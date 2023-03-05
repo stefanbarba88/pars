@@ -28,10 +28,12 @@
 <body>
 
 {#{% if is_granted('ROLE_USER') %}#}
-{#    {% include 'includes/header.html.twig' %}#}
+
 {#{% endif %}#}
 
-{% block content %}{% endblock content %}
+{% block content %}
+
+{% endblock content %}
 
 {% block includeJavascript %}
 

@@ -165,61 +165,23 @@
                             <h6 class="mb-0">Registracija novog korisnika</h6>
                         </div>
 
-                        <form class="wizard-form steps-validation" action="#">
-                            <h6>Personal data</h6>
+
+                        {{ form_start(form, {'attr': {'class' : 'wizard-form steps-validation', 'novalidation': 'novalidation', 'id': 'kongres_form', 'enctype': 'multipart/form-data' }}) }}
+{#                        <form class="" action="#">#}
+                            <h6>Lični podaci</h6>
                             <fieldset>
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Select location:</label>
-                                            <select name="location" class="form-select">
-                                                <optgroup label="North America">
-                                                    <option value="1">United States</option>
-                                                    <option value="2">Canada</option>
-                                                </optgroup>
-
-                                                <optgroup label="Latin America">
-                                                    <option value="3">Chile</option>
-                                                    <option value="4">Argentina</option>
-                                                    <option value="5">Colombia</option>
-                                                    <option value="6">Peru</option>
-                                                </optgroup>
-
-                                                <optgroup label="Europe">
-                                                    <option value="8">Croatia</option>
-                                                    <option value="9">Hungary</option>
-                                                    <option value="10">Ukraine</option>
-                                                    <option value="11">Greece</option>
-                                                </optgroup>
-                                            </select>
+                                            {{ form_label(form.ime, 'Ime:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.ime, {attr: { class: 'form-control required' }}) }}
                                         </div>
                                     </div>
 
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Select position:</label>
-                                            <select name="position" class="form-select">
-                                                <optgroup label="Developer Relations">
-                                                    <option value="1" selected>Sales Engineer</option>
-                                                    <option value="2">Ads Solutions Consultant</option>
-                                                    <option value="3">Technical Solutions Consultant</option>
-                                                    <option value="4">Business Intern</option>
-                                                </optgroup>
-
-                                                <optgroup label="Engineering &amp; Design">
-                                                    <option value="5">Interaction Designer</option>
-                                                    <option value="6">Technical Program Manager</option>
-                                                    <option value="7">Software Engineer</option>
-                                                    <option value="8">Information Security Engineer</option>
-                                                </optgroup>
-
-                                                <optgroup label="Marketing &amp; Communications">
-                                                    <option value="13">Media Outreach Manager</option>
-                                                    <option value="14">Research Manager</option>
-                                                    <option value="15">Marketing Intern</option>
-                                                    <option value="16">Business Intern</option>
-                                                </optgroup>
-                                            </select>
+                                            {{ form_label(form.prezime, 'Prezime:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.prezime, {attr: { class: 'form-control required' }}) }}
                                         </div>
                                     </div>
                                 </div>
@@ -227,8 +189,48 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Applicant name: <span class="text-danger">*</span></label>
-                                            <input type="text" name="name" class="form-control required" placeholder="John Doe">
+                                            {{ form_label(form.datumRodjenja, 'Datum rođenja:', {'label_attr': {'class': 'form-label'}}) }}
+                                            <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                                {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom' }}) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            {{ form_label(form.pol, 'Pol:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.pol, {attr: { class: 'form-control select required' }}) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+
+
+                                                <label class="col-form-label col-lg-3">Basic select</label>
+                                                <div class="col-lg-9">
+                                                    <select class="form-control select" data-minimum-results-for-search="Infinity">
+                                                        <optgroup label="Mountain Time Zone">
+                                                            <option value="AZ">Arizona</option>
+                                                            <option value="CO">Colorado</option>
+                                                            <option value="ID">Idaho</option>
+                                                            <option value="WY">Wyoming</option>
+                                                        </optgroup>
+                                                        <optgroup label="Central Time Zone">
+                                                            <option value="AL">Alabama</option>
+                                                            <option value="AR">Arkansas</option>
+                                                            <option value="KS">Kansas</option>
+                                                            <option value="KY">Kentucky</option>
+                                                        </optgroup>
+                                                    </select>
+                                                </div>
+
+
                                         </div>
                                     </div>
 
@@ -310,13 +312,13 @@
                                 </div>
                             </fieldset>
 
-                            <h6>Your education</h6>
+                            <h6>Login podaci</h6>
                             <fieldset>
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-label">University: <span class="text-danger">*</span></label>
-                                            <input type="text" name="university" placeholder="University name" class="form-control required">
+                                            <label class="form-label">Email address: <span class="text-danger">*</span></label>
+                                            <input type="email" name="email" class="form-control required" placeholder="your@email.com">
                                         </div>
                                     </div>
 
@@ -407,7 +409,7 @@
                                 </div>
                             </fieldset>
 
-                            <h6>Your experience</h6>
+                            <h6>Slika</h6>
                             <fieldset>
                                 <div class="row">
                                     <div class="col-lg-6">
@@ -489,7 +491,7 @@
                                 </div>
                             </fieldset>
 
-                            <h6>Additional info</h6>
+                            <h6>Dodatne informacije</h6>
                             <fieldset>
                                 <div class="row">
                                     <div class="col-lg-6">
@@ -549,7 +551,7 @@
                                     </div>
                                 </div>
                             </fieldset>
-                        </form>
+                        {{ form_end(form) }}
                     </div>
                     <!-- /wizard with validation -->
 
@@ -584,15 +586,14 @@
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
     {% endif %}
 
-{#    <script src="{{ asset('assets/demo/pages/dashboard.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/streamgraph.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/sparklines.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/lines.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/areas.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/donuts.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/bars.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/progress.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/heatmaps.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/pies.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/bullets.js') }}"></script>#}
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
 {% endblock includeJavascript %}

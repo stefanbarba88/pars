@@ -7,10 +7,11 @@ use App\Classes\Interfaces\DataClassInterface;
 class VrstaZaposlenjaData implements DataClassInterface {
 
   public const VRSTA_ZAPOSLENJA = [
-    1 => 'Određeno',
-    2 => 'Neodređeno',
+    1 => 'Neodređeno',
+    2 => 'Određeno',
     3 => 'Privremeni i povremeni poslovi',
-    4 => 'Agencija'
+    4 => 'Agencija',
+    5 => 'Omladinska zadruga'
   ];
 
   public static function form(): array {

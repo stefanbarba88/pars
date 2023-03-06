@@ -11,7 +11,8 @@ class UserRolesData implements DataClassInterface {
   public const ROLE_SUPER_ADMIN = 1;
   public const ROLE_ADMIN = 2;
   public const ROLE_GEODETA = 3;
-  public const ROLE_POMOCNI_GEODETA = 4;
+  public const ROLE_FIGURANT = 4;
+  public const ROLE_KLIJENT = 5;
 
 
   public const DATA = [
@@ -31,7 +32,12 @@ class UserRolesData implements DataClassInterface {
       'role' => 'ROLE_GEODETA',
     ],
     'ROLE_POMOCNI_GEODETA' => [
-      'id' => self::ROLE_POMOCNI_GEODETA,
+      'id' => self::ROLE_FIGURANT,
+      'title' => 'Figurant',
+      'role' => 'ROLE_FIGURANT',
+    ],
+    'ROLE_KLIJENT' => [
+      'id' => self::ROLE_KLIJENT,
       'title' => 'Pomoćni geodeta',
       'role' => 'ROLE_POMOCNI_GEODETA',
     ],

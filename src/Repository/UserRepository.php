@@ -51,6 +51,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     $this->save($user, true);
   }
 
+  public function findForForm(int $id = 0): User {
+    if (empty($id)) {
+      return new User();
+    }
+    return $this->getEntityManager()->getRepository(User::class)->find($id);
+  }
+
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

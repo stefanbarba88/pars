@@ -9,12 +9,14 @@ use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
 #[ORM\HasLifecycleCallbacks]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface {
   #[ORM\Id]
   #[ORM\GeneratedValue]
@@ -43,8 +45,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $adresa = null;
 
-  #[ORM\Column(length: 255, nullable: true)]
-  private ?string $grad = null;
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?City $grad = null;
 
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $telefon1 = null;
@@ -122,6 +125,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     $this->email = $email;
 
     return $this;
+  }
+
+  /**
+   * @return DateTimeImmutable
+   */
+  public function getCreated(): DateTimeImmutable {
+    return $this->created;
   }
 
   public function setCreated(DateTimeImmutable $created): self {
@@ -215,16 +225,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
   }
 
   /**
-   * @return string|null
+   * @return City|null
    */
-  public function getGrad(): ?string {
+  public function getGrad(): ?City {
     return $this->grad;
   }
 
   /**
-   * @param string|null $grad
+   * @param City|null $grad
    */
-  public function setGrad(?string $grad): void {
+  public function setGrad(?City $grad): void {
     $this->grad = $grad;
   }
 

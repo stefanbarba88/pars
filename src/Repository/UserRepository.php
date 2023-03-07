@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Service\MailService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -18,17 +20,44 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface {
-  public function __construct(ManagerRegistry $registry) {
+
+  private UserPasswordHasherInterface $passwordHasher;
+  private MailService $mail;
+
+  public function __construct(ManagerRegistry $registry, UserPasswordHasherInterface $passwordHasher, MailService $mail) {
     parent::__construct($registry, User::class);
+    $this->passwordHasher = $passwordHasher;
+    $this->mail = $mail;
   }
 
-  public function save(User $entity, bool $flush = false): void {
-    $this->getEntityManager()->persist($entity);
 
-    if ($flush) {
-      $this->getEntityManager()->flush();
-    }
+  public function save(User $user): User {
+    $this->hashPlainPassword($user);
+    $this->getEntityManager()->persist($user);
+
+    $this->mail->registration($user);
+
+    $this->getEntityManager()->flush();
+
+    return $user;
   }
+
+  public function hashPlainPassword(User $user): User {
+    $hashedPassword = $this->passwordHasher->hashPassword(
+      $user,
+      $user->getPlainPassword()
+    );
+    $user->setPassword($hashedPassword);
+    return $user;
+  }
+
+//  public function save(User $entity, bool $flush = false): void {
+//    $this->getEntityManager()->persist($entity);
+//
+//    if ($flush) {
+//      $this->getEntityManager()->flush();
+//    }
+//  }
 
   public function remove(User $entity, bool $flush = false): void {
     $this->getEntityManager()->remove($entity);

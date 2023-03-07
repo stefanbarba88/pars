@@ -7,7 +7,7 @@ namespace App\Classes\JMBGcheck;
  * https://www.paragraf.rs/propisi/zakon-o-jedinstvenom-maticnom-broju-gradjana.html
  */
 
-class JMBG {
+class JMBGcheck {
 
   private Person $Person;
 
@@ -86,6 +86,11 @@ class JMBG {
     $this->validateControlNumber();
 
     return $this;
+  }
+
+  public function validateJMBG(): bool {
+    $jmbg = $this->validate();
+    return $jmbg->Person->ControlNumberMatch;
   }
 
   /**

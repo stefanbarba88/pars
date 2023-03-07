@@ -23,7 +23,7 @@ class Person {
   private string $DateOfBirthAssumed;
   private bool $DateOfBirthAssumedValidDate;
   private int $ControlNumberCalculated;
-  private bool $ControlNumberMatch;
+  public bool $ControlNumberMatch;
 
   public function get(string $key, string $returntype = "array") {
 

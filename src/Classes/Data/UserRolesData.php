@@ -38,8 +38,8 @@ class UserRolesData implements DataClassInterface {
     ],
     'ROLE_KLIJENT' => [
       'id' => self::ROLE_KLIJENT,
-      'title' => 'Pomoćni geodeta',
-      'role' => 'ROLE_POMOCNI_GEODETA',
+      'title' => 'Klijent',
+      'role' => 'ROLE_KLIJENT',
     ],
   ];
 
@@ -48,7 +48,8 @@ class UserRolesData implements DataClassInterface {
   }
 
   public static function formForForm(): array {
-        $data = ['' => ''];
+//        $data = ['' => ''];
+    $data = [];
         foreach (self::DATA as $v) {
             $data[$v['title']] = $v['id'];
         }

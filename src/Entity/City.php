@@ -25,6 +25,10 @@ class City {
   #[ORM\Column(length: 255)]
   private ?string $municipality = null;
 
+  public function getFormTitle(): ?string {
+    return $this->title . ' (' . $this->ptt . ')';
+  }
+
   public function getId(): ?int {
     return $this->id;
   }

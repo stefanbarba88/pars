@@ -48,7 +48,11 @@ class UserController extends AbstractController {
     $form = $this->createForm(UserRegistrationFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
+
       if ($form->isSubmitted() && $form->isValid()) {
+        dd($request);
+        $request->request->all('delegat');
+        dd($form);
 //        if (!is_null($sysUser->getGrana())) {
 //          $grana = $sysUser->getGrana();
 //        } else {

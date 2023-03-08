@@ -22,6 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class UserRegistrationFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
@@ -43,14 +44,14 @@ class UserRegistrationFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('jmbg', IntegerType::class, [
+      ->add('jmbg', TextType::class, [
         'constraints' => [
+          new Regex('/^\d{13}$/', 'Morate uneti odgovarajući format'),
           new JMBG('strict'),
         ],
         'attr' => [
           'maxlength' => '13',
           'minlength' => '13',
-          'pattern' => '[0-9.]+'
         ],
       ])
       ->add('vrstaZaposlenja', ChoiceType::class, [
@@ -110,13 +111,13 @@ class UserRegistrationFormType extends AbstractType {
         'multiple' => false,
       ])
       ->add('adresa')
-      ->add('telefon1',IntegerType::class, [
+      ->add('telefon1',TextType::class, [
           'attr' => [
           'maxlength' => '10',
           'pattern' => '[0-9.]+'
         ],
       ])
-      ->add('telefon2',IntegerType::class, [
+      ->add('telefon2',TextType::class, [
         'attr' => [
           'maxlength' => '10',
           'pattern' => '[0-9.]+'

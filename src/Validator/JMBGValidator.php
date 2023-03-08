@@ -4,6 +4,7 @@ namespace App\Validator;
 
 
 use App\Classes\JMBGcheck\JMBGcheck;
+use Exception;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -34,14 +35,19 @@ class JMBGValidator extends ConstraintValidator {
 //// ...
 //    }
 
+    try {
+      $jmbg = new JMBGcheck($value);
+      $test = $jmbg->validateJMBG();
 
-    $jmbg = new JMBGcheck($value);
-    $test = $jmbg->validateJMBG();
-
-    if (!$test) {
-// the argument must be a string or an object implementing __toString()
+      if (!$test) {
+        $this->context->buildViolation($constraint->message)
+          ->addViolation();
+      }
+    }
+    catch (Exception $e) {
       $this->context->buildViolation($constraint->message)
         ->addViolation();
     }
+
   }
 }

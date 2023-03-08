@@ -1,4 +1,10 @@
 security:
+#    role_hierarchy:
+#        ROLE_POVERENIK: [ ROLE_USER ]
+#        ROLE_REG_POVERENIK: [ ROLE_USER ]
+#        ROLE_UPRAVNIK_CENTRALE: [ ROLE_USER ]
+#        ROLE_UPRAVNIK_GRANE: [ ROLE_USER ]
+#        ROLE_SUPER_ADMIN: [ ROLE_USER, ROLE_ALLOWED_TO_SWITCH ]
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
@@ -16,6 +22,8 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            # by default, the feature allows 5 login attempts per minute
+            login_throttling: null
 
             form_login:
                 # "app_login" is the name of the route created previously
@@ -26,6 +34,7 @@ security:
             logout:
                 path: app_logout
                 target: app_login
+#            custom_authenticator: App\Security\LoginAuthenticator
 
                 # activate different ways to authenticate
                 # https://symfony.com/doc/current/security.html#the-firewall

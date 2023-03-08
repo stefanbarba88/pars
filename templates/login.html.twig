@@ -11,7 +11,11 @@
 
                 <!-- Content area -->
                 <div class="content d-flex justify-content-center align-items-center">
-
+{#                    {% if app.user %}#}
+{#                        <div class="mb-3">#}
+{#                            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>#}
+{#                        </div>#}
+{#                    {% endif %}#}
                     <!-- Login form -->
                     <form class="login-form needs-validation" action="{{ path('app_login') }}" method="POST" novalidate>
                         <div class="card mb-0">
@@ -27,7 +31,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Email</label>
                                     <div class="form-control-feedback form-control-feedback-start">
-                                        <input type="email" class="form-control" placeholder="email@email.com" required>
+                                        <input type="email" name="email" class="form-control" placeholder="email@email.com" required value="{{ last_username }}" autofocus>
                                         <div class="invalid-feedback">Morate uneti Vaš email</div>
                                         <div class="form-control-feedback-icon">
                                             <i class="ph-user-circle text-muted"></i>
@@ -38,13 +42,26 @@
                                 <div class="mb-3">
                                     <label class="form-label">Lozinka</label>
                                     <div class="form-control-feedback form-control-feedback-start">
-                                        <input type="password" class="form-control" placeholder="•••••••••••" required>
+                                        <input type="password" name="password" class="form-control" placeholder="•••••••••••" required autocomplete="current-password">
                                         <div class="invalid-feedback">Morate uneti Vašu lozinku</div>
                                         <div class="form-control-feedback-icon">
                                             <i class="ph-lock text-muted"></i>
                                         </div>
                                     </div>
                                 </div>
+
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                                {#
+                                Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+                                See https://symfony.com/doc/current/security/remember_me.html
+
+                                <div class="checkbox mb-3">
+                                    <label>
+                                        <input type="checkbox" name="_remember_me"> Remember me
+                                    </label>
+                                </div>
+                                #}
 
                                 <div class="mb-3">
                                     <button type="submit" class="btn btn-primary w-100">Prijavite se</button>

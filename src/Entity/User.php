@@ -16,15 +16,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[UniqueEntity(fields: ['email'], message: 'U bazi već postoji korinik sa ovim email nalogom')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface {
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]
   private ?int $id = null;
 
-  public function getUploadPath(): ?string {
-    return $_ENV['USER_PATH'] . date('Y/m/d/');
+  public function getImageUploadPath(): ?string {
+    return $_ENV['USER_IMAGE_PATH'] . date('Y/m/d/');
+  }
+  public function getAvatarUploadPath(): ?string {
+    return $_ENV['USER_AVATAR_PATH'] . date('Y/m/d/');
   }
 
   #[ORM\Column(length: 180, unique: true)]
@@ -36,7 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
   #[ORM\Column(length: 255)]
   private ?string $prezime = null;
 
-  #[ORM\Column(length: 255, nullable: true)]
+  #[ORM\Column(length: 13)]
   private ?string $jmbg = null;
 
   #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -311,11 +314,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     return (string)$this->email;
   }
 
+  #[ORM\PostLoad]
+  public function postLoad(): void {
+    $this->role = UserRolesData::userRole($this);
+  }
+
   /**
    * @see UserInterface
    */
   public function getRoles(): array {
-    $roles = $this->roles;
+    $roles = empty($this->roles) ? [] : $this->roles;
     // guarantee every user at least has ROLE_USER
     $roles[] = 'ROLE_USER';
 
@@ -328,12 +336,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     return $this;
   }
 
-  public function setRole(string $role): void {
-    $this->role = $role;
-    $this->setRoles([$role]);
-
-    $this->setUserType(UserRolesData::getTypeByRole($role));
-  }
+//  public function setRole(string $role): void {
+//    $this->role = $role;
+//    $this->setRoles([$role]);
+//
+//    $this->setUserType(UserRolesData::getTypeByRole($role));
+//  }
 
   /**
    * @return int|null
@@ -347,6 +355,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
    */
   public function setUserType(?int $userType): void {
     $this->userType = $userType;
+    $this->setRoles([UserRolesData::getRoleByType($userType)]);
   }
 
   /**

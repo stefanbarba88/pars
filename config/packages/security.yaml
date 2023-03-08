@@ -24,6 +24,7 @@ security:
             provider: app_user_provider
             # by default, the feature allows 5 login attempts per minute
             login_throttling: null
+            user_checker: App\Security\UserChecker
 
             form_login:
                 # "app_login" is the name of the route created previously

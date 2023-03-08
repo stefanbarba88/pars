@@ -18,7 +18,17 @@
 {#                    {% endif %}#}
                     <!-- Login form -->
                     <form class="login-form needs-validation" action="{{ path('app_login') }}" method="POST" novalidate>
+
                         <div class="card mb-0">
+{#                            {% if error is not empty %}#}
+{#                                <div class="alert alert-danger" role="alert">#}
+{#                                    {% if error.code == 1  %}#}
+{#                                        Nalog je suspendovan!#}
+{#                                    {% else %}#}
+{#                                        Neispravan email ili lozinka!#}
+{#                                    {% endif %}#}
+{#                                </div>#}
+{#                            {% endif %}#}
                             <div class="card-body">
                                 <div class="text-center mb-3">
                                     <div class="d-inline-flex align-items-center justify-content-center mb-4 mt-2">
@@ -31,7 +41,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Email</label>
                                     <div class="form-control-feedback form-control-feedback-start">
-                                        <input type="email" name="email" class="form-control" placeholder="email@email.com" required value="{{ last_username }}" autofocus>
+                                        <input type="email" name="_username" class="form-control" placeholder="email@email.com" required autofocus>
                                         <div class="invalid-feedback">Morate uneti Vaš email</div>
                                         <div class="form-control-feedback-icon">
                                             <i class="ph-user-circle text-muted"></i>
@@ -42,7 +52,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Lozinka</label>
                                     <div class="form-control-feedback form-control-feedback-start">
-                                        <input type="password" name="password" class="form-control" placeholder="•••••••••••" required autocomplete="current-password">
+                                        <input type="password" name="_password" class="form-control" placeholder="•••••••••••" required autocomplete="current-password">
                                         <div class="invalid-feedback">Morate uneti Vašu lozinku</div>
                                         <div class="form-control-feedback-icon">
                                             <i class="ph-lock text-muted"></i>

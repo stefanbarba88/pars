@@ -57,11 +57,11 @@ class UserController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
-        dd($user);
+
         $file = $request->files->all()['user_registration_form']['slika'];
 
         if(is_null($file)) {
-          $path = Avatar::getAvatar($user->getIme(), $user->getPrezime(), $this->getParameter('kernel.project_dir') . $user->getAvatarUploadPath());
+          $path = Avatar::getAvatar($user->getIme(), $user->getPrezime(), $this->getParameter('kernel.project_dir') . $user->getAvatarUploadPath(), $user);
         } else {
           $path = $uploadService->upload($file, $user->getImageUploadPath());
           $path = $path->getUrl();

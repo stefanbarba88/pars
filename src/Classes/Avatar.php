@@ -14,12 +14,16 @@ class Avatar {
   public const ROUNDED = 'true';
 
 
-  public static function getAvatar(string $name, string $lastname, $path): string {
+  public static function getAvatar(string $name, string $lastname, $path, $user): string {
 
+    $fullName = Slugify::slugify($name . $lastname);
+
+    if (file_exists($path)) {
+      return $user->getAvatarUploadPath() . $fullName . '.png';
+    }
     mkdir($path, 0777, true);
 
-
-    $path = $path . $name . $lastname . '.png';
+    $path = $path . $fullName . '.png';
 
     $url = self::URL_PATH . $name . '+' . $lastname . '&background=' . self::BACKGROUND . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
 
@@ -57,7 +61,7 @@ class Avatar {
 //      unlink($path);
 //      throw new OidlEmptyFileException($path);
 //    }
-    return $path;
+    return $user->getAvatarUploadPath() . $fullName . '.png';
   }
 
 }

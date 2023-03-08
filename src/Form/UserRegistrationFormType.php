@@ -46,7 +46,7 @@ class UserRegistrationFormType extends AbstractType {
       ])
       ->add('jmbg', TextType::class, [
         'constraints' => [
-          new Regex('/^\d{13}$/', 'Morate uneti odgovarajući format'),
+          new Regex('/^\d{13}$/', 'JMBG morate uneti u odgovarajućem formatu'),
           new JMBG('strict'),
         ],
         'attr' => [
@@ -61,12 +61,20 @@ class UserRegistrationFormType extends AbstractType {
       ])
 
       ->add('plainPassword', TextType::class, [
-      'attr' => [
-        'minlength' => '8',
-        'pattern' => '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
+        'constraints' => [
+          new Regex('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', 'Lozinka mora imati minimum 8 karaktera (obavezno jedno veliko slovo, jedno malo slovo, jedan specijalan karakter i jednu cifru)'),
+        ],
+        'attr' => [
+          'minlength' => '8',
+          ],
+      ])
+
+      ->add('email', EmailType::class, [
+        'constraints' => [
+          new Regex('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', 'Email adresu morate uneti u odgovarajućem formatu'),
         ],
       ])
-      ->add('email', EmailType::class)
+
       ->add('userType', ChoiceType::class, [
         'choices' => UserRolesData::formForForm(),
         'expanded' => false,
@@ -112,15 +120,19 @@ class UserRegistrationFormType extends AbstractType {
       ])
       ->add('adresa')
       ->add('telefon1',TextType::class, [
+        'constraints' => [
+          new Regex('/^\d{10}$/', 'Broj telefona morate uneti u odgovarajućem formatu'),
+        ],
           'attr' => [
-          'maxlength' => '10',
-          'pattern' => '[0-9.]+'
+          'maxlength' => '10'
         ],
       ])
       ->add('telefon2',TextType::class, [
+        'constraints' => [
+          new Regex('/^\d{10}$/', 'Broj telefona morate uneti u odgovarajućem formatu'),
+        ],
         'attr' => [
-          'maxlength' => '10',
-          'pattern' => '[0-9.]+'
+          'maxlength' => '10'
         ],
       ]);
   }

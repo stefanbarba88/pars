@@ -1,22 +1,62 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout.html.twig' %}
+{% block content %}
+    <!-- Page content -->
+    <div class="page-content">
 
-{% block title %}Reset your password{% endblock %}
+        <!-- Main content -->
+        <div class="content-wrapper">
 
-{% block body %}
-    {% for flash_error in app.flashes('reset_password_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
-    <h1>Reset your password</h1>
+            <!-- Inner content -->
+            <div class="content-inner">
 
-    {{ form_start(requestForm) }}
-        {{ form_row(requestForm.email) }}
-        <div>
-            <small>
-                Enter your email address and we will send you a
-                link to reset your password.
-            </small>
+                <!-- Content area -->
+                <div class="content d-flex justify-content-center align-items-center">
+
+                    <!-- Reset form -->
+                    <form class="login-form needs-validation" action="{{ path('app_login') }}" method="POST" novalidate>
+                        <div class="card mb-0">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <div class="d-inline-flex align-items-center justify-content-center mb-4 mt-2">
+                                        <img src="{{ asset('assets/images/logo/logo_admin.png') }}" class="h-250px" alt="">
+                                    </div>
+                                    <h5 class="mb-0">Resetujte Vašu lozinku</h5>
+                                    <span class="d-block text-muted">Unesite Vašu email adresu i mi ćemo Vam poslati link za reset lozinke.</span>
+                                </div>
+
+                                {{ form_start(requestForm, {'attr': {'class' : 'login-form needs-validation', 'novalidation': 'novalidation' }}) }}
+                                    <div class="mb-3">
+                                        {{ form_label(requestForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                                        <div class="form-control-feedback form-control-feedback-start">
+                                            {{ form_widget(requestForm.email, {attr: { class: 'form-control required'}}) }}
+                                            <div class="invalid-feedback">Morate uneti ispravan email</div>
+                                            <div class="form-control-feedback-icon">
+                                                <i class="ph-user-circle text-muted"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <button type="submit" class="btn btn-primary w-100">Pošaljite zahtev</button>
+                                    </div>
+                                {{ form_end(requestForm) }}
+                            </div>
+                        </div>
+                    </form>
+                    <!-- /login form -->
+
+                </div>
+                <!-- /content area -->
+
+            </div>
+            <!-- /inner content -->
+
         </div>
+        <!-- /main content -->
 
-        <button class="btn btn-primary">Send password reset email</button>
-    {{ form_end(requestForm) }}
-{% endblock %}
+    </div>
+    <!-- /page content -->
+
+
+{% endblock content %}
+

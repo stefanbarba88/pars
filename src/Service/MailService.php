@@ -40,6 +40,7 @@ class MailService {
     $args['password'] = $user->getPlainPassword();
     $args['name'] = $user->getFullName();
     $args['role'] = UserRolesData::userRoleTitle($user);
+    $args['support'] = CompanyInfo::SUPPORT_MAIL_ADDRESS;
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 

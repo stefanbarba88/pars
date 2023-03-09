@@ -1,12 +1,76 @@
 {% extends 'layout.html.twig' %}
-
-
-
 {% block content %}
-    <h1>Reset your password</h1>
+    <!-- Page content -->
+    <div class="page-content">
 
-    {{ form_start(resetForm) }}
-        {{ form_row(resetForm.plainPassword) }}
-        <button class="btn btn-primary">Reset password</button>
-    {{ form_end(resetForm) }}
-{% endblock %}
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Content area -->
+                <div class="content d-flex justify-content-center align-items-center">
+                    <!-- Reset form -->
+                    {{ form_start(resetForm, {'attr': {'class' : 'login-form needs-validation', 'novalidate': 'novalidate' }}) }}
+                    <div class="card mb-0">
+                        <div class="card-body">
+                            {% if form_errors(resetForm.plainPassword.first) or form_errors(resetForm.plainPassword.second) %}
+                                <div class="alert alert-danger alert-dismissible fade show">
+                                    <span class="fw-semibold">
+                                        {{ form_errors(resetForm.plainPassword.first) | errorsList }}
+                                        {{ form_errors(resetForm.plainPassword.second) | errorsList }}
+                                    </span>
+                                </div>
+                            {% endif %}
+
+                            <div class="text-center mb-3">
+                                <div class="d-inline-flex align-items-center justify-content-center mb-4 mt-2">
+                                    <img src="{{ asset('assets/images/logo/logo_admin.png') }}" class="h-250px" alt="">
+                                </div>
+                                <h5 class="mb-0">Resetujte Vašu lozinku</h5>
+                                <span class="d-block text-muted">Lozinka mora sadržati minimum 8 karaktera (obavezno jedno veliko slovo, jedno malo slovo, jedan specijalan karakter i jednu cifru)</span>
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(resetForm.plainPassword.first, 'Nova lozinka', {'label_attr': {'class': 'form-label'}}) }}
+                                <div class="form-control-feedback form-control-feedback-start">
+                                    {{ form_widget(resetForm.plainPassword.first, {attr: { class: 'form-control required'}}) }}
+                                    <div class="invalid-feedback">Morate uneti Vašu lozinku</div>
+                                    <div class="form-control-feedback-icon">
+                                        <i class="ph-lock text-muted"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                {{ form_label(resetForm.plainPassword.second, 'Ponovite lozinku', {'label_attr': {'class': 'form-label'}}) }}
+                                <div class="form-control-feedback form-control-feedback-start">
+                                    {{ form_widget(resetForm.plainPassword.second, {attr: { class: 'form-control required'}}) }}
+                                    <div class="invalid-feedback">Morate uneti Vašu lozinku</div>
+                                    <div class="form-control-feedback-icon">
+                                        <i class="ph-lock text-muted"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary w-100">Resetujte lozinku</button>
+                            </div>
+                        </div>
+                    </div>
+                    {{ form_end(resetForm) }}
+                    <!-- /reset form -->
+
+                </div>
+                <!-- /content area -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+    </div>
+    <!-- /page content -->
+
+
+{% endblock content %}

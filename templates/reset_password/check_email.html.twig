@@ -1,11 +1,44 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout.html.twig' %}
+{% block content %}
+    <!-- Page content -->
+    <div class="page-content">
+        <!-- Main content -->
+        <div class="content-wrapper">
+            <!-- Inner content -->
+            <div class="content-inner">
+                <!-- Content area -->
+                <div class="content d-flex justify-content-center align-items-center">
+                    <!-- Reset form -->
+                    <div class="card mb-0">
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <div class="d-inline-flex align-items-center justify-content-center mb-4 mt-2">
+                                    <img src="{{ asset('assets/images/logo/logo_admin.png') }}" class="h-250px" alt="">
+                                </div>
+                                <h5 class="mb-0">Email za reset Vaše lozinke je poslat</h5>
+                                <span class="d-block text-muted">
+                                    Ako postoji nalog koji se podudara sa email adresom koja je navedena, dobićete email koji sadži link za reset lozinke.<br>
+                                    Link ističe za {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+                                </span>
+                            </div>
+                            <div class="text-center mb-3">
+                                <span class="d-block text-muted">
+                                    Ukoliko niste primili mail pogledajte u spam pošti ili klikom na dugme ispod ponovite proces.
+                                </span>
+                            </div>
+                            <a href="{{ path('app_forgot_password_request') }}" type="button" class="btn btn-primary w-100">Pošaljite zahtev</a>
+                        </div>
+                    </div>
+                    <!-- /reset form -->
+                </div>
+                <!-- /content area -->
+            </div>
+            <!-- /inner content -->
+        </div>
+        <!-- /main content -->
+    </div>
+    <!-- /page content -->
 
-{% block title %}Password Reset Email Sent{% endblock %}
 
-{% block body %}
-    <p>
-        If an account matching your email exists, then an email was just sent that contains a link that you can use to reset your password.
-        This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
-    </p>
-    <p>If you don't receive an email please check your spam folder or <a href="{{ path('app_forgot_password_request') }}">try again</a>.</p>
-{% endblock %}
+{% endblock content %}
+

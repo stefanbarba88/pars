@@ -46,4 +46,20 @@ class MailService {
 
   }
 
+  public function resetPassword(User $user, $resetToken): void {
+    $args = [];
+    $to = $user->getEmail();
+    $subject = 'Reset lozinke na ' . CompanyInfo::ORGANIZATION_TITLE;
+    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/reset_password.html.twig';
+
+    $args['resetToken'] = $resetToken;
+    $args['name'] = $user->getFullName();
+    $args['support'] = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
 }

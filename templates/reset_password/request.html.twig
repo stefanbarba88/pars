@@ -13,18 +13,16 @@
                 <div class="content d-flex justify-content-center align-items-center">
 
                     <!-- Reset form -->
-                    <form class="login-form needs-validation" action="{{ path('app_login') }}" method="POST" novalidate>
+                    {{ form_start(requestForm, {'attr': {'class' : 'login-form needs-validation', 'novalidation': 'novalidation' }}) }}
                         <div class="card mb-0">
                             <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="d-inline-flex align-items-center justify-content-center mb-4 mt-2">
-                                        <img src="{{ asset('assets/images/logo/logo_admin.png') }}" class="h-250px" alt="">
+                                    <div class="text-center mb-3">
+                                        <div class="d-inline-flex align-items-center justify-content-center mb-4 mt-2">
+                                            <img src="{{ asset('assets/images/logo/logo_admin.png') }}" class="h-250px" alt="">
+                                        </div>
+                                        <h5 class="mb-0">Resetujte Vašu lozinku</h5>
+                                        <span class="d-block text-muted">Unesite Vašu email adresu i mi ćemo Vam poslati link za reset lozinke.</span>
                                     </div>
-                                    <h5 class="mb-0">Resetujte Vašu lozinku</h5>
-                                    <span class="d-block text-muted">Unesite Vašu email adresu i mi ćemo Vam poslati link za reset lozinke.</span>
-                                </div>
-
-                                {{ form_start(requestForm, {'attr': {'class' : 'login-form needs-validation', 'novalidation': 'novalidation' }}) }}
                                     <div class="mb-3">
                                         {{ form_label(requestForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
                                         <div class="form-control-feedback form-control-feedback-start">
@@ -35,15 +33,13 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="mb-3">
                                         <button type="submit" class="btn btn-primary w-100">Pošaljite zahtev</button>
                                     </div>
-                                {{ form_end(requestForm) }}
                             </div>
                         </div>
-                    </form>
-                    <!-- /login form -->
+                    {{ form_end(requestForm) }}
+                    <!-- /reset form -->
 
                 </div>
                 <!-- /content area -->

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Classes\CompanyInfo;
 use App\Classes\Data\UserRolesData;
 use App\Entity\User;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -29,14 +30,15 @@ class MailService {
   public function registration(User $user): void {
     $args = [];
     $to = $user->getEmail();
-    $subject = 'Pristup bazi UGSa';
-    $from = $_ENV['REGISTRATION_MAIL_ADDRESS'];
-    $sender = $_ENV['ORGANIZATION_TITLE'];
-    $template = 'mail/mail_registration.html.twig';
+    $subject = 'Registracija na ' . CompanyInfo::ORGANIZATION_TITLE;
+    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/registration.html.twig';
 
     $args['link'] = $this->router->generate('app_login', [], UrlGeneratorInterface::ABSOLUTE_URL);
     $args['mail'] = $user->getEmail();
     $args['password'] = $user->getPlainPassword();
+    $args['name'] = $user->getFullName();
     $args['role'] = UserRolesData::userRoleTitle($user);
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);

@@ -26,9 +26,8 @@ class UserController extends AbstractController {
   #[Route('/list/', name: 'app_users')]
   public function list(): Response {
     $args=[];
-
     $args['users'] = $this->em->getRepository(User::class)->getAll();
-dd($args);
+
     return $this->render('user/list.html.twig', $args);
   }
 
@@ -66,7 +65,7 @@ dd($args);
           $path = Avatar::getAvatar($user->getIme(), $user->getPrezime(), $this->getParameter('kernel.project_dir') . $user->getAvatarUploadPath(), $user);
         } else {
           $path = $uploadService->upload($file, $user->getImageUploadPath());
-          $path = $path->getUrl();
+          $path = $path->getAssetPath();
         }
 
         $user->setSlika($path);

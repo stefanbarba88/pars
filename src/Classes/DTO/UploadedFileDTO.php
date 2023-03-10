@@ -48,4 +48,8 @@ class UploadedFileDTO {
     return $this->uploadPath . $this->fileName;
   }
 
+  public function getAssetPath(): string {
+    return str_replace("/public","",$this->urlPath . $this->fileName);
+  }
+
 }

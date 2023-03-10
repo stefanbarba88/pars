@@ -19,7 +19,7 @@ class Avatar {
     $fullName = Slugify::slugify($name . $lastname);
 
     if (file_exists($path)) {
-      return $user->getAvatarUploadPath() . $fullName . '.png';
+      return str_replace("/public","",$user->getAvatarUploadPath() . $fullName . '.png');
     }
     mkdir($path, 0777, true);
 
@@ -61,7 +61,7 @@ class Avatar {
 //      unlink($path);
 //      throw new OidlEmptyFileException($path);
 //    }
-    return $user->getAvatarUploadPath() . $fullName . '.png';
+    return str_replace("/public","",$user->getAvatarUploadPath() . $fullName . '.png');
   }
 
 }

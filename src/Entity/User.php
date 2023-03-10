@@ -358,6 +358,18 @@ class User implements UserInterface {
     $this->setRoles([UserRolesData::getRoleByType($userType)]);
   }
 
+  public function getBadgeByUserType(): string {
+    return UserRolesData::getBadgeByType($this->userType);
+  }
+
+  public function getBadgeByStatus(): string {
+    if ($this->isSuspended) {
+      return '<span class="badge bg-danger rounded-pill p-1"><i class="ph-x-circle"></i></span>';
+    }
+    return '<span class="badge bg-success rounded-pill p-1"><i class="ph-minus-circle"></i></span>';
+
+  }
+
   /**
    * @see PasswordAuthenticatedUserInterface
    */
@@ -421,6 +433,7 @@ class User implements UserInterface {
   public function setDatumRodjenja(?DateTimeImmutable $datumRodjenja): void {
     $this->datumRodjenja = $datumRodjenja;
   }
+
 
 
 }

@@ -100,8 +100,24 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
   }
 
   public function getAll(): array {
-    $qb = $this->createQueryBuilder('u');
-    return $qb->orderBy('u.id')->getQuery()->getResult();
+//    $qb = $this->createQueryBuilder('u');
+//    $qb->select('u.id','u.ime', 'u.prezime', 'u.slika', 'u.isSuspended', 'u.datumRodjenja', 'u.userType');
+//    $qb->orderBy('u.id')->getQuery()->getResult();
+    $users = $this->getEntityManager()->getRepository(User::class)->findAll();
+
+    $usersList = [];
+    foreach ($users as $user) {
+      $usersList [] = [
+        'id' => $user->getId(),
+        'ime' => $user->getIme(),
+        'prezime' => $user->getPrezime(),
+        'slika' => $user->getSlika(),
+        'isSuspended' => $user->getBadgeByStatus(),
+        'datumRodjenja' => $user->getDatumRodjenja(),
+        'role' => $user->getBadgeByUserType(),
+      ];
+    }
+    return $usersList;
   }
 
 //    /**

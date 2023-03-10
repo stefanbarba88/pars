@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use App\Service\MailService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -96,6 +97,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       return new User();
     }
     return $this->getEntityManager()->getRepository(User::class)->find($id);
+  }
+
+  public function getAll(): array {
+    $qb = $this->createQueryBuilder('u');
+    return $qb->orderBy('u.id')->getQuery()->getResult();
   }
 
 //    /**

@@ -23,11 +23,13 @@ class UserController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
 
-  #[Route('/list/{page}', name: 'app_users', defaults: ['page' => 1])]
+  #[Route('/list/', name: 'app_users')]
   public function list(): Response {
-    return $this->render('user/list.html.twig', [
-      'controller_name' => 'UserController',
-    ]);
+    $args=[];
+
+    $args['users'] = $this->em->getRepository(User::class)->getAll();
+dd($args);
+    return $this->render('user/list.html.twig', $args);
   }
 
   #[Route('/form/{id}', name: 'app_user_form', defaults: ['id' => 0])]

@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: 'users')]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['email'], message: 'U bazi već postoji korinik sa ovim email nalogom')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface {
+class User implements UserInterface {
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]

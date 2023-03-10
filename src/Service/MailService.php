@@ -58,6 +58,7 @@ class MailService {
     $args['name'] = $user->getFullName();
     $args['support'] = CompanyInfo::SUPPORT_MAIL_ADDRESS;
 
+
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 
   }

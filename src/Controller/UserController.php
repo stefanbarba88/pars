@@ -71,7 +71,6 @@ class UserController extends AbstractController {
 
         $this->em->getRepository(User::class)->register($user);
 
-
         return $this->redirectToRoute('app_users');
       }
     }

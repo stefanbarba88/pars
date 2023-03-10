@@ -1,20 +1,342 @@
-<!DOCTYPE html>
+{% extends 'layout.html.twig' %}
 
-<title>Hello UserController!</title>
+{% block content %}
+    {% include 'includes/header.html.twig' %}
+    <div class="page-content">
+        {% include 'includes/sidebar.html.twig' %}
 
-{% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+        <!-- Main content -->
+        <div class="content-wrapper">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+            <!-- Inner content -->
+            <div class="content-inner">
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/xampp/htdocs/pars/src/Controller/UserController.php'|file_link(0) }}">src/Controller/UserController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/xampp/htdocs/pars/templates/user/index.html.twig'|file_link(0) }}">templates/user/index.html.twig</a></code></li>
-    </ul>
-</div>
-{% endblock %}
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Dodavanje novog korisnika
+                            </h4>
+
+                            <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
+                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
+                                <div class="dropdown w-100 w-sm-auto">
+                                    <a href="#" class="d-flex align-items-center text-body lh-1 dropdown-toggle py-sm-2" data-bs-toggle="dropdown" data-bs-display="static">
+                                        <img src="../../../assets/images/brands/tesla.svg" class="w-32px h-32px me-2" alt="">
+                                        <div class="me-auto me-lg-1">
+                                            <div class="fs-sm text-muted mb-1">Customer</div>
+                                            <div class="fw-semibold">Tesla Motors Inc</div>
+                                        </div>
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-lg-end w-100 w-lg-auto wmin-300 wmin-sm-350 pt-0">
+                                        <div class="d-flex align-items-center p-3">
+                                            <h6 class="fw-semibold mb-0">Customers</h6>
+                                            <a href="#" class="ms-auto">
+                                                View all
+                                                <i class="ph-arrow-circle-right ms-1"></i>
+                                            </a>
+                                        </div>
+                                        <a href="#" class="dropdown-item active py-2">
+                                            <img src="../../../assets/images/brands/tesla.svg" class="w-32px h-32px me-2" alt="">
+                                            <div>
+                                                <div class="fw-semibold">Tesla Motors Inc</div>
+                                                <div class="fs-sm text-muted">42 users</div>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="dropdown-item py-2">
+                                            <img src="../../../assets/images/brands/debijenkorf.svg" class="w-32px h-32px me-2" alt="">
+                                            <div>
+                                                <div class="fw-semibold">De Bijenkorf</div>
+                                                <div class="fs-sm text-muted">49 users</div>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="dropdown-item py-2">
+                                            <img src="../../../assets/images/brands/klm.svg" class="w-32px h-32px me-2" alt="">
+                                            <div>
+                                                <div class="fw-semibold">Royal Dutch Airlines</div>
+                                                <div class="fs-sm text-muted">18 users</div>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="dropdown-item py-2">
+                                            <img src="../../../assets/images/brands/shell.svg" class="w-32px h-32px me-2" alt="">
+                                            <div>
+                                                <div class="fw-semibold">Royal Dutch Shell</div>
+                                                <div class="fs-sm text-muted">54 users</div>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="dropdown-item py-2">
+                                            <img src="../../../assets/images/brands/bp.svg" class="w-32px h-32px me-2" alt="">
+                                            <div>
+                                                <div class="fw-semibold">BP plc</div>
+                                                <div class="fs-sm text-muted">23 users</div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
+
+                                <div class="d-inline-flex mt-3 mt-sm-0">
+                                    {#                            <a href="#" class="status-indicator-container ms-1">#}
+                                    {#                                <img src="../../../assets/images/demo/users/face24.jpg" class="w-32px h-32px rounded-pill" alt="">#}
+                                    {#                                <span class="status-indicator bg-warning"></span>#}
+                                    {#                            </a>#}
+                                    {#                            <a href="#" class="status-indicator-container ms-1">#}
+                                    {#                                <img src="../../../assets/images/demo/users/face1.jpg" class="w-32px h-32px rounded-pill" alt="">#}
+                                    {#                                <span class="status-indicator bg-success"></span>#}
+                                    {#                            </a>#}
+                                    {#                            <a href="#" class="status-indicator-container ms-1">#}
+                                    {#                                <img src="../../../assets/images/demo/users/face3.jpg" class="w-32px h-32px rounded-pill" alt="">#}
+                                    {#                                <span class="status-indicator bg-danger"></span>#}
+                                    {#                            </a>#}
+                                    <a href="#" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                        <i class="ph-plus"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <a href="#" class="breadcrumb-item">Kontrolna tabla</a>
+                                <span class="breadcrumb-item active">Korisnici</span>
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse d-lg-block ms-lg-auto" id="breadcrumb_elements">
+                            <div class="d-lg-flex mb-2 mb-lg-0">
+                                <a href="#" class="d-flex align-items-center text-body py-2">
+                                    <i class="ph-lifebuoy me-2"></i>
+                                    Support
+                                </a>
+
+                                <div class="dropdown ms-lg-3">
+                                    <a href="#" class="d-flex align-items-center text-body dropdown-toggle py-2" data-bs-toggle="dropdown">
+                                        <i class="ph-gear me-2"></i>
+                                        <span class="flex-1">Settings</span>
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end w-100 w-lg-auto">
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-shield-warning me-2"></i>
+                                            Account security
+                                        </a>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-chart-bar me-2"></i>
+                                            Analytics
+                                        </a>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-lock-key me-2"></i>
+                                            Privacy
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-gear me-2"></i>
+                                            All settings
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">State saving</h5>
+                        </div>
+
+                        <div class="card-body">
+                            Button's column visibility module works seamlessly with DataTables' state saving option (<code>stateSave</code>). All you need to do is enable both the column visibility buttons and state saving, as shown in this example. To demonstrate this ability, simple hide a few columns and then refresh the table. The columns you selected to be hidden will remain hidden and the button states will reflect this.
+                        </div>
+
+                        <table class="table datatable-colvis-state-pars">
+                            <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Job Title</th>
+                                <th>DOB</th>
+                                <th>Status</th>
+                                <th>Salary</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Marth</td>
+                                <td><a href="#">Enright</a></td>
+                                <td>Traffic Court Referee</td>
+                                <td>22 Jun 1972</td>
+                                <td><span class="badge bg-success bg-opacity-10 text-success">Active</span></td>
+                                <td>$85,600</td>
+                            </tr>
+                            <tr>
+                                <td>Jackelyn</td>
+                                <td>Weible</td>
+                                <td><a href="#">Airline Transport Pilot</a></td>
+                                <td>3 Oct 1981</td>
+                                <td><span class="badge bg-secondary bg-opacity-10 text-secondary">Inactive</span></td>
+                                <td>$106,450</td>
+                            </tr>
+                            <tr>
+                                <td>Aura</td>
+                                <td>Hard</td>
+                                <td>Business Services Sales Representative</td>
+                                <td>19 Apr 1969</td>
+                                <td><span class="badge bg-danger bg-opacity-10 text-danger">Suspended</span></td>
+                                <td>$237,500</td>
+                            </tr>
+                            <tr>
+                                <td>Nathalie</td>
+                                <td><a href="#">Pretty</a></td>
+                                <td>Drywall Stripper</td>
+                                <td>13 Dec 1977</td>
+                                <td><span class="badge bg-info bg-opacity-10 text-info">Pending</span></td>
+                                <td>$198,500</td>
+                            </tr>
+                            <tr>
+                                <td>Sharan</td>
+                                <td>Leland</td>
+                                <td>Aviation Tactical Readiness Officer</td>
+                                <td>30 Dec 1991</td>
+                                <td><span class="badge bg-secondary bg-opacity-10 text-secondary">Inactive</span></td>
+                                <td>$470,600</td>
+                            </tr>
+                            <tr>
+                                <td>Maxine</td>
+                                <td><a href="#">Woldt</a></td>
+                                <td><a href="#">Business Services Sales Representative</a></td>
+                                <td>17 Oct 1987</td>
+                                <td><span class="badge bg-info bg-opacity-10 text-info">Pending</span></td>
+                                <td>$90,560</td>
+                            </tr>
+                            <tr>
+                                <td>Sylvia</td>
+                                <td><a href="#">Mcgaughy</a></td>
+                                <td>Hemodialysis Technician</td>
+                                <td>11 Nov 1983</td>
+                                <td><span class="badge bg-danger bg-opacity-10 text-danger">Suspended</span></td>
+                                <td>$103,600</td>
+                            </tr>
+                            <tr>
+                                <td>Lizzee</td>
+                                <td><a href="#">Goodlow</a></td>
+                                <td>Technical Services Librarian</td>
+                                <td>1 Nov 1961</td>
+                                <td><span class="badge bg-danger bg-opacity-10 text-danger">Suspended</span></td>
+                                <td>$205,500</td>
+                            </tr>
+                            <tr>
+                                <td>Kennedy</td>
+                                <td>Haley</td>
+                                <td>Senior Marketing Designer</td>
+                                <td>18 Dec 1960</td>
+                                <td><span class="badge bg-success bg-opacity-10 text-success">Active</span></td>
+                                <td>$137,500</td>
+                            </tr>
+                            <tr>
+                                <td>Chantal</td>
+                                <td><a href="#">Nailor</a></td>
+                                <td>Technical Services Librarian</td>
+                                <td>10 Jan 1980</td>
+                                <td><span class="badge bg-secondary bg-opacity-10 text-secondary">Inactive</span></td>
+                                <td>$372,000</td>
+                            </tr>
+                            <tr>
+                                <td>Delma</td>
+                                <td>Bonds</td>
+                                <td>Lead Brand Manager</td>
+                                <td>21 Dec 1968</td>
+                                <td><span class="badge bg-info bg-opacity-10 text-info">Pending</span></td>
+                                <td>$162,700</td>
+                            </tr>
+                            <tr>
+                                <td>Roland</td>
+                                <td>Salmos</td>
+                                <td><a href="#">Senior Program Developer</a></td>
+                                <td>5 Jun 1986</td>
+                                <td><span class="badge bg-secondary bg-opacity-10 text-secondary">Inactive</span></td>
+                                <td>$433,060</td>
+                            </tr>
+                            <tr>
+                                <td>Coy</td>
+                                <td>Wollard</td>
+                                <td>Customer Service Operator</td>
+                                <td>12 Oct 1982</td>
+                                <td><span class="badge bg-success bg-opacity-10 text-success">Active</span></td>
+                                <td>$86,000</td>
+                            </tr>
+                            <tr>
+                                <td>Maxwell</td>
+                                <td>Maben</td>
+                                <td>Regional Representative</td>
+                                <td>25 Feb 1988</td>
+                                <td><span class="badge bg-danger bg-opacity-10 text-danger">Suspended</span></td>
+                                <td>$130,500</td>
+                            </tr>
+                            <tr>
+                                <td>Cicely</td>
+                                <td>Sigler</td>
+                                <td><a href="#">Senior Research Officer</a></td>
+                                <td>15 Mar 1960</td>
+                                <td><span class="badge bg-info bg-opacity-10 text-info">Pending</span></td>
+                                <td>$159,000</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /state saving -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+
+
+
+
+{% endblock includeJavascript %}

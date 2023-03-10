@@ -170,9 +170,8 @@
                                 <th>Ime</th>
                                 <th>Prezime</th>
                                 <th>Vrsta korisnika</th>
-                                <th>Zahtevi</th>
+                                <th>Datum rođenja</th>
                                 <th>Status</th>
-                                <th>Kontakt</th>
                                 <th>Pregled</th>
                             </tr>
                             </thead>
@@ -180,18 +179,19 @@
                             {% for user in users %}
                                 <tr>
                                     <td>
-                                        <a href="#"><img src="{{ asset(user.slika) | imagine_filter('my_thumb')}}" class="rounded-circle" width="50" height="50" alt="{{ user.ime }}"></a>
-{#                                        <a href="#"><img src="{{ asset(user.slika) | imagine_filter('my_thumb')}}" class="rounded-circle" width="50" height="50" alt="{{ user.ime }}"></a>#}
-{#                                        <a href="#"><img src="{{ asset(user.slika) }}" class="rounded-circle" width="50" height="50" alt="{{ user.ime }}"></a>#}
-{#                                        <a href="#"><img src="{{ asset(user.slika) }}" class="rounded-circle" width="50" height="50" alt="{{ user.ime }}"></a>#}
+                                        <a href="#"><img src="{{ asset(user.slika)}}" class="rounded-circle" width="50" height="50" alt="{{ user.ime }}"></a>
                                     </td>
-                                    <td></td>
-                                    <td></td>
-                                    <td><a href="#">Enright</a></td>
-                                    <td><a href="#">Enright</a></td>
-                                    <td><a href="#">Enright</a></td>
-                                    <td>22 Jun 1972</td>
-                                    <td><span class="badge bg-success bg-opacity-10 text-success">Active</span></td>
+                                    <td>{{ user.ime }}</td>
+                                    <td>{{ user.prezime }}</td>
+                                    <td>{{ user.role | raw }}</td>
+                                    <td>{{ user.datumRodjenja | date("d.m.Y")}}</td>
+                                    <td>{{ user.isSuspended | raw }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary">
+                                            <i class="ph-check-square-offset me-2"></i>
+                                            With icon
+                                        </button>
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>

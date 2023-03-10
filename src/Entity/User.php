@@ -364,9 +364,9 @@ class User implements UserInterface {
 
   public function getBadgeByStatus(): string {
     if ($this->isSuspended) {
-      return '<span class="badge bg-danger rounded-pill p-1"><i class="ph-x-circle"></i></span>';
+      return '<span class="badge bg-danger">Neaktivan</span>';
     }
-    return '<span class="badge bg-success rounded-pill p-1"><i class="ph-minus-circle"></i></span>';
+    return '<span class="badge bg-info">Aktivan</span>';
 
   }
 

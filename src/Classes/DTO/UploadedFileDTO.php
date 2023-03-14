@@ -6,6 +6,7 @@ class UploadedFileDTO {
 
   private string $uploadPath;
   private string $urlPath;
+
   private string $fileName;
 
   /**
@@ -17,6 +18,7 @@ class UploadedFileDTO {
     $this->uploadPath = $uploadPath;
     $this->urlPath = $urlPath;
     $this->fileName = $fileName;
+
   }
 
   /**

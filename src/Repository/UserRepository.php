@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Classes\DTO\UploadedFileDTO;
+use App\Entity\Image;
 use App\Entity\User;
 use App\Service\MailService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -31,26 +33,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     $this->mail = $mail;
   }
 
-  public function register(User $user): User {
+  public function register(User $user, UploadedFileDTO $file, string $kernelPath): User {
 
     $this->hashPlainPassword($user);
-    $this->getEntityManager()->persist($user);
+    $this->save($user);
 
     $this->mail->registration($user);
-
-    $this->getEntityManager()->flush();
+    $this->getEntityManager()->getRepository(Image::class)->addImages($file, $user, $kernelPath);
 
     return $user;
   }
 
   public function save(User $user): User {
-    $this->hashPlainPassword($user);
-    $this->getEntityManager()->persist($user);
-
-    $this->mail->registration($user);
-
+    if (is_null($user->getId())) {
+      $this->getEntityManager()->persist($user);
+    }
     $this->getEntityManager()->flush();
-
     return $user;
   }
 
@@ -111,7 +109,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         'id' => $user->getId(),
         'ime' => $user->getIme(),
         'prezime' => $user->getPrezime(),
-        'slika' => $user->getSlika(),
+        'slika' => $this->getEntityManager()->getRepository(Image::class)->findOneBy(['user' => $user]),
         'isSuspended' => $user->getBadgeByStatus(),
         'datumRodjenja' => $user->getDatumRodjenja(),
         'role' => $user->getBadgeByUserType(),

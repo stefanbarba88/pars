@@ -10,22 +10,25 @@ class Avatar {
   public const URL_PATH = 'https://ui-avatars.com/api/?name=';
   public const BACKGROUND = 'random';
 
-  public const SIZE = '256';
+  public const SIZE = '1024';
   public const ROUNDED = 'true';
 
 
-  public static function getAvatar(string $name, string $lastname, $path, $user): string {
+  public static function getAvatar($path, $user): UploadedFileDTO {
 
-    $fullName = Slugify::slugify($name . $lastname);
+    $fullName = Slugify::slugify($user->getIme() . $user->getPrezime());
+    $file = new UploadedFileDTO($path, $user->getAvatarUploadPath(), $fullName . '.png');
+
 
     if (file_exists($path)) {
-      return str_replace("/public","",$user->getAvatarUploadPath() . $fullName . '.png');
+      return $file;
     }
+
     mkdir($path, 0777, true);
 
     $path = $path . $fullName . '.png';
 
-    $url = self::URL_PATH . $name . '+' . $lastname . '&background=' . self::BACKGROUND . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
+    $url = self::URL_PATH . $user->getIme() . '+' . $user->getPrezime() . '&background=' . self::BACKGROUND . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
 
     $fp = fopen($path, 'w');
     $ch = curl_init($url);
@@ -61,7 +64,8 @@ class Avatar {
 //      unlink($path);
 //      throw new OidlEmptyFileException($path);
 //    }
-    return str_replace("/public","",$user->getAvatarUploadPath() . $fullName . '.png');
+
+    return $file;
   }
 
 }

@@ -166,7 +166,7 @@
                         <table class="table datatable-colvis-state-pars">
                             <thead>
                             <tr>
-                                <th></th>
+                                <th>Slika</th>
                                 <th>Ime</th>
                                 <th>Prezime</th>
                                 <th>Vrsta korisnika</th>
@@ -179,7 +179,7 @@
                             {% for user in users %}
                                 <tr>
                                     <td>
-                                        <a href="#"><img src="{{ asset(user.slika)}}" class="rounded-circle" width="50" height="50" alt="{{ user.ime }}"></a>
+                                        <a href="#"><img src="{{ asset(user.slika.getThumbnail100())}}" class="rounded-circle" width="50" height="50" alt="{{ user.ime }}"></a>
                                     </td>
                                     <td>{{ user.ime }}</td>
                                     <td>{{ user.prezime }}</td>

@@ -29,6 +29,9 @@ class User implements UserInterface {
   public function getAvatarUploadPath(): ?string {
     return $_ENV['USER_AVATAR_PATH'] . date('Y/m/d/');
   }
+  public function getThumbUploadPath(): ?string {
+    return $_ENV['USER_THUMB_PATH'] . date('Y/m/d/');
+  }
 
   #[ORM\Column(length: 180, unique: true)]
   private ?string $email = null;
@@ -41,9 +44,6 @@ class User implements UserInterface {
 
   #[ORM\Column(length: 13)]
   private ?string $jmbg = null;
-
-  #[ORM\Column(type: Types::TEXT, nullable: true)]
-  private ?string $slika = null;
 
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $adresa = null;
@@ -197,20 +197,6 @@ class User implements UserInterface {
    */
   public function setJmbg(?string $jmbg): void {
     $this->jmbg = $jmbg;
-  }
-
-  /**
-   * @return string|null
-   */
-  public function getSlika(): ?string {
-    return $this->slika;
-  }
-
-  /**
-   * @param string|null $slika
-   */
-  public function setSlika(?string $slika): void {
-    $this->slika = $slika;
   }
 
   /**

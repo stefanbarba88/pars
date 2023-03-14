@@ -21,7 +21,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Regex;
 
-class UserRegistrationFormType extends AbstractType {
+class UserEditInfoFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
     $builder
       ->add('ime')
@@ -51,50 +51,6 @@ class UserRegistrationFormType extends AbstractType {
           'minlength' => '13',
         ],
       ])
-      ->add('vrstaZaposlenja', ChoiceType::class, [
-        'choices' => VrstaZaposlenjaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-
-      ->add('plainPassword', TextType::class, [
-        'constraints' => [
-          new Regex('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', 'Lozinka mora imati minimum 8 karaktera (obavezno jedno veliko slovo, jedno malo slovo, jedan specijalan karakter i jednu cifru)'),
-        ],
-        'attr' => [
-          'minlength' => '8',
-          ],
-      ])
-
-      ->add('email', EmailType::class, [
-        'constraints' => [
-          new Regex('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', 'Email adresu morate uneti u odgovarajućem formatu'),
-        ],
-      ])
-
-      ->add('userType', ChoiceType::class, [
-        'choices' => UserRolesData::formForForm(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-
-      ->add('slika', FileType::class, [
-        'attr' => ['accept' => 'image/jpeg,image/png,image/jpg,image-gif', 'data-show-upload' => 'false'],
-        // unmapped means that this field is not associated to any entity property
-        'mapped' => false,
-        // make it optional so you don't have to re-upload the PDF file
-        // every time you edit the Product details
-        'required' => false,
-        // unmapped fields can't define their validation using annotations
-        // in the associated entity, so you can use the PHP constraint classes
-        'constraints' => [
-          new Image([
-            'maxSize' => '2048k',
-            'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 2Mb'
-          ])
-        ],
-      ])
-
       ->add('grad', EntityType::class, [
         'class' => City::class,
         'query_builder' => function (EntityRepository $em) {

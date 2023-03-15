@@ -10,8 +10,8 @@ class Avatar {
   public const URL_PATH = 'https://ui-avatars.com/api/?name=';
   public const BACKGROUND = 'random';
 
-  public const SIZE = '1024';
-  public const ROUNDED = 'true';
+  public const SIZE = '512';
+  public const ROUNDED = 'false';
 
 
   public static function getAvatar($path, $user): UploadedFileDTO {
@@ -19,18 +19,17 @@ class Avatar {
     $fullName = Slugify::slugify($user->getIme() . $user->getPrezime());
     $file = new UploadedFileDTO($path, $user->getAvatarUploadPath(), $fullName . '.png');
 
-
-    if (file_exists($path)) {
+    if (file_exists($file->getPath())) {
       return $file;
     }
 
-    mkdir($path, 0777, true);
-
-    $path = $path . $fullName . '.png';
+    if (!file_exists($path)) {
+      mkdir($path, 0777, true);
+    }
 
     $url = self::URL_PATH . $user->getIme() . '+' . $user->getPrezime() . '&background=' . self::BACKGROUND . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
 
-    $fp = fopen($path, 'w');
+    $fp = fopen($file->getPath(), 'w');
     $ch = curl_init($url);
 
 //    if (!empty($authorization)) {

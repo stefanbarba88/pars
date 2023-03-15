@@ -51,7 +51,7 @@
             "./config/routes/liip_imagine.yaml"
         ]
     },
-    "php-flasher/flasher-sweetalert-symfony": {
+    "php-flasher/flasher-notyf-symfony": {
         "version": "v1.13.1"
     },
     "php-flasher/flasher-symfony": {

@@ -33,6 +33,7 @@ class ImageRepository extends ServiceEntityRepository {
 
   public function addImages(UploadedFileDTO $file, User $user, string $kernelPath): Image {
 
+
     $image = new Image();
     $image->setUser($user);
     $image->setOriginal($file->getAssetPath());
@@ -40,6 +41,8 @@ class ImageRepository extends ServiceEntityRepository {
     $thumb = new Thumb();
 
     $savepath = $kernelPath . $user->getThumbUploadPath();
+
+
     if (!file_exists($savepath)) {
       mkdir($savepath, 0777, true);
     }

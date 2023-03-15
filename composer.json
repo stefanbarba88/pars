@@ -16,7 +16,7 @@
         "knplabs/knp-paginator-bundle": "*",
         "lasserafn/php-initials": "^3.1",
         "liip/imagine-bundle": "^2.10",
-        "php-flasher/flasher-sweetalert-symfony": "^1.13",
+        "php-flasher/flasher-notyf-symfony": "^1.13",
         "php-flasher/flasher-symfony": "^1.13",
         "sensio/framework-extra-bundle": "^6.2",
         "symfony/asset": "6.2.*",

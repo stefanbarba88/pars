@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Avatar;
+use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\Downloader;
 use App\Classes\Thumb;
@@ -54,17 +55,18 @@ class UserController extends AbstractController {
 
         if(is_null($file)) {
           $file = Avatar::getAvatar($this->getParameter('kernel.project_dir') . $usr->getAvatarUploadPath(), $usr);
+
         } else {
           $file = $uploadService->upload($file, $usr->getImageUploadPath());
         }
-
         $this->em->getRepository(User::class)->register($usr, $file, $this->getParameter('kernel.project_dir'));
 
-        sweetalert()
-          ->toast()
-          ->option('position', 'top-right')
-          ->option('timeout', 15000)
-          ->addFlash('info', 'Your password has been reset and a new one has been sent to your email.');
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::REGISTRATION_USER_SUCCESS);
 
         return $this->redirectToRoute('app_users');
       }

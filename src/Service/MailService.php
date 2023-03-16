@@ -46,6 +46,25 @@ class MailService {
 
   }
 
+  public function edit(User $user): void {
+    $args = [];
+    $to = $user->getEmail();
+    $subject = 'Izmena profila na ' . CompanyInfo::ORGANIZATION_TITLE;
+    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/edit_account.html.twig';
+
+    $args['link'] = $this->router->generate('app_login', [], UrlGeneratorInterface::ABSOLUTE_URL);
+    $args['mail'] = $user->getEmail();
+    $args['password'] = $user->getPlainPassword();
+    $args['name'] = $user->getFullName();
+    $args['role'] = UserRolesData::userRoleTitle($user);
+    $args['support'] = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
   public function resetPassword(User $user, $resetToken): void {
     $args = [];
     $to = $user->getEmail();

@@ -34,17 +34,20 @@
                 </li>
                 <li class="nav-item">
                     <a href="{{ path('app_user_calendar_view', { id: user.id}) }}" class="nav-link">
-                        <i class="ph-calendar me-2"></i>
-                        Raspored
+                        <i class="ph-calendar me-2"></i>Raspored
                         <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>
                     </a>
                 </li>
                 <li class="nav-item-divider"></li>
                 <li class="nav-item">
-                    <a href="{{ path('app_logout') }}" class="nav-link" data-bs-toggle="tab">
-                        <i class="ph-sign-out me-2"></i>
-                        Odjavite se
+{#                    <a href="{{ path('app_logout') }}" class="nav-link" data-bs-toggle="tab">#}
+{#                        <i class="ph-sign-out me-2"></i>Odjavite se#}
+{#                    </a>#}
+                    <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="nav-link">
+                        <i class="ph-lightbulb me-2"></i>Status
+                        <span class="ms-auto">{{ user.badgeByStatus | raw }}</span>
                     </a>
+
                 </li>
             </ul>
         </div>

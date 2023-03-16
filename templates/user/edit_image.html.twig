@@ -86,7 +86,7 @@
                         </div>
                     </div>
 
-                    {{ render(controller('App\\Controller\\WidgetController::userProfilNavigation', { id: user.id } )) }}
+                    {{ render(controller('App\\Controller\\WidgetController::userProfilNavigation', { user: user } )) }}
 
                 </div>
                 <!-- /page header -->
@@ -107,7 +107,7 @@
                     <div class="d-lg-flex align-items-lg-start">
 
                         <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::userProfilSidebar', { id: user.id } )) }}
+                        {{ render(controller('App\\Controller\\WidgetController::userProfilSidebar', { user: user } )) }}
                         <!-- /left sidebar component -->
 
                         <!-- Right content -->

@@ -9,12 +9,9 @@ use App\Entity\User;
 class UserRolesData implements DataClassInterface {
 
   public const ROLE_SUPER_ADMIN = 1;
-
   public const ROLE_ADMIN = 2;
-
-  public const ROLE_GEODETA = 3;
-  public const ROLE_FIGURANT = 4;
-  public const ROLE_KLIJENT = 5;
+  public const ROLE_OFFICE = 3;
+  public const ROLE_KLIJENT = 4;
 
 
   public const DATA = [
@@ -30,23 +27,17 @@ class UserRolesData implements DataClassInterface {
       'role' => 'ROLE_ADMIN',
       'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-success">Administrator</span>',
     ],
-    'ROLE_GEODETA' => [
-      'id' => self::ROLE_GEODETA,
-      'title' => 'Geodeta',
-      'role' => 'ROLE_GEODETA',
-      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Geodeta</span>',
-    ],
-    'ROLE_POMOCNI_GEODETA' => [
-      'id' => self::ROLE_FIGURANT,
-      'title' => 'Figurant',
-      'role' => 'ROLE_FIGURANT',
-      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-info">Figurant</span>',
-    ],
     'ROLE_KLIJENT' => [
       'id' => self::ROLE_KLIJENT,
       'title' => 'Klijent',
       'role' => 'ROLE_KLIJENT',
       'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-secondary">Klijent</span>',
+    ],
+    'ROLE_OFFICE' => [
+      'id' => self::ROLE_OFFICE,
+      'title' => 'Upravnik',
+      'role' => 'ROLE_OFFICE',
+      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Upravnik</span>',
     ],
   ];
 

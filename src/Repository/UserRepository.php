@@ -51,6 +51,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     if (!empty($user->getPlainPassword())) {
       $this->hashPlainPassword($user);
+
+      $this->mail->edit($user);
     }
 
     $this->getEntityManager()->flush();

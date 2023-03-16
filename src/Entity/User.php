@@ -61,6 +61,10 @@ class User implements UserInterface {
   #[ORM\Column(type: Types::SMALLINT)]
   private ?int $pol = null;
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?ZaposleniPozicija $pozicija = null;
+
   #[ORM\Column(name: 'vrsta_zaposlenja', length: 2, nullable: true)]
   private ?int $vrstaZaposlenja = null;
 
@@ -225,6 +229,20 @@ class User implements UserInterface {
    */
   public function setGrad(?City $grad): void {
     $this->grad = $grad;
+  }
+
+  /**
+   * @return ZaposleniPozicija|null
+   */
+  public function getPozicija(): ?ZaposleniPozicija {
+    return $this->pozicija;
+  }
+
+  /**
+   * @param ZaposleniPozicija|null $pozicija
+   */
+  public function setPozicija(?ZaposleniPozicija $pozicija): void {
+    $this->grad = $pozicija;
   }
 
   /**

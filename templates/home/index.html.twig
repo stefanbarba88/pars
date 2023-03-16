@@ -3,7 +3,7 @@
 {% block content %}
     {% include 'includes/header.html.twig' %}
     <div class="page-content">
-        {% include 'includes/sidebar.html.twig' %}
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
         <!-- Main content -->
         <div class="content-wrapper">
 

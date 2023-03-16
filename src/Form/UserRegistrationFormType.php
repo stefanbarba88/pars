@@ -7,6 +7,7 @@ use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VrstaZaposlenjaData;
 use App\Entity\City;
 use App\Entity\User;
+use App\Entity\ZaposleniPozicija;
 use App\Validator\JMBG;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -107,6 +108,17 @@ class UserRegistrationFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
+      ->add('pozicija', EntityType::class, [
+        'class' => ZaposleniPozicija::class,
+        'query_builder' => function (EntityRepository $em) {
+          return $em->createQueryBuilder('g')
+            ->orderBy('g.id', 'ASC');
+        },
+        'choice_label' => 'title',
+        'expanded' => false,
+        'multiple' => false,
+      ])
+
       ->add('adresa')
       ->add('telefon1',TextType::class, [
         'constraints' => [

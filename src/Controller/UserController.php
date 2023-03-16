@@ -10,6 +10,7 @@ use App\Form\UserEditImageFormType;
 use App\Form\UserEditInfoFormType;
 use App\Form\UserEditAccountFormType;
 use App\Form\UserRegistrationFormType;
+use App\Form\UserSuspendedFormType;
 use App\Service\UploadService;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -198,5 +199,41 @@ class UserController extends AbstractController {
     $args['user'] = $usr;
 
     return $this->render('user/view_tools.html.twig', $args);
+  }
+
+  #[Route('/settings/{id}', name: 'app_user_settings_form')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function settings(User $usr, Request $request): Response {
+    $args['user'] = $usr;
+    $form = $this->createForm(UserSuspendedFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_settings_form', ['id' => $usr->getId()])]]);
+    if ($request->isMethod('POST')) {
+
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+        dd($usr);
+
+        $this->em->getRepository(User::class)->suspend($usr);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true);
+          if ($usr->isSuspended()) {
+            notyf()->addSuccess(NotifyMessagesData::USER_SUSPENDED_TRUE);
+          }else {
+            notyf()->addSuccess(NotifyMessagesData::USER_SUSPENDED_FALSE);
+          }
+
+        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['user'] = $usr;
+    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['user' => $usr]);
+
+
+    return $this->render('user/settings.html.twig', $args);
   }
 }

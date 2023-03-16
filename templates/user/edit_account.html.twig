@@ -86,7 +86,7 @@
                         </div>
                     </div>
 
-                    {{ render(controller('App\\Controller\\WidgetController::userProfilNavigation', { id: user.id } )) }}
+                    {{ render(controller('App\\Controller\\WidgetController::userProfilNavigation', { user: user } )) }}
 
                 </div>
                 <!-- /page header -->
@@ -107,7 +107,7 @@
                     <div class="d-lg-flex align-items-lg-start">
 
                         <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::userProfilSidebar', { id: user.id } )) }}
+                        {{ render(controller('App\\Controller\\WidgetController::userProfilSidebar', { user: user } )) }}
                         <!-- /left sidebar component -->
 
                         <!-- Right content -->
@@ -135,16 +135,22 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4">
                                                 <div class="mb-3">
                                                     {{ form_label(form.userType, 'Tip korisnika:*', {'label_attr': {'class': 'form-label'}}) }}
                                                     {{ form_widget(form.userType, {attr: { class: 'form-control select required' }}) }}
                                                 </div>
                                             </div>
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4">
                                                 <div class="mb-3">
                                                     {{ form_label(form.vrstaZaposlenja, 'Vrsta zaposlenja:*', {'label_attr': {'class': 'form-label'}}) }}
                                                     {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required' }}) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.pozicija, {attr: { class: 'form-control select required' }}) }}
                                                 </div>
                                             </div>
                                         </div>

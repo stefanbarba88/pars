@@ -33,13 +33,16 @@ class ImageRepository extends ServiceEntityRepository {
 
   public function addImages(UploadedFileDTO $file, User $user, string $kernelPath): Image {
 
+    $image = $this->getEntityManager()->getRepository(Image::class)->findOneBy(['user' => $user]);
+    if (!is_null($image)) {
+      $this->remove($image, true);
+    }
 
     $image = new Image();
     $image->setUser($user);
     $image->setOriginal($file->getAssetPath());
 
     $thumb = new Thumb();
-
     $savepath = $kernelPath . $user->getThumbUploadPath();
 
 

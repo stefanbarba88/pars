@@ -154,98 +154,7 @@
                         </div>
                     </div>
 
-                    <div class="navbar navbar-expand-lg border-top py-2">
-                        <div class="container-fluid">
-                            <ul class="nav navbar-nav flex-row flex-fill">
-                                <li class="nav-item me-1">
-                                    <a href="#activity" class="navbar-nav-link navbar-nav-link-icon active rounded" data-bs-toggle="tab">
-                                        <div class="d-flex align-items-center mx-lg-1">
-                                            <i class="ph-activity"></i>
-                                            <span class="d-none d-lg-inline-block ms-2">Activity</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="nav-item me-1">
-                                    <a href="#schedule" class="navbar-nav-link navbar-nav-link-icon rounded" data-bs-toggle="tab">
-                                        <div class="d-flex align-items-center mx-lg-1">
-                                            <i class="ph-calendar"></i>
-                                            <span class="d-none d-lg-inline-block ms-2">
-												Schedule
-												<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span>
-											</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="nav-item me-1">
-                                    <a href="#settings" class="navbar-nav-link navbar-nav-link-icon rounded" data-bs-toggle="tab">
-                                        <div class="d-flex align-items-center mx-lg-1">
-                                            <i class="ph-gear"></i>
-                                            <span class="d-none d-lg-inline-block ms-2">Settings</span>
-                                        </div>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item d-lg-none ms-auto">
-                                    <a href="#profile_nav" class="navbar-nav-link navbar-nav-link-icon collapsed rounded" data-bs-toggle="collapse">
-                                        <i class="ph-caret-down collapsible-indicator"></i>
-                                    </a>
-                                </li>
-                            </ul>
-
-                            <div class="navbar-collapse collapse" id="profile_nav">
-                                <ul class="navbar-nav ms-lg-auto mt-2 mt-lg-0">
-                                    <li class="nav-item ms-lg-1">
-                                        <a href="#" class="navbar-nav-link rounded">
-                                            <i class="ph-note me-2"></i>
-                                            Notes
-                                        </a>
-                                    </li>
-                                    <li class="nav-item ms-lg-1">
-                                        <a href="#" class="navbar-nav-link rounded">
-                                            <i class="ph-users me-2"></i>
-                                            Friends
-                                        </a>
-                                    </li>
-                                    <li class="nav-item ms-lg-1">
-                                        <a href="#" class="navbar-nav-link rounded">
-                                            <i class="ph-image me-2"></i>
-                                            Photos
-                                        </a>
-                                    </li>
-                                    <li class="nav-item dropdown ms-lg-1">
-                                        <a href="#" class="navbar-nav-link rounded dropdown-toggle" data-bs-toggle="dropdown">
-                                            <i class="ph-gear"></i>
-                                            <span class="d-lg-none ms-2">More</span>
-                                        </a>
-
-                                        <div class="dropdown-menu dropdown-menu-end">
-                                            <a href="#" class="dropdown-item">
-                                                <i class="ph-image me-2"></i>
-                                                Update cover
-                                            </a>
-                                            <a href="#" class="dropdown-item">
-                                                <i class="ph-clipboard-text me-2"></i>
-                                                Update info
-                                            </a>
-                                            <a href="#" class="dropdown-item">
-                                                <i class="ph-rows me-2"></i>
-                                                Manage sections
-                                            </a>
-                                            <div class="dropdown-divider"></div>
-                                            <a href="#" class="dropdown-item">
-                                                <i class="ph-activity me-2"></i>
-                                                Activity log
-                                            </a>
-                                            <a href="#" class="dropdown-item">
-                                                <i class="ph-gear me-2"></i>
-                                                Profile settings
-                                            </a>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                    {% include 'navigation/users_nav.html.twig' %}
 
                 </div>
                 <!-- /page header -->
@@ -503,7 +412,7 @@
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
-                            <div class="tab-pane fade active show" id="activity">
+                            <div class="tab-pane fade active show">
 
                                 <!-- Weekly stats -->
                                 <div class="card">
@@ -918,145 +827,46 @@
 
                             </div>
 
-                            <div class="tab-pane fade" id="schedule">
+{#                            <div class="tab-pane fade" id="schedule">#}
 
-                                <!-- Available hours -->
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Available hours</h5>
-                                    </div>
+{#                                <!-- Available hours -->#}
+{#                                <div class="card">#}
+{#                                    <div class="card-header">#}
+{#                                        <h5 class="mb-0">Available hours</h5>#}
+{#                                    </div>#}
 
-                                    <div class="card-body">
-                                        <div class="chart-container">
-                                            <div class="chart has-fixed-height" id="available_hours"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /available hours -->
-
-
-                                <!-- Schedule -->
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">My schedule</h5>
-                                    </div>
-
-                                    <div class="card-body">
-                                        <div class="my-schedule"></div>
-                                    </div>
-                                </div>
-                                <!-- /schedule -->
-
-                            </div>
-
-                            <div class="tab-pane fade" id="settings">
-
-                                <!-- Profile info -->
-                                {{ render(controller('App\\Controller\\UserController::editAccount', { 'id': 25 })) }}
-                                <!-- /profile info -->
+{#                                    <div class="card-body">#}
+{#                                        <div class="chart-container">#}
+{#                                            <div class="chart has-fixed-height" id="available_hours"></div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <!-- /available hours -->#}
 
 
-                                <!-- Account settings -->
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Account settings</h5>
-                                    </div>
+{#                                <!-- Schedule -->#}
+{#                                <div class="card">#}
+{#                                    <div class="card-header">#}
+{#                                        <h5 class="mb-0">My schedule</h5>#}
+{#                                    </div>#}
 
-                                    <div class="card-body">
-                                        <form action="#">
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Username</label>
-                                                        <input type="text" value="Vicky" readonly class="form-control">
-                                                    </div>
-                                                </div>
+{#                                    <div class="card-body">#}
+{#                                        <div class="my-schedule"></div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <!-- /schedule -->#}
 
-                                                <div class="col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Current password</label>
-                                                        <input type="password" value="password" readonly class="form-control">
-                                                    </div>
-                                                </div>
-                                            </div>
+{#                            </div>#}
 
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">New password</label>
-                                                        <input type="password" placeholder="Enter new password" class="form-control">
-                                                    </div>
-                                                </div>
+{#                            <div class="tab-pane fade" id="settings">#}
 
-                                                <div class="col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Repeat password</label>
-                                                        <input type="password" placeholder="Repeat new password" class="form-control">
-                                                    </div>
-                                                </div>
-                                            </div>
+{#                                <!-- Profile info -->#}
+{#                                {{ render(controller('App\\Controller\\UserController::editInfo', { 'id': user.id })) }}#}
+{#                                <!-- /profile info -->#}
 
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Profile visibility</label>
-
-                                                        <label class="form-check mb-2">
-                                                            <input type="radio" name="visibility" class="form-check-input" checked>
-                                                            <span class="form-check-label">Visible to everyone</span>
-                                                        </label>
-
-                                                        <label class="form-check mb-2">
-                                                            <input type="radio" name="visibility" class="form-check-input">
-                                                            <span class="form-check-label">Visible to friends only</span>
-                                                        </label>
-
-                                                        <label class="form-check mb-2">
-                                                            <input type="radio" name="visibility" class="form-check-input">
-                                                            <span class="form-check-label">Visible to my connections only</span>
-                                                        </label>
-
-                                                        <label class="form-check">
-                                                            <input type="radio" name="visibility" class="form-check-input">
-                                                            <span class="form-check-label">Visible to my colleagues only</span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Notifications</label>
-
-                                                        <label class="form-check mb-2">
-                                                            <input type="checkbox" class="form-check-input" checked>
-                                                            <span class="form-check-label">Password expiration notification</span>
-                                                        </label>
-
-                                                        <label class="form-check mb-2">
-                                                            <input type="checkbox" class="form-check-input" checked>
-                                                            <span class="form-check-label">New message notification</span>
-                                                        </label>
-
-                                                        <label class="form-check mb-2">
-                                                            <input type="checkbox" class="form-check-input" checked>
-                                                            <span class="form-check-label">New task notification</span>
-                                                        </label>
-
-                                                        <label class="form-check">
-                                                            <input type="checkbox" class="form-check-input">
-                                                            <span class="form-check-label">New contact request notification</span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="text-end">
-                                                <button type="submit" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <!-- /account settings -->
+{#                                <!-- Account settings -->#}
+{#                                {{ render(controller('App\\Controller\\UserController::editAccount', { 'id': user.id })) }}#}
+{#                                <!-- /account settings -->#}
 
                             </div>
 {#                            <div class="tab-pane fade active show" id="profile">#}
@@ -2602,6 +2412,20 @@
 {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
 {#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
 
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
 
     <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
@@ -2616,6 +2440,12 @@
     <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
 
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
 
 {% endblock includeJavascript %}
 

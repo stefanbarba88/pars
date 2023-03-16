@@ -41,16 +41,16 @@ class UserRegistrationFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('jmbg', TextType::class, [
-        'constraints' => [
-          new Regex('/^\d{13}$/', 'JMBG morate uneti u odgovarajućem formatu'),
-          new JMBG('strict'),
-        ],
-        'attr' => [
-          'maxlength' => '13',
-          'minlength' => '13',
-        ],
-      ])
+//      ->add('jmbg', TextType::class, [
+//        'constraints' => [
+//          new Regex('/^\d{13}$/', 'JMBG morate uneti u odgovarajućem formatu'),
+//          new JMBG('strict'),
+//        ],
+//        'attr' => [
+//          'maxlength' => '13',
+//          'minlength' => '13',
+//        ],
+//      ])
       ->add('vrstaZaposlenja', ChoiceType::class, [
         'choices' => VrstaZaposlenjaData::form(),
         'expanded' => false,
@@ -110,7 +110,7 @@ class UserRegistrationFormType extends AbstractType {
       ->add('adresa')
       ->add('telefon1',TextType::class, [
         'constraints' => [
-          new Regex('/^\d{10}$/', 'Broj telefona morate uneti u odgovarajućem formatu'),
+          new Regex('/^\d{10}$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
         ],
           'attr' => [
             'maxlength' => '10'
@@ -119,7 +119,7 @@ class UserRegistrationFormType extends AbstractType {
       ->add('telefon2',TextType::class, [
         'required' => false,
         'constraints' => [
-          new Regex('/^\d{10}$/', 'Broj telefona morate uneti u odgovarajućem formatu'),
+          new Regex('/^\d{10}$/', 'Broj telefona#2 morate uneti u odgovarajućem formatu'),
         ],
         'attr' => [
             'maxlength' => '10'

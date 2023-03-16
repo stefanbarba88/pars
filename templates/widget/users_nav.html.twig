@@ -1,0 +1,101 @@
+<div class="navbar navbar-expand-lg border-top py-2">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav flex-row flex-fill">
+            <li class="nav-item me-1">
+                <a href="{{ path('app_user_profile_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                    <div class="d-flex align-items-center mx-lg-1">
+                        <i class="ph-user"></i>
+                        <span class="d-none d-lg-inline-block ms-2">Profil</span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item me-1">
+                <a href="{{ path('app_user_activity_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                    <div class="d-flex align-items-center mx-lg-1">
+                        <i class="ph-activity"></i>
+                        <span class="d-none d-lg-inline-block ms-2">Aktivnosti</span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item me-1">
+                <a href="{{ path('app_user_calendar_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                    <div class="d-flex align-items-center mx-lg-1">
+                        <i class="ph-calendar"></i>
+                        <span class="d-none d-lg-inline-block ms-2">Raspored<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item me-1">
+                <a href="{{ path('app_user_car_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                    <div class="d-flex align-items-center mx-lg-1">
+                        <i class="ph-car"></i>
+                        <span class="d-none d-lg-inline-block ms-2">
+												Vozila
+												<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span>
+											</span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item me-1">
+                <a href="{{ path('app_user_tools_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                    <div class="d-flex align-items-center mx-lg-1">
+                        <i class="ph-wrench"></i>
+                        <span class="d-none d-lg-inline-block ms-2">
+												Oprema
+												<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span>
+											</span>
+                    </div>
+                </a>
+            </li>
+
+            <li class="nav-item d-lg-none ms-auto">
+                <a href="#profile_nav" class="navbar-nav-link navbar-nav-link-icon collapsed rounded" data-bs-toggle="collapse">
+                    <i class="ph-caret-down collapsible-indicator"></i>
+                </a>
+            </li>
+        </ul>
+
+        <div class="navbar-collapse collapse" id="profile_nav">
+            <ul class="navbar-nav ms-lg-auto mt-2 mt-lg-0">
+                <li class="nav-item ms-lg-1">
+                    <a href="#" class="navbar-nav-link rounded">
+                        <i class="ph-note me-2"></i>
+                        Dokumenta
+                    </a>
+                </li>
+                <li class="nav-item ms-lg-1">
+                    <a href="#" class="navbar-nav-link rounded">
+                        <i class="ph-image me-2"></i>
+                        Slike
+                    </a>
+                </li>
+                <li class="nav-item dropdown ms-lg-1">
+                    <a href="#" class="navbar-nav-link rounded dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="ph-gear"></i>
+                        <span class="d-lg-none ms-2">Više</span>
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a href="{{ path('app_user_edit_info_form', { id: user.id}) }}" class="dropdown-item">
+                            <i class="ph-clipboard-text me-2"></i>
+                            Izmenite profil
+                        </a>
+                        <a href="{{ path('app_user_edit_account_form', { id: user.id}) }}" class="dropdown-item">
+                            <i class="ph-lock-key me-2"></i>
+                            Izmenite nalog
+                        </a>
+                        <a href="{{ path('app_user_edit_image_form', { id: user.id}) }}" class="dropdown-item">
+                            <i class="ph-image me-2"></i>
+                            Izmenite profilnu sliku
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i class="ph-gear me-2"></i>
+                            Podešavanje profila
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

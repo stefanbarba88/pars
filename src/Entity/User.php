@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueEntity(fields: ['email'], message: 'U bazi već postoji korinik sa ovim email nalogom')]
+#[UniqueEntity(fields: ['email'], message: 'U bazi već postoji korisnik sa ovim email nalogom')]
 class User implements UserInterface {
   #[ORM\Id]
   #[ORM\GeneratedValue]
@@ -42,7 +42,7 @@ class User implements UserInterface {
   #[ORM\Column(length: 255)]
   private ?string $prezime = null;
 
-  #[ORM\Column(length: 13)]
+  #[ORM\Column(length: 13, nullable: true)]
   private ?string $jmbg = null;
 
   #[ORM\Column(length: 255, nullable: true)]

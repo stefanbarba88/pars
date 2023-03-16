@@ -4,24 +4,17 @@ namespace App\Controller;
 
 use App\Classes\Avatar;
 use App\Classes\Data\NotifyMessagesData;
-use App\Classes\Data\UserRolesData;
-use App\Classes\Downloader;
-use App\Classes\Thumb;
-use App\Classes\Thumbnail;
 use App\Entity\Image;
 use App\Entity\User;
+use App\Form\UserEditImageFormType;
 use App\Form\UserEditInfoFormType;
+use App\Form\UserEditAccountFormType;
 use App\Form\UserRegistrationFormType;
 use App\Service\UploadService;
 use Doctrine\Persistence\ManagerRegistry;
-use Imagick;
-use Imagine\Imagick\Imagine;
-use LasseRafn\Initials\Initials;
-
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -55,10 +48,10 @@ class UserController extends AbstractController {
 
         if(is_null($file)) {
           $file = Avatar::getAvatar($this->getParameter('kernel.project_dir') . $usr->getAvatarUploadPath(), $usr);
-
         } else {
           $file = $uploadService->upload($file, $usr->getImageUploadPath());
         }
+
         $this->em->getRepository(User::class)->register($usr, $file, $this->getParameter('kernel.project_dir'));
 
         notyf()
@@ -76,9 +69,10 @@ class UserController extends AbstractController {
     return $this->render('user/registration_form.html.twig', $args);
   }
 
-  #[Route('/edit/{id}', name: 'app_user_edit_info_form')]
+
+  #[Route('/edit-info/{id}', name: 'app_user_edit_info_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editAccount(User $usr, Request $request, UploadService $uploadService): Response {
+  public function editInfo(User $usr, Request $request): Response {
 
     $form = $this->createForm(UserEditInfoFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_info_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -86,30 +80,123 @@ class UserController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-//        $file = $request->files->all()['user_registration_form']['slika'];
-//
-//        if(is_null($file)) {
-//          $file = Avatar::getAvatar($this->getParameter('kernel.project_dir') . $usr->getAvatarUploadPath(), $usr);
-//        } else {
-//          $file = $uploadService->upload($file, $usr->getImageUploadPath());
-//        }
-//
-//        $this->em->getRepository(User::class)->register($usr, $file, $this->getParameter('kernel.project_dir'));
+        $this->em->getRepository(User::class)->save($usr);
 
-        return $this->redirectToRoute('app_user_view', ['id' => $usr->getId()]);
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
+
+        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
       }
     }
     $args['form'] = $form->createView();
+    $args['user'] = $usr;
+
+    return $this->render('user/edit_info.html.twig', $args);
+  }
+
+  #[Route('/edit-account/{id}', name: 'app_user_edit_account_form')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function editAccount(User $usr, Request $request): Response {
+
+    $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(User::class)->save($usr);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
+
+        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['user'] = $usr;
 
     return $this->render('user/edit_account.html.twig', $args);
   }
 
+  #[Route('/edit-image/{id}', name: 'app_user_edit_image_form')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function editImage(User $usr, Request $request, UploadService $uploadService): Response {
 
-  #[Route('/view/{id}', name: 'app_user_view')]
+    $form = $this->createForm(UserEditImageFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_image_form', ['id' => $usr->getId()])]]);
+    if ($request->isMethod('POST')) {
+
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $file = $request->files->all()['user_edit_image_form']['slika'];
+        $file = $uploadService->upload($file, $usr->getImageUploadPath());
+
+        $this->em->getRepository(Image::class)->addImages($file, $usr, $this->getParameter('kernel.project_dir'));
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_USER_IMAGE_SUCCESS);
+
+        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['user'] = $usr;
+    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['user' => $usr]);
+
+    return $this->render('user/edit_image.html.twig', $args);
+  }
+
+  #[Route('/view-profile/{id}', name: 'app_user_profile_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(User $usr): Response {
+  public function viewProfile(User $usr): Response {
+    $args['user'] = $usr;
+    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['user' => $usr]);
+
+    return $this->render('user/view_profile.html.twig', $args);
+  }
+
+  #[Route('/view-activity/{id}', name: 'app_user_activity_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewActivity(User $usr): Response {
     $args['user'] = $usr;
 
-    return $this->render('user/view.html.twig', $args);
+    return $this->render('user/view_activity.html.twig', $args);
+  }
+
+  #[Route('/view-calendar/{id}', name: 'app_user_calendar_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewCalendar(User $usr): Response {
+    $args['user'] = $usr;
+
+    return $this->render('user/view_calendar.html.twig', $args);
+  }
+
+  #[Route('/view-cars/{id}', name: 'app_user_car_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewCar(User $usr): Response {
+    $args['user'] = $usr;
+
+    return $this->render('user/view_cars.html.twig', $args);
+  }
+
+  #[Route('/view-tools/{id}', name: 'app_user_tools_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewTools(User $usr): Response {
+    $args['user'] = $usr;
+
+    return $this->render('user/view_tools.html.twig', $args);
   }
 }

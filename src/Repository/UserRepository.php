@@ -35,10 +35,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function register(User $user, UploadedFileDTO $file, string $kernelPath): User {
 
-    $this->hashPlainPassword($user);
     $this->save($user);
 
     $this->mail->registration($user);
+
     $this->getEntityManager()->getRepository(Image::class)->addImages($file, $user, $kernelPath);
 
     return $user;
@@ -48,6 +48,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     if (is_null($user->getId())) {
       $this->getEntityManager()->persist($user);
     }
+
+    if (!empty($user->getPlainPassword())) {
+      $this->hashPlainPassword($user);
+    }
+
     $this->getEntityManager()->flush();
     return $user;
   }

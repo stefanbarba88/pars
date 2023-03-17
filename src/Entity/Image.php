@@ -26,7 +26,12 @@ class Image {
   private ?string $thumbnail500 = null;
 
   #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
   private ?User $user = null;
+
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?Client $client = null;
 
   #[ORM\Column]
   private DateTimeImmutable $created;
@@ -124,4 +129,20 @@ class Image {
   public function setThumbnail500(?string $thumbnail500): void {
     $this->thumbnail500 = $thumbnail500;
   }
+
+  /**
+   * @return Client|null
+   */
+  public function getClient(): ?Client {
+    return $this->client;
+  }
+
+  /**
+   * @param Client|null $client
+   */
+  public function setClient(?Client $client): void {
+    $this->client = $client;
+  }
+
+
 }

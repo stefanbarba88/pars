@@ -65,6 +65,37 @@ class MailService {
 
   }
 
+  public function deactivate(User $user): void {
+    $args = [];
+    $to = $user->getEmail();
+    $subject = 'Deaktivacija naloga na ' . CompanyInfo::ORGANIZATION_TITLE;
+    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/deactivate.html.twig';
+
+    $args['name'] = $user->getFullName();
+    $args['support'] = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function activate(User $user): void {
+    $args = [];
+    $to = $user->getEmail();
+    $subject = 'Aktivacija naloga na ' . CompanyInfo::ORGANIZATION_TITLE;
+    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/activate.html.twig';
+
+    $args['link'] = $this->router->generate('app_login', [], UrlGeneratorInterface::ABSOLUTE_URL);
+    $args['name'] = $user->getFullName();
+    $args['support'] = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
   public function resetPassword(User $user, $resetToken): void {
     $args = [];
     $to = $user->getEmail();

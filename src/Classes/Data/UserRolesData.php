@@ -10,8 +10,9 @@ class UserRolesData implements DataClassInterface {
 
   public const ROLE_SUPER_ADMIN = 1;
   public const ROLE_ADMIN = 2;
-  public const ROLE_OFFICE = 3;
-  public const ROLE_KLIJENT = 4;
+  public const ROLE_MANAGER = 3;
+  public const ROLE_EMPLOYEE = 4;
+  public const ROLE_CLIENT = 5;
 
 
   public const DATA = [
@@ -27,18 +28,25 @@ class UserRolesData implements DataClassInterface {
       'role' => 'ROLE_ADMIN',
       'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-success">Administrator</span>',
     ],
-    'ROLE_KLIJENT' => [
-      'id' => self::ROLE_KLIJENT,
+    'ROLE_MANAGER' => [
+      'id' => self::ROLE_MANAGER,
+      'title' => 'Menadžment',
+      'role' => 'ROLE_MANAGER',
+      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Menadžment</span>',
+    ],
+    'ROLE_EMPLOYEE' => [
+      'id' => self::ROLE_EMPLOYEE,
+      'title' => 'Zaposleni',
+      'role' => 'ROLE_EMPLOYEE',
+      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-info">Zaposleni</span>',
+    ],
+    'ROLE_CLIENT' => [
+      'id' => self::ROLE_CLIENT,
       'title' => 'Klijent',
-      'role' => 'ROLE_KLIJENT',
+      'role' => 'ROLE_CLIENT',
       'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-secondary">Klijent</span>',
     ],
-    'ROLE_OFFICE' => [
-      'id' => self::ROLE_OFFICE,
-      'title' => 'Upravnik',
-      'role' => 'ROLE_OFFICE',
-      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Upravnik</span>',
-    ],
+
   ];
 
   public static function form(): array {

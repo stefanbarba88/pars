@@ -68,14 +68,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $user;
   }
 
-//  public function save(User $entity, bool $flush = false): void {
-//    $this->getEntityManager()->persist($entity);
-//
-//    if ($flush) {
-//      $this->getEntityManager()->flush();
-//    }
-//  }
-
   public function remove(User $entity, bool $flush = false): void {
     $this->getEntityManager()->remove($entity);
 
@@ -84,7 +76,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
   }
 
-  /**
+  public function suspend(User $user): User {
+
+    if ($user->isSuspended()) {
+      $this->mail->deactivate($user);
+    } else {
+      $this->mail->activate($user);
+    }
+    $this->save($user);
+
+    return $user;
+
+  }
+    /**
    * Used to upgrade (rehash) the user's password automatically over time.
    */
   public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void {

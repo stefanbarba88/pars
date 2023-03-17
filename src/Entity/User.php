@@ -71,6 +71,9 @@ class User implements UserInterface {
   #[ORM\Column(name: 'datum_rodjenja', type: Types::DATE_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $datumRodjenja = null;
 
+  #[ORM\ManyToOne(targetEntity: self::class)]
+  private ?self $editBy = null;
+
   #[ORM\Column]
   private bool $isSuspended = false;
 
@@ -242,7 +245,7 @@ class User implements UserInterface {
    * @param ZaposleniPozicija|null $pozicija
    */
   public function setPozicija(?ZaposleniPozicija $pozicija): void {
-    $this->grad = $pozicija;
+    $this->pozicija = $pozicija;
   }
 
   /**
@@ -368,9 +371,9 @@ class User implements UserInterface {
 
   public function getBadgeByStatus(): string {
     if ($this->isSuspended) {
-      return '<span class="badge bg-danger">Neaktivan</span>';
+      return '<span class="badge bg-danger">Deaktiviran</span>';
     }
-    return '<span class="badge bg-info">Aktivan</span>';
+    return '<span class="badge bg-info">Aktiviran</span>';
 
   }
 
@@ -438,6 +441,14 @@ class User implements UserInterface {
     $this->datumRodjenja = $datumRodjenja;
   }
 
+  public function getEditBy(): ?self {
+    return $this->editBy;
+  }
 
+  public function setEditBy(?self $editBy): self {
+    $this->editBy = $editBy;
+
+    return $this;
+  }
 
 }

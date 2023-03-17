@@ -1,0 +1,308 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {% include 'includes/header.html.twig' %}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Klijenti
+                            </h4>
+
+                            <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
+                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
+                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
+                                <div class="d-inline-flex mt-3 mt-sm-0">
+                                    <a href="{{ path('app_client_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                        <i class="ph-plus"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <a href="{{ path('app_clients') }}" class="breadcrumb-item">Klijenti</a>
+                                <span class="breadcrumb-item active">Dodavanje novog klijenta</span>
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse d-lg-block ms-lg-auto" id="breadcrumb_elements">
+                            <div class="d-lg-flex mb-2 mb-lg-0">
+                                <a href="#" class="d-flex align-items-center text-body py-2">
+                                    <i class="ph-lifebuoy me-2"></i>
+                                    Support
+                                </a>
+
+                                <div class="dropdown ms-lg-3">
+                                    <a href="#" class="d-flex align-items-center text-body dropdown-toggle py-2" data-bs-toggle="dropdown">
+                                        <i class="ph-gear me-2"></i>
+                                        <span class="flex-1">Settings</span>
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end w-100 w-lg-auto">
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-shield-warning me-2"></i>
+                                            Account security
+                                        </a>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-chart-bar me-2"></i>
+                                            Analytics
+                                        </a>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-lock-key me-2"></i>
+                                            Privacy
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-gear me-2"></i>
+                                            All settings
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    {% if not form.vars.valid %}
+                        {% for child in form.children %}
+                            {%for error in child.vars.errors%}
+                                <div class="alert alert-danger alert-dismissible fade show">
+                                    <span class="fw-semibold">{{error.message}}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {%endfor%}
+                        {%endfor%}
+                    {%endif%}
+                    <!-- Wizard with validation -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Dodavanje novog klijenta</h6>
+                        </div>
+                        {{ form_start(form, {'attr': {'class' : 'wizard-form steps-validation', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
+{#                            <h6>Lični podaci</h6>#}
+{#                            <fieldset>#}
+{#                                <div class="row">#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.ime, 'Ime:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.ime, {attr: { class: 'form-control required' }}) }}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.prezime, 'Prezime:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.prezime, {attr: { class: 'form-control required' }}) }}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="row">#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.datumRodjenja, 'Datum rođenja:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            <div class="input-group">#}
+{#											<span class="input-group-text">#}
+{#												<i class="ph-calendar"></i>#}
+{#											</span>#}
+{#                                                {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom' }}) }}#}
+{#                                            </div>#}
+{#                                            <span class="form-text">Format: 31.12.1900</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.pol, 'Pol:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.pol, {attr: { class: 'form-control select required' }}) }}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </fieldset>#}
+
+{#                            <h6>Login podaci</h6>#}
+{#                            <fieldset>#}
+{#                                <div class="row">#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.plainPassword, 'Lozinka:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.plainPassword, {attr: { class: 'form-control required' }}) }}#}
+{#                                            <span class="form-text">Format: Minimum 8 karaktera (obavezno jedno veliko slovo, jedno malo slovo, jedan specijalan karakter i jednu cifru) </span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.email, 'Email:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.email, {attr: { class: 'form-control required' }}) }}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="row">#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.vrstaZaposlenja, 'Vrsta zaposlenja:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required' }}) }}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="row">#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.userType, 'Tip korisnika:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.userType, {attr: { class: 'form-control select required role' }}) }}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="col-lg-6 hide ROLE_EMPLOYEE">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.pozicija, {attr: { class: 'form-control select' }}) }}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </fieldset>#}
+{#                            <h6>Slika</h6>#}
+{#                            <fieldset>#}
+{#                                <div class="row">#}
+{#                                    <div class="col-lg-12">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.slika, 'Profilna slika:', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.slika, {attr: { class: 'form-control file-input' }}) }}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </fieldset>#}
+
+{#                            <h6>Dodatne informacije</h6>#}
+{#                            <fieldset>#}
+{#                                <div class="row">#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.grad, 'Grad:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.grad, {attr: { class: 'form-control select required' }}) }}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.adresa, 'Ulica i broj:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.adresa, {attr: { class: 'form-control required' }}) }}#}
+{#                                            <span class="form-text">Format: Bulevar Milutina Milankovića 1</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="row">#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.telefon1, 'Telefon #1:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.telefon1, {attr: { class: 'form-control required' }}) }}#}
+{#                                            <span class="form-text">Format: 0661111222</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}#}
+{#                                            <span class="form-text">Format: 0661111222</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </fieldset>#}
+
+                        {{ form_end(form) }}
+                    </div>
+                    <!-- /wizard with validation -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+
+{% block footerJavascript %}
+
+    <script>
+        $(function () {
+            $(".role").change(function() {
+                if ($(this).val() == "4") {
+                    $('.ROLE_EMPLOYEE').removeClass('hide');
+                    $('.ROLE_EMPLOYEE [input]').addClass('required');
+                } else {
+                    $('.ROLE_EMPLOYEE').addClass('hide');
+                    $('.ROLE_EMPLOYEE [input]').removeClass('required');
+                }
+            });
+        });
+    </script>
+
+{% endblock footerJavascript %}

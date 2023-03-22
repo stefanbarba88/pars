@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Klijenti
+                                Pozicije
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -28,7 +28,7 @@
                             <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
                                 <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
                                 <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_client_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                    <a href="{{ path('app_position_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
                                         <i class="ph-plus"></i>
                                     </a>
                                 </div>
@@ -40,8 +40,8 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_clients') }}" class="breadcrumb-item">Klijenti</a>
-                                <span class="breadcrumb-item active">Dodavanje/Izmena klijenta</span>
+                                <a href="{{ path('app_positions') }}" class="breadcrumb-item">Pozicije</a>
+                                <span class="breadcrumb-item active">Dodavanje/Izmena pozicije</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -88,7 +88,6 @@
                 </div>
                 <!-- /page header -->
 
-                <!-- Content area -->
                 <div class="content">
                     {% if not form.vars.valid %}
                         {% for child in form.children %}
@@ -103,27 +102,10 @@
                     <!-- Wizard with validation -->
                     <div class="card">
                         <div class="card-header">
-                            <h6 class="mb-0">Dodavanje/Izmena klijenta</h6>
+                            <h6 class="mb-0">Dodavanje/Izmena pozicije</h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isSerbian, 'Srpska kompanija:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isSerbian, {attr: { class: 'form-control required select' }}) }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.pib, 'PIB/VAT:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.pib, {attr: { class: 'form-control required', maxLength: '9', minLength: '9' }}) }}
-                                        <span id="formatPib" class="form-text">Format: Uneti tačno 9 cifara.</span>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
@@ -133,39 +115,17 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.kontakt, 'Lice za kontakt:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.kontakt, {attr: { class: 'form-control required select' }}) }}
+                                        {{ form_label(form.titleShort, 'Kratak naziv:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.titleShort, {attr: { class: 'form-control required' }}) }}
+                                        <span class="form-text">Format: ABC</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.grad, 'Grad:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.grad, {attr: { class: 'form-control select required' }}) }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.adresa, 'Ulica i broj:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.adresa, {attr: { class: 'form-control required' }}) }}
-                                        <span class="form-text">Format: Bulevar Milutina Milankovića 1</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.telefon1, 'Telefon #1:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.telefon1, {attr: { class: 'form-control required' }}) }}
-                                        <span class="form-text">Format: 0661111222</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
-                                        <span class="form-text">Format: 0661111222</span>
+                                        {{ form_label(form.isSuspended, 'Deaktivirana pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.isSuspended, {attr: { class: 'form-control required select' }}) }}
                                     </div>
                                 </div>
                             </div>
@@ -175,10 +135,9 @@
                         </div>
                         {{ form_end(form) }}
                     </div>
-                    <!-- /wizard with validation -->
+                            <!-- /wizard with validation -->
 
                 </div>
-                <!-- /content area -->
 
                 <!-- Footer -->
                 {% include 'includes/footer.html.twig' %}
@@ -227,29 +186,9 @@
 
     <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
     {% endif %}
 
-
 {% endblock includeJavascript %}
-
-{% block footerJavascript %}
-    <script>
-        $(function () {
-            $("#client_form_isSerbian").change(function() {
-                if ($(this).val() === 1) {
-                    $("#client_form_pib").attr({
-                        "maxlength": 9,
-                        "minlength": 9
-                    });
-                    $("#formatPib").text('Format: Uneti tačno 9 cifara.');
-                } else {
-                    $("#client_form_pib").removeAttr("maxlength")
-                        .removeAttr("minlength");
-                    $("#formatPib").text('Format: Uneti cifre u skladu sa formatom države u kojoj se kompanija nalazi.');
-                }
-            });
-        });
-    </script>
-{% endblock footerJavascript %}

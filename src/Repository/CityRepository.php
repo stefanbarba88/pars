@@ -14,30 +14,70 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method City[]    findAll()
  * @method City[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CityRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, City::class);
+class CityRepository extends ServiceEntityRepository {
+  public function __construct(ManagerRegistry $registry) {
+    parent::__construct($registry, City::class);
+  }
+
+  public function save(City $city): City {
+    if (is_null($city->getId())) {
+      $this->getEntityManager()->persist($city);
     }
 
-    public function save(City $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
+    $this->getEntityManager()->flush();
+    return $city;
+  }
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+  public function remove(City $entity, bool $flush = false): void {
+    $this->getEntityManager()->remove($entity);
+
+    if ($flush) {
+      $this->getEntityManager()->flush();
+    }
+  }
+
+  public function findForForm(int $id = 0): City {
+    if (empty($id)) {
+      return new City();
+    }
+    return $this->getEntityManager()->getRepository(City::class)->find($id);
+  }
+
+  public function getRegionsSerbia(): array {
+
+    $regions = [];
+    $queryBuilder = $this->getEntityManager()->getRepository(City::class)
+      ->createQueryBuilder('c');
+    $query = $queryBuilder
+      ->select("c")
+      ->groupBy("c.region")
+      ->getQuery();
+
+    foreach ($query->getResult() as $reg) {
+      $regions[] = $reg->getRegion();
     }
 
-    public function remove(City $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
+    return $regions;
+  }
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+  public function getMunicipalitiesSerbia(): array {
+
+    $municipalities = [];
+    $queryBuilder = $this->getEntityManager()->getRepository(City::class)
+      ->createQueryBuilder('c');
+    $query = $queryBuilder
+      ->select("c")
+      ->groupBy("c.municipality")
+      ->getQuery();
+
+    foreach ($query->getResult() as $reg) {
+      $municipalities[] = $reg->getMunicipality();
     }
+
+    return $municipalities;
+  }
+
+
 
 //    /**
 //     * @return City[] Returns an array of City objects

@@ -2,14 +2,15 @@
 
 namespace App\Form;
 
+use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\City;
 use App\Entity\Client;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -39,22 +40,18 @@ class ClientFormType extends AbstractType {
           'maxlength' => '10'
         ],
       ])
-      ->add('pib')
-      ->add('slika', FileType::class, [
-        'attr' => ['accept' => 'image/jpeg,image/png,image/jpg,image-gif', 'data-show-upload' => 'false'],
-        // unmapped means that this field is not associated to any entity property
-        'mapped' => false,
-        // make it optional so you don't have to re-upload the PDF file
-        // every time you edit the Product details
-        'required' => false,
-        // unmapped fields can't define their validation using annotations
-        // in the associated entity, so you can use the PHP constraint classes
+      ->add('pib',TextType::class, [
         'constraints' => [
-          new Image([
-            'maxSize' => '2048k',
-            'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 2Mb'
-          ])
+          new Regex('/^\d+$/', 'PIB/VAT morate uneti u odgovarajućem formatu'),
         ],
+      ])
+      ->add('isSerbian', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
       ])
       ->add('grad', EntityType::class, [
         'class' => City::class,
@@ -69,6 +66,7 @@ class ClientFormType extends AbstractType {
         'multiple' => false,
       ])
       ->add('kontakt', EntityType::class, [
+        'placeholder' => 'Izaberite lice za kontakt',
         'class' => User::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')

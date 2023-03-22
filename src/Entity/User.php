@@ -312,6 +312,7 @@ class User implements UserInterface {
     return VrstaZaposlenjaData::VRSTA_ZAPOSLENJA[$this->getVrstaZaposlenja()];
   }
 
+
   /**
    * A visual identifier that represents this user.
    *

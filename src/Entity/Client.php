@@ -44,8 +44,7 @@ class Client {
 
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $telefon2 = null;
-
-  #[ORM\Column(length: 9)]
+  #[ORM\Column]
   private ?string $pib = null;
 
   #[ORM\OneToOne(cascade: ['persist', 'remove'])]
@@ -57,6 +56,9 @@ class Client {
 
   #[ORM\Column]
   private bool $isSuspended = false;
+
+  #[ORM\Column]
+  private bool $isSerbian = true;
 
   #[ORM\Column]
   private DateTimeImmutable $created;
@@ -190,6 +192,20 @@ class Client {
   }
 
   /**
+   * @return bool
+   */
+  public function isSerbian(): bool {
+    return $this->isSerbian;
+  }
+
+  /**
+   * @param bool $isSerbian
+   */
+  public function setIsSerbian(bool $isSerbian): void {
+    $this->isSerbian = $isSerbian;
+  }
+
+  /**
    * @return DateTimeImmutable
    */
   public function getCreated(): DateTimeImmutable {
@@ -215,6 +231,14 @@ class Client {
    */
   public function setUpdated(DateTimeImmutable $updated): void {
     $this->updated = $updated;
+  }
+
+  public function getBadgeByStatus(): string {
+    if ($this->isSuspended) {
+      return '<span class="badge bg-danger">Deaktiviran</span>';
+    }
+    return '<span class="badge bg-info">Aktiviran</span>';
+
   }
 
 }

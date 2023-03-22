@@ -9,6 +9,7 @@ class NotifyMessagesData {
   public const USER_SUSPENDED_TRUE = 'Uspešno ste deaktivirali korisnički nalog.';
   public const USER_SUSPENDED_FALSE = 'Uspešno ste aktivirali korisnički nalog.';
   public const USER_SUSPENDED_QUESTION = 'Da li zaista želite da deaktivirate korisnika?';
+  public const EDIT_SUCCESS = 'Uspešno ste dodali/izmenili stavku.';
 
 
 

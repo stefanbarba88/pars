@@ -14,30 +14,35 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ZaposleniPozicija[]    findAll()
  * @method ZaposleniPozicija[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ZaposleniPozicijaRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, ZaposleniPozicija::class);
+class ZaposleniPozicijaRepository extends ServiceEntityRepository {
+  public function __construct(ManagerRegistry $registry) {
+    parent::__construct($registry, ZaposleniPozicija::class);
+  }
+
+  public function save(ZaposleniPozicija $pozicija): ZaposleniPozicija {
+    $pozicija->setTitleShort(mb_strtoupper($pozicija->getTitleShort()));
+    if (is_null($pozicija->getId())) {
+      $this->getEntityManager()->persist($pozicija);
     }
 
-    public function save(ZaposleniPozicija $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
+    $this->getEntityManager()->flush();
+    return $pozicija;
+  }
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+  public function remove(ZaposleniPozicija $entity, bool $flush = false): void {
+    $this->getEntityManager()->remove($entity);
+
+    if ($flush) {
+      $this->getEntityManager()->flush();
     }
+  }
 
-    public function remove(ZaposleniPozicija $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+  public function findForForm(int $id = 0): ZaposleniPozicija {
+    if (empty($id)) {
+      return new ZaposleniPozicija();
     }
+    return $this->getEntityManager()->getRepository(ZaposleniPozicija::class)->find($id);
+  }
 
 //    /**
 //     * @return ZaposleniPozicija[] Returns an array of ZaposleniPozicija objects

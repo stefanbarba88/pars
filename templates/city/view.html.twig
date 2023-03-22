@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header_user.html.twig' %}
+    {% include 'includes/header.html.twig' %}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Korisnici
+                                Gradovi
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -28,7 +28,7 @@
                             <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
                                 <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
                                 <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_user_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                    <a href="{{ path('app_city_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
                                         <i class="ph-plus"></i>
                                     </a>
                                 </div>
@@ -40,8 +40,8 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_users') }}" class="breadcrumb-item">Korisnici</a>
-                                <span class="breadcrumb-item active">Profil</span>
+                                <a href="{{ path('app_cities') }}" class="breadcrumb-item">Gradovi</a>
+                                <span class="breadcrumb-item active">Grad</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -85,9 +85,6 @@
                             </div>
                         </div>
                     </div>
-
-                    {{ render(controller('App\\Controller\\WidgetController::userProfilNavigation', { user: user } )) }}
-
                 </div>
                 <!-- /page header -->
 
@@ -97,79 +94,54 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::userProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
-
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header">
+                                             <h5 class="mb-0">{{ city.getFormTitle() }} <a href="{{ path('app_city_form', {id: city.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Naziv:</div>
+                                            <div class="col-8">{{ city.title }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">PTT broj:</div>
+                                            <div class="col-8">{{ city.ptt }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Opština:</div>
+                                            <div class="col-8">{{ city.municipality }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Region:</div>
+                                            <div class="col-8">{{ city.region }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Država:</div>
+                                            <div class="col-8">{{ city.drzava.title }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if city.editBy is not null %}
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Izmena:</h5>
+                                    </div>
 
-                                        <h5 class="mb-0">Lični podaci <a href="{{ path('app_user_edit_info_form', {id: user.id}) }}"><i class="ph-note-pencil"></i></a></h5>
-                                    </div>
                                     <div class="card-body">
                                         <div class="row p-2">
-                                            <div class="col-4">Ime i prezime:</div>
-                                            <div class="col-8">{{ user.fullName() }}</div>
+                                            <div class="col-4">Izmenio:</div>
+                                            <div class="col-8">{{ city.editBy.getFullName() | default('/') }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Datum rođenja:</div>
-                                            <div class="col-8">{{ user.datumRodjenja | date("d.m.Y")}}</div>
-                                        </div>
-                                        <div class="row p-2 bg">
-                                            <div class="col-4">Pol:</div>
-                                            <div class="col-8">{{ user.getPolData()}}</div>
+                                            <div class="col-4">Vreme:</div>
+                                            <div class="col-8">{{ city.updated | date("d.m.Y") }} u {{ city.updated | date("H:i:s") }}</div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Kontakt podaci <a href="{{ path('app_user_edit_info_form', {id: user.id}) }}"><i class="ph-note-pencil"></i></a></h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row p-2">
-                                            <div class="col-4" >Grad:</div>
-                                            <div class="col-8">{{ user.grad.getFormTitle() }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Adresa:</div>
-                                            <div class="col-8">{{ user.adresa }}</div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Telefon#1:</div>
-                                            <div class="col-8">{{ user.telefon1 }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Telefon#2:</div>
-                                            <div class="col-8">{{ user.telefon2 | default('/') }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Login podaci <a href="{{ path('app_user_edit_account_form', {id: user.id}) }}"><i class="ph-note-pencil"></i></a></h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row p-2">
-                                            <div class="col-4">Email:</div>
-                                            <div class="col-8">{{ user.email }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Vrsta zaposlenja:</div>
-                                            <div class="col-8">{{ user.vrstaZaposlenjaData }}</div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Tip korisnika:</div>
-                                            <div class="col-8">{{ user.badgeByUserType | raw }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Pozicija:</div>
-                                            <div class="col-8">{{ user.pozicija.title | default('/')  }}</div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% endif %}
                             </div>
                         </div>
                         <!-- /right content -->

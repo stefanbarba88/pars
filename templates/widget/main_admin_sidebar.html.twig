@@ -127,7 +127,7 @@
                     <i class="ph-dots-three sidebar-resize-show"></i>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ path('app_users') }}" class="nav-link">
+                    <a href="{{ path('app_clients') }}" class="nav-link">
                         <i class="ph-factory"></i>
                         <span>Lista</span>
                         <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>
@@ -197,14 +197,13 @@
                 <li class="nav-item nav-item-submenu">
                     <a href="#" class="nav-link">
                         <i class="ph-wrench"></i>
-                        <span>Service pages</span>
+                        <span>Podešavanja</span>
                     </a>
                     <ul class="nav-group-sub collapse">
-                        <li class="nav-item"><a href="service_sitemap.html" class="nav-link">Sitemap</a></li>
                         <li class="nav-item nav-item-submenu">
-                            <a href="#" class="nav-link">Invoicing</a>
+                            <a href="#" class="nav-link">Geopodešavanja</a>
                             <ul class="nav-group-sub collapse">
-                                <li class="nav-item"><a href="invoice_template.html" class="nav-link">Invoice template</a></li>
+                                <li class="nav-item"><a href="{{ path('app_cities') }}" class="nav-link">Gradovi</a></li>
                                 <li class="nav-item"><a href="invoice_grid.html" class="nav-link">Invoice grid</a></li>
                                 <li class="nav-item"><a href="invoice_archive.html" class="nav-link">Invoice archive</a></li>
                             </ul>
@@ -212,7 +211,7 @@
                         <li class="nav-item nav-item-submenu">
                             <a href="#" class="nav-link">Authentication</a>
                             <ul class="nav-group-sub collapse">
-                                <li class="nav-item"><a href="login_simple.html" class="nav-link">Simple login</a></li>
+                                <li class="nav-item"><a href="{{ path('app_positions') }}" class="nav-link">Pozicije</a></li>
                                 <li class="nav-item"><a href="login_advanced.html" class="nav-link">More login info</a></li>
                                 <li class="nav-item"><a href="login_registration.html" class="nav-link">Simple registration</a></li>
                                 <li class="nav-item"><a href="login_registration_advanced.html" class="nav-link">More registration info</a></li>

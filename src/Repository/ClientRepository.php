@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Client;
+use App\Entity\Image;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,12 +21,15 @@ class ClientRepository extends ServiceEntityRepository {
     parent::__construct($registry, Client::class);
   }
 
-  public function save(Client $entity, bool $flush = false): void {
-    $this->getEntityManager()->persist($entity);
+  public function save(Client $client): Client {
 
-    if ($flush) {
-      $this->getEntityManager()->flush();
+    if (is_null($client->getId())) {
+      $this->getEntityManager()->getRepository(Image::class)->addImagesClient($client);
+      $this->getEntityManager()->persist($client);
     }
+
+    $this->getEntityManager()->flush();
+    return $client;
   }
 
   public function remove(Client $entity, bool $flush = false): void {
@@ -41,7 +46,21 @@ class ClientRepository extends ServiceEntityRepository {
     }
     return $this->getEntityManager()->getRepository(Client::class)->find($id);
   }
+  public function suspend(Client $client): Client {
 
+    $user = $this->getEntityManager()->getRepository(User::class)->find($client->getKontakt()->getId());
+    if ($client->isSuspended()) {
+      $user->setIsSuspended(true);
+    } else {
+      $user->setIsSuspended(false);
+    }
+
+    $this->getEntityManager()->getRepository(User::class)->suspend($user);
+    $this->save($client);
+
+    return $client;
+
+  }
 //    /**
 //     * @return Client[] Returns an array of Client objects
 //     */

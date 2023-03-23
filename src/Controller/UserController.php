@@ -39,7 +39,7 @@ class UserController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, User $usr, UploadService $uploadService): Response {
     $usr->setEditBy($this->getUser());
-
+//    $request->query->getInt('user_type')
     $form = $this->createForm(UserRegistrationFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);

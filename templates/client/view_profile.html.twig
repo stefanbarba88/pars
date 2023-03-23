@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Korisnici
+                                Klijenti
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -28,7 +28,7 @@
                             <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
                                 <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
                                 <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_user_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                    <a href="{{ path('app_client_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
                                         <i class="ph-plus"></i>
                                     </a>
                                 </div>
@@ -40,8 +40,8 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_users') }}" class="breadcrumb-item">Korisnici</a>
-                                <span class="breadcrumb-item active">Raspored</span>
+                                <a href="{{ path('app_clients') }}" class="breadcrumb-item">Klijenti</a>
+                                <span class="breadcrumb-item active">{{ client.title | upper }} - profil</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -86,7 +86,7 @@
                         </div>
                     </div>
 
-                    {{ render(controller('App\\Controller\\WidgetController::userProfilNavigation', { user: user } )) }}
+                    {{ render(controller('App\\Controller\\WidgetController::clientProfilNavigation', { client: client} )) }}
 
                 </div>
                 <!-- /page header -->
@@ -97,40 +97,121 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::userProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
+                        <div class="sidebar sidebar-component sidebar-expand-lg bg-transparent shadow-none me-lg-3">
+                            <!-- Sidebar content -->
+                            <div class="sidebar-content">
+                                <!-- Navigation -->
+                                <div class="card">
+                                    <div class="sidebar-section-body text-center">
+                                        <div class="card-img-actions d-inline-block mb-3">
+                                            <img class="img-fluid rounded-circle" src="{{ asset(image.thumbnail500) }}" width="150" height="150" alt="{{ client.title }}">
+                                        </div>
+                                        <h6 class="mb-0">{{ client.title | upper }}</h6>
+                                    </div>
+                                    <ul class="nav nav-sidebar">
+                                        <li class="nav-item">
+                                            <a href="{{ path('app_client_profile_view', { id: client.id}) }}" class="nav-link" >
+                                                <i class="ph-user me-2"></i>
+                                                Profil
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ path('app_client_activity_view', { id: client.id}) }}" class="nav-link">
+                                                <i class="ph-activity me-2"></i>
+                                                Aktivnosti
+                                                <span class="badge bg-secondary rounded-pill ms-auto">29</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ path('app_client_calendar_view', { id: client.id}) }}" class="nav-link">
+                                                <i class="ph-calendar me-2"></i>Raspored
+                                                <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item-divider"></li>
+                                        <li class="nav-item">
+                                            {#                    <a href="{{ path('app_logout') }}" class="nav-link" data-bs-toggle="tab">#}
+                                            {#                        <i class="ph-sign-out me-2"></i>Odjavite se#}
+                                            {#                    </a>#}
+                                            <a href="{{ path('app_client_settings_form', { id: client.id}) }}" class="nav-link">
+                                                <i class="ph-lightbulb me-2"></i>Status
+                                                <span class="ms-auto">{{ client.badgeByStatus | raw }}</span>
+                                            </a>
 
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- /navigation -->
+                            </div>
+                            <!-- /sidebar content -->
+                        </div>
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
-                                <!-- Available hours -->
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">Available hours</h5>
+                                        <h5 class="mb-0">{{ client.title | upper }} <a href="{{ path('app_client_form', {id: client.id}) }}"><i class="ph-note-pencil"></i></a></h5>
                                     </div>
-
                                     <div class="card-body">
-                                        <div class="chart-container">
-                                            <div class="chart has-fixed-height" id="available_hours"></div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Naziv:</div>
+                                            <div class="col-8">{{ client.title | upper }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">PIB/VAT:</div>
+                                            <div class="col-8">{{ client.pib }}</div>
+                                        </div>
+                                        <div class="row p-2 bg">
+                                            <div class="col-4">Lice za kontakt:</div>
+                                            <div class="col-8"><a href="{{ path('app_user_profile_view', {id: client.kontakt.id}) }}">{{ client.kontakt.fullName }}</a></div>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- /available hours -->
-
-
-                                <!-- Schedule -->
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">My schedule</h5>
+                                        <h5 class="mb-0">Kontakt podaci <a href="{{ path('app_client_form', {id: client.id}) }}"><i class="ph-note-pencil"></i></a></h5>
                                     </div>
-
                                     <div class="card-body">
-                                        <div class="my-schedule"></div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Država:</div>
+                                            <div class="col-8">{{ client.grad.drzava.title }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Grad:</div>
+                                            <div class="col-8">{{ client.grad.getFormTitle() }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Adresa:</div>
+                                            <div class="col-8">{{ client.adresa }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Telefon#1:</div>
+                                            <div class="col-8">{{ client.telefon1 }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Telefon#2:</div>
+                                            <div class="col-8">{{ client.telefon2 | default('/') }}</div>
+                                        </div>
                                     </div>
                                 </div>
-                                <!-- /schedule -->
+                                {% if client.editBy is not null %}
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Izmena:</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Izmenio:</div>
+                                                <div class="col-8">{{ client.editBy.getFullName() | default('/') }}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Vreme:</div>
+                                                <div class="col-8">{{ client.updated | date("d.m.Y") }} u {{ client.updated | date("H:i:s") }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                         <!-- /right content -->
@@ -150,8 +231,8 @@
 
         </div>
         <!-- /main content -->
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
 
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -193,8 +274,6 @@
     <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
 
     <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
-
     <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
 
@@ -203,88 +282,3 @@
     {% endif %}
 
 {% endblock includeJavascript %}
-
-{#{% block footerJavascript %}#}
-{#    <script type="text/javascript">#}
-{#        $(document).ready(function() {#}
-{#            var options = {#}
-{#                // target:        '#output1',   // target element(s) to be updated with server response#}
-{#                success:       editInfoResponse,  // post-submit callback#}
-{#                //         // target:        '#error',#}
-{#                //         // other available options:#}
-{#                //         //url:       url         // override for form's 'action' attribute#}
-{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#                //         //clearForm: true        // clear all form fields after successful submit#}
-{#                        resetForm: true,        // reset the form after successful submit#}
-{#                //         success:   editInfoResponse#}
-{#                //         // $.ajax options can be used here too, for example:#}
-{#                //         //timeout:   3000#}
-{#            };#}
-
-{#            // bind form using 'ajaxForm'#}
-{#            $('#infoForma').ajaxForm(options);#}
-{#        });#}
-{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
-{#        //     // for normal html responses, the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseText property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'xml' then the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseXML property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'json' then the first argument to the success callback#}
-{#        //     // is the json data object returned by the server#}
-{#        //#}
-{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
-{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
-{#        // }#}
-{#        // $(function () {#}
-{#        //     var options = {#}
-{#        //         // target:        '#error',#}
-{#        //         // other available options:#}
-{#        //         //url:       url         // override for form's 'action' attribute#}
-{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#        //         //clearForm: true        // clear all form fields after successful submit#}
-{#        //         resetForm: true,        // reset the form after successful submit#}
-{#        //         success:   editInfoResponse#}
-{#        //         // $.ajax options can be used here too, for example:#}
-{#        //         //timeout:   3000#}
-{#        //     };#}
-{#        //     // bind form using ajaxForm#}
-{#        //     $('#infoForma').submit(function() {#}
-{#        //         // inside event callbacks 'this' is the DOM element so we first#}
-{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
-{#        //         $(this).ajaxSubmit(options);#}
-{#        //#}
-{#        //         // !!! Important !!!#}
-{#        //         // always return false to prevent standard browser submit and page navigation#}
-{#        //         return false;#}
-{#        //     });#}
-{#        // });#}
-{#        //#}
-{#        function editInfoResponse(data) {#}
-{#            // 'data' is the json object returned from the server#}
-
-{#            if (data.success === 1) {#}
-{#                swal({#}
-{#                    type: 'success',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-{#            else {#}
-{#                var error = data.error_msg.toString();#}
-{#                swal({#}
-{#                    type: 'error',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-
-{#        }#}
-
-{#    </script>#}
-{#{% endblock footerJavascript %}#}

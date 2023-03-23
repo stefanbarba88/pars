@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Classes\DTO\UploadedFileDTO;
 use App\Classes\Thumb;
+use App\Entity\Client;
 use App\Entity\Image;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -31,7 +32,7 @@ class ImageRepository extends ServiceEntityRepository {
     }
   }
 
-  public function addImages(UploadedFileDTO $file, User $user, string $kernelPath): Image {
+  public function addImagesUser(UploadedFileDTO $file, User $user, string $kernelPath): Image {
 
     $image = $this->getEntityManager()->getRepository(Image::class)->findOneBy(['user' => $user]);
     if (!is_null($image)) {
@@ -68,6 +69,17 @@ class ImageRepository extends ServiceEntityRepository {
 
     $image->setThumbnail100(str_replace("/public","",$user->getThumbUploadPath() . '100' .$file->getFileName()));
     $image->setThumbnail500(str_replace("/public","",$user->getThumbUploadPath() . '500' .$file->getFileName()));
+
+    return $this->save($image);
+  }
+
+  public function addImagesClient(Client $client): Image {
+
+    $image = new Image();
+    $image->setClient($client);
+    $image->setOriginal('/assets/images/clients/client.svg');
+    $image->setThumbnail100('/assets/images/clients/client.svg');
+    $image->setThumbnail500('/assets/images/clients/client.svg');
 
     return $this->save($image);
   }

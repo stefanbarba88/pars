@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\UserRolesData;
 use App\Classes\DTO\UploadedFileDTO;
 use App\Entity\Image;
 use App\Entity\User;
@@ -39,7 +40,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     $this->mail->registration($user);
 
-    $this->getEntityManager()->getRepository(Image::class)->addImages($file, $user, $kernelPath);
+    $this->getEntityManager()->getRepository(Image::class)->addImagesUser($file, $user, $kernelPath);
 
     return $user;
   }
@@ -77,7 +78,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
   }
 
   public function suspend(User $user): User {
-
     if ($user->isSuspended()) {
       $this->mail->deactivate($user);
     } else {
@@ -124,6 +124,27 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         'isSuspended' => $user->getBadgeByStatus(),
         'datumRodjenja' => $user->getDatumRodjenja(),
         'role' => $user->getBadgeByUserType(),
+      ];
+    }
+    return $usersList;
+  }
+  public function getEmployees(): array {
+//    $qb = $this->createQueryBuilder('u');
+//    $qb->select('u.id','u.ime', 'u.prezime', 'u.slika', 'u.isSuspended', 'u.datumRodjenja', 'u.userType');
+//    $qb->orderBy('u.id')->getQuery()->getResult();
+    $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE]);
+
+    $usersList = [];
+    foreach ($users as $user) {
+      $usersList [] = [
+        'id' => $user->getId(),
+        'ime' => $user->getIme(),
+        'prezime' => $user->getPrezime(),
+        'slika' => $this->getEntityManager()->getRepository(Image::class)->findOneBy(['user' => $user]),
+        'isSuspended' => $user->getBadgeByStatus(),
+        'datumRodjenja' => $user->getDatumRodjenja(),
+        'role' => $user->getBadgeByUserType(),
+        'pozicija' => $user->getPozicija()->getTitle(),
       ];
     }
     return $usersList;

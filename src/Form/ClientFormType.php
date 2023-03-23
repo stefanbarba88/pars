@@ -25,7 +25,7 @@ class ClientFormType extends AbstractType {
       ->add('adresa')
       ->add('telefon1',TextType::class, [
         'constraints' => [
-          new Regex('/^\d{10}$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
+          new Regex('/^\d+$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
         ],
         'attr' => [
           'maxlength' => '10'

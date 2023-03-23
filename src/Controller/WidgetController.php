@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Client;
 use App\Entity\Image;
 use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
@@ -33,9 +34,20 @@ class WidgetController extends AbstractController {
     return $this->render('widget/users_nav.html.twig', $args);
   }
 
-  public function confirmationModal(User $user, string $message): Response {
+  public function clientProfilNavigation(Client $client): Response {
 
-    $args['user'] = $user;
+    $args['client'] = $client;
+
+    return $this->render('widget/clients_nav.html.twig', $args);
+  }
+
+  public function rightSidebar(): Response {
+
+    return $this->render('widget/right_sidebar.html.twig');
+  }
+
+  public function confirmationModal(string $message): Response {
+
     $args['message'] = $message;
 
     return $this->render('widget/confirmation_modal.html.twig', $args);

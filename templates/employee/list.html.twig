@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                               Klijenti
+                                Zaposleni
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -28,19 +28,18 @@
                             <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
                                 <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
                                 <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_client_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                    <a href="{{ path('app_user_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
                                         <i class="ph-plus"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="page-header-content d-lg-flex border-top">
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Klijenti</span>
+                                <span class="breadcrumb-item active">Zaposleni</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -92,31 +91,33 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header">
-                            <h6 class="mb-0">Lista klijenata</h6>
+                            <h6 class="mb-0">Lista zaposlenih</h6>
                         </div>
                         <table class="table datatable-colvis-state-pars">
                             <thead>
                             <tr>
-                                <th>Naziv</th>
-                                <th>PIB/VAT</th>
-                                <th>Grad</th>
-                                <th>Država</th>
-                                <th>Kontakt lice</th>
+                                <th>Slika</th>
+                                <th>Ime</th>
+                                <th>Prezime</th>
+                                <th>Pozicija</th>
+                                <th>Datum rođenja</th>
                                 <th>Status</th>
                                 <th>Pregled</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for client in clients %}
+                            {% for user in users %}
                                 <tr>
-                                    <td><a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title | upper }}</a></td>
-                                    <td>{{ client.pib }}</td>
-                                    <td>{{ client.grad.title }}</td>
-                                    <td>{{ client.grad.drzava.title }}</td>
-                                    <td><a href="{{ path('app_user_profile_view', { id: client.kontakt.id}) }}">{{ client.kontakt.getFullName() }}</a></td>
-                                    <td>{{ client.badgeByStatus | raw }}</td>
                                     <td>
-                                        <a href="{{ path('app_client_profile_view', { id: client.id}) }}" class="btn btn-primary">
+                                        <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.slika.getThumbnail100())}}" class="rounded-circle" width="50" height="50" alt="{{ user.ime }}"></a>
+                                    </td>
+                                    <td><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.ime }}</a></td>
+                                    <td><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.prezime }}</a></td>
+                                    <td>{{ user.pozicija }}</td>
+                                    <td>{{ user.datumRodjenja | date("d.m.Y")}}</td>
+                                    <td>{{ user.isSuspended | raw }}</td>
+                                    <td>
+                                        <a href="{{ path('app_user_profile_view', { id: user.id}) }}" class="btn btn-primary">
                                             <i class="ph-eye me-2"></i>
                                             Pregledajte
                                         </a>
@@ -141,7 +142,6 @@
         <!-- /main content -->
 
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
-
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

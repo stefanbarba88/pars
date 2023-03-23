@@ -7,7 +7,6 @@
 
         <!-- Main content -->
         <div class="content-wrapper">
-
             <!-- Inner content -->
             <div class="content-inner">
 
@@ -204,8 +203,8 @@
 
         </div>
         <!-- /main content -->
-
-
+        </div>
+    {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

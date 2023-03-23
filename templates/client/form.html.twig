@@ -1,7 +1,12 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header.html.twig' %}
+    {% if client.id is not null %}
+        {% include 'includes/header_user.html.twig' %}
+    {% else %}
+        {% include 'includes/header.html.twig' %}
+    {% endif %}
+
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -85,99 +90,160 @@
                             </div>
                         </div>
                     </div>
+
+                    {% if client.id is not null %}
+                        {{ render(controller('App\\Controller\\WidgetController::clientProfilNavigation', { client: client} )) }}
+                    {% endif %}
                 </div>
                 <!-- /page header -->
+                 <div class="content">
+                    <!-- Content area -->
+                    <div class="d-lg-flex align-items-lg-start">
+                        {% if client.id is not null %}
+                            <div class="sidebar sidebar-component sidebar-expand-lg bg-transparent shadow-none me-lg-3">
+                                <!-- Sidebar content -->
+                                <div class="sidebar-content">
+                                    <!-- Navigation -->
+                                    <div class="card">
+                                        <div class="sidebar-section-body text-center">
+                                            <div class="card-img-actions d-inline-block mb-3">
+                                                <img class="img-fluid rounded-circle" src="{{ asset(image.thumbnail500) }}" width="150" height="150" alt="{{ client.title }}">
+                                            </div>
+                                            <h6 class="mb-0">{{ client.title | upper }}</h6>
+                                        </div>
+                                        <ul class="nav nav-sidebar">
+                                            <li class="nav-item">
+                                                <a href="{{ path('app_client_profile_view', { id: client.id}) }}" class="nav-link" >
+                                                    <i class="ph-user me-2"></i>
+                                                    Profil
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="{{ path('app_client_activity_view', { id: client.id}) }}" class="nav-link">
+                                                    <i class="ph-activity me-2"></i>
+                                                    Aktivnosti
+                                                    <span class="badge bg-secondary rounded-pill ms-auto">29</span>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="{{ path('app_client_calendar_view', { id: client.id}) }}" class="nav-link">
+                                                    <i class="ph-calendar me-2"></i>Raspored
+                                                    <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item-divider"></li>
+                                            <li class="nav-item">
+                                                {#                    <a href="{{ path('app_logout') }}" class="nav-link" data-bs-toggle="tab">#}
+                                                {#                        <i class="ph-sign-out me-2"></i>Odjavite se#}
+                                                {#                    </a>#}
+                                                <a href="{{ path('app_client_settings_form', { id: client.id}) }}" class="nav-link">
+                                                    <i class="ph-lightbulb me-2"></i>Status
+                                                    <span class="ms-auto">{{ client.badgeByStatus | raw }}</span>
+                                                </a>
 
-                <!-- Content area -->
-                <div class="content">
-                    {% if not form.vars.valid %}
-                        {% for child in form.children %}
-                            {%for error in child.vars.errors%}
-                                <div class="alert alert-danger alert-dismissible fade show">
-                                    <span class="fw-semibold">{{error.message}}</span>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- /navigation -->
                                 </div>
-                            {%endfor%}
-                        {%endfor%}
-                    {%endif%}
-                    <!-- Wizard with validation -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">Dodavanje/Izmena klijenta</h6>
+                                <!-- /sidebar content -->
+                            </div>
+                        {% endif %}
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                    {% if not form.vars.valid %}
+                                        {% for child in form.children %}
+                                            {%for error in child.vars.errors%}
+                                                <div class="alert alert-danger alert-dismissible fade show">
+                                                    <span class="fw-semibold">{{error.message}}</span>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                                </div>
+                                            {%endfor%}
+                                        {%endfor%}
+                                    {%endif%}
+                                    <!-- Wizard with validation -->
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Dodavanje/Izmena klijenta</h6>
+                                        </div>
+                                        {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isSerbian, 'Srpska kompanija:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isSerbian, {attr: { class: 'form-control required select' }}) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.pib, 'PIB/VAT:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.pib, {attr: { class: 'form-control required', maxLength: '9', minLength: '9' }}) }}
+                                                        <span id="formatPib" class="form-text">Format: Uneti tačno 9 cifara.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.kontakt, 'Lice za kontakt:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.kontakt, {attr: { class: 'form-control required select' }}) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.grad, 'Grad:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.grad, {attr: { class: 'form-control select required' }}) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.adresa, 'Ulica i broj:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.adresa, {attr: { class: 'form-control required' }}) }}
+                                                        <span class="form-text">Format: Bulevar Milutina Milankovića 1</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.telefon1, 'Telefon #1:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.telefon1, {attr: { class: 'form-control required' }}) }}
+                                                        <span class="form-text">Format: 0661111222</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
+                                                        <span class="form-text">Format: 0661111222</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                            </div>
+                                        </div>
+                                        {{ form_end(form) }}
+                                    </div>
+                                    <!-- /wizard with validation -->
+                            </div>
                         </div>
-                        {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isSerbian, 'Srpska kompanija:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isSerbian, {attr: { class: 'form-control required select' }}) }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.pib, 'PIB/VAT:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.pib, {attr: { class: 'form-control required', maxLength: '9', minLength: '9' }}) }}
-                                        <span id="formatPib" class="form-text">Format: Uneti tačno 9 cifara.</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.kontakt, 'Lice za kontakt:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.kontakt, {attr: { class: 'form-control required select' }}) }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.grad, 'Grad:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.grad, {attr: { class: 'form-control select required' }}) }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.adresa, 'Ulica i broj:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.adresa, {attr: { class: 'form-control required' }}) }}
-                                        <span class="form-text">Format: Bulevar Milutina Milankovića 1</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.telefon1, 'Telefon #1:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.telefon1, {attr: { class: 'form-control required' }}) }}
-                                        <span class="form-text">Format: 0661111222</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
-                                        <span class="form-text">Format: 0661111222</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
-                            </div>
-                        </div>
-                        {{ form_end(form) }}
+                        <!-- /right content -->
+
                     </div>
-                    <!-- /wizard with validation -->
-
-                </div>
+                 </div>
                 <!-- /content area -->
 
                 <!-- Footer -->
@@ -190,7 +256,7 @@
         </div>
         <!-- /main content -->
 
-
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

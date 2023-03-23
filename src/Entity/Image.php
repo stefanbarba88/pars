@@ -25,11 +25,11 @@ class Image {
   #[ORM\Column(name: 'thumbnail_500x500', type: Types::TEXT, nullable: true)]
   private ?string $thumbnail500 = null;
 
-  #[ORM\ManyToOne]
+  #[ORM\ManyToOne(cascade: ['persist'])]
   #[ORM\JoinColumn(nullable: true)]
   private ?User $user = null;
 
-  #[ORM\ManyToOne]
+  #[ORM\ManyToOne(cascade: ['persist'])]
   #[ORM\JoinColumn(nullable: true)]
   private ?Client $client = null;
 

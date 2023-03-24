@@ -1,0 +1,151 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {% include 'includes/header.html.twig' %}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Aktivnosti
+                            </h4>
+
+                            <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
+                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
+                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
+                                <div class="d-inline-flex mt-3 mt-sm-0">
+                                    <a href="{{ path('app_activity_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                        <i class="ph-plus"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <span class="breadcrumb-item active">Aktivnosti</span>
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse d-lg-block ms-lg-auto" id="breadcrumb_elements">
+                            <div class="d-lg-flex mb-2 mb-lg-0">
+                                <a href="#" class="d-flex align-items-center text-body py-2">
+                                    <i class="ph-lifebuoy me-2"></i>
+                                    Support
+                                </a>
+
+                                <div class="dropdown ms-lg-3">
+                                    <a href="#" class="d-flex align-items-center text-body dropdown-toggle py-2" data-bs-toggle="dropdown">
+                                        <i class="ph-gear me-2"></i>
+                                        <span class="flex-1">Settings</span>
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end w-100 w-lg-auto">
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-shield-warning me-2"></i>
+                                            Account security
+                                        </a>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-chart-bar me-2"></i>
+                                            Analytics
+                                        </a>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-lock-key me-2"></i>
+                                            Privacy
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-gear me-2"></i>
+                                            All settings
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Lista aktivnosti</h6>
+                        </div>
+                        <table class="table datatable-colvis-state-pars">
+                            <thead>
+                            <tr>
+                                <th>Naziv</th>
+                                <th>Status</th>
+                                <th>Pregled</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for activity in activities %}
+                                <tr>
+                                    <td><a href="{{ path('app_activity_view', { id: activity.id}) }}">{{ activity.title }}</a></td>
+                                    <td>{{ activity.badgeByStatus | raw }}</td>
+                                    <td>
+                                        <a href="{{ path('app_activity_view', { id: activity.id}) }}" class="btn btn-primary">
+                                            <i class="ph-eye me-2"></i>
+                                            Pregledajte
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

@@ -35,6 +35,7 @@ class UserRegistrationFormType extends AbstractType {
         'input' => 'datetime_immutable'
       ])
       ->add('pol', ChoiceType::class, [
+        'placeholder' => 'Izaberite pol',
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],
@@ -53,6 +54,7 @@ class UserRegistrationFormType extends AbstractType {
 //        ],
 //      ])
       ->add('vrstaZaposlenja', ChoiceType::class, [
+        'placeholder' => 'Izaberite vrstu zaposlenja',
         'choices' => VrstaZaposlenjaData::form(),
         'expanded' => false,
         'multiple' => false,
@@ -74,6 +76,7 @@ class UserRegistrationFormType extends AbstractType {
       ])
 
       ->add('userType', ChoiceType::class, [
+        'placeholder' => 'Izaberite tip korisnika',
         'choices' => UserRolesData::formForForm(),
         'expanded' => false,
         'multiple' => false,
@@ -97,6 +100,7 @@ class UserRegistrationFormType extends AbstractType {
       ])
 
       ->add('grad', EntityType::class, [
+        'placeholder' => 'Izaberite grad',
         'class' => City::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
@@ -109,6 +113,7 @@ class UserRegistrationFormType extends AbstractType {
         'multiple' => false,
       ])
       ->add('pozicija', EntityType::class, [
+        'placeholder' => 'Izaberite poziciju',
         'class' => ZaposleniPozicija::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')

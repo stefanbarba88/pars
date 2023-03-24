@@ -28,6 +28,7 @@ class CityFormType extends AbstractType {
       ->add('region')
       ->add('municipality')
       ->add('drzava', EntityType::class, [
+        'placeholder' => 'Izaberite državu',
         'class' => Country::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')

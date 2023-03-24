@@ -170,6 +170,24 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% if user.editBy is not null %}
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Poslednja izmena:</h5>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Izmenio:</div>
+                                                <div class="col-8">{{ user.editBy.getFullName() | default('/') }}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Vreme:</div>
+                                                <div class="col-8">{{ user.updated | date("d.m.Y") }} u {{ user.updated | date("H:i:s") }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                         <!-- /right content -->

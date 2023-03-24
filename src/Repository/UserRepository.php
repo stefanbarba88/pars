@@ -46,6 +46,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
   }
 
   public function save(User $user): User {
+
+    if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+      $user->setPozicija(null);
+    }
+
     if (is_null($user->getId())) {
       $this->getEntityManager()->persist($user);
     }

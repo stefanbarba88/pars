@@ -39,6 +39,7 @@ class UserEditAccountFormType extends AbstractType {
         'multiple' => false,
       ])
       ->add('pozicija', EntityType::class, [
+        'placeholder' => 'Izaberite poziciju',
         'class' => ZaposleniPozicija::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')

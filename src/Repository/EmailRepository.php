@@ -19,12 +19,13 @@ class EmailRepository extends ServiceEntityRepository {
     parent::__construct($registry, Email::class);
   }
 
-  public function save(Email $entity, bool $flush = false): void {
-    $this->getEntityManager()->persist($entity);
-
-    if ($flush) {
-      $this->getEntityManager()->flush();
+  public function save(Email $email): Email {
+    if (is_null($email->getId())) {
+      $this->getEntityManager()->persist($email);
     }
+
+    $this->getEntityManager()->flush();
+    return $email;
   }
 
   public function remove(Email $entity, bool $flush = false): void {

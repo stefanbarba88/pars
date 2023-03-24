@@ -22,7 +22,7 @@ class Email {
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $subject = null;
 
-  #[ORM\Column(length: 255, nullable: true)]
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
   private ?string $body = null;
 
   #[ORM\Column(length: 255, nullable: true)]
@@ -36,6 +36,22 @@ class Email {
 
   #[ORM\Column]
   private DateTimeImmutable $created;
+
+
+  public function __construct() {
+  }
+
+  public static function create(string $toEmail, string $subject, string $body, string $file, string $function, int $line): Email {
+    $mail = new self();
+    $mail->setToEmail($toEmail);
+    $mail->setSubject($subject);
+    $mail->setBody($body);
+    $mail->setFile($file);
+    $mail->setFunction($function);
+    $mail->setLine($line);
+
+    return  $mail;
+  }
 
   #[ORM\PrePersist]
   public function prePersist(): void {

@@ -4,7 +4,10 @@ namespace App\Service;
 
 use App\Classes\CompanyInfo;
 use App\Classes\Data\UserRolesData;
+use App\Entity\Email;
 use App\Entity\User;
+use Twig\Environment;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -12,7 +15,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class MailService {
 
-  public function __construct(private readonly MailerInterface $mailer, private readonly UrlGeneratorInterface $router) {
+  public function __construct(private readonly MailerInterface $mailer, private readonly UrlGeneratorInterface $router, private readonly ManagerRegistry $em, private Environment $twig) {
   }
 
   public function sendMail(string $to, string $subject, string $from, string $sender, string $template, array $args): void {
@@ -25,6 +28,18 @@ class MailService {
       ->context($args);
 
     $this->mailer->send($message);
+
+    $backtrace = debug_backtrace();
+
+    $line = $backtrace[0]['line'];
+    $function = $backtrace[1]['function'];
+    $file = $backtrace[0]['file'];
+
+    $body = $this->twig->render($template, $args);
+
+    $mail = Email::create($to, $subject, $body, $file, $function, $line);
+    $this->em->getRepository(Email::class)->save($mail);
+
   }
 
   public function registration(User $user): void {

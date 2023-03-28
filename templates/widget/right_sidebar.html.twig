@@ -13,7 +13,7 @@
 
         <!-- Header -->
         <div class="sidebar-section sidebar-section-body d-flex align-items-center pb-2">
-            <h5 class="mb-0">Sidebar</h5>
+            <h5 class="mb-0">Navigation</h5>
             <div class="ms-auto">
                 <button type="button" class="btn btn-light border-transparent btn-icon rounded-pill btn-sm sidebar-control sidebar-end-toggle d-none d-lg-inline-flex">
                     <i class="ph-arrows-left-right"></i>
@@ -26,374 +26,233 @@
         </div>
         <!-- /header -->
 
-
         <!-- Sidebar search -->
         <div class="sidebar-section">
             <div class="sidebar-section-header border-bottom">
-                <span class="fw-semibold">Sidebar search</span>
-                <div class="ms-auto">
-                    <a href="#sidebar-search" class="text-reset" data-bs-toggle="collapse">
-                        <i class="ph-caret-down collapsible-indicator"></i>
-                    </a>
-                </div>
+                <span class="fw-semibold">Search task</span>
             </div>
 
-            <div class="collapse show" id="sidebar-search">
-                <div class="sidebar-section-body">
-                    <div class="form-control-feedback form-control-feedback-end">
-                        <input type="search" class="form-control" placeholder="Search">
-                        <div class="form-control-feedback-icon">
-                            <i class="ph-magnifying-glass opacity-50"></i>
-                        </div>
+            <form class="sidebar-section-body" action="#">
+                <div class="form-control-feedback form-control-feedback-end">
+                    <input type="search" class="form-control" placeholder="Type here">
+                    <div class="form-control-feedback-icon">
+                        <i class="ph-magnifying-glass"></i>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
         <!-- /sidebar search -->
-
-
-        <!-- Actions -->
-        <div class="sidebar-section">
-            <div class="sidebar-section-header border-bottom">
-                <span class="fw-semibold">Actions</span>
-                <div class="ms-auto">
-                    <a href="#sidebar-actions" class="text-reset" data-bs-toggle="collapse">
-                        <i class="ph-caret-down collapsible-indicator"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="collapse show" id="sidebar-actions">
-                <div class="sidebar-section-body">
-                    <div class="row row-tile g-0">
-                        <div class="col">
-                            <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-top-start py-2">
-                                <i class="ph-app-store-logo text-primary ph-2x mb-1"></i>
-                                App store
-                            </button>
-
-                            <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2">
-                                <i class="ph-twitter-logo text-info ph-2x mb-1"></i>
-                                Twitter
-                            </button>
-                        </div>
-
-                        <div class="col">
-                            <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-top-end py-2">
-                                <i class="ph-dribbble-logo text-pink ph-2x mb-1"></i>
-                                Dribbble
-                            </button>
-
-                            <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-end py-2">
-                                <i class="ph-spotify-logo text-success ph-2x mb-1"></i>
-                                Spotify
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- /actions -->
 
 
         <!-- Sub navigation -->
         <div class="sidebar-section">
             <div class="sidebar-section-header border-bottom">
                 <span class="fw-semibold">Navigation</span>
-                <div class="ms-auto">
-                    <a href="#sidebar-navigation" class="text-reset" data-bs-toggle="collapse">
-                        <i class="ph-caret-down collapsible-indicator"></i>
-                    </a>
-                </div>
             </div>
 
-            <div class="collapse show" id="sidebar-navigation">
-                <ul class="nav nav-sidebar mt-2" data-nav-type="accordion">
-                    <li class="nav-item-header opacity-50">Actions</li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="ph-plus-circle me-2"></i>
-                            Create task
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="ph-circles-three-plus me-2"></i>
-                            Create project
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="ph-pencil me-2"></i>
-                            Edit task list
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="ph-user-plus me-2"></i>
-                            Assign users
-                            <span class="badge bg-primary rounded-pill ms-auto">94 online</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="ph-users-three me-2"></i>
-                            Create team
-                        </a>
-                    </li>
-                    <li class="nav-item-header opacity-50">Navigate</li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="ph-kanban me-2"></i>
-                            All tasks
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="ph-file-plus me-2"></i>
-                            Active tasks
-                            <span class="badge bg-dark rounded-pill ms-auto">28</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="ph-file-x me-2"></i>
-                            Closed tasks
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="ph-user-focus me-2"></i>
-                            Assigned to me
-                            <span class="badge bg-info rounded-pill ms-auto">86</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="ph-folder-user me-2"></i>
-                            Assigned to my team
-                            <span class="badge bg-danger rounded-pill ms-auto">47</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="ph-gear me-2"></i>
-                            Settings
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <ul class="nav nav-sidebar" data-nav-type="accordion">
+                <li class="nav-item-header text-muted">Actions</li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="ph-plus-circle me-2"></i>
+                        Create task
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="ph-folder-plus me-2"></i>
+                        Create project
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="ph-check-square-offset me-2"></i>
+                        Edit task list
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="ph-user-circle-plus me-2"></i>
+                        Assign users
+                        <span class="badge bg-primary rounded-pill ms-auto">94 online</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="ph-users-three me-2"></i>
+                        Create team
+                    </a>
+                </li>
+                <li class="nav-item-header text-muted">Navigate</li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="ph-list-checks me-2"></i>
+                        All tasks
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="ph-list-bullets me-2"></i>
+                        Active tasks
+                        <span class="badge bg-yellow text-black rounded-pill ms-auto">28</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="ph-checks me-2"></i>
+                        Closed tasks
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="ph-user-list me-2"></i>
+                        Assigned to me
+                        <span class="badge bg-info rounded-pill ms-auto">86</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="ph-users-four me-2"></i>
+                        Assigned to my team
+                        <span class="badge bg-danger rounded-pill ms-auto">47</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="ph-gear me-2"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
         </div>
         <!-- /sub navigation -->
 
 
-        <!-- Online users -->
+        <!-- Completeness -->
         <div class="sidebar-section">
             <div class="sidebar-section-header border-bottom">
-                <span class="fw-semibold">Users online</span>
-                <div class="ms-auto">
-                    <a href="#sidebar-users" class="text-reset" data-bs-toggle="collapse">
-                        <i class="ph-caret-down collapsible-indicator"></i>
-                    </a>
-                </div>
+                <span class="fw-semibold">Completeness</span>
             </div>
 
-            <div class="collapse show" id="sidebar-users">
-                <div class="sidebar-section-body">
-                    <div class="d-flex mb-3">
-                        <a href="#" class="me-3">
-                            <img src="../../../assets/images/demo/users/face1.jpg" width="36" height="36" class="rounded-pill" alt="">
-                        </a>
-                        <div class="flex-fill">
-                            <a href="#" class="fw-semibold">James Alexander</a>
-                            <div class="fs-sm opacity-50">Santa Ana, CA.</div>
+            <div class="sidebar-section-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-3">
+                        <div class="d-flex align-items-center mb-1">Blockers <span class="text-muted ms-auto">50%</span></div>
+                        <div class="progress" style="height: 0.25rem;">
+                            <div class="progress-bar bg-danger" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <div class="ms-3 align-self-center">
-                            <div class="bg-success border-success rounded-pill p-1"></div>
+                    </li>
+
+                    <li class="mb-3">
+                        <div class="d-flex align-items-center mb-1">High priority <span class="text-muted ms-auto">70%</span></div>
+                        <div class="progress" style="height: 0.25rem;">
+                            <div class="progress-bar bg-warning" style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
+                    </li>
+
+                    <li class="mb-3">
+                        <div class="d-flex align-items-center mb-1">Normal priority <span class="text-muted ms-auto">80%</span></div>
+                        <div class="progress" style="height: 0.25rem;">
+                            <div class="progress-bar bg-success" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="d-flex align-items-center mb-1">Low priority <span class="text-muted ms-auto">60%</span></div>
+                        <div class="progress" style="height: 0.25rem;">
+                            <div class="progress-bar bg-secondary" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- /completeness -->
+
+
+        <!-- Assigned users -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-header border-bottom">
+                <span class="fw-semibold">Assigned users</span>
+            </div>
+
+            <div class="sidebar-section-body">
+                <div class="d-flex mb-3">
+                    <div class="me-3">
+                        <img src="../../../assets/images/demo/users/face1.jpg" class="rounded-circle" width="40" height="40" alt="">
                     </div>
 
-                    <div class="d-flex mb-3">
-                        <a href="#" class="me-3">
-                            <img src="../../../assets/images/demo/users/face2.jpg" width="36" height="36" class="rounded-pill" alt="">
-                        </a>
-                        <div class="flex-fill">
-                            <a href="#" class="fw-semibold">Jeremy Victorino</a>
-                            <div class="fs-sm opacity-50">Dowagiac, MI.</div>
-                        </div>
-                        <div class="ms-3 align-self-center">
-                            <div class="bg-danger border-danger rounded-pill p-1"></div>
-                        </div>
+                    <div class="flex-fill">
+                        <a href="#" class="fw-semibold">James Alexander</a>
+                        <div class="fs-sm text-muted">Santa Ana, CA.</div>
                     </div>
 
-                    <div class="d-flex mb-3">
-                        <a href="#" class="me-3">
-                            <img src="../../../assets/images/demo/users/face3.jpg" width="36" height="36" class="rounded-pill" alt="">
-                        </a>
-                        <div class="flex-fill">
-                            <a href="#" class="fw-semibold">Margo Baker</a>
-                            <div class="fs-sm opacity-50">Kasaan, AK.</div>
-                        </div>
-                        <div class="ms-3 align-self-center">
-                            <div class="bg-success border-success rounded-pill p-1"></div>
-                        </div>
+                    <div class="align-self-center">
+                        <div class="bg-success border-success rounded-pill p-1"></div>
+                    </div>
+                </div>
+
+                <div class="d-flex mb-3">
+                    <div class="me-3">
+                        <img src="../../../assets/images/demo/users/face2.jpg" class="rounded-circle" width="40" height="40" alt="">
                     </div>
 
-                    <div class="d-flex mb-3">
-                        <a href="#" class="me-3">
-                            <img src="../../../assets/images/demo/users/face4.jpg" width="36" height="36" class="rounded-pill" alt="">
-                        </a>
-                        <div class="flex-fill">
-                            <a href="#" class="fw-semibold">Beatrix Diaz</a>
-                            <div class="fs-sm opacity-50">Neenah, WI.</div>
-                        </div>
-                        <div class="ms-3 align-self-center">
-                            <div class="bg-warning border-warning rounded-pill p-1"></div>
-                        </div>
+                    <div class="flex-fill">
+                        <a href="#" class="fw-semibold">Jeremy Victorino</a>
+                        <div class="fs-sm text-muted">Dowagiac, MI.</div>
                     </div>
 
-                    <div class="d-flex">
-                        <a href="#" class="me-3">
-                            <img src="../../../assets/images/demo/users/face5.jpg" width="36" height="36" class="rounded-pill" alt="">
-                        </a>
-                        <div class="flex-fill">
-                            <a href="#" class="fw-semibold">Richard Vango</a>
-                            <div class="fs-sm opacity-50">Grapevine, TX.</div>
-                        </div>
-                        <div class="ms-3 align-self-center">
-                            <div class="bg-secondary border-secondary rounded-pill p-1"></div>
-                        </div>
+                    <div class="align-self-center">
+                        <div class="bg-danger border-danger rounded-pill p-1"></div>
+                    </div>
+                </div>
+
+                <div class="d-flex mb-3">
+                    <div class="me-3">
+                        <img src="../../../assets/images/demo/users/face3.jpg" class="rounded-circle" width="40" height="40" alt="">
+                    </div>
+
+                    <div class="flex-fill">
+                        <a href="#" class="fw-semibold">Margo Baker</a>
+                        <div class="fs-sm text-muted">Kasaan, AK.</div>
+                    </div>
+
+                    <div class="align-self-center">
+                        <div class="bg-success border-success rounded-pill p-1"></div>
+                    </div>
+                </div>
+
+                <div class="d-flex mb-3">
+                    <div class="me-3">
+                        <img src="../../../assets/images/demo/users/face4.jpg" class="rounded-circle" width="40" height="40" alt="">
+                    </div>
+
+                    <div class="flex-fill">
+                        <a href="#" class="fw-semibold">Beatrix Diaz</a>
+                        <div class="fs-sm text-muted">Neenah, WI.</div>
+                    </div>
+
+                    <div class="align-self-center">
+                        <div class="bg-warning border-warning rounded-pill p-1"></div>
+                    </div>
+                </div>
+
+                <div class="d-flex">
+                    <div class="me-3">
+                        <img src="../../../assets/images/demo/users/face5.jpg" class="rounded-circle" width="40" height="40" alt="">
+                    </div>
+
+                    <div class="flex-fill">
+                        <a href="#" class="fw-semibold">Richard Vango</a>
+                        <div class="fs-sm text-muted">Grapevine, TX.</div>
+                    </div>
+
+                    <div class="align-self-center">
+                        <div class="bg-secondary border-secondary rounded-pill p-1"></div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- /online users -->
-
-
-        <!-- Filter -->
-        <div class="sidebar-section">
-            <div class="sidebar-section-header border-bottom">
-                <span class="fw-semibold">Filters</span>
-                <div class="ms-auto">
-                    <a href="#sidebar-filters" class="text-reset" data-bs-toggle="collapse">
-                        <i class="ph-caret-down collapsible-indicator"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="collapse show" id="sidebar-filters">
-                <div class="sidebar-section-body">
-                    <label class="form-check form-check-reverse text-start mb-2">
-                        <input type="checkbox" class="form-check-input" checked>
-                        <span class="form-check-label">Canon</span>
-                    </label>
-
-                    <label class="form-check form-check-reverse text-start mb-2">
-                        <input type="checkbox" class="form-check-input">
-                        <span class="form-check-label">Nikon</span>
-                    </label>
-
-                    <label class="form-check form-check-reverse text-start mb-2">
-                        <input type="checkbox" class="form-check-input" checked>
-                        <span class="form-check-label">Sony</span>
-                    </label>
-
-                    <label class="form-check form-check-reverse text-start mb-2">
-                        <input type="checkbox" class="form-check-input" checked>
-                        <span class="form-check-label">Fuji</span>
-                    </label>
-
-                    <label class="form-check form-check-reverse text-start">
-                        <input type="checkbox" class="form-check-input">
-                        <span class="form-check-label">Leica</span>
-                    </label>
-                </div>
-            </div>
-        </div>
-        <!-- /filter -->
-
-
-        <!-- Latest updates -->
-        <div class="sidebar-section">
-            <div class="sidebar-section-header border-bottom">
-                <span class="fw-semibold">Latest updates</span>
-                <div class="ms-auto">
-                    <a href="#sidebar-updates" class="text-reset" data-bs-toggle="collapse">
-                        <i class="ph-caret-down collapsible-indicator"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="collapse show" id="sidebar-updates">
-                <div class="sidebar-section-body">
-                    <div class="d-flex mb-3">
-                        <div class="me-3">
-                            <div class="bg-primary bg-opacity-10 text-primary lh-1 rounded-pill p-2">
-                                <i class="ph-git-pull-request"></i>
-                            </div>
-                        </div>
-
-                        <div class="flex-fill">
-                            Drop the IE <a href="#">specific hacks</a> for temporal inputs
-                            <div class="fs-sm opacity-50">4 minutes ago</div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex mb-3">
-                        <div class="me-3">
-                            <div class="bg-warning bg-opacity-10 text-warning lh-1 rounded-pill p-2">
-                                <i class="ph-git-commit"></i>
-                            </div>
-                        </div>
-
-                        <div class="flex-fill">
-                            Add full font overrides for popovers and tooltips
-                            <div class="fs-sm opacity-50">36 minutes ago</div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex mb-3">
-                        <div class="me-3">
-                            <div class="bg-info bg-opacity-10 text-info lh-1 rounded-pill p-2">
-                                <i class="ph-git-branch"></i>
-                            </div>
-                        </div>
-
-                        <div class="flex-fill">
-                            <a href="#">Chris Arney</a> created a new <span class="fw-semibold">Design</span> branch
-                            <div class="fs-sm opacity-50">2 hours ago</div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex mb-3">
-                        <div class="me-3">
-                            <div class="bg-success bg-opacity-10 text-success lh-1 rounded-pill p-2">
-                                <i class="ph-git-merge"></i>
-                            </div>
-                        </div>
-
-                        <div class="flex-fill">
-                            <a href="#">Eugene Kopyov</a> merged <span class="fw-semibold">Master</span> and <span class="fw-semibold">Dev</span> branches
-                            <div class="fs-sm opacity-50">Dec 18, 18:36</div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex">
-                        <div class="me-3">
-                            <div class="bg-primary bg-opacity-10 text-primary lh-1 rounded-pill p-2">
-                                <i class="ph-git-pull-request"></i>
-                            </div>
-                        </div>
-
-                        <div class="flex-fill">
-                            Have Carousel ignore keyboard events
-                            <div class="fs-sm opacity-50">Dec 12, 05:46</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- /latest updates -->
+        <!-- /assigned users -->
 
     </div>
     <!-- /sidebar content -->

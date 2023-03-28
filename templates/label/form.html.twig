@@ -113,6 +113,14 @@
                                         {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
                                     </div>
                                 </div>
+                                <div class="col-lg-3">
+                                    <div class="mb-3">
+                                        {{ form_label(form.color, 'Boja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.color, {attr: { class: 'form-control required form-control-color' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.isSuspended, 'Deaktivirana oznaka:*', {'label_attr': {'class': 'form-label'}}) }}
@@ -148,7 +156,6 @@
 {% block includeJavascript %}
     {{ parent() }}
 
-    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
 
@@ -182,4 +189,6 @@
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
     {% endif %}
 
+
 {% endblock includeJavascript %}
+

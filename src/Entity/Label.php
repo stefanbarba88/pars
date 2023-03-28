@@ -18,6 +18,9 @@ class Label {
   #[ORM\Column(length: 255)]
   private ?string $title = null;
 
+  #[ORM\Column(length: 255)]
+  private ?string $color = null;
+
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?User $editBy = null;
@@ -119,5 +122,21 @@ class Label {
     return '<span class="badge bg-info">Aktivan</span>';
 
   }
+
+  /**
+   * @return string|null
+   */
+  public function getColor(): ?string {
+    return $this->color;
+  }
+
+  /**
+   * @param string|null $color
+   */
+  public function setColor(?string $color): void {
+    $this->color = $color;
+  }
+
+
 
 }

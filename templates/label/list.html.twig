@@ -98,6 +98,7 @@
                             <thead>
                             <tr>
                                 <th>Naziv</th>
+                                <th>Boja</th>
                                 <th>Status</th>
                                 <th>Pregled</th>
                             </tr>
@@ -106,6 +107,7 @@
                             {% for label in labels %}
                                 <tr>
                                     <td><a href="{{ path('app_label_view', { id: label.id}) }}">{{ label.title }}</a></td>
+                                    <td><span style="display: inline-block; width: 16px; height: 16px; border-radius: 100%; background: {{ label.color }};"></span></td>
                                     <td>{{ label.badgeByStatus | raw }}</td>
                                     <td>
                                         <a href="{{ path('app_label_view', { id: label.id}) }}" class="btn btn-primary">

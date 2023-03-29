@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\ResponseMessages;
 use App\Entity\Label;
 use App\Form\LabelFormType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -32,6 +33,33 @@ class LabelController extends AbstractController {
     $label->setEditBy($this->getUser());
 
     $form = $this->createForm(LabelFormType::class, $label, ['attr' => ['action' => $this->generateUrl('app_label_form', ['id' => $label->getId()])]]);
+
+// ajax
+//    if ($request->isMethod('POST')) {
+//      $jsonArgs = [];
+//
+//      $form->handleRequest($request);
+//
+//      if ($form->isSubmitted() && $form->isValid()) {
+//        $label = $this->em->getRepository(label::class)->save($label);
+//        $jsonArgs['label'] = $label;
+//        $jsonArgs['success'] = ResponseMessages::SUCCESS;
+//      }
+//
+//      if (!$form->isValid()) {
+//        $jsonArgs['success'] = 0;
+//        $jsonArgs['error'] = ResponseMessages::ERROR_FORM_NOT_VALID;
+//
+//        $jsonArgs['errors'] = [];
+//        foreach ($form->getErrors(true) as $error) {
+//          $jsonArgs['errors'][] = $error->getMessage();
+//        }
+//      }
+//
+//      return $this->json($jsonArgs);
+//  }
+
+
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 

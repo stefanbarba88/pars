@@ -104,7 +104,37 @@
                         <div class="card-header">
                             <h6 class="mb-0">Dodavanje/Izmena oznake</h6>
                         </div>
-                        {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
+{#                        {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}#}
+{#                        <div class="card-body">#}
+{#                            <div class="row">#}
+{#                                <div class="col-lg-6">#}
+{#                                    <div class="mb-3">#}
+{#                                        {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="col-lg-3">#}
+{#                                    <div class="mb-3">#}
+{#                                        {{ form_label(form.color, 'Boja:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        {{ form_widget(form.color, {attr: { class: 'form-control required form-control-color' }}) }}#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="row">#}
+{#                                <div class="col-lg-6">#}
+{#                                    <div class="mb-3">#}
+{#                                        {{ form_label(form.isSuspended, 'Deaktivirana oznaka:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        {{ form_widget(form.isSuspended, {attr: { class: 'form-control required select' }}) }}#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="text-end">#}
+{#                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        {{ form_end(form) }}#}
+
+                        {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'label_form' }}) }}
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-lg-6">
@@ -133,6 +163,7 @@
                             </div>
                         </div>
                         {{ form_end(form) }}
+
                     </div>
                             <!-- /wizard with validation -->
 
@@ -183,6 +214,7 @@
     <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
 
     <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/noty.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
 
     {% if app.request.locale == 'sr-RS' %}
@@ -192,3 +224,29 @@
 
 {% endblock includeJavascript %}
 
+{#{% block footerJavascript %}#}
+
+{#    <script>#}
+{#        $(function () {#}
+
+{#            $('#label_form').ajaxForm({#}
+{#                // dataType identifies the expected content type of the server response#}
+{#                dataType:  'json',#}
+
+{#                // success identifies the function to invoke when the server response#}
+{#                // has been received#}
+{#                success:   processJson#}
+{#            });#}
+
+{#            function processJson(data) {#}
+{#                // 'data' is the json object returned from the server#}
+{#                new Noty({#}
+{#                    text: 'Change a few things up and try submitting again.',#}
+{#                    type: 'error'#}
+{#                }).show();#}
+{#            }#}
+
+{#        });#}
+{#    </script>#}
+
+{#{% endblock footerJavascript %}#}

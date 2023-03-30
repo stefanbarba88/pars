@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Oznake
+                                Kategorije
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -28,7 +28,7 @@
                             <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
                                 <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
                                 <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_label_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                    <a href="{{ path('app_category_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
                                         <i class="ph-plus"></i>
                                     </a>
                                 </div>
@@ -40,8 +40,8 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_labels') }}" class="breadcrumb-item">Oznake</a>
-                                <span class="breadcrumb-item active">Dodavanje/Izmena oznake</span>
+                                <a href="{{ path('app_categories') }}" class="breadcrumb-item">Kategorije</a>
+                                <span class="breadcrumb-item active">Dodavanje/Izmena kategorije</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -102,28 +102,22 @@
                     <!-- Wizard with validation -->
                     <div class="card">
                         <div class="card-header">
-                            <h6 class="mb-0">Dodavanje/Izmena oznake</h6>
+                            <h6 class="mb-0">Dodavanje/Izmena kategorije</h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'label_form' }}) }}
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-category'}}) }}
                                         {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-3">
-                                    <div class="mb-3">
-                                        {{ form_label(form.color, 'Boja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.color, {attr: { class: 'form-control required form-control-color' }}) }}
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.isSuspended, 'Deaktivirana oznaka:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.isSuspended, 'Deaktivirana kategorija:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.isSuspended, {attr: { class: 'form-control required select' }}) }}
                                     </div>
                                 </div>

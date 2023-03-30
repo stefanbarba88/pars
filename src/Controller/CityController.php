@@ -8,6 +8,7 @@ use App\Form\CityFormType;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,6 +26,7 @@ class CityController extends AbstractController {
 
     return $this->render('city/list.html.twig', $args);
   }
+
 
   #[Route('/form/{id}', name: 'app_city_form', defaults: ['id' => 0])]
   #[Entity('city', expr: 'repository.findForForm(id)')]

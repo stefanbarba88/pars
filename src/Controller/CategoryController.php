@@ -34,32 +34,6 @@ class CategoryController extends AbstractController {
 
     $form = $this->createForm(CategoryFormType::class, $category, ['attr' => ['action' => $this->generateUrl('app_category_form', ['id' => $category->getId()])]]);
 
-// ajax
-//    if ($request->isMethod('POST')) {
-//      $jsonArgs = [];
-//
-//      $form->handleRequest($request);
-//
-//      if ($form->isSubmitted() && $form->isValid()) {
-//        $label = $this->em->getRepository(label::class)->save($label);
-//        $jsonArgs['label'] = $label;
-//        $jsonArgs['success'] = ResponseMessages::SUCCESS;
-//      }
-//
-//      if (!$form->isValid()) {
-//        $jsonArgs['success'] = 0;
-//        $jsonArgs['error'] = ResponseMessages::ERROR_FORM_NOT_VALID;
-//
-//        $jsonArgs['errors'] = [];
-//        foreach ($form->getErrors(true) as $error) {
-//          $jsonArgs['errors'][] = $error->getMessage();
-//        }
-//      }
-//
-//      return $this->json($jsonArgs);
-//  }
-
-
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 

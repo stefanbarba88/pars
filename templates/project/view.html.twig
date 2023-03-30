@@ -1,0 +1,289 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {% include 'includes/header.html.twig' %}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Projekti
+                            </h4>
+
+                            <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
+                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
+                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
+                                <div class="d-inline-flex mt-3 mt-sm-0">
+                                    <a href="{{ path('app_category_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                        <i class="ph-plus"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <a href="{{ path('app_categories') }}" class="breadcrumb-item">Kategorije</a>
+                                <span class="breadcrumb-item active">{{ category.title }}</span>
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse d-lg-block ms-lg-auto" id="breadcrumb_elements">
+                            <div class="d-lg-flex mb-2 mb-lg-0">
+                                <a href="#" class="d-flex align-items-center text-body py-2">
+                                    <i class="ph-lifebuoy me-2"></i>
+                                    Support
+                                </a>
+
+                                <div class="dropdown ms-lg-3">
+                                    <a href="#" class="d-flex align-items-center text-body dropdown-toggle py-2" data-bs-toggle="dropdown">
+                                        <i class="ph-gear me-2"></i>
+                                        <span class="flex-1">Settings</span>
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end w-100 w-lg-auto">
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-shield-warning me-2"></i>
+                                            Account security
+                                        </a>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-chart-bar me-2"></i>
+                                            Analytics
+                                        </a>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-lock-key me-2"></i>
+                                            Privacy
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-gear me-2"></i>
+                                            All settings
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">{{ category.title }} <a href="{{ path('app_category_form', {id: category.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Naziv:</div>
+                                            <div class="col-8">{{ category.title() }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Status:</div>
+                                            <div class="col-8">{{ category.badgeByStatus() | raw}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if category.editBy is not null %}
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Izmena:</h5>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Izmenio:</div>
+                                                <div class="col-8">{{ category.editBy.getFullName() | default('/') }}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Vreme:</div>
+                                                <div class="col-8">{{ category.updated | date("d.m.Y") }} u {{ category.updated | date("H:i:s") }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+
+{#{% block footerJavascript %}#}
+{#    <script type="text/javascript">#}
+{#        $(document).ready(function() {#}
+{#            var options = {#}
+{#                // target:        '#output1',   // target element(s) to be updated with server response#}
+{#                success:       editInfoResponse,  // post-submit callback#}
+{#                //         // target:        '#error',#}
+{#                //         // other available options:#}
+{#                //         //url:       url         // override for form's 'action' attribute#}
+{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#                //         //clearForm: true        // clear all form fields after successful submit#}
+{#                        resetForm: true,        // reset the form after successful submit#}
+{#                //         success:   editInfoResponse#}
+{#                //         // $.ajax options can be used here too, for example:#}
+{#                //         //timeout:   3000#}
+{#            };#}
+
+{#            // bind form using 'ajaxForm'#}
+{#            $('#infoForma').ajaxForm(options);#}
+{#        });#}
+{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
+{#        //     // for normal html responses, the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseText property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'xml' then the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseXML property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'json' then the first argument to the success callback#}
+{#        //     // is the json data object returned by the server#}
+{#        //#}
+{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
+{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
+{#        // }#}
+{#        // $(function () {#}
+{#        //     var options = {#}
+{#        //         // target:        '#error',#}
+{#        //         // other available options:#}
+{#        //         //url:       url         // override for form's 'action' attribute#}
+{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#        //         //clearForm: true        // clear all form fields after successful submit#}
+{#        //         resetForm: true,        // reset the form after successful submit#}
+{#        //         success:   editInfoResponse#}
+{#        //         // $.ajax options can be used here too, for example:#}
+{#        //         //timeout:   3000#}
+{#        //     };#}
+{#        //     // bind form using ajaxForm#}
+{#        //     $('#infoForma').submit(function() {#}
+{#        //         // inside event callbacks 'this' is the DOM element so we first#}
+{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
+{#        //         $(this).ajaxSubmit(options);#}
+{#        //#}
+{#        //         // !!! Important !!!#}
+{#        //         // always return false to prevent standard browser submit and page navigation#}
+{#        //         return false;#}
+{#        //     });#}
+{#        // });#}
+{#        //#}
+{#        function editInfoResponse(data) {#}
+{#            // 'data' is the json object returned from the server#}
+
+{#            if (data.success === 1) {#}
+{#                swal({#}
+{#                    type: 'success',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+{#            else {#}
+{#                var error = data.error_msg.toString();#}
+{#                swal({#}
+{#                    type: 'error',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+
+{#        }#}
+
+{#    </script>#}
+{#{% endblock footerJavascript %}#}

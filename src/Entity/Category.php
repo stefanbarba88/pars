@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\CategoryRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
@@ -30,6 +32,13 @@ class Category {
 
   #[ORM\Column]
   private DateTimeImmutable $updated;
+
+  #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'category')]
+  private Collection $projects;
+
+  public function __construct() {
+    $this->projects = new ArrayCollection();
+  }
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -118,6 +127,30 @@ class Category {
     }
     return '<span class="badge bg-info">Aktivan</span>';
 
+  }
+
+  /**
+   * @return Collection<int, Project>
+   */
+  public function getProjects(): Collection {
+    return $this->projects;
+  }
+
+  public function addProject(Project $project): self {
+    if (!$this->projects->contains($project)) {
+      $this->projects->add($project);
+      $project->addCategory($this);
+    }
+
+    return $this;
+  }
+
+  public function removeProject(Project $project): self {
+    if ($this->projects->removeElement($project)) {
+      $project->removeCategory($this);
+    }
+
+    return $this;
   }
 
 }

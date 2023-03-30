@@ -14,30 +14,34 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Project[]    findAll()
  * @method Project[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProjectRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Project::class);
+class ProjectRepository extends ServiceEntityRepository {
+  public function __construct(ManagerRegistry $registry) {
+    parent::__construct($registry, Project::class);
+  }
+
+  public function save(Project $project): Project {
+    if (is_null($project->getId())) {
+      $this->getEntityManager()->persist($project);
     }
 
-    public function save(Project $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
+    $this->getEntityManager()->flush();
+    return $project;
+  }
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+  public function remove(Project $entity, bool $flush = false): void {
+    $this->getEntityManager()->remove($entity);
+
+    if ($flush) {
+      $this->getEntityManager()->flush();
     }
+  }
 
-    public function remove(Project $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+  public function findForForm(int $id = 0): Project {
+    if (empty($id)) {
+      return new Project();
     }
+    return $this->getEntityManager()->getRepository(Project::class)->find($id);
+  }
 
 //    /**
 //     * @return Project[] Returns an array of Project objects

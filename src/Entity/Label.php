@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\LabelRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LabelRepository::class)]
@@ -33,6 +35,13 @@ class Label {
 
   #[ORM\Column]
   private DateTimeImmutable $updated;
+
+  #[ORM\OneToMany(mappedBy: 'label', targetEntity: Project::class)]
+  private Collection $projects;
+
+  public function __construct() {
+    $this->projects = new ArrayCollection();
+  }
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -137,6 +146,31 @@ class Label {
     $this->color = $color;
   }
 
+  /**
+   * @return Collection<int, Project>
+   */
+  public function getProjects(): Collection {
+    return $this->projects;
+  }
 
+  public function addProject(Project $project): self {
+    if (!$this->projects->contains($project)) {
+      $this->projects->add($project);
+      $project->setLabel($this);
+    }
+
+    return $this;
+  }
+
+  public function removeProject(Project $project): self {
+    if ($this->projects->removeElement($project)) {
+      // set the owning side to null (unless already changed)
+      if ($project->getLabel() === $this) {
+        $project->setLabel(null);
+      }
+    }
+
+    return $this;
+  }
 
 }

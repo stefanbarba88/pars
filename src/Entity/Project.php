@@ -6,6 +6,7 @@ use App\Repository\ProjectRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
@@ -31,6 +32,12 @@ class Project {
   private bool $isSuspended = false;
 
   #[ORM\Column]
+  private bool $isClientView = false;
+
+  #[ORM\Column]
+  private bool $isTimeRoundUp = false;
+
+  #[ORM\Column]
   private DateTimeImmutable $created;
 
   #[ORM\Column]
@@ -44,6 +51,27 @@ class Project {
 
   #[ORM\ManyToOne(inversedBy: 'projects')]
   private ?Label $label = null;
+
+  #[ORM\Column(type: Types::SMALLINT)]
+  private ?int $payment = null;
+
+  #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
+  private ?string $price = null;
+
+  #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
+  private ?string $pricePerHour = null;
+
+  #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
+  private ?string $pricePerTask = null;
+
+  #[ORM\ManyToOne(inversedBy: 'projects')]
+  private ?Currency $currency = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $roundingInterval = null;
+
+  #[ORM\Column]
+  private ?int $minEntry = null;
 
   public function __construct() {
     $this->category = new ArrayCollection();
@@ -141,11 +169,47 @@ class Project {
     $this->isSuspended = $isSuspended;
   }
 
+  /**
+   * @return bool
+   */
+  public function isClientView(): bool {
+    return $this->isClientView;
+  }
+
+  /**
+   * @param bool $isClientView
+   */
+  public function setIsClientView(bool $isClientView): void {
+    $this->isClientView = $isClientView;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isTimeRoundUp(): bool {
+    return $this->isTimeRoundUp;
+  }
+
+  /**
+   * @param bool $isTimeRoundUp
+   */
+  public function setIsTimeRoundUp(bool $isTimeRoundUp): void {
+    $this->isTimeRoundUp = $isTimeRoundUp;
+  }
+
   public function getBadgeByStatus(): string {
     if ($this->isSuspended) {
       return '<span class="badge bg-danger">Neaktivan</span>';
     }
     return '<span class="badge bg-info">Aktivan</span>';
+
+  }
+
+  public function getBadgeByClientView(): string {
+    if ($this->isClientView) {
+      return '<span class="badge bg-info"><i class="ph-eye ph-sm m-1"></i></span>';
+    }
+    return '<span class="badge bg-danger"><i class="ph-eye-slash ph-sm m-1"></i></span>';
 
   }
 
@@ -197,6 +261,76 @@ class Project {
 
   public function setLabel(?Label $label): self {
     $this->label = $label;
+
+    return $this;
+  }
+
+  public function getPayment(): ?int {
+    return $this->payment;
+  }
+
+  public function setPayment(int $payment): self {
+    $this->payment = $payment;
+
+    return $this;
+  }
+
+  public function getPrice(): ?string {
+    return $this->price;
+  }
+
+  public function setPrice(?string $price): self {
+    $this->price = $price;
+
+    return $this;
+  }
+
+  public function getPricePerHour(): ?string {
+    return $this->pricePerHour;
+  }
+
+  public function setPricePerHour(?string $pricePerHour): self {
+    $this->pricePerHour = $pricePerHour;
+
+    return $this;
+  }
+
+  public function getPricePerTask(): ?string {
+    return $this->pricePerTask;
+  }
+
+  public function setPricePerTask(?string $pricePerTask): self {
+    $this->pricePerTask = $pricePerTask;
+
+    return $this;
+  }
+
+  public function getCurrency(): ?Currency {
+    return $this->currency;
+  }
+
+  public function setCurrency(?Currency $currency): self {
+    $this->currency = $currency;
+
+    return $this;
+  }
+
+  public function getRoundingInterval(): ?int {
+    return $this->roundingInterval;
+  }
+
+  public function setRoundingInterval(?int $roundingInterval): self {
+    $this->roundingInterval = $roundingInterval;
+
+    return $this;
+  }
+
+  public function getMinEntry(): ?int {
+    return $this->minEntry;
+  }
+
+  public function setMinEntry(int $minEntry): self {
+    $this->minEntry = $minEntry;
 
     return $this;
   }

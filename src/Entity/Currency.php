@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\CurrencyRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CurrencyRepository::class)]
@@ -36,6 +38,13 @@ class Currency {
 
   #[ORM\Column]
   private DateTimeImmutable $updated;
+
+  #[ORM\OneToMany(mappedBy: 'currency', targetEntity: Project::class)]
+  private Collection $projects;
+
+  public function __construct() {
+    $this->projects = new ArrayCollection();
+  }
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -154,8 +163,40 @@ class Currency {
     $this->short = $short;
   }
 
+  /**
+   * @return Collection<int, Project>
+   */
+  public function getProjects(): Collection {
+    return $this->projects;
+  }
 
+  public function addProject(Project $project): self {
+    if (!$this->projects->contains($project)) {
+      $this->projects->add($project);
+      $project->setCurrency($this);
+    }
 
+    return $this;
+  }
+
+  public function removeProject(Project $project): self {
+    if ($this->projects->removeElement($project)) {
+      // set the owning side to null (unless already changed)
+      if ($project->getCurrency() === $this) {
+        $project->setCurrency(null);
+      }
+    }
+
+    return $this;
+  }
+
+  public function getFormTitle(): ?string {
+    if (is_null($this->symbol)) {
+      return $this->short . ' - ' . $this->title;
+    } else {
+      return $this->short . ' (' . $this->symbol . ') - ' . $this->title;
+    }
+  }
 
 
 }

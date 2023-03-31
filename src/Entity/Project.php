@@ -38,6 +38,9 @@ class Project {
   private bool $isTimeRoundUp = false;
 
   #[ORM\Column]
+  private bool $isEstimate = false;
+
+  #[ORM\Column]
   private DateTimeImmutable $created;
 
   #[ORM\Column]
@@ -70,8 +73,11 @@ class Project {
   #[ORM\Column(nullable: true)]
   private ?int $roundingInterval = null;
 
-  #[ORM\Column]
+  #[ORM\Column(nullable: true)]
   private ?int $minEntry = null;
+
+  #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+  private ?DateTimeImmutable $deadline = null;
 
   public function __construct() {
     $this->category = new ArrayCollection();
@@ -167,6 +173,20 @@ class Project {
    */
   public function setIsSuspended(bool $isSuspended): void {
     $this->isSuspended = $isSuspended;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isEstimate(): bool {
+    return $this->isEstimate;
+  }
+
+  /**
+   * @param bool $isEstimate
+   */
+  public function setIsEstimate(bool $isEstimate): void {
+    $this->isEstimate = $isEstimate;
   }
 
   /**
@@ -329,9 +349,21 @@ class Project {
     return $this->minEntry;
   }
 
-  public function setMinEntry(int $minEntry): self {
+  public function setMinEntry(?int $minEntry): self {
     $this->minEntry = $minEntry;
 
     return $this;
+  }
+
+  public function getDeadline(): ?DateTimeImmutable
+  {
+      return $this->deadline;
+  }
+
+  public function setDeadline(?DateTimeImmutable $deadline): self
+  {
+      $this->deadline = $deadline;
+
+      return $this;
   }
 }

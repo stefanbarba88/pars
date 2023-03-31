@@ -68,7 +68,7 @@ class Client {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'Client')]
+  #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'client')]
   private Collection $projects;
 
   public function __construct()

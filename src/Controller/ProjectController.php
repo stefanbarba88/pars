@@ -39,6 +39,8 @@ class ProjectController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
+        dd($project);
+
         $this->em->getRepository(Project::class)->save($project);
 
         notyf()

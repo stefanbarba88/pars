@@ -41,7 +41,7 @@
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
-                                <span class="breadcrumb-item active">Dodavanje/Izmena projekata</span>
+                                <span class="breadcrumb-item active">Dodavanje/Izmena projekta</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -102,48 +102,159 @@
                     <!-- Wizard with validation -->
                     <div class="card">
                         <div class="card-header">
-                            <h6 class="mb-0">Dodavanje/Izmena projekata</h6>
+                            <h6 class="mb-0">Dodavanje/Izmena projekta</h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'project_form' }}) }}
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-category'}}) }}
-                                        {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
+                            <fieldset class="mb-3">
+                                <legend class="fs-base fw-bold border-bottom pb-2 mb-3">Osnovne informacije</legend>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-category'}}) }}
+                                            {{ form_widget(form.title, {attr: { class: 'form-control' }}) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.deadline, 'Rok:', {'label_attr': {'class': 'form-category'}}) }}
+                                            <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                                {{ form_widget(form.deadline, {attr: { class: 'form-control datepicker-date-format-custom' }}) }}
+                                            </div>
+                                            <span class="form-text">Format: 31.12.1900. Možete definisati predviđeni kraj radova na projektu.</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        {{ form_label(form.description, 'Opis:*', {'label_attr': {'class': 'form-category'}}) }}
-                                        {{ form_widget(form.description, {attr: { class: 'form-control required' }}) }}
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            {{ form_label(form.description, 'Opis:*', {'label_attr': {'class': 'form-category'}}) }}
+                                            {{ form_widget(form.description, {attr: { class: 'form-control ckeditor_simple' }}) }}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.category, 'Kategorija:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.category, {attr: { class: 'form-control required select' }}) }}
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.category, 'Kategorija:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.category, {attr: { class: 'form-control required select' }}) }}
+                                            <span class="form-text">Kategorizacija pomaže u organizaciji. Projekat može imati više kategorija.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.label, 'Oznaka:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.label, {attr: { class: 'form-control required select' }}) }}
+                                            <span class="form-text">Oznaka pokazuje u kojoj fazi razvoja se nalazi projekat.</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.label, 'Oznaka:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.label, {attr: { class: 'form-control required select' }}) }}
+                            </fieldset>
+
+                            <fieldset class="mb-3">
+                                <legend class="fs-base fw-bold border-bottom pb-2 mb-3">Informacije o klijentu</legend>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.client, 'Klijent:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.client, {attr: { class: 'form-control required select' }}) }}
+                                            <span class="form-text">Više klijenata mogu biti vlasnici nad projekatom.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.isClientView, 'Klijent ima uvid u projekat:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.isClientView, {attr: { class: 'form-control required select' }}) }}
+                                            <span class="form-text">Klijent ima uvid u razvoj projekta. Može se definisati kasnije i na nivou zadataka.</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.client, 'Klijent:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.client, {attr: { class: 'form-control required select' }}) }}
+                            </fieldset>
+
+                            <fieldset class="mb-3">
+                                <legend class="fs-base fw-bold border-bottom pb-2 mb-3">Informacije o finansiranju projekta</legend>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.payment, 'Tip finansiranja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.payment, {attr: { class: 'form-control required select payment' }}) }}
+                                            <span class="form-text">Može se definisati kasnije i na nivou zadataka.</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 hide payment_price">
+                                        <div class="mb-3">
+                                            {{ form_label(form.price, 'Fiksna cena:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.price, {attr: { class: 'form-control priceValue' }}) }}
+                                            <span class="form-text">Format: 0.00</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 hide payment_ph">
+                                        <div class="mb-3">
+                                            {{ form_label(form.pricePerHour, 'Cena po satu:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.pricePerHour, {attr: { class: 'form-control phValue' }}) }}
+                                            <span class="form-text">Format: 0.00</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 hide payment_pt">
+                                        <div class="mb-3">
+                                            {{ form_label(form.pricePerTask, 'Cena po zadatku:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.pricePerTask, {attr: { class: 'form-control ptValue' }}) }}
+                                            <span class="form-text">Format: 0.00</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 hide payment_currency">
+                                        <div class="mb-3">
+                                            {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue' }}) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="mb-3">
+                                <legend class="fs-base fw-bold border-bottom pb-2 mb-3">Podešavanje praćenja vremena</legend>
+                                <div class="row">
+                                    <div class="col-lg-6 ">
+                                        <div class="mb-3">
+                                            {{ form_label(form.isEstimate, 'Vremenska procena:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.isEstimate, {attr: { class: 'form-control required select' }}) }}
+                                            <span class="form-text">Procena vremenskog trajanja za svaki zadatak u okviru projekta. Može se definisati kasnije i na nivou zadataka.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6 ">
+                                        <div class="mb-3">
+                                            {{ form_label(form.isTimeRoundUp, 'Zaokruživanje vremena:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.isTimeRoundUp, {attr: { class: 'form-control required select round' }}) }}
+                                            <span class="form-text">Mereno vreme se zaokružuje. Može se definisati kasnije i na nivou zadataka.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row hide timeRound">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval' }}) }}
+                                            <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.minEntry, {attr: { class: 'form-control minent' }}) }}
+                                            <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
                             <div class="text-end">
                                 <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                             </div>
@@ -202,37 +313,93 @@
     <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/notifications/noty.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/editor_ckeditor_classic.js') }}"></script>
 
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
     {% endif %}
 
-
 {% endblock includeJavascript %}
 
-{#{% block footerJavascript %}#}
+{% block footerJavascript %}
 
-{#    <script>#}
-{#        $(function () {#}
+    <script>
+        $(function () {
+            $(".payment").change(function(e) {
+                e.preventDefault();
+                if ($(this).val() == "2") {
 
-{#            $('#label_form').ajaxForm({#}
-{#                // dataType identifies the expected content type of the server response#}
-{#                dataType:  'json',#}
+                    $('.payment_price').removeClass('hide');
+                    $('.priceValue').addClass('required');
 
-{#                // success identifies the function to invoke when the server response#}
-{#                // has been received#}
-{#                success:   processJson#}
-{#            });#}
+                    $('.payment_ph').addClass('hide');
+                    $('.phValue').removeClass('required');
 
-{#            function processJson(data) {#}
-{#                // 'data' is the json object returned from the server#}
-{#                new Noty({#}
-{#                    text: 'Change a few things up and try submitting again.',#}
-{#                    type: 'error'#}
-{#                }).show();#}
-{#            }#}
+                    $('.payment_pt').addClass('hide');
+                    $('.ptValue').removeClass('required');
 
-{#        });#}
-{#    </script>#}
+                    $('.payment_currency').removeClass('hide');
+                    $('.currencyValue').addClass('required');
 
-{#{% endblock footerJavascript %}#}
+                }
+                else if ($(this).val() == "3") {
+                    $('.payment_ph').removeClass('hide');
+                    $('.phValue').addClass('required');
+
+                    $('.payment_price').addClass('hide');
+                    $('.priceValue').removeClass('required');
+
+                    $('.payment_pt').addClass('hide');
+                    $('.ptValue').removeClass('required');
+
+                    $('.payment_currency').removeClass('hide');
+                    $('.currencyValue').addClass('required');
+
+
+                }
+                else if ($(this).val() == "4") {
+                    $('.payment_ph').addClass('hide');
+                    $('.phValue').removeClass('required');
+
+                    $('.payment_price').addClass('hide');
+                    $('.priceValue').removeClass('required');
+
+                    $('.payment_pt').removeClass('hide');
+                    $('.ptValue').addClass('required');
+
+                    $('.payment_currency').removeClass('hide');
+                    $('.currencyValue').addClass('required');
+                }
+                else {
+                    $('.payment_price').addClass('hide');
+                    $('.priceValue').removeClass('required');
+                    $('.payment_ph').addClass('hide');
+                    $('.phValue').removeClass('required');
+                    $('.payment_pt').addClass('hide');
+                    $('.ptValue').removeClass('required');
+                    $('.payment_currency').addClass('hide');
+                    $('.currencyValue').removeClass('required');
+
+                }
+            });
+            $(".round").change(function(e) {
+                e.preventDefault();
+                if ($(this).val() == "1") {
+
+                    $('.timeRound').removeClass('hide');
+                    $('.interval').addClass('required');
+                    $('.minent').addClass('required');
+
+                }
+                else {
+                    $('.timeRound').addClass('hide');
+                    $('.interval').removeClass('required');
+                    $('.minent').removeClass('required');
+
+                }
+            });
+        });
+    </script>
+
+{% endblock footerJavascript %}

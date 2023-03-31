@@ -15,41 +15,18 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Range;
 
 class ProjectFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
     $builder
       ->add('title')
       ->add('description')
-      ->add('client', EntityType::class, [
-        'class' => Client::class,
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => true,
-      ])
-      ->add('isClientView', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('isTimeRoundUp', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-
       ->add('label', EntityType::class, [
         'placeholder' => 'Izaberite oznaku',
         'class' => Label::class,
@@ -71,8 +48,28 @@ class ProjectFormType extends AbstractType {
         'expanded' => false,
         'multiple' => true,
       ])
+
+      ->add('client', EntityType::class, [
+        'class' => Client::class,
+        'query_builder' => function (EntityRepository $em) {
+          return $em->createQueryBuilder('g')
+            ->orderBy('g.id', 'ASC');
+        },
+        'choice_label' => 'title',
+        'expanded' => false,
+        'multiple' => true,
+      ])
+      ->add('isClientView', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+
       ->add('payment', ChoiceType::class, [
-        'placeholder' => 'Izaberite tip budžeta',
+        'placeholder' => 'Izaberite tip finansiranja',
         'choices' => VrstaPlacanjaData::form(),
         'expanded' => false,
         'multiple' => false,
@@ -90,12 +87,66 @@ class ProjectFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('price')
-      ->add('pricePerHour')
-      ->add('pricePerTask')
+      ->add('price', NumberType::class, [
+        'required' => false,
+        'attr' => [
+          'min' => '0.01',
+          'step' => '0.01'
+        ],
+      ])
+      ->add('pricePerHour', NumberType::class, [
+        'required' => false,
+        'attr' => [
+          'min' => '0.01',
+          'step' => '0.01'
+        ],
+      ])
+      ->add('pricePerTask', NumberType::class, [
+        'required' => false,
+        'attr' => [
+          'min' => '0.01',
+          'step' => '0.01'
+        ],
+      ])
 
-      ->add('minEntry')
-      ->add('roundingInterval')
+      ->add('isTimeRoundUp', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('minEntry', IntegerType::class, [
+        'required' => false,
+        'attr' => [
+          'min' => '1',
+          'max' => '60'
+        ],
+      ])
+      ->add('roundingInterval', IntegerType::class, [
+        'required' => false,
+        'attr' => [
+          'min' => '1',
+          'max' => '60'
+        ],
+      ])
+
+      ->add('isEstimate', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('deadline', DateType::class, [
+        'required' => false,
+        'widget' => 'single_text',
+        'format' => 'dd.mm.yyyy',
+        'html5' => false,
+        'input' => 'datetime_immutable'
+      ])
     ;
   }
 

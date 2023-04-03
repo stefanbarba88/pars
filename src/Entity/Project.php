@@ -21,7 +21,7 @@ class Project {
   #[ORM\Column(length: 255)]
   private ?string $title = null;
 
-  #[ORM\Column(length: 255, nullable: true)]
+  #[ORM\Column(Types::TEXT, nullable: true)]
   private ?string $description = null;
 
   #[ORM\ManyToOne]
@@ -76,7 +76,7 @@ class Project {
   #[ORM\Column(nullable: true)]
   private ?int $minEntry = null;
 
-  #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+  #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $deadline = null;
 
   public function __construct() {
@@ -159,6 +159,16 @@ class Project {
    */
   public function setUpdated(DateTimeImmutable $updated): void {
     $this->updated = $updated;
+  }
+
+  public function getDeadline(): ?DateTimeImmutable {
+    return $this->deadline;
+  }
+
+  public function setDeadline(?DateTimeImmutable $deadline): self {
+    $this->deadline = $deadline;
+
+    return $this;
   }
 
   /**
@@ -355,15 +365,4 @@ class Project {
     return $this;
   }
 
-  public function getDeadline(): ?DateTimeImmutable
-  {
-      return $this->deadline;
-  }
-
-  public function setDeadline(?DateTimeImmutable $deadline): self
-  {
-      $this->deadline = $deadline;
-
-      return $this;
-  }
 }

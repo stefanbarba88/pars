@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -29,7 +30,7 @@ class UserEditInfoFormType extends AbstractType {
       ->add('datumRodjenja', DateType::class, [
         'required' => false,
         'widget' => 'single_text',
-        'format' => 'dd.mm.yyyy',
+        'format' => 'dd.MM.yyyy',
         'html5' => false,
         'input' => 'datetime_immutable'
       ])

@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                               Kategorije
+                               Projekti
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -28,7 +28,7 @@
                             <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
                                 <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
                                 <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_category_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                    <a href="{{ path('app_project_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
                                         <i class="ph-plus"></i>
                                     </a>
                                 </div>
@@ -40,7 +40,7 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Kategorije</span>
+                                <span class="breadcrumb-item active">Projekti</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -92,23 +92,39 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header">
-                            <h6 class="mb-0">Lista kategorija</h6>
+                            <h6 class="mb-0">Lista projekata</h6>
                         </div>
                         <table class="table datatable-colvis-state-pars">
                             <thead>
                             <tr>
                                 <th>Naziv</th>
-                                <th>Status</th>
+                                <th>Kategorija/e</th>
+                                <th>Oznaka</th>
+                                <th>Klijent/i</th>
+                                <th>Kreiran</th>
+                                <th>Rok</th>
                                 <th>Pregled</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for category in categories %}
+                            {% for project in projects %}
                                 <tr>
-                                    <td><a href="{{ path('app_category_view', { id: category.id}) }}">{{ category.title }}</a></td>
-                                    <td>{{ category.badgeByStatus | raw }}</td>
+                                    <td><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></td>
                                     <td>
-                                        <a href="{{ path('app_category_view', { id: category.id}) }}" class="btn btn-primary">
+                                        {% for cat in project.category %}
+                                            <a href="{{ path('app_category_view', { id: cat.id}) }}">{{ cat.title }}</a>{% if  not loop.last %},{% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td><a href="{{ path('app_label_view', { id: project.label.id}) }}">{{ project.label.title }}</a></td>
+                                    <td>
+                                        {% for client in project.client %}
+                                            <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title }}</a>{% if  not loop.last %},{% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{ project.created | date("d.m.Y")}}</td>
+                                    <td>{{ project.deadline ? project.deadline | date("d.m.Y") : '/' }}</td>
+                                    <td>
+                                        <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="btn btn-primary">
                                             <i class="ph-eye me-2"></i>
                                             Pregledajte
                                         </a>

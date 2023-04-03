@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Client;
 use App\Entity\Image;
+use App\Entity\Project;
 use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,6 +33,13 @@ class WidgetController extends AbstractController {
     $args['user'] = $user;
 
     return $this->render('widget/users_nav.html.twig', $args);
+  }
+
+  public function projectProfilNavigation(Project $project): Response {
+
+    $args['project'] = $project;
+
+    return $this->render('widget/project_nav.html.twig', $args);
   }
 
   public function clientProfilNavigation(Client $client): Response {

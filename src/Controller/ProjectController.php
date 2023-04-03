@@ -39,8 +39,6 @@ class ProjectController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        dd($project);
-
         $this->em->getRepository(Project::class)->save($project);
 
         notyf()
@@ -59,12 +57,61 @@ class ProjectController extends AbstractController {
     return $this->render('project/form.html.twig', $args);
   }
 
-  #[Route('/view/{id}', name: 'app_project_view')]
+  #[Route('/view-profile/{id}', name: 'app_project_profile_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(Project $project): Response {
+  public function viewProfile(Project $project): Response {
     $args['project'] = $project;
 
-    return $this->render('project/view.html.twig', $args);
+    return $this->render('project/view_profile.html.twig', $args);
+  }
+
+  #[Route('/view-tasks/{id}', name: 'app_project_tasks_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewTasks(Project $project): Response {
+    $args['project'] = $project;
+    $args['tasks'] = [];
+
+    return $this->render('project/view_tasks.html.twig', $args);
+  }
+
+  #[Route('/view-activity/{id}', name: 'app_project_activity_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewActivity(Project $project): Response {
+    $args['project'] = $project;
+
+    return $this->render('project/view_activity.html.twig', $args);
+  }
+
+  #[Route('/view-calendar/{id}', name: 'app_project_calendar_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewCalendar(Project $project): Response {
+    $args['project'] = $project;
+
+    return $this->render('project/view_calendar.html.twig', $args);
+  }
+
+  #[Route('/view-time/{id}', name: 'app_project_time_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewTime(Project $project): Response {
+    $args['project'] = $project;
+
+    return $this->render('project/view_time.html.twig', $args);
+  }
+
+  #[Route('/view-expenses/{id}', name: 'app_project_expenses_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewExpenses(Project $project): Response {
+    $args['project'] = $project;
+
+    return $this->render('project/view_expenses.html.twig', $args);
+  }
+
+  #[Route('/view-users/{id}', name: 'app_project_users_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewUsers(Project $project): Response {
+    $args['project'] = $project;
+
+    return $this->render('project/view_users.html.twig', $args);
   }
 
 }

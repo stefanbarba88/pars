@@ -68,7 +68,7 @@ class User implements UserInterface {
   #[ORM\Column(name: 'vrsta_zaposlenja', length: 2, nullable: true)]
   private ?int $vrstaZaposlenja = null;
 
-  #[ORM\Column(name: 'datum_rodjenja', type: Types::DATE_IMMUTABLE, nullable: true)]
+  #[ORM\Column(name: 'datum_rodjenja', type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $datumRodjenja = null;
 
   #[ORM\ManyToOne(targetEntity: self::class)]

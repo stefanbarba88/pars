@@ -9,6 +9,7 @@
         "ext-gd": "*",
         "ext-iconv": "*",
         "aimeos/map": "^3.4",
+        "buzzingpixel/twig-switch": "^1.0",
         "calcinai/php-imagick": "^0.1.2",
         "doctrine/doctrine-bundle": "^2.8",
         "doctrine/doctrine-migrations-bundle": "^3.2",

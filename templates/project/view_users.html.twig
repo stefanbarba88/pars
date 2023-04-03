@@ -28,7 +28,7 @@
                             <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
                                 <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
                                 <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_category_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                    <a href="{{ path('app_project_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
                                         <i class="ph-plus"></i>
                                     </a>
                                 </div>
@@ -40,8 +40,8 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_categories') }}" class="breadcrumb-item">Kategorije</a>
-                                <span class="breadcrumb-item active">{{ category.title }}</span>
+                                <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
+                                <span class="breadcrumb-item active">Korisnici</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -85,6 +85,7 @@
                             </div>
                         </div>
                     </div>
+                    {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: project } )) }}
                 </div>
                 <!-- /page header -->
 
@@ -95,43 +96,43 @@
                     <div class="d-lg-flex align-items-lg-start">
 
                         <!-- Right content -->
-                        <div class="tab-content flex-fill">
-                            <div class="tab-pane fade active show">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">{{ category.title }} <a href="{{ path('app_category_form', {id: category.id}) }}"><i class="ph-note-pencil"></i></a></h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row p-2">
-                                            <div class="col-4">Naziv:</div>
-                                            <div class="col-8">{{ category.title() }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Status:</div>
-                                            <div class="col-8">{{ category.badgeByStatus() | raw}}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% if category.editBy is not null %}
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5 class="mb-0">Izmena:</h5>
-                                        </div>
+{#                        <div class="tab-content flex-fill">#}
+{#                            <div class="tab-pane fade active show">#}
+{#                                <div class="card">#}
+{#                                    <div class="card-header">#}
+{#                                        <h5 class="mb-0">{{ category.title }} <a href="{{ path('app_category_form', {id: category.id}) }}"><i class="ph-note-pencil"></i></a></h5>#}
+{#                                    </div>#}
+{#                                    <div class="card-body">#}
+{#                                        <div class="row p-2">#}
+{#                                            <div class="col-4">Naziv:</div>#}
+{#                                            <div class="col-8">{{ category.title() }}</div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Status:</div>#}
+{#                                            <div class="col-8">{{ category.badgeByStatus() | raw}}</div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                {% if category.editBy is not null %}#}
+{#                                    <div class="card">#}
+{#                                        <div class="card-header">#}
+{#                                            <h5 class="mb-0">Izmena:</h5>#}
+{#                                        </div>#}
 
-                                        <div class="card-body">
-                                            <div class="row p-2">
-                                                <div class="col-4">Izmenio:</div>
-                                                <div class="col-8">{{ category.editBy.getFullName() | default('/') }}</div>
-                                            </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Vreme:</div>
-                                                <div class="col-8">{{ category.updated | date("d.m.Y") }} u {{ category.updated | date("H:i:s") }}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
+{#                                        <div class="card-body">#}
+{#                                            <div class="row p-2">#}
+{#                                                <div class="col-4">Izmenio:</div>#}
+{#                                                <div class="col-8">{{ category.editBy.getFullName() | default('/') }}</div>#}
+{#                                            </div>#}
+{#                                            <div class="row p-2 bg-light">#}
+{#                                                <div class="col-4">Vreme:</div>#}
+{#                                                <div class="col-8">{{ category.updated | date("d.m.Y") }} u {{ category.updated | date("H:i:s") }}</div>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+{#                            </div>#}
+{#                        </div>#}
                         <!-- /right content -->
 
                     </div>

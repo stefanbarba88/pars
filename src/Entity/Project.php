@@ -8,11 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'projects')]
-class Project {
+class Project implements JsonSerializable {
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]
@@ -79,9 +81,13 @@ class Project {
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $deadline = null;
 
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectHistory::class, cascade : ["persist", "remove"])]
+  private Collection $projectHistories;
+
   public function __construct() {
     $this->category = new ArrayCollection();
     $this->client = new ArrayCollection();
+    $this->projectHistories = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -94,6 +100,33 @@ class Project {
   public function preUpdate(): void {
     $this->updated = new DateTimeImmutable();
   }
+
+  public function __clone() {
+    if ($this->id) {
+      $this->id = null;
+    }
+  }
+
+  public function jsonSerialize(): array {
+    return [
+      'id' => $this->getId(),
+      'title' => $this->getTitle(),
+      'description' => $this->getDescription(),
+      'isSuspended' => $this->isSuspended(),
+      'isTimeRoundUp' => $this->isTimeRoundUp(),
+      'isEstimate' => $this->isEstimate(),
+      'category' => $this->getCategory(),
+      'client' => $this->getClient(),
+      'label' => $this->getLabel(),
+      'payment' => $this->getPayment(),
+      'price' => $this->getPrice(),
+      'pricePerHour' => $this->getPricePerHour(),
+      'pricePerTask' => $this->getPricePerTask(),
+      'currency' => $this->getCurrency(),
+      'minEntry' => $this->getMinEntry(),
+      'deadline' => $this->getDeadline()
+      ];
+}
 
   public function getId(): ?int {
     return $this->id;
@@ -363,6 +396,36 @@ class Project {
     $this->minEntry = $minEntry;
 
     return $this;
+  }
+
+  /**
+   * @return Collection<int, ProjectHistory>
+   */
+  public function getProjectHistories(): Collection
+  {
+      return $this->projectHistories;
+  }
+
+  public function addProjectHistory(ProjectHistory $projectHistory): self
+  {
+      if (!$this->projectHistories->contains($projectHistory)) {
+          $this->projectHistories->add($projectHistory);
+          $projectHistory->setProject($this);
+      }
+
+      return $this;
+  }
+
+  public function removeProjectHistory(ProjectHistory $projectHistory): self
+  {
+      if ($this->projectHistories->removeElement($projectHistory)) {
+          // set the owning side to null (unless already changed)
+          if ($projectHistory->getProject() === $this) {
+              $projectHistory->setProject(null);
+          }
+      }
+
+      return $this;
   }
 
 }

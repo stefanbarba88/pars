@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Project;
+use App\Entity\ProjectHistory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,6 +18,27 @@ use Doctrine\Persistence\ManagerRegistry;
 class ProjectRepository extends ServiceEntityRepository {
   public function __construct(ManagerRegistry $registry) {
     parent::__construct($registry, Project::class);
+  }
+
+  public function saveProject(Project $project): Project  {
+
+//    if (!is_null($project->getId())) {
+//      $this->getEntityManager()->detach($project);
+//      $projectHistory = clone $project;
+//
+//      $history = new ProjectHistory();
+//
+//      $history->setProject($project);
+//      $history->setHistory(json_encode($projectHistory);
+////      $this->getEntityManager()->persist($history);
+//
+//      $history = $this->getEntityManager()->getRepository(ProjectHistory::class)->save($history);
+//      dd($history);
+//      return $this->save($project);
+//    }
+
+    return $this->save($project);
+
   }
 
   public function save(Project $project): Project {

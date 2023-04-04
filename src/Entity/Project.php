@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -23,12 +22,16 @@ class Project implements JsonSerializable {
   #[ORM\Column(length: 255)]
   private ?string $title = null;
 
-  #[ORM\Column(Types::TEXT, nullable: true)]
+  #[ORM\Column(type: Types::TEXT, nullable: true, )]
   private ?string $description = null;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?User $editBy = null;
+
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?User $createdBy = null;
 
   #[ORM\Column]
   private bool $isSuspended = false;
@@ -165,6 +168,22 @@ class Project implements JsonSerializable {
   public function setEditBy(?User $editBy): void {
     $this->editBy = $editBy;
   }
+
+  /**
+   * @return User|null
+   */
+  public function getCreatedBy(): ?User {
+    return $this->createdBy;
+  }
+
+  /**
+   * @param User|null $createdBy
+   */
+  public function setCreatedBy(?User $createdBy): void {
+    $this->createdBy = $createdBy;
+  }
+
+
 
   /**
    * @return DateTimeImmutable

@@ -6,6 +6,7 @@ use App\Classes\Data\NotifyMessagesData;
 use App\Classes\ResponseMessages;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
+use App\Entity\User;
 use App\Form\ProjectFormType;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -35,8 +36,20 @@ class ProjectController extends AbstractController {
   #[Route('/form/{id}', name: 'app_project_form', defaults: ['id' => 0])]
   #[Entity('project', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Project $project, SerializerInterface $serializer): Response {
-    $project->setEditBy($this->getUser());
+  public function form(Request $request, Project $project): Response {
+    $history = null;
+    //ovde izvlacimo ulogovanog usera
+//    $user = $this->getUser();
+    $user = $this->em->getRepository(User::class)->find(1);
+    if($project->getId()) {
+      $history = $this->json($project, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
 
     $form = $this->createForm(ProjectFormType::class, $project, ['attr' => ['action' => $this->generateUrl('app_project_form', ['id' => $project->getId()])]]);
 
@@ -45,28 +58,9 @@ class ProjectController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $history = new ProjectHistory();
+//        $test1 = $serializer->deserialize($test->getContent(), Project::class, 'json');
 
-        $history->setProject($project);
-        $history->setHistory($project->jsonSerialize());
-
-        $test = $this->json($project, Response::HTTP_OK, [], [
-            ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-            return $object->getId();
-            }
-        ]
-        );
-
-        $test1 = $serializer->deserialize($test->getContent(), Project::class, 'json');
-
-
-        dd($test1);
-        $history->setHistory($historyJson);
-//      $this->getEntityManager()->persist($history);
-
-        $this->em->getRepository(ProjectHistory::class)->save($history);
-
-        $this->em->getRepository(Project::class)->saveProject($project);
+        $this->em->getRepository(Project::class)->saveProject($project, $user, $history);
 
         notyf()
           ->position('x', 'right')

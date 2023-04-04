@@ -4,8 +4,10 @@ namespace App\Repository;
 
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * @extends ServiceEntityRepository<Project>
@@ -20,22 +22,20 @@ class ProjectRepository extends ServiceEntityRepository {
     parent::__construct($registry, Project::class);
   }
 
-  public function saveProject(Project $project): Project  {
+  public function saveProject(Project $project, User $user, ?string $history): Project  {
 
-//    if (!is_null($project->getId())) {
-//      $this->getEntityManager()->detach($project);
-//      $projectHistory = clone $project;
-//
-//      $history = new ProjectHistory();
-//
-//      $history->setProject($project);
-//      $history->setHistory(json_encode($projectHistory);
-////      $this->getEntityManager()->persist($history);
-//
-//      $history = $this->getEntityManager()->getRepository(ProjectHistory::class)->save($history);
-//      dd($history);
-//      return $this->save($project);
-//    }
+    if (!is_null($project->getId())) {
+
+      $historyProject = new ProjectHistory();
+      $historyProject->setHistory($history);
+
+      $project->addProjectHistory($historyProject);
+      $project->setEditBy($user);
+
+      return $this->save($project);
+    }
+
+    $project->setCreatedBy($user);
 
     return $this->save($project);
 

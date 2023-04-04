@@ -26,8 +26,8 @@ class ProjectHistory {
   #[ORM\Column]
   private ?DateTimeImmutable $updated = null;
 
-  #[ORM\Column]
-  private array $history = [];
+  #[ORM\Column(type: Types::TEXT)]
+  private ?string  $history = null;
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -81,16 +81,21 @@ class ProjectHistory {
     $this->updated = $updated;
   }
 
-  public function getHistory(): array
-  {
-      return $this->history;
+  /**
+   * @return string
+   */
+  public function getHistory(): string {
+    return $this->history;
   }
 
-  public function setHistory(array $history): self
-  {
-      $this->history = $history;
-
-      return $this;
+  /**
+   * @param string $history
+   */
+  public function setHistory(string $history): void {
+    $this->history = $history;
   }
+
+
+
 
 }

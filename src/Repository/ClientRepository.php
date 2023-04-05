@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Client;
+use App\Entity\ClientHistory;
 use App\Entity\Image;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -19,6 +20,25 @@ use Doctrine\Persistence\ManagerRegistry;
 class ClientRepository extends ServiceEntityRepository {
   public function __construct(ManagerRegistry $registry) {
     parent::__construct($registry, Client::class);
+  }
+
+  public function saveClient(Client $client, User $user, ?string $history): Client  {
+
+    if (!is_null($client->getId())) {
+
+      $historyClient = new ClientHistory();
+      $historyClient->setHistory($history);
+
+      $client->addClientHistory($historyClient);
+      $client->setEditBy($user);
+
+      return $this->save($client);
+    }
+
+//    $client->setCreatedBy($user);
+
+    return $this->save($client);
+
   }
 
   public function save(Client $client): Client {

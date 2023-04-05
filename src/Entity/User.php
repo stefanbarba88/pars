@@ -7,8 +7,11 @@ use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VrstaZaposlenjaData;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -17,7 +20,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: 'users')]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['email'], message: 'U bazi već postoji korisnik sa ovim email nalogom')]
-class User implements UserInterface {
+class User implements UserInterface, JsonSerializable {
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]
@@ -105,6 +108,12 @@ class User implements UserInterface {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserHistory::class, cascade : ["persist", "remove"])]
+  private Collection $userHistories;
+
+  public function __construct() {
+    $this->userHistories = new ArrayCollection();
+  }
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -448,6 +457,56 @@ class User implements UserInterface {
 
   public function setEditBy(?self $editBy): self {
     $this->editBy = $editBy;
+
+    return $this;
+  }
+
+  public function jsonSerialize(): array {
+
+    return [
+      'id' => $this->getId(),
+      'ime' => $this->getIme(),
+      'prezime' => $this->getPrezime(),
+      'adresa' => $this->getAdresa(),
+      'grad' => $this->getGrad(),
+      'telefon1' => $this->getTelefon1(),
+      'telefon2' => $this->getTelefon2(),
+      'jmbg' => $this->getJmbg(),
+      'pol' => $this->getPolData(),
+      'pozicija' => $this->getPozicija(),
+      'vrstaZaposlenja' => $this->getVrstaZaposlenjaData(),
+      'datumRodjenja' => $this->getDatumRodjenja(),
+      'userType' => $this->getUserType(),
+      'roles' => $this->getRoles(),
+      'editBy' => $this->editBy,
+      'isSuspended' => $this->isSuspended(),
+      'email' => $this->getEmail(),
+    ];
+  }
+
+  /**
+   * @return Collection<int, UserHistory>
+   */
+  public function getUserHistories(): Collection {
+    return $this->userHistories;
+  }
+
+  public function addUserHistory(UserHistory $userHistory): self {
+    if (!$this->userHistories->contains($userHistory)) {
+      $this->userHistories->add($userHistory);
+      $userHistory->setUser($this);
+    }
+
+    return $this;
+  }
+
+  public function removeUserHistory(UserHistory $userHistory): self {
+    if ($this->userHistories->removeElement($userHistory)) {
+      // set the owning side to null (unless already changed)
+      if ($userHistory->getUser() === $this) {
+        $userHistory->setUser(null);
+      }
+    }
 
     return $this;
   }

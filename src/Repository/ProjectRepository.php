@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\VrstaPlacanjaData;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
 use App\Entity\User;
@@ -23,6 +24,8 @@ class ProjectRepository extends ServiceEntityRepository {
   }
 
   public function saveProject(Project $project, User $user, ?string $history): Project  {
+
+    $project = $this->paymentTimeSet($project);
 
     if (!is_null($project->getId())) {
 
@@ -56,6 +59,30 @@ class ProjectRepository extends ServiceEntityRepository {
     if ($flush) {
       $this->getEntityManager()->flush();
     }
+  }
+
+  public function paymentTimeSet(Project $project): Project {
+
+    if ($project->getPayment() == VrstaPlacanjaData::BESPLATNO) {
+      $project->setPrice(null);
+      $project->setPricePerHour(null);
+      $project->setPricePerTask(null);
+    } else if ($project->getPayment() == VrstaPlacanjaData::FIKSNA_CENA) {
+      $project->setPricePerHour(null);
+      $project->setPricePerTask(null);
+    } else if ($project->getPayment() == VrstaPlacanjaData::PLACANJE_PO_SATU) {
+      $project->setPrice(null);
+      $project->setPricePerTask(null);
+    } else {
+      $project->setPricePerHour(null);
+      $project->setPrice(null);
+    }
+
+    if (!$project->isTimeRoundUp()) {
+      $project->setRoundingInterval(null);
+      $project->setMinEntry(null);
+    }
+    return $project;
   }
 
   public function findForForm(int $id = 0): Project {

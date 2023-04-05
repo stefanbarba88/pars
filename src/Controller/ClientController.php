@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Classes\Data\NotifyMessagesData;
 use App\Entity\Client;
 use App\Entity\Image;
+use App\Entity\User;
 use App\Form\ClientFormType;
 use App\Form\ClientSuspendedFormType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,6 +15,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 #[Route('/clients')]
 class ClientController extends AbstractController {
@@ -33,7 +35,19 @@ class ClientController extends AbstractController {
   #[Entity('client', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, Client $client): Response {
-    $client->setEditBy($this->getUser());
+    $history = null;
+    //ovde izvlacimo ulogovanog usera
+//    $user = $this->getUser();
+    $user = $this->em->getRepository(User::class)->find(1);
+    if($client->getId()) {
+      $history = $this->json($client, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
 
     $form = $this->createForm(ClientFormType::class, $client, ['attr' => ['action' => $this->generateUrl('app_client_form', ['id' => $client->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -41,7 +55,7 @@ class ClientController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $this->em->getRepository(Client::class)->save($client);
+        $this->em->getRepository(Client::class)->saveClient($client, $user, $history);
 
         notyf()
           ->position('x', 'right')

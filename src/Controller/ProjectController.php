@@ -86,6 +86,25 @@ class ProjectController extends AbstractController {
     return $this->render('project/view_profile.html.twig', $args);
   }
 
+  #[Route('/history-project-list/{id}', name: 'app_project_profile_history_list')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function listProjectHistory(Project $project): Response {
+    $args['project'] = $project;
+    $args['historyProjects'] = $this->em->getRepository(ProjectHistory::class)->findBy(['project' => $project], ['id' => 'DESC']);
+
+    return $this->render('project/project_history_list.html.twig', $args);
+  }
+
+  #[Route('/history-project-view/{id}', name: 'app_project_profile_history_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewProjectHistory(ProjectHistory $projectHistory, SerializerInterface $serializer): Response {
+
+    $args['projectH'] = $serializer->deserialize($projectHistory->getHistory(), Project::class, 'json');
+    $args['projectHistory'] = $projectHistory;
+
+    return $this->render('project/view_history_profile.html.twig', $args);
+  }
+
   #[Route('/view-tasks/{id}', name: 'app_project_tasks_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewTasks(Project $project): Response {

@@ -2,22 +2,22 @@
 
 namespace App\Entity;
 
-use App\Repository\ProjectHistoryRepository;
+use App\Repository\UserHistoryRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ProjectHistoryRepository::class)]
+#[ORM\Entity(repositoryClass: UserHistoryRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class ProjectHistory {
+class UserHistory {
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]
   private ?int $id = null;
 
-  #[ORM\ManyToOne(inversedBy: 'projectHistories')]
+  #[ORM\ManyToOne(inversedBy: 'userHistories')]
   #[ORM\JoinColumn(nullable: false)]
-  private ?Project $project = null;
+  private ?User $user = null;
 
 
   #[ORM\Column]
@@ -48,12 +48,12 @@ class ProjectHistory {
     return $this->id;
   }
 
-  public function getProject(): ?Project {
-    return $this->project;
+  public function getUser(): ?User {
+    return $this->user;
   }
 
-  public function setProject(?Project $project): self {
-    $this->project = $project;
+  public function setUser(?User $user): self {
+    $this->user = $user;
 
     return $this;
   }

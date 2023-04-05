@@ -7,13 +7,14 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Table(name: 'clients')]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['pib'], message: 'U bazi već postoji klijent sa ovim pib-om.')]
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
-class Client {
+class Client implements JsonSerializable {
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]
@@ -68,12 +69,11 @@ class Client {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'client')]
-  private Collection $projects;
+  #[ORM\OneToMany(mappedBy: 'client', targetEntity: ClientHistory::class, cascade: ["persist", "remove"])]
+  private Collection $clientHistories;
 
-  public function __construct()
-  {
-      $this->projects = new ArrayCollection();
+  public function __construct() {
+    $this->clientHistories = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -85,6 +85,23 @@ class Client {
   #[ORM\PreUpdate]
   public function preUpdate(): void {
     $this->updated = new DateTimeImmutable();
+  }
+
+  public function jsonSerialize(): array {
+
+    return [
+      'id' => $this->getId(),
+      'title' => $this->getTitle(),
+      'adresa' => $this->getAdresa(),
+      'grad' => $this->getGrad(),
+      'telefon1' => $this->getTelefon1(),
+      'telefon2' => $this->getTelefon2(),
+      'pib' => $this->getPib(),
+      'kontakt' => $this->getKontakt(),
+      'editBy' => $this->editBy,
+      'isSuspended' => $this->isSuspended(),
+      'isSerbian' => $this->isSerbian(),
+    ];
   }
 
   public function getId(): ?int {
@@ -252,30 +269,30 @@ class Client {
   }
 
   /**
-   * @return Collection<int, Project>
+   * @return Collection<int, ClientHistory>
    */
-  public function getProjects(): Collection
-  {
-      return $this->projects;
+  public function getClientHistories(): Collection {
+    return $this->clientHistories;
   }
 
-  public function addProject(Project $project): self
-  {
-      if (!$this->projects->contains($project)) {
-          $this->projects->add($project);
-          $project->addClient($this);
-      }
+  public function addClientHistory(ClientHistory $clientHistory): self {
+    if (!$this->clientHistories->contains($clientHistory)) {
+      $this->clientHistories->add($clientHistory);
+      $clientHistory->setClient($this);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeProject(Project $project): self
-  {
-      if ($this->projects->removeElement($project)) {
-          $project->removeClient($this);
+  public function removeClientHistory(ClientHistory $clientHistory): self {
+    if ($this->clientHistories->removeElement($clientHistory)) {
+      // set the owning side to null (unless already changed)
+      if ($clientHistory->getClient() === $this) {
+        $clientHistory->setClient(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
 }

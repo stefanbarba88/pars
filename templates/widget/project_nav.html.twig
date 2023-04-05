@@ -92,17 +92,13 @@
                     </a>
 
                     <div class="dropdown-menu dropdown-menu-end">
-                        <a href="{{ path('app_project_profile_view', { id: project.id}) }}" class="dropdown-item">
-                            <i class="ph-clipboard-text me-2"></i>
+                        <a href="{{ path('app_project_form', { id: project.id}) }}" class="dropdown-item">
+                            <i class="ph-note-pencil me-2"></i>
                             Izmenite profil
                         </a>
-                        <a href="{{ path('app_project_profile_view', { id: project.id}) }}" class="dropdown-item">
-                            <i class="ph-lock-key me-2"></i>
-                            Izmenite nalog
-                        </a>
-                        <a href="{{ path('app_project_profile_view', { id: project.id}) }}" class="dropdown-item">
-                            <i class="ph-image me-2"></i>
-                            Izmenite profilnu sliku
+                        <a href="{{ path('app_project_profile_history_list', { id: project.id}) }}" class="dropdown-item">
+                            <i class="ph-clock-counter-clockwise me-2"></i>
+                            Istorija izmena
                         </a>
                         <div class="dropdown-divider"></div>
                         <a href="{{ path('app_project_profile_view', { id: project.id}) }}" class="dropdown-item">

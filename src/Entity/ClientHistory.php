@@ -2,22 +2,22 @@
 
 namespace App\Entity;
 
-use App\Repository\ProjectHistoryRepository;
+use App\Repository\ClientHistoryRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ProjectHistoryRepository::class)]
+#[ORM\Entity(repositoryClass: ClientHistoryRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class ProjectHistory {
+class ClientHistory {
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]
   private ?int $id = null;
 
-  #[ORM\ManyToOne(inversedBy: 'projectHistories')]
+  #[ORM\ManyToOne(inversedBy: 'clientHistories')]
   #[ORM\JoinColumn(nullable: false)]
-  private ?Project $project = null;
+  private ?Client $client = null;
 
 
   #[ORM\Column]
@@ -48,12 +48,12 @@ class ProjectHistory {
     return $this->id;
   }
 
-  public function getProject(): ?Project {
-    return $this->project;
+  public function getClient(): ?Client {
+    return $this->client;
   }
 
-  public function setProject(?Project $project): self {
-    $this->project = $project;
+  public function setClient(?Client $client): self {
+    $this->client = $client;
 
     return $this;
   }

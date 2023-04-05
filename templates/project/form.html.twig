@@ -187,33 +187,76 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-lg-3 hide payment_price">
-                                        <div class="mb-3">
-                                            {{ form_label(form.price, 'Fiksna cena:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.price, {attr: { class: 'form-control priceValue' }}) }}
-                                            <span class="form-text">Format: 0.00</span>
+                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::FIKSNA_CENA') %}
+                                        <div class="col-lg-3 payment_price">
+                                            <div class="mb-3">
+                                                {{ form_label(form.price, 'Fiksna cena:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.price, {attr: { class: 'form-control priceValue required' }}) }}
+                                                <span class="form-text">Format: 0.00</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-3 hide payment_ph">
-                                        <div class="mb-3">
-                                            {{ form_label(form.pricePerHour, 'Cena po satu:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.pricePerHour, {attr: { class: 'form-control phValue' }}) }}
-                                            <span class="form-text">Format: 0.00</span>
+                                    {% else %}
+                                        <div class="col-lg-3 hide payment_price">
+                                            <div class="mb-3">
+                                                {{ form_label(form.price, 'Fiksna cena:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.price, {attr: { class: 'form-control priceValue' }}) }}
+                                                <span class="form-text">Format: 0.00</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-3 hide payment_pt">
-                                        <div class="mb-3">
-                                            {{ form_label(form.pricePerTask, 'Cena po zadatku:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.pricePerTask, {attr: { class: 'form-control ptValue' }}) }}
-                                            <span class="form-text">Format: 0.00</span>
+                                    {% endif %}
+
+                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_SATU') %}
+                                        <div class="col-lg-3 payment_ph">
+                                            <div class="mb-3">
+                                                {{ form_label(form.pricePerHour, 'Cena po satu:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.pricePerHour, {attr: { class: 'form-control phValue required' }}) }}
+                                                <span class="form-text">Format: 0.00</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-3 hide payment_currency">
-                                        <div class="mb-3">
-                                            {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue' }}) }}
+                                    {% else %}
+                                        <div class="col-lg-3 hide payment_ph">
+                                            <div class="mb-3">
+                                                {{ form_label(form.pricePerHour, 'Cena po satu:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.pricePerHour, {attr: { class: 'form-control phValue' }}) }}
+                                                <span class="form-text">Format: 0.00</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    {% endif %}
+
+                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_ZADATKU') %}
+                                        <div class="col-lg-3 payment_pt">
+                                            <div class="mb-3">
+                                                {{ form_label(form.pricePerTask, 'Cena po zadatku:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.pricePerTask, {attr: { class: 'form-control ptValue required' }}) }}
+                                                <span class="form-text">Format: 0.00</span>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="col-lg-3 hide payment_pt">
+                                            <div class="mb-3">
+                                                {{ form_label(form.pricePerTask, 'Cena po zadatku:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.pricePerTask, {attr: { class: 'form-control ptValue' }}) }}
+                                                <span class="form-text">Format: 0.00</span>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::BESPLATNO') %}
+                                        <div class="col-lg-3 hide payment_currency">
+                                            <div class="mb-3">
+                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue required' }}) }}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="col-lg-3 payment_currency">
+                                            <div class="mb-3">
+                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue' }}) }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
                                 </div>
                             </fieldset>
 
@@ -237,22 +280,42 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row hide timeRound">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval' }}) }}
-                                            <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
+                                {% if project.timeRoundUp %}
+                                    <div class="row timeRound">
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval required' }}) }}
+                                                <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.minEntry, {attr: { class: 'form-control minent required' }}) }}
+                                                <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.minEntry, {attr: { class: 'form-control minent' }}) }}
-                                            <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>
+                                {% else %}
+                                    <div class="row hide timeRound">
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval' }}) }}
+                                                <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.minEntry, {attr: { class: 'form-control minent' }}) }}
+                                                <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                {% endif %}
+
                             </fieldset>
 
                             <div class="text-end">
@@ -328,7 +391,7 @@
         $(function () {
             $(".payment").change(function(e) {
                 e.preventDefault();
-                if ($(this).val() == "2") {
+                if ($(this).val() == '2') {
 
                     $('.payment_price').removeClass('hide');
                     $('.priceValue').addClass('required');
@@ -343,7 +406,7 @@
                     $('.currencyValue').addClass('required');
 
                 }
-                else if ($(this).val() == "3") {
+                else if ($(this).val() == '3') {
                     $('.payment_ph').removeClass('hide');
                     $('.phValue').addClass('required');
 
@@ -358,7 +421,7 @@
 
 
                 }
-                else if ($(this).val() == "4") {
+                else if ($(this).val() == '4') {
                     $('.payment_ph').addClass('hide');
                     $('.phValue').removeClass('required');
 

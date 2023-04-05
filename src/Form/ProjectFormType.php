@@ -3,14 +3,12 @@
 namespace App\Form;
 
 use App\Classes\Data\PotvrdaData;
-use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VrstaPlacanjaData;
 use App\Entity\Category;
 use App\Entity\Client;
 use App\Entity\Currency;
 use App\Entity\Label;
 use App\Entity\Project;
-use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -21,7 +19,6 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Range;
 
 class ProjectFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
@@ -90,6 +87,7 @@ class ProjectFormType extends AbstractType {
       ])
       ->add('price', NumberType::class, [
         'required' => false,
+        'html5' => true,
         'attr' => [
           'min' => '0.01',
           'step' => '0.01'
@@ -97,6 +95,7 @@ class ProjectFormType extends AbstractType {
       ])
       ->add('pricePerHour', NumberType::class, [
         'required' => false,
+        'html5' => true,
         'attr' => [
           'min' => '0.01',
           'step' => '0.01'
@@ -104,6 +103,7 @@ class ProjectFormType extends AbstractType {
       ])
       ->add('pricePerTask', NumberType::class, [
         'required' => false,
+        'html5' => true,
         'attr' => [
           'min' => '0.01',
           'step' => '0.01'

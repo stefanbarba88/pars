@@ -6,6 +6,11 @@ use App\Classes\Interfaces\DataClassInterface;
 
 class VrstaPlacanjaData implements DataClassInterface {
 
+  public const BESPLATNO = 1;
+  public const FIKSNA_CENA = 2;
+  public const PLACANJE_PO_SATU = 3;
+  public const PLACANJE_PO_ZADATKU = 4;
+
   public const VRSTA_PLACANJA = [
     1 => 'Besplatno',
     2 => 'Fiksna cena',

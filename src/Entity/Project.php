@@ -111,6 +111,7 @@ class Project implements JsonSerializable {
   }
 
   public function jsonSerialize(): array {
+
     return [
       'id' => $this->getId(),
       'title' => $this->getTitle(),
@@ -118,15 +119,18 @@ class Project implements JsonSerializable {
       'isSuspended' => $this->isSuspended(),
       'isTimeRoundUp' => $this->isTimeRoundUp(),
       'isEstimate' => $this->isEstimate(),
-      'category' => $this->getCategory(),
-      'client' => $this->getClient(),
-      'label' => $this->getLabel(),
+      'isClientView' => $this->isClientView(),
+      'category' => $this->category,
+      'client' => $this->client,
+      'label' => $this->label,
+      'editBy' => $this->editBy,
       'payment' => $this->getPayment(),
       'price' => $this->getPrice(),
       'pricePerHour' => $this->getPricePerHour(),
       'pricePerTask' => $this->getPricePerTask(),
       'currency' => $this->getCurrency(),
       'minEntry' => $this->getMinEntry(),
+      'roundingInterval' => $this->roundingInterval,
       'deadline' => $this->getDeadline()
       ];
 }

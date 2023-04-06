@@ -77,16 +77,20 @@
 
                     <div class="dropdown-menu dropdown-menu-end">
                         <a href="{{ path('app_user_edit_info_form', { id: user.id}) }}" class="dropdown-item">
-                            <i class="ph-clipboard-text me-2"></i>
-                            Izmenite profil
+                            <i class="ph-note-pencil me-2"></i>
+                            Lični i kontakt podaci
                         </a>
                         <a href="{{ path('app_user_edit_account_form', { id: user.id}) }}" class="dropdown-item">
-                            <i class="ph-lock-key me-2"></i>
-                            Izmenite nalog
+                            <i class="ph-note-pencil me-2"></i>
+                            Login podaci
                         </a>
                         <a href="{{ path('app_user_edit_image_form', { id: user.id}) }}" class="dropdown-item">
                             <i class="ph-image me-2"></i>
-                            Izmenite profilnu sliku
+                            Profilna slika/avatar
+                        </a>
+                        <a href="{{ path('app_user_history_list', { id: user.id}) }}" class="dropdown-item">
+                            <i class="ph-clock-counter-clockwise me-2"></i>
+                            Istorija izmena
                         </a>
                         <div class="dropdown-divider"></div>
                         <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="dropdown-item">

@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ user.getFullName() }}
+                                {{ userHistory.user.getFullName()}}
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -28,7 +28,7 @@
                             <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
                                 <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
                                 <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_user_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                    <a href="{{ path('app_client_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
                                         <i class="ph-plus"></i>
                                     </a>
                                 </div>
@@ -41,8 +41,9 @@
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_users') }}" class="breadcrumb-item">Korisnici</a>
-                                <a href="{{ path('app_user_profile_view', { id: user.id}) }}" class="breadcrumb-item">Profil</a>
-                                <span class="breadcrumb-item active">Izmena profilne slike/avatara</span>
+                                <a href="{{ path('app_user_profile_view', { id: userHistory.user.id}) }}" class="breadcrumb-item">Profil</a>
+                                <a href="{{ path('app_user_history_list', { id: userHistory.user.id}) }}" class="breadcrumb-item">Istorija izmena</a>
+                                <span class="breadcrumb-item active">V.{{ userHistory.version }}</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -86,29 +87,18 @@
                             </div>
                         </div>
                     </div>
-
-                    {{ render(controller('App\\Controller\\WidgetController::userProfilNavigation', { user: user } )) }}
-
+                    {{ render(controller('App\\Controller\\WidgetController::userProfilNavigation', { user: userHistory.user} )) }}
                 </div>
                 <!-- /page header -->
 
                 <!-- Content area -->
                 <div class="content">
-                    {% if not form.vars.valid %}
-                        {% for child in form.children %}
-                            {%for error in child.vars.errors%}
-                                <div class="alert alert-danger alert-dismissible fade show">
-                                    <span class="fw-semibold">{{error.message}}</span>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>
-                            {%endfor%}
-                        {%endfor%}
-                    {%endif%}
+
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
                         <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::userProfilSidebar', { user: user } )) }}
+                        {{ render(controller('App\\Controller\\WidgetController::userProfilSidebar', { user: userHistory.user } )) }}
                         <!-- /left sidebar component -->
 
                         <!-- Right content -->
@@ -116,42 +106,84 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">Izmena profilne slike/avatara</h5>
+                                        <h5 class="mb-0">Lični i kontakt podaci</h5>
                                     </div>
-                                    {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
                                     <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <div class="mb-3">
-                                                    <div class="card">
-                                                        <div class="card-img-actions m-1">
-                                                            <img class="card-img img-fluid" src="{{ image.thumbnail500 }}" alt="{{ user.fullName }}">
-                                                            <div class="card-img-actions-overlay card-img">
-                                                                <a href="{{ image.thumbnail500 }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                                    <i class="ph-plus"></i>
-                                                                </a>
-{#                                                                <a href="#" class="btn btn-outline-white btn-icon rounded-pill ms-2">#}
-{#                                                                    <i class="ph-link"></i>#}
-{#                                                                </a>#}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-8">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.slika, 'Profilna slika:', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.slika, {attr: { class: 'form-control file-input required' }}) }}
-                                                    <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
-                                                </div>
-                                            </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Verzija izmene:</div>
+                                            <div class="col-8">V.{{ userHistory.version }}</div>
                                         </div>
-                                        <div class="text-end">
-                                            <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Ime i prezime:</div>
+                                            <div class="col-8">{{ userH.fullName() }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Datum rođenja:</div>
+                                            <div class="col-8">{{ userH.datumRodjenja | date("d.m.Y")}}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Pol:</div>
+                                            <div class="col-8">{{ userH.getPolData()}}</div>
+                                        </div>
+                                        <div class="row p-2 ">
+                                            <div class="col-4" >Grad:</div>
+                                            <div class="col-8">{{ userH.grad.getFormTitle() }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Adresa:</div>
+                                            <div class="col-8">{{ userH.adresa }}</div>
+                                        </div>
+                                        <div class="row p-2 ">
+                                            <div class="col-4">Telefon#1:</div>
+                                            <div class="col-8">{{ userH.telefon1 }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Telefon#2:</div>
+                                            <div class="col-8">{{ userH.telefon2 | default('/') }}</div>
                                         </div>
                                     </div>
-                                    {{ form_end(form) }}
                                 </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Login podaci</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Email:</div>
+                                            <div class="col-8">{{ userH.email }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Vrsta zaposlenja:</div>
+                                            <div class="col-8">{{ userH.vrstaZaposlenjaData }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Tip korisnika:</div>
+                                            <div class="col-8">{{ userH.badgeByUserType | raw }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Pozicija:</div>
+                                            <div class="col-8">{{ userH.pozicija.title | default('/')  }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if userH.editBy is not null %}
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Verzija kreirana:</h5>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Izmenio:</div>
+                                                <div class="col-8">{{ userH.editBy.getFullName() | default('/') }}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Vreme:</div>
+                                                <div class="col-8">{{ userHistory.created | date("d.m.Y") }} u {{ userHistory.created | date("H:i:s") }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                         <!-- /right content -->
@@ -181,12 +213,12 @@
     {{ parent() }}
 
     <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
-    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
-    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
-    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
-    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
-    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
-    {#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
 
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
@@ -206,10 +238,6 @@
     <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
 
-    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
-    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
-    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
-
     <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
@@ -222,10 +250,6 @@
 
     <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
-
-    <script src="{{ asset('assets/js/vendor/media/glightbox.min.js') }}"></script>
-    <script src="{{ asset('assets/demo/pages/gallery_library.js') }}"></script>
-
 
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>

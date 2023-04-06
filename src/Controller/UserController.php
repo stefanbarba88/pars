@@ -6,6 +6,7 @@ use App\Classes\Avatar;
 use App\Classes\Data\NotifyMessagesData;
 use App\Entity\Image;
 use App\Entity\User;
+use App\Entity\UserHistory;
 use App\Form\UserEditImageFormType;
 use App\Form\UserEditInfoFormType;
 use App\Form\UserEditAccountFormType;
@@ -20,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/users')]
 class UserController extends AbstractController {
@@ -272,5 +274,24 @@ class UserController extends AbstractController {
 
 
     return $this->render('user/settings.html.twig', $args);
+  }
+
+  #[Route('/history-user-list/{id}', name: 'app_user_history_list')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function listUserHistory(User $user): Response {
+    $args['user'] = $user;
+    $args['historyUsers'] = $this->em->getRepository(UserHistory::class)->findBy(['user' => $user], ['id' => 'DESC']);
+
+    return $this->render('user/user_history_list.html.twig', $args);
+  }
+
+  #[Route('/history-user-view/{id}', name: 'app_user_profile_history_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewUserHistory(UserHistory $userHistory, SerializerInterface $serializer): Response {
+
+    $args['userH'] = $serializer->deserialize($userHistory->getHistory(), user::class, 'json');
+    $args['userHistory'] = $userHistory;
+
+    return $this->render('user/view_history_profile.html.twig', $args);
   }
 }

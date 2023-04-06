@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Korisnici
+                                {{ user.getFullName() }}
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -107,7 +107,7 @@
                                 <div class="card">
                                     <div class="card-header">
 
-                                        <h5 class="mb-0">Lični podaci <a href="{{ path('app_user_edit_info_form', {id: user.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                        <h5 class="mb-0">Lični i kontakt podaci <a href="{{ path('app_user_edit_info_form', {id: user.id}) }}"><i class="ph-note-pencil"></i></a></h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">
@@ -118,30 +118,23 @@
                                             <div class="col-4">Datum rođenja:</div>
                                             <div class="col-8">{{ user.datumRodjenja | date("d.m.Y")}}</div>
                                         </div>
-                                        <div class="row p-2 bg">
+                                        <div class="row p-2">
                                             <div class="col-4">Pol:</div>
                                             <div class="col-8">{{ user.getPolData()}}</div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Kontakt podaci <a href="{{ path('app_user_edit_info_form', {id: user.id}) }}"><i class="ph-note-pencil"></i></a></h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row p-2">
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4" >Grad:</div>
                                             <div class="col-8">{{ user.grad.getFormTitle() }}</div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2">
                                             <div class="col-4">Adresa:</div>
                                             <div class="col-8">{{ user.adresa }}</div>
                                         </div>
-                                        <div class="row p-2">
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Telefon#1:</div>
                                             <div class="col-8">{{ user.telefon1 }}</div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2">
                                             <div class="col-4">Telefon#2:</div>
                                             <div class="col-8">{{ user.telefon2 | default('/') }}</div>
                                         </div>

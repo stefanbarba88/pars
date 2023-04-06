@@ -101,135 +101,128 @@
                         {%endfor%}
                     {%endif%}
                     <!-- Wizard with validation -->
+
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">Registracija novog korisnika</h6>
                         </div>
-                        {{ form_start(form, {'attr': {'class' : 'wizard-form steps-validation', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
-                            <h6>Lični podaci</h6>
-                            <fieldset>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.ime, 'Ime:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.ime, {attr: { class: 'form-control required' }}) }}
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.prezime, 'Prezime:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.prezime, {attr: { class: 'form-control required' }}) }}
-                                        </div>
+                        {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.ime, 'Ime:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.ime, {attr: { class: 'form-control required' }}) }}
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.datumRodjenja, 'Datum rođenja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            <div class="input-group">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.prezime, 'Prezime:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.prezime, {attr: { class: 'form-control required' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.datumRodjenja, 'Datum rođenja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        <div class="input-group">
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                                {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom' }}) }}
-                                            </div>
-                                            <span class="form-text">Format: 31.12.1900</span>
+                                            {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom' }}) }}
                                         </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.pol, 'Pol:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.pol, {attr: { class: 'form-control select required' }}) }}
-                                        </div>
+                                        <span class="form-text">Format: 31.12.1900</span>
                                     </div>
                                 </div>
-                            </fieldset>
-
-                            <h6>Login podaci</h6>
-                            <fieldset>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.plainPassword, 'Lozinka:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.plainPassword, {attr: { class: 'form-control required' }}) }}
-                                            <span class="form-text">Format: Minimum 8 karaktera (obavezno jedno veliko slovo, jedno malo slovo, jedan specijalan karakter i jednu cifru) </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.email, 'Email:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.email, {attr: { class: 'form-control required' }}) }}
-                                        </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.pol, 'Pol:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.pol, {attr: { class: 'form-control select required' }}) }}
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.vrstaZaposlenja, 'Vrsta zaposlenja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required' }}) }}
-                                        </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.plainPassword, 'Lozinka:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.plainPassword, {attr: { class: 'form-control required' }}) }}
+                                        <span class="form-text">Format: Minimum 8 karaktera (obavezno jedno veliko slovo, jedno malo slovo, jedan specijalan karakter i jednu cifru) </span>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.userType, 'Tip korisnika:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.userType, {attr: { class: 'form-control select required role' }}) }}
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 hide ROLE_EMPLOYEE">
-                                        <div class="mb-3">
-                                            {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.pozicija, {attr: { class: 'form-control select' }}) }}
-                                        </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.email, 'Email:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.email, {attr: { class: 'form-control required' }}) }}
                                     </div>
                                 </div>
-                            </fieldset>
-                            <h6>Slika</h6>
-                            <fieldset>
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            {{ form_label(form.slika, 'Profilna slika:', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.slika, {attr: { class: 'form-control file-input' }}) }}
-                                        </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.vrstaZaposlenja, 'Vrsta zaposlenja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required' }}) }}
                                     </div>
                                 </div>
-                            </fieldset>
-
-                            <h6>Dodatne informacije</h6>
-                            <fieldset>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.grad, 'Grad:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.grad, {attr: { class: 'form-control select required' }}) }}
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.adresa, 'Ulica i broj:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.adresa, {attr: { class: 'form-control required' }}) }}
-                                            <span class="form-text">Format: Bulevar Milutina Milankovića 1</span>
-                                        </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.userType, 'Tip korisnika:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.userType, {attr: { class: 'form-control select required role' }}) }}
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.telefon1, 'Telefon #1:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.telefon1, {attr: { class: 'form-control required' }}) }}
-                                            <span class="form-text">Format: 0661111222</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
-                                            <span class="form-text">Format: 0661111222</span>
-                                        </div>
+                                <div class="col-lg-6 hide ROLE_EMPLOYEE">
+                                    <div class="mb-3">
+                                        {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.pozicija, {attr: { class: 'form-control select' }}) }}
                                     </div>
                                 </div>
-                            </fieldset>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        {{ form_label(form.slika, 'Profilna slika:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.slika, {attr: { class: 'form-control file-input' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.grad, 'Grad:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.grad, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.adresa, 'Ulica i broj:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.adresa, {attr: { class: 'form-control required' }}) }}
+                                        <span class="form-text">Format: Bulevar Milutina Milankovića 1</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.telefon1, 'Telefon #1:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.telefon1, {attr: { class: 'form-control required' }}) }}
+                                        <span class="form-text">Format: 0661111222</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
+                                        <span class="form-text">Format: 0661111222</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                            </div>
+                        </div>
 
                         {{ form_end(form) }}
                     </div>
@@ -282,7 +275,7 @@
     <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
 
     <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
-
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
     {% endif %}

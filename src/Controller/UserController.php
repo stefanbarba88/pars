@@ -38,7 +38,9 @@ class UserController extends AbstractController {
   #[Entity('usr', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, User $usr, UploadService $uploadService): Response {
-    $usr->setEditBy($this->getUser());
+    //ovde izvlacimo ulogovanog usera
+//    $user = $this->getUser();
+    $user = $this->em->getRepository(User::class)->find(1);
 //    $request->query->getInt('user_type')
     $form = $this->createForm(UserRegistrationFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -53,6 +55,8 @@ class UserController extends AbstractController {
         } else {
           $file = $uploadService->upload($file, $usr->getImageUploadPath());
         }
+//        dd($usr);
+        $usr->setCreatedBy($user);
 
         $this->em->getRepository(User::class)->register($usr, $file, $this->getParameter('kernel.project_dir'));
 

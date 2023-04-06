@@ -77,6 +77,9 @@ class User implements UserInterface, JsonSerializable {
   #[ORM\ManyToOne(targetEntity: self::class)]
   private ?self $editBy = null;
 
+  #[ORM\ManyToOne(targetEntity: self::class)]
+  private ?self $createdBy = null;
+
   #[ORM\Column]
   private bool $isSuspended = false;
 
@@ -457,6 +460,16 @@ class User implements UserInterface, JsonSerializable {
 
   public function setEditBy(?self $editBy): self {
     $this->editBy = $editBy;
+
+    return $this;
+  }
+
+  public function getCreatedBy(): ?self {
+    return $this->createdBy;
+  }
+
+  public function setCreatedBy(?self $createdBy): self {
+    $this->createdBy = $createdBy;
 
     return $this;
   }

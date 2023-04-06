@@ -21,7 +21,11 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Klijenti
+                                {% if client.id is not null %}
+                                    {{ client.title | upper}}
+                                {% else %}
+                                    Klijenti
+                                {% endif %}
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -46,7 +50,12 @@
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_clients') }}" class="breadcrumb-item">Klijenti</a>
-                                <span class="breadcrumb-item active">Dodavanje/Izmena klijenta</span>
+                                {% if client.id is not null %}
+                                    <a href="{{ path('app_client_profile_view', {id: client.id} ) }}" class="breadcrumb-item">Profil</a>
+                                    <span class="breadcrumb-item active">Izmena</span>
+                                {% else %}
+                                    <span class="breadcrumb-item active">Dodavanje</span>
+                                {% endif %}
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -165,10 +174,18 @@
                                     <!-- Wizard with validation -->
                                     <div class="card">
                                         <div class="card-header">
-                                            <h6 class="mb-0">Dodavanje/Izmena klijenta</h6>
+                                            <h6 class="mb-0">
+                                                {% if client.id is not null %}
+                                                    Izmena
+                                                {% else %}
+                                                    Dodavanje
+                                                {% endif %}
+                                                klijenta
+                                            </h6>
                                         </div>
                                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
                                         <div class="card-body">
+                                            <div class="fw-bold border-bottom pb-2 mb-3">Osnovni podaci</div>
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">
@@ -200,6 +217,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="fw-bold border-bottom pb-2 mb-3">Kontakt podaci</div>
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">
@@ -215,6 +233,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">

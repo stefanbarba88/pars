@@ -4,7 +4,7 @@
             <li class="nav-item me-1">
                 <a href="{{ path('app_client_profile_view', { id: client.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
                     <div class="d-flex align-items-center mx-lg-1">
-                        <i class="ph-user"></i>
+                        <i class="ph-factory"></i>
                         <span class="d-none d-lg-inline-block ms-2">Profil</span>
                     </div>
                 </a>
@@ -77,8 +77,12 @@
 
                     <div class="dropdown-menu dropdown-menu-end">
                         <a href="{{ path('app_client_form', { id: client.id}) }}" class="dropdown-item">
-                            <i class="ph-clipboard-text me-2"></i>
+                            <i class="ph-note-pencil me-2"></i>
                             Izmenite profil
+                        </a>
+                        <a href="{{ path('app_client_history_list', { id: client.id}) }}" class="dropdown-item">
+                            <i class="ph-clock-counter-clockwise me-2"></i>
+                            Istorija izmena
                         </a>
                         <div class="dropdown-divider"></div>
                         <a href="{{ path('app_client_settings_form', { id: client.id}) }}" class="dropdown-item">

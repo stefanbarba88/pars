@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
 use App\Entity\Client;
+use App\Entity\ClientHistory;
 use App\Entity\Image;
 use App\Entity\User;
 use App\Form\ClientFormType;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/clients')]
 class ClientController extends AbstractController {
@@ -154,6 +156,25 @@ class ClientController extends AbstractController {
 
 
     return $this->render('client/settings.html.twig', $args);
+  }
+
+  #[Route('/history-client-list/{id}', name: 'app_client_history_list')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function listClientHistory(Client $client): Response {
+    $args['client'] = $client;
+    $args['historyClients'] = $this->em->getRepository(ClientHistory::class)->findBy(['client' => $client], ['id' => 'DESC']);
+
+    return $this->render('client/client_history_list.html.twig', $args);
+  }
+
+  #[Route('/history-client-view/{id}', name: 'app_client_profile_history_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewClientHistory(ClientHistory $clientHistory, SerializerInterface $serializer): Response {
+
+    $args['clientH'] = $serializer->deserialize($clientHistory->getHistory(), Client::class, 'json');
+    $args['clientHistory'] = $clientHistory;
+
+    return $this->render('client/view_history_profile.html.twig', $args);
   }
 
 }

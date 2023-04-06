@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Klijenti
+                                {{ client.title | upper}}
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -41,7 +41,8 @@
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_clients') }}" class="breadcrumb-item">Klijenti</a>
-                                <span class="breadcrumb-item active">{{ client.title | upper }} - podešavanje</span>
+                                <a href="{{ path('app_client_profile_view', {id: client.id} ) }}" class="breadcrumb-item">Profil</a>
+                                <span class="breadcrumb-item active">Podešavanja</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">

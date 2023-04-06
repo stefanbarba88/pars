@@ -147,7 +147,7 @@
                                             <div class="col-4" >Klijent:</div>
                                             <div class="col-8">
                                                 {% for client in project.client %}
-                                                    <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title }}</a>{% if  not loop.last %}<br>{% endif %}
+                                                    <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title | upper }}</a>{% if  not loop.last %}<br>{% endif %}
                                                 {% endfor %}
                                             </div>
                                         </div>

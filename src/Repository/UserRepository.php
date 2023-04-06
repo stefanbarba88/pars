@@ -5,11 +5,15 @@ namespace App\Repository;
 use App\Classes\Data\UserRolesData;
 use App\Classes\DTO\UploadedFileDTO;
 use App\Entity\Image;
+use App\Entity\Project;
+use App\Entity\ProjectHistory;
 use App\Entity\User;
+use App\Entity\UserHistory;
 use App\Service\MailService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -27,11 +31,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   private UserPasswordHasherInterface $passwordHasher;
   private MailService $mail;
+  private Security $security;
 
-  public function __construct(ManagerRegistry $registry, UserPasswordHasherInterface $passwordHasher, MailService $mail) {
+  public function __construct(ManagerRegistry $registry, UserPasswordHasherInterface $passwordHasher, MailService $mail, Security $security) {
     parent::__construct($registry, User::class);
     $this->passwordHasher = $passwordHasher;
     $this->mail = $mail;
+    $this->security = $security;
   }
 
   public function register(User $user, UploadedFileDTO $file, string $kernelPath): User {
@@ -45,20 +51,39 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $user;
   }
 
-  public function save(User $user): User {
+  public function saveHistory(User $user, ?string $history): User {
+    $historyUser = new UserHistory();
+    $historyUser->setHistory($history);
+
+    $user->addUserHistory($historyUser);
+
+    return $user;
+  }
+
+  public function save(User $user, ?string $history = null): User {
+
+    if (!is_null($history)) {
+      $this->saveHistory($user, $history);
+    }
 
     if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
       $user->setPozicija(null);
     }
 
     if (is_null($user->getId())) {
-      $this->getEntityManager()->persist($user);
+      //    $user->setEditBy($this->security->getUser());
+      $user->setCreatedBy($this->getEntityManager()->getRepository(User::class)->find(1));
+    } else {
+      $user->setEditBy($this->getEntityManager()->getRepository(User::class)->find(2));
     }
 
     if (!empty($user->getPlainPassword())) {
       $this->hashPlainPassword($user);
-
       $this->mail->edit($user);
+    }
+
+    if (is_null($user->getId())) {
+      $this->getEntityManager()->persist($user);
     }
 
     $this->getEntityManager()->flush();
@@ -82,13 +107,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
   }
 
-  public function suspend(User $user): User {
+  public function suspend(User $user, ?string $history): User {
     if ($user->isSuspended()) {
       $this->mail->deactivate($user);
     } else {
       $this->mail->activate($user);
     }
-    $this->save($user);
+    $this->save($user, $history);
 
     return $user;
 

@@ -36,9 +36,6 @@ class ClientController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, Client $client): Response {
     $history = null;
-    //ovde izvlacimo ulogovanog usera
-//    $user = $this->getUser();
-    $user = $this->em->getRepository(User::class)->find(1);
     if($client->getId()) {
       $history = $this->json($client, Response::HTTP_OK, [], [
           ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
@@ -55,7 +52,7 @@ class ClientController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $this->em->getRepository(Client::class)->saveClient($client, $user, $history);
+        $this->em->getRepository(Client::class)->save($client, $history);
 
         notyf()
           ->position('x', 'right')

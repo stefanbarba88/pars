@@ -57,6 +57,10 @@ class Client implements JsonSerializable {
   #[ORM\JoinColumn(nullable: true)]
   private ?User $editBy = null;
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?User $createdBy = null;
+
   #[ORM\Column]
   private bool $isSuspended = false;
 
@@ -202,6 +206,20 @@ class Client implements JsonSerializable {
    */
   public function setEditBy(?User $editBy): void {
     $this->editBy = $editBy;
+  }
+
+  /**
+   * @return User|null
+   */
+  public function getCreatedBy(): ?User {
+    return $this->createdBy;
+  }
+
+  /**
+   * @param User|null $createdBy
+   */
+  public function setCreatedBy(?User $createdBy): void {
+    $this->createdBy = $createdBy;
   }
 
   /**

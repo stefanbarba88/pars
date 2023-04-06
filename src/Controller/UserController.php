@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 #[Route('/users')]
 class UserController extends AbstractController {
@@ -38,9 +39,7 @@ class UserController extends AbstractController {
   #[Entity('usr', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, User $usr, UploadService $uploadService): Response {
-    //ovde izvlacimo ulogovanog usera
-//    $user = $this->getUser();
-    $user = $this->em->getRepository(User::class)->find(1);
+
 //    $request->query->getInt('user_type')
     $form = $this->createForm(UserRegistrationFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -55,8 +54,6 @@ class UserController extends AbstractController {
         } else {
           $file = $uploadService->upload($file, $usr->getImageUploadPath());
         }
-//        dd($usr);
-        $usr->setCreatedBy($user);
 
         $this->em->getRepository(User::class)->register($usr, $file, $this->getParameter('kernel.project_dir'));
 
@@ -78,7 +75,16 @@ class UserController extends AbstractController {
   #[Route('/edit-info/{id}', name: 'app_user_edit_info_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editInfo(User $usr, Request $request): Response {
-    $usr->setEditBy($this->getUser());
+    $history = null;
+    if($usr->getId()) {
+      $history = $this->json($usr, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
 
     $form = $this->createForm(UserEditInfoFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_info_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -86,7 +92,7 @@ class UserController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $this->em->getRepository(User::class)->save($usr);
+        $this->em->getRepository(User::class)->save($usr, $history);
 
         notyf()
           ->position('x', 'right')
@@ -107,7 +113,16 @@ class UserController extends AbstractController {
   #[Route('/edit-account/{id}', name: 'app_user_edit_account_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editAccount(User $usr, Request $request): Response {
-    $usr->setEditBy($this->getUser());
+    $history = null;
+    if($usr->getId()) {
+      $history = $this->json($usr, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
 
     $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -116,7 +131,7 @@ class UserController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $this->em->getRepository(User::class)->save($usr);
+        $this->em->getRepository(User::class)->save($usr, $history);
 
         notyf()
           ->position('x', 'right')
@@ -212,7 +227,16 @@ class UserController extends AbstractController {
   #[Route('/settings/{id}', name: 'app_user_settings_form')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function settings(User $usr, Request $request): Response {
-    $usr->setEditBy($this->getUser());
+    $history = null;
+    if($usr->getId()) {
+      $history = $this->json($usr, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
     $args['user'] = $usr;
     $form = $this->createForm(UserSuspendedFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_settings_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -221,7 +245,7 @@ class UserController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $this->em->getRepository(User::class)->suspend($usr);
+        $this->em->getRepository(User::class)->suspend($usr, $history);
 
           if ($usr->isSuspended()) {
             notyf()

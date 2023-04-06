@@ -109,6 +109,7 @@
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
 
                         <div class="card-body">
+                            <div class="fw-bold border-bottom pb-2 mb-3">Lični podaci</div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
@@ -143,6 +144,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="fw-bold border-bottom pb-2 mb-3">Login podaci</div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
@@ -180,14 +182,17 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="fw-bold border-bottom pb-2 mb-3">Profilna slika</div>
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         {{ form_label(form.slika, 'Profilna slika:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.slika, {attr: { class: 'form-control file-input' }}) }}
+                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
                                     </div>
                                 </div>
                             </div>
+                            <div class="fw-bold border-bottom pb-2 mb-3">Kontakt podaci</div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">

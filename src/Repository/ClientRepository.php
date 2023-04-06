@@ -8,6 +8,7 @@ use App\Entity\Image;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Client>
@@ -18,34 +19,35 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Client[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ClientRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, Client::class);
+    $this->security = $security;
   }
 
-  public function saveClient(Client $client, User $user, ?string $history): Client  {
+  public function saveHistory(Client $client, ?string $history): Client {
+    $historyClient = new ClientHistory();
+    $historyClient->setHistory($history);
 
-    if (!is_null($client->getId())) {
+    $client->addClientHistory($historyClient);
 
-      $historyClient = new ClientHistory();
-      $historyClient->setHistory($history);
+    return $client;
+  }
 
-      $client->addClientHistory($historyClient);
-      $client->setEditBy($user);
+  public function save(Client $client, ?string $history = null): Client {
 
-      return $this->save($client);
+    if (!is_null($history)) {
+      $this->saveHistory($client, $history);
     }
 
-//    $client->setCreatedBy($user);
-
-    return $this->save($client);
-
-  }
-
-  public function save(Client $client): Client {
-
     if (is_null($client->getId())) {
+      //    $user->setEditBy($this->security->getUser());
+      $client->setCreatedBy($this->getEntityManager()->getRepository(User::class)->find(1));
       $this->getEntityManager()->getRepository(Image::class)->addImagesClient($client);
       $this->getEntityManager()->persist($client);
+    } else {
+      $client->setEditBy($this->getEntityManager()->getRepository(User::class)->find(2));
     }
 
     $this->getEntityManager()->flush();

@@ -176,11 +176,10 @@
                                         <div class="card-header">
                                             <h6 class="mb-0">
                                                 {% if client.id is not null %}
-                                                    Izmena
+                                                    Izmena klijenta
                                                 {% else %}
-                                                    Dodavanje
+                                                    Dodavanje klijenta
                                                 {% endif %}
-                                                klijenta
                                             </h6>
                                         </div>
                                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}

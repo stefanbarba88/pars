@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Projekti
+                                {{ projectHistory.project.title }}
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -41,7 +41,7 @@
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
-                                <a href="{{ path('app_project_profile_view', { id: projectHistory.project.id}) }}" class="breadcrumb-item">{{ projectHistory.project.title }}</a>
+                                <a href="{{ path('app_project_profile_view', { id: projectHistory.project.id}) }}" class="breadcrumb-item">Informacije</a>
                                 <a href="{{ path('app_project_profile_history_list', { id: projectHistory.project.id}) }}" class="breadcrumb-item">Istorija izmena</a>
                                 <span class="breadcrumb-item active">V.{{ projectHistory.version }}</span>
                             </div>
@@ -102,23 +102,26 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header">
-
-                                        <h5 class="mb-0">V.{{ projectHistory.version }} - Osnovne informacije</h5>
+                                        <h5 class="mb-0">Osnovne informacije</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">
+                                            <div class="col-4">Verzija izmene:</div>
+                                            <div class="col-8">V.{{ projectHistory.version }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Naziv:</div>
                                             <div class="col-8">{{ projectH.title }}</div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2">
                                             <div class="col-4">Opis:</div>
                                             <div class="col-8">{{ projectH.description | raw }}</div>
                                         </div>
-                                        <div class="row p-2 bg">
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Rok:</div>
                                             <div class="col-8">{{ projectH.deadline ? projectH.deadline | date("d.m.Y") : '/' }}</div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2">
                                             <div class="col-4">Kategorija:</div>
                                             <div class="col-8">
                                                 {% for cat in projectH.category %}
@@ -126,7 +129,7 @@
                                                 {% endfor %}
                                             </div>
                                         </div>
-                                        <div class="row p-2 bg">
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Oznaka:</div>
                                             <div class="col-8">{{ projectH.label.title }}</div>
                                         </div>

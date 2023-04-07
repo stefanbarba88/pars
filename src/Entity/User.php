@@ -29,9 +29,11 @@ class User implements UserInterface, JsonSerializable {
   public function getImageUploadPath(): ?string {
     return $_ENV['USER_IMAGE_PATH'] . date('Y/m/d/');
   }
+
   public function getAvatarUploadPath(): ?string {
     return $_ENV['USER_AVATAR_PATH'] . date('Y/m/d/');
   }
+
   public function getThumbUploadPath(): ?string {
     return $_ENV['USER_THUMB_PATH'] . date('Y/m/d/');
   }
@@ -111,8 +113,14 @@ class User implements UserInterface, JsonSerializable {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserHistory::class, cascade : ["persist", "remove"])]
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserHistory::class, cascade: ["persist", "remove"])]
   private Collection $userHistories;
+
+  #[ORM\ManyToOne(inversedBy: 'users')]
+  private ?Image $image = null;
+
+  #[ORM\ManyToOne(inversedBy: 'contact')]
+  private ?Client $client = null;
 
   public function __construct() {
     $this->userHistories = new ArrayCollection();
@@ -494,6 +502,7 @@ class User implements UserInterface, JsonSerializable {
       'editBy' => $this->editBy,
       'isSuspended' => $this->isSuspended(),
       'email' => $this->getEmail(),
+      'image' => $this->getImage()
     ];
   }
 
@@ -522,6 +531,28 @@ class User implements UserInterface, JsonSerializable {
     }
 
     return $this;
+  }
+
+  public function getImage(): ?Image {
+    return $this->image;
+  }
+
+  public function setImage(?Image $image): self {
+    $this->image = $image;
+
+    return $this;
+  }
+
+  public function getClient(): ?Client
+  {
+      return $this->client;
+  }
+
+  public function setClient(?Client $client): self
+  {
+      $this->client = $client;
+
+      return $this;
   }
 
 }

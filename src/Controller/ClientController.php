@@ -37,6 +37,7 @@ class ClientController extends AbstractController {
   #[Entity('client', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, Client $client): Response {
+//    dd($client);
     $history = null;
     if($client->getId()) {
       $history = $this->json($client, Response::HTTP_OK, [], [
@@ -68,7 +69,6 @@ class ClientController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['client'] = $client;
-    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['client' => $client]);
 
     return $this->render('client/form.html.twig', $args);
   }
@@ -77,7 +77,6 @@ class ClientController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewProfile(Client $client): Response {
     $args['client'] = $client;
-    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['client' => $client]);
 
     return $this->render('client/view_profile.html.twig', $args);
   }
@@ -86,7 +85,6 @@ class ClientController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewActivity(Client $client): Response {
     $args['client'] = $client;
-    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['client' => $client]);
 
     return $this->render('client/view_activity.html.twig', $args);
   }
@@ -95,7 +93,6 @@ class ClientController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewCalendar(Client $client): Response {
     $args['client'] = $client;
-    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['client' => $client]);
 
     return $this->render('client/view_calendar.html.twig', $args);
   }
@@ -104,7 +101,6 @@ class ClientController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewCar(Client $client): Response {
     $args['client'] = $client;
-    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['client' => $client]);
 
     return $this->render('client/view_cars.html.twig', $args);
   }
@@ -113,7 +109,6 @@ class ClientController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewTools(Client $client): Response {
     $args['client'] = $client;
-    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['client' => $client]);
 
     return $this->render('client/view_tools.html.twig', $args);
   }
@@ -152,7 +147,6 @@ class ClientController extends AbstractController {
       }
     }
     $args['form'] = $form->createView();
-    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['client' => $client]);
 
 
     return $this->render('client/settings.html.twig', $args);

@@ -118,26 +118,30 @@
                                             <div class="col-8">{{ userH.fullName() }}</div>
                                         </div>
                                         <div class="row p-2">
+                                            <div class="col-4">Profilna slika/avatar:</div>
+                                            <div class="col-8"><img src="{{ userH.image.thumbnail100 }}" alt="{{ userH.fullName() }}" class="img-preview rounded"></div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Datum rođenja:</div>
                                             <div class="col-8">{{ userH.datumRodjenja | date("d.m.Y")}}</div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2">
                                             <div class="col-4">Pol:</div>
                                             <div class="col-8">{{ userH.getPolData()}}</div>
                                         </div>
-                                        <div class="row p-2 ">
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4" >Grad:</div>
                                             <div class="col-8">{{ userH.grad.getFormTitle() }}</div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2">
                                             <div class="col-4">Adresa:</div>
                                             <div class="col-8">{{ userH.adresa }}</div>
                                         </div>
-                                        <div class="row p-2 ">
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Telefon#1:</div>
                                             <div class="col-8">{{ userH.telefon1 }}</div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2">
                                             <div class="col-4">Telefon#2:</div>
                                             <div class="col-8">{{ userH.telefon2 | default('/') }}</div>
                                         </div>
@@ -169,7 +173,7 @@
                                 {% if userH.editBy is not null %}
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5 class="mb-0">Verzija kreirana:</h5>
+                                            <h5 class="mb-0">Verzija kreirana</h5>
                                         </div>
 
                                         <div class="card-body">

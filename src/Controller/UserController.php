@@ -158,6 +158,16 @@ class UserController extends AbstractController {
 
     $form = $this->createForm(UserEditImageFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_image_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
+      $history = null;
+      if($usr->getId()) {
+        $history = $this->json($usr, Response::HTTP_OK, [], [
+            ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+              return $object->getId();
+            }
+          ]
+        );
+        $history = $history->getContent();
+      }
 
       $form->handleRequest($request);
 
@@ -166,7 +176,10 @@ class UserController extends AbstractController {
         $file = $request->files->all()['user_edit_image_form']['slika'];
         $file = $uploadService->upload($file, $usr->getImageUploadPath());
 
-        $this->em->getRepository(Image::class)->addImages($file, $usr, $this->getParameter('kernel.project_dir'));
+        $image = $this->em->getRepository(Image::class)->addImage($file, $usr->getThumbUploadPath(), $this->getParameter('kernel.project_dir'));
+        $usr->setImage($image);
+
+        $this->em->getRepository(User::class)->save($usr, $history);
 
         notyf()
           ->position('x', 'right')
@@ -180,7 +193,6 @@ class UserController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['user'] = $usr;
-    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['user' => $usr]);
 
     return $this->render('user/edit_image.html.twig', $args);
   }
@@ -189,7 +201,6 @@ class UserController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewProfile(User $usr): Response {
     $args['user'] = $usr;
-    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['user' => $usr]);
 
     return $this->render('user/view_profile.html.twig', $args);
   }
@@ -280,7 +291,7 @@ class UserController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function listUserHistory(User $user): Response {
     $args['user'] = $user;
-    $args['historyUsers'] = $this->em->getRepository(UserHistory::class)->findBy(['user' => $user], ['id' => 'DESC']);
+    $args['historyUsers'] = $this->em->getRepository(UserHistory::class)->findBy(['user' => $user], ['id' => 'ASC']);
 
     return $this->render('user/user_history_list.html.twig', $args);
   }

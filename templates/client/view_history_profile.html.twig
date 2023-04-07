@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header.html.twig' %}
+    {% include 'includes/header_user.html.twig' %}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -97,6 +97,55 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
+                        <div class="sidebar sidebar-component sidebar-expand-lg bg-transparent shadow-none me-lg-3">
+                            <!-- Sidebar content -->
+                            <div class="sidebar-content">
+                                <!-- Navigation -->
+                                <div class="card">
+                                    <div class="sidebar-section-body text-center">
+                                        <div class="card-img-actions d-inline-block mb-3">
+                                            <img class="img-fluid rounded-circle" src="{{ asset(clientHistory.client.image.thumbnail500) }}" width="150" height="150" alt="{{ clientHistory.client.title }}">
+                                        </div>
+                                        <h6 class="mb-0">{{ clientHistory.client.title | upper }}</h6>
+                                    </div>
+                                    <ul class="nav nav-sidebar">
+                                        <li class="nav-item">
+                                            <a href="{{ path('app_client_profile_view', { id: clientHistory.client.id}) }}" class="nav-link" >
+                                                <i class="ph-user me-2"></i>
+                                                Profil
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ path('app_client_activity_view', { id: clientHistory.client.id}) }}" class="nav-link">
+                                                <i class="ph-activity me-2"></i>
+                                                Aktivnosti
+                                                <span class="badge bg-secondary rounded-pill ms-auto">29</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ path('app_client_calendar_view', { id: clientHistory.client.id}) }}" class="nav-link">
+                                                <i class="ph-calendar me-2"></i>Raspored
+                                                <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item-divider"></li>
+                                        <li class="nav-item">
+                                            {#                    <a href="{{ path('app_logout') }}" class="nav-link" data-bs-toggle="tab">#}
+                                            {#                        <i class="ph-sign-out me-2"></i>Odjavite se#}
+                                            {#                    </a>#}
+                                            <a href="{{ path('app_client_settings_form', { id: clientHistory.client.id}) }}" class="nav-link">
+                                                <i class="ph-lightbulb me-2"></i>Status
+                                                <span class="ms-auto">{{ clientHistory.client.badgeByStatus | raw }}</span>
+                                            </a>
+
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- /navigation -->
+                            </div>
+                            <!-- /sidebar content -->
+                        </div>
+
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
@@ -118,8 +167,12 @@
                                             <div class="col-8">{{ clientH.pib }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Lice za kontakt:</div>
-                                            <div class="col-8">{{ clientH.kontakt.fullName }}</div>
+                                            <div class="col-4">Lica za kontakt:</div>
+                                            <div class="col-8">
+                                                {% for contact in clientH.contact %}
+                                                    {{ contact.fullName }}{% if not loop.last %}<br>{% endif %}
+                                                {% endfor %}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -153,7 +206,7 @@
                                 {% if clientH.editBy is not null %}
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5 class="mb-0">Verzija kreirana:</h5>
+                                            <h5 class="mb-0">Verzija kreirana</h5>
                                         </div>
 
                                         <div class="card-body">

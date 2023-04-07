@@ -104,7 +104,7 @@
                                 <div class="card">
                                     <div class="sidebar-section-body text-center">
                                         <div class="card-img-actions d-inline-block mb-3">
-                                            <img class="img-fluid rounded-circle" src="{{ asset(image.thumbnail500) }}" width="150" height="150" alt="{{ client.title }}">
+                                            <img class="img-fluid rounded-circle" src="{{ asset(client.image.thumbnail500) }}" width="150" height="150" alt="{{ client.title }}">
                                         </div>
                                         <h6 class="mb-0">{{ client.title | upper }}</h6>
                                     </div>
@@ -163,8 +163,12 @@
                                             <div class="col-8">{{ client.pib }}</div>
                                         </div>
                                         <div class="row p-2 bg">
-                                            <div class="col-4">Lice za kontakt:</div>
-                                            <div class="col-8"><a href="{{ path('app_user_profile_view', {id: client.kontakt.id}) }}">{{ client.kontakt.fullName }}</a></div>
+                                            <div class="col-4">Lica za kontakt:</div>
+                                            <div class="col-8">
+                                                {% for contact in client.contact %}
+                                                    <a href="{{ path('app_user_profile_view', {id: contact.id}) }}">{{ contact.fullName }}</a>{% if  not loop.last %}<br>{% endif %}
+                                                {% endfor %}
+                                            </div>
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Kreirao:</div>
@@ -206,7 +210,7 @@
                                 {% if client.editBy is not null %}
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5 class="mb-0">Poslednja verzija:</h5>
+                                            <h5 class="mb-0">Poslednja verzija</h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="row p-2">

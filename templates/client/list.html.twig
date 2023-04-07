@@ -101,7 +101,7 @@
                                 <th>PIB/VAT</th>
                                 <th>Grad</th>
                                 <th>Država</th>
-                                <th>Kontakt lice</th>
+                                <th>Lica za kontakt</th>
                                 <th>Status</th>
                                 <th>Pregled</th>
                             </tr>
@@ -113,7 +113,11 @@
                                     <td>{{ client.pib }}</td>
                                     <td>{{ client.grad.title }}</td>
                                     <td>{{ client.grad.drzava.title }}</td>
-                                    <td><a href="{{ path('app_user_profile_view', { id: client.kontakt.id}) }}">{{ client.kontakt.getFullName() }}</a></td>
+                                    <td>
+                                        {% for contact in client.contact %}
+                                        <a href="{{ path('app_user_profile_view', { id: contact.id}) }}">{{ contact.getFullName() }}</a>{% if  not loop.last %},{% endif %}
+                                        {% endfor %}
+                                    </td>
                                     <td>{{ client.badgeByStatus | raw }}</td>
                                     <td>
                                         <a href="{{ path('app_client_profile_view', { id: client.id}) }}" class="btn btn-primary">

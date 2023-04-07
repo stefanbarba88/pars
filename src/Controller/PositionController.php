@@ -49,6 +49,7 @@ class PositionController extends AbstractController {
       }
     }
     $args['form'] = $form->createView();
+    $args['position'] = $pozicija;
 
     return $this->render('position/form.html.twig', $args);
   }

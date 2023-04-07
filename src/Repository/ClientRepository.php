@@ -44,7 +44,8 @@ class ClientRepository extends ServiceEntityRepository {
     if (is_null($client->getId())) {
       //    $user->setEditBy($this->security->getUser());
       $client->setCreatedBy($this->getEntityManager()->getRepository(User::class)->find(1));
-      $this->getEntityManager()->getRepository(Image::class)->addImagesClient($client);
+      $client->setImage($this->getEntityManager()->getRepository(Image::class)->find(2));
+
       $this->getEntityManager()->persist($client);
     } else {
       $client->setEditBy($this->getEntityManager()->getRepository(User::class)->find(2));

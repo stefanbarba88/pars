@@ -32,20 +32,13 @@ class ImageRepository extends ServiceEntityRepository {
     }
   }
 
-  public function addImagesUser(UploadedFileDTO $file, User $user, string $kernelPath): Image {
-
-    $image = $this->getEntityManager()->getRepository(Image::class)->findOneBy(['user' => $user]);
-    if (!is_null($image)) {
-      $this->remove($image, true);
-    }
+  public function addImage(UploadedFileDTO $file, string $thumbnailPath, string $kernelPath): Image {
 
     $image = new Image();
-    $image->setUser($user);
     $image->setOriginal($file->getAssetPath());
 
     $thumb = new Thumb();
-    $savepath = $kernelPath . $user->getThumbUploadPath();
-
+    $savepath = $kernelPath . $thumbnailPath;
 
     if (!file_exists($savepath)) {
       mkdir($savepath, 0777, true);
@@ -63,12 +56,21 @@ class ImageRepository extends ServiceEntityRepository {
       "max_width" => "500",
       "max_height" => "500"
     ];
+    $param3 = [
+      "sourcefile" => $file->getPath(),
+      "savepath" => $savepath . '1024' .$file->getFileName(),
+      "max_width" => "1024",
+      "max_height" => "768"
+    ];
 
     $thumb->thumbnail($param1);
     $thumb->thumbnail($param2);
+    $thumb->thumbnail($param3);
 
-    $image->setThumbnail100(str_replace("/public","",$user->getThumbUploadPath() . '100' .$file->getFileName()));
-    $image->setThumbnail500(str_replace("/public","",$user->getThumbUploadPath() . '500' .$file->getFileName()));
+
+    $image->setThumbnail100(str_replace("/public","",$thumbnailPath . '100' .$file->getFileName()));
+    $image->setThumbnail500(str_replace("/public","",$thumbnailPath . '500' .$file->getFileName()));
+    $image->setThumbnail1024(str_replace("/public","",$thumbnailPath . '1024' .$file->getFileName()));
 
     return $this->save($image);
   }

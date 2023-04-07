@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header.html.twig' %}
+    {% include 'includes/header_user.html.twig' %}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -92,38 +92,101 @@
 
                 <!-- Content area -->
                 <div class="content">
-                    <!-- State saving -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">Lista izmena</h6>
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Left sidebar component -->
+                        <div class="sidebar sidebar-component sidebar-expand-lg bg-transparent shadow-none me-lg-3">
+                            <!-- Sidebar content -->
+                            <div class="sidebar-content">
+                                <!-- Navigation -->
+                                <div class="card">
+                                    <div class="sidebar-section-body text-center">
+                                        <div class="card-img-actions d-inline-block mb-3">
+                                            <img class="img-fluid rounded-circle" src="{{ asset(client.image.thumbnail500) }}" width="150" height="150" alt="{{ client.title }}">
+                                        </div>
+                                        <h6 class="mb-0">{{ client.title | upper }}</h6>
+                                    </div>
+                                    <ul class="nav nav-sidebar">
+                                        <li class="nav-item">
+                                            <a href="{{ path('app_client_profile_view', { id: client.id}) }}" class="nav-link" >
+                                                <i class="ph-user me-2"></i>
+                                                Profil
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ path('app_client_activity_view', { id: client.id}) }}" class="nav-link">
+                                                <i class="ph-activity me-2"></i>
+                                                Aktivnosti
+                                                <span class="badge bg-secondary rounded-pill ms-auto">29</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ path('app_client_calendar_view', { id: client.id}) }}" class="nav-link">
+                                                <i class="ph-calendar me-2"></i>Raspored
+                                                <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item-divider"></li>
+                                        <li class="nav-item">
+                                            {#                    <a href="{{ path('app_logout') }}" class="nav-link" data-bs-toggle="tab">#}
+                                            {#                        <i class="ph-sign-out me-2"></i>Odjavite se#}
+                                            {#                    </a>#}
+                                            <a href="{{ path('app_client_settings_form', { id: client.id}) }}" class="nav-link">
+                                                <i class="ph-lightbulb me-2"></i>Status
+                                                <span class="ms-auto">{{ client.badgeByStatus | raw }}</span>
+                                            </a>
+
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- /navigation -->
+                            </div>
+                            <!-- /sidebar content -->
                         </div>
-                        <table class="table datatable-colvis-state-pars">
-                            <thead>
-                            <tr>
-                                <th>Verzija</th>
-                                <th>Naziv</th>
-                                <th>Datum i vreme izmene</th>
-                                <th>Pregled</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for clientH in historyClients %}
-                                <tr>
-                                    <td><a href="{{ path('app_client_profile_history_view', { id: clientH.id}) }}">V.{{ clientH.version }}</a></td>
-                                    <td><a href="{{ path('app_client_profile_history_view', { id: clientH.id}) }}">{{ client.title | upper }}</a></td>
-                                    <td>{{ clientH.created | date("d.m.Y H:i:s")}}</td>
-                                    <td>
-                                        <a href="{{ path('app_client_profile_view', { id: client.id}) }}" class="btn btn-primary">
-                                            <i class="ph-eye me-2"></i>
-                                            Pregledajte
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                        <!-- /left sidebar component -->
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Lista izmena</h6>
+                                    </div>
+                                    <table class="table datatable-colvis-state-pars">
+                                        <thead>
+                                        <tr>
+                                            <th>Verzija</th>
+                                            <th>Naziv</th>
+                                            <th>Datum i vreme izmene</th>
+                                            <th>Pregled</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for clientH in historyClients %}
+                                            <tr>
+                                                <td><a href="{{ path('app_client_profile_history_view', { id: clientH.id}) }}">V.{{ clientH.version }}</a></td>
+                                                <td><a href="{{ path('app_client_profile_history_view', { id: clientH.id}) }}">{{ client.title | upper }}</a></td>
+                                                <td>{{ clientH.created | date("d.m.Y H:i:s")}}</td>
+                                                <td>
+                                                    <a href="{{ path('app_client_profile_view', { id: client.id}) }}" class="btn btn-primary">
+                                                        <i class="ph-eye me-2"></i>
+                                                        Pregledajte
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
                     </div>
-                    <!-- /state saving -->
+                    <!-- /inner container -->
+
                 </div>
                 <!-- /content area -->
 

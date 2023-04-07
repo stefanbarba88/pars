@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ImageRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,19 +27,33 @@ class Image {
   #[ORM\Column(name: 'thumbnail_500x500', type: Types::TEXT, nullable: true)]
   private ?string $thumbnail500 = null;
 
-  #[ORM\ManyToOne(cascade: ['persist'])]
-  #[ORM\JoinColumn(nullable: true)]
-  private ?User $user = null;
+  #[ORM\Column(name: 'thumbnail_1024x768', type: Types::TEXT, nullable: true)]
+  private ?string $thumbnail1024 = null;
 
-  #[ORM\ManyToOne(cascade: ['persist'])]
-  #[ORM\JoinColumn(nullable: true)]
-  private ?Client $client = null;
+//  #[ORM\ManyToOne(cascade: ['persist'])]
+//  #[ORM\JoinColumn(nullable: true)]
+//  private ?User $user = null;
+//
+//  #[ORM\ManyToOne(cascade: ['persist'])]
+//  #[ORM\JoinColumn(nullable: true)]
+//  private ?Client $client = null;
 
   #[ORM\Column]
   private DateTimeImmutable $created;
 
   #[ORM\Column]
   private DateTimeImmutable $updated;
+
+  #[ORM\OneToMany(mappedBy: 'image', targetEntity: User::class)]
+  private Collection $users;
+
+  #[ORM\OneToMany(mappedBy: 'image', targetEntity: Client::class)]
+  private Collection $clients;
+
+  public function __construct() {
+    $this->users = new ArrayCollection();
+    $this->clients = new ArrayCollection();
+  }
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -54,16 +70,16 @@ class Image {
     return $this->id;
   }
 
-
-  public function getUser(): ?User {
-    return $this->user;
-  }
-
-  public function setUser(?User $user): self {
-    $this->user = $user;
-
-    return $this;
-  }
+//
+//  public function getUser(): ?User {
+//    return $this->user;
+//  }
+//
+//  public function setUser(?User $user): self {
+//    $this->user = $user;
+//
+//    return $this;
+//  }
 
   /**
    * @return DateTimeImmutable
@@ -131,17 +147,88 @@ class Image {
   }
 
   /**
-   * @return Client|null
+   * @return string|null
    */
-  public function getClient(): ?Client {
-    return $this->client;
+  public function getThumbnail1024(): ?string {
+    return $this->thumbnail1024;
   }
 
   /**
-   * @param Client|null $client
+   * @param string|null $thumbnail1024
    */
-  public function setClient(?Client $client): void {
-    $this->client = $client;
+  public function setThumbnail1024(?string $thumbnail1024): void {
+    $this->thumbnail1024 = $thumbnail1024;
+  }
+
+//  /**
+//   * @return Client|null
+//   */
+//  public function getClient(): ?Client {
+//    return $this->client;
+//  }
+//
+//  /**
+//   * @param Client|null $client
+//   */
+//  public function setClient(?Client $client): void {
+//    $this->client = $client;
+//  }
+
+  /**
+   * @return Collection<int, User>
+   */
+  public function getUsers(): Collection {
+    return $this->users;
+  }
+
+  public function addUser(User $user): self {
+    if (!$this->users->contains($user)) {
+      $this->users->add($user);
+      $user->setImage($this);
+    }
+
+    return $this;
+  }
+
+  public function removeUser(User $user): self {
+    if ($this->users->removeElement($user)) {
+      // set the owning side to null (unless already changed)
+      if ($user->getImage() === $this) {
+        $user->setImage(null);
+      }
+    }
+
+    return $this;
+  }
+
+  /**
+   * @return Collection<int, Client>
+   */
+  public function getClients(): Collection
+  {
+      return $this->clients;
+  }
+
+  public function addClient(Client $client): self
+  {
+      if (!$this->clients->contains($client)) {
+          $this->clients->add($client);
+          $client->setImage($this);
+      }
+
+      return $this;
+  }
+
+  public function removeClient(Client $client): self
+  {
+      if ($this->clients->removeElement($client)) {
+          // set the owning side to null (unless already changed)
+          if ($client->getImage() === $this) {
+              $client->setImage(null);
+          }
+      }
+
+      return $this;
   }
 
 

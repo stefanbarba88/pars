@@ -116,7 +116,7 @@
                                     <div class="card">
                                         <div class="sidebar-section-body text-center">
                                             <div class="card-img-actions d-inline-block mb-3">
-                                                <img class="img-fluid rounded-circle" src="{{ asset(image.thumbnail500) }}" width="150" height="150" alt="{{ client.title }}">
+                                                <img class="img-fluid rounded-circle" src="{{ asset(client.image.thumbnail500) }}" width="150" height="150" alt="{{ client.title }}">
                                             </div>
                                             <h6 class="mb-0">{{ client.title | upper }}</h6>
                                         </div>
@@ -211,8 +211,8 @@
                                                 </div>
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">
-                                                        {{ form_label(form.kontakt, 'Lice za kontakt:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                        {{ form_widget(form.kontakt, {attr: { class: 'form-control required select' }}) }}
+                                                        {{ form_label(form.contact, 'Lica za kontakt:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.contact, {attr: { class: 'form-control required select' }}) }}
                                                     </div>
                                                 </div>
                                             </div>

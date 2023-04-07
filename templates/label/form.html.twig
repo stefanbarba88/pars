@@ -16,7 +16,11 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Oznake
+                                {% if label.id is not null %}
+                                    {{ label.title }}
+                                {% else %}
+                                    Oznake
+                                {% endif %}
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -41,7 +45,13 @@
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_labels') }}" class="breadcrumb-item">Oznake</a>
-                                <span class="breadcrumb-item active">Dodavanje/Izmena oznake</span>
+                                <span class="breadcrumb-item active">
+                                    {% if label.id is not null %}
+                                        Izmena
+                                    {% else %}
+                                        Dodavanje
+                                    {% endif %}
+                                </span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -102,7 +112,13 @@
                     <!-- Wizard with validation -->
                     <div class="card">
                         <div class="card-header">
-                            <h6 class="mb-0">Dodavanje/Izmena oznake</h6>
+                            <h6 class="mb-0">
+                                {% if label.id is not null %}
+                                    Izmena oznake
+                                {% else %}
+                                    Dodavanje oznake
+                                {% endif %}
+                            </h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'label_form' }}) }}
                         <div class="card-body">

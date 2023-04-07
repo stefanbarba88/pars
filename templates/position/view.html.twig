@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Pozicije
+                                {{ position.title }}
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -41,7 +41,7 @@
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_positions') }}" class="breadcrumb-item">Pozicije</a>
-                                <span class="breadcrumb-item active">{{ position.title }}</span>
+                                <span class="breadcrumb-item active">Profil</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -119,7 +119,7 @@
                                 {% if position.editBy is not null %}
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5 class="mb-0">Izmena:</h5>
+                                            <h5 class="mb-0">Poslednja verizja:</h5>
                                         </div>
 
                                         <div class="card-body">

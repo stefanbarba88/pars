@@ -20,6 +20,20 @@ use Symfony\Component\Validator\Constraints\Regex;
 
 class ClientFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
+
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getClient(): ?Client {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $clientId = $dataObject->getClient()->getId();
+
     $builder
       ->add('title')
       ->add('adresa')
@@ -65,20 +79,22 @@ class ClientFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('kontakt', EntityType::class, [
+      ->add('contact', EntityType::class, [
         'placeholder' => 'Izaberite lice za kontakt',
         'class' => User::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($clientId) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.userType = :userType')
+            ->andWhere('g.client IS NULL OR g.client = :client')
             ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
+            ->setParameter(':client', $clientId)
             ->orderBy('g.id', 'ASC');
         },
         'choice_label' => function ($user) {
           return $user->getFullName();
         },
         'expanded' => false,
-        'multiple' => false,
+        'multiple' => true,
       ]);
   }
 

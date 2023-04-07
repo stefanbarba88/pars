@@ -42,12 +42,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function register(User $user, UploadedFileDTO $file, string $kernelPath): User {
 
+    $image = $this->getEntityManager()->getRepository(Image::class)->addImage($file, $user->getThumbUploadPath(), $kernelPath);
+    $user->setImage($image);
     $this->save($user);
 
     $this->mail->registration($user);
-
-    $this->getEntityManager()->getRepository(Image::class)->addImagesUser($file, $user, $kernelPath);
-
     return $user;
   }
 
@@ -150,7 +149,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         'id' => $user->getId(),
         'ime' => $user->getIme(),
         'prezime' => $user->getPrezime(),
-        'slika' => $this->getEntityManager()->getRepository(Image::class)->findOneBy(['user' => $user]),
+        'slika' => $user->getImage(),
         'isSuspended' => $user->getBadgeByStatus(),
         'datumRodjenja' => $user->getDatumRodjenja(),
         'role' => $user->getBadgeByUserType(),
@@ -170,7 +169,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         'id' => $user->getId(),
         'ime' => $user->getIme(),
         'prezime' => $user->getPrezime(),
-        'slika' => $this->getEntityManager()->getRepository(Image::class)->findOneBy(['user' => $user]),
+        'slika' => $user->getImage(),
         'isSuspended' => $user->getBadgeByStatus(),
         'datumRodjenja' => $user->getDatumRodjenja(),
         'role' => $user->getBadgeByUserType(),

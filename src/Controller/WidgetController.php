@@ -22,7 +22,7 @@ class WidgetController extends AbstractController {
   public function userProfilSidebar(User $user): Response {
 
     $args['user'] = $user;
-    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['user' => $user]);
+//    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['user' => $user]);
     $args['users'] = $this->em->getRepository(User::class)->findAll();
 
     return $this->render('widget/user_profil_sidebar.html.twig', $args);

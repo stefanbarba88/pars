@@ -50,8 +50,6 @@ class Client implements JsonSerializable {
   #[ORM\Column]
   private ?string $pib = null;
 
-  #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-  private ?User $kontakt = null;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
@@ -76,8 +74,15 @@ class Client implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'client', targetEntity: ClientHistory::class, cascade: ["persist", "remove"])]
   private Collection $clientHistories;
 
+  #[ORM\ManyToOne(inversedBy: 'clients')]
+  private ?Image $image = null;
+
+  #[ORM\OneToMany(mappedBy: 'client', targetEntity: User::class)]
+  private Collection $contact;
+
   public function __construct() {
     $this->clientHistories = new ArrayCollection();
+    $this->contact = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -101,7 +106,7 @@ class Client implements JsonSerializable {
       'telefon1' => $this->getTelefon1(),
       'telefon2' => $this->getTelefon2(),
       'pib' => $this->getPib(),
-      'kontakt' => $this->getKontakt(),
+      'contact' => $this->getContact(),
       'editBy' => $this->editBy,
       'isSuspended' => $this->isSuspended(),
       'isSerbian' => $this->isSerbian(),
@@ -142,15 +147,6 @@ class Client implements JsonSerializable {
     return $this;
   }
 
-  public function getKontakt(): ?User {
-    return $this->kontakt;
-  }
-
-  public function setKontakt(?User $kontakt): self {
-    $this->kontakt = $kontakt;
-
-    return $this;
-  }
 
   /**
    * @return City|null
@@ -307,6 +303,43 @@ class Client implements JsonSerializable {
       // set the owning side to null (unless already changed)
       if ($clientHistory->getClient() === $this) {
         $clientHistory->setClient(null);
+      }
+    }
+
+    return $this;
+  }
+
+  public function getImage(): ?Image {
+    return $this->image;
+  }
+
+  public function setImage(?Image $image): self {
+    $this->image = $image;
+
+    return $this;
+  }
+
+  /**
+   * @return Collection<int, User>
+   */
+  public function getContact(): Collection {
+    return $this->contact;
+  }
+
+  public function addContact(User $contact): self {
+    if (!$this->contact->contains($contact)) {
+      $this->contact->add($contact);
+      $contact->setClient($this);
+    }
+
+    return $this;
+  }
+
+  public function removeContact(User $contact): self {
+    if ($this->contact->removeElement($contact)) {
+      // set the owning side to null (unless already changed)
+      if ($contact->getClient() === $this) {
+        $contact->setClient(null);
       }
     }
 

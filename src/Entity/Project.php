@@ -22,7 +22,7 @@ class Project implements JsonSerializable {
   #[ORM\Column(length: 255)]
   private ?string $title = null;
 
-  #[ORM\Column(type: Types::TEXT, nullable: true, )]
+  #[ORM\Column(type: Types::TEXT, nullable: true,)]
   private ?string $description = null;
 
   #[ORM\ManyToOne]
@@ -84,7 +84,7 @@ class Project implements JsonSerializable {
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $deadline = null;
 
-  #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectHistory::class, cascade : ["persist", "remove"])]
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectHistory::class, cascade: ["persist", "remove"])]
   private Collection $projectHistories;
 
   public function __construct() {
@@ -111,7 +111,6 @@ class Project implements JsonSerializable {
   }
 
   public function jsonSerialize(): array {
-
     return [
       'id' => $this->getId(),
       'title' => $this->getTitle(),
@@ -120,20 +119,20 @@ class Project implements JsonSerializable {
       'isTimeRoundUp' => $this->isTimeRoundUp(),
       'isEstimate' => $this->isEstimate(),
       'isClientView' => $this->isClientView(),
-      'category' => $this->category,
-      'client' => $this->client,
-      'label' => $this->label,
-      'editBy' => $this->editBy,
+      'category' => $this->getCategoriesJson(),
+      'client' => $this->getClientsJson(),
+      'label' => $this->getLabelJson(),
+      'editBy' => $this->getEditByJson(),
       'payment' => $this->getPayment(),
       'price' => $this->getPrice(),
       'pricePerHour' => $this->getPricePerHour(),
       'pricePerTask' => $this->getPricePerTask(),
-      'currency' => $this->getCurrency(),
+      'currency' => $this->getCurrencyJson(),
       'minEntry' => $this->getMinEntry(),
-      'roundingInterval' => $this->roundingInterval,
+      'roundingInterval' => $this->getRoundingInterval(),
       'deadline' => $this->getDeadline()
-      ];
-}
+    ];
+  }
 
   public function getId(): ?int {
     return $this->id;
@@ -166,6 +165,12 @@ class Project implements JsonSerializable {
     return $this->editBy;
   }
 
+  public function getEditByJson(): string {
+
+    return $this->editBy->getFullName();
+  }
+
+
   /**
    * @param User|null $editBy
    */
@@ -186,7 +191,6 @@ class Project implements JsonSerializable {
   public function setCreatedBy(?User $createdBy): void {
     $this->createdBy = $createdBy;
   }
-
 
 
   /**
@@ -306,6 +310,16 @@ class Project implements JsonSerializable {
     return $this->category;
   }
 
+  public function getCategoriesJson(): array {
+    $categories = [];
+
+    foreach ($this->category as $cat) {
+      $categories[] = $cat->getTitle();
+    }
+
+    return $categories;
+  }
+
   public function addCategory(Category $category): self {
     if (!$this->category->contains($category)) {
       $this->category->add($category);
@@ -327,6 +341,16 @@ class Project implements JsonSerializable {
     return $this->client;
   }
 
+  public function getClientsJson(): array {
+    $clients = [];
+
+    foreach ($this->client as $cli) {
+      $clients[] = $cli->getTitle();
+    }
+
+    return $clients;
+  }
+
   public function addClient(Client $client): self {
     if (!$this->client->contains($client)) {
       $this->client->add($client);
@@ -343,6 +367,11 @@ class Project implements JsonSerializable {
 
   public function getLabel(): ?Label {
     return $this->label;
+  }
+
+  public function getLabelJson(): string {
+
+    return $this->label->getTitle();
   }
 
   public function setLabel(?Label $label): self {
@@ -395,6 +424,12 @@ class Project implements JsonSerializable {
     return $this->currency;
   }
 
+  public function getCurrencyJson(): string {
+
+    return $this->currency->getFormTitle();
+  }
+
+
   public function setCurrency(?Currency $currency): self {
     $this->currency = $currency;
 
@@ -424,31 +459,28 @@ class Project implements JsonSerializable {
   /**
    * @return Collection<int, ProjectHistory>
    */
-  public function getProjectHistories(): Collection
-  {
-      return $this->projectHistories;
+  public function getProjectHistories(): Collection {
+    return $this->projectHistories;
   }
 
-  public function addProjectHistory(ProjectHistory $projectHistory): self
-  {
-      if (!$this->projectHistories->contains($projectHistory)) {
-          $this->projectHistories->add($projectHistory);
-          $projectHistory->setProject($this);
-      }
+  public function addProjectHistory(ProjectHistory $projectHistory): self {
+    if (!$this->projectHistories->contains($projectHistory)) {
+      $this->projectHistories->add($projectHistory);
+      $projectHistory->setProject($this);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeProjectHistory(ProjectHistory $projectHistory): self
-  {
-      if ($this->projectHistories->removeElement($projectHistory)) {
-          // set the owning side to null (unless already changed)
-          if ($projectHistory->getProject() === $this) {
-              $projectHistory->setProject(null);
-          }
+  public function removeProjectHistory(ProjectHistory $projectHistory): self {
+    if ($this->projectHistories->removeElement($projectHistory)) {
+      // set the owning side to null (unless already changed)
+      if ($projectHistory->getProject() === $this) {
+        $projectHistory->setProject(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
 }

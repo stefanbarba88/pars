@@ -116,7 +116,16 @@ class ClientController extends AbstractController {
   #[Route('/settings/{id}', name: 'app_client_settings_form')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function settings(Client $client, Request $request): Response {
-    $client->setEditBy($this->getUser());
+    $history = null;
+    if($client->getId()) {
+      $history = $this->json($client, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
     $args['client'] = $client;
     $form = $this->createForm(ClientSuspendedFormType::class, $client, ['attr' => ['action' => $this->generateUrl('app_client_settings_form', ['id' => $client->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -125,8 +134,31 @@ class ClientController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $this->em->getRepository(Client::class)->suspend($client);
+        $users = $client->getContact();
+        if (!empty ($users)) {
+          foreach ($users as $user) {
+            if($user->getId()) {
+              $historyUser = $this->json($user, Response::HTTP_OK, [], [
+                  ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+                    return $object->getId();
+                  }
+                ]
+              );
+              $historyUser = $historyUser->getContent();
+            }
 
+            if ($user->isSuspended()) {
+              $user->setIsSuspended(false);
+            } else {
+              $user->setIsSuspended(true);
+            }
+
+            $this->em->getRepository(User::class)->suspend($user, $historyUser);
+
+          }
+        }
+
+        $this->em->getRepository(Client::class)->save($client, $history);
         if ($client->isSuspended()) {
           notyf()
             ->position('x', 'right')

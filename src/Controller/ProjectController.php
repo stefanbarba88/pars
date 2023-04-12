@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\ProjectHelper;
+use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
@@ -99,7 +101,8 @@ class ProjectController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewProjectHistory(ProjectHistory $projectHistory, SerializerInterface $serializer): Response {
 
-    $args['projectH'] = $serializer->deserialize($projectHistory->getHistory(), Project::class, 'json');
+    $args['projectH'] = $serializer->deserialize($projectHistory->getHistory(), ProjectHistoryHelper::class, 'json');
+
     $args['projectHistory'] = $projectHistory;
 
     return $this->render('project/view_history_profile.html.twig', $args);

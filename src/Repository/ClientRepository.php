@@ -69,21 +69,7 @@ class ClientRepository extends ServiceEntityRepository {
     }
     return $this->getEntityManager()->getRepository(Client::class)->find($id);
   }
-  public function suspend(Client $client): Client {
 
-    $user = $this->getEntityManager()->getRepository(User::class)->find($client->getKontakt()->getId());
-    if ($client->isSuspended()) {
-      $user->setIsSuspended(true);
-    } else {
-      $user->setIsSuspended(false);
-    }
-
-    $this->getEntityManager()->getRepository(User::class)->suspend($user);
-    $this->save($client);
-
-    return $client;
-
-  }
 //    /**
 //     * @return Client[] Returns an array of Client objects
 //     */

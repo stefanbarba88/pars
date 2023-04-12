@@ -125,13 +125,13 @@
                                             <div class="col-4">Kategorija:</div>
                                             <div class="col-8">
                                                 {% for cat in projectH.category %}
-                                                {{ cat.title }}{% if  not loop.last %}<br>{% endif %}
+                                                {{ cat }}{% if  not loop.last %}<br>{% endif %}
                                                 {% endfor %}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Oznaka:</div>
-                                            <div class="col-8">{{ projectH.label.title }}</div>
+                                            <div class="col-8">{{ projectH.label }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -144,14 +144,14 @@
                                             <div class="col-4" >Klijent:</div>
                                             <div class="col-8">
                                                 {% for client in projectH.client %}
-                                                    {{ client.title | upper }}{% if  not loop.last %}<br>{% endif %}
+                                                    {{ client | upper }}{% if  not loop.last %}<br>{% endif %}
                                                 {% endfor %}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Klijent ima uvid u projekat:</div>
                                             <div class="col-8">
-                                                {% if projectH.clientView %}
+                                                {% if projectH.getIsClientView %}
                                                     <i class="ph-eye"></i>
                                                 {% else %}
                                                     <i class="ph-eye-slash"></i>
@@ -172,7 +172,7 @@
                                             </div>
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Fiksna cena:</div>
-                                                <div class="col-8">{{ projectH.price | number_format(2, '.', ',') }} - {{ projectH.currency.getFormTitle() }}</div>
+                                                <div class="col-8">{{ projectH.price | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>
                                             </div>
                                         {% elseif projectH.payment == 3 %}
                                             <div class="row p-2">
@@ -181,7 +181,7 @@
                                             </div>
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Cena po satu:</div>
-                                                <div class="col-8">{{ projectH.pricePerHour | number_format(2, '.', ',') }} - {{ projectH.currency.getFormTitle() }}</div>
+                                                <div class="col-8">{{ projectH.pricePerHour | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>
                                             </div>
                                         {% elseif projectH.payment == 4 %}
                                             <div class="row p-2">
@@ -190,7 +190,7 @@
                                             </div>
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Cena po satu:</div>
-                                                <div class="col-8">{{ projectH.pricePerTask | number_format(2, '.', ',') }} - {{ projectH.currency.getFormTitle() }}</div>
+                                                <div class="col-8">{{ projectH.pricePerTask | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>
                                             </div>
                                         {% else %}
                                             <div class="row p-2">
@@ -208,7 +208,7 @@
                                         <div class="row p-2">
                                             <div class="col-4">Vremenska procena:</div>
                                             <div class="col-8">
-                                                {% if projectH.estimate %}
+                                                {% if projectH.getIsEstimate %}
                                                     <i class="ph-check-circle"></i>
                                                 {% else %}
                                                     <i class="ph-minus-circle"></i>
@@ -218,14 +218,14 @@
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Zaokruživanje vremena:</div>
                                             <div class="col-8">
-                                                {% if projectH.timeRoundUp %}
+                                                {% if projectH.getIsTimeRoundUp %}
                                                     <i class="ph-check-circle"></i>
                                                 {% else %}
                                                     <i class="ph-minus-circle"></i>
                                                 {% endif %}
                                             </div>
                                         </div>
-                                        {% if projectH.timeRoundUp %}
+                                        {% if projectH.getIsTimeRoundUp %}
                                             <div class="row p-2">
                                                 <div class="col-4">Interval zaokruživanja:</div>
                                                 <div class="col-8">
@@ -250,7 +250,7 @@
                                         <div class="card-body">
                                             <div class="row p-2">
                                                 <div class="col-4">Izmenio:</div>
-                                                <div class="col-8">{{ projectH.editBy.getFullName() | default('/') }}</div>
+                                                <div class="col-8">{{ projectH.editBy | default('/') }}</div>
                                             </div>
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Vreme:</div>

@@ -99,6 +99,7 @@
                             <tr>
                                 <th>Naziv</th>
                                 <th>Status</th>
+                                <th>Kategorija zadataka</th>
                                 <th>Pregled</th>
                             </tr>
                             </thead>
@@ -107,6 +108,13 @@
                                 <tr>
                                     <td><a href="{{ path('app_category_view', { id: category.id}) }}">{{ category.title }}</a></td>
                                     <td>{{ category.badgeByStatus | raw }}</td>
+                                    <td>
+                                        {% if category.isTaskCategory %}
+                                            <i class="ph-check-circle"></i>
+                                        {% else %}
+                                            <i class="ph-minus-circle"></i>
+                                        {% endif %}
+                                    </td>
                                     <td>
                                         <a href="{{ path('app_category_view', { id: category.id}) }}" class="btn btn-primary">
                                             <i class="ph-eye me-2"></i>

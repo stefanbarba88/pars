@@ -17,6 +17,14 @@ class LabelFormType extends AbstractType {
       ->add('color', ColorType::class, [
 
       ])
+      ->add('isTaskLabel', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
       ->add('isSuspended', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',

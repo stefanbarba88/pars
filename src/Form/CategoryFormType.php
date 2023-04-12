@@ -13,6 +13,14 @@ class CategoryFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
     $builder
       ->add('title')
+      ->add('isTaskCategory', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
       ->add('isSuspended', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',

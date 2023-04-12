@@ -31,6 +31,9 @@ class Label {
   private bool $isSuspended = false;
 
   #[ORM\Column]
+  private bool $isTaskLabel = false;
+
+  #[ORM\Column]
   private DateTimeImmutable $created;
 
   #[ORM\Column]
@@ -172,5 +175,20 @@ class Label {
 
     return $this;
   }
+
+  /**
+   * @return bool
+   */
+  public function isTaskLabel(): bool {
+    return $this->isTaskLabel;
+  }
+
+  /**
+   * @param bool $isTaskLabel
+   */
+  public function setIsTaskLabel(bool $isTaskLabel): void {
+    $this->isTaskLabel = $isTaskLabel;
+  }
+
 
 }

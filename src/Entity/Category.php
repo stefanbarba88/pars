@@ -28,6 +28,9 @@ class Category {
   private bool $isSuspended = false;
 
   #[ORM\Column]
+  private bool $isTaskCategory = false;
+
+  #[ORM\Column]
   private DateTimeImmutable $created;
 
   #[ORM\Column]
@@ -152,5 +155,20 @@ class Category {
 
     return $this;
   }
+
+  /**
+   * @return bool
+   */
+  public function isTaskCategory(): bool {
+    return $this->isTaskCategory;
+  }
+
+  /**
+   * @param bool $isTaskCategory
+   */
+  public function setIsTaskCategory(bool $isTaskCategory): void {
+    $this->isTaskCategory = $isTaskCategory;
+  }
+
 
 }

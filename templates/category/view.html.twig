@@ -107,6 +107,16 @@
                                             <div class="col-8">{{ category.title() }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
+                                            <div class="col-4">Kategorija zadataka:</div>
+                                            <div class="col-8">
+                                                {% if category.isTaskCategory %}
+                                                    <i class="ph-check-circle"></i>
+                                                {% else %}
+                                                    <i class="ph-minus-circle"></i>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
                                             <div class="col-4">Status:</div>
                                             <div class="col-8">{{ category.badgeByStatus() | raw}}</div>
                                         </div>

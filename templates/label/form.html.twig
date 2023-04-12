@@ -139,6 +139,13 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
+                                        {{ form_label(form.isTaskLabel, 'Oznaka zadataka:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.isTaskLabel, {attr: { class: 'form-control required select' }}) }}
+                                        <span class="form-text">Odnosi se na označavanje zadataka u okviru projekta.</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
                                         {{ form_label(form.isSuspended, 'Deaktivirana oznaka:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.isSuspended, {attr: { class: 'form-control required select' }}) }}
                                     </div>

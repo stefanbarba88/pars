@@ -111,6 +111,16 @@
                                             <div class="col-8"><span style="display: inline-block; width: 16px; height: 16px; border-radius: 100%; background: {{ label.color }};"></span></div>
                                         </div>
                                         <div class="row p-2">
+                                            <div class="col-4">Oznaka zadataka:</div>
+                                            <div class="col-8">
+                                                {% if label.isTaskLabel %}
+                                                    <i class="ph-check-circle"></i>
+                                                {% else %}
+                                                    <i class="ph-minus-circle"></i>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Status:</div>
                                             <div class="col-8">{{ label.badgeByStatus() | raw}}</div>
                                         </div>

@@ -19,7 +19,6 @@ class ProjectHistory {
   #[ORM\JoinColumn(nullable: false)]
   private ?Project $project = null;
 
-
   #[ORM\Column]
   private ?DateTimeImmutable $created = null;
 

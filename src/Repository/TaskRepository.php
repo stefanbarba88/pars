@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Project;
 use App\Entity\Task;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,30 +16,64 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Task[]    findAll()
  * @method Task[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TaskRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Task::class);
+class TaskRepository extends ServiceEntityRepository {
+  public function __construct(ManagerRegistry $registry) {
+    parent::__construct($registry, Task::class);
+  }
+
+  public function saveTask(Task $task, User $user, ?string $history): Task  {
+
+    if (!is_null($task->getId())) {
+
+      $historyTask = new TaskHistory();
+      $historyTask->setHistory($history);
+
+      $Taskt->addTasktHistory($historyTaskt);
+      $Taskt->setEditBy($user);
+
+      return $this->save($Taskt);
     }
 
-    public function save(Task $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
+    $Taskt->setCreatedBy($user);
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+    return $this->save($Taskt);
+
+  }
+
+  public function save(Project $project): Project {
+    if (is_null($project->getId())) {
+      $this->getEntityManager()->persist($project);
     }
 
-    public function remove(Task $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
+    $this->getEntityManager()->flush();
+    return $project;
+  }
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+  public function remove(Task $entity, bool $flush = false): void {
+    $this->getEntityManager()->remove($entity);
+
+    if ($flush) {
+      $this->getEntityManager()->flush();
     }
+  }
+
+  public function findForFormProject(Project $project = null, int $id = 0): Task {
+    if (empty($id)) {
+      $task = new Task();
+      $task->setProject($project);
+      return $task;
+    }
+    return $this->getEntityManager()->getRepository(Task::class)->find($id);
+
+  }
+
+  public function findForForm(int $id = 0): Task {
+    if (empty($id)) {
+      return new Task();
+    }
+    return $this->getEntityManager()->getRepository(Task::class)->find($id);
+
+  }
 
 //    /**
 //     * @return Task[] Returns an array of Task objects

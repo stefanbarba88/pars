@@ -39,8 +39,12 @@ class Category {
   #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'category')]
   private Collection $projects;
 
+  #[ORM\ManyToMany(targetEntity: Task::class, mappedBy: 'category')]
+  private Collection $tasks;
+
   public function __construct() {
     $this->projects = new ArrayCollection();
+    $this->tasks = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -168,6 +172,33 @@ class Category {
    */
   public function setIsTaskCategory(bool $isTaskCategory): void {
     $this->isTaskCategory = $isTaskCategory;
+  }
+
+  /**
+   * @return Collection<int, Task>
+   */
+  public function getTasks(): Collection
+  {
+      return $this->tasks;
+  }
+
+  public function addTask(Task $task): self
+  {
+      if (!$this->tasks->contains($task)) {
+          $this->tasks->add($task);
+          $task->addCategory($this);
+      }
+
+      return $this;
+  }
+
+  public function removeTask(Task $task): self
+  {
+      if ($this->tasks->removeElement($task)) {
+          $task->removeCategory($this);
+      }
+
+      return $this;
   }
 
 

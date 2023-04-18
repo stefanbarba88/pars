@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\TaskRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
@@ -20,7 +22,7 @@ class Task implements JsonSerializable {
   #[ORM\Column(length: 255)]
   private ?string $title = null;
 
-  #[ORM\Column(type: Types::TEXT, nullable: true,)]
+  #[ORM\Column(type: Types::TEXT)]
   private ?string $description = null;
 
   #[ORM\ManyToOne]
@@ -44,19 +46,45 @@ class Task implements JsonSerializable {
   private ?int $priority = null;
 
   #[ORM\Column]
-  private ?bool $isEstimate = null;
+  private ?bool $isEstimate = false;
 
   #[ORM\Column]
-  private ?bool $isClientView = null;
+  private ?bool $isClientView = false;
 
   #[ORM\Column]
-  private ?bool $isTimeRoundUp = null;
+  private ?bool $isExpenses = false;
+
+  #[ORM\Column]
+  private ?bool $isTimeRoundUp = false;
 
   #[ORM\Column(nullable: true)]
   private ?int $minEntry = null;
 
   #[ORM\Column(nullable: true)]
   private ?int $roundingInterval = null;
+
+  #[ORM\ManyToOne(inversedBy: 'tasks')]
+  private ?Project $project = null;
+
+  #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'tasks')]
+  private Collection $assignedUsers;
+
+  #[ORM\ManyToOne(inversedBy: 'tasks')]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?Label $label = null;
+
+  #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'tasks')]
+  #[ORM\JoinColumn(nullable: true)]
+  private Collection $category;
+
+  #[ORM\ManyToOne(targetEntity: self::class)]
+  private ?self $parentTask = null;
+
+
+  public function __construct() {
+    $this->assignedUsers = new ArrayCollection();
+    $this->category = new ArrayCollection();
+  }
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -143,6 +171,16 @@ class Task implements JsonSerializable {
 
   public function setIsEstimate(bool $isEstimate): self {
     $this->isEstimate = $isEstimate;
+
+    return $this;
+  }
+
+  public function isIsExpenses(): ?bool {
+    return $this->isExpenses;
+  }
+
+  public function setIsExpenses(bool $isExpenses): self {
+    $this->isExpenses = $isExpenses;
 
     return $this;
   }
@@ -243,5 +281,76 @@ class Task implements JsonSerializable {
     $this->updated = $updated;
   }
 
+  public function getProject(): ?Project {
+    return $this->project;
+  }
+
+  public function setProject(?Project $project): self {
+    $this->project = $project;
+
+    return $this;
+  }
+
+  /**
+   * @return Collection<int, User>
+   */
+  public function getAssignedUsers(): Collection {
+    return $this->assignedUsers;
+  }
+
+  public function addAssignedUser(User $assignedUser): self {
+    if (!$this->assignedUsers->contains($assignedUser)) {
+      $this->assignedUsers->add($assignedUser);
+    }
+
+    return $this;
+  }
+
+  public function removeAssignedUser(User $assignedUser): self {
+    $this->assignedUsers->removeElement($assignedUser);
+
+    return $this;
+  }
+
+  public function getLabel(): ?Label {
+    return $this->label;
+  }
+
+  public function setLabel(?Label $label): self {
+    $this->label = $label;
+
+    return $this;
+  }
+
+  /**
+   * @return Collection<int, Category>
+   */
+  public function getCategory(): Collection {
+    return $this->category;
+  }
+
+  public function addCategory(Category $category): self {
+    if (!$this->category->contains($category)) {
+      $this->category->add($category);
+    }
+
+    return $this;
+  }
+
+  public function removeCategory(Category $category): self {
+    $this->category->removeElement($category);
+
+    return $this;
+  }
+
+  public function getParentTask(): ?self {
+    return $this->parentTask;
+  }
+
+  public function setParentTask(?self $parentTask): self {
+    $this->parentTask = $parentTask;
+
+    return $this;
+  }
 
 }

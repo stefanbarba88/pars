@@ -3,12 +3,13 @@
 namespace App\Form;
 
 use App\Classes\Data\PotvrdaData;
-use App\Classes\Data\VrstaPlacanjaData;
+use App\Classes\Data\PrioritetData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\Category;
-use App\Entity\Client;
-use App\Entity\Currency;
 use App\Entity\Label;
 use App\Entity\Project;
+use App\Entity\Task;
+use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -20,39 +21,14 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ProjectFormType extends AbstractType {
+class TaskFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
     $builder
       ->add('title')
       ->add('description', TextareaType::class)
-      ->add('label', EntityType::class, [
-        'placeholder' => 'Izaberite oznaku',
-        'class' => Label::class,
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.isTaskLabel = :isTaskLabel')
-            ->setParameter(':isTaskLabel', 0)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('category', EntityType::class, [
-        'class' => Category::class,
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.isTaskCategory = :isTaskCategory')
-            ->setParameter(':isTaskCategory', 0)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => true,
-      ])
-
-      ->add('client', EntityType::class, [
-        'class' => Client::class,
+      ->add('project', EntityType::class, [
+        'placeholder' => 'Izaberite projekat',
+        'class' => Project::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.isSuspended = :isSuspended')
@@ -61,59 +37,55 @@ class ProjectFormType extends AbstractType {
         },
         'choice_label' => 'title',
         'expanded' => false,
-        'multiple' => true,
-      ])
-      ->add('isClientView', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
         'multiple' => false,
       ])
-
-      ->add('payment', ChoiceType::class, [
-        'placeholder' => 'Izaberite tip finansiranja',
-        'choices' => VrstaPlacanjaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('currency', EntityType::class, [
-        'placeholder' => 'Izaberite valutu',
-        'class' => Currency::class,
+      ->add('label', EntityType::class, [
+        'required' => false,
+        'placeholder' => 'Izaberite oznaku',
+        'class' => Label::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
+            ->andWhere('g.isTaskLabel = :isTaskLabel')
+            ->setParameter(':isTaskLabel', 1)
             ->orderBy('g.id', 'ASC');
         },
-        'choice_label' => function ($currency) {
-          return $currency->getFormTitle();
-        },
+        'choice_label' => 'title',
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('price', NumberType::class, [
+      ->add('category', EntityType::class, [
         'required' => false,
-        'html5' => true,
-        'attr' => [
-          'min' => '0.01',
-          'step' => '0.01'
-        ],
+        'class' => Category::class,
+        'query_builder' => function (EntityRepository $em) {
+          return $em->createQueryBuilder('g')
+            ->andWhere('g.isTaskCategory = :isTaskCategory')
+            ->setParameter(':isTaskCategory', 1)
+            ->orderBy('g.id', 'ASC');
+        },
+        'choice_label' => 'title',
+        'expanded' => false,
+        'multiple' => true,
       ])
-      ->add('pricePerHour', NumberType::class, [
+      ->add('deadline', DateType::class, [
         'required' => false,
-        'html5' => true,
-        'attr' => [
-          'min' => '0.01',
-          'step' => '0.01'
-        ],
+        'widget' => 'single_text',
+        'format' => 'dd.MM.yyyy',
+        'html5' => false,
+        'input' => 'datetime_immutable'
       ])
-      ->add('pricePerTask', NumberType::class, [
-        'required' => false,
-        'html5' => true,
-        'attr' => [
-          'min' => '0.01',
-          'step' => '0.01'
-        ],
+      ->add('assignedUsers', EntityType::class, [
+        'class' => User::class,
+        'query_builder' => function (EntityRepository $em) {
+          return $em->createQueryBuilder('g')
+            ->andWhere('g.userType = :userType')
+            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+            ->orderBy('g.id', 'ASC');
+        },
+        'choice_label' => function ($user) {
+          return $user->getNameForForm();
+        },
+        'expanded' => false,
+        'multiple' => true,
       ])
 
       ->add('isTimeRoundUp', ChoiceType::class, [
@@ -139,7 +111,15 @@ class ProjectFormType extends AbstractType {
         ],
       ])
 
-      ->add('isEstimate', ChoiceType::class, [
+//      ->add('isEstimate', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'choices' => PotvrdaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
+      ->add('isExpenses', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],
@@ -147,19 +127,29 @@ class ProjectFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('deadline', DateType::class, [
-        'required' => false,
-        'widget' => 'single_text',
-        'format' => 'dd.MM.yyyy',
-        'html5' => false,
-        'input' => 'datetime_immutable'
+      ->add('isClientView', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
       ])
+      ->add('priority', ChoiceType::class, [
+        'required' => false,
+        'placeholder' => 'Izaberite prioritet zadatka',
+        'choices' => PrioritetData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+
+
     ;
   }
 
   public function configureOptions(OptionsResolver $resolver): void {
     $resolver->setDefaults([
-      'data_class' => Project::class,
+      'data_class' => Task::class,
     ]);
   }
 }

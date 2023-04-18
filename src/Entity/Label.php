@@ -42,8 +42,13 @@ class Label {
   #[ORM\OneToMany(mappedBy: 'label', targetEntity: Project::class)]
   private Collection $projects;
 
+  #[ORM\OneToMany(mappedBy: 'label', targetEntity: Task::class)]
+  private Collection $tasks;
+
+
   public function __construct() {
     $this->projects = new ArrayCollection();
+    $this->tasks = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -189,6 +194,38 @@ class Label {
   public function setIsTaskLabel(bool $isTaskLabel): void {
     $this->isTaskLabel = $isTaskLabel;
   }
+
+  /**
+   * @return Collection<int, Task>
+   */
+  public function getTasks(): Collection
+  {
+      return $this->tasks;
+  }
+
+  public function addTask(Task $task): self
+  {
+      if (!$this->tasks->contains($task)) {
+          $this->tasks->add($task);
+          $task->setLabel($this);
+      }
+
+      return $this;
+  }
+
+  public function removeTask(Task $task): self
+  {
+      if ($this->tasks->removeElement($task)) {
+          // set the owning side to null (unless already changed)
+          if ($task->getLabel() === $this) {
+              $task->setLabel(null);
+          }
+      }
+
+      return $this;
+  }
+
+
 
 
 }

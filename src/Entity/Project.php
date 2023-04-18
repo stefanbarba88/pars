@@ -87,10 +87,14 @@ class Project implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectHistory::class, cascade: ["persist", "remove"])]
   private Collection $projectHistories;
 
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: Task::class)]
+  private Collection $tasks;
+
   public function __construct() {
     $this->category = new ArrayCollection();
     $this->client = new ArrayCollection();
     $this->projectHistories = new ArrayCollection();
+    $this->tasks = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -481,6 +485,36 @@ class Project implements JsonSerializable {
     }
 
     return $this;
+  }
+
+  /**
+   * @return Collection<int, Task>
+   */
+  public function getTasks(): Collection
+  {
+      return $this->tasks;
+  }
+
+  public function addTask(Task $task): self
+  {
+      if (!$this->tasks->contains($task)) {
+          $this->tasks->add($task);
+          $task->setProject($this);
+      }
+
+      return $this;
+  }
+
+  public function removeTask(Task $task): self
+  {
+      if ($this->tasks->removeElement($task)) {
+          // set the owning side to null (unless already changed)
+          if ($task->getProject() === $this) {
+              $task->setProject(null);
+          }
+      }
+
+      return $this;
   }
 
 }

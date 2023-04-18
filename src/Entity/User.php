@@ -122,8 +122,12 @@ class User implements UserInterface, JsonSerializable {
   #[ORM\ManyToOne(inversedBy: 'contact')]
   private ?Client $client = null;
 
+  #[ORM\ManyToMany(targetEntity: Task::class, mappedBy: 'assignedUsers')]
+  private Collection $tasks;
+
   public function __construct() {
     $this->userHistories = new ArrayCollection();
+    $this->tasks = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -210,6 +214,10 @@ class User implements UserInterface, JsonSerializable {
 
   public function getFullName(): string {
     return $this->ime . ' ' . $this->prezime;
+  }
+
+  public function getNameForForm(): string {
+    return $this->ime . ' ' . $this->prezime .' - ' . $this->pozicija->getTitle();
   }
 
   /**
@@ -551,6 +559,33 @@ class User implements UserInterface, JsonSerializable {
   public function setClient(?Client $client): self
   {
       $this->client = $client;
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Task>
+   */
+  public function getTasks(): Collection
+  {
+      return $this->tasks;
+  }
+
+  public function addTask(Task $task): self
+  {
+      if (!$this->tasks->contains($task)) {
+          $this->tasks->add($task);
+          $task->addAssignedUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeTask(Task $task): self
+  {
+      if ($this->tasks->removeElement($task)) {
+          $task->removeAssignedUser($this);
+      }
 
       return $this;
   }

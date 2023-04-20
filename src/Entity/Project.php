@@ -90,11 +90,15 @@ class Project implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'project', targetEntity: Task::class)]
   private Collection $tasks;
 
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: Pdf::class)]
+  private Collection $pdfs;
+
   public function __construct() {
     $this->category = new ArrayCollection();
     $this->client = new ArrayCollection();
     $this->projectHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
+    $this->pdfs = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -490,27 +494,54 @@ class Project implements JsonSerializable {
   /**
    * @return Collection<int, Task>
    */
-  public function getTasks(): Collection
-  {
-      return $this->tasks;
+  public function getTasks(): Collection {
+    return $this->tasks;
   }
 
-  public function addTask(Task $task): self
+  public function addTask(Task $task): self {
+    if (!$this->tasks->contains($task)) {
+      $this->tasks->add($task);
+      $task->setProject($this);
+    }
+
+    return $this;
+  }
+
+  public function removeTask(Task $task): self {
+    if ($this->tasks->removeElement($task)) {
+      // set the owning side to null (unless already changed)
+      if ($task->getProject() === $this) {
+        $task->setProject(null);
+      }
+    }
+
+    return $this;
+  }
+
+  /**
+   * @return Collection<int, Pdf>
+   */
+  public function getPdfs(): Collection
   {
-      if (!$this->tasks->contains($task)) {
-          $this->tasks->add($task);
-          $task->setProject($this);
+      return $this->pdfs;
+  }
+
+  public function addPdf(Pdf $pdf): self
+  {
+      if (!$this->pdfs->contains($pdf)) {
+          $this->pdfs->add($pdf);
+          $pdf->setProject($this);
       }
 
       return $this;
   }
 
-  public function removeTask(Task $task): self
+  public function removePdf(Pdf $pdf): self
   {
-      if ($this->tasks->removeElement($task)) {
+      if ($this->pdfs->removeElement($pdf)) {
           // set the owning side to null (unless already changed)
-          if ($task->getProject() === $this) {
-              $task->setProject(null);
+          if ($pdf->getProject() === $this) {
+              $pdf->setProject(null);
           }
       }
 

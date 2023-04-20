@@ -125,9 +125,13 @@ class User implements UserInterface, JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Task::class, mappedBy: 'assignedUsers')]
   private Collection $tasks;
 
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: TaskLog::class, orphanRemoval: true)]
+  private Collection $taskLogs;
+
   public function __construct() {
     $this->userHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
+    $this->taskLogs = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -585,6 +589,36 @@ class User implements UserInterface, JsonSerializable {
   {
       if ($this->tasks->removeElement($task)) {
           $task->removeAssignedUser($this);
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, TaskLog>
+   */
+  public function getTaskLogs(): Collection
+  {
+      return $this->taskLogs;
+  }
+
+  public function addTaskLog(TaskLog $taskLog): self
+  {
+      if (!$this->taskLogs->contains($taskLog)) {
+          $this->taskLogs->add($taskLog);
+          $taskLog->setUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeTaskLog(TaskLog $taskLog): self
+  {
+      if ($this->taskLogs->removeElement($taskLog)) {
+          // set the owning side to null (unless already changed)
+          if ($taskLog->getUser() === $this) {
+              $taskLog->setUser(null);
+          }
       }
 
       return $this;

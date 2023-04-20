@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Project;
 use App\Entity\Task;
+use App\Entity\TaskHistory;
+use App\Entity\TaskLog;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -23,30 +25,36 @@ class TaskRepository extends ServiceEntityRepository {
 
   public function saveTask(Task $task, User $user, ?string $history): Task  {
 
+    foreach ($task->getAssignedUsers() as $assignedUser) {
+      $taskLog = new TaskLog();
+      $taskLog->setUser($assignedUser);
+      $this->getEntityManager()->getRepository(TaskLog::class)->saveTaskLog($taskLog);
+    }
+
     if (!is_null($task->getId())) {
 
       $historyTask = new TaskHistory();
       $historyTask->setHistory($history);
 
-      $Taskt->addTasktHistory($historyTaskt);
-      $Taskt->setEditBy($user);
+      $task->addTaskHistory($historyTask);
+      $task->setEditBy($user);
 
-      return $this->save($Taskt);
+      return $this->save($task);
     }
 
-    $Taskt->setCreatedBy($user);
+    $task->setCreatedBy($user);
 
-    return $this->save($Taskt);
+    return $this->save($task);
 
   }
 
-  public function save(Project $project): Project {
-    if (is_null($project->getId())) {
-      $this->getEntityManager()->persist($project);
+  public function save(Task $task): Task {
+    if (is_null($task->getId())) {
+      $this->getEntityManager()->persist($task);
     }
 
     $this->getEntityManager()->flush();
-    return $project;
+    return $task;
   }
 
   public function remove(Task $entity, bool $flush = false): void {

@@ -91,28 +91,25 @@ class TaskController extends AbstractController {
     //ovde izvlacimo ulogovanog usera
 //    $user = $this->getUser();
     $user = $this->em->getRepository(User::class)->find(1);
-//    if ($task->getId()) {
-//      $history = $this->json($task, Response::HTTP_OK, [], [
-//          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-//            return $object->getId();
-//          }
-//        ]
-//      );
-//      $history = $history->getContent();
-//    }
-//
+    if ($task->getId()) {
+      $history = $this->json($task, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
+
     $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
 
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
-
         dd($request);
 
-//        $test1 = $serializer->deserialize($test->getContent(), Project::class, 'json');
-
-        $this->em->getRepository(Task::class)->saveTask($project, $user, $history);
+        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 
         notyf()
           ->position('x', 'right')
@@ -130,83 +127,12 @@ class TaskController extends AbstractController {
     return $this->render('task/form.html.twig', $args);
   }
 
+  #[Route('/view/{id}', name: 'app_task_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function view(Task $task): Response {
+    $args['task'] = $task;
 
-//
-//  #[Route('/view-profile/{id}', name: 'app_project_profile_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewProfile(Project $project): Response {
-//    $args['project'] = $project;
-//
-//    return $this->render('project/view_profile.html.twig', $args);
-//  }
-//
-//  #[Route('/history-project-list/{id}', name: 'app_project_profile_history_list')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function listProjectHistory(Project $project): Response {
-//    $args['project'] = $project;
-//    $args['historyProjects'] = $this->em->getRepository(ProjectHistory::class)->findBy(['project' => $project], ['id' => 'DESC']);
-//
-//    return $this->render('project/project_history_list.html.twig', $args);
-//  }
-//
-//  #[Route('/history-project-view/{id}', name: 'app_project_profile_history_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewProjectHistory(ProjectHistory $projectHistory, SerializerInterface $serializer): Response {
-//
-//    $args['projectH'] = $serializer->deserialize($projectHistory->getHistory(), ProjectHistoryHelper::class, 'json');
-//
-//    $args['projectHistory'] = $projectHistory;
-//
-//    return $this->render('project/view_history_profile.html.twig', $args);
-//  }
-//
-//  #[Route('/view-tasks/{id}', name: 'app_project_tasks_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewTasks(Project $project): Response {
-//    $args['project'] = $project;
-//    $args['tasks'] = [];
-//
-//    return $this->render('project/view_tasks.html.twig', $args);
-//  }
-//
-//  #[Route('/view-activity/{id}', name: 'app_project_activity_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewActivity(Project $project): Response {
-//    $args['project'] = $project;
-//
-//    return $this->render('project/view_activity.html.twig', $args);
-//  }
-//
-//  #[Route('/view-calendar/{id}', name: 'app_project_calendar_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewCalendar(Project $project): Response {
-//    $args['project'] = $project;
-//
-//    return $this->render('project/view_calendar.html.twig', $args);
-//  }
-//
-//  #[Route('/view-time/{id}', name: 'app_project_time_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewTime(Project $project): Response {
-//    $args['project'] = $project;
-//
-//    return $this->render('project/view_time.html.twig', $args);
-//  }
-//
-//  #[Route('/view-expenses/{id}', name: 'app_project_expenses_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewExpenses(Project $project): Response {
-//    $args['project'] = $project;
-//
-//    return $this->render('project/view_expenses.html.twig', $args);
-//  }
-//
-//  #[Route('/view-users/{id}', name: 'app_project_users_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewUsers(Project $project): Response {
-//    $args['project'] = $project;
-//
-//    return $this->render('project/view_users.html.twig', $args);
-//  }
+    return $this->render('task/view.html.twig', $args);
+  }
 
 }

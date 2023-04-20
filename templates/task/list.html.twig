@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                               Projekti
+                               Zadaci
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -28,9 +28,36 @@
                             <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
                                 <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
                                 <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_project_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
-                                        <i class="ph-plus"></i>
-                                    </a>
+                                    <div>
+                                        <div class="fab-menu fab-menu-top" data-fab-toggle="click">
+                                            <button type="button" class="fab-menu-btn btn btn-primary btn-icon rounded-pill">
+                                                <div class="m-1">
+                                                    <i class="fab-icon-open ph-plus"></i>
+                                                    <i class="fab-icon-close ph-x"></i>
+                                                </div>
+                                            </button>
+
+                                            <ul class="fab-menu-inner">
+                                                <li>
+                                                    <div class="fab-label-end fab-label-light">
+                                                        <a href="#" class="btn btn-light btn-icon rounded-pill">
+                                                            projekat
+                                                        </a>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="fab-label-end fab-label-light" data-fab-label="Conversations">
+                                                        <a href="#" class="btn btn-light btn-icon rounded-pill">
+                                                            <i class="ph-chats m-1"></i>
+                                                        </a>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+{#                                    <a href="{{ path('app_task_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">#}
+{#                                        <i class="ph-plus"></i>#}
+{#                                    </a>#}
                                 </div>
                             </div>
                         </div>
@@ -40,7 +67,7 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Projekti</span>
+                                <span class="breadcrumb-item active">Zadaci</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -92,43 +119,68 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header">
-                            <h6 class="mb-0">Lista projekata</h6>
+                            <h6 class="mb-0">Lista zadataka</h6>
                         </div>
                         <table class="table datatable-colvis-state-pars">
                             <thead>
                             <tr>
-                                <th>Naziv</th>
-                                <th>Kategorija/e</th>
-                                <th>Oznaka</th>
-                                <th>Klijent/i</th>
+                                <th>#</th>
+                                <th>Opis zadatka</th>
+                                <th>Projekat</th>
+                                <th>Prioritet</th>
+                                <th>Poslednja promena</th>
                                 <th>Kreiran</th>
-                                <th>Rok</th>
-                                <th>Pregled</th>
+                                <th>Zaduženi</th>
+{#                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>#}
                             </tr>
                             </thead>
                             <tbody>
-                            {% for project in projects %}
+                            {% for task in tasks %}
                                 <tr>
-                                    <td><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></td>
+                                    <td>#{{ task.id }}</td>
+{#                                    <td><a href="{{ path('app_task_tasks_view', { id: task.id}) }}">{{ task.title }}</a></td>#}
                                     <td>
-                                        {% for cat in project.category %}
-                                            <a href="{{ path('app_category_view', { id: cat.id}) }}">{{ cat.title }}</a>{% if  not loop.last %},{% endif %}
+                                        <div class="fw-semibold"><a href="">{{ task.title }}</a></div>
+                                        <div class="text-muted">{{ task.description }}</div>
+                                    </td>
+                                    <td>
+                                        <a href="{{ path('app_project_profile_view', { id: task.project.id}) }}">{{ task.project.title }}</a>
+                                    </td>
+                                    <td>
+                                        {{ task.jsonPriority | default('/') }}
+                                    </td>
+                                    <td>
+                                        <div class="d-inline-flex align-items-center">
+                                            <i class="ph-calendar me-2"></i>
+                                            {{ task.updated | date("d.m.Y")}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-inline-flex align-items-center">
+                                            <i class="ph-calendar me-2"></i>
+                                            {{ task.created | date("d.m.Y")}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% for user in task.assignedUsers %}
+                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}"></a>
                                         {% endfor %}
                                     </td>
-                                    <td><a href="{{ path('app_label_view', { id: project.label.id}) }}">{{ project.label.title }}</a></td>
-                                    <td>
-                                        {% for client in project.client %}
-                                            <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title }}</a>{% if  not loop.last %},{% endif %}
-                                        {% endfor %}
-                                    </td>
-                                    <td>{{ project.created | date("d.m.Y")}}</td>
-                                    <td>{{ project.deadline ? project.deadline | date("d.m.Y") : '/' }}</td>
-                                    <td>
-                                        <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="btn btn-primary">
-                                            <i class="ph-eye me-2"></i>
-                                            Pregledajte
-                                        </a>
-                                    </td>
+{#                                    <td class="text-center">#}
+{#                                        <div class="dropdown">#}
+{#                                            <a href="#" class="text-body" data-bs-toggle="dropdown">#}
+{#                                                <i class="ph-gear"></i>#}
+{#                                            </a>#}
+{#                                            <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Check in</a>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-paperclip me-2"></i> Attach screenshot</a>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-user-switch me-2"></i> Reassign</a>#}
+{#                                                <div class="dropdown-divider"></div>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-x me-2"></i> Remove</a>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </td>#}
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -163,5 +215,7 @@
     <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fab.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/prism.min.js') }}"></script>
 
 {% endblock includeJavascript %}

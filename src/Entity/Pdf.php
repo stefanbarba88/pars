@@ -22,9 +22,6 @@ class Pdf {
   private ?string $path = null;
 
   #[ORM\ManyToOne(inversedBy: 'pdfs')]
-  private ?Project $project = null;
-
-  #[ORM\ManyToOne(inversedBy: 'pdfs')]
   private ?Task $task = null;
 
   #[ORM\ManyToOne(inversedBy: 'pdfs')]
@@ -71,15 +68,6 @@ class Pdf {
     return $this;
   }
 
-  public function getProject(): ?Project {
-    return $this->project;
-  }
-
-  public function setProject(?Project $project): self {
-    $this->project = $project;
-
-    return $this;
-  }
 
   public function getTask(): ?Task {
     return $this->task;

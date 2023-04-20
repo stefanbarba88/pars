@@ -154,14 +154,14 @@
                                     <div class="mb-3">
                                         {{ form_label(form.category, 'Kategorija:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.category, {attr: { class: 'form-control select' }}) }}
-                                        <span class="form-text">Kategorizacija pomaže u organizaciji. Zadatak može imati više kategorija. Zadatak može biti nekategorizovan.</span>
+                                        <span class="form-text">Kategorizacija pomaže u organizaciji.</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.label, 'Oznaka:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.label, {attr: { class: 'form-control select' }}) }}
-                                        <span class="form-text">Oznaka pokazuje u kojoj fazi razvoja se nalazi zadatak. Zadatak može biti bez oznake.</span>
+                                        <span class="form-text">Oznaka bliže opisuje projekat. Projekat može imati više oznaka.</span>
                                     </div>
                                 </div>
                             </div>
@@ -223,7 +223,7 @@
 
                             <div class="fw-bold border-bottom pb-2 mb-3">Dokumentacija</div>
                             <div class="row">
-                                <div class="col-lg-6 ">
+                                <div class="col-lg-12">
                                     <div class="mb-3">
                                         {{ form_label(form.pdf, 'Dokumenta:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.pdf, {attr: { class: 'form-control file-input' }}) }}
@@ -263,9 +263,9 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="mb-3">
-                                        {{ form_label(form.priority, 'Prioritet:', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.priority, {attr: { class: 'form-control select' }}) }}
-                                        <span class="form-text">Prioritet izvršenja zadatka. Zadatak može biti bez prioriteta.</span>
+                                        {{ form_label(form.isPriority, 'Visok prioritet:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.isPriority, {attr: { class: 'form-control select' }}) }}
+                                        <span class="form-text">Zadatak može biti visoko prioritetan. Takav zadatak se nalazi na vrhu liste.</span>
                                     </div>
                                 </div>
                             </div>

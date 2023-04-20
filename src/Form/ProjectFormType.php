@@ -21,7 +21,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
-use Symfony\Component\Validator\Constraints\Image;
 
 class ProjectFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
@@ -29,7 +28,7 @@ class ProjectFormType extends AbstractType {
       ->add('title')
       ->add('description', TextareaType::class)
       ->add('label', EntityType::class, [
-        'placeholder' => 'Izaberite oznaku',
+        'required' => false,
         'class' => Label::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
@@ -39,10 +38,11 @@ class ProjectFormType extends AbstractType {
         },
         'choice_label' => 'title',
         'expanded' => false,
-        'multiple' => false,
+        'multiple' => true,
       ])
       ->add('category', EntityType::class, [
         'class' => Category::class,
+        'placeholder' => '--Izaberite kategoriju--',
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.isTaskCategory = :isTaskCategory')
@@ -51,7 +51,7 @@ class ProjectFormType extends AbstractType {
         },
         'choice_label' => 'title',
         'expanded' => false,
-        'multiple' => true,
+        'multiple' => false,
       ])
 
       ->add('client', EntityType::class, [
@@ -76,13 +76,12 @@ class ProjectFormType extends AbstractType {
       ])
 
       ->add('payment', ChoiceType::class, [
-        'placeholder' => 'Izaberite tip finansiranja',
+        'placeholder' => '--Izaberite tip finansiranja--',
         'choices' => VrstaPlacanjaData::form(),
         'expanded' => false,
         'multiple' => false,
       ])
       ->add('currency', EntityType::class, [
-        'placeholder' => 'Izaberite valutu',
         'class' => Currency::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
@@ -158,24 +157,6 @@ class ProjectFormType extends AbstractType {
         'input' => 'datetime_immutable'
       ])
 
-      ->add('pdf', FileType::class, [
-        'attr' => ['accept' => 'pdf', 'data-show-upload' => 'false'],
-        'multiple' => true,
-        // unmapped means that this field is not associated to any entity property
-        'mapped' => false,
-        // make it optional so you don't have to re-upload the PDF file
-        // every time you edit the Product details
-        'required' => false,
-        // unmapped fields can't define their validation using annotations
-        // in the associated entity, so you can use the PHP constraint classes
-        'constraints' => [
-          new File([
-            'mimeTypes' => 'application/pdf',
-            'maxSize' => '5120k',
-            'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5Mb.'
-          ])
-        ],
-      ])
     ;
   }
 

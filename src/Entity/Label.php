@@ -23,6 +23,9 @@ class Label {
   #[ORM\Column(length: 255)]
   private ?string $color = null;
 
+  #[ORM\Column(length: 255)]
+  private ?string $label = null;
+
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?User $editBy = null;
@@ -39,17 +42,17 @@ class Label {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\OneToMany(mappedBy: 'label', targetEntity: Project::class)]
+  #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'label')]
   private Collection $projects;
 
-  #[ORM\OneToMany(mappedBy: 'label', targetEntity: Task::class)]
+  #[ORM\ManyToMany(targetEntity: Task::class, mappedBy: 'label')]
   private Collection $tasks;
-
 
   public function __construct() {
     $this->projects = new ArrayCollection();
     $this->tasks = new ArrayCollection();
   }
+
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -155,31 +158,19 @@ class Label {
   }
 
   /**
-   * @return Collection<int, Project>
+   * @return string|null
    */
-  public function getProjects(): Collection {
-    return $this->projects;
+  public function getLabel(): ?string {
+    return $this->label;
   }
 
-  public function addProject(Project $project): self {
-    if (!$this->projects->contains($project)) {
-      $this->projects->add($project);
-      $project->setLabel($this);
-    }
-
-    return $this;
+  /**
+   * @param string|null $label
+   */
+  public function setLabel(?string $label): void {
+    $this->label = $label;
   }
 
-  public function removeProject(Project $project): self {
-    if ($this->projects->removeElement($project)) {
-      // set the owning side to null (unless already changed)
-      if ($project->getLabel() === $this) {
-        $project->setLabel(null);
-      }
-    }
-
-    return $this;
-  }
 
   /**
    * @return bool
@@ -196,36 +187,52 @@ class Label {
   }
 
   /**
+   * @return Collection<int, Project>
+   */
+  public function getProjects(): Collection {
+    return $this->projects;
+  }
+
+  public function addProject(Project $project): self {
+    if (!$this->projects->contains($project)) {
+      $this->projects->add($project);
+      $project->addLabel($this);
+    }
+
+    return $this;
+  }
+
+  public function removeProject(Project $project): self {
+    if ($this->projects->removeElement($project)) {
+      $project->removeLabel($this);
+    }
+
+    return $this;
+  }
+
+  /**
    * @return Collection<int, Task>
    */
-  public function getTasks(): Collection
-  {
-      return $this->tasks;
+  public function getTasks(): Collection {
+    return $this->tasks;
   }
 
-  public function addTask(Task $task): self
-  {
-      if (!$this->tasks->contains($task)) {
-          $this->tasks->add($task);
-          $task->setLabel($this);
-      }
+  public function addTask(Task $task): self {
+    if (!$this->tasks->contains($task)) {
+      $this->tasks->add($task);
+      $task->addLabel($this);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeTask(Task $task): self
-  {
-      if ($this->tasks->removeElement($task)) {
-          // set the owning side to null (unless already changed)
-          if ($task->getLabel() === $this) {
-              $task->setLabel(null);
-          }
-      }
+  public function removeTask(Task $task): self {
+    if ($this->tasks->removeElement($task)) {
+      $task->removeLabel($this);
+    }
 
-      return $this;
+    return $this;
   }
-
-
 
 
 }

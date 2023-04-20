@@ -45,7 +45,6 @@ class TaskFormType extends AbstractType {
       ])
       ->add('label', EntityType::class, [
         'required' => false,
-        'placeholder' => 'Izaberite oznaku',
         'class' => Label::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
@@ -55,9 +54,10 @@ class TaskFormType extends AbstractType {
         },
         'choice_label' => 'title',
         'expanded' => false,
-        'multiple' => false,
+        'multiple' => true,
       ])
       ->add('category', EntityType::class, [
+        'placeholder' => '--Izaberite kategoriju--',
         'required' => false,
         'class' => Category::class,
         'query_builder' => function (EntityRepository $em) {
@@ -68,7 +68,7 @@ class TaskFormType extends AbstractType {
         },
         'choice_label' => 'title',
         'expanded' => false,
-        'multiple' => true,
+        'multiple' => false,
       ])
       ->add('deadline', DateType::class, [
         'required' => false,
@@ -139,10 +139,11 @@ class TaskFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('priority', ChoiceType::class, [
-        'required' => false,
-        'placeholder' => 'Izaberite prioritet zadatka',
-        'choices' => PrioritetData::form(),
+      ->add('isPriority', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
         'expanded' => false,
         'multiple' => false,
       ])

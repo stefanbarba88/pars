@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classes\Data\ColorsData;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\ResponseMessages;
 use App\Entity\Label;
@@ -59,12 +60,12 @@ class LabelController extends AbstractController {
 //      return $this->json($jsonArgs);
 //  }
 
-
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
-
+        $color = $request->request->get('color');
+        $label->setColor($color);
         $this->em->getRepository(label::class)->save($label);
 
         notyf()
@@ -79,6 +80,7 @@ class LabelController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['label'] = $label;
+    $args['colors'] = ColorsData::form();
 
     return $this->render('label/form.html.twig', $args);
   }

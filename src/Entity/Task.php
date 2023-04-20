@@ -43,8 +43,8 @@ class Task implements JsonSerializable {
   #[ORM\Column(nullable: true)]
   private ?DateTimeImmutable $deadline;
 
-  #[ORM\Column(type: Types::SMALLINT, nullable: true)]
-  private ?int $priority = null;
+  #[ORM\Column]
+  private ?bool $isPriority = false;
 
   #[ORM\Column]
   private ?bool $isEstimate = false;
@@ -73,14 +73,6 @@ class Task implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'tasks')]
   private Collection $assignedUsers;
 
-  #[ORM\ManyToOne(inversedBy: 'tasks')]
-  #[ORM\JoinColumn(nullable: true)]
-  private ?Label $label = null;
-
-  #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'tasks')]
-  #[ORM\JoinColumn(nullable: true)]
-  private Collection $category;
-
   #[ORM\OneToMany(mappedBy: 'task', targetEntity: TaskHistory::class, cascade: ["persist", "remove"])]
   private Collection $taskHistories;
 
@@ -90,12 +82,18 @@ class Task implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'task', targetEntity: Pdf::class)]
   private Collection $pdfs;
 
+  #[ORM\ManyToOne(inversedBy: 'tasks')]
+  private ?Category $category = null;
+
+  #[ORM\ManyToMany(targetEntity: Label::class, inversedBy: 'tasks')]
+  private Collection $label;
+
 
   public function __construct() {
     $this->assignedUsers = new ArrayCollection();
-    $this->category = new ArrayCollection();
     $this->taskHistories = new ArrayCollection();
     $this->pdfs = new ArrayCollection();
+    $this->label = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -119,8 +117,6 @@ class Task implements JsonSerializable {
       'isEstimate' => $this->isIsEstimate(),
       'isClientView' => $this->isIsClientView(),
       'isExpenses' => $this->isIsExpenses(),
-      'category' => $this->getCategoriesJson(),
-      'label' => $this->getLabelJson(),
       'editBy' => $this->getEditByJson(),
       'parentTask' => $this->getParentTask()->getTitle(),
       'priority' => $this->getJsonPriority(),
@@ -135,18 +131,18 @@ class Task implements JsonSerializable {
     return $this->editBy->getFullName();
   }
 
-  public function getLabelJson(): string {
-    return $this->label->getTitle();
-  }
-
-  public function getCategoriesJson(): array {
-    $categories = [];
-    foreach ($this->category as $cat) {
-      $categories[] = $cat->getTitle();
-    }
-
-    return $categories;
-  }
+//  public function getLabelJson(): string {
+//    return $this->label->getTitle();
+//  }
+//
+//  public function getCategoriesJson(): array {
+//    $categories = [];
+//    foreach ($this->category as $cat) {
+//      $categories[] = $cat->getTitle();
+//    }
+//
+//    return $categories;
+//  }
 
   public function getJsonAssignedUsers(): array {
     $users = [];
@@ -191,22 +187,20 @@ class Task implements JsonSerializable {
     return $this;
   }
 
-  public function getPriority(): ?int {
-    return $this->priority;
+  /**
+   * @return bool|null
+   */
+  public function getIsPriority(): ?bool {
+    return $this->isPriority;
   }
 
-  public function setPriority(?int $priority): self {
-    $this->priority = $priority;
-
-    return $this;
+  /**
+   * @param bool|null $isPriority
+   */
+  public function setIsPriority(?bool $isPriority): void {
+    $this->isPriority = $isPriority;
   }
 
-  public function getJsonPriority(): ?string {
-    if (is_null($this->priority)) {
-      return null;
-    }
-    return PrioritetData::PRIORITET[$this->priority];
-  }
 
   public function isIsEstimate(): ?bool {
     return $this->isEstimate;
@@ -365,37 +359,6 @@ class Task implements JsonSerializable {
     return $this;
   }
 
-  public function getLabel(): ?Label {
-    return $this->label;
-  }
-
-  public function setLabel(?Label $label): self {
-    $this->label = $label;
-
-    return $this;
-  }
-
-  /**
-   * @return Collection<int, Category>
-   */
-  public function getCategory(): Collection {
-    return $this->category;
-  }
-
-  public function addCategory(Category $category): self {
-    if (!$this->category->contains($category)) {
-      $this->category->add($category);
-    }
-
-    return $this;
-  }
-
-  public function removeCategory(Category $category): self {
-    $this->category->removeElement($category);
-
-    return $this;
-  }
-
   public function getParentTask(): ?self {
     return $this->parentTask;
   }
@@ -456,6 +419,37 @@ class Task implements JsonSerializable {
         $pdf->setTask(null);
       }
     }
+
+    return $this;
+  }
+
+  public function getCategory(): ?Category {
+    return $this->category;
+  }
+
+  public function setCategory(?Category $category): self {
+    $this->category = $category;
+
+    return $this;
+  }
+
+  /**
+   * @return Collection<int, Label>
+   */
+  public function getLabel(): Collection {
+    return $this->label;
+  }
+
+  public function addLabel(Label $label): self {
+    if (!$this->label->contains($label)) {
+      $this->label->add($label);
+    }
+
+    return $this;
+  }
+
+  public function removeLabel(Label $label): self {
+    $this->label->removeElement($label);
 
     return $this;
   }

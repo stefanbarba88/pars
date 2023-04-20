@@ -129,22 +129,31 @@
                                         {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
                                     </div>
                                 </div>
-                                <div class="col-lg-3">
-                                    <div class="mb-3">
-                                        {{ form_label(form.color, 'Boja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.color, {attr: { class: 'form-control required form-control-color' }}) }}
-                                    </div>
-                                </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        <label class="form-label required" for="label_form_color">Boja:*</label>
+                                        <select id="label_form_color" name="color" required="required" class="form-control required">
+                                            <option value="" selected="selected">--Izaberite boju oznake--</option>
+                                            {% for color in colors %}
+                                                {% if label.color == color.value %}
+                                                    <option class="{{ color.class }}" value="{{ color.value }}" selected>{{ color.option }}</option>
+                                                {% else %}
+                                                    <option class="{{ color.class }}" value="{{ color.value }}">{{ color.option }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.isTaskLabel, 'Oznaka zadataka:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.isTaskLabel, {attr: { class: 'form-control required select' }}) }}
                                         <span class="form-text">Odnosi se na označavanje zadataka u okviru projekta.</span>
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.isSuspended, 'Deaktivirana oznaka:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.isSuspended, {attr: { class: 'form-control required select' }}) }}

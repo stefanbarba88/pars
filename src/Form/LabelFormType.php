@@ -14,9 +14,6 @@ class LabelFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
     $builder
       ->add('title')
-      ->add('color', ColorType::class, [
-
-      ])
       ->add('isTaskLabel', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',

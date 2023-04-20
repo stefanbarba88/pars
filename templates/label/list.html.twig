@@ -98,7 +98,6 @@
                             <thead>
                             <tr>
                                 <th>Naziv</th>
-                                <th>Boja</th>
                                 <th>Status</th>
                                 <th>Oznaka zadataka</th>
                                 <th>Pregled</th>
@@ -107,8 +106,7 @@
                             <tbody>
                             {% for label in labels %}
                                 <tr>
-                                    <td><a href="{{ path('app_label_view', { id: label.id}) }}">{{ label.title }}</a></td>
-                                    <td><span style="display: inline-block; width: 16px; height: 16px; border-radius: 100%; background: {{ label.color }};"></span></td>
+                                    <td><a href="{{ path('app_label_view', { id: label.id}) }}">{{ label.label | raw }}</a></td>
                                     <td>{{ label.badgeByStatus | raw }}</td>
                                     <td>
                                         {% if label.isTaskLabel %}

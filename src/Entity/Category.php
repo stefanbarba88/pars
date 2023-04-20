@@ -36,16 +36,17 @@ class Category {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'category')]
+  #[ORM\OneToMany(mappedBy: 'category', targetEntity: Project::class)]
   private Collection $projects;
 
-  #[ORM\ManyToMany(targetEntity: Task::class, mappedBy: 'category')]
+  #[ORM\OneToMany(mappedBy: 'category', targetEntity: Task::class)]
   private Collection $tasks;
 
   public function __construct() {
     $this->projects = new ArrayCollection();
     $this->tasks = new ArrayCollection();
   }
+
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -137,30 +138,6 @@ class Category {
   }
 
   /**
-   * @return Collection<int, Project>
-   */
-  public function getProjects(): Collection {
-    return $this->projects;
-  }
-
-  public function addProject(Project $project): self {
-    if (!$this->projects->contains($project)) {
-      $this->projects->add($project);
-      $project->addCategory($this);
-    }
-
-    return $this;
-  }
-
-  public function removeProject(Project $project): self {
-    if ($this->projects->removeElement($project)) {
-      $project->removeCategory($this);
-    }
-
-    return $this;
-  }
-
-  /**
    * @return bool
    */
   public function isTaskCategory(): bool {
@@ -175,30 +152,57 @@ class Category {
   }
 
   /**
+   * @return Collection<int, Project>
+   */
+  public function getProjects(): Collection {
+    return $this->projects;
+  }
+
+  public function addProject(Project $project): self {
+    if (!$this->projects->contains($project)) {
+      $this->projects->add($project);
+      $project->setCategory($this);
+    }
+
+    return $this;
+  }
+
+  public function removeProject(Project $project): self {
+    if ($this->projects->removeElement($project)) {
+      // set the owning side to null (unless already changed)
+      if ($project->getCategory() === $this) {
+        $project->setCategory(null);
+      }
+    }
+
+    return $this;
+  }
+
+  /**
    * @return Collection<int, Task>
    */
-  public function getTasks(): Collection
-  {
-      return $this->tasks;
+  public function getTasks(): Collection {
+    return $this->tasks;
   }
 
-  public function addTask(Task $task): self
-  {
-      if (!$this->tasks->contains($task)) {
-          $this->tasks->add($task);
-          $task->addCategory($this);
-      }
+  public function addTask(Task $task): self {
+    if (!$this->tasks->contains($task)) {
+      $this->tasks->add($task);
+      $task->setCategory($this);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeTask(Task $task): self
-  {
-      if ($this->tasks->removeElement($task)) {
-          $task->removeCategory($this);
+  public function removeTask(Task $task): self {
+    if ($this->tasks->removeElement($task)) {
+      // set the owning side to null (unless already changed)
+      if ($task->getCategory() === $this) {
+        $task->setCategory(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
 

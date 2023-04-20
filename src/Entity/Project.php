@@ -51,14 +51,8 @@ class Project implements JsonSerializable {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'projects')]
-  private Collection $category;
-
   #[ORM\ManyToMany(targetEntity: Client::class, inversedBy: 'projects')]
   private Collection $client;
-
-  #[ORM\ManyToOne(inversedBy: 'projects')]
-  private ?Label $label = null;
 
   #[ORM\Column(type: Types::SMALLINT)]
   private ?int $payment = null;
@@ -90,15 +84,18 @@ class Project implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'project', targetEntity: Task::class)]
   private Collection $tasks;
 
-  #[ORM\OneToMany(mappedBy: 'project', targetEntity: Pdf::class)]
-  private Collection $pdfs;
+
+  #[ORM\ManyToOne(inversedBy: 'projects')]
+  private ?Category $category = null;
+
+  #[ORM\ManyToMany(targetEntity: Label::class, inversedBy: 'projects')]
+  private Collection $label;
 
   public function __construct() {
-    $this->category = new ArrayCollection();
     $this->client = new ArrayCollection();
     $this->projectHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
-    $this->pdfs = new ArrayCollection();
+    $this->label = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -127,9 +124,9 @@ class Project implements JsonSerializable {
       'isTimeRoundUp' => $this->isTimeRoundUp(),
       'isEstimate' => $this->isEstimate(),
       'isClientView' => $this->isClientView(),
-      'category' => $this->getCategoriesJson(),
-      'client' => $this->getClientsJson(),
       'label' => $this->getLabelJson(),
+      'client' => $this->getClientsJson(),
+      'category' => $this->category->getTitle(),
       'editBy' => $this->getEditByJson(),
       'payment' => $this->getPayment(),
       'price' => $this->getPrice(),
@@ -174,7 +171,9 @@ class Project implements JsonSerializable {
   }
 
   public function getEditByJson(): string {
-
+  if(is_null($this->editBy)) {
+    return '';
+  }
     return $this->editBy->getFullName();
   }
 
@@ -312,37 +311,6 @@ class Project implements JsonSerializable {
   }
 
   /**
-   * @return Collection<int, Category>
-   */
-  public function getCategory(): Collection {
-    return $this->category;
-  }
-
-  public function getCategoriesJson(): array {
-    $categories = [];
-
-    foreach ($this->category as $cat) {
-      $categories[] = $cat->getTitle();
-    }
-
-    return $categories;
-  }
-
-  public function addCategory(Category $category): self {
-    if (!$this->category->contains($category)) {
-      $this->category->add($category);
-    }
-
-    return $this;
-  }
-
-  public function removeCategory(Category $category): self {
-    $this->category->removeElement($category);
-
-    return $this;
-  }
-
-  /**
    * @return Collection<int, Client>
    */
   public function getClient(): Collection {
@@ -369,21 +337,6 @@ class Project implements JsonSerializable {
 
   public function removeClient(Client $client): self {
     $this->client->removeElement($client);
-
-    return $this;
-  }
-
-  public function getLabel(): ?Label {
-    return $this->label;
-  }
-
-  public function getLabelJson(): string {
-
-    return $this->label->getTitle();
-  }
-
-  public function setLabel(?Label $label): self {
-    $this->label = $label;
 
     return $this;
   }
@@ -518,34 +471,44 @@ class Project implements JsonSerializable {
     return $this;
   }
 
+  public function getCategory(): ?Category {
+    return $this->category;
+  }
+
+  public function setCategory(?Category $category): self {
+    $this->category = $category;
+
+    return $this;
+  }
+
   /**
-   * @return Collection<int, Pdf>
+   * @return Collection<int, Label>
    */
-  public function getPdfs(): Collection
-  {
-      return $this->pdfs;
+  public function getLabel(): Collection {
+    return $this->label;
   }
 
-  public function addPdf(Pdf $pdf): self
-  {
-      if (!$this->pdfs->contains($pdf)) {
-          $this->pdfs->add($pdf);
-          $pdf->setProject($this);
-      }
+  public function addLabel(Label $label): self {
+    if (!$this->label->contains($label)) {
+      $this->label->add($label);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removePdf(Pdf $pdf): self
-  {
-      if ($this->pdfs->removeElement($pdf)) {
-          // set the owning side to null (unless already changed)
-          if ($pdf->getProject() === $this) {
-              $pdf->setProject(null);
-          }
-      }
+  public function removeLabel(Label $label): self {
+    $this->label->removeElement($label);
 
-      return $this;
+    return $this;
+  }
+
+    public function getLabelJson(): array {
+    $labels = [];
+    foreach ($this->label as $lab) {
+      $labels[] = $lab->getTitle();
+    }
+
+    return $labels;
   }
 
 }

@@ -20,6 +20,7 @@
         "php-flasher/flasher-notyf-symfony": "^1.13",
         "php-flasher/flasher-symfony": "^1.13",
         "sensio/framework-extra-bundle": "^6.2",
+        "snapappointments/bootstrap-select": "^1.13",
         "symfony/asset": "6.2.*",
         "symfony/console": "6.2.*",
         "symfony/dotenv": "6.2.*",

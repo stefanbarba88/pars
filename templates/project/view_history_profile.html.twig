@@ -123,15 +123,15 @@
                                         </div>
                                         <div class="row p-2">
                                             <div class="col-4">Kategorija:</div>
-                                            <div class="col-8">
-                                                {% for cat in projectH.category %}
-                                                {{ cat }}{% if  not loop.last %}<br>{% endif %}
-                                                {% endfor %}
-                                            </div>
+                                            <div class="col-8">{{ projectH.category }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Oznaka:</div>
-                                            <div class="col-8">{{ projectH.label }}</div>
+                                            <div class="col-8">
+                                                {% for lab in projectH.label %}
+                                                    {{ lab }}{% if  not loop.last %}<br>{% endif %}
+                                                {% endfor %}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

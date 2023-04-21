@@ -91,11 +91,15 @@ class Project implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Label::class, inversedBy: 'projects')]
   private Collection $label;
 
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: Pdf::class)]
+  private Collection $pdfs;
+
   public function __construct() {
     $this->client = new ArrayCollection();
     $this->projectHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
     $this->label = new ArrayCollection();
+    $this->pdfs = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -510,5 +514,35 @@ class Project implements JsonSerializable {
 
     return $labels;
   }
+
+    /**
+     * @return Collection<int, Pdf>
+     */
+    public function getPdfs(): Collection
+    {
+        return $this->pdfs;
+    }
+
+    public function addPdf(Pdf $pdf): self
+    {
+        if (!$this->pdfs->contains($pdf)) {
+            $this->pdfs->add($pdf);
+            $pdf->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removePdf(Pdf $pdf): self
+    {
+        if ($this->pdfs->removeElement($pdf)) {
+            // set the owning side to null (unless already changed)
+            if ($pdf->getProject() === $this) {
+                $pdf->setProject(null);
+            }
+        }
+
+        return $this;
+    }
 
 }

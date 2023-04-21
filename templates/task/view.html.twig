@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{task.title }}
+                                {{ task.project.title | default ('Zadatak bez projekta') }}: {{ task.title }}
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -38,13 +38,20 @@
 
                     <div class="page-header-content d-lg-flex border-top">
                         <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
-                                <a href="{{ path('app_project_profile_view', {id: project.id} ) }}" class="breadcrumb-item">Informacije</a>
-                                <span class="breadcrumb-item active">Aktivnosti</span>
-                            </div>
-
+                            {% if task.project is null %}
+                                <div class="breadcrumb py-2">
+                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                    <span class="breadcrumb-item active">Zadaci</span>
+                                </div>
+                            {% else %}
+                                <div class="breadcrumb py-2">
+                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                    <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
+                                    <a href="{{ path('app_project_profile_view', {id: task.project.id} ) }}" class="breadcrumb-item">Informacije</a>
+                                    <a href="{{ path('app_project_tasks_view', {id: task.project.id} ) }}" class="breadcrumb-item">Zadaci</a>
+                                    <span class="breadcrumb-item active">Informacije</span>
+                                </div>
+                            {% endif %}
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
                                 <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
                             </a>
@@ -86,7 +93,10 @@
                             </div>
                         </div>
                     </div>
-                    {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: project } )) }}
+                    {% if task.project is not null %}
+                        {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}
+                    {% endif %}
+
                 </div>
                 <!-- /page header -->
 
@@ -101,116 +111,26 @@
                             <!-- Task overview -->
                             <div class="card">
                                 <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">#23: Support tickets list doesn't support commas</h5>
-                                    <div class="mt-1 my-lg-auto ms-lg-auto">
-                                        <a href="#" class="btn btn-primary">Check in <i class="ph-clock ms-2"></i></a>
-                                    </div>
+                                    <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }} <a href="#"><i class="ph-note-pencil"></i></a></h5>
+{#                                    <div class="mt-1 my-lg-auto ms-lg-auto">#}
+{#                                    </div>#}
                                 </div>
 
                                 <div class="card-body">
                                     <div class="mb-4">
-                                        <h6>Overview</h6>
-                                        <p class="mb-3">Then sluggishly this camel learned woodchuck far stretched unspeakable notwithstanding the walked owing stung mellifluously glumly rooster more examined one that combed until a less less witless pouted up voluble timorously glared elaborate giraffe steady while grinned and got one beaver to walked. Connected picked rashly ocelot flirted while wherever unwound much more one inside emotionally well much woolly amidst upon far burned ouch sadistically became.</p>
+                                        <h6>Opis</h6>
+                                        {{ task.description | raw }}
+                                        </div>
+
+                                    <div class="mb-4">
+                                        <h6>Oprema</h6>
                                     </div>
 
                                     <div class="mb-4">
-                                        <h6>What we need</h6>
-                                        <p class="mb-4">Some cow goose out and sweeping wow the skillfully goodness one crazily far some jeez darn well so peevish pending nudged categorically in between about much alas handsome intolerable devotedly helpfully smiled momentously next much this this next sweepingly far. Together prim and limpet much extravagantly quail longing a ouch that walking a jeepers flamingo more.</p>
-
-                                        <div class="row px-3">
-                                            <div class="col-lg-6">
-                                                <dl>
-                                                    <dt class="fs-sm text-primary text-uppercase mb-2">1. Salamander much that on much</dt>
-                                                    <dd class="mb-3">Like partook magic this enthusiastic tasteful far crud otter this the ferret honey iguana.</dd>
-
-                                                    <dt class="fs-sm text-primary text-uppercase mb-2">2. Well far some raccoon</dt>
-                                                    <dd class="mb-3">Python laudably euphemistically since this copious much human this briefly hello ouch less one diligent however impotently made gave a slick up much.</dd>
-
-                                                    <dt class="fs-sm text-primary text-uppercase mb-2">3. Goldfish rapidly that far</dt>
-                                                    <dd class="mb-3">Well far some raccoon knew goose and crud behind salmon amenable oh the poignant sufficiently yikes a naked showed far reindeer imminently.</dd>
-                                                </dl>
-                                            </div>
-
-                                            <div class="col-lg-6">
-                                                <dl>
-                                                    <dt class="fs-sm text-primary text-uppercase mb-2">1. Misunderstood cuffed more depending</dt>
-                                                    <dd class="mb-3">And earthworm dear arose bald agilely sad so below cowered within ceremonially therefore via much this symbolically and newt capably.</dd>
-
-                                                    <dt class="fs-sm text-primary text-uppercase mb-2">2. Voluble much saddled mechanic</dt>
-                                                    <dd class="mb-3">Much took between less goodness jay mallard kneeled gnashed this up strong cooperative.</dd>
-
-                                                    <dt class="fs-sm text-primary text-uppercase mb-2">3. Before some one more</dt>
-                                                    <dd class="mb-3">Pending some contrary rabbit up that the more conditionally ouch confidently far so was darn logic thus dove the juicily because that placed otter.</dd>
-                                                </dl>
-                                            </div>
-                                        </div>
+                                        <h6>Vozila</h6>
                                     </div>
 
-                                    <div class="mb-4">
-                                        <h6>Requirements</h6>
-                                        <p class="mb-3">So slit more darn hey well wore submissive savage this shark aardvark fumed thoughtfully much drank when angelfish so outgrew some alas vigorously therefore warthog superb less oh groundhog less alas gibbered barked some hey despicably with aesthetic hamster jay by luckily.</p>
-
-                                        <div class="table-responsive border rounded">
-                                            <table class="table">
-                                                <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Task</th>
-                                                    <th>Due date</th>
-                                                    <th>Description</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td><span class="fw-semibold">Design mockup</span></td>
-                                                    <td>
-                                                        <div class="d-inline-flex align-items-center">
-                                                            <i class="ph-calendar me-2"></i>
-                                                            21 January, 15
-                                                        </div>
-                                                    </td>
-                                                    <td>Create design mockups for a new app, must be delivered before 1st of March</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td><span class="fw-semibold">User interface research</span></td>
-                                                    <td>
-                                                        <div class="d-inline-flex align-items-center">
-                                                            <i class="ph-calendar me-2"></i>
-                                                            24 January, 15
-                                                        </div>
-                                                    </td>
-                                                    <td>Create a focus group with random people, provide a research statement</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>3</td>
-                                                    <td><span class="fw-semibold">New icons set</span></td>
-                                                    <td>
-                                                        <div class="d-inline-flex align-items-center">
-                                                            <i class="ph-calendar me-2"></i>
-                                                            28 January, 15
-                                                        </div>
-                                                    </td>
-                                                    <td>Create a full set of icons required for the iOS application, send them to team lead for review</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>4</td>
-                                                    <td><span class="fw-semibold">Loading optimization</span></td>
-                                                    <td>
-                                                        <div class="d-inline-flex align-items-center">
-                                                            <i class="ph-calendar me-2"></i>
-                                                            1 February, 15
-                                                        </div>
-                                                    </td>
-                                                    <td>Review image sizes, compress them as much as possible, make sure page loading time is less than 1 second</td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    <h6>Uploaded files</h6>
+                                    <h6>Slike</h6>
                                     <p>A much goodness between destructive that save stupid firefly destructively dog goldfinch continually alas pinched for outside flailed inescapably hey brought rid crud and awakened sobbed extraordinarily wherever deer before tenable yet into dalmatian opposite save close ahead next independent mindful but far.</p>
 
                                     <div class="row">
@@ -340,227 +260,214 @@
                                         <a href="#" class="text-body ms-2">
                                             <i class="ph-trash"></i>
                                         </a>
-                                        <div class="d-flex dropdown ms-2">
-                                            <a href="#" class="text-body d-inline-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">
-                                                <i class="ph-list"></i>
-                                            </a>
-
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Check in</a>
-                                                <a href="#" class="dropdown-item"><i class="ph-paperclip me-2"></i> Attach screenshot</a>
-                                                <a href="#" class="dropdown-item"><i class="ph-user-circle-plus me-2"></i> Assign users</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a href="#" class="dropdown-item"><i class="ph-warning-circle me-2"></i> Report</a>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <!-- /task overview -->
 
 
-                            <!-- Comments -->
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Comments</h5>
-                                </div>
+{#                            <!-- Comments -->#}
+{#                            <div class="card">#}
+{#                                <div class="card-header">#}
+{#                                    <h5 class="mb-0">Comments</h5>#}
+{#                                </div>#}
 
-                                <div class="card-body">
-                                    <div class="d-flex flex-column flex-lg-row mb-3">
-                                        <div class="me-lg-3 mb-2 mb-lg-0">
-                                            <a href="#"><img src="../../../assets/images/demo/users/face2.jpg" class="rounded-circle" width="40" height="40" alt=""></a>
-                                        </div>
+{#                                <div class="card-body">#}
+{#                                    <div class="d-flex flex-column flex-lg-row mb-3">#}
+{#                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
+{#                                            <a href="#"><img src="../../../assets/images/demo/users/face2.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
+{#                                        </div>#}
 
-                                        <div class="flex-fill">
-                                            <a href="#" class="fw-semibold">William Jennings</a>
-                                            <span class="fs-sm text-muted ms-3">Just now</span>
+{#                                        <div class="flex-fill">#}
+{#                                            <a href="#" class="fw-semibold">William Jennings</a>#}
+{#                                            <span class="fs-sm text-muted ms-3">Just now</span>#}
 
-                                            <p>He moonlight difficult engrossed an it sportsmen. Interested has all devonshire difficulty gay assistance joy. Unaffected at ye of compliment alteration to.</p>
+{#                                            <p>He moonlight difficult engrossed an it sportsmen. Interested has all devonshire difficulty gay assistance joy. Unaffected at ye of compliment alteration to.</p>#}
 
-                                            <ul class="list-inline mb-0">
-                                                <li class="list-inline-item d-inline-flex align-items-center">
-                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>
-                                                    114
-                                                </li>
-                                                <li class="list-inline-item ms-2">
-                                                    <a href="#">Reply</a>
-                                                </li>
-                                                <li class="list-inline-item">
-                                                    <a href="#">Edit</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
+{#                                            <ul class="list-inline mb-0">#}
+{#                                                <li class="list-inline-item d-inline-flex align-items-center">#}
+{#                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
+{#                                                    114#}
+{#                                                </li>#}
+{#                                                <li class="list-inline-item ms-2">#}
+{#                                                    <a href="#">Reply</a>#}
+{#                                                </li>#}
+{#                                                <li class="list-inline-item">#}
+{#                                                    <a href="#">Edit</a>#}
+{#                                                </li>#}
+{#                                            </ul>#}
+{#                                        </div>#}
+{#                                    </div>#}
 
-                                    <div class="d-flex flex-column flex-lg-row mb-3">
-                                        <div class="me-lg-3 mb-2 mb-lg-0">
-                                            <a href="#"><img src="../../../assets/images/demo/users/face3.jpg" class="rounded-circle" width="40" height="40" alt=""></a>
-                                        </div>
+{#                                    <div class="d-flex flex-column flex-lg-row mb-3">#}
+{#                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
+{#                                            <a href="#"><img src="../../../assets/images/demo/users/face3.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
+{#                                        </div>#}
 
-                                        <div class="flex-fill">
-                                            <a href="#" class="fw-semibold">Margo Baker</a>
-                                            <span class="fs-sm text-muted ms-3">5 minutes ago</span>
+{#                                        <div class="flex-fill">#}
+{#                                            <a href="#" class="fw-semibold">Margo Baker</a>#}
+{#                                            <span class="fs-sm text-muted ms-3">5 minutes ago</span>#}
 
-                                            <p>Place voice no arise along to. Parlors waiting so against me no. Wishing calling are warrant settled was luckily. Express besides it present if at an opinion visitor.</p>
+{#                                            <p>Place voice no arise along to. Parlors waiting so against me no. Wishing calling are warrant settled was luckily. Express besides it present if at an opinion visitor.</p>#}
 
-                                            <ul class="list-inline mb-0">
-                                                <li class="list-inline-item d-inline-flex align-items-center">
-                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>
-                                                    90
-                                                </li>
-                                                <li class="list-inline-item ms-2">
-                                                    <a href="#">Reply</a>
-                                                </li>
-                                                <li class="list-inline-item">
-                                                    <a href="#">Edit</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
+{#                                            <ul class="list-inline mb-0">#}
+{#                                                <li class="list-inline-item d-inline-flex align-items-center">#}
+{#                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
+{#                                                    90#}
+{#                                                </li>#}
+{#                                                <li class="list-inline-item ms-2">#}
+{#                                                    <a href="#">Reply</a>#}
+{#                                                </li>#}
+{#                                                <li class="list-inline-item">#}
+{#                                                    <a href="#">Edit</a>#}
+{#                                                </li>#}
+{#                                            </ul>#}
+{#                                        </div>#}
+{#                                    </div>#}
 
-                                    <div class="d-flex flex-column flex-lg-row mb-3">
-                                        <div class="me-lg-3 mb-2 mb-lg-0">
-                                            <a href="#"><img src="../../../assets/images/demo/users/face1.jpg" class="rounded-circle" width="40" height="40" alt=""></a>
-                                        </div>
+{#                                    <div class="d-flex flex-column flex-lg-row mb-3">#}
+{#                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
+{#                                            <a href="#"><img src="../../../assets/images/demo/users/face1.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
+{#                                        </div>#}
 
-                                        <div class="flex-fill">
-                                            <a href="#" class="fw-semibold">James Alexander</a>
-                                            <span class="fs-sm text-muted ms-3">7 minutes ago</span>
+{#                                        <div class="flex-fill">#}
+{#                                            <a href="#" class="fw-semibold">James Alexander</a>#}
+{#                                            <span class="fs-sm text-muted ms-3">7 minutes ago</span>#}
 
-                                            <p>Savings her pleased are several started females met. Short her not among being any. Thing of judge fruit charm views do. Miles mr an forty along as he.</p>
+{#                                            <p>Savings her pleased are several started females met. Short her not among being any. Thing of judge fruit charm views do. Miles mr an forty along as he.</p>#}
 
-                                            <ul class="list-inline mb-0">
-                                                <li class="list-inline-item d-inline-flex align-items-center">
-                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>
-                                                    70
-                                                </li>
-                                                <li class="list-inline-item ms-2">
-                                                    <a href="#">Reply</a>
-                                                </li>
-                                                <li class="list-inline-item">
-                                                    <a href="#">Edit</a>
-                                                </li>
-                                            </ul>
+{#                                            <ul class="list-inline mb-0">#}
+{#                                                <li class="list-inline-item d-inline-flex align-items-center">#}
+{#                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
+{#                                                    70#}
+{#                                                </li>#}
+{#                                                <li class="list-inline-item ms-2">#}
+{#                                                    <a href="#">Reply</a>#}
+{#                                                </li>#}
+{#                                                <li class="list-inline-item">#}
+{#                                                    <a href="#">Edit</a>#}
+{#                                                </li>#}
+{#                                            </ul>#}
 
-                                            <div class="d-flex flex-column flex-lg-row mt-3">
-                                                <div class="me-lg-3 mb-2 mb-lg-0">
-                                                    <a href="#"><img src="../../../assets/images/demo/users/face9.jpg" class="rounded-circle" width="40" height="40" alt=""></a>
-                                                </div>
+{#                                            <div class="d-flex flex-column flex-lg-row mt-3">#}
+{#                                                <div class="me-lg-3 mb-2 mb-lg-0">#}
+{#                                                    <a href="#"><img src="../../../assets/images/demo/users/face9.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
+{#                                                </div>#}
 
-                                                <div class="flex-fill">
-                                                    <a href="#" class="fw-semibold">Jack Cooper</a>
-                                                    <span class="fs-sm text-muted ms-3">10 minutes ago</span>
+{#                                                <div class="flex-fill">#}
+{#                                                    <a href="#" class="fw-semibold">Jack Cooper</a>#}
+{#                                                    <span class="fs-sm text-muted ms-3">10 minutes ago</span>#}
 
-                                                    <p>She education get middleton day agreement performed preserved unwilling. Do however as pleased offence outward beloved by present. By outward neither he so covered.</p>
+{#                                                    <p>She education get middleton day agreement performed preserved unwilling. Do however as pleased offence outward beloved by present. By outward neither he so covered.</p>#}
 
-                                                    <ul class="list-inline mb-0">
-                                                        <li class="list-inline-item d-inline-flex align-items-center">
-                                                            <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>
-                                                            67
-                                                        </li>
-                                                        <li class="list-inline-item ms-2">
-                                                            <a href="#">Reply</a>
-                                                        </li>
-                                                        <li class="list-inline-item">
-                                                            <a href="#">Edit</a>
-                                                        </li>
-                                                    </ul>
+{#                                                    <ul class="list-inline mb-0">#}
+{#                                                        <li class="list-inline-item d-inline-flex align-items-center">#}
+{#                                                            <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
+{#                                                            67#}
+{#                                                        </li>#}
+{#                                                        <li class="list-inline-item ms-2">#}
+{#                                                            <a href="#">Reply</a>#}
+{#                                                        </li>#}
+{#                                                        <li class="list-inline-item">#}
+{#                                                            <a href="#">Edit</a>#}
+{#                                                        </li>#}
+{#                                                    </ul>#}
 
-                                                    <div class="d-flex flex-column flex-lg-row mt-3">
-                                                        <div class="me-lg-3 mb-2 mb-lg-0">
-                                                            <a href="#"><img src="../../../assets/images/demo/users/face11.jpg" class="rounded-circle" width="40" height="40" alt=""></a>
-                                                        </div>
+{#                                                    <div class="d-flex flex-column flex-lg-row mt-3">#}
+{#                                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
+{#                                                            <a href="#"><img src="../../../assets/images/demo/users/face11.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
+{#                                                        </div>#}
 
-                                                        <div class="flex-fill">
-                                                            <a href="#" class="fw-semibold">Natalie Wallace</a>
-                                                            <span class="fs-sm text-muted ms-3">1 hour ago</span>
+{#                                                        <div class="flex-fill">#}
+{#                                                            <a href="#" class="fw-semibold">Natalie Wallace</a>#}
+{#                                                            <span class="fs-sm text-muted ms-3">1 hour ago</span>#}
 
-                                                            <p>Juvenile proposal betrayed he an informed weddings followed. Precaution day see imprudence sympathize principles. At full leaf give quit to in they up.</p>
+{#                                                            <p>Juvenile proposal betrayed he an informed weddings followed. Precaution day see imprudence sympathize principles. At full leaf give quit to in they up.</p>#}
 
-                                                            <ul class="list-inline mb-0">
-                                                                <li class="list-inline-item d-inline-flex align-items-center">
-                                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>
-                                                                    54
-                                                                </li>
-                                                                <li class="list-inline-item ms-2">
-                                                                    <a href="#">Reply</a>
-                                                                </li>
-                                                                <li class="list-inline-item">
-                                                                    <a href="#">Edit</a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
+{#                                                            <ul class="list-inline mb-0">#}
+{#                                                                <li class="list-inline-item d-inline-flex align-items-center">#}
+{#                                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
+{#                                                                    54#}
+{#                                                                </li>#}
+{#                                                                <li class="list-inline-item ms-2">#}
+{#                                                                    <a href="#">Reply</a>#}
+{#                                                                </li>#}
+{#                                                                <li class="list-inline-item">#}
+{#                                                                    <a href="#">Edit</a>#}
+{#                                                                </li>#}
+{#                                                            </ul>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
 
-                                                    <div class="d-flex flex-column flex-lg-row mt-3">
-                                                        <div class="me-lg-3 mb-2 mb-lg-0">
-                                                            <a href="#"><img src="../../../assets/images/demo/users/face13.jpg" class="rounded-circle" width="40" height="40" alt=""></a>
-                                                        </div>
+{#                                                    <div class="d-flex flex-column flex-lg-row mt-3">#}
+{#                                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
+{#                                                            <a href="#"><img src="../../../assets/images/demo/users/face13.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
+{#                                                        </div>#}
 
-                                                        <div class="flex-fill">
-                                                            <a href="#" class="fw-semibold">Nicolette Grey</a>
-                                                            <span class="fs-sm text-muted ms-3">2 hours ago</span>
+{#                                                        <div class="flex-fill">#}
+{#                                                            <a href="#" class="fw-semibold">Nicolette Grey</a>#}
+{#                                                            <span class="fs-sm text-muted ms-3">2 hours ago</span>#}
 
-                                                            <p>Although moreover mistaken kindness me feelings do be marianne. Son over own nay with tell they cold upon are. Cordial village and settled she ability law herself.</p>
+{#                                                            <p>Although moreover mistaken kindness me feelings do be marianne. Son over own nay with tell they cold upon are. Cordial village and settled she ability law herself.</p>#}
 
-                                                            <ul class="list-inline mb-0">
-                                                                <li class="list-inline-item d-inline-flex align-items-center">
-                                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>
-                                                                    41
-                                                                </li>
-                                                                <li class="list-inline-item ms-2">
-                                                                    <a href="#">Reply</a>
-                                                                </li>
-                                                                <li class="list-inline-item">
-                                                                    <a href="#">Edit</a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+{#                                                            <ul class="list-inline mb-0">#}
+{#                                                                <li class="list-inline-item d-inline-flex align-items-center">#}
+{#                                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
+{#                                                                    41#}
+{#                                                                </li>#}
+{#                                                                <li class="list-inline-item ms-2">#}
+{#                                                                    <a href="#">Reply</a>#}
+{#                                                                </li>#}
+{#                                                                <li class="list-inline-item">#}
+{#                                                                    <a href="#">Edit</a>#}
+{#                                                                </li>#}
+{#                                                            </ul>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
 
-                                    <div class="d-flex flex-column flex-lg-row">
-                                        <div class="me-lg-3 mb-2 mb-lg-0">
-                                            <a href="#"><img src="../../../assets/images/demo/users/face4.jpg" class="rounded-circle" width="40" height="40" alt=""></a>
-                                        </div>
+{#                                    <div class="d-flex flex-column flex-lg-row">#}
+{#                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
+{#                                            <a href="#"><img src="../../../assets/images/demo/users/face4.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
+{#                                        </div>#}
 
-                                        <div class="flex-fill">
-                                            <a href="#" class="fw-semibold">Victoria Johnson</a>
-                                            <span class="fs-sm text-muted ms-3">3 hours ago</span>
+{#                                        <div class="flex-fill">#}
+{#                                            <a href="#" class="fw-semibold">Victoria Johnson</a>#}
+{#                                            <span class="fs-sm text-muted ms-3">3 hours ago</span>#}
 
-                                            <p>Finished why bringing but sir bachelor unpacked any thoughts. Unpleasing unsatiable particular inquietude did nor sir.</p>
+{#                                            <p>Finished why bringing but sir bachelor unpacked any thoughts. Unpleasing unsatiable particular inquietude did nor sir.</p>#}
 
-                                            <ul class="list-inline mb-0">
-                                                <li class="list-inline-item d-inline-flex align-items-center">
-                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>
-                                                    32
-                                                </li>
-                                                <li class="list-inline-item ms-2">
-                                                    <a href="#">Reply</a>
-                                                </li>
-                                                <li class="list-inline-item">
-                                                    <a href="#">Edit</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
+{#                                            <ul class="list-inline mb-0">#}
+{#                                                <li class="list-inline-item d-inline-flex align-items-center">#}
+{#                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
+{#                                                    32#}
+{#                                                </li>#}
+{#                                                <li class="list-inline-item ms-2">#}
+{#                                                    <a href="#">Reply</a>#}
+{#                                                </li>#}
+{#                                                <li class="list-inline-item">#}
+{#                                                    <a href="#">Edit</a>#}
+{#                                                </li>#}
+{#                                            </ul>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
 
-                                <div class="border-top border-bottom">
-                                    <div id="add-comment">Get his declared appetite distance his together now families. Friends am himself at on norland it viewing. Suspected elsewhere you belonging continued commanded she...</div>
-                                </div>
+{#                                <div class="border-top border-bottom">#}
+{#                                    <div id="add-comment">Get his declared appetite distance his together now families. Friends am himself at on norland it viewing. Suspected elsewhere you belonging continued commanded she...</div>#}
+{#                                </div>#}
 
-                                <div class="card-body text-end">
-                                    <button type="button" class="btn btn-primary">
-                                        Submit
-                                        <i class="ph-paper-plane-tilt ms-2"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- /comments -->
+{#                                <div class="card-body text-end">#}
+{#                                    <button type="button" class="btn btn-primary">#}
+{#                                        Submit#}
+{#                                        <i class="ph-paper-plane-tilt ms-2"></i>#}
+{#                                    </button>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <!-- /comments -->#}
 
                         </div>
                         <!-- /left content -->
@@ -575,34 +482,24 @@
                                 <!-- Task timer -->
                                 <div class="card">
                                     <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Task timer</span>
+                                        <span class="fw-semibold">Utrošeno vreme na zadatku</span>
                                     </div>
 
                                     <div class="sidebar-section-body">
-                                        <div class="d-flex justify-content-center mb-3">
-                                            <a href="#" class="text-body mx-1">Mon</a>
-                                            <a href="#" class="link-primary mx-1">Tue</a>
-                                            <a href="#" class="text-body mx-1">Wed</a>
-                                            <a href="#" class="text-body mx-1">Thu</a>
-                                            <a href="#" class="text-body mx-1">Fri</a>
-                                            <a href="#" class="text-body mx-1">Sat</a>
-                                            <a href="#" class="text-body mx-1">Sun</a>
-                                        </div>
-
                                         <div class="d-flex justify-content-center text-center">
                                             <div>
                                                 <span class="display-6 lh-1 m-0">09</span>
-                                                <div class="mt-2">hours</div>
+                                                <div class="mt-2">sati</div>
                                             </div>
                                             <div class="mx-1 my-2">:</div>
                                             <div>
                                                 <span class="display-6 lh-1 m-0">54</span>
-                                                <div class="mt-2">minutes</div>
+                                                <div class="mt-2">minuta</div>
                                             </div>
                                             <div class="mx-1 my-2">:</div>
                                             <div>
                                                 <span class="display-6 lh-1 m-0">29</span>
-                                                <div class="mt-2">seconds</div>
+                                                <div class="mt-2">sekundi</div>
                                             </div>
                                         </div>
                                     </div>
@@ -639,14 +536,14 @@
                                 <!-- Task details -->
                                 <div class="card">
                                     <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Task details</span>
+                                        <span class="fw-semibold">Detalji</span>
                                     </div>
 
                                     <table class="table table-borderless table-xs my-2">
                                         <tbody>
                                         <tr>
-                                            <td><i class="ph-briefcase me-2"></i> Project:</td>
-                                            <td class="text-end"><a href="#">Singular app</a></td>
+                                            <td><i class="ph-briefcase me-2"></i> Projekat:</td>
+                                            <td class="text-end"><a href="#">{{ task.project.title | default ('Zadatak bez projekta') }}</a></td>
                                         </tr>
                                         <tr>
                                             <td><i class="ph-warning-octagon me-2"></i> Priority:</td>
@@ -701,27 +598,13 @@
                                     </table>
 
                                     <div class="card-footer d-flex align-items-center">
-                                        <div class="d-inline-flex">
-                                            <a href="#" class="text-body me-2">
-                                                <i class="ph-pencil"></i>
+                                        <div class="d-inline-flex mb-0">
+                                            <a href="#" class="text-body">
+                                                <i class="ph-note-pencil"></i>
                                             </a>
-                                            <a href="#" class="text-body me-2">
+                                            <a href="#" class="text-body ms-2">
                                                 <i class="ph-trash"></i>
                                             </a>
-                                        </div>
-
-                                        <div class="dropdown d-flex ms-auto">
-                                            <a href="#" class="text-body d-inline-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">
-                                                <i class="ph-gear"></i>
-                                            </a>
-
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Check in</a>
-                                                <a href="#" class="dropdown-item"><i class="ph-paperclip me-2"></i> Attach screenshot</a>
-                                                <a href="#" class="dropdown-item"><i class="ph-user-circle-plus me-2"></i> Assign users</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a href="#" class="dropdown-item"><i class="ph-warning-circle me-2"></i> Report</a>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -731,7 +614,7 @@
                                 <!-- Attached files -->
                                 <div class="card">
                                     <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Attached files</span>
+                                        <span class="fw-semibold">Dodati fajlovi</span>
                                     </div>
 
                                     <div class="sidebar-section-body">
@@ -822,7 +705,7 @@
                                 <!-- Revisions -->
                                 <div class="card">
                                     <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Revisions</span>
+                                        <span class="fw-semibold">Istorija izmena</span>
                                     </div>
 
                                     <div class="sidebar-section-body">
@@ -898,7 +781,7 @@
                                 <!-- Assigned users -->
                                 <div class="card">
                                     <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Assigned users</span>
+                                        <span class="fw-semibold">Zaduženi korisnici</span>
                                     </div>
 
                                     <div class="sidebar-section-body">
@@ -1091,7 +974,7 @@
                                 <!-- Latest comments -->
                                 <div class="card">
                                     <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Latest comments</span>
+                                        <span class="fw-semibold">Poslednji komentari</span>
                                     </div>
 
                                     <div class="list-group list-group-borderless py-1">

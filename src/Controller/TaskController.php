@@ -6,12 +6,14 @@ use App\Classes\Data\NotifyMessagesData;
 use App\Classes\ProjectHelper;
 use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
+use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Form\ProjectFormType;
 use App\Form\TaskFormType;
+use App\Service\UploadService;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -86,7 +88,7 @@ class TaskController extends AbstractController {
   #[Route('/form/{id}', name: 'app_task_form', defaults: ['id' => 0])]
   #[Entity('task', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Task $task, Request $request): Response {
+  public function form(Task $task, Request $request, UploadService $uploadService): Response {
     $history = null;
     //ovde izvlacimo ulogovanog usera
 //    $user = $this->getUser();
@@ -107,7 +109,18 @@ class TaskController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
-        dd($request);
+
+
+        $uploadFiles = $request->files->all()['task_form']['pdf'];
+        if(!empty ($uploadFiles)) {
+          foreach ($uploadFiles as $uploadFile) {
+            $pdf = new Pdf();
+            $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+            $pdf->setTitle($file->getFileName());
+            $pdf->setPath($file->getUrl());
+            $task->addPdf($pdf);
+          }
+        }
 
         $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 

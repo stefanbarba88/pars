@@ -15,6 +15,10 @@ class Pdf {
   #[ORM\Column]
   private ?int $id = null;
 
+  public function getPdfUploadPath(): ?string {
+    return $_ENV['PDF_PATH'] . date('Y/m/d/');
+  }
+
   #[ORM\Column(length: 255)]
   private ?string $title = null;
 
@@ -32,6 +36,9 @@ class Pdf {
 
   #[ORM\Column]
   private DateTimeImmutable $updated;
+
+  #[ORM\ManyToOne(inversedBy: 'pdfs')]
+  private ?Project $project = null;
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -108,6 +115,16 @@ class Pdf {
 
   public function setUpdated(DateTimeImmutable $updated): self {
     $this->updated = $updated;
+
+    return $this;
+  }
+
+  public function getProject(): ?Project {
+    return $this->project;
+  }
+
+  public function setProject(?Project $project): self {
+    $this->project = $project;
 
     return $this;
   }

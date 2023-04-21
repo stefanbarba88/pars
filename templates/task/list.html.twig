@@ -131,7 +131,7 @@
                                 <th>Poslednja promena</th>
                                 <th>Kreiran</th>
                                 <th>Zaduženi</th>
-{#                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>#}
+                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -140,19 +140,27 @@
                                     <td>#{{ task.id }}</td>
 {#                                    <td><a href="{{ path('app_task_tasks_view', { id: task.id}) }}">{{ task.title }}</a></td>#}
                                     <td>
-                                        <div class="fw-semibold"><a href="">{{ task.title }}</a></div>
+                                        <div class="fw-semibold"><a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a></div>
                                         <div class="text-muted">{{ task.description }}</div>
                                     </td>
                                     <td>
-                                        <a href="{{ path('app_project_profile_view', { id: task.project.id}) }}">{{ task.project.title }}</a>
+                                        {% if task.project is null %}
+                                            /
+                                        {% else %}
+                                            <a href="{{ path('app_project_profile_view', { id: task.project.id}) }}">{{ task.project.title }}</a>
+                                        {% endif %}
                                     </td>
-                                    <td>
-                                        {{ task.jsonPriority | default('/') }}
+                                    <td class="text-center">
+                                        {% if task.isPriority %}
+                                            <span class="badge bg-danger rounded-pill p-1">
+												<i class="ph-warning-octagon"></i>
+											</span>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         <div class="d-inline-flex align-items-center">
                                             <i class="ph-calendar me-2"></i>
-                                            {{ task.updated | date("d.m.Y")}}
+                                            {{ task.updated | date("d.m.Y H:i:s")}}
                                         </div>
                                     </td>
                                     <td>
@@ -166,21 +174,21 @@
                                             <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}"></a>
                                         {% endfor %}
                                     </td>
-{#                                    <td class="text-center">#}
-{#                                        <div class="dropdown">#}
-{#                                            <a href="#" class="text-body" data-bs-toggle="dropdown">#}
-{#                                                <i class="ph-gear"></i>#}
-{#                                            </a>#}
-{#                                            <div class="dropdown-menu dropdown-menu-end">#}
-{#                                                <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Check in</a>#}
-{#                                                <a href="#" class="dropdown-item"><i class="ph-paperclip me-2"></i> Attach screenshot</a>#}
-{#                                                <a href="#" class="dropdown-item"><i class="ph-user-switch me-2"></i> Reassign</a>#}
-{#                                                <div class="dropdown-divider"></div>#}
-{#                                                <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>#}
-{#                                                <a href="#" class="dropdown-item"><i class="ph-x me-2"></i> Remove</a>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </td>#}
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                <i class="ph-gear"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Check in</a>
+                                                <a href="#" class="dropdown-item"><i class="ph-paperclip me-2"></i> Attach screenshot</a>
+                                                <a href="#" class="dropdown-item"><i class="ph-user-switch me-2"></i> Reassign</a>
+                                                <div class="dropdown-divider"></div>
+                                                <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>
+                                                <a href="#" class="dropdown-item"><i class="ph-x me-2"></i> Remove</a>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>

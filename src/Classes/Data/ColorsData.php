@@ -16,11 +16,6 @@ class ColorsData implements DataClassInterface {
     ['class' =>'text-bg-success', 'value' => 'success', 'option' => 'Success'],
     ['class' =>'text-bg-info', 'value' => 'info', 'option' => 'Info'],
     ['class' =>'text-bg-dark', 'value' => 'dark', 'option' => 'Dark'],
-    ['class' =>'text-bg-pink', 'value' => 'pink', 'option' => 'Pink'],
-    ['class' =>'text-bg-purple', 'value' => 'purple', 'option' => 'Purple'],
-    ['class' =>'text-bg-indigo', 'value' => 'indigo', 'option' => 'Indigo'],
-    ['class' =>'text-bg-yellow', 'value' => 'yellow', 'option' => 'Yellow'],
-
   ];
 
   public static function form(): array {

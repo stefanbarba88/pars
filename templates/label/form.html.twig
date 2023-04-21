@@ -131,29 +131,55 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-4">
+                                <div class="col-lg-6">
                                     <div class="mb-3">
                                         <label class="form-label required" for="label_form_color">Boja:*</label>
-                                        <select id="label_form_color" name="color" required="required" class="form-control required">
-                                            <option value="" selected="selected">--Izaberite boju oznake--</option>
-                                            {% for color in colors %}
-                                                {% if label.color == color.value %}
-                                                    <option class="{{ color.class }}" value="{{ color.value }}" selected>{{ color.option }}</option>
-                                                {% else %}
-                                                    <option class="{{ color.class }}" value="{{ color.value }}">{{ color.option }}</option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
+                                        <div class="border px-3 pt-3 pb-2 rounded mb-3">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        {% for color in colors | slice(0, 4) %}
+                                                            {% if label.color == color.value %}
+                                                                <div class="form-check form-switch mb-2">
+                                                                    <input type="radio" class="required form-check-input form-check-input-{{ color.value }}" name="color" value="{{ color.value }}" id="sr_r_{{ color.value }}" checked>
+                                                                    <label class="form-check-label" for="sr_r_{{ color.value }}">{{ color.option }}</label>
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="form-check form-switch mb-2">
+                                                                    <input type="radio" class="required form-check-input form-check-input-{{ color.value }}" name="color" value="{{ color.value }}" id="sr_r_{{ color.value }}">
+                                                                    <label class="form-check-label" for="sr_r_{{ color.value }}">{{ color.option }}</label>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        {% for color in colors | slice(4, 3) %}
+                                                            {% if label.color == color.value %}
+                                                                <div class="form-check form-switch mb-2">
+                                                                    <input type="radio" class="required form-check-input form-check-input-{{ color.value }}" name="color" value="{{ color.value }}" id="sr_r_{{ color.value }}" checked>
+                                                                    <label class="form-check-label" for="sr_r_{{ color.value }}">{{ color.option }}</label>
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="form-check form-switch mb-2">
+                                                                    <input type="radio" class="required form-check-input form-check-input-{{ color.value }}" name="color" value="{{ color.value }}" id="sr_r_{{ color.value }}">
+                                                                    <label class="form-check-label" for="sr_r_{{ color.value }}">{{ color.option }}</label>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.isTaskLabel, 'Oznaka zadataka:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.isTaskLabel, {attr: { class: 'form-control required select' }}) }}
                                         <span class="form-text">Odnosi se na označavanje zadataka u okviru projekta.</span>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.isSuspended, 'Deaktivirana oznaka:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.isSuspended, {attr: { class: 'form-control required select' }}) }}

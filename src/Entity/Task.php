@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Classes\Data\PrioritetData;
 use App\Repository\TaskRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -79,7 +78,7 @@ class Task implements JsonSerializable {
   #[ORM\ManyToOne(targetEntity: self::class)]
   private ?self $parentTask = null;
 
-  #[ORM\OneToMany(mappedBy: 'task', targetEntity: Pdf::class)]
+  #[ORM\OneToMany(mappedBy: 'task', targetEntity: Pdf::class, cascade: ["persist", "remove"])]
   private Collection $pdfs;
 
   #[ORM\ManyToOne(inversedBy: 'tasks')]
@@ -116,11 +115,14 @@ class Task implements JsonSerializable {
       'isTimeRoundUp' => $this->isIsTimeRoundUp(),
       'isEstimate' => $this->isIsEstimate(),
       'isClientView' => $this->isIsClientView(),
+      'labels' => $this->getLabelJson(),
+      'category' => $this->getCategory()->getTitle(),
       'isExpenses' => $this->isIsExpenses(),
       'editBy' => $this->getEditByJson(),
       'parentTask' => $this->getParentTask()->getTitle(),
-      'priority' => $this->getJsonPriority(),
+      'isPriority' => $this->isIsPriority(),
       'assignedUsers' => $this->getJsonAssignedUsers(),
+      'pdfs' => $this->getJsonPdfs(),
       'minEntry' => $this->getMinEntry(),
       'roundingInterval' => $this->getRoundingInterval(),
       'deadline' => $this->getDeadline()
@@ -131,18 +133,14 @@ class Task implements JsonSerializable {
     return $this->editBy->getFullName();
   }
 
-//  public function getLabelJson(): string {
-//    return $this->label->getTitle();
-//  }
-//
-//  public function getCategoriesJson(): array {
-//    $categories = [];
-//    foreach ($this->category as $cat) {
-//      $categories[] = $cat->getTitle();
-//    }
-//
-//    return $categories;
-//  }
+  public function getLabelJson(): array {
+    $labels = [];
+    foreach ($this->label as $lab) {
+      $labels[] = $lab->getTitle();
+    }
+
+    return $labels;
+  }
 
   public function getJsonAssignedUsers(): array {
     $users = [];
@@ -151,6 +149,15 @@ class Task implements JsonSerializable {
     }
 
     return $users;
+  }
+
+  public function getJsonPdfs(): array {
+    $pdfs = [];
+    foreach ($this->pdfs as $pdf) {
+      $pdfs[] = $pdf->getTitle();
+    }
+
+    return $pdfs;
   }
 
   public function getId(): ?int {
@@ -190,7 +197,7 @@ class Task implements JsonSerializable {
   /**
    * @return bool|null
    */
-  public function getIsPriority(): ?bool {
+  public function isIsPriority(): ?bool {
     return $this->isPriority;
   }
 

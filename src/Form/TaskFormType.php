@@ -21,6 +21,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\File;
 
 class TaskFormType extends AbstractType {
@@ -31,7 +32,8 @@ class TaskFormType extends AbstractType {
         'required' => false
       ])
       ->add('project', EntityType::class, [
-        'placeholder' => 'Izaberite projekat',
+        'placeholder' => '--Izaberite projekat--',
+        'required' => false,
         'class' => Project::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
@@ -149,7 +151,8 @@ class TaskFormType extends AbstractType {
       ])
 
       ->add('pdf', FileType::class, [
-        'attr' => ['accept' => 'pdf', 'data-show-upload' => 'false'],
+        'attr' => ['accept' => '.pdf', 'data-show-upload' => 'false'],
+        'multiple' => true,
         // unmapped means that this field is not associated to any entity property
         'mapped' => false,
         // make it optional so you don't have to re-upload the PDF file
@@ -158,10 +161,13 @@ class TaskFormType extends AbstractType {
         // unmapped fields can't define their validation using annotations
         // in the associated entity, so you can use the PHP constraint classes
         'constraints' => [
-          new File([
-            'mimeTypes' => 'application/pdf',
-            'maxSize' => '5120k',
-            'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5Mb.'
+          new All([
+            new File([
+              'mimeTypes' => 'application/pdf',
+              'maxSize' => '5120k',
+              'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5Mb.',
+              'mimeTypesMessage' => 'Molimo Vas postavite dokument u .pdf formatu.'
+            ])
           ])
         ],
       ])

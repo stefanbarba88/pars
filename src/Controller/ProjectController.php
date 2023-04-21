@@ -8,6 +8,7 @@ use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
+use App\Entity\Task;
 use App\Entity\User;
 use App\Form\ProjectFormType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -112,7 +113,7 @@ class ProjectController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewTasks(Project $project): Response {
     $args['project'] = $project;
-    $args['tasks'] = [];
+    $args['tasks'] = $this->em->getRepository(Task::class)->findBy(['project' => $project], ['id' => 'DESC']);;
 
     return $this->render('project/view_tasks.html.twig', $args);
   }

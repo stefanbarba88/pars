@@ -92,53 +92,85 @@
 
                 <!-- Content area -->
                 <div class="content">
-
-                    <!-- Inner container -->
-                    <div class="d-lg-flex align-items-lg-start">
-
-                        <!-- Right content -->
-{#                        <div class="tab-content flex-fill">#}
-{#                            <div class="tab-pane fade active show">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-header">#}
-{#                                        <h5 class="mb-0">{{ category.title }} <a href="{{ path('app_category_form', {id: category.id}) }}"><i class="ph-note-pencil"></i></a></h5>#}
-{#                                    </div>#}
-{#                                    <div class="card-body">#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Naziv:</div>#}
-{#                                            <div class="col-8">{{ category.title() }}</div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Status:</div>#}
-{#                                            <div class="col-8">{{ category.badgeByStatus() | raw}}</div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                {% if category.editBy is not null %}#}
-{#                                    <div class="card">#}
-{#                                        <div class="card-header">#}
-{#                                            <h5 class="mb-0">Izmena:</h5>#}
-{#                                        </div>#}
-
-{#                                        <div class="card-body">#}
-{#                                            <div class="row p-2">#}
-{#                                                <div class="col-4">Izmenio:</div>#}
-{#                                                <div class="col-8">{{ category.editBy.getFullName() | default('/') }}</div>#}
-{#                                            </div>#}
-{#                                            <div class="row p-2 bg-light">#}
-{#                                                <div class="col-4">Vreme:</div>#}
-{#                                                <div class="col-8">{{ category.updated | date("d.m.Y") }} u {{ category.updated | date("H:i:s") }}</div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                {% endif %}#}
-{#                            </div>#}
-{#                        </div>#}
-                        <!-- /right content -->
-
-                    </div>
-                    <!-- /inner container -->
-
+                    <!-- State saving -->
+                    <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Lista zadataka</h6>
+                                </div>
+                                <table class="table datatable-colvis-state-pars">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Opis zadatka</th>
+                                        <th>Projekat</th>
+                                        <th>Prioritet</th>
+                                        <th>Poslednja promena</th>
+                                        <th>Kreiran</th>
+                                        <th>Zaduženi</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for task in tasks %}
+                                        <tr>
+                                            <td>#{{ task.id }}</td>
+                                            {#                                    <td><a href="{{ path('app_task_tasks_view', { id: task.id}) }}">{{ task.title }}</a></td>#}
+                                            <td>
+                                                <div class="fw-semibold"><a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a></div>
+                                                <div class="text-muted">{{ task.description }}</div>
+                                            </td>
+                                            <td>
+                                                {% if task.project is null %}
+                                                    /
+                                                {% else %}
+                                                    <a href="{{ path('app_project_profile_view', { id: task.project.id}) }}">{{ task.project.title }}</a>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                {% if task.isPriority %}
+                                                    <span class="badge bg-danger rounded-pill p-1">
+												<i class="ph-warning-octagon"></i>
+											</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ task.updated | date("d.m.Y H:i:s")}}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ task.created | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% for user in task.assignedUsers %}
+                                                    <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}"></a>
+                                                {% endfor %}
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Check in</a>
+                                                        <a href="#" class="dropdown-item"><i class="ph-paperclip me-2"></i> Attach screenshot</a>
+                                                        <a href="#" class="dropdown-item"><i class="ph-user-switch me-2"></i> Reassign</a>
+                                                        <div class="dropdown-divider"></div>
+                                                        <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>
+                                                        <a href="#" class="dropdown-item"><i class="ph-x me-2"></i> Remove</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                    <!-- /state saving -->
                 </div>
                 <!-- /content area -->
 

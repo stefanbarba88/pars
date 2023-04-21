@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Classes\DTO\UploadedFileDTO;
 use App\Entity\Pdf;
+use App\Entity\Task;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,30 +16,32 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Pdf[]    findAll()
  * @method Pdf[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PdfRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Pdf::class);
+class PdfRepository extends ServiceEntityRepository {
+  public function __construct(ManagerRegistry $registry) {
+    parent::__construct($registry, Pdf::class);
+  }
+
+  public function save(Pdf $pdf, UploadedFileDTO $file): Pdf {
+
+    $pdf->setTitle($file->getFileName());
+    $pdf->setPath($file->getUrl());
+
+    if (is_null($pdf->getId())) {
+      $this->getEntityManager()->persist($pdf);
     }
 
-    public function save(Pdf $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
+    $this->getEntityManager()->flush();
+    return $pdf;
+  }
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+
+  public function remove(Pdf $entity, bool $flush = false): void {
+    $this->getEntityManager()->remove($entity);
+
+    if ($flush) {
+      $this->getEntityManager()->flush();
     }
-
-    public function remove(Pdf $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
+  }
 
 //    /**
 //     * @return Pdf[] Returns an array of Pdf objects

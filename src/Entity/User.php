@@ -125,13 +125,10 @@ class User implements UserInterface, JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Task::class, mappedBy: 'assignedUsers')]
   private Collection $tasks;
 
-  #[ORM\OneToMany(mappedBy: 'user', targetEntity: TaskLog::class, orphanRemoval: true)]
-  private Collection $taskLogs;
 
   public function __construct() {
     $this->userHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
-    $this->taskLogs = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -221,7 +218,7 @@ class User implements UserInterface, JsonSerializable {
   }
 
   public function getNameForForm(): string {
-    return $this->ime . ' ' . $this->prezime .' - ' . $this->pozicija->getTitle();
+    return $this->ime . ' ' . $this->prezime . ' - ' . $this->pozicija->getTitle();
   }
 
   /**
@@ -555,73 +552,38 @@ class User implements UserInterface, JsonSerializable {
     return $this;
   }
 
-  public function getClient(): ?Client
-  {
-      return $this->client;
+  public function getClient(): ?Client {
+    return $this->client;
   }
 
-  public function setClient(?Client $client): self
-  {
-      $this->client = $client;
+  public function setClient(?Client $client): self {
+    $this->client = $client;
 
-      return $this;
+    return $this;
   }
 
   /**
    * @return Collection<int, Task>
    */
-  public function getTasks(): Collection
-  {
-      return $this->tasks;
+  public function getTasks(): Collection {
+    return $this->tasks;
   }
 
-  public function addTask(Task $task): self
-  {
-      if (!$this->tasks->contains($task)) {
-          $this->tasks->add($task);
-          $task->addAssignedUser($this);
-      }
+  public function addTask(Task $task): self {
+    if (!$this->tasks->contains($task)) {
+      $this->tasks->add($task);
+      $task->addAssignedUser($this);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeTask(Task $task): self
-  {
-      if ($this->tasks->removeElement($task)) {
-          $task->removeAssignedUser($this);
-      }
+  public function removeTask(Task $task): self {
+    if ($this->tasks->removeElement($task)) {
+      $task->removeAssignedUser($this);
+    }
 
-      return $this;
-  }
-
-  /**
-   * @return Collection<int, TaskLog>
-   */
-  public function getTaskLogs(): Collection
-  {
-      return $this->taskLogs;
-  }
-
-  public function addTaskLog(TaskLog $taskLog): self
-  {
-      if (!$this->taskLogs->contains($taskLog)) {
-          $this->taskLogs->add($taskLog);
-          $taskLog->setUser($this);
-      }
-
-      return $this;
-  }
-
-  public function removeTaskLog(TaskLog $taskLog): self
-  {
-      if ($this->taskLogs->removeElement($taskLog)) {
-          // set the owning side to null (unless already changed)
-          if ($taskLog->getUser() === $this) {
-              $taskLog->setUser(null);
-          }
-      }
-
-      return $this;
+    return $this;
   }
 
 }

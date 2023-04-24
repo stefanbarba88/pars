@@ -39,7 +39,7 @@ class ProjectController extends AbstractController {
   #[Route('/form/{id}', name: 'app_project_form', defaults: ['id' => 0])]
   #[Entity('project', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Project $project): Response {
+  public function form(Project $project, Request $request): Response {
     $history = null;
     //ovde izvlacimo ulogovanog usera
 //    $user = $this->getUser();

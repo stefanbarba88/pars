@@ -102,7 +102,6 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Opis zadatka</th>
-                                        <th>Projekat</th>
                                         <th>Prioritet</th>
                                         <th>Poslednja promena</th>
                                         <th>Kreiran</th>
@@ -114,17 +113,8 @@
                                     {% for task in tasks %}
                                         <tr>
                                             <td>#{{ task.id }}</td>
-                                            {#                                    <td><a href="{{ path('app_task_tasks_view', { id: task.id}) }}">{{ task.title }}</a></td>#}
                                             <td>
                                                 <div class="fw-semibold"><a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a></div>
-                                                <div class="text-muted">{{ task.description }}</div>
-                                            </td>
-                                            <td>
-                                                {% if task.project is null %}
-                                                    /
-                                                {% else %}
-                                                    <a href="{{ path('app_project_profile_view', { id: task.project.id}) }}">{{ task.project.title }}</a>
-                                                {% endif %}
                                             </td>
                                             <td class="text-center">
                                                 {% if task.isPriority %}
@@ -193,12 +183,12 @@
     {{ parent() }}
 
     <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
 
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>

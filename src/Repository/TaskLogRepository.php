@@ -19,12 +19,6 @@ class TaskLogRepository extends ServiceEntityRepository {
     parent::__construct($registry, TaskLog::class);
   }
 
-  public function saveTaskLog(TaskLog $taskLog): void {
-    $this->getEntityManager()->persist($taskLog);
-    $this->getEntityManager()->flush();
-
-  }
-
   public function save(TaskLog $entity, bool $flush = false): void {
     $this->getEntityManager()->persist($entity);
 

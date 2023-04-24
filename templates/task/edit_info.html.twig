@@ -16,11 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {% if task.id is not null %}
-                                    {{task.title }}
-                                {% else %}
-                                    Zadaci
-                                {% endif %}
+                                #{{ task.id }}: {{task.title }}
                             </h4>
 
                             <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -45,13 +41,9 @@
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_tasks') }}" class="breadcrumb-item">Zadaci</a>
-                                {% if task.id is not null %}
-                                    <a href="" class="breadcrumb-item">Informacije</a>
-                                    <a href="{{ path('app_project_profile_view', {id: task.project.id} ) }}" class="breadcrumb-item">Informacije</a>
-                                    <span class="breadcrumb-item active">Izmena</span>
-                                {% else %}
-                                    <span class="breadcrumb-item active">Dodavanje</span>
-                                {% endif %}
+                                <a href="" class="breadcrumb-item">Informacije</a>
+                                <a href="{{ path('app_project_profile_view', {id: task.project.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
+                                <span class="breadcrumb-item active">Izmena</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -95,6 +87,7 @@
                             </div>
                         </div>
                     </div>
+                    {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}
                 </div>
 
                 <!-- /page header -->
@@ -116,11 +109,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
-                                {% if task.id is not null %}
-                                    Izmena zadatka
-                                {% else %}
-                                    Dodavanje zadatka
-                                {% endif %}
+                                Izmena zadatka
                             </h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
@@ -162,110 +151,6 @@
                                         {{ form_label(form.label, 'Oznaka:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.label, {attr: { class: 'form-control select' }}) }}
                                         <span class="form-text">Oznaka bliže opisuje projekat. Projekat može imati više oznaka.</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.assignedUsers, 'Zaduženi:*', {'label_attr': {'class': 'form-category'}}) }}
-                                        {{ form_widget(form.assignedUsers, {attr: { class: 'form-control select required' }}) }}
-                                        <span class="form-text">Morate dodati najmanje jednog zapolsenog sa liste kome dodeljujete zadatak.</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="fw-bold border-bottom pb-2 mb-3">Podešavanje praćenja vremena</div>
-                            <div class="row">
-                                <div class="col-lg-6 ">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isTimeRoundUp, 'Zaokruživanje vremena:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isTimeRoundUp, {attr: { class: 'form-control required select round' }}) }}
-                                        <span class="form-text">Mereno vreme se zaokružuje.</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% if task.isTimeRoundUp %}
-                                <div class="row timeRound">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval required' }}) }}
-                                            <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.minEntry, {attr: { class: 'form-control minent required' }}) }}
-                                            <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% else %}
-                                <div class="row hide timeRound">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval' }}) }}
-                                            <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.minEntry, {attr: { class: 'form-control minent' }}) }}
-                                            <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endif %}
-
-                            <div class="fw-bold border-bottom pb-2 mb-3">Dokumentacija</div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        {{ form_label(form.pdf, 'Dokumenta:', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.pdf, {attr: { class: 'form-control file-input' }}) }}
-                                        <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="fw-bold border-bottom pb-2 mb-3">Ostala podešavanja</div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.deadline, 'Rok:', {'label_attr': {'class': 'form-category'}}) }}
-                                        <div class="input-group">
-											<span class="input-group-text">
-												<i class="ph-calendar"></i>
-											</span>
-                                            {{ form_widget(form.deadline, {attr: { class: 'form-control datepicker-date-format-custom' }}) }}
-                                        </div>
-                                        <span class="form-text">Format: 31.12.1900. Možete definisati predviđeni kraj radova na zadatku.</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isExpenses, 'Praćenje troškova:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isExpenses, {attr: { class: 'form-control required select' }}) }}
-                                        <span class="form-text">Zaposleni u svom dnevniku može uneti troškove vezane za ovaj zadatak.</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isClientView, 'Klijent ima uvid u projekat:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isClientView, {attr: { class: 'form-control required select' }}) }}
-                                        <span class="form-text">Klijent ima uvid u razvoj projekta.</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isPriority, 'Visok prioritet:', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isPriority, {attr: { class: 'form-control select' }}) }}
-                                        <span class="form-text">Zadatak može biti visoko prioritetan. Takav zadatak se nalazi na vrhu liste.</span>
                                     </div>
                                 </div>
                             </div>

@@ -87,12 +87,16 @@ class Task implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Label::class, inversedBy: 'tasks')]
   private Collection $label;
 
+  #[ORM\OneToMany(mappedBy: 'task', targetEntity: TaskLog::class, cascade: ["persist", "remove"], orphanRemoval: true)]
+  private Collection $taskLogs;
+
 
   public function __construct() {
     $this->assignedUsers = new ArrayCollection();
     $this->taskHistories = new ArrayCollection();
     $this->pdfs = new ArrayCollection();
     $this->label = new ArrayCollection();
+    $this->taskLogs = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -119,7 +123,7 @@ class Task implements JsonSerializable {
       'category' => $this->getCategory()->getTitle(),
       'isExpenses' => $this->isIsExpenses(),
       'editBy' => $this->getEditByJson(),
-      'parentTask' => $this->getParentTask()->getTitle(),
+      'parentTask' => $this->getParentTaskJson(),
       'isPriority' => $this->isIsPriority(),
       'assignedUsers' => $this->getJsonAssignedUsers(),
       'pdfs' => $this->getJsonPdfs(),
@@ -130,6 +134,9 @@ class Task implements JsonSerializable {
   }
 
   public function getEditByJson(): string {
+    if(is_null($this->editBy)) {
+      return '';
+    }
     return $this->editBy->getFullName();
   }
 
@@ -369,7 +376,12 @@ class Task implements JsonSerializable {
   public function getParentTask(): ?self {
     return $this->parentTask;
   }
-
+  public function getParentTaskJson(): string {
+    if(is_null($this->parentTask)) {
+      return '';
+    }
+    return $this->parentTask->getTitle();
+  }
   public function setParentTask(?self $parentTask): self {
     $this->parentTask = $parentTask;
 
@@ -459,6 +471,36 @@ class Task implements JsonSerializable {
     $this->label->removeElement($label);
 
     return $this;
+  }
+
+  /**
+   * @return Collection<int, TaskLog>
+   */
+  public function getTaskLogs(): Collection
+  {
+      return $this->taskLogs;
+  }
+
+  public function addTaskLog(TaskLog $taskLog): self
+  {
+      if (!$this->taskLogs->contains($taskLog)) {
+          $this->taskLogs->add($taskLog);
+          $taskLog->setTask($this);
+      }
+
+      return $this;
+  }
+
+  public function removeTaskLog(TaskLog $taskLog): self
+  {
+      if ($this->taskLogs->removeElement($taskLog)) {
+          // set the owning side to null (unless already changed)
+          if ($taskLog->getTask() === $this) {
+              $taskLog->setTask(null);
+          }
+      }
+
+      return $this;
   }
 
 }

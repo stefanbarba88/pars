@@ -28,7 +28,7 @@ class TaskRepository extends ServiceEntityRepository {
     foreach ($task->getAssignedUsers() as $assignedUser) {
       $taskLog = new TaskLog();
       $taskLog->setUser($assignedUser);
-      $this->getEntityManager()->getRepository(TaskLog::class)->saveTaskLog($taskLog);
+      $task->addTaskLog($taskLog);
     }
 
     if (!is_null($task->getId())) {

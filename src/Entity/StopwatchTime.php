@@ -40,10 +40,6 @@ class StopwatchTime {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\ManyToOne(inversedBy: 'stopwatchTimes')]
-  #[ORM\JoinColumn(nullable: false)]
-  private ?TaskLog $taskLog = null;
-
   #[ORM\PrePersist]
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();
@@ -147,13 +143,4 @@ class StopwatchTime {
     $this->updated = $updated;
   }
 
-  public function getTaskLog(): ?TaskLog {
-    return $this->taskLog;
-  }
-
-  public function setTaskLog(?TaskLog $taskLog): self {
-    $this->taskLog = $taskLog;
-
-    return $this;
-  }
 }

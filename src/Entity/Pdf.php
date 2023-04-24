@@ -28,9 +28,6 @@ class Pdf {
   #[ORM\ManyToOne(inversedBy: 'pdfs')]
   private ?Task $task = null;
 
-  #[ORM\ManyToOne(inversedBy: 'pdfs')]
-  private ?TaskLog $TaskLog = null;
-
   #[ORM\Column]
   private DateTimeImmutable $created;
 

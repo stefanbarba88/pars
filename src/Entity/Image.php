@@ -50,6 +50,7 @@ class Image {
   #[ORM\OneToMany(mappedBy: 'image', targetEntity: Client::class)]
   private Collection $clients;
 
+
   public function __construct() {
     $this->users = new ArrayCollection();
     $this->clients = new ArrayCollection();
@@ -230,6 +231,5 @@ class Image {
 
       return $this;
   }
-
 
 }

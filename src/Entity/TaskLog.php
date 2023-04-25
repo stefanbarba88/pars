@@ -38,9 +38,6 @@ class TaskLog implements JsonSerializable {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\ManyToMany(targetEntity: Activity::class, inversedBy: 'taskLogs')]
-  private Collection $activity;
-
   #[ORM\ManyToMany(targetEntity: Image::class)]
   private Collection $image;
 
@@ -51,10 +48,13 @@ class TaskLog implements JsonSerializable {
   #[ORM\JoinColumn(nullable: false)]
   private ?Task $task = null;
 
+  #[ORM\OneToMany(mappedBy: 'taskLog', targetEntity: StopwatchTime::class, orphanRemoval: true)]
+  private Collection $stopwatch;
+
   public function __construct() {
-    $this->activity = new ArrayCollection();
     $this->image = new ArrayCollection();
     $this->pdf = new ArrayCollection();
+    $this->stopwatch = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -81,7 +81,6 @@ class TaskLog implements JsonSerializable {
       'editBy' => $this->getEditByJson(),
       'pdfs' => $this->getJsonPdfs(),
       'images' => $this->getJsonImages(),
-      'activities' => $this->getJsonActivities(),
       'user' => $this->getUser()->getFullName(),
     ];
   }
@@ -203,27 +202,6 @@ class TaskLog implements JsonSerializable {
   }
 
   /**
-   * @return Collection<int, Activity>
-   */
-  public function getActivity(): Collection {
-    return $this->activity;
-  }
-
-  public function addActivity(Activity $activity): self {
-    if (!$this->activity->contains($activity)) {
-      $this->activity->add($activity);
-    }
-
-    return $this;
-  }
-
-  public function removeActivity(Activity $activity): self {
-    $this->activity->removeElement($activity);
-
-    return $this;
-  }
-
-  /**
    * @return Collection<int, Image>
    */
   public function getImage(): Collection {
@@ -273,6 +251,36 @@ class TaskLog implements JsonSerializable {
   public function setTask(?Task $task): self
   {
       $this->task = $task;
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, StopwatchTime>
+   */
+  public function getStopwatch(): Collection
+  {
+      return $this->stopwatch;
+  }
+
+  public function addStopwatch(StopwatchTime $stopwatch): self
+  {
+      if (!$this->stopwatch->contains($stopwatch)) {
+          $this->stopwatch->add($stopwatch);
+          $stopwatch->setTaskLog($this);
+      }
+
+      return $this;
+  }
+
+  public function removeStopwatch(StopwatchTime $stopwatch): self
+  {
+      if ($this->stopwatch->removeElement($stopwatch)) {
+          // set the owning side to null (unless already changed)
+          if ($stopwatch->getTaskLog() === $this) {
+              $stopwatch->setTaskLog(null);
+          }
+      }
 
       return $this;
   }

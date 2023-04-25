@@ -21,14 +21,14 @@ class StopwatchTimeRepository extends ServiceEntityRepository
         parent::__construct($registry, StopwatchTime::class);
     }
 
-    public function save(StopwatchTime $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+  public function save(StopwatchTime $stopwatch): StopwatchTime {
+    if (is_null($stopwatch->getId())) {
+      $this->getEntityManager()->persist($stopwatch);
     }
+
+    $this->getEntityManager()->flush();
+    return $stopwatch;
+  }
 
     public function remove(StopwatchTime $entity, bool $flush = false): void
     {

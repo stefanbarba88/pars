@@ -9,7 +9,9 @@ use App\Classes\ResponseMessages;
 use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
+use App\Entity\StopwatchTime;
 use App\Entity\Task;
+use App\Entity\TaskLog;
 use App\Entity\User;
 use App\Form\ProjectFormType;
 use App\Form\TaskEditInfoType;
@@ -232,6 +234,18 @@ class TaskController extends AbstractController {
   public function view(Task $task): Response {
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();
+
+    return $this->render('task/view.html.twig', $args);
+  }
+
+  #[Route('/view-user/{id}', name: 'app_task_view_user')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewUser(Task $task): Response {
+    $args['task'] = $task;
+    $args['revision'] = $task->getTaskHistories()->count();
+    $user = $this->em->getRepository(User::class)->find(2);
+    $args['taskLog'] = $this->em->getRepository(TaskLog::class)->findOneBy(['user' => $user]);
+    $args['stopwatch'] = $this->em->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $args['taskLog']]);
 
     return $this->render('task/view.html.twig', $args);
   }

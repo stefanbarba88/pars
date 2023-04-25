@@ -33,13 +33,6 @@ class Activity {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\ManyToMany(targetEntity: TaskLog::class, mappedBy: 'activity')]
-  private Collection $taskLogs;
-
-  public function __construct()
-  {
-      $this->taskLogs = new ArrayCollection();
-  }
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -130,31 +123,5 @@ class Activity {
 
   }
 
-  /**
-   * @return Collection<int, TaskLog>
-   */
-  public function getTaskLogs(): Collection
-  {
-      return $this->taskLogs;
-  }
-
-  public function addTaskLog(TaskLog $taskLog): self
-  {
-      if (!$this->taskLogs->contains($taskLog)) {
-          $this->taskLogs->add($taskLog);
-          $taskLog->addActivity($this);
-      }
-
-      return $this;
-  }
-
-  public function removeTaskLog(TaskLog $taskLog): self
-  {
-      if ($this->taskLogs->removeElement($taskLog)) {
-          $taskLog->removeActivity($this);
-      }
-
-      return $this;
-  }
 
 }

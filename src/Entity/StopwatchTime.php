@@ -4,41 +4,66 @@ namespace App\Entity;
 
 use App\Repository\StopwatchTimeRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StopwatchTimeRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ORM\Table(name: 'stopwatchTimes')]
+#[ORM\Table(name: 'stopwatch_times')]
 class StopwatchTime {
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]
   private ?int $id = null;
 
-  #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-  private ?\DateTimeImmutable $start = null;
+  #[ORM\Column(nullable: true)]
+  private DateTimeImmutable $start;
 
-  #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-  private ?\DateTimeImmutable $stop = null;
+  #[ORM\Column(nullable: true)]
+  private DateTimeImmutable $stop;
 
-  #[ORM\Column]
+  #[ORM\Column(nullable: true)]
   private ?int $diff = null;
 
-  #[ORM\Column]
+  #[ORM\Column(nullable: true)]
+  private ?int $min = null;
+
+  #[ORM\Column(nullable: true)]
   private ?int $diffRounded = null;
 
-  #[ORM\Column(type: Types::DECIMAL, precision: 11, scale: 8)]
+  #[ORM\Column(type: Types::DECIMAL, precision: 11, scale: 8, nullable: true)]
   private ?string $lon = null;
 
-  #[ORM\Column(type: Types::DECIMAL, precision: 11, scale: 8)]
+  #[ORM\Column(type: Types::DECIMAL, precision: 11, scale: 8, nullable: true)]
   private ?string $lat = null;
+
+  #[ORM\Column(type: Types::DECIMAL, precision: 11, scale: 8, nullable: true)]
+  private ?string $lonStop = null;
+
+  #[ORM\Column(type: Types::DECIMAL, precision: 11, scale: 8, nullable: true)]
+  private ?string $latStop = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true,)]
+  private ?string $description = null;
 
   #[ORM\Column]
   private DateTimeImmutable $created;
 
   #[ORM\Column]
   private DateTimeImmutable $updated;
+
+  #[ORM\ManyToMany(targetEntity: Activity::class)]
+  private Collection $activity;
+
+  #[ORM\ManyToOne(inversedBy: 'stopwatch')]
+  #[ORM\JoinColumn(nullable: false)]
+  private ?TaskLog $taskLog = null;
+
+  public function __construct() {
+    $this->activity = new ArrayCollection();
+  }
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -85,6 +110,16 @@ class StopwatchTime {
     return $this;
   }
 
+  public function getMin(): ?int {
+    return $this->min;
+  }
+
+  public function setMin(int $min): self {
+    $this->min = $min;
+
+    return $this;
+  }
+
   public function getDiffRounded(): ?int {
     return $this->diffRounded;
   }
@@ -111,6 +146,27 @@ class StopwatchTime {
 
   public function setLat(string $lat): self {
     $this->lat = $lat;
+
+    return $this;
+  }
+
+
+  public function getLonStop(): ?string {
+    return $this->lonStop;
+  }
+
+  public function setLonStop(string $lonStop): self {
+    $this->lonStop = $lonStop;
+
+    return $this;
+  }
+
+  public function getLatStop(): ?string {
+    return $this->latStop;
+  }
+
+  public function setLatStop(string $latStop): self {
+    $this->latStop = $latStop;
 
     return $this;
   }
@@ -143,4 +199,46 @@ class StopwatchTime {
     $this->updated = $updated;
   }
 
+  /**
+   * @return Collection<int, Activity>
+   */
+  public function getActivity(): Collection {
+    return $this->activity;
+  }
+
+  public function addActivity(Activity $activity): self {
+    if (!$this->activity->contains($activity)) {
+      $this->activity->add($activity);
+    }
+
+    return $this;
+  }
+
+  public function removeActivity(Activity $activity): self {
+    $this->activity->removeElement($activity);
+
+    return $this;
+  }
+
+  public function getDescription(): ?string {
+    return $this->description;
+  }
+
+  public function setDescription(?string $description): self {
+    $this->description = $description;
+
+    return $this;
+  }
+
+  public function getTaskLog(): ?TaskLog
+  {
+      return $this->taskLog;
+  }
+
+  public function setTaskLog(?TaskLog $taskLog): self
+  {
+      $this->taskLog = $taskLog;
+
+      return $this;
+  }
 }

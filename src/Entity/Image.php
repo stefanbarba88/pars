@@ -50,6 +50,9 @@ class Image {
   #[ORM\OneToMany(mappedBy: 'image', targetEntity: Client::class)]
   private Collection $clients;
 
+  #[ORM\ManyToOne(inversedBy: 'image')]
+  private ?StopwatchTime $stopwatchTime = null;
+
 
   public function __construct() {
     $this->users = new ArrayCollection();
@@ -228,6 +231,18 @@ class Image {
               $client->setImage(null);
           }
       }
+
+      return $this;
+  }
+
+  public function getStopwatchTime(): ?StopwatchTime
+  {
+      return $this->stopwatchTime;
+  }
+
+  public function setStopwatchTime(?StopwatchTime $stopwatchTime): self
+  {
+      $this->stopwatchTime = $stopwatchTime;
 
       return $this;
   }

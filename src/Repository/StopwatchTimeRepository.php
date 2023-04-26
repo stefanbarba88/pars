@@ -14,12 +14,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method StopwatchTime[]    findAll()
  * @method StopwatchTime[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class StopwatchTimeRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, StopwatchTime::class);
-    }
+class StopwatchTimeRepository extends ServiceEntityRepository {
+  public function __construct(ManagerRegistry $registry) {
+    parent::__construct($registry, StopwatchTime::class);
+  }
 
   public function save(StopwatchTime $stopwatch): StopwatchTime {
     if (is_null($stopwatch->getId())) {
@@ -30,14 +28,87 @@ class StopwatchTimeRepository extends ServiceEntityRepository
     return $stopwatch;
   }
 
-    public function remove(StopwatchTime $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
+  public function remove(StopwatchTime $entity, bool $flush = false): void {
+    $this->getEntityManager()->remove($entity);
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+    if ($flush) {
+      $this->getEntityManager()->flush();
     }
+  }
+
+  public function setTime(StopwatchTime $stopwatch): StopwatchTime {
+
+    $hours = $stopwatch->getStart()->diff($stopwatch->getStop())->h;
+    $minutes = $stopwatch->getStart()->diff($stopwatch->getStop())->i;
+
+    $task = $stopwatch->getTaskLog()->getTask();
+    $project = $task->getProject();
+
+    $diff = ($hours * 60) + ($minutes);
+
+    if(!is_null($task->isIsTimeRoundUp())) {
+      if($task->isIsTimeRoundUp()) {
+        $min = $task->getMinEntry();
+        $stopwatch->setMin($min);
+
+        $roundInt = $task->getRoundingInterval();
+
+        $minRound = (round($minutes / $roundInt) * $roundInt);
+        $hourRound = $hours;
+
+        if ($minRound == 60) {
+          $minRound = 0;
+          $hourRound++;
+        }
+
+        $diffRound = ($hourRound * 60) + ($minRound);
+
+        if ($min > $diffRound) {
+          $diffRound = $min;
+        }
+
+      } else {
+        $diffRound = $diff;
+      }
+    } else {
+      if($project->isTimeRoundUp()) {
+        $min = $project->getMinEntry();
+        $stopwatch->setMin($min);
+
+        $roundInt = $project->getRoundingInterval();
+
+        $minRound = (round($minutes / $roundInt) * $roundInt);
+        $hourRound = $hours;
+
+        if ($minRound == 60) {
+          $minRound = 0;
+          $hourRound++;
+        }
+
+        $diffRound = ($hourRound * 60) + ($minRound);
+
+        if ($min > $diffRound) {
+          $diffRound = $min;
+        }
+      } else {
+        $diffRound = $diff;
+      }
+    }
+
+    $stopwatch->setDiff($diff);
+    $stopwatch->setDiffRounded($diffRound);
+
+
+
+    return $stopwatch;
+
+
+
+  }
+
+//  public function setTime(StopwatchTime $stopwatch): StopwatchTime {
+//
+//  }
 
 //    /**
 //     * @return StopwatchTime[] Returns an array of StopwatchTime objects

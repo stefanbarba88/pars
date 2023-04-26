@@ -30,6 +30,9 @@ class StopwatchTime {
   #[ORM\Column(nullable: true)]
   private ?int $min = null;
 
+  #[ORM\Column]
+  private ?bool $isEdited = false;
+
   #[ORM\Column(nullable: true)]
   private ?int $diffRounded = null;
 
@@ -54,15 +57,24 @@ class StopwatchTime {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\ManyToMany(targetEntity: Activity::class)]
-  private Collection $activity;
-
   #[ORM\ManyToOne(inversedBy: 'stopwatch')]
   #[ORM\JoinColumn(nullable: false)]
   private ?TaskLog $taskLog = null;
 
-  public function __construct() {
-    $this->activity = new ArrayCollection();
+  #[ORM\ManyToMany(targetEntity: Activity::class)]
+  private Collection $activity;
+
+  #[ORM\OneToMany(mappedBy: 'stopwatchTime', targetEntity: Pdf::class)]
+  private Collection $pdf;
+
+  #[ORM\OneToMany(mappedBy: 'stopwatchTime', targetEntity: Image::class)]
+  private Collection $image;
+
+  public function __construct()
+  {
+      $this->activity = new ArrayCollection();
+      $this->pdf = new ArrayCollection();
+      $this->image = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -116,6 +128,16 @@ class StopwatchTime {
 
   public function setMin(int $min): self {
     $this->min = $min;
+
+    return $this;
+  }
+
+  public function isIsEdited(): ?bool {
+    return $this->isEdited;
+  }
+
+  public function setIsEdited(bool $isEdited): self {
+    $this->isEdited = $isEdited;
 
     return $this;
   }
@@ -199,27 +221,6 @@ class StopwatchTime {
     $this->updated = $updated;
   }
 
-  /**
-   * @return Collection<int, Activity>
-   */
-  public function getActivity(): Collection {
-    return $this->activity;
-  }
-
-  public function addActivity(Activity $activity): self {
-    if (!$this->activity->contains($activity)) {
-      $this->activity->add($activity);
-    }
-
-    return $this;
-  }
-
-  public function removeActivity(Activity $activity): self {
-    $this->activity->removeElement($activity);
-
-    return $this;
-  }
-
   public function getDescription(): ?string {
     return $this->description;
   }
@@ -238,6 +239,90 @@ class StopwatchTime {
   public function setTaskLog(?TaskLog $taskLog): self
   {
       $this->taskLog = $taskLog;
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Activity>
+   */
+  public function getActivity(): Collection
+  {
+      return $this->activity;
+  }
+
+  public function addActivity(Activity $activity): self
+  {
+      if (!$this->activity->contains($activity)) {
+          $this->activity->add($activity);
+      }
+
+      return $this;
+  }
+
+  public function removeActivity(Activity $activity): self
+  {
+      $this->activity->removeElement($activity);
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Pdf>
+   */
+  public function getPdf(): Collection
+  {
+      return $this->pdf;
+  }
+
+  public function addPdf(Pdf $pdf): self
+  {
+      if (!$this->pdf->contains($pdf)) {
+          $this->pdf->add($pdf);
+          $pdf->setStopwatchTime($this);
+      }
+
+      return $this;
+  }
+
+  public function removePdf(Pdf $pdf): self
+  {
+      if ($this->pdf->removeElement($pdf)) {
+          // set the owning side to null (unless already changed)
+          if ($pdf->getStopwatchTime() === $this) {
+              $pdf->setStopwatchTime(null);
+          }
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Image>
+   */
+  public function getImage(): Collection
+  {
+      return $this->image;
+  }
+
+  public function addImage(Image $image): self
+  {
+      if (!$this->image->contains($image)) {
+          $this->image->add($image);
+          $image->setStopwatchTime($this);
+      }
+
+      return $this;
+  }
+
+  public function removeImage(Image $image): self
+  {
+      if ($this->image->removeElement($image)) {
+          // set the owning side to null (unless already changed)
+          if ($image->getStopwatchTime() === $this) {
+              $image->setStopwatchTime(null);
+          }
+      }
 
       return $this;
   }

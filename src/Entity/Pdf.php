@@ -37,6 +37,9 @@ class Pdf {
   #[ORM\ManyToOne(inversedBy: 'pdfs')]
   private ?Project $project = null;
 
+  #[ORM\ManyToOne(inversedBy: 'pdf')]
+  private ?StopwatchTime $stopwatchTime = null;
+
   #[ORM\PrePersist]
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();
@@ -83,15 +86,6 @@ class Pdf {
     return $this;
   }
 
-  public function getTaskLog(): ?TaskLog {
-    return $this->TaskLog;
-  }
-
-  public function setTaskLog(?TaskLog $TaskLog): self {
-    $this->TaskLog = $TaskLog;
-
-    return $this;
-  }
 
   /**
    * @return DateTimeImmutable
@@ -124,5 +118,17 @@ class Pdf {
     $this->project = $project;
 
     return $this;
+  }
+
+  public function getStopwatchTime(): ?StopwatchTime
+  {
+      return $this->stopwatchTime;
+  }
+
+  public function setStopwatchTime(?StopwatchTime $stopwatchTime): self
+  {
+      $this->stopwatchTime = $stopwatchTime;
+
+      return $this;
   }
 }

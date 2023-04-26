@@ -45,20 +45,20 @@ class Task implements JsonSerializable {
   #[ORM\Column]
   private ?bool $isPriority = false;
 
-  #[ORM\Column]
-  private ?bool $isEstimate = false;
+  #[ORM\Column(nullable: true)]
+  private ?bool $isEstimate = null;
 
-  #[ORM\Column]
-  private ?bool $isClientView = false;
+  #[ORM\Column(nullable: true)]
+  private ?bool $isClientView = null;
 
-  #[ORM\Column]
-  private ?bool $isExpenses = false;
+  #[ORM\Column(nullable: true)]
+  private ?bool $isExpenses = null;
 
   #[ORM\Column]
   private ?bool $isClosed = false;
 
-  #[ORM\Column]
-  private ?bool $isTimeRoundUp = false;
+  #[ORM\Column(nullable: true)]
+  private ?bool $isTimeRoundUp = null;
 
   #[ORM\Column(nullable: true)]
   private ?int $minEntry = null;

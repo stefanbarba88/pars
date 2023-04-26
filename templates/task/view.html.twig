@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header_user.html.twig' %}
+    {% include 'includes/header.html.twig' %}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -987,7 +987,8 @@
                                     <div class="card-footer d-flex justify-content-center text-center">
                                         <div class="d-inline-flex">
                                             <a href="#" id="link-start" class="btn btn-success mx-2"><i class="ph-play-circle"></i></a>
-                                            <a href="#" id="stop" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-stop-circle"></i></a>
+{#                                            <a href="#" id="link-stop" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-stop-circle"></i></a>#}
+                                            <a href="#" id="link-stop" class="btn btn-danger"><i class="ph-stop-circle"></i></a>
                                         </div>
                                     </div>
                                 </div>
@@ -1232,7 +1233,7 @@
 
                     // Create the URL with the coordinates as parameters
                     let urlStart = '{{ path('app_stopwatch_start', {id: taskLog.id}) }}?lon='+lon+'&lat='+lat;
-                    let urlStop = '{{ path('app_stopwatch_stop', {id: taskLog.id}) }}?lon='+lon+'&lat='+lat;
+                    let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+lon+'&lat='+lat;
 
                     // Set the HREF of the link
                     $('#link-start').attr('href', urlStart);
@@ -1243,9 +1244,9 @@
                 }
             );
 
-            document.getElementById('stop').addEventListener('click', () => {
-                document.getElementById('ime').value = Math.round((newStamp-startStamp)/1000);
-            });
+            // document.getElementById('stop').addEventListener('click', () => {
+            //     document.getElementById('ime').value = Math.round((newStamp-startStamp)/1000);
+            // });
         });
 
         // $(document).ready(function() {

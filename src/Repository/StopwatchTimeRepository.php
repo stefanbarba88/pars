@@ -45,7 +45,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     $project = $task->getProject();
 
     $diff = ($hours * 60) + ($minutes);
-
+//srediti ovaj kod
     if(!is_null($task->isIsTimeRoundUp())) {
       if($task->isIsTimeRoundUp()) {
         $min = $task->getMinEntry();

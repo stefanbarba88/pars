@@ -124,38 +124,14 @@
 {#                                {% endif %}#}
 {#                            </h6>#}
                         </div>
+                        {{ dump(stopwatch) }}
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
                         <div class="card-body">
                             <div class="fw-bold border-bottom pb-2 mb-3">Dnevnik zadatka</div>
                             <div class="row">
-                                <div class="col-lg-2">
+                                <div class="col-lg-6">
                                     <div class="mb-3">
-                                        <div class="col">
-                                            <div class="input-group">
-                                                <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                                    <i class="ph-minus ph-sm"></i>
-                                                </button>
-                                                <input class="form-control form-control-number text-center" type="number" name="hours" value="5" min="0">
-                                                <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                                                    <i class="ph-plus ph-sm"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2">
-                                    <div class="mb-3">
-                                        <div class="col">
-                                            <div class="input-group">
-                                                <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                                    <i class="ph-minus ph-sm"></i>
-                                                </button>
-                                                <input class="form-control form-control-number text-center" type="number" name="minutes" value="5">
-                                                <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                                                    <i class="ph-plus ph-sm"></i>
-                                                </button>
-                                            </div>
-                                        </div>
+                                        <span class="badge bg-warning bg-opacity-20 text-warning">{{ hours }} : {{ minutes }}h</span>
                                     </div>
                                 </div>
                             </div>

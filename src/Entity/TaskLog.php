@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Classes\Slugify;
 use App\Repository\TaskLogRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,6 +14,25 @@ use JsonSerializable;
 #[ORM\Entity(repositoryClass: TaskLogRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class TaskLog implements JsonSerializable {
+
+
+  public function getUploadPath(): ?string {
+    return $this->getTask()->getUploadPath() . date('Y/m/d/');
+  }
+
+  public function getThumbUploadPath(): ?string {
+    return $this->getTask()->getThumbUploadPath() . date('Y/m/d/');
+  }
+
+  public function getNoProjectUploadPath(): ?string {
+    return $this->getNoProjectUploadPath() . date('Y/m/d/');
+  }
+
+  public function getNoProjectThumbUploadPath(): ?string {
+    return $this->getNoProjectThumbUploadPath() . date('Y/m/d/');
+  }
+
+
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]

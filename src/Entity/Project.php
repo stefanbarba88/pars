@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Classes\Slugify;
 use App\Repository\ProjectRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -14,6 +15,23 @@ use JsonSerializable;
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'projects')]
 class Project implements JsonSerializable {
+
+  public function getUploadPath(): ?string {
+    return $_ENV['PROJECT_IMAGE_PATH'] . Slugify::slugify($this->title) . '/';
+  }
+
+  public function getThumbUploadPath(): ?string {
+    return $_ENV['PROJECT_THUMB_PATH'] . Slugify::slugify($this->title) . '/';
+  }
+
+  public function getNoProjectUploadPath(): ?string {
+    return $_ENV['NOPROJECT_IMAGE_PATH'];
+  }
+
+  public function getNoProjectThumbUploadPath(): ?string {
+    return $_ENV['NOPROJECT_THUMB_PATH'];
+  }
+
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]

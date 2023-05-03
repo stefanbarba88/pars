@@ -33,6 +33,10 @@ class ImageRepository extends ServiceEntityRepository {
   }
 
   public function addImage(UploadedFileDTO $file, string $thumbnailPath, string $kernelPath): Image {
+    return $this->save($this->add($file, $thumbnailPath, $kernelPath));
+  }
+
+  public function add(UploadedFileDTO $file, string $thumbnailPath, string $kernelPath): Image {
 
     $image = new Image();
     $image->setOriginal($file->getAssetPath());
@@ -72,7 +76,7 @@ class ImageRepository extends ServiceEntityRepository {
     $image->setThumbnail500(str_replace("/public","",$thumbnailPath . '500' .$file->getFileName()));
     $image->setThumbnail1024(str_replace("/public","",$thumbnailPath . '1024' .$file->getFileName()));
 
-    return $this->save($image);
+    return $image;
   }
 
   public function addImagesClient(Client $client): Image {

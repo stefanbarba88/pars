@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Classes\TimeRounding;
+use App\Classes\Data\NotifyMessagesData;
 use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\StopwatchTime;
@@ -24,7 +24,6 @@ class StopwatchController extends AbstractController {
 
   #[Route('/start/{id}', name: 'app_stopwatch_start')]
   public function start(TaskLog $taskLog, Request $request): Response {
-    $args = [];
 
     $stopwatch = new StopwatchTime();
     $stopwatch->setTaskLog($taskLog);
@@ -59,7 +58,7 @@ class StopwatchController extends AbstractController {
 //      );
 //      $history = $history->getContent();
 //    }
-
+//    dd($stopwatch);
     $form = $this->createForm(StopwatchTimeFormType::class, $stopwatch, ['attr' => ['action' => $this->generateUrl('app_stopwatch_form', ['id' => $stopwatch->getId()])]]);
 
     if ($request->isMethod('POST')) {
@@ -72,8 +71,9 @@ class StopwatchController extends AbstractController {
           foreach ($uploadFiles as $uploadFile) {
             $pdf = new Pdf();
             $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+
             $pdf->setTitle($file->getFileName());
-            $pdf->setPath($file->getUrl());
+            $pdf->setPath($file->getAssetPath());
             if (!is_null($stopwatch->getTaskLog()->getTask()->getProject())) {
               $pdf->setProject($stopwatch->getTaskLog()->getTask()->getProject());
             }
@@ -81,6 +81,7 @@ class StopwatchController extends AbstractController {
               $pdf->setProject($stopwatch->getTaskLog()->getTask()->getProject());
             }
             $pdf->setTask($stopwatch->getTaskLog()->getTask());
+
             $stopwatch->addPdf($pdf);
           }
         }
@@ -88,7 +89,7 @@ class StopwatchController extends AbstractController {
         $uploadImages = $request->files->all()['stopwatch_time_form']['image'];
         if(!empty ($uploadImages)) {
           foreach ($uploadImages as $uploadFile) {
-            $image = new Image();
+
             if (!is_null($stopwatch->getTaskLog()->getTask()->getProject())) {
               $path = $stopwatch->getTaskLog()->getUploadPath();
               $pathThumb = $stopwatch->getTaskLog()->getThumbUploadPath();
@@ -97,39 +98,29 @@ class StopwatchController extends AbstractController {
               $pathThumb = $stopwatch->getTaskLog()->getNoProjectThumbUploadPath();
             }
             $file = $uploadService->upload($uploadFile, $path);
-
-            $image = $this->em->getRepository(Image::class)->addImage($file, $pathThumb, $kernelPath);
-
-            $pdf->setTitle($file->getFileName());
-            $pdf->setPath($file->getUrl());
-            if (!is_null($stopwatch->getTaskLog()->getTask()->getProject())) {
-              $pdf->setProject($stopwatch->getTaskLog()->getTask()->getProject());
-            }
-            if (!is_null($stopwatch->getTaskLog()->getTask()->getProject())) {
-              $pdf->setProject($stopwatch->getTaskLog()->getTask()->getProject());
-            }
-            $pdf->setTask($stopwatch->getTaskLog()->getTask());
-            $stopwatch->addPdf($pdf);
+            $image = $this->em->getRepository(Image::class)->add($file, $pathThumb, $this->getParameter('kernel.project_dir'));
+            $stopwatch->addImage($image);
           }
         }
-        dd($stopwatch);
-//
-//        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
-//
-//        notyf()
-//          ->position('x', 'right')
-//          ->position('y', 'top')
-//          ->duration(5000)
-//          ->dismissible(true)
-//          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
-//
-//        return $this->redirectToRoute('app_tasks');
+
+        $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return $this->redirectToRoute('app_tasks');
       }
     }
     $args['form'] = $form->createView();
     $args['stopwatch'] = $stopwatch;
     $args['hours'] = intdiv($stopwatch->getDiffRounded(), 60);
     $args['minutes'] = $stopwatch->getDiffRounded() % 60;
+
+
     return $this->render('task/stopwatch_form.html.twig', $args);
   }
 }

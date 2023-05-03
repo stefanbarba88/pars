@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\StopwatchTime;
+use App\Entity\TaskLog;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -34,6 +35,34 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     if ($flush) {
       $this->getEntityManager()->flush();
     }
+  }
+
+  public function getStopwatches(TaskLog $taskLog): array {
+    $stopwatches = [];
+
+    $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog]);
+
+    foreach ($times as $time) {
+      $stopwatches [] = [
+        'id' => $time->getId(),
+        'hours' => intdiv($time->getDiffRounded(), 60),
+        'minutes' => $time->getDiffRounded() % 60,
+        'hoursReal' => intdiv($time->getDiff(), 60),
+        'minutesReal' => $time->getDiff() % 60,
+        'start' => $time->getStart(),
+        'stop' => $time->getStop(),
+        'startLon' => $time->getLon(),
+        'startLat' => $time->getLat(),
+        'stopLon' => $time->getLonStop(),
+        'stopLat' => $time->getLatStop(),
+        'description' => $time->getDescription(),
+        'min' => $time->getMin(),
+        'activity' => $time->getActivity(),
+        'images' => $time->getImage(),
+        'pdfs' => $time->getPdf(),
+      ];
+    }
+    return $stopwatches;
   }
 
   public function setTime(StopwatchTime $stopwatch): StopwatchTime {
@@ -100,7 +129,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
 
 
-    return $stopwatch;
+    return $this->save($stopwatch);
 
 
 

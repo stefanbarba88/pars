@@ -1,0 +1,448 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {% include 'includes/header.html.twig' %}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ task.project.title | default ('Zadatak bez projekta') }}: {{ task.title }}
+                            </h4>
+
+                            <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
+                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
+                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
+                                <div class="d-inline-flex mt-3 mt-sm-0">
+                                    <a href="{{ path('app_task_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                        <i class="ph-plus"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            {% if task.project is null %}
+                                <div class="breadcrumb py-2">
+                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                    <span class="breadcrumb-item active">Zadaci</span>
+                                </div>
+                            {% else %}
+                                <div class="breadcrumb py-2">
+                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                    <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
+                                    <a href="{{ path('app_project_profile_view', {id: task.project.id} ) }}" class="breadcrumb-item">Informacije</a>
+                                    <a href="{{ path('app_project_tasks_view', {id: task.project.id} ) }}" class="breadcrumb-item">Zadaci</a>
+                                    <a href="{{ path('app_task_view', {id: task.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
+                                    <span class="breadcrumb-item active">Dnevnik: {{ taskLog.user.getFullName() }}</span>
+                                </div>
+                            {% endif %}
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse d-lg-block ms-lg-auto" id="breadcrumb_elements">
+                            <div class="d-lg-flex mb-2 mb-lg-0">
+                                <a href="#" class="d-flex align-items-center text-body py-2">
+                                    <i class="ph-lifebuoy me-2"></i>
+                                    Support
+                                </a>
+
+                                <div class="dropdown ms-lg-3">
+                                    <a href="#" class="d-flex align-items-center text-body dropdown-toggle py-2" data-bs-toggle="dropdown">
+                                        <i class="ph-gear me-2"></i>
+                                        <span class="flex-1">Settings</span>
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end w-100 w-lg-auto">
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-shield-warning me-2"></i>
+                                            Account security
+                                        </a>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-chart-bar me-2"></i>
+                                            Analytics
+                                        </a>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-lock-key me-2"></i>
+                                            Privacy
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="ph-gear me-2"></i>
+                                            All settings
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if task.project is not null %}
+                        {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}
+                    {% endif %}
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <div class="d-flex align-items-stretch align-items-lg-start flex-column flex-lg-row">
+
+                        <!-- Left content -->
+                        <div class="flex-1 order-2 order-lg-1">
+
+                            <!-- Task overview -->
+                            <div class="card">
+                                <div class="card-header d-lg-flex py-lg-0">
+                                    <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }} <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a></h5>
+                                    <div class="mt-1 my-lg-auto ms-lg-auto">
+                                        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal_form_vertical">Launch <i class="ph-play-circle ms-2"></i></button>
+                                    </div>
+                                </div>
+
+                                <!-- Vertical form modal -->
+                                <div id="modal_form_vertical" class="modal fade" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Vertical form</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+
+                                            <form action="#">
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <label class="form-label">First name</label>
+                                                                <input type="text" placeholder="Eugene" class="form-control" id="ime">
+                                                            </div>
+
+                                                            <div class="col-sm-6">
+                                                                <label class="form-label">Last name</label>
+                                                                <input type="text" placeholder="Kopyov" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <label class="form-label">Address line 1</label>
+                                                                <input type="text" placeholder="Ring street 12" class="form-control">
+                                                            </div>
+
+                                                            <div class="col-sm-6">
+                                                                <label class="form-label">Address line 2</label>
+                                                                <input type="text" placeholder="building D, flat #67" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <div class="row">
+                                                            <div class="col-sm-4">
+                                                                <label class="form-label">City</label>
+                                                                <input type="text" placeholder="Munich" class="form-control">
+                                                            </div>
+
+                                                            <div class="col-sm-4">
+                                                                <label class="form-label">State/Province</label>
+                                                                <input type="text" placeholder="Bayern" class="form-control">
+                                                            </div>
+
+                                                            <div class="col-sm-4">
+                                                                <label class="form-label">ZIP code</label>
+                                                                <input type="text" placeholder="1031" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <label class="form-label">Email</label>
+                                                                <input type="text" placeholder="eugene@kopyov.com" class="form-control">
+                                                                <div class="form-text text-muted">name@domain.com</div>
+                                                            </div>
+
+                                                            <div class="col-sm-6">
+                                                                <label class="form-label">Phone #</label>
+                                                                <input type="text" placeholder="+99-99-9999-9999" data-mask="+99-99-9999-9999" class="form-control">
+                                                                <div class="form-text text-muted">+99-99-9999-9999</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-link" data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Submit form</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /vertical form modal -->
+
+                                <div class="card-body">
+{#                                    <div class="mb-4">#}
+{#                                        <h6>Opis</h6>#}
+{#                                        {{ task.description | raw }}#}
+{#                                        </div>#}
+
+{#                                    <div class="mb-4">#}
+{#                                        <h6>Oprema</h6>#}
+{#                                    </div>#}
+
+                                    <div class="mb-4">
+                                        <h6>Vremenski zapisi</h6>
+                                    </div>
+                                    {% for stopwatch in stopwatches %}
+                                        <div class="row">
+                                        <div class="col-xl-6 col-sm-6">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="d-flex mb-3">
+                                                        <div class="d-inline-flex">
+                                                            <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ stopwatch.hours }}:{{ stopwatch.minutes }}h</span>
+                                                            <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ stopwatch.hoursReal }}:{{ stopwatch.minutesReal }}h</span>
+                                                        </div>
+
+                                                        <div class="dropdown ms-auto">
+                                                            <a href="#" class="text-body">
+                                                                <i class="ph-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mt-2">
+                                                        <h6 class="mb-1">Odrađene aktivnosti:</h6>
+                                                            <ul class="list mb-0">
+                                                                {% for activity in stopwatch.activity %}
+                                                                    <li>{{ activity.title }}</li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                    </div>
+
+                                                    <div class="mt-2">
+                                                        <h6 class="mb-1 ">Dodatni opis:</h6>
+                                                        <p class="mb-2">{{ stopwatch.description | raw }}</p>
+                                                    </div>
+
+                                                    <div class="mt-2">
+                                                        <h6 class="mb-1 ">Slike:</h6>
+                                                        <div class="row">
+                                                            {% for image in stopwatch.images %}
+                                                            <div class="col-xl-2 col-sm-4">
+                                                                <div class="card">
+                                                                    <div class="card-img-actions">
+                                                                        <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
+                                                                        <div class="card-img-actions-overlay card-img">
+                                                                            <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
+                                                                                <i class="ph-magnifying-glass-plus"></i>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mt-2">
+                                                        <h6 class="mb-1 ">Dokumenta:</h6>
+                                                        <div class="row">
+                                                            {% for pdf in stopwatch.pdfs %}
+                                                                <div class="col-xl-12">
+                                                                    <div class="d-flex align-items-start flex-wrap">
+                                                                        <div class="d-flex align-items-start">
+                                                                            <div class="me-2">
+                                                                                <i class="ph-file-pdf"></i>
+                                                                            </div>
+                                                                            <div class="flex-fill overflow-hidden">
+                                                                                <div class="fw-semibold text-truncate"><a href="{{ asset(pdf.path) }}" download>{{ pdf.title }}</a></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <h6 class="mb-1"><a href="task_manager_detailed.html">#24. Create UI design model</a></h6>
+                                                        <p class="mb-2">Bewitchingly amid heard by llama glanced fussily quetzal more that overcame eerie goodness badger..</p>
+                                                    </div>
+
+                                                    <div class="d-sm-flex align-items-sm-center flex-sm-wrap">
+                                                        <div class="d-flex flex-wrap">
+                                                            <div><span class="text-muted"><i class="ph-calendar me-1"></i> 28.06.2022</span></div>
+                                                            <div class="ms-3"><a href="#"><i class="ph-circles-three me-1"></i> Eternity app</a></div>
+                                                        </div>
+
+                                                        <div class="d-inline-flex align-items-center mt-2 mt-sm-0 ms-sm-auto">
+                                                            <a href="#" class="me-1">
+                                                                <img src="../../../assets/images/demo/users/face1.jpg" class="rounded-circle" width="32" height="32" alt="">
+                                                            </a>
+                                                            <a href="#" class="me-1">
+                                                                <img src="../../../assets/images/demo/users/face2.jpg" class="rounded-circle" width="32" height="32" alt="">
+                                                            </a>
+                                                            <a href="#" class="me-1">
+                                                                <img src="../../../assets/images/demo/users/face3.jpg" class="rounded-circle" width="32" height="32" alt="">
+                                                            </a>
+                                                            <a href="#" class="text-body">&nbsp;<i class="ph-plus"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card-footer d-flex align-items-center">
+									<span>
+										<i class="ph-bell-ringing me-1"></i>
+										Due: <span class="fw-semibold">23 hours</span>
+									</span>
+
+                                                    <div class="d-inline-flex mt-2 mt-sm-0 ms-auto">
+                                                        <div class="dropdown d-inline-flex">
+                                                            <a href="#" class="text-body d-inline-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">
+                                                                <i class="ph-check-square-offset me-2"></i>
+                                                                Open
+                                                            </a>
+
+                                                            <div class="dropdown-menu dropdown-menu-end">
+                                                                <a href="#" class="dropdown-item active">Open</a>
+                                                                <a href="#" class="dropdown-item">On hold</a>
+                                                                <a href="#" class="dropdown-item">Resolved</a>
+                                                                <a href="#" class="dropdown-item">Closed</a>
+                                                                <div class="dropdown-divider"></div>
+                                                                <a href="#" class="dropdown-item">Dublicate</a>
+                                                                <a href="#" class="dropdown-item">Invalid</a>
+                                                                <a href="#" class="dropdown-item">Wontfix</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+{#                                        <div class="col-xl-3 col-sm-6">#}
+{#                                            <div class="card">#}
+{#                                                <div class="card-img-actions mx-1 mt-1">#}
+{#                                                    <img class="card-img img-fluid" src="../../../assets/images/demo/flat/9.png" alt="">#}
+{#                                                    <div class="card-img-actions-overlay card-img">#}
+{#                                                        <a href="../../../assets/images/demo/flat/9.png" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">#}
+{#                                                            <i class="ph-magnifying-glass-plus"></i>#}
+{#                                                        </a>#}
+
+{#                                                        <a href="#" class="btn btn-outline-white btn-icon rounded-pill ms-2">#}
+{#                                                            <i class="ph-download-simple"></i>#}
+{#                                                        </a>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+
+{#                                                <div class="card-body">#}
+{#                                                    <div class="d-flex align-items-start flex-wrap">#}
+{#                                                        <div class="fw-semibold">dashboard_draft.png</div>#}
+{#                                                        <span class="text-muted ms-auto">378Kb</span>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <!-- /task overview -->
+
+                        </div>
+                        <!-- /left content -->
+
+                    </div>
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/media/glightbox.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
+
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+    <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
+
+{% endblock includeJavascript %}
+

@@ -64,10 +64,10 @@ class StopwatchTime {
   #[ORM\ManyToMany(targetEntity: Activity::class)]
   private Collection $activity;
 
-  #[ORM\OneToMany(mappedBy: 'stopwatchTime', targetEntity: Pdf::class)]
+  #[ORM\OneToMany(mappedBy: 'stopwatchTime', targetEntity: Pdf::class, cascade: ["persist", "remove"])]
   private Collection $pdf;
 
-  #[ORM\OneToMany(mappedBy: 'stopwatchTime', targetEntity: Image::class)]
+  #[ORM\OneToMany(mappedBy: 'stopwatchTime', targetEntity: Image::class, cascade: ["persist", "remove"])]
   private Collection $image;
 
   public function __construct()

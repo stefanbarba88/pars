@@ -1000,14 +1000,14 @@
                                         <span class="fw-semibold">Dnevnik zadatka</span>
                                     </div>
 
-                                    <div class="sidebar-section-body">
+                                        <div class="sidebar-section-body">
                                         <div class="d-flex align-items-start mb-3">
                                             <div class="me-2">
                                                 <i class="ph-clipboard"></i>
                                             </div>
 
                                             <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">Overdrew_scowled.doc</div>
+                                                <div class="fw-semibold text-truncate">{{ taskLog.user.getFullName }}</div>
                                                 <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
                                                     <li class="list-inline-item">Size: 1.2Mb</li>
                                                     <li class="list-inline-item">By <a href="#">Winnie</a></li>
@@ -1015,12 +1015,13 @@
                                             </div>
 
                                             <div class="ms-3">
-                                                <a href="#" class="text-body">
+                                                <a href="{{ path('app_task_log_view',{id: taskLog.id} ) }}" class="text-body">
                                                     <i class="ph-download-simple"></i>
                                                 </a>
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                                 <!-- /dnevnici -->
 

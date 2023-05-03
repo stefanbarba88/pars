@@ -54,4 +54,5 @@ class UploadedFileDTO {
     return str_replace("/public","",$this->urlPath . $this->fileName);
   }
 
+
 }

@@ -15,7 +15,7 @@ class UploadService {
 
   public function upload(UploadedFile $file, string $path): UploadedFileDTO {
     $originalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-    $cleanFileName = $this->slugger->slug($originalFileName);
+    $cleanFileName = mb_substr(mb_strtolower($this->slugger->slug($originalFileName)), 0, 50);
     $fileName = $cleanFileName . '.' . $file->guessExtension();
 
     try {

@@ -19,10 +19,10 @@ class StopwatchTime {
   private ?int $id = null;
 
   #[ORM\Column(nullable: true)]
-  private DateTimeImmutable $start;
+  private ?DateTimeImmutable $start = null;
 
   #[ORM\Column(nullable: true)]
-  private DateTimeImmutable $stop;
+  private ?DateTimeImmutable $stop = null;
 
   #[ORM\Column(nullable: true)]
   private ?int $diff = null;

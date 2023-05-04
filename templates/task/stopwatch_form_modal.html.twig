@@ -1,0 +1,95 @@
+<!-- Vertical form modal -->
+<div id="modal_form_vertical" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Dodavanje vremenskog zapisa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
+            <div class="card-body">
+                <div class="fw-bold border-bottom pb-2 mb-3">Utrošeno vreme</div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="mb-3">
+                            <div class="col">
+                                <label class="form-category" for="stopwatch_time_add_form_hours">Utrošeni sati:</label>
+                                <div class="input-group">
+                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                        <i class="ph-minus ph-sm"></i>
+                                    </button>
+                                    <input class="form-control form-control-number text-center" type="number" name="hours" value="0" min="0">
+                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                        <i class="ph-plus ph-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="mb-3">
+                            <div class="col">
+                                <label class="form-category" for="stopwatch_time_add_form_minutes">Utrošeni minuti:</label>
+                                <div class="input-group">
+                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                        <i class="ph-minus ph-sm"></i>
+                                    </button>
+                                    <input class="form-control form-control-number text-center" type="number" name="minutes" value="{{ min }}" min="0" max="59" step="{{ step }}" >
+                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                        <i class="ph-plus ph-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fw-bold border-bottom pb-2 mb-3">Aktivnosti</div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            {{ form_label(form.activity, 'Odrađene aktivnosti:*', {'label_attr': {'class': 'form-category'}}) }}
+                            {{ form_widget(form.activity, {attr: { class: 'form-control listbox-basic' }}) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            {{ form_label(form.description, 'Opis:', {'label_attr': {'class': 'form-category'}}) }}
+                            {{ form_widget(form.description, {attr: { class: 'form-control ckeditor_simple1' }}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-pdf" aria-expanded="false">Dokumentacija</div>
+                <div class="row collapse" id="collapse-pdf">
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            {{ form_label(form.pdf, 'Dokumenta:', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.pdf, {attr: { class: 'form-control file-input' }}) }}
+                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-image" aria-expanded="false">Slike</div>
+                <div class="row collapse" id="collapse-image">
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            {{ form_label(form.image, 'Slike:', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.image, {attr: { class: 'form-control file-input' }}) }}
+                            <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                </div>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+<!-- /vertical form modal -->

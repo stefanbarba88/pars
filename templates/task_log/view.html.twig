@@ -114,93 +114,12 @@
                                 <div class="card-header d-lg-flex py-lg-0">
                                     <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }} <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a></h5>
                                     <div class="mt-1 my-lg-auto ms-lg-auto">
-                                        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal_form_vertical">Launch <i class="ph-play-circle ms-2"></i></button>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
                                     </div>
                                 </div>
 
                                 <!-- Vertical form modal -->
-                                <div id="modal_form_vertical" class="modal fade" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Vertical form</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-
-                                            <form action="#">
-                                                <div class="modal-body">
-                                                    <div class="mb-3">
-                                                        <div class="row">
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">First name</label>
-                                                                <input type="text" placeholder="Eugene" class="form-control" id="ime">
-                                                            </div>
-
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">Last name</label>
-                                                                <input type="text" placeholder="Kopyov" class="form-control">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <div class="row">
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">Address line 1</label>
-                                                                <input type="text" placeholder="Ring street 12" class="form-control">
-                                                            </div>
-
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">Address line 2</label>
-                                                                <input type="text" placeholder="building D, flat #67" class="form-control">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <div class="row">
-                                                            <div class="col-sm-4">
-                                                                <label class="form-label">City</label>
-                                                                <input type="text" placeholder="Munich" class="form-control">
-                                                            </div>
-
-                                                            <div class="col-sm-4">
-                                                                <label class="form-label">State/Province</label>
-                                                                <input type="text" placeholder="Bayern" class="form-control">
-                                                            </div>
-
-                                                            <div class="col-sm-4">
-                                                                <label class="form-label">ZIP code</label>
-                                                                <input type="text" placeholder="1031" class="form-control">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div>
-                                                        <div class="row">
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">Email</label>
-                                                                <input type="text" placeholder="eugene@kopyov.com" class="form-control">
-                                                                <div class="form-text text-muted">name@domain.com</div>
-                                                            </div>
-
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">Phone #</label>
-                                                                <input type="text" placeholder="+99-99-9999-9999" data-mask="+99-99-9999-9999" class="form-control">
-                                                                <div class="form-text text-muted">+99-99-9999-9999</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-link" data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-primary">Submit form</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
+                                {{ render(controller('App\\Controller\\StopwatchController::add', { taskLog: taskLog.id, id:0 } )) }}
                                 <!-- /vertical form modal -->
 
                                 <div class="card-body">
@@ -218,7 +137,7 @@
                                     </div>
                                     {% for stopwatch in stopwatches %}
                                         <div class="row">
-                                        <div class="col-xl-6 col-sm-6">
+                                        <div class="col-xl-12 col-sm-12">
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div class="d-flex mb-3">
@@ -252,7 +171,7 @@
                                                         <h6 class="mb-1 ">Slike:</h6>
                                                         <div class="row">
                                                             {% for image in stopwatch.images %}
-                                                            <div class="col-xl-2 col-sm-4">
+                                                            <div class="col-xl-1 col-sm-2">
                                                                 <div class="card">
                                                                     <div class="card-img-actions">
                                                                         <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
@@ -285,58 +204,6 @@
                                                                     </div>
                                                                 </div>
                                                             {% endfor %}
-                                                        </div>
-                                                    </div>
-
-                                                    <div>
-                                                        <h6 class="mb-1"><a href="task_manager_detailed.html">#24. Create UI design model</a></h6>
-                                                        <p class="mb-2">Bewitchingly amid heard by llama glanced fussily quetzal more that overcame eerie goodness badger..</p>
-                                                    </div>
-
-                                                    <div class="d-sm-flex align-items-sm-center flex-sm-wrap">
-                                                        <div class="d-flex flex-wrap">
-                                                            <div><span class="text-muted"><i class="ph-calendar me-1"></i> 28.06.2022</span></div>
-                                                            <div class="ms-3"><a href="#"><i class="ph-circles-three me-1"></i> Eternity app</a></div>
-                                                        </div>
-
-                                                        <div class="d-inline-flex align-items-center mt-2 mt-sm-0 ms-sm-auto">
-                                                            <a href="#" class="me-1">
-                                                                <img src="../../../assets/images/demo/users/face1.jpg" class="rounded-circle" width="32" height="32" alt="">
-                                                            </a>
-                                                            <a href="#" class="me-1">
-                                                                <img src="../../../assets/images/demo/users/face2.jpg" class="rounded-circle" width="32" height="32" alt="">
-                                                            </a>
-                                                            <a href="#" class="me-1">
-                                                                <img src="../../../assets/images/demo/users/face3.jpg" class="rounded-circle" width="32" height="32" alt="">
-                                                            </a>
-                                                            <a href="#" class="text-body">&nbsp;<i class="ph-plus"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card-footer d-flex align-items-center">
-									<span>
-										<i class="ph-bell-ringing me-1"></i>
-										Due: <span class="fw-semibold">23 hours</span>
-									</span>
-
-                                                    <div class="d-inline-flex mt-2 mt-sm-0 ms-auto">
-                                                        <div class="dropdown d-inline-flex">
-                                                            <a href="#" class="text-body d-inline-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">
-                                                                <i class="ph-check-square-offset me-2"></i>
-                                                                Open
-                                                            </a>
-
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <a href="#" class="dropdown-item active">Open</a>
-                                                                <a href="#" class="dropdown-item">On hold</a>
-                                                                <a href="#" class="dropdown-item">Resolved</a>
-                                                                <a href="#" class="dropdown-item">Closed</a>
-                                                                <div class="dropdown-divider"></div>
-                                                                <a href="#" class="dropdown-item">Dublicate</a>
-                                                                <a href="#" class="dropdown-item">Invalid</a>
-                                                                <a href="#" class="dropdown-item">Wontfix</a>
-                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -438,6 +305,15 @@
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
 
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/dual_listbox.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_dual_listboxes.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/editor_ckeditor_classic.js') }}"></script>
 
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>

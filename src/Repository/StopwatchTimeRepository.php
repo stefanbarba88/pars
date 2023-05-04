@@ -131,7 +131,16 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
     return $this->save($stopwatch);
 
+  }
 
+  public function findForForm(TaskLog $taskLog, int $id = 0): StopwatchTime {
+    if (empty($id)) {
+      $stopwatch = new StopwatchTime();
+      $stopwatch->setTaskLog($taskLog);
+
+      return $stopwatch;
+    }
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->find($id);
 
   }
 

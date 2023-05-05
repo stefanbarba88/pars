@@ -6,6 +6,7 @@ use App\Classes\Data\NotifyMessagesData;
 use App\Classes\ProjectHelper;
 use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
+use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;

@@ -109,10 +109,9 @@
                         <!-- Left content -->
                         <div class="flex-1 order-2 order-lg-1">
 
-                            <!-- Task overview -->
                             <div class="card">
                                 <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }} <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a></h5>
+                                    <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }} - {{ taskLog.user.getFullName() }}</h5>
                                     <div class="mt-1 my-lg-auto ms-lg-auto">
                                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
                                     </div>
@@ -123,120 +122,193 @@
                                 <!-- /vertical form modal -->
 
                                 <div class="card-body">
-{#                                    <div class="mb-4">#}
-{#                                        <h6>Opis</h6>#}
-{#                                        {{ task.description | raw }}#}
-{#                                        </div>#}
+{#                                    <div class="row">#}
+{#                                                            <div class="col-xl-12 col-sm-12">#}
+{#                                                                <div class="card">#}
+{#                                                                    <div class="card-body">#}
+{#                                                                        <div class="d-flex mb-3">#}
+{#                                                                            <div class="d-inline-flex">#}
+{#                                                                                <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ stopwatch.hours }}:{{ stopwatch.minutes }}h</span>#}
+{#                                                                                <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ stopwatch.hoursReal }}:{{ stopwatch.minutesReal }}h</span>#}
+{#                                                                            </div>#}
+{#                                                                        </div>#}
 
-{#                                    <div class="mb-4">#}
-{#                                        <h6>Oprema</h6>#}
-{#                                    </div>#}
+{#                                                                        <div class="mt-2">#}
+{#                                                                            <h6 class="mb-1">Odrađene aktivnosti:</h6>#}
+{#                                                                            <ul class="list mb-0">#}
+{#                                                                                {% for activity in stopwatch.activity %}#}
+{#                                                                                    <li>{{ activity.title }}</li>#}
+{#                                                                                {% endfor %}#}
+{#                                                                            </ul>#}
+{#                                                                        </div>#}
 
-                                    <div class="mb-4">
-                                        <h6>Vremenski zapisi</h6>
-                                    </div>
-                                    {% for stopwatch in stopwatches %}
-                                        <div class="row">
-                                        <div class="col-xl-12 col-sm-12">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <div class="d-flex mb-3">
-                                                        <div class="d-inline-flex">
-                                                            <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ stopwatch.hours }}:{{ stopwatch.minutes }}h</span>
-                                                            <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ stopwatch.hoursReal }}:{{ stopwatch.minutesReal }}h</span>
-                                                        </div>
+{#                                                                        <div class="mt-2">#}
+{#                                                                            <h6 class="mb-1 ">Dodatni opis:</h6>#}
+{#                                                                            <p class="mb-2">{{ stopwatch.description | raw }}</p>#}
+{#                                                                        </div>#}
 
-                                                        <div class="dropdown ms-auto">
-                                                            <a href="#" class="text-body">
-                                                                <i class="ph-trash"></i>
-                                                            </a>
-                                                        </div>
-                                                    </div>
+{#                                                                        <div class="mt-2">#}
+{#                                                                            <h6 class="mb-1 ">Slike:</h6>#}
+{#                                                                            <div class="row">#}
+{#                                                                                {% for image in stopwatch.images %}#}
+{#                                                                                    <div class="col-xl-1 col-sm-2">#}
+{#                                                                                        <div class="card">#}
+{#                                                                                            <div class="card-img-actions">#}
+{#                                                                                                <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">#}
+{#                                                                                                <div class="card-img-actions-overlay card-img">#}
+{#                                                                                                    <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">#}
+{#                                                                                                        <i class="ph-magnifying-glass-plus"></i>#}
+{#                                                                                                    </a>#}
+{#                                                                                                </div>#}
+{#                                                                                            </div>#}
+{#                                                                                        </div>#}
+{#                                                                                    </div>#}
+{#                                                                                {% endfor %}#}
+{#                                                                            </div>#}
+{#                                                                        </div>#}
 
-                                                    <div class="mt-2">
-                                                        <h6 class="mb-1">Odrađene aktivnosti:</h6>
-                                                            <ul class="list mb-0">
-                                                                {% for activity in stopwatch.activity %}
-                                                                    <li>{{ activity.title }}</li>
-                                                                {% endfor %}
-                                                            </ul>
-                                                    </div>
+{#                                                                        <div class="mt-2">#}
+{#                                                                            <h6 class="mb-1 ">Dokumenta:</h6>#}
+{#                                                                            <div class="row">#}
+{#                                                                                {% for pdf in stopwatch.pdfs %}#}
+{#                                                                                    <div class="col-xl-12">#}
+{#                                                                                        <div class="d-flex align-items-start flex-wrap">#}
+{#                                                                                            <div class="d-flex align-items-start">#}
+{#                                                                                                <div class="me-2">#}
+{#                                                                                                    <i class="ph-file-pdf"></i>#}
+{#                                                                                                </div>#}
+{#                                                                                                <div class="flex-fill overflow-hidden">#}
+{#                                                                                                    <div class="fw-semibold text-truncate"><a href="{{ asset(pdf.path) }}" download>{{ pdf.title }}</a></div>#}
+{#                                                                                                </div>#}
+{#                                                                                            </div>#}
+{#                                                                                        </div>#}
+{#                                                                                    </div>#}
+{#                                                                                {% endfor %}#}
+{#                                                                            </div>#}
+{#                                                                        </div>#}
+{#                                                                    </div>#}
+{#                                                                    <div class="card-footer d-flex justify-content-between align-items-center">#}
+{#                                                                        <div class="d-flex align-items-center">#}
 
-                                                    <div class="mt-2">
-                                                        <h6 class="mb-1 ">Dodatni opis:</h6>
-                                                        <p class="mb-2">{{ stopwatch.description | raw }}</p>
-                                                    </div>
+{#                                                                        </div>#}
 
-                                                    <div class="mt-2">
-                                                        <h6 class="mb-1 ">Slike:</h6>
-                                                        <div class="row">
-                                                            {% for image in stopwatch.images %}
-                                                            <div class="col-xl-1 col-sm-2">
-                                                                <div class="card">
-                                                                    <div class="card-img-actions">
-                                                                        <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
-                                                                        <div class="card-img-actions-overlay card-img">
-                                                                            <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                                                <i class="ph-magnifying-glass-plus"></i>
-                                                                            </a>
+{#                                                                        <div class="d-inline-flex mb-0">#}
+
+{#                                                                            <a href="#" class="text-body ms-2">#}
+{#                                                                                <i class="ph-trash"></i>#}
+{#                                                                            </a>#}
+{#                                                                        </div>#}
+{#                                                                    </div>#}
+{#                                                                </div>#}
+{#                                                            </div>#}
+{#                                                        </div>#}
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header d-lg-flex py-lg-0">
+                                    <h5 class="py-lg-3 mb-0">Vremenski zapisi</h5>
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="accordion" id="accordion_collapsed">
+                                        {% for stopwatch in stopwatches %}
+                                            <div class="accordion-item">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ loop.index }}">
+                                                            #{{ loop.index }}: {{ stopwatch.created | date("d.m.Y H:i:s")}}
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapsed_item{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
+                                                        <div class="accordion-body">
+                                                            <div class="row">
+                                                                <div class="col-xl-12 col-sm-12">
+                                                                    <div class="card">
+                                                                        <div class="card-body">
+                                                                            <div class="d-flex mb-3">
+                                                                                <div class="d-inline-flex">
+                                                                                    <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ stopwatch.hours }}:{{ stopwatch.minutes }}h</span>
+                                                                                    <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ stopwatch.hoursReal }}:{{ stopwatch.minutesReal }}h</span>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="mt-2">
+                                                                                <h6 class="mb-1">Odrađene aktivnosti:</h6>
+                                                                                <ul class="list mb-0">
+                                                                                    {% for activity in stopwatch.activity %}
+                                                                                        <li>{{ activity.title }}</li>
+                                                                                    {% endfor %}
+                                                                                </ul>
+                                                                            </div>
+
+                                                                            <div class="mt-2">
+                                                                                <h6 class="mb-1 ">Dodatni opis:</h6>
+                                                                                <p class="mb-2">{{ stopwatch.description | raw }}</p>
+                                                                            </div>
+
+                                                                            <div class="mt-2">
+                                                                                <h6 class="mb-1 ">Slike:</h6>
+                                                                                <div class="row">
+                                                                                    {% for image in stopwatch.images %}
+                                                                                        <div class="col-xl-1 col-sm-2">
+                                                                                            <div class="card">
+                                                                                                <div class="card-img-actions">
+                                                                                                    <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
+                                                                                                    <div class="card-img-actions-overlay card-img">
+                                                                                                        <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
+                                                                                                            <i class="ph-magnifying-glass-plus"></i>
+                                                                                                        </a>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    {% endfor %}
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="mt-2">
+                                                                                <h6 class="mb-1 ">Dokumenta:</h6>
+                                                                                <div class="row">
+                                                                                    {% for pdf in stopwatch.pdfs %}
+                                                                                        <div class="col-xl-12">
+                                                                                            <div class="d-flex align-items-start flex-wrap">
+                                                                                                <div class="d-flex align-items-start">
+                                                                                                    <div class="me-2">
+                                                                                                        <i class="ph-file-pdf"></i>
+                                                                                                    </div>
+                                                                                                    <div class="flex-fill overflow-hidden">
+                                                                                                        <div class="fw-semibold text-truncate"><a href="{{ asset(pdf.path) }}" download>{{ pdf.title }}</a></div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    {% endfor %}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="card-footer d-flex justify-content-between align-items-center">
+                                                                            <div class="d-flex align-items-center">
+
+                                                                            </div>
+
+                                                                            <div class="d-inline-flex mb-0">
+
+                                                                                <a href="#" class="text-body ms-2">
+                                                                                    <i class="ph-trash"></i>
+                                                                                </a>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="mt-2">
-                                                        <h6 class="mb-1 ">Dokumenta:</h6>
-                                                        <div class="row">
-                                                            {% for pdf in stopwatch.pdfs %}
-                                                                <div class="col-xl-12">
-                                                                    <div class="d-flex align-items-start flex-wrap">
-                                                                        <div class="d-flex align-items-start">
-                                                                            <div class="me-2">
-                                                                                <i class="ph-file-pdf"></i>
-                                                                            </div>
-                                                                            <div class="flex-fill overflow-hidden">
-                                                                                <div class="fw-semibold text-truncate"><a href="{{ asset(pdf.path) }}" download>{{ pdf.title }}</a></div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            {% endfor %}
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-{#                                        <div class="col-xl-3 col-sm-6">#}
-{#                                            <div class="card">#}
-{#                                                <div class="card-img-actions mx-1 mt-1">#}
-{#                                                    <img class="card-img img-fluid" src="../../../assets/images/demo/flat/9.png" alt="">#}
-{#                                                    <div class="card-img-actions-overlay card-img">#}
-{#                                                        <a href="../../../assets/images/demo/flat/9.png" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">#}
-{#                                                            <i class="ph-magnifying-glass-plus"></i>#}
-{#                                                        </a>#}
-
-{#                                                        <a href="#" class="btn btn-outline-white btn-icon rounded-pill ms-2">#}
-{#                                                            <i class="ph-download-simple"></i>#}
-{#                                                        </a>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-
-{#                                                <div class="card-body">#}
-{#                                                    <div class="d-flex align-items-start flex-wrap">#}
-{#                                                        <div class="fw-semibold">dashboard_draft.png</div>#}
-{#                                                        <span class="text-muted ms-auto">378Kb</span>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                        </div>#}
+                                        {% endfor %}
                                     </div>
-                                    {% endfor %}
                                 </div>
                             </div>
-                            <!-- /task overview -->
+
 
                         </div>
                         <!-- /left content -->

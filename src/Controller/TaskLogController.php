@@ -77,6 +77,13 @@ dd($request);
     $args['taskLog'] = $taskLog;
 
     $args['stopwatches'] = $this->em->getRepository(StopwatchTime::class)->getStopwatches($args['taskLog']);
+    $args['time'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchTime($args['taskLog']);
+dd($args['time']);
+
+    //    $args['time'] = $this->em->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $args['taskLog'], 'diff' => null]);
+//    $args['activity'] = $this->em->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $args['taskLog'], 'diff' => null]);
+//    $args['images'] = $args['taskLog']->getImages
+//    $args['docs'] = $this->em->getRepository(Pdf::class)->findBy(['taskLog' => $args['taskLog']]);
 
     return $this->render('task_log/view.html.twig', $args);
   }

@@ -60,15 +60,46 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'activity' => $time->getActivity(),
         'images' => $time->getImage(),
         'pdfs' => $time->getPdf(),
+        'created' => $time->getCreated(),
       ];
     }
     return $stopwatches;
   }
 
-  public function setTime(StopwatchTime $stopwatch): StopwatchTime {
+  public function getStopwatchTime(TaskLog $taskLog): array {
 
-    $hours = $stopwatch->getStart()->diff($stopwatch->getStop())->h;
-    $minutes = $stopwatch->getStart()->diff($stopwatch->getStop())->i;
+    $hours = 0;
+    $minutes = 0;
+    $hoursR = 0;
+    $minutesR = 0;
+
+    $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog]);
+
+    foreach ($times as $time) {
+        $hoursR = $hoursR + intdiv($time->getDiffRounded(), 60);
+        $minutesR = $minutesR + $time->getDiffRounded() % 60;
+        $hours = $hours + intdiv($time->getDiff(), 60);
+        $minutes = $minutes + $time->getDiff() % 60;
+    }
+
+    $minutesU = $hours*60 + $minutes;
+    $minutesRU = $hoursR*60 + $minutesR;
+
+    $h = intdiv($minutesU, 60);
+    $m = $minutesU % 60;
+    $hR = intdiv($minutesRU, 60);
+    $mR = $minutesRU % 60;
+
+    return [
+      'hours' => $h,
+      'minutes' => $m,
+      'hoursR' => $hR,
+      'minutesR' => $mR,
+    ];
+
+  }
+
+  public function setTime(StopwatchTime $stopwatch, int $hours, int $minutes): StopwatchTime {
 
     $task = $stopwatch->getTaskLog()->getTask();
     $project = $task->getProject();
@@ -126,8 +157,6 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
     $stopwatch->setDiff($diff);
     $stopwatch->setDiffRounded($diffRound);
-
-
 
     return $this->save($stopwatch);
 

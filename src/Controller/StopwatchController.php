@@ -42,12 +42,14 @@ class StopwatchController extends AbstractController {
   public function form(StopwatchTime $stopwatch, Request $request, UploadService $uploadService): Response {
     $args = [];
 
-
+  if (is_null($stopwatch->getStop())) {
     $stopwatch->setStop(new DateTimeImmutable());
     $stopwatch->setLonStop($request->query->get('lon'));
     $stopwatch->setLatStop($request->query->get('lat'));
-    $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTime($stopwatch);
-
+    $hours = $stopwatch->getStart()->diff($stopwatch->getStop())->h;
+    $minutes = $stopwatch->getStart()->diff($stopwatch->getStop())->i;
+    $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTime($stopwatch, $hours, $minutes);
+  }
     $history = null;
     //ovde izvlacimo ulogovanog usera
 //    $user = $this->getUser();
@@ -115,7 +117,7 @@ class StopwatchController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-        return $this->redirectToRoute('app_tasks');
+        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
       }
     }
     $args['form'] = $form->createView();
@@ -132,11 +134,6 @@ class StopwatchController extends AbstractController {
   #[Entity('stopwatch', expr: 'repository.findForForm(taskLog, id)')]
   public function add(TaskLog $taskLog, StopwatchTime $stopwatch, Request $request, UploadService $uploadService): Response {
     $args = [];
-
-//    $stopwatch->setStop(new DateTimeImmutable());
-//    $stopwatch->setLonStop($request->query->get('lon'));
-//    $stopwatch->setLatStop($request->query->get('lat'));
-//    $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTime($stopwatch);
 
     $history = null;
     //ovde izvlacimo ulogovanog usera
@@ -158,9 +155,7 @@ class StopwatchController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
-        $diff = ($request->request->get('hours') * 60) + $request->request->get('minutes');
-        $stopwatch->setDiff($diff);
-        $stopwatch->setDiffRounded($diff);
+        $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTime($stopwatch, $request->request->get('hours'), $request->request->get('minutes'));
 
         $uploadFiles = $request->files->all()['stopwatch_time_add_form']['pdf'];
         if (!empty ($uploadFiles)) {

@@ -16,7 +16,14 @@ class WidgetController extends AbstractController {
 
   public function adminMainSidebar(): Response {
 
-    return $this->render('widget/main_admin_sidebar.html.twig');
+    $args = [];
+
+    $args['countUsers'] = $this->em->getRepository(User::class)->count([]);
+//    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
+//    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
+//    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
+//    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
+    return $this->render('widget/main_admin_sidebar.html.twig', $args);
   }
 
   public function userProfilSidebar(User $user): Response {

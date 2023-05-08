@@ -33,6 +33,10 @@ class StopwatchTime {
   #[ORM\Column]
   private ?bool $isEdited = false;
 
+  #[ORM\Column]
+  private ?bool $isDeleted = false;
+
+
   #[ORM\Column(nullable: true)]
   private ?int $diffRounded = null;
 
@@ -69,6 +73,12 @@ class StopwatchTime {
 
   #[ORM\OneToMany(mappedBy: 'stopwatchTime', targetEntity: Image::class, cascade: ["persist", "remove"])]
   private Collection $image;
+
+  #[ORM\ManyToOne]
+  private ?User $deletedBy = null;
+
+  #[ORM\ManyToOne]
+  private ?User $editedBy = null;
 
   public function __construct()
   {
@@ -138,6 +148,17 @@ class StopwatchTime {
 
   public function setIsEdited(bool $isEdited): self {
     $this->isEdited = $isEdited;
+
+    return $this;
+  }
+
+
+  public function isIsDeleted(): ?bool {
+    return $this->isDeleted;
+  }
+
+  public function setIsDeleted(bool $isDeleted): self {
+    $this->isDeleted = $isDeleted;
 
     return $this;
   }
@@ -323,6 +344,30 @@ class StopwatchTime {
               $image->setStopwatchTime(null);
           }
       }
+
+      return $this;
+  }
+
+  public function getDeletedBy(): ?User
+  {
+      return $this->deletedBy;
+  }
+
+  public function setDeletedBy(?User $deletedBy): self
+  {
+      $this->deletedBy = $deletedBy;
+
+      return $this;
+  }
+
+  public function getEditedBy(): ?User
+  {
+      return $this->editedBy;
+  }
+
+  public function setEditedBy(?User $editedBy): self
+  {
+      $this->editedBy = $editedBy;
 
       return $this;
   }

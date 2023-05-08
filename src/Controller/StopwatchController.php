@@ -137,7 +137,7 @@ class StopwatchController extends AbstractController {
 
     $history = null;
     //ovde izvlacimo ulogovanog usera
-//    $user = $this->getUser();
+    $user = $this->getUser();
 //    $user = $this->em->getRepository(User::class)->find(1);
 //    if ($task->getId()) {
 //      $history = $this->json($task, Response::HTTP_OK, [], [
@@ -194,6 +194,9 @@ class StopwatchController extends AbstractController {
           }
         }
 
+        $stopwatch->setIsEdited(true);
+        $stopwatch->setEditedBy($user);
+
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 
         notyf()
@@ -227,5 +230,27 @@ class StopwatchController extends AbstractController {
 
     $stopwatch->setMin($args['min']);
     return $this->render('task/stopwatch_form_modal.html.twig', $args);
+  }
+
+  #[Route('/delete/{id}', name: 'app_stopwatch_delete')]
+  public function delete(StopwatchTime $stopwatch): Response {
+    $taskLogId = $stopwatch->getTaskLog()->getId();
+    $user = $this->getUser();
+
+    $stopwatch->setIsDeleted(true);
+    $stopwatch->setIsEdited(true);
+    $stopwatch->setDeletedBy($user);
+    $stopwatch->setEditedBy($user);
+
+    $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+    return $this->redirectToRoute('app_task_log_view', ['id' => $taskLogId]);
   }
 }

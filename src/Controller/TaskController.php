@@ -242,6 +242,9 @@ class TaskController extends AbstractController {
   #[Route('/view-user/{id}', name: 'app_task_view_user')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewUser(Task $task): Response {
+
+    $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
+
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();
     $user = $this->em->getRepository(User::class)->find(2);

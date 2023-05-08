@@ -11,6 +11,8 @@ use App\Entity\User;
 use App\Entity\UserHistory;
 use App\Service\MailService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -141,7 +143,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 //    $qb = $this->createQueryBuilder('u');
 //    $qb->select('u.id','u.ime', 'u.prezime', 'u.slika', 'u.isSuspended', 'u.datumRodjenja', 'u.userType');
 //    $qb->orderBy('u.id')->getQuery()->getResult();
-    $users = $this->getEntityManager()->getRepository(User::class)->findAll();
+    $users = $this->getEntityManager()->getRepository(User::class)->findBy([], ['isSuspended' => 'ASC', 'userType' => 'ASC']);
 
     $usersList = [];
     foreach ($users as $user) {
@@ -157,6 +159,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
     return $usersList;
   }
+
+//  /**
+//   * @throws NonUniqueResultException
+//   * @throws NoResultException
+//   */
+//  public function countUsers(): int{
+//    $qb = $this->createQueryBuilder('u');
+//
+//    $qb->select($qb->expr()->count('u'))
+//      ->from('User', 'u');
+//
+//    $query = $qb->getQuery();
+//
+//    return $query->getSingleScalarResult();
+//
+//  }
   public function getEmployees(): array {
 //    $qb = $this->createQueryBuilder('u');
 //    $qb->select('u.id','u.ime', 'u.prezime', 'u.slika', 'u.isSuspended', 'u.datumRodjenja', 'u.userType');

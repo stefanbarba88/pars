@@ -258,10 +258,12 @@
                                 <div class="card-footer d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center">
                                         <i class="ph-lightbulb me-2"></i> Status:&nbsp;
-                                        {% if task.isClosed %}
-                                            <span class="badge bg-danger">Zatvoren</span>
+                                        {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                            <span class="badge bg-info">Nije startovan</span>
+                                        {% elseif status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                            <span class="badge bg-success">Otvoren</span>
                                         {% else %}
-                                            <span class="badge bg-info">Otvoren</span>
+                                            <span class="badge bg-danger">Zatvoren</span>
                                         {% endif %}
                                     </div>
 
@@ -295,7 +297,6 @@
                                     <div class="sidebar-section-header border-bottom">
                                         <span class="fw-semibold">Vreme</span>
                                     </div>
-                                    {{ dump(stopwatch) }}
                                     {% if not stopwatch %}
                                         <div class="sidebar-section-body">
                                             <div class="d-flex justify-content-center text-center">
@@ -334,11 +335,6 @@
                                                 <div>
                                                     <span id="timeM" class="display-6 lh-1 m-0"></span>
                                                     <div class="mt-2">minuta</div>
-                                                </div>
-                                                <div class="mx-1 my-2">:</div>
-                                                <div>
-                                                    <span id="timeS" class="display-6 lh-1 m-0"></span>
-                                                    <div class="mt-2">sekundi</div>
                                                 </div>
                                             </div>
                                         </div>

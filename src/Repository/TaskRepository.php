@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\TaskStatusData;
 use App\Entity\Project;
+use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskHistory;
 use App\Entity\TaskLog;
@@ -21,6 +23,32 @@ use Doctrine\Persistence\ManagerRegistry;
 class TaskRepository extends ServiceEntityRepository {
   public function __construct(ManagerRegistry $registry) {
     parent::__construct($registry, Task::class);
+  }
+
+  public function taskStatus(Task $task): int {
+
+    $stopwatches = $this->createQueryBuilder('t')
+      ->select('s.diff', 's.start', 's.stop')
+      ->from(TaskLog::class, 'tl')
+      ->from(StopwatchTime::class, 's' )
+      ->andWhere('t.id = tl.task')
+      ->andWhere('t.id = :taskId')
+      ->setParameter(':taskId', $task->getId())
+      ->getQuery()
+      ->getResult();
+
+    foreach ($stopwatches as $stopwatch) {
+      if (is_null($stopwatch['start']) && is_null($stopwatch['stop']) && is_null($stopwatch['diff'])) {
+        return TaskStatusData::NIJE_ZAPOCETO;
+      }
+      if (!is_null($stopwatch['start']) && is_null($stopwatch['stop']) ) {
+        return TaskStatusData::ZAPOCETO;
+      }
+      if (!is_null($stopwatch['diff'])) {
+        return TaskStatusData::ZAVRSENO;
+      }
+    }
+    return TaskStatusData::ZAVRSENO;
   }
 
   public function saveTask(Task $task, User $user, ?string $history): Task  {

@@ -40,7 +40,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
   public function getStopwatches(TaskLog $taskLog): array {
     $stopwatches = [];
 
-    $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog]);
+//    $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog]);
+    $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog, 'isDeleted' => false]);
 
     foreach ($times as $time) {
       $stopwatches [] = [
@@ -73,13 +74,14 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     $hoursR = 0;
     $minutesR = 0;
 
-    $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog]);
+//    $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog]);
+    $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog, 'isDeleted' => false]);
 
     foreach ($times as $time) {
-        $hoursR = $hoursR + intdiv($time->getDiffRounded(), 60);
-        $minutesR = $minutesR + $time->getDiffRounded() % 60;
-        $hours = $hours + intdiv($time->getDiff(), 60);
-        $minutes = $minutes + $time->getDiff() % 60;
+        $hours = $hours + intdiv($time->getDiffRounded(), 60);
+        $minutes = $minutes + $time->getDiffRounded() % 60;
+        $hoursR = $hoursR + intdiv($time->getDiff(), 60);
+        $minutesR = $minutesR + $time->getDiff() % 60;
     }
 
     $minutesU = $hours*60 + $minutes;

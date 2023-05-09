@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Classes\Data\TaskStatusData;
+use App\Entity\Image;
+use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -34,21 +36,59 @@ class TaskRepository extends ServiceEntityRepository {
       ->andWhere('t.id = tl.task')
       ->andWhere('t.id = :taskId')
       ->setParameter(':taskId', $task->getId())
+      ->addOrderBy('s.created', 'DESC')
+      ->setMaxResults(1)
       ->getQuery()
       ->getResult();
+
 
     foreach ($stopwatches as $stopwatch) {
       if (is_null($stopwatch['start']) && is_null($stopwatch['stop']) && is_null($stopwatch['diff'])) {
         return TaskStatusData::NIJE_ZAPOCETO;
       }
       if (!is_null($stopwatch['start']) && is_null($stopwatch['stop']) ) {
-        return TaskStatusData::ZAPOCETO;
+       return TaskStatusData::ZAPOCETO;
       }
       if (!is_null($stopwatch['diff'])) {
         return TaskStatusData::ZAVRSENO;
       }
     }
+
     return TaskStatusData::ZAVRSENO;
+  }
+
+  public function getPdfsByTask(Task $task): array {
+
+    return $this->createQueryBuilder('t')
+      ->select('i.title', 'i.path')
+      ->from(TaskLog::class, 'tl')
+      ->from(StopwatchTime::class, 's' )
+      ->from(Pdf::class, 'i' )
+      ->andWhere('t.id = tl.task')
+      ->andWhere('s.id = i.stopwatchTime')
+      ->andWhere('t.id = :taskId')
+      ->andWhere('s.isDeleted = 0')
+      ->setParameter(':taskId', $task->getId())
+      ->getQuery()
+      ->getResult();
+
+  }
+
+  public function getImagesByTask(Task $task): array {
+
+    return $this->createQueryBuilder('t')
+      ->select('i.thumbnail100', 'i.thumbnail500', 'i.thumbnail1024')
+      ->from(TaskLog::class, 'tl')
+      ->from(StopwatchTime::class, 's' )
+      ->from(Image::class, 'i' )
+      ->andWhere('t.id = tl.task')
+      ->andWhere('s.id = i.stopwatchTime')
+      ->andWhere('t.id = :taskId')
+      ->andWhere('s.isDeleted = 0')
+      ->setParameter(':taskId', $task->getId())
+      ->getQuery()
+      ->getResult();
+
   }
 
   public function saveTask(Task $task, User $user, ?string $history): Task  {

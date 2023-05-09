@@ -160,26 +160,27 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $usersList;
   }
 
-//  /**
-//   * @throws NonUniqueResultException
-//   * @throws NoResultException
-//   */
-//  public function countUsers(): int{
-//    $qb = $this->createQueryBuilder('u');
-//
-//    $qb->select($qb->expr()->count('u'))
-//      ->from('User', 'u');
-//
-//    $query = $qb->getQuery();
-//
-//    return $query->getSingleScalarResult();
-//
-//  }
+  /**
+   * @throws NonUniqueResultException
+   * @throws NoResultException
+   */
+  public function countEmployees(): int{
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->select($qb->expr()->count('u'))
+      ->andWhere('u.userType = :userType')
+      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
   public function getEmployees(): array {
 //    $qb = $this->createQueryBuilder('u');
 //    $qb->select('u.id','u.ime', 'u.prezime', 'u.slika', 'u.isSuspended', 'u.datumRodjenja', 'u.userType');
 //    $qb->orderBy('u.id')->getQuery()->getResult();
-    $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE]);
+    $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE], ['isSuspended' => 'ASC']);
 
     $usersList = [];
     foreach ($users as $user) {

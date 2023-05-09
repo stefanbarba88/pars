@@ -81,13 +81,13 @@
                         <span>Registracija</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="" class="nav-link">
-                        <i class="ph-user-minus"></i>
-                        <span>Deaktivirani</span>
-                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>
-                    </a>
-                </li>
+{#                <li class="nav-item">#}
+{#                    <a href="" class="nav-link">#}
+{#                        <i class="ph-user-minus"></i>#}
+{#                        <span>Deaktivirani</span>#}
+{#                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>#}
+{#                    </a>#}
+{#                </li>#}
                 <li class="nav-item">
                     <a href="" class="nav-link">
                         <i class="ph-file-text"></i>
@@ -105,7 +105,7 @@
                     <a href="{{ path('app_employees') }}" class="nav-link">
                         <i class="ph-user-circle"></i>
                         <span>Lista</span>
-                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>
+                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countEmployees }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -131,7 +131,7 @@
                     <a href="{{ path('app_clients') }}" class="nav-link">
                         <i class="ph-factory"></i>
                         <span>Lista</span>
-                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>
+                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countClients }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -151,14 +151,13 @@
                     <a href="{{ path('app_projects') }}" class="nav-link">
                         <i class="ph-folders"></i>
                         <span>Lista</span>
-                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>
+                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjects }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ path('app_project_form') }}" class="nav-link">
                         <i class="ph-folder-plus"></i>
                         <span>Dodajte</span>
-                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -181,43 +180,42 @@
                     </a>
                     <ul class="nav-group-sub collapse">
                         <li class="nav-item nav-item-submenu">
-                            <a href="#" class="nav-link">Geopodešavanja</a>
+                            <a href="#" class="nav-link">Katalog</a>
                             <ul class="nav-group-sub collapse">
                                 <li class="nav-item"><a href="{{ path('app_cities') }}" class="nav-link">Gradovi</a></li>
-                                <li class="nav-item"><a href="invoice_grid.html" class="nav-link">Invoice grid</a></li>
-                                <li class="nav-item"><a href="invoice_archive.html" class="nav-link">Invoice archive</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item nav-item-submenu">
-                            <a href="#" class="nav-link">Authentication</a>
-                            <ul class="nav-group-sub collapse">
                                 <li class="nav-item"><a href="{{ path('app_positions') }}" class="nav-link">Pozicije</a></li>
                                 <li class="nav-item"><a href="{{ path('app_activities') }}" class="nav-link">Aktivnosti</a></li>
                                 <li class="nav-item"><a href="{{ path('app_categories') }}" class="nav-link">Kategorije</a></li>
                                 <li class="nav-item"><a href="{{ path('app_labels') }}" class="nav-link">Oznake</a></li>
-                                <li class="nav-item"><a href="login_registration.html" class="nav-link">Simple registration</a></li>
-                                <li class="nav-item"><a href="login_registration_advanced.html" class="nav-link">More registration info</a></li>
-                                <li class="nav-item"><a href="login_unlock.html" class="nav-link">Unlock user</a></li>
-                                <li class="nav-item"><a href="login_password_recover.html" class="nav-link">Reset password</a></li>
-                                <li class="nav-item"><a href="login_hide_navbar.html" class="nav-link">Hide navbar</a></li>
-                                <li class="nav-item"><a href="login_transparent.html" class="nav-link">Transparent box</a></li>
-                                <li class="nav-item"><a href="login_background.html" class="nav-link">Background option</a></li>
-                                <li class="nav-item"><a href="login_validation.html" class="nav-link">With validation</a></li>
-                                <li class="nav-item"><a href="login_tabbed.html" class="nav-link">Tabbed form</a></li>
-                                <li class="nav-item"><a href="login_modals.html" class="nav-link">Inside modals</a></li>
                             </ul>
                         </li>
-                        <li class="nav-item nav-item-submenu">
-                            <a href="#" class="nav-link">Error pages</a>
-                            <ul class="nav-group-sub collapse">
-                                <li class="nav-item"><a href="error_403.html" class="nav-link">Error 403</a></li>
-                                <li class="nav-item"><a href="error_404.html" class="nav-link">Error 404</a></li>
-                                <li class="nav-item"><a href="error_405.html" class="nav-link">Error 405</a></li>
-                                <li class="nav-item"><a href="error_500.html" class="nav-link">Error 500</a></li>
-                                <li class="nav-item"><a href="error_503.html" class="nav-link">Error 503</a></li>
-                                <li class="nav-item"><a href="error_offline.html" class="nav-link">Offline page</a></li>
-                            </ul>
-                        </li>
+{#                        <li class="nav-item nav-item-submenu">#}
+{#                            <a href="#" class="nav-link">Authentication</a>#}
+{#                            <ul class="nav-group-sub collapse">#}
+{#                 #}
+{#                                <li class="nav-item"><a href="login_registration.html" class="nav-link">Simple registration</a></li>#}
+{#                                <li class="nav-item"><a href="login_registration_advanced.html" class="nav-link">More registration info</a></li>#}
+{#                                <li class="nav-item"><a href="login_unlock.html" class="nav-link">Unlock user</a></li>#}
+{#                                <li class="nav-item"><a href="login_password_recover.html" class="nav-link">Reset password</a></li>#}
+{#                                <li class="nav-item"><a href="login_hide_navbar.html" class="nav-link">Hide navbar</a></li>#}
+{#                                <li class="nav-item"><a href="login_transparent.html" class="nav-link">Transparent box</a></li>#}
+{#                                <li class="nav-item"><a href="login_background.html" class="nav-link">Background option</a></li>#}
+{#                                <li class="nav-item"><a href="login_validation.html" class="nav-link">With validation</a></li>#}
+{#                                <li class="nav-item"><a href="login_tabbed.html" class="nav-link">Tabbed form</a></li>#}
+{#                                <li class="nav-item"><a href="login_modals.html" class="nav-link">Inside modals</a></li>#}
+{#                            </ul>#}
+{#                        </li>#}
+{#                        <li class="nav-item nav-item-submenu">#}
+{#                            <a href="#" class="nav-link">Error pages</a>#}
+{#                            <ul class="nav-group-sub collapse">#}
+{#                                <li class="nav-item"><a href="error_403.html" class="nav-link">Error 403</a></li>#}
+{#                                <li class="nav-item"><a href="error_404.html" class="nav-link">Error 404</a></li>#}
+{#                                <li class="nav-item"><a href="error_405.html" class="nav-link">Error 405</a></li>#}
+{#                                <li class="nav-item"><a href="error_500.html" class="nav-link">Error 500</a></li>#}
+{#                                <li class="nav-item"><a href="error_503.html" class="nav-link">Error 503</a></li>#}
+{#                                <li class="nav-item"><a href="error_offline.html" class="nav-link">Offline page</a></li>#}
+{#                            </ul>#}
+{#                        </li>#}
                     </ul>
                 </li>
 

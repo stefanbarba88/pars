@@ -31,7 +31,7 @@ class ProjectController extends AbstractController {
   #[Route('/list/', name: 'app_projects')]
   public function list(): Response {
     $args = [];
-    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy([], ['isSuspended' => 'ASC']);
 
     return $this->render('project/list.html.twig', $args);
   }

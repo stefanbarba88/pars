@@ -2,9 +2,12 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\UserRolesData;
 use App\Entity\StopwatchTime;
 use App\Entity\TaskLog;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -40,8 +43,15 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
   public function getStopwatches(TaskLog $taskLog): array {
     $stopwatches = [];
 
-//    $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog]);
-    $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog, 'isDeleted' => false]);
+    $times = $this->createQueryBuilder('u')
+      ->andWhere('u.taskLog = :taskLog')
+      ->setParameter(':taskLog', $taskLog)
+      ->andWhere('u.diff is NOT NULL')
+      ->orderBy('u.isDeleted', 'ASC')
+      ->addOrderBy('u.isEdited', 'ASC')
+      ->addOrderBy('u.id', 'DESC')
+      ->getQuery()
+      ->getResult();
 
     foreach ($times as $time) {
       $stopwatches [] = [
@@ -62,11 +72,72 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'images' => $time->getImage(),
         'pdfs' => $time->getPdf(),
         'created' => $time->getCreated(),
+        'edited' => $time->isIsEdited(),
+        'editedBy' => $time->getEditedBy(),
+        'deleted' => $time->isIsDeleted(),
+        'deletedBy' => $time->getDeletedBy(),
       ];
     }
     return $stopwatches;
   }
 
+  public function getStopwatchesActive(TaskLog $taskLog): array {
+    $stopwatches = [];
+
+    $times = $this->createQueryBuilder('u')
+      ->andWhere('u.taskLog = :taskLog')
+      ->setParameter(':taskLog', $taskLog)
+      ->andWhere('u.diff is NOT NULL')
+      ->andWhere('u.isDeleted = 0')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($times as $time) {
+      $stopwatches [] = [
+        'id' => $time->getId(),
+        'hours' => intdiv($time->getDiffRounded(), 60),
+        'minutes' => $time->getDiffRounded() % 60,
+        'hoursReal' => intdiv($time->getDiff(), 60),
+        'minutesReal' => $time->getDiff() % 60,
+        'start' => $time->getStart(),
+        'stop' => $time->getStop(),
+        'startLon' => $time->getLon(),
+        'startLat' => $time->getLat(),
+        'stopLon' => $time->getLonStop(),
+        'stopLat' => $time->getLatStop(),
+        'description' => $time->getDescription(),
+        'min' => $time->getMin(),
+        'activity' => $time->getActivity(),
+        'images' => $time->getImage(),
+        'pdfs' => $time->getPdf(),
+        'created' => $time->getCreated(),
+        'edited' => $time->isIsEdited(),
+        'editedBy' => $time->getEditedBy(),
+        'deleted' => $time->isIsDeleted(),
+        'deletedBy' => $time->getDeletedBy(),
+      ];
+    }
+    return $stopwatches;
+  }
+
+  /**
+   * @throws NonUniqueResultException
+   * @throws NoResultException
+   */
+  public function countStopwatches($taskLog): int{
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->select($qb->expr()->count('u'))
+      ->andWhere('u.taskLog = :taskLog')
+      ->setParameter(':taskLog', $taskLog)
+      ->andWhere('u.isDeleted = 0')
+      ->andWhere('u.diff is NOT NULL');
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
   public function getStopwatchTime(TaskLog $taskLog): array {
 
     $hours = 0;
@@ -99,6 +170,10 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       'minutesR' => $mR,
     ];
 
+  }
+
+  public function lastEdit(TaskLog $taskLog): StopwatchTime {
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $taskLog],['updated' => 'DESC']);
   }
 
   public function setTime(StopwatchTime $stopwatch, int $hours, int $minutes): StopwatchTime {
@@ -157,6 +232,9 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       }
     }
 
+    if ($diff == 0) {
+      $diff = 1;
+    }
     $stopwatch->setDiff($diff);
     $stopwatch->setDiffRounded($diffRound);
 

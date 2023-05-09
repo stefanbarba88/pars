@@ -41,7 +41,8 @@
                             {% if task.project is null %}
                                 <div class="breadcrumb py-2">
                                     <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                    <span class="breadcrumb-item active">Zadaci</span>
+                                    <a href="{{ path('app_tasks') }}" class="breadcrumb-item">Zadaci</a>
+                                    <span class="breadcrumb-item active">{{task.title }}</span>
                                 </div>
                             {% else %}
                                 <div class="breadcrumb py-2">
@@ -127,11 +128,11 @@
                                             </div>
 
                                             <div class="modal-body">
-                                                <p>tesxt</p>
+                                                <p>Da li ste sigurni da želite da zaustavite merenje vremena?</p>
                                             </div>
 
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x-square me-2"></i>Odustanite</button>
+                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
                                                 <a href="#" id="link-stop" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
                                             </div>
                                         </div>
@@ -157,101 +158,20 @@
                                     <p>A much goodness between destructive that save stupid firefly destructively dog goldfinch continually alas pinched for outside flailed inescapably hey brought rid crud and awakened sobbed extraordinarily wherever deer before tenable yet into dalmatian opposite save close ahead next independent mindful but far.</p>
 
                                     <div class="row">
-                                        <div class="col-xl-3 col-sm-6">
-                                            <div class="card">
-                                                <div class="card-img-actions mx-1 mt-1">
-                                                    <img class="card-img img-fluid" src="../../../assets/images/demo/flat/9.png" alt="">
-                                                    <div class="card-img-actions-overlay card-img">
-                                                        <a href="../../../assets/images/demo/flat/9.png" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                            <i class="ph-magnifying-glass-plus"></i>
-                                                        </a>
-
-                                                        <a href="#" class="btn btn-outline-white btn-icon rounded-pill ms-2">
-                                                            <i class="ph-download-simple"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-start flex-wrap">
-                                                        <div class="fw-semibold">dashboard_draft.png</div>
-                                                        <span class="text-muted ms-auto">378Kb</span>
+                                        {% for image in images %}
+                                            <div class="col-xl-1 col-sm-2">
+                                                <div class="card">
+                                                    <div class="card-img-actions">
+                                                        <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
+                                                        <div class="card-img-actions-overlay card-img">
+                                                            <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
+                                                                <i class="ph-magnifying-glass-plus"></i>
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        <div class="col-xl-3 col-sm-6">
-                                            <div class="card">
-                                                <div class="card-img-actions mx-1 mt-1">
-                                                    <img class="card-img img-fluid" src="../../../assets/images/demo/flat/8.png" alt="">
-                                                    <div class="card-img-actions-overlay card-img">
-                                                        <a href="../../../assets/images/demo/flat/8.png" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                            <i class="ph-magnifying-glass-plus"></i>
-                                                        </a>
-
-                                                        <a href="#" class="btn btn-outline-white btn-icon rounded-pill ms-2">
-                                                            <i class="ph-download-simple"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-start flex-wrap">
-                                                        <div class="fw-semibold">profile_page.png</div>
-                                                        <span class="text-muted ms-auto">1.2Mb</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xl-3 col-sm-6">
-                                            <div class="card">
-                                                <div class="card-img-actions mx-1 mt-1">
-                                                    <img class="card-img img-fluid" src="../../../assets/images/demo/flat/6.png" alt="">
-                                                    <div class="card-img-actions-overlay card-img">
-                                                        <a href="../../../assets/images/demo/flat/6.png" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                            <i class="ph-magnifying-glass-plus"></i>
-                                                        </a>
-
-                                                        <a href="#" class="btn btn-outline-white btn-icon rounded-pill ms-2">
-                                                            <i class="ph-download-simple"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-start flex-wrap">
-                                                        <div class="fw-semibold">shopping_cart.png</div>
-                                                        <span class="text-muted ms-auto">1.8Mb</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xl-3 col-sm-6">
-                                            <div class="card">
-                                                <div class="card-img-actions mx-1 mt-1">
-                                                    <img class="card-img img-fluid" src="../../../assets/images/demo/flat/12.png" alt="">
-                                                    <div class="card-img-actions-overlay card-img">
-                                                        <a href="../../../assets/images/demo/flat/12.png" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                            <i class="ph-magnifying-glass-plus"></i>
-                                                        </a>
-
-                                                        <a href="#" class="btn btn-outline-white btn-icon rounded-pill ms-2">
-                                                            <i class="ph-download-simple"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-start flex-wrap">
-                                                        <div class="fw-semibold">sales_statistics.png</div>
-                                                        <span class="text-muted ms-auto">2.0Mb</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
 
@@ -295,7 +215,7 @@
                                 <!-- Task timer -->
                                 <div class="card">
                                     <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Vreme</span>
+                                        <span class="fw-semibold">Vremenski zapis</span>
                                     </div>
                                     {% if not stopwatch %}
                                         <div class="sidebar-section-body">
@@ -310,18 +230,13 @@
                                                     <span class="display-6 lh-1 m-0">00</span>
                                                     <div class="mt-2">minuta</div>
                                                 </div>
-{#                                                <div class="mx-1 my-2">:</div>#}
-{#                                                <div>#}
-{#                                                    <span id="timeS" class="display-6 lh-1 m-0"></span>#}
-{#                                                    <div class="mt-2">sekundi</div>#}
-{#                                                </div>#}
                                             </div>
                                         </div>
 
                                         <div class="card-footer d-flex justify-content-center text-center">
                                             <div class="d-inline-flex">
-                                                <a href="#" id="link-start" class="btn btn-success mx-2"><i class="ph-play-circle"></i></a>
-                                                <a href="#" class="btn btn-danger disabled" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-stop-circle"></i></a></div>
+                                                <a href="#" id="link-start" class="btn btn-success mx-2"><i class="ph-play"></i></a>
+                                                <a href="#" class="btn btn-danger disabled" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-stop"></i></a></div>
                                         </div>
                                     {% else %}
                                         <div class="sidebar-section-body">
@@ -341,8 +256,8 @@
 
                                         <div class="card-footer d-flex justify-content-center text-center">
                                             <div class="d-inline-flex">
-                                                <a href="#" id="link-start" class="btn btn-success mx-2 disabled"><i class="ph-play-circle"></i></a>
-                                                <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-stop-circle"></i></a></div>
+                                                <a href="#" id="link-start" class="btn btn-success mx-2 disabled"><i class="ph-play"></i></a>
+                                                <a href="#" id="stopTimer" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-stop"></i></a></div>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -361,17 +276,21 @@
                                             </div>
 
                                             <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">{{ taskLog.user.getFullName }}</div>
+                                                <div class="fw-semibold text-truncate">
+                                                    <a href="{{ path('app_task_log_view',{id: taskLog.id} ) }}" class="text-body">
+                                                        {{ taskLog.user.getFullName }}
+                                                    </a>
+                                                </div>
+
                                                 <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                    <li class="list-inline-item">Size: 1.2Mb</li>
-                                                    <li class="list-inline-item">By <a href="#">Winnie</a></li>
+                                                    <li class="list-inline-item">Izmena:</li>
+                                                    <li class="list-inline-item">{{ lastEdit.updated | date("d.m.Y H:i:s")}}</li>
                                                 </ul>
+
                                             </div>
 
                                             <div class="ms-3">
-                                                <a href="{{ path('app_task_log_view',{id: taskLog.id} ) }}" class="text-body">
-                                                    <i class="ph-download-simple"></i>
-                                                </a>
+                                                <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countStopwatches }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -382,89 +301,27 @@
                                 <!-- Attached files -->
                                 <div class="card">
                                     <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Dodati fajlovi</span>
+                                        <span class="fw-semibold">Dokumenta</span>
                                     </div>
 
                                     <div class="sidebar-section-body">
-                                        <div class="d-flex align-items-start mb-3">
-                                            <div class="me-2">
-                                                <i class="ph-file-doc"></i>
-                                            </div>
+                                        {% for pdf in pdfs %}
+                                            <div class="d-flex align-items-start mb-3">
+                                                <div class="me-2">
+                                                    <i class="ph-file-pdf"></i>
+                                                </div>
 
-                                            <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">Overdrew_scowled.doc</div>
-                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                    <li class="list-inline-item">Size: 1.2Mb</li>
-                                                    <li class="list-inline-item">By <a href="#">Winnie</a></li>
-                                                </ul>
-                                            </div>
+                                                <div class="flex-fill overflow-hidden">
+                                                    <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+                                                </div>
 
-                                            <div class="ms-3">
-                                                <a href="#" class="text-body">
-                                                    <i class="ph-download-simple"></i>
-                                                </a>
+                                                <div class="ms-3">
+                                                    <a href="{{ asset(pdf.path) }}" download class="text-body">
+                                                        <i class="ph-download-simple"></i>
+                                                    </a>
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        <div class="d-flex align-items-start mb-3">
-                                            <div class="me-2">
-                                                <i class="ph-file-pdf"></i>
-                                            </div>
-
-                                            <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">And_less_maternally.pdf</div>
-                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                    <li class="list-inline-item">Size: 0.9Mb</li>
-                                                    <li class="list-inline-item">By <a href="#">Eugene</a></li>
-                                                </ul>
-                                            </div>
-
-                                            <div class="ms-3">
-                                                <a href="#" class="text-body">
-                                                    <i class="ph-download-simple"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div class="d-flex align-items-start mb-3">
-                                            <div class="me-2">
-                                                <i class="ph-file-video"></i>
-                                            </div>
-
-                                            <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">Well_equitably.mov</div>
-                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                    <li class="list-inline-item">Size: 14.8Mb</li>
-                                                    <li class="list-inline-item">By <a href="#">Jenny</a></li>
-                                                </ul>
-                                            </div>
-
-                                            <div class="ms-3">
-                                                <a href="#" class="text-body">
-                                                    <i class="ph-download-simple"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div class="d-flex align-items-start">
-                                            <div class="me-2">
-                                                <i class="ph-file-pdf"></i>
-                                            </div>
-
-                                            <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">The_less_overslept.pdf</div>
-                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                    <li class="list-inline-item">Size: 4.3Mb</li>
-                                                    <li class="list-inline-item">By <a href="#">Natalie</a></li>
-                                                </ul>
-                                            </div>
-
-                                            <div class="ms-3">
-                                                <a href="#" class="text-body">
-                                                    <i class="ph-download-simple"></i>
-                                                </a>
-                                            </div>
-                                        </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                                 <!-- /attached files -->
@@ -531,6 +388,7 @@
     <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
     <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/media/glightbox.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
 
     <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
@@ -579,13 +437,8 @@
                     m = '0' + m;
                 }
 
-                if (s < 10) {
-                    s = '0' + s;
-                }
-
                 document.getElementById("timeH").innerHTML = h;
                 document.getElementById("timeM").innerHTML = m;
-                document.getElementById("timeS").innerHTML = s;
             }
 
             setInterval(updateClock, 1000);
@@ -601,16 +454,33 @@
                     // Create the URL with the coordinates as parameters
                     let urlStart = '{{ path('app_stopwatch_start', {id: taskLog.id}) }}?lon='+lon+'&lat='+lat;
                     $('#link-start').attr('href', urlStart);
-                    {% if stopwatch %}
-                        let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+lon+'&lat='+lat;
-                        $('#link-stop').attr('href', urlStop);
-                    {% endif %}
+
 
                 },
                 function error(error) {
                     // Handle error
                 }
             );
+
+            const modalBtn = document.getElementById('stopTimer');
+
+            modalBtn.addEventListener('click', function() {
+                // Get the user's current position
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    // Get the longitude and latitude from the position
+                    const lon = position.coords.longitude;
+                    const lat = position.coords.latitude;
+
+                    // Do something with the coordinates, like logging them to the console
+                    {% if stopwatch %}
+                        let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+lon+'&lat='+lat;
+                        $('#link-stop').attr('href', urlStop);
+                    {% endif %}
+                }, function(error) {
+                    // Handle error
+                    console.error(error);
+                });
+            });
 
             // document.getElementById('stop').addEventListener('click', () => {
             //     document.getElementById('ime').value = Math.round((newStamp-startStamp)/1000);

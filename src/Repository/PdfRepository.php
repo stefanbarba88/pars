@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Classes\DTO\UploadedFileDTO;
+use App\Entity\Image;
 use App\Entity\Pdf;
+use App\Entity\StopwatchTime;
 use App\Entity\Task;
+use App\Entity\TaskLog;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -42,6 +45,7 @@ class PdfRepository extends ServiceEntityRepository {
       $this->getEntityManager()->flush();
     }
   }
+
 
 //    /**
 //     * @return Pdf[] Returns an array of Pdf objects

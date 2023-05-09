@@ -247,9 +247,16 @@ class TaskController extends AbstractController {
 
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();
-    $user = $this->em->getRepository(User::class)->find(2);
-    $args['taskLog'] = $this->em->getRepository(TaskLog::class)->findOneBy(['user' => $user]);
+
+    $user = $this->getUser();
+
+    $args['taskLog'] = $this->em->getRepository(TaskLog::class)->findOneBy(['user' => $user, 'task' => $task]);
     $args['stopwatch'] = $this->em->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $args['taskLog'], 'diff' => null]);
+    $args['countStopwatches'] = $this->em->getRepository(StopwatchTime::class)->countStopwatches($args['taskLog']);
+    $args['images'] = $this->em->getRepository(Task::class)->getImagesByTask($task);
+    $args['pdfs'] = $this->em->getRepository(Task::class)->getPdfsByTask($task);
+
+    $args['lastEdit'] = $this->em->getRepository(StopwatchTime::class)->lastEdit($args['taskLog']);
 
     return $this->render('task/view_user.html.twig', $args);
   }

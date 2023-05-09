@@ -19,9 +19,9 @@ class WidgetController extends AbstractController {
     $args = [];
 
     $args['countUsers'] = $this->em->getRepository(User::class)->count([]);
-//    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
-//    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
-//    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
+    $args['countEmployees'] = $this->em->getRepository(User::class)->countEmployees();
+    $args['countClients'] = $this->em->getRepository(Client::class)->count([]);
+    $args['countProjects'] = $this->em->getRepository(Project::class)->count([]);
 //    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
     return $this->render('widget/main_admin_sidebar.html.twig', $args);
   }

@@ -41,7 +41,9 @@
                             {% if task.project is null %}
                                 <div class="breadcrumb py-2">
                                     <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                    <span class="breadcrumb-item active">Zadaci</span>
+                                    <a href="{{ path('app_tasks') }}" class="breadcrumb-item">Zadaci</a>
+                                    <a href="{{ path('app_task_view', {id: task.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
+                                    <span class="breadcrumb-item active">Dnevnik: {{ taskLog.user.getFullName() }}</span>
                                 </div>
                             {% else %}
                                 <div class="breadcrumb py-2">
@@ -135,7 +137,7 @@
                                                     <div class="mt-2">
                                                         <h6 class="mb-1">Odrađene aktivnosti:</h6>
                                                         <ul class="list mb-0">
-                                                            {% for stopwatch in stopwatches %}
+                                                            {% for stopwatch in stopwatchesActive %}
                                                                 {% for activity in stopwatch.activity %}
                                                                     <li>{{ activity.title }}</li>
                                                                 {% endfor %}
@@ -144,14 +146,14 @@
                                                     </div>
                                                     <div class="mt-2">
                                                         <h6 class="mb-1 ">Dodatni opis:</h6>
-                                                        {% for stopwatch in stopwatches %}
+                                                        {% for stopwatch in stopwatchesActive %}
                                                             <p class="mb-2">{{ stopwatch.description | raw }}</p>
                                                         {% endfor %}
                                                     </div>
                                                     <div class="mt-2">
                                                         <h6 class="mb-1 ">Slike:</h6>
                                                         <div class="row">
-                                                            {% for stopwatch in stopwatches %}
+                                                            {% for stopwatch in stopwatchesActive %}
                                                                 {% for image in stopwatch.images %}
                                                                     <div class="col-xl-1 col-sm-2">
                                                                         <div class="card">
@@ -172,18 +174,21 @@
                                                     <div class="mt-2">
                                                         <h6 class="mb-1 ">Dokumenta:</h6>
                                                         <div class="row">
-                                                            {% for stopwatch in stopwatches %}
+                                                            {% for stopwatch in stopwatchesActive %}
                                                                 {% for pdf in stopwatch.pdfs %}
-                                                                    <div class="col-xl-12">
-                                                                        <div class="d-flex align-items-start flex-wrap">
-                                                                            <div class="d-flex align-items-start">
-                                                                                <div class="me-2">
-                                                                                    <i class="ph-file-pdf"></i>
-                                                                                </div>
-                                                                                <div class="flex-fill overflow-hidden">
-                                                                                    <div class="fw-semibold text-truncate"><a href="{{ asset(pdf.path) }}" download>{{ pdf.title }}</a></div>
-                                                                                </div>
-                                                                            </div>
+                                                                    <div class="d-flex align-items-start mb-3">
+                                                                        <div class="me-2">
+                                                                            <i class="ph-file-pdf"></i>
+                                                                        </div>
+
+                                                                        <div class="flex-fill overflow-hidden">
+                                                                            <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+                                                                        </div>
+
+                                                                        <div class="ms-3">
+                                                                            <a href="{{ asset(pdf.path) }}" download class="text-body">
+                                                                                <i class="ph-download-simple"></i>
+                                                                            </a>
                                                                         </div>
                                                                     </div>
                                                                 {% endfor %}
@@ -208,7 +213,13 @@
                                             <div class="accordion-item">
                                                     <h2 class="accordion-header">
                                                         <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ loop.index }}">
-                                                            #{{ loop.index }}: {{ stopwatch.created | date("d.m.Y H:i:s")}}
+                                                            {% if stopwatch.deleted %}
+                                                                #{{ loop.index }}: {{ stopwatch.created | date("d.m.Y H:i:s")}} - {{ stopwatch.deletedBy.getFullName() }} <span class="badge bg-warning bg-opacity-20 text-warning mx-2">Obrisan</span>
+                                                            {% elseif not stopwatch.deleted and stopwatch.edited %}
+                                                                #{{ loop.index }}: {{ stopwatch.created | date("d.m.Y H:i:s")}} - {{ stopwatch.editedBy.getFullName() }} <span class="badge bg-info bg-opacity-20 text-info mx-2">Manuelno</span>
+                                                            {% else %}
+                                                                #{{ loop.index }}: {{ stopwatch.created | date("d.m.Y H:i:s")}} <span class="badge bg-success bg-opacity-20 text-success mx-2">Automatsko</span>
+                                                            {% endif %}
                                                         </button>
                                                     </h2>
                                                     <div id="collapsed_item{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
@@ -262,16 +273,19 @@
                                                                                 <h6 class="mb-1 ">Dokumenta:</h6>
                                                                                 <div class="row">
                                                                                     {% for pdf in stopwatch.pdfs %}
-                                                                                        <div class="col-xl-12">
-                                                                                            <div class="d-flex align-items-start flex-wrap">
-                                                                                                <div class="d-flex align-items-start">
-                                                                                                    <div class="me-2">
-                                                                                                        <i class="ph-file-pdf"></i>
-                                                                                                    </div>
-                                                                                                    <div class="flex-fill overflow-hidden">
-                                                                                                        <div class="fw-semibold text-truncate"><a href="{{ asset(pdf.path) }}" download>{{ pdf.title }}</a></div>
-                                                                                                    </div>
-                                                                                                </div>
+                                                                                        <div class="d-flex align-items-start mb-3">
+                                                                                            <div class="me-2">
+                                                                                                <i class="ph-file-pdf"></i>
+                                                                                            </div>
+
+                                                                                            <div class="flex-fill overflow-hidden">
+                                                                                                <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+                                                                                            </div>
+
+                                                                                            <div class="ms-3">
+                                                                                                <a href="{{ asset(pdf.path) }}" download class="text-body">
+                                                                                                    <i class="ph-download-simple"></i>
+                                                                                                </a>
                                                                                             </div>
                                                                                         </div>
                                                                                     {% endfor %}
@@ -297,18 +311,18 @@
                                             <div id="modal_{{ loop.index }}" class="modal fade" tabindex="-1">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
-                                                        <div class="modal-header bg-primary text-white border-0">
+                                                        <div class="modal-header bg-danger text-white border-0">
                                                             <h6 class="modal-title">Potvrda</h6>
                                                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                                         </div>
 
                                                         <div class="modal-body">
-                                                            <p>tesxt</p>
+                                                            <p>Da li ste sigurni da želite da obrišete ovaj vremenski zapis?</p>
                                                         </div>
 
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x-square me-2"></i>Odustanite</button>
-                                                            <a href="{{ path('app_stopwatch_delete', {id: stopwatch.id} ) }}" id="link-stop" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
+                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                            <a href="{{ path('app_stopwatch_delete', {id: stopwatch.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
                                                         </div>
                                                     </div>
                                                 </div>

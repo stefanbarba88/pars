@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Classes\Data\TaskStatusData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\Project;
@@ -12,6 +13,7 @@ use App\Entity\TaskHistory;
 use App\Entity\TaskLog;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -29,18 +31,30 @@ class TaskRepository extends ServiceEntityRepository {
 
   public function taskStatus(Task $task): int {
 
+//    $stopwatches = $this->createQueryBuilder('t')
+//      ->select('s.diff', 's.start', 's.stop')
+//      ->from(TaskLog::class, 'tl')
+//      ->from(StopwatchTime::class, 's' )
+//      ->andWhere('t.id = tl.task')
+//      ->andWhere('t.id = :taskId')
+//      ->setParameter(':taskId', $task->getId())
+//      ->addOrderBy('s.created', 'DESC')
+//      ->setMaxResults(1)
+//      ->getQuery()
+//      ->getResult();
+
     $stopwatches = $this->createQueryBuilder('t')
+
       ->select('s.diff', 's.start', 's.stop')
-      ->from(TaskLog::class, 'tl')
-      ->from(StopwatchTime::class, 's' )
-      ->andWhere('t.id = tl.task')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->innerJoin(StopwatchTime::class, 's', Join::WITH, 'tl = s.taskLog')
       ->andWhere('t.id = :taskId')
+      ->andWhere('s.isDeleted = 0')
       ->setParameter(':taskId', $task->getId())
       ->addOrderBy('s.created', 'DESC')
       ->setMaxResults(1)
       ->getQuery()
       ->getResult();
-
 
     foreach ($stopwatches as $stopwatch) {
       if (is_null($stopwatch['start']) && is_null($stopwatch['stop']) && is_null($stopwatch['diff'])) {
@@ -54,18 +68,16 @@ class TaskRepository extends ServiceEntityRepository {
       }
     }
 
-    return TaskStatusData::ZAVRSENO;
+    return TaskStatusData::NIJE_ZAPOCETO;
   }
 
   public function getPdfsByTask(Task $task): array {
 
     return $this->createQueryBuilder('t')
       ->select('i.title', 'i.path')
-      ->from(TaskLog::class, 'tl')
-      ->from(StopwatchTime::class, 's' )
-      ->from(Pdf::class, 'i' )
-      ->andWhere('t.id = tl.task')
-      ->andWhere('s.id = i.stopwatchTime')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->innerJoin(StopwatchTime::class, 's', Join::WITH, 'tl = s.taskLog')
+      ->innerJoin(Pdf::class, 'i', Join::WITH, 's = i.stopwatchTime')
       ->andWhere('t.id = :taskId')
       ->andWhere('s.isDeleted = 0')
       ->setParameter(':taskId', $task->getId())
@@ -74,15 +86,57 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
+  public function close(Task $task): void {
+
+    $stopwatches = $this->createQueryBuilder('t')
+      ->select('s.id')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->innerJoin(StopwatchTime::class, 's', Join::WITH, 'tl = s.taskLog')
+      ->andWhere('t.id = :taskId')
+      ->andWhere('s.start is NOT NULL')
+      ->andWhere('s.diff is NULL')
+      ->setParameter(':taskId', $task->getId())
+      ->getQuery()
+      ->getResult();
+
+    foreach ($stopwatches as $stop) {
+      $stopwatch = $this->getEntityManager()->getRepository(StopwatchTime::class)->find($stop);
+      $this->getEntityManager()->getRepository(StopwatchTime::class)->close($stopwatch);
+    }
+
+  }
+
+  public function deleteTask(Task $task, User $user): Task {
+
+    $stopwatches = $this->createQueryBuilder('t')
+      ->select('s.id')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->innerJoin(StopwatchTime::class, 's', Join::WITH, 'tl = s.taskLog')
+      ->andWhere('t.id = :taskId')
+      ->setParameter(':taskId', $task->getId())
+      ->getQuery()
+      ->getResult();
+
+    foreach ($stopwatches as $stop) {
+      $stopwatch = $this->getEntityManager()->getRepository(StopwatchTime::class)->find($stop);
+      if (is_null($stopwatch->getDiff() && !is_null($stopwatch->getStart()))) {
+        $this->getEntityManager()->getRepository(StopwatchTime::class)->close($stopwatch);
+      }
+
+      $this->getEntityManager()->getRepository(StopwatchTime::class)->deleteStopwatch($stopwatch, $user);
+    }
+
+    $task->setIsDeleted(true);
+    return $this->save($task);
+  }
+
   public function getImagesByTask(Task $task): array {
 
     return $this->createQueryBuilder('t')
       ->select('i.thumbnail100', 'i.thumbnail500', 'i.thumbnail1024')
-      ->from(TaskLog::class, 'tl')
-      ->from(StopwatchTime::class, 's' )
-      ->from(Image::class, 'i' )
-      ->andWhere('t.id = tl.task')
-      ->andWhere('s.id = i.stopwatchTime')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->innerJoin(StopwatchTime::class, 's', Join::WITH, 'tl = s.taskLog')
+      ->innerJoin(Image::class, 'i', Join::WITH, 's = i.stopwatchTime')
       ->andWhere('t.id = :taskId')
       ->andWhere('s.isDeleted = 0')
       ->setParameter(':taskId', $task->getId())
@@ -92,6 +146,11 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function saveTask(Task $task, User $user, ?string $history): Task  {
+
+    $taskLogOld = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $task]);
+    foreach ($taskLogOld as $log) {
+      $task->removeTaskLog($log);
+    }
 
     foreach ($task->getAssignedUsers() as $assignedUser) {
       $taskLog = new TaskLog();
@@ -113,6 +172,17 @@ class TaskRepository extends ServiceEntityRepository {
     $task->setCreatedBy($user);
 
     return $this->save($task);
+
+  }
+
+  public function editTask(Task $task, User $user, ?string $history): Task  {
+
+    $taskLogOld = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $task]);
+    foreach ($taskLogOld as $log) {
+      $task->removeTaskLog($log);
+    }
+
+    return $this->saveTask($task, $user, $history);
 
   }
 

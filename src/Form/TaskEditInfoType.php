@@ -58,6 +58,7 @@ class TaskEditInfoType extends AbstractType {
         'expanded' => false,
         'multiple' => true,
       ])
+
       ->add('category', EntityType::class, [
         'placeholder' => '--Izaberite kategoriju--',
         'required' => false,

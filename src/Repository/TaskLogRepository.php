@@ -2,8 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\Image;
+use App\Entity\StopwatchTime;
+use App\Entity\Task;
 use App\Entity\TaskLog;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,6 +21,21 @@ use Doctrine\Persistence\ManagerRegistry;
 class TaskLogRepository extends ServiceEntityRepository {
   public function __construct(ManagerRegistry $registry) {
     parent::__construct($registry, TaskLog::class);
+  }
+
+  public function findLogs(Task $task): array {
+    $logs = [];
+
+    $taskLogs = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $task]);
+
+    foreach ($taskLogs as $log) {
+      $count = $this->getEntityManager()->getRepository(StopwatchTime::class)->countStopwatches($log);
+      $lastEdit = $this->getEntityManager()->getRepository(StopwatchTime::class)->lastEdit($log);
+      $logs[] = ['log' => $log, 'count' => $count, 'lastEdit' => $lastEdit];
+    }
+
+    return $logs;
+
   }
 
   public function save(TaskLog $entity, bool $flush = false): void {

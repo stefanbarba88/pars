@@ -125,7 +125,7 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Opis zadatka</th>
+                                <th>Zadatak</th>
                                 <th>Projekat</th>
                                 <th>Prioritet</th>
                                 <th>Poslednja promena</th>
@@ -141,7 +141,11 @@
 {#                                    <td><a href="{{ path('app_task_tasks_view', { id: task.id}) }}">{{ task.title }}</a></td>#}
                                     <td>
                                         <div class="fw-semibold"><a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a></div>
-                                        <div class="text-muted">{{ task.description }}</div>
+                                        <div class="d-inline-flex">
+                                            {% for label in task.label %}
+                                                {{label.label | raw}}
+                                            {% endfor %}
+                                        </div>
                                     </td>
                                     <td>
                                         {% if task.project is null %}
@@ -153,7 +157,7 @@
                                     <td class="text-center">
                                         {% if task.isPriority %}
                                             <span class="badge bg-danger rounded-pill p-1">
-												<i class="ph-warning-octagon"></i>
+												<i class="ph-warning-circle"></i>
 											</span>
                                         {% endif %}
                                     </td>

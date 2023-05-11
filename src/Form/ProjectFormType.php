@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Classes\Data\PotvrdaData;
+use App\Classes\Data\RoundingIntervalData;
 use App\Classes\Data\VrstaPlacanjaData;
 use App\Entity\Category;
 use App\Entity\Client;
@@ -133,12 +134,15 @@ class ProjectFormType extends AbstractType {
           'max' => '60'
         ],
       ])
-      ->add('roundingInterval', IntegerType::class, [
-        'required' => false,
+      ->add('roundingInterval', ChoiceType::class, [
         'attr' => [
-          'min' => '1',
-          'max' => '60'
+          'data-minimum-results-for-search' => 'Infinity',
         ],
+        'required' => false,
+        'placeholder' => '--Izaberite model zaokruživanja--',
+        'choices' => RoundingIntervalData::form(),
+        'expanded' => false,
+        'multiple' => false,
       ])
 
       ->add('isEstimate', ChoiceType::class, [

@@ -34,6 +34,9 @@ class StopwatchTime {
   private ?bool $isEdited = false;
 
   #[ORM\Column]
+  private ?bool $isManuallyClosed = false;
+
+  #[ORM\Column]
   private ?bool $isDeleted = false;
 
 
@@ -159,6 +162,16 @@ class StopwatchTime {
 
   public function setIsDeleted(bool $isDeleted): self {
     $this->isDeleted = $isDeleted;
+
+    return $this;
+  }
+
+  public function isIsManuallyClosed(): ?bool {
+    return $this->isManuallyClosed;
+  }
+
+  public function setIsManuallyClosed(bool $isManuallyClosed): self {
+    $this->isManuallyClosed = $isManuallyClosed;
 
     return $this;
   }

@@ -9,13 +9,13 @@ use App\Entity\User;
 class ColorsData implements DataClassInterface {
 
   public const DATA = [
-    ['class' =>'text-bg-primary', 'value' => 'primary', 'option' => 'Primary'],
-    ['class' =>'text-bg-secondary', 'value' => 'secondary', 'option' => 'Secondary'],
-    ['class' =>'text-bg-danger', 'value' => 'danger', 'option' => 'Danger'],
-    ['class' =>'text-bg-warning', 'value' => 'warning', 'option' => 'Warning'],
-    ['class' =>'text-bg-success', 'value' => 'success', 'option' => 'Success'],
-    ['class' =>'text-bg-info', 'value' => 'info', 'option' => 'Info'],
-    ['class' =>'text-bg-dark', 'value' => 'dark', 'option' => 'Dark'],
+    ['class' =>'text-bg-primary me-2', 'value' => 'primary', 'option' => 'Primary'],
+    ['class' =>'text-bg-secondary me-2', 'value' => 'secondary', 'option' => 'Secondary'],
+    ['class' =>'text-bg-danger me-2', 'value' => 'danger', 'option' => 'Danger'],
+    ['class' =>'text-bg-warning me-2', 'value' => 'warning', 'option' => 'Warning'],
+    ['class' =>'text-bg-success me-2', 'value' => 'success', 'option' => 'Success'],
+    ['class' =>'text-bg-info me-2', 'value' => 'info', 'option' => 'Info'],
+    ['class' =>'text-bg-dark me-2', 'value' => 'dark', 'option' => 'Dark'],
   ];
 
   public static function form(): array {

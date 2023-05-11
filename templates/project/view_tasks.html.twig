@@ -101,8 +101,9 @@
                                     <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Opis zadatka</th>
+                                        <th>Zadatak</th>
                                         <th>Prioritet</th>
+                                        <th>Kategorija</th>
                                         <th>Poslednja promena</th>
                                         <th>Kreiran</th>
                                         <th>Zaduženi</th>
@@ -114,13 +115,29 @@
                                         <tr>
                                             <td>#{{ task.id }}</td>
                                             <td>
-                                                <div class="fw-semibold"><a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a></div>
+                                                <div class="fw-semibold">
+                                                    {% if is_granted('ROLE_EMPLOYEE') %}
+                                                        <a href="{{ path('app_task_view_user', { id: task.id}) }}">{{ task.title }}</a>
+                                                    {% else %}
+                                                        <a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="d-inline-flex">
+                                                    {% for label in task.label %}
+                                                        {{label.label | raw}}
+                                                    {% endfor %}
+                                                </div>
                                             </td>
                                             <td class="text-center">
                                                 {% if task.isPriority %}
                                                     <span class="badge bg-danger rounded-pill p-1">
-												<i class="ph-warning-octagon"></i>
+												<i class="ph-warning-circle"></i>
 											</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.category %}
+                                                    <a href="{{ path('app_category_view', { id: task.category.id}) }}">{{ task.category.title }}</a>
                                                 {% endif %}
                                             </td>
                                             <td>
@@ -146,10 +163,8 @@
                                                         <i class="ph-gear"></i>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
-                                                        <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Check in</a>
                                                         <a href="#" class="dropdown-item"><i class="ph-paperclip me-2"></i> Attach screenshot</a>
-                                                        <a href="#" class="dropdown-item"><i class="ph-user-switch me-2"></i> Reassign</a>
-                                                        <div class="dropdown-divider"></div>
+                                                        <a href="{{ path('app_task_reassign', {id: task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Reassign</a>
                                                         <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>
                                                         <a href="#" class="dropdown-item"><i class="ph-x me-2"></i> Remove</a>
                                                     </div>

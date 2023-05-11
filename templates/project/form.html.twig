@@ -321,7 +321,7 @@
                                         <div class="col-lg-6">
                                             <div class="mb-3">
                                                 {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval required' }}) }}
+                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval required select' }}) }}
                                                 <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
                                             </div>
                                         </div>
@@ -338,8 +338,8 @@
                                         <div class="col-lg-6">
                                             <div class="mb-3">
                                                 {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval' }}) }}
-                                                <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
+                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval select' }}) }}
+                                                <span class="form-text">Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
                                             </div>
                                         </div>
                                         <div class="col-lg-6">
@@ -513,7 +513,7 @@
             });
 
             ClassicEditor.create(document.querySelector('.ckeditor'), {
-                toolbar: [ 'heading', 'bold', 'italic', 'bulletedList', 'numberedList', 'blockQuote' , 'link', 'insertTable', 'undo', 'redo' ]
+                toolbar: [ 'heading', 'bold', 'italic', 'bulletedList', 'numberedList', 'blockQuote' , 'link', 'undo', 'redo' ]
             }).catch(error => {
                 console.error(error);
             });

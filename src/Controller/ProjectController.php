@@ -113,7 +113,7 @@ class ProjectController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewTasks(Project $project): Response {
     $args['project'] = $project;
-    $args['tasks'] = $this->em->getRepository(Task::class)->findBy(['project' => $project], ['id' => 'DESC']);;
+    $args['tasks'] = $this->em->getRepository(Task::class)->findBy(['project' => $project], ['isDeleted' => 'ASC', 'isClosed' => 'ASC', 'isPriority' => 'DESC', 'id' => 'DESC']);;
 
     return $this->render('project/view_tasks.html.twig', $args);
   }

@@ -237,12 +237,7 @@ class StopwatchController extends AbstractController {
     $taskLogId = $stopwatch->getTaskLog()->getId();
     $user = $this->getUser();
 
-    $stopwatch->setIsDeleted(true);
-    $stopwatch->setIsEdited(true);
-    $stopwatch->setDeletedBy($user);
-    $stopwatch->setEditedBy($user);
-
-    $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
+    $this->em->getRepository(StopwatchTime::class)->deleteStopwatch($stopwatch, $user);
 
     notyf()
       ->position('x', 'right')
@@ -252,5 +247,20 @@ class StopwatchController extends AbstractController {
       ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
     return $this->redirectToRoute('app_task_log_view', ['id' => $taskLogId]);
+  }
+
+  #[Route('/close/{id}', name: 'app_stopwatch_close')]
+  public function close(StopwatchTime $stopwatch): Response {
+
+    $this->em->getRepository(StopwatchTime::class)->close($stopwatch);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+    return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
   }
 }

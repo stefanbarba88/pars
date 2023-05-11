@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Classes\Data\UserRolesData;
 use App\Entity\StopwatchTime;
 use App\Entity\TaskLog;
+use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -30,6 +32,16 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
     $this->getEntityManager()->flush();
     return $stopwatch;
+  }
+
+  public function close(StopwatchTime $stopwatch): StopwatchTime {
+
+    $stopwatch->setStop(new DateTimeImmutable());
+    $hours = $stopwatch->getStart()->diff($stopwatch->getStop())->h;
+    $minutes = $stopwatch->getStart()->diff($stopwatch->getStop())->i;
+    $this->setTime($stopwatch, $hours, $minutes);
+    $stopwatch->setIsManuallyClosed(true);
+    return $this->save($stopwatch);
   }
 
   public function remove(StopwatchTime $entity, bool $flush = false): void {
@@ -76,6 +88,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'editedBy' => $time->getEditedBy(),
         'deleted' => $time->isIsDeleted(),
         'deletedBy' => $time->getDeletedBy(),
+        'manually' => $time->isIsManuallyClosed(),
       ];
     }
     return $stopwatches;
@@ -115,6 +128,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'editedBy' => $time->getEditedBy(),
         'deleted' => $time->isIsDeleted(),
         'deletedBy' => $time->getDeletedBy(),
+        'manually' => $time->isIsManuallyClosed(),
       ];
     }
     return $stopwatches;
@@ -172,7 +186,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
   }
 
-  public function lastEdit(TaskLog $taskLog): StopwatchTime {
+  public function lastEdit(TaskLog $taskLog): ?StopwatchTime {
     return $this->getEntityManager()->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $taskLog],['updated' => 'DESC']);
   }
 
@@ -237,6 +251,17 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     }
     $stopwatch->setDiff($diff);
     $stopwatch->setDiffRounded($diffRound);
+
+    return $this->save($stopwatch);
+
+  }
+
+  public function deleteStopwatch(StopwatchTime $stopwatch, User $user): StopwatchTime {
+
+    $stopwatch->setIsDeleted(true);
+    $stopwatch->setIsEdited(true);
+    $stopwatch->setDeletedBy($user);
+    $stopwatch->setEditedBy($user);
 
     return $this->save($stopwatch);
 

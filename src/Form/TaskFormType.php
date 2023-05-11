@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\PrioritetData;
+use App\Classes\Data\RoundingIntervalData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Category;
 use App\Entity\Label;
@@ -33,7 +34,6 @@ class TaskFormType extends AbstractType {
       ])
       ->add('project', EntityType::class, [
         'placeholder' => '--Izaberite projekat--',
-        'required' => false,
         'class' => Project::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
@@ -111,12 +111,15 @@ class TaskFormType extends AbstractType {
           'max' => '60'
         ],
       ])
-      ->add('roundingInterval', IntegerType::class, [
-        'required' => false,
+      ->add('roundingInterval', ChoiceType::class, [
         'attr' => [
-          'min' => '1',
-          'max' => '60'
+          'data-minimum-results-for-search' => 'Infinity',
         ],
+        'required' => false,
+        'placeholder' => '--Izaberite model zaokruživanja--',
+        'choices' => RoundingIntervalData::form(),
+        'expanded' => false,
+        'multiple' => false,
       ])
 
 //      ->add('isEstimate', ChoiceType::class, [
@@ -147,6 +150,7 @@ class TaskFormType extends AbstractType {
         'multiple' => false,
       ])
       ->add('isPriority', ChoiceType::class, [
+        'placeholder' => '--Prioritetan zadatak--',
         'required' => false,
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',

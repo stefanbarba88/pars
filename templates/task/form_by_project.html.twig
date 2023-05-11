@@ -16,10 +16,10 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {% if task.project is not null %}
-                                    {{ task.project.title }}: {{ task.title }}
+                                {% if task.id is not null %}
+                                    {{task.title }}
                                 {% else %}
-                                    Novi zadatak
+                                    Zadaci
                                 {% endif %}
                             </h4>
 
@@ -42,26 +42,18 @@
 
                     <div class="page-header-content d-lg-flex border-top">
                         <div class="d-flex">
-                            {% if task.project is null %}
-                                <div class="breadcrumb py-2">
-                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                    <a href="{{ path('app_tasks') }}" class="breadcrumb-item">Zadaci</a>
-                                    <span class="breadcrumb-item active">Dodavanje</span>
-                                </div>
-                            {% else%}
-                                <div class="breadcrumb py-2">
-                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                    <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <a href="{{ path('app_tasks') }}" class="breadcrumb-item">Zadaci</a>
+                                {% if task.id is not null %}
+                                    <a href="" class="breadcrumb-item">Informacije</a>
                                     <a href="{{ path('app_project_profile_view', {id: task.project.id} ) }}" class="breadcrumb-item">Informacije</a>
-                                    <a href="{{ path('app_project_tasks_view', {id: task.project.id} ) }}" class="breadcrumb-item">Zadaci</a>
-                                    {% if task.id is null %}
-                                        <span class="breadcrumb-item active">Dodavanje</span>
-                                    {% else %}
-                                        <span class="breadcrumb-item active">Izmena</span>
-                                    {% endif %}
+                                    <span class="breadcrumb-item active">Izmena</span>
+                                {% else %}
+                                    <span class="breadcrumb-item active">Dodavanje</span>
+                                {% endif %}
+                            </div>
 
-                                </div>
-                            {% endif %}
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
                                 <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
                             </a>
@@ -103,10 +95,6 @@
                             </div>
                         </div>
                     </div>
-                    {% if task.project is not null %}
-                        {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}
-                    {% endif %}
-
                 </div>
 
                 <!-- /page header -->
@@ -201,8 +189,8 @@
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval required select' }}) }}
-                                            <span class="form-text">Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
+                                            {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval required' }}) }}
+                                            <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
@@ -218,8 +206,8 @@
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval select' }}) }}
-                                            <span class="form-text">Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
+                                            {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval' }}) }}
+                                            <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
                                         </div>
                                     </div>
                                     <div class="col-lg-6">

@@ -73,6 +73,9 @@ class Task implements JsonSerializable {
   private ?bool $isExpenses = null;
 
   #[ORM\Column]
+  private ?bool $isDeleted = false;
+
+  #[ORM\Column]
   private ?bool $isClosed = false;
 
   #[ORM\Column(nullable: true)]
@@ -132,13 +135,13 @@ class Task implements JsonSerializable {
     return [
       'id' => $this->getId(),
       'title' => $this->getTitle(),
-      'project' => $this->getProject()->getTitle(),
+      'project' => $this->getProjectJson(),
       'description' => $this->getDescription(),
       'isTimeRoundUp' => $this->isIsTimeRoundUp(),
       'isEstimate' => $this->isIsEstimate(),
       'isClientView' => $this->isIsClientView(),
       'labels' => $this->getLabelJson(),
-      'category' => $this->getCategory()->getTitle(),
+      'category' => $this->getCategoryJson(),
       'isExpenses' => $this->isIsExpenses(),
       'editBy' => $this->getEditByJson(),
       'parentTask' => $this->getParentTaskJson(),
@@ -250,6 +253,16 @@ class Task implements JsonSerializable {
 
   public function setIsClosed(bool $isClosed): self {
     $this->isClosed = $isClosed;
+
+    return $this;
+  }
+
+  public function isIsDeleted(): ?bool {
+    return $this->isDeleted;
+  }
+
+  public function setIsDeleted(bool $isDeleted): self {
+    $this->isDeleted = $isDeleted;
 
     return $this;
   }
@@ -458,6 +471,19 @@ class Task implements JsonSerializable {
     }
 
     return $this;
+  }
+  public function getCategoryJson(): ?string {
+    if (is_null($this->category)) {
+      return null;
+    }
+    return $this->category->getTitle();
+  }
+
+  public function getProjectJson(): ?string {
+    if (is_null($this->project)) {
+      return null;
+    }
+    return $this->project->getTitle();
   }
 
   public function getCategory(): ?Category {

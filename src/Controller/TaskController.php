@@ -15,6 +15,7 @@ use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
 use App\Form\ProjectFormType;
+use App\Form\ReassignTaskFormType;
 use App\Form\TaskEditInfoType;
 use App\Form\TaskEditType;
 use App\Form\TaskFormType;
@@ -96,8 +97,7 @@ class TaskController extends AbstractController {
   public function form(Task $task, Request $request, UploadService $uploadService): Response {
     $history = null;
     //ovde izvlacimo ulogovanog usera
-//    $user = $this->getUser();
-    $user = $this->em->getRepository(User::class)->find(1);
+    $user = $this->getUser();
     if ($task->getId()) {
       $history = $this->json($task, Response::HTTP_OK, [], [
           ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
@@ -152,8 +152,8 @@ class TaskController extends AbstractController {
   public function editInfo(Task $task, Request $request): Response {
     $history = null;
     //ovde izvlacimo ulogovanog usera
-//    $user = $this->getUser();
-    $user = $this->em->getRepository(User::class)->find(1);
+    $user = $this->getUser();
+
     if ($task->getId()) {
       $history = $this->json($task, Response::HTTP_OK, [], [
           ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
@@ -187,6 +187,48 @@ class TaskController extends AbstractController {
     $args['task'] = $task;
 
     return $this->render('task/edit_info.html.twig', $args);
+  }
+
+  #[Route('/reassign/{id}', name: 'app_task_reassign')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function reassign(Task $task, Request $request): Response {
+    $history = null;
+    //ovde izvlacimo ulogovanog usera
+    $user = $this->getUser();
+
+    if ($task->getId()) {
+      $history = $this->json($task, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
+
+    $form = $this->createForm(ReassignTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_reassign', ['id' => $task->getId()])]]);
+
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(Task::class)->editTask($task, $user, $history);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['task'] = $task;
+
+    return $this->render('task/reassign.html.twig', $args);
   }
 
   #[Route('/edit-task/{id}', name: 'app_task_edit')]
@@ -233,8 +275,13 @@ class TaskController extends AbstractController {
   #[Route('/view/{id}', name: 'app_task_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function view(Task $task): Response {
+
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();
+    $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
+    $args['taskLogs'] = $this->em->getRepository(TaskLog::class)->findLogs($task);
+    $args['images'] = $this->em->getRepository(Task::class)->getImagesByTask($task);
+    $args['pdfs'] = $this->em->getRepository(Task::class)->getPdfsByTask($task);
 
     return $this->render('task/view.html.twig', $args);
   }
@@ -248,7 +295,8 @@ class TaskController extends AbstractController {
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();
 
-    $user = $this->getUser();
+//    $user = $this->getUser();
+    $user = $this->em->getRepository(User::class)->find(3);
 
     $args['taskLog'] = $this->em->getRepository(TaskLog::class)->findOneBy(['user' => $user, 'task' => $task]);
     $args['stopwatch'] = $this->em->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $args['taskLog'], 'diff' => null]);
@@ -259,6 +307,36 @@ class TaskController extends AbstractController {
     $args['lastEdit'] = $this->em->getRepository(StopwatchTime::class)->lastEdit($args['taskLog']);
 
     return $this->render('task/view_user.html.twig', $args);
+  }
+
+  #[Route('/close/{id}', name: 'app_task_close')]
+  public function close(Task $task): Response {
+
+    $this->em->getRepository(Task::class)->close($task);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+    return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+  }
+
+  #[Route('/delete/{id}', name: 'app_task_delete')]
+  public function delete(Task $task): Response {
+    $user = $this->getUser();
+    $this->em->getRepository(Task::class)->deleteTask($task, $user);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+    return $this->redirectToRoute('app_tasks');
   }
 
 }

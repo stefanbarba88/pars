@@ -108,7 +108,16 @@
                             <tbody>
                             {% for project in projects %}
                                 <tr>
-                                    <td><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></td>
+                                    <td>
+
+                                        <div class="fw-semibold"><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></div>
+
+                                        <div class="d-inline-flex">
+                                            {% for label in project.label %}
+                                                {{label.label | raw}}
+                                            {% endfor %}
+                                        </div>
+                                    </td>
                                     <td>
                                         <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>
                                     </td>

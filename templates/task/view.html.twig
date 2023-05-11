@@ -108,105 +108,205 @@
                         <!-- Left content -->
                         <div class="flex-1 order-2 order-lg-1">
 
-                            <!-- Task overview -->
-                            <div class="card">
-                                <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }} <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a></h5>
-                                    <div class="mt-1 my-lg-auto ms-lg-auto">
-                                        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal_form_vertical">Launch <i class="ph-play-circle ms-2"></i></button>
+
+                            <div class="row">
+                                <div class="col-sm-6 col-xl-4">
+                                    <div class="card">
+                                        <div class="card-header d-flex">
+                                            <h5 class="mb-0">
+                                                <i class="ph-timer me-2"></i>
+                                                Vreme
+                                            </h5>
+                                        </div>
+
+                                        <div class="list-group list-group-borderless py-2">
+
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="col-sm-6 col-xl-4">
+                                    <div class="card">
+                                        <div class="card-header d-flex">
+                                            <h5 class="mb-0">
+                                                <i class="ph-users-three me-2"></i>
+                                                Zaduženi korisnici
+                                                {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
+                                                    <a href="{{ path('app_task_reassign', {id: task.id} ) }}"> <i class="ph-note-pencil mx-1"></i></a>
+                                                {% endif %}
+                                            </h5>
+                                        </div>
+
+                                        <div class="list-group list-group-borderless py-2">
+                                            {% for log in taskLogs %}
+                                                <div class="d-flex list-group-item align-items-start">
+                                                    <div class="me-2">
+                                                        <i class="ph-clipboard"></i>
+                                                    </div>
+
+                                                    <div class="flex-fill overflow-hidden">
+                                                        <div class="fw-semibold text-truncate">
+                                                            <a href="{{ path('app_task_log_view',{id: log.log.id} ) }}" class="text-body">
+                                                                {{ log.log.user.getFullName }}
+                                                            </a>
+                                                        </div>
+                                                        {% if log.lastEdit is not null  %}
+                                                            <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
+                                                                <li class="list-inline-item">Izmena: {{ log.lastEdit.updated | date("d.m.Y H:i:s")}}</li>
+                                                            </ul>
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <div class="ms-3">
+                                                        {% if log.count > 0  %}
+                                                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                        {% else %}
+                                                            <span class="badge bg-warning align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-xl-4">
+                                    <div class="card">
+                                        <div class="card-header d-flex">
+                                            <h5 class="mb-0">
+                                                <i class="ph-files me-2"></i>
+                                                Dokumenta
+                                            </h5>
+                                        </div>
+
+                                        <div class="list-group list-group-borderless py-2">
+                                            {% if pdfs is empty %}
+                                                <div class="d-flex align-items-start mb-3">
+                                                    <div class="list-group-item">
+                                                        <div class="fw-semibold text-truncate">Nema dokumenata</div>
+                                                    </div>
+
+                                                </div>
+                                            {% else %}
+                                                {% for pdf in pdfs %}
+                                                    <div class="d-flex list-group-item align-items-start">
+                                                        <div class="me-2">
+                                                            <i class="ph-file-pdf"></i>
+                                                        </div>
+                                                        <div class="flex-fill overflow-hidden">
+                                                            <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+                                                        </div>
+                                                        <div class="ms-3">
+                                                            <a href="{{ asset(pdf.path) }}" download class="text-body">
+                                                                <i class="ph-download-simple"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                            <!-- Task overview -->
+
+                            <div class="card">
+                                <div class="card-header d-lg-flex py-lg-0">
+                                    <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }}
+                                        {% if not task.isDeleted %}
+                                            <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>
+                                        {% endif %}
+                                    </h5>
+                                    {% if status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                        <div class="mt-1 my-lg-auto ms-lg-auto">
+                                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modal_close_task"><i class="ph-x me-2"></i>Zatvorite</button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- close task modal -->
+                                <div id="modal_close_task" class="modal fade" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-primary text-white border-0">
+                                                <h6 class="modal-title">Potvrda</h6>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                <a href="{{ path('app_task_close',{id: task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /close task modal -->
 
                                 <!-- Vertical form modal -->
                                 <div id="modal_form_vertical" class="modal fade" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Vertical form</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            <div class="modal-header bg-primary text-white border-0">
+                                                <h6 class="modal-title">Potvrda</h6>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                             </div>
 
-                                            <form action="#">
-                                                <div class="modal-body">
-                                                    <div class="mb-3">
-                                                        <div class="row">
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">First name</label>
-                                                                <input type="text" placeholder="Eugene" class="form-control" id="ime">
-                                                            </div>
+                                            <div class="modal-body">
+                                                <p>Da li ste sigurni da želite da zaustavite merenje vremena?</p>
+                                            </div>
 
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">Last name</label>
-                                                                <input type="text" placeholder="Kopyov" class="form-control">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <div class="row">
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">Address line 1</label>
-                                                                <input type="text" placeholder="Ring street 12" class="form-control">
-                                                            </div>
-
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">Address line 2</label>
-                                                                <input type="text" placeholder="building D, flat #67" class="form-control">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <div class="row">
-                                                            <div class="col-sm-4">
-                                                                <label class="form-label">City</label>
-                                                                <input type="text" placeholder="Munich" class="form-control">
-                                                            </div>
-
-                                                            <div class="col-sm-4">
-                                                                <label class="form-label">State/Province</label>
-                                                                <input type="text" placeholder="Bayern" class="form-control">
-                                                            </div>
-
-                                                            <div class="col-sm-4">
-                                                                <label class="form-label">ZIP code</label>
-                                                                <input type="text" placeholder="1031" class="form-control">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div>
-                                                        <div class="row">
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">Email</label>
-                                                                <input type="text" placeholder="eugene@kopyov.com" class="form-control">
-                                                                <div class="form-text text-muted">name@domain.com</div>
-                                                            </div>
-
-                                                            <div class="col-sm-6">
-                                                                <label class="form-label">Phone #</label>
-                                                                <input type="text" placeholder="+99-99-9999-9999" data-mask="+99-99-9999-9999" class="form-control">
-                                                                <div class="form-text text-muted">+99-99-9999-9999</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-link" data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-primary">Submit form</button>
-                                                </div>
-                                            </form>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                <a href="#" id="link-stop" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- /vertical form modal -->
 
+                                <!-- delete task modal -->
+                                <div id="modal_delete_task" class="modal fade" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white border-0">
+                                                <h6 class="modal-title">Potvrda</h6>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                <a href="{{ path('app_task_delete', {id: task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /delete task modal -->
+
+
                                 <div class="card-body">
+                                    <div class="mb-4">
+                                        <h6>Oznake</h6>
+                                        {% for label in task.label %}
+                                            {{ label.label | raw }}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="mb-4">
+                                        <h6>Kategorija</h6>
+                                        {{ task.category.title | default('') }}
+                                    </div>
                                     <div class="mb-4">
                                         <h6>Opis</h6>
                                         {{ task.description | raw }}
-                                        </div>
+                                    </div>
 
                                     <div class="mb-4">
                                         <h6>Oprema</h6>
@@ -216,905 +316,191 @@
                                         <h6>Vozila</h6>
                                     </div>
 
-                                    <h6>Slike</h6>
-                                    <p>A much goodness between destructive that save stupid firefly destructively dog goldfinch continually alas pinched for outside flailed inescapably hey brought rid crud and awakened sobbed extraordinarily wherever deer before tenable yet into dalmatian opposite save close ahead next independent mindful but far.</p>
-
-                                    <div class="row">
-                                        <div class="col-xl-3 col-sm-6">
-                                            <div class="card">
-                                                <div class="card-img-actions mx-1 mt-1">
-                                                    <img class="card-img img-fluid" src="../../../assets/images/demo/flat/9.png" alt="">
-                                                    <div class="card-img-actions-overlay card-img">
-                                                        <a href="../../../assets/images/demo/flat/9.png" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                            <i class="ph-magnifying-glass-plus"></i>
-                                                        </a>
-
-                                                        <a href="#" class="btn btn-outline-white btn-icon rounded-pill ms-2">
-                                                            <i class="ph-download-simple"></i>
-                                                        </a>
+                                    <div class="mb-4">
+                                        <h6>Slike</h6>
+                                        <div class="row">
+                                            {% for image in images %}
+                                                <div class="col-xl-1 col-sm-2">
+                                                    <div class="card">
+                                                        <div class="card-img-actions">
+                                                            <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
+                                                            <div class="card-img-actions-overlay card-img">
+                                                                <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
+                                                                    <i class="ph-magnifying-glass-plus"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-start flex-wrap">
-                                                        <div class="fw-semibold">dashboard_draft.png</div>
-                                                        <span class="text-muted ms-auto">378Kb</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xl-3 col-sm-6">
-                                            <div class="card">
-                                                <div class="card-img-actions mx-1 mt-1">
-                                                    <img class="card-img img-fluid" src="../../../assets/images/demo/flat/8.png" alt="">
-                                                    <div class="card-img-actions-overlay card-img">
-                                                        <a href="../../../assets/images/demo/flat/8.png" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                            <i class="ph-magnifying-glass-plus"></i>
-                                                        </a>
-
-                                                        <a href="#" class="btn btn-outline-white btn-icon rounded-pill ms-2">
-                                                            <i class="ph-download-simple"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-start flex-wrap">
-                                                        <div class="fw-semibold">profile_page.png</div>
-                                                        <span class="text-muted ms-auto">1.2Mb</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xl-3 col-sm-6">
-                                            <div class="card">
-                                                <div class="card-img-actions mx-1 mt-1">
-                                                    <img class="card-img img-fluid" src="../../../assets/images/demo/flat/6.png" alt="">
-                                                    <div class="card-img-actions-overlay card-img">
-                                                        <a href="../../../assets/images/demo/flat/6.png" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                            <i class="ph-magnifying-glass-plus"></i>
-                                                        </a>
-
-                                                        <a href="#" class="btn btn-outline-white btn-icon rounded-pill ms-2">
-                                                            <i class="ph-download-simple"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-start flex-wrap">
-                                                        <div class="fw-semibold">shopping_cart.png</div>
-                                                        <span class="text-muted ms-auto">1.8Mb</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xl-3 col-sm-6">
-                                            <div class="card">
-                                                <div class="card-img-actions mx-1 mt-1">
-                                                    <img class="card-img img-fluid" src="../../../assets/images/demo/flat/12.png" alt="">
-                                                    <div class="card-img-actions-overlay card-img">
-                                                        <a href="../../../assets/images/demo/flat/12.png" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                            <i class="ph-magnifying-glass-plus"></i>
-                                                        </a>
-
-                                                        <a href="#" class="btn btn-outline-white btn-icon rounded-pill ms-2">
-                                                            <i class="ph-download-simple"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-start flex-wrap">
-                                                        <div class="fw-semibold">sales_statistics.png</div>
-                                                        <span class="text-muted ms-auto">2.0Mb</span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            {% endfor %}
                                         </div>
                                     </div>
+
                                 </div>
 
                                 <div class="card-footer d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <i class="ph-lightbulb me-2"></i> Status:&nbsp;
-                                        {% if task.isClosed %}
-                                            <span class="badge bg-danger">Zatvoren</span>
-                                        {% else %}
-                                            <span class="badge bg-info">Otvoren</span>
-                                        {% endif %}
-                                    </div>
+                                    {% if not task.isDeleted %}
+                                        <div class="d-flex align-items-center">
+                                            <i class="ph-lightbulb me-2"></i>
+                                            {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                <span class="badge bg-info">Nije startovan</span>
+                                            {% elseif status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                <span class="badge bg-success">Otvoren</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Zatvoren</span>
+                                            {% endif %}
+                                        </div>
 
-                                    <div class="d-inline-flex mb-0">
-                                        <a href="{{ path('app_task_edit_info', {id: task.id} ) }}" class="text-body">
-                                            <i class="ph-note-pencil"></i>
-                                        </a>
-                                        <a href="#" class="text-body ms-2">
-                                            <i class="ph-trash"></i>
-                                        </a>
-                                    </div>
+                                        <div class="d-inline-flex mb-0">
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task" class="text-body ms-2">
+                                                <i class="ph-trash"></i>
+                                            </a>
+                                        </div>
+                                    {% else %}
+                                        <div class="d-flex align-items-center">
+                                        </div>
+                                        <div class="d-inline-flex mb-0">
+                                            <span class="badge bg-warning bg-opacity-20 text-warning mx-2">Obrisan</span>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <!-- /task overview -->
 
 
-{#                            <!-- Comments -->#}
-{#                            <div class="card">#}
-{#                                <div class="card-header">#}
-{#                                    <h5 class="mb-0">Comments</h5>#}
-{#                                </div>#}
-
-{#                                <div class="card-body">#}
-{#                                    <div class="d-flex flex-column flex-lg-row mb-3">#}
-{#                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
-{#                                            <a href="#"><img src="../../../assets/images/demo/users/face2.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
-{#                                        </div>#}
-
-{#                                        <div class="flex-fill">#}
-{#                                            <a href="#" class="fw-semibold">William Jennings</a>#}
-{#                                            <span class="fs-sm text-muted ms-3">Just now</span>#}
-
-{#                                            <p>He moonlight difficult engrossed an it sportsmen. Interested has all devonshire difficulty gay assistance joy. Unaffected at ye of compliment alteration to.</p>#}
-
-{#                                            <ul class="list-inline mb-0">#}
-{#                                                <li class="list-inline-item d-inline-flex align-items-center">#}
-{#                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
-{#                                                    114#}
-{#                                                </li>#}
-{#                                                <li class="list-inline-item ms-2">#}
-{#                                                    <a href="#">Reply</a>#}
-{#                                                </li>#}
-{#                                                <li class="list-inline-item">#}
-{#                                                    <a href="#">Edit</a>#}
-{#                                                </li>#}
-{#                                            </ul>#}
-{#                                        </div>#}
-{#                                    </div>#}
-
-{#                                    <div class="d-flex flex-column flex-lg-row mb-3">#}
-{#                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
-{#                                            <a href="#"><img src="../../../assets/images/demo/users/face3.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
-{#                                        </div>#}
-
-{#                                        <div class="flex-fill">#}
-{#                                            <a href="#" class="fw-semibold">Margo Baker</a>#}
-{#                                            <span class="fs-sm text-muted ms-3">5 minutes ago</span>#}
-
-{#                                            <p>Place voice no arise along to. Parlors waiting so against me no. Wishing calling are warrant settled was luckily. Express besides it present if at an opinion visitor.</p>#}
-
-{#                                            <ul class="list-inline mb-0">#}
-{#                                                <li class="list-inline-item d-inline-flex align-items-center">#}
-{#                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
-{#                                                    90#}
-{#                                                </li>#}
-{#                                                <li class="list-inline-item ms-2">#}
-{#                                                    <a href="#">Reply</a>#}
-{#                                                </li>#}
-{#                                                <li class="list-inline-item">#}
-{#                                                    <a href="#">Edit</a>#}
-{#                                                </li>#}
-{#                                            </ul>#}
-{#                                        </div>#}
-{#                                    </div>#}
-
-{#                                    <div class="d-flex flex-column flex-lg-row mb-3">#}
-{#                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
-{#                                            <a href="#"><img src="../../../assets/images/demo/users/face1.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
-{#                                        </div>#}
-
-{#                                        <div class="flex-fill">#}
-{#                                            <a href="#" class="fw-semibold">James Alexander</a>#}
-{#                                            <span class="fs-sm text-muted ms-3">7 minutes ago</span>#}
-
-{#                                            <p>Savings her pleased are several started females met. Short her not among being any. Thing of judge fruit charm views do. Miles mr an forty along as he.</p>#}
-
-{#                                            <ul class="list-inline mb-0">#}
-{#                                                <li class="list-inline-item d-inline-flex align-items-center">#}
-{#                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
-{#                                                    70#}
-{#                                                </li>#}
-{#                                                <li class="list-inline-item ms-2">#}
-{#                                                    <a href="#">Reply</a>#}
-{#                                                </li>#}
-{#                                                <li class="list-inline-item">#}
-{#                                                    <a href="#">Edit</a>#}
-{#                                                </li>#}
-{#                                            </ul>#}
-
-{#                                            <div class="d-flex flex-column flex-lg-row mt-3">#}
-{#                                                <div class="me-lg-3 mb-2 mb-lg-0">#}
-{#                                                    <a href="#"><img src="../../../assets/images/demo/users/face9.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
-{#                                                </div>#}
-
-{#                                                <div class="flex-fill">#}
-{#                                                    <a href="#" class="fw-semibold">Jack Cooper</a>#}
-{#                                                    <span class="fs-sm text-muted ms-3">10 minutes ago</span>#}
-
-{#                                                    <p>She education get middleton day agreement performed preserved unwilling. Do however as pleased offence outward beloved by present. By outward neither he so covered.</p>#}
-
-{#                                                    <ul class="list-inline mb-0">#}
-{#                                                        <li class="list-inline-item d-inline-flex align-items-center">#}
-{#                                                            <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
-{#                                                            67#}
-{#                                                        </li>#}
-{#                                                        <li class="list-inline-item ms-2">#}
-{#                                                            <a href="#">Reply</a>#}
-{#                                                        </li>#}
-{#                                                        <li class="list-inline-item">#}
-{#                                                            <a href="#">Edit</a>#}
-{#                                                        </li>#}
-{#                                                    </ul>#}
-
-{#                                                    <div class="d-flex flex-column flex-lg-row mt-3">#}
-{#                                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
-{#                                                            <a href="#"><img src="../../../assets/images/demo/users/face11.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
-{#                                                        </div>#}
-
-{#                                                        <div class="flex-fill">#}
-{#                                                            <a href="#" class="fw-semibold">Natalie Wallace</a>#}
-{#                                                            <span class="fs-sm text-muted ms-3">1 hour ago</span>#}
-
-{#                                                            <p>Juvenile proposal betrayed he an informed weddings followed. Precaution day see imprudence sympathize principles. At full leaf give quit to in they up.</p>#}
-
-{#                                                            <ul class="list-inline mb-0">#}
-{#                                                                <li class="list-inline-item d-inline-flex align-items-center">#}
-{#                                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
-{#                                                                    54#}
-{#                                                                </li>#}
-{#                                                                <li class="list-inline-item ms-2">#}
-{#                                                                    <a href="#">Reply</a>#}
-{#                                                                </li>#}
-{#                                                                <li class="list-inline-item">#}
-{#                                                                    <a href="#">Edit</a>#}
-{#                                                                </li>#}
-{#                                                            </ul>#}
-{#                                                        </div>#}
-{#                                                    </div>#}
-
-{#                                                    <div class="d-flex flex-column flex-lg-row mt-3">#}
-{#                                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
-{#                                                            <a href="#"><img src="../../../assets/images/demo/users/face13.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
-{#                                                        </div>#}
-
-{#                                                        <div class="flex-fill">#}
-{#                                                            <a href="#" class="fw-semibold">Nicolette Grey</a>#}
-{#                                                            <span class="fs-sm text-muted ms-3">2 hours ago</span>#}
-
-{#                                                            <p>Although moreover mistaken kindness me feelings do be marianne. Son over own nay with tell they cold upon are. Cordial village and settled she ability law herself.</p>#}
-
-{#                                                            <ul class="list-inline mb-0">#}
-{#                                                                <li class="list-inline-item d-inline-flex align-items-center">#}
-{#                                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
-{#                                                                    41#}
-{#                                                                </li>#}
-{#                                                                <li class="list-inline-item ms-2">#}
-{#                                                                    <a href="#">Reply</a>#}
-{#                                                                </li>#}
-{#                                                                <li class="list-inline-item">#}
-{#                                                                    <a href="#">Edit</a>#}
-{#                                                                </li>#}
-{#                                                            </ul>#}
-{#                                                        </div>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-
-{#                                    <div class="d-flex flex-column flex-lg-row">#}
-{#                                        <div class="me-lg-3 mb-2 mb-lg-0">#}
-{#                                            <a href="#"><img src="../../../assets/images/demo/users/face4.jpg" class="rounded-circle" width="40" height="40" alt=""></a>#}
-{#                                        </div>#}
-
-{#                                        <div class="flex-fill">#}
-{#                                            <a href="#" class="fw-semibold">Victoria Johnson</a>#}
-{#                                            <span class="fs-sm text-muted ms-3">3 hours ago</span>#}
-
-{#                                            <p>Finished why bringing but sir bachelor unpacked any thoughts. Unpleasing unsatiable particular inquietude did nor sir.</p>#}
-
-{#                                            <ul class="list-inline mb-0">#}
-{#                                                <li class="list-inline-item d-inline-flex align-items-center">#}
-{#                                                    <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>#}
-{#                                                    32#}
-{#                                                </li>#}
-{#                                                <li class="list-inline-item ms-2">#}
-{#                                                    <a href="#">Reply</a>#}
-{#                                                </li>#}
-{#                                                <li class="list-inline-item">#}
-{#                                                    <a href="#">Edit</a>#}
-{#                                                </li>#}
-{#                                            </ul>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-
-{#                                <div class="border-top border-bottom">#}
-{#                                    <div id="add-comment">Get his declared appetite distance his together now families. Friends am himself at on norland it viewing. Suspected elsewhere you belonging continued commanded she...</div>#}
-{#                                </div>#}
-
-{#                                <div class="card-body text-end">#}
-{#                                    <button type="button" class="btn btn-primary">#}
-{#                                        Submit#}
-{#                                        <i class="ph-paper-plane-tilt ms-2"></i>#}
-{#                                    </button>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                            <!-- /comments -->#}
 
                         </div>
                         <!-- /left content -->
 
 
-{#                        <!-- Right sidebar component Admin -->#}
-{#                        <div class="sidebar sidebar-component sidebar-expand-lg bg-transparent shadow-none order-1 order-lg-2 ms-lg-3 mb-3">#}
-
-{#                            <!-- Sidebar content -->#}
-{#                            <div class="sidebar-content">#}
-
-{#                                <!-- Task timer -->#}
-{#                                <div class="card">#}
-{#                                    <div class="sidebar-section-header border-bottom">#}
-{#                                        <span class="fw-semibold">Utrošeno vreme na zadatku</span>#}
-{#                                    </div>#}
-
-{#                                    <div class="sidebar-section-body">#}
-{#                                        <div class="d-flex justify-content-center text-center">#}
-{#                                            <div>#}
-{#                                                <span class="display-6 lh-1 m-0">09</span>#}
-{#                                                <div class="mt-2">sati</div>#}
-{#                                            </div>#}
-{#                                            <div class="mx-1 my-2">:</div>#}
-{#                                            <div>#}
-{#                                                <span class="display-6 lh-1 m-0">54</span>#}
-{#                                                <div class="mt-2">minuta</div>#}
-{#                                            </div>#}
-{#                                            <div class="mx-1 my-2">:</div>#}
-{#                                            <div>#}
-{#                                                <span class="display-6 lh-1 m-0">29</span>#}
-{#                                                <div class="mt-2">sekundi</div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-
-{#                                    <div class="card-footer d-flex align-items-center">#}
-{#                                        <div class="d-inline-flex">#}
-{#                                            <a href="#" class="text-body"><i class="ph-play-circle"></i></a>#}
-{#                                            <a href="#" class="text-body mx-2"><i class="ph-pause-circle"></i></a>#}
-{#                                            <a href="#" class="text-body"><i class="ph-stop-circle"></i></a>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <!-- /task timer -->#}
-
-
-{#                                <!-- Task details -->#}
-{#                                <div class="card">#}
-{#                                    <div class="sidebar-section-header border-bottom">#}
-{#                                        <span class="fw-semibold">Detalji</span>#}
-{#                                    </div>#}
-
-{#                                    <table class="table table-borderless table-xs my-2">#}
-{#                                        <tbody>#}
-{#                                        <tr>#}
-{#                                            <td><i class="ph-briefcase me-2"></i> Projekat:</td>#}
-{#                                            <td class="text-end"><a href="{{ path('app_project_profile_view', {id: task.project.id}) }}">{{ task.project.title | default ('Zadatak bez projekta') }}</a></td>#}
-{#                                        </tr>#}
-{#                                        <tr>#}
-{#                                            <td><i class="ph-warning-octagon me-2"></i> Prioritet:</td>#}
-{#                                            <td class="text-end">#}
-{#                                                {% if task.isPriority %}#}
-{#                                                    <span class="badge bg-danger rounded-pill p-1"><i class="ph-warning-octagon"></i></span>#}
-{#                                                {% else %}#}
-{#                                                    <span class="badge bg-success rounded-pill p-1"><i class="ph-warning-octagon"></i></span>#}
-{#                                                {% endif %}#}
-{#                                            </td>#}
-{#                                        </tr>#}
-{#                                        <tr>#}
-{#                                            <td><i class="ph-clock-counter-clockwise me-2"></i> Izmene:</td>#}
-{#                                            <td class="text-end"><span class="badge bg-primary rounded-pill ms-auto ms-lg-2">{{ revision }}</span></td>#}
-{#                                        </tr>#}
-{#                                        <tr>#}
-{#                                            <td><i class="ph-lightbulb me-2"></i> Status:</td>#}
-{#                                            <td class="text-end">#}
-{#                                                {% if task.isClosed %}#}
-{#                                                    <span class="badge bg-danger">Zatvoren</span>#}
-{#                                                {% else %}#}
-{#                                                    <span class="badge bg-info">Otvoren</span>#}
-{#                                                {% endif %}#}
-{#                                            </td>#}
-{#                                        </tr>#}
-{#                                        <tr>#}
-{#                                            <td><i class="ph-eye me-2"></i> Vidljiv klijentu:</td>#}
-{#                                            <td class="text-end">#}
-{#                                                {% if task.isClientView %}#}
-{#                                                    <i class="ph-eye"></i>#}
-{#                                                {% else %}#}
-{#                                                    <i class="ph-eye-slash"></i>#}
-{#                                                {% endif %}#}
-{#                                            </td>#}
-{#                                        </tr>#}
-{#                                        <tr>#}
-{#                                            <td><i class="ph-clock me-2"></i> Interval zaokruživanja:</td>#}
-{#                                            <td class="text-end">{{ task.roundingInterval }} min</td>#}
-{#                                        </tr>#}
-{#                                        <tr>#}
-{#                                            <td><i class="ph-clock me-2"></i> Minimalni unos:</td>#}
-{#                                            <td class="text-end">{{ task.minEntry }} min</td>#}
-{#                                        </tr>#}
-{#                                        <tr>#}
-{#                                            <td><i class="ph-user-circle-plus me-2"></i> Kreirao:</td>#}
-{#                                            <td class="text-end"><a href="{{ path('app_user_profile_view', {id: task.createdBy.id}) }}">{{ task.createdBy.fullName }}</a></td>#}
-{#                                        </tr>#}
-{#                                        <tr>#}
-{#                                            <td><i class="ph-calendar-check me-2"></i> Izmenjen:</td>#}
-{#                                            <td class="text-end text-muted">{{ task.updated | date("d.m.Y H:i:s")}}</td>#}
-{#                                        </tr>#}
-{#                                        <tr>#}
-{#                                            <td><i class="ph-calendar-plus me-2"></i> Kreiran:</td>#}
-{#                                            <td class="text-end text-muted">{{ task.created | date("d.m.Y H:i:s")}}</td>#}
-{#                                        </tr>#}
-{#                                        </tbody>#}
-{#                                    </table>#}
-
-{#                                    <div class="card-footer d-flex align-items-center">#}
-{#                                        <div class="d-inline-flex mb-0">#}
-{#                                            <a href="{{ path('app_task_edit', {id: task.id} ) }}" class="text-body">#}
-{#                                                <i class="ph-note-pencil"></i>#}
-{#                                            </a>#}
-{#                                            <a href="#" class="text-body ms-2">#}
-{#                                                <i class="ph-trash"></i>#}
-{#                                            </a>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <!-- /task details -->#}
-
-
-{#                                <!-- Attached files -->#}
-{#                                <div class="card">#}
-{#                                    <div class="sidebar-section-header border-bottom">#}
-{#                                        <span class="fw-semibold">Dodati fajlovi</span>#}
-{#                                    </div>#}
-
-{#                                    <div class="sidebar-section-body">#}
-{#                                        <div class="d-flex align-items-start mb-3">#}
-{#                                            <div class="me-2">#}
-{#                                                <i class="ph-file-doc"></i>#}
-{#                                            </div>#}
-
-{#                                            <div class="flex-fill overflow-hidden">#}
-{#                                                <div class="fw-semibold text-truncate">Overdrew_scowled.doc</div>#}
-{#                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">#}
-{#                                                    <li class="list-inline-item">Size: 1.2Mb</li>#}
-{#                                                    <li class="list-inline-item">By <a href="#">Winnie</a></li>#}
-{#                                                </ul>#}
-{#                                            </div>#}
-
-{#                                            <div class="ms-3">#}
-{#                                                <a href="#" class="text-body">#}
-{#                                                    <i class="ph-download-simple"></i>#}
-{#                                                </a>#}
-{#                                            </div>#}
-{#                                        </div>#}
-
-{#                                        <div class="d-flex align-items-start mb-3">#}
-{#                                            <div class="me-2">#}
-{#                                                <i class="ph-file-pdf"></i>#}
-{#                                            </div>#}
-
-{#                                            <div class="flex-fill overflow-hidden">#}
-{#                                                <div class="fw-semibold text-truncate">And_less_maternally.pdf</div>#}
-{#                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">#}
-{#                                                    <li class="list-inline-item">Size: 0.9Mb</li>#}
-{#                                                    <li class="list-inline-item">By <a href="#">Eugene</a></li>#}
-{#                                                </ul>#}
-{#                                            </div>#}
-
-{#                                            <div class="ms-3">#}
-{#                                                <a href="#" class="text-body">#}
-{#                                                    <i class="ph-download-simple"></i>#}
-{#                                                </a>#}
-{#                                            </div>#}
-{#                                        </div>#}
-
-{#                                        <div class="d-flex align-items-start mb-3">#}
-{#                                            <div class="me-2">#}
-{#                                                <i class="ph-file-video"></i>#}
-{#                                            </div>#}
-
-{#                                            <div class="flex-fill overflow-hidden">#}
-{#                                                <div class="fw-semibold text-truncate">Well_equitably.mov</div>#}
-{#                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">#}
-{#                                                    <li class="list-inline-item">Size: 14.8Mb</li>#}
-{#                                                    <li class="list-inline-item">By <a href="#">Jenny</a></li>#}
-{#                                                </ul>#}
-{#                                            </div>#}
-
-{#                                            <div class="ms-3">#}
-{#                                                <a href="#" class="text-body">#}
-{#                                                    <i class="ph-download-simple"></i>#}
-{#                                                </a>#}
-{#                                            </div>#}
-{#                                        </div>#}
-
-{#                                        <div class="d-flex align-items-start">#}
-{#                                            <div class="me-2">#}
-{#                                                <i class="ph-file-pdf"></i>#}
-{#                                            </div>#}
-
-{#                                            <div class="flex-fill overflow-hidden">#}
-{#                                                <div class="fw-semibold text-truncate">The_less_overslept.pdf</div>#}
-{#                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">#}
-{#                                                    <li class="list-inline-item">Size: 4.3Mb</li>#}
-{#                                                    <li class="list-inline-item">By <a href="#">Natalie</a></li>#}
-{#                                                </ul>#}
-{#                                            </div>#}
-
-{#                                            <div class="ms-3">#}
-{#                                                <a href="#" class="text-body">#}
-{#                                                    <i class="ph-download-simple"></i>#}
-{#                                                </a>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <!-- /attached files -->#}
-
-
-{#                                <!-- Revisions -->#}
-{#                                <div class="card">#}
-{#                                    <div class="sidebar-section-header border-bottom">#}
-{#                                        <span class="fw-semibold">Istorija izmena</span>#}
-{#                                    </div>#}
-
-{#                                    <div class="sidebar-section-body">#}
-{#                                        <div class="d-flex mb-3">#}
-{#                                            <div class="me-3">#}
-{#                                                <div class="bg-primary bg-opacity-10 text-primary lh-1 rounded-pill p-2">#}
-{#                                                    <i class="ph-git-pull-request"></i>#}
-{#                                                </div>#}
-{#                                            </div>#}
-
-{#                                            <div class="flex-fill">#}
-{#                                                Drop the IE <a href="#">specific hacks</a> for temporal inputs#}
-{#                                                <div class="fs-sm opacity-50">4 minutes ago</div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-
-{#                                        <div class="d-flex mb-3">#}
-{#                                            <div class="me-3">#}
-{#                                                <div class="bg-warning bg-opacity-10 text-warning lh-1 rounded-pill p-2">#}
-{#                                                    <i class="ph-git-commit"></i>#}
-{#                                                </div>#}
-{#                                            </div>#}
-
-{#                                            <div class="flex-fill">#}
-{#                                                Add full font overrides for popovers and tooltips#}
-{#                                                <div class="fs-sm opacity-50">36 minutes ago</div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-
-{#                                        <div class="d-flex mb-3">#}
-{#                                            <div class="me-3">#}
-{#                                                <div class="bg-info bg-opacity-10 text-info lh-1 rounded-pill p-2">#}
-{#                                                    <i class="ph-git-branch"></i>#}
-{#                                                </div>#}
-{#                                            </div>#}
-
-{#                                            <div class="flex-fill">#}
-{#                                                <a href="#">Chris Arney</a> created a new <span class="fw-semibold">Design</span> branch#}
-{#                                                <div class="fs-sm opacity-50">2 hours ago</div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-
-{#                                        <div class="d-flex mb-3">#}
-{#                                            <div class="me-3">#}
-{#                                                <div class="bg-success bg-opacity-10 text-success lh-1 rounded-pill p-2">#}
-{#                                                    <i class="ph-git-merge"></i>#}
-{#                                                </div>#}
-{#                                            </div>#}
-
-{#                                            <div class="flex-fill">#}
-{#                                                <a href="#">Eugene Kopyov</a> merged <span class="fw-semibold">Master</span> and <span class="fw-semibold">Dev</span> branches#}
-{#                                                <div class="fs-sm opacity-50">Dec 18, 18:36</div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-
-{#                                        <div class="d-flex">#}
-{#                                            <div class="me-3">#}
-{#                                                <div class="bg-primary bg-opacity-10 text-primary lh-1 rounded-pill p-2">#}
-{#                                                    <i class="ph-git-pull-request"></i>#}
-{#                                                </div>#}
-{#                                            </div>#}
-
-{#                                            <div class="flex-fill">#}
-{#                                                Have Carousel ignore keyboard events#}
-{#                                                <div class="fs-sm opacity-50">Dec 12, 05:46</div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <!-- /revisions -->#}
-
-
-{#                                <!-- Assigned users -->#}
-{#                                <div class="card">#}
-{#                                    <div class="sidebar-section-header border-bottom">#}
-{#                                        <span class="fw-semibold">Zaduženi korisnici</span>#}
-{#                                    </div>#}
-
-{#                                    <div class="sidebar-section-body">#}
-{#                                        {% for user in task.assignedUsers %}#}
-{#                                            <div class="d-flex align-items-center mb-3">#}
-{#                                            <a href="#" class="me-3 position-relative">#}
-{#                                                <img src="{{ asset(user.image.thumbnail100) }}" width="40" height="40" class="rounded-circle" alt="{{ user.fullName }}">#}
-{#                                                broj unosa vremena#}
-{#                                                <span class="badge bg-yellow text-black position-absolute top-0 start-100 translate-middle rounded-pill">6</span>#}
-{#                                            </a>#}
-
-{#                                            <div class="flex-fill fw-medium">#}
-{#                                                <a href="{{ path('app_user_profile_view', {id: user.id}) }}">{{ user.fullName }}</a>#}
-{#                                                <div class="fs-sm text-muted">{{ user.pozicija.title }}</div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        {% endfor %}#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <!-- /assigned users -->#}
-
-
-{#                                <!-- Latest comments -->#}
-{#                                <div class="card">#}
-{#                                    <div class="sidebar-section-header border-bottom">#}
-{#                                        <span class="fw-semibold">Poslednji komentari</span>#}
-{#                                    </div>#}
-
-{#                                    <div class="list-group list-group-borderless py-1">#}
-{#                                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-start">#}
-{#                                            <div class="me-3">#}
-{#                                                <img src="../../../assets/images/demo/users/face25.jpg" width="40" height="40" class="rounded-circle" alt="">#}
-{#                                            </div>#}
-{#                                            <div class="flex-fill">#}
-{#                                                <span class="fw-semibold">Will Samuel</span>#}
-{#                                                <div class="text-muted">And he looked over at the alarm clock, ticking..</div>#}
-{#                                                <div class="fs-sm text-muted mt-1">#}
-{#                                                    <i class="ph-checks fs-base text-primary align-text-top me-1"></i>#}
-{#                                                    Just now#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                        </a>#}
-
-{#                                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-start">#}
-{#                                            <div class="me-3">#}
-{#                                                <img src="../../../assets/images/demo/users/face3.jpg" width="40" height="40" class="rounded-circle" alt="">#}
-{#                                            </div>#}
-{#                                            <div class="flex-fill">#}
-{#                                                <span class="fw-semibold">Margo Baker</span>#}
-{#                                                <div class="text-muted">However hard he threw himself onto..</div>#}
-{#                                                <div class="fs-sm text-muted mt-1">#}
-{#                                                    <i class="ph-checks fs-base text-primary align-text-top me-1"></i>#}
-{#                                                    6 minutes ago#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                        </a>#}
-
-{#                                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-start">#}
-{#                                            <div class="me-3">#}
-{#                                                <img src="../../../assets/images/demo/users/face11.jpg" width="40" height="40" class="rounded-circle" alt="">#}
-{#                                            </div>#}
-{#                                            <div class="flex-fill">#}
-{#                                                <span class="fw-semibold">Monica Smith</span>#}
-{#                                                <div class="text-muted">Yes, but was it possible to quietly sleep through..</div>#}
-{#                                                <div class="fs-sm text-muted mt-1">#}
-{#                                                    <i class="ph-check fs-base align-text-top me-1"></i>#}
-{#                                                    Yesterday#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                        </a>#}
-
-{#                                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-start">#}
-{#                                            <div class="me-3">#}
-{#                                                <img src="../../../assets/images/demo/users/face12.jpg" width="40" height="40" class="rounded-circle" alt="">#}
-{#                                            </div>#}
-{#                                            <div class="flex-fill">#}
-{#                                                <span class="fw-semibold">Jordana Mills</span>#}
-{#                                                <div class="text-muted">What should he do now? The next train went at..</div>#}
-{#                                                <div class="fs-sm text-muted mt-1">#}
-{#                                                    <i class="ph-check fs-base align-text-top me-1"></i>#}
-{#                                                    Monday#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                        </a>#}
-
-{#                                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-start">#}
-{#                                            <div class="me-3">#}
-{#                                                <img src="../../../assets/images/demo/users/face15.jpg" width="40" height="40" class="rounded-circle" alt="">#}
-{#                                            </div>#}
-{#                                            <div class="flex-fill">#}
-{#                                                <span class="fw-semibold">John Craving</span>#}
-{#                                                <div class="text-muted">Gregor then turned to look out the window..</div>#}
-{#                                                <div class="fs-sm text-muted mt-1">#}
-{#                                                    <i class="ph-checks fs-base text-primary align-text-top me-1"></i>#}
-{#                                                    Jan 24, 14:50#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                        </a>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <!-- /latest comments -->#}
-
-{#                            </div>#}
-{#                            <!-- /sidebar content -->#}
-
-{#                        </div>#}
-{#                        <!-- /right sidebar component admin -->#}
 
                         <!-- Right sidebar component User -->
-                        <div class="sidebar sidebar-component sidebar-expand bg-transparent shadow-none order-1 order-lg-2 ms-lg-3 mb-3">
+                        <div class="sidebar sidebar-component sidebar-collapsed bg-transparent shadow-none order-1 order-lg-2 ms-lg-3 mb-3">
 
                             <!-- Sidebar content -->
                             <div class="sidebar-content">
-
-                                <!-- Task timer -->
                                 <div class="card">
-                                    <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Vreme</span>
-                                    </div>
+                                    <div class="card-header d-flex">
+                                        <h5 class="mb-0">
+                                            <i class="ph-folder me-2"></i>
+                                            Downloaded files
+                                        </h5>
 
-                                    <div class="sidebar-section-body">
-                                        <div class="d-flex justify-content-center text-center">
-                                            <div id="time-elapsed"></div>
-                                            <div>
-                                                <span id="timeH" class="display-6 lh-1 m-0"></span>
-                                                <div class="mt-2">sati</div>
-                                            </div>
-                                            <div class="mx-1 my-2">:</div>
-                                            <div>
-                                                <span id="timeM" class="display-6 lh-1 m-0"></span>
-                                                <div class="mt-2">minuta</div>
-                                            </div>
-                                            <div class="mx-1 my-2">:</div>
-                                            <div>
-                                                <span id="timeS" class="display-6 lh-1 m-0"></span>
-                                                <div class="mt-2">sekundi</div>
-                                            </div>
+                                        <div class="ms-auto">
+                                            <span class="text-muted">(93)</span>
                                         </div>
                                     </div>
 
-                                    <div class="card-footer d-flex justify-content-center text-center">
-                                        <div class="d-inline-flex">
-                                            <a href="#" id="link-start" class="btn btn-success mx-2"><i class="ph-play-circle"></i></a>
-{#                                            <a href="#" id="link-stop" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-stop-circle"></i></a>#}
-                                            <a href="#" id="link-stop" class="btn btn-danger"><i class="ph-stop-circle"></i></a>
-                                        </div>
+                                    <div class="list-group list-group-borderless py-2">
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            <i class="ph-file-pdf me-3"></i>
+                                            Hello_exotic_staunch.pdf <span class="badge bg-success ms-auto">New</span>
+                                        </a>
+
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            <i class="ph-file-doc me-3"></i>
+                                            That_well_ecstatically.docx
+                                        </a>
+
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            <i class="ph-file-csv me-3"></i>
+                                            Shared_coast_concurrent.csv
+                                            <span class="badge badge-secondary ml-auto">Draft</span>
+                                        </a>
+
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            <i class="ph-file-doc me-3"></i>
+                                            Into_intrepid_belated.docx
+                                        </a>
+
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            <i class="ph-arrow-right me-3"></i>
+                                            Show all files (93)
+                                        </a>
                                     </div>
                                 </div>
-                                <!-- /task timer -->
-
                                 <!-- dnevnici -->
                                 <div class="card">
                                     <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Dnevnik zadatka</span>
+                                        <span class="fw-semibold">Zaduženi korisnici</span>
+                                        {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
+                                            <a href="{{ path('app_task_reassign', {id: task.id} ) }}"> <i class="ph-note-pencil mx-1"></i></a>
+                                        {% endif %}
                                     </div>
 
-                                        <div class="sidebar-section-body">
-                                        <div class="d-flex align-items-start mb-3">
+                                    <div class="sidebar-section-body">
+                                        {% for log in taskLogs %}
+                                            <div class="d-flex align-items-start mb-3">
                                             <div class="me-2">
                                                 <i class="ph-clipboard"></i>
                                             </div>
 
                                             <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">{{ taskLog.user.getFullName }}</div>
+                                                <div class="fw-semibold text-truncate">
+                                                    <a href="{{ path('app_task_log_view',{id: log.log.id} ) }}" class="text-body">
+                                                        {{ log.log.user.getFullName }}
+                                                    </a>
+                                                </div>
+                                            {% if log.lastEdit is not null  %}
                                                 <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                    <li class="list-inline-item">Size: 1.2Mb</li>
-                                                    <li class="list-inline-item">By <a href="#">Winnie</a></li>
+                                                    <li class="list-inline-item">Izmena: {{ log.lastEdit.updated | date("d.m.Y H:i:s")}}</li>
                                                 </ul>
+                                            {% endif %}
                                             </div>
 
                                             <div class="ms-3">
-                                                <a href="{{ path('app_task_log_view',{id: taskLog.id} ) }}" class="text-body">
-                                                    <i class="ph-download-simple"></i>
-                                                </a>
+                                                {% if log.count > 0  %}
+                                                    <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                {% endif %}
                                             </div>
                                         </div>
+                                        {% endfor %}
                                     </div>
 
                                 </div>
                                 <!-- /dnevnici -->
 
-                                <!-- Attached files -->
-                                <div class="card">
-                                    <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Dodati fajlovi</span>
-                                    </div>
+{#                                {% if not task.isDeleted %}#}
+{#                                    <!-- Attached files -->#}
+{#                                    <div class="card">#}
+{#                                        <div class="sidebar-section-header border-bottom">#}
+{#                                            <span class="fw-semibold">Dokumenta</span>#}
+{#                                        </div>#}
 
-                                    <div class="sidebar-section-body">
-                                        <div class="d-flex align-items-start mb-3">
-                                            <div class="me-2">
-                                                <i class="ph-file-doc"></i>
-                                            </div>
+{#                                        <div class="sidebar-section-body">#}
+{#                                            {% if pdfs is empty %}#}
+{#                                                <div class="d-flex align-items-start mb-3">#}
 
-                                            <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">Overdrew_scowled.doc</div>
-                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                    <li class="list-inline-item">Size: 1.2Mb</li>
-                                                    <li class="list-inline-item">By <a href="#">Winnie</a></li>
-                                                </ul>
-                                            </div>
+{#                                                    <div class="flex-fill overflow-hidden">#}
+{#                                                        <div class="fw-semibold text-truncate">Nema dokumenata</div>#}
+{#                                                    </div>#}
 
-                                            <div class="ms-3">
-                                                <a href="#" class="text-body">
-                                                    <i class="ph-download-simple"></i>
-                                                </a>
-                                            </div>
-                                        </div>
+{#                                                </div>#}
+{#                                            {% else %}#}
+{#                                                {% for pdf in pdfs %}#}
+{#                                                    <div class="d-flex align-items-start mb-3">#}
+{#                                                        <div class="me-2">#}
+{#                                                            <i class="ph-file-pdf"></i>#}
+{#                                                        </div>#}
 
-                                        <div class="d-flex align-items-start mb-3">
-                                            <div class="me-2">
-                                                <i class="ph-file-pdf"></i>
-                                            </div>
+{#                                                        <div class="flex-fill overflow-hidden">#}
+{#                                                            <div class="fw-semibold text-truncate">{{ pdf.title }}</div>#}
+{#                                                        </div>#}
 
-                                            <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">And_less_maternally.pdf</div>
-                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                    <li class="list-inline-item">Size: 0.9Mb</li>
-                                                    <li class="list-inline-item">By <a href="#">Eugene</a></li>
-                                                </ul>
-                                            </div>
-
-                                            <div class="ms-3">
-                                                <a href="#" class="text-body">
-                                                    <i class="ph-download-simple"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div class="d-flex align-items-start mb-3">
-                                            <div class="me-2">
-                                                <i class="ph-file-video"></i>
-                                            </div>
-
-                                            <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">Well_equitably.mov</div>
-                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                    <li class="list-inline-item">Size: 14.8Mb</li>
-                                                    <li class="list-inline-item">By <a href="#">Jenny</a></li>
-                                                </ul>
-                                            </div>
-
-                                            <div class="ms-3">
-                                                <a href="#" class="text-body">
-                                                    <i class="ph-download-simple"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div class="d-flex align-items-start">
-                                            <div class="me-2">
-                                                <i class="ph-file-pdf"></i>
-                                            </div>
-
-                                            <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">The_less_overslept.pdf</div>
-                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                    <li class="list-inline-item">Size: 4.3Mb</li>
-                                                    <li class="list-inline-item">By <a href="#">Natalie</a></li>
-                                                </ul>
-                                            </div>
-
-                                            <div class="ms-3">
-                                                <a href="#" class="text-body">
-                                                    <i class="ph-download-simple"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /attached files -->
-
+{#                                                        <div class="ms-3">#}
+{#                                                            <a href="{{ asset(pdf.path) }}" download class="text-body">#}
+{#                                                                <i class="ph-download-simple"></i>#}
+{#                                                            </a>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                {% endfor %}#}
+{#                                            {% endif %}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <!-- /attached files -->#}
+{#                                {% endif %}#}
                             </div>
                             <!-- /sidebar content -->
 
@@ -1194,141 +580,6 @@
 
 {% block footerJavascript %}
     <script type="text/javascript">
-        $(document).ready(function() {
-            let startDateTime = new Date({{ stopwatch ? stopwatch.start | date('Y, (m-1), d, H, i, s') : '2014,8,26,2,1,0,0' }});// YYYY (M-1) D H m s (start time and date from DB)
-            {#let startDateTime = new Date({{ stopwatch.start | date('Y, (m-1), d, H, i, s') }});// YYYY (M-1) D H m s (start time and date from DB)#}
-            let startStamp = startDateTime.getTime();
-
-            let newDate = new Date();
-            let newStamp = newDate.getTime();
-
-            let timer;
-
-            function updateClock() {
-                newDate = new Date();
-                newStamp = newDate.getTime();
-                let diff = Math.round((newStamp-startStamp)/1000);
-
-                let d = Math.floor(diff/(24*60*60));
-                diff = diff-(d*24*60*60);
-                let h = Math.floor(diff/(60*60));
-                diff = diff-(h*60*60);
-                let m = Math.floor(diff/(60));
-                diff = diff-(m*60);
-                let s = diff;
-
-                document.getElementById("timeH").innerHTML = h;
-                document.getElementById("timeM").innerHTML = m;
-                document.getElementById("timeS").innerHTML = s;
-            }
-
-            setInterval(updateClock, 1000);
-
-            // Get the current position
-            navigator.geolocation.getCurrentPosition(
-                function success(position) {
-
-                    // Get the longitude and latitude from the position
-                    let lon = position.coords.longitude;
-                    let lat = position.coords.latitude;
-
-                    // Create the URL with the coordinates as parameters
-                    let urlStart = '{{ path('app_stopwatch_start', {id: taskLog.id}) }}?lon='+lon+'&lat='+lat;
-                    let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+lon+'&lat='+lat;
-
-                    // Set the HREF of the link
-                    $('#link-start').attr('href', urlStart);
-                    $('#link-stop').attr('href', urlStop);
-                },
-                function error(error) {
-                    // Handle error
-                }
-            );
-
-            // document.getElementById('stop').addEventListener('click', () => {
-            //     document.getElementById('ime').value = Math.round((newStamp-startStamp)/1000);
-            // });
-        });
-
-        // $(document).ready(function() {
-        //     var options = {
-        //         // target:        '#output1',   // target element(s) to be updated with server response
-        //         success:       editInfoResponse,  // post-submit callback
-        //         //         // target:        '#error',
-        //         //         // other available options:
-        //         //         //url:       url         // override for form's 'action' attribute
-        //         //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute
-        //                 dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
-        //         //         //clearForm: true        // clear all form fields after successful submit
-        //                 resetForm: true,        // reset the form after successful submit
-        //         //         success:   editInfoResponse
-        //         //         // $.ajax options can be used here too, for example:
-        //         //         //timeout:   3000
-        //     };
-        //
-        //     // bind form using 'ajaxForm'
-        //     $('#infoForma').ajaxForm(options);
-        // });
-        // function showResponse(responseText, statusText, xhr, $form)  {
-        //     // for normal html responses, the first argument to the success callback
-        //     // is the XMLHttpRequest object's responseText property
-        //
-        //     // if the ajaxForm method was passed an Options Object with the dataType
-        //     // property set to 'xml' then the first argument to the success callback
-        //     // is the XMLHttpRequest object's responseXML property
-        //
-        //     // if the ajaxForm method was passed an Options Object with the dataType
-        //     // property set to 'json' then the first argument to the success callback
-        //     // is the json data object returned by the server
-        //
-        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +
-        //         '\n\nThe output div should have already been updated with the responseText.');
-        // }
-        // $(function () {
-        //     var options = {
-        //         // target:        '#error',
-        //         // other available options:
-        //         //url:       url         // override for form's 'action' attribute
-        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute
-        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
-        //         //clearForm: true        // clear all form fields after successful submit
-        //         resetForm: true,        // reset the form after successful submit
-        //         success:   editInfoResponse
-        //         // $.ajax options can be used here too, for example:
-        //         //timeout:   3000
-        //     };
-        //     // bind form using ajaxForm
-        //     $('#infoForma').submit(function() {
-        //         // inside event callbacks 'this' is the DOM element so we first
-        //         // wrap it in a jQuery object and then invoke ajaxSubmit
-        //         $(this).ajaxSubmit(options);
-        //
-        //         // !!! Important !!!
-        //         // always return false to prevent standard browser submit and page navigation
-        //         return false;
-        //     });
-        // });
-        //
-        // function editInfoResponse(data) {
-        //     // 'data' is the json object returned from the server
-        //
-        //     if (data.success === 1) {
-        //         swal({
-        //             type: 'success',
-        //             title: 'Correct!',
-        //             html: 'All safe! Here is the answer from the tool:'
-        //         })
-        //     }
-        //     else {
-        //         var error = data.error_msg.toString();
-        //         swal({
-        //             type: 'error',
-        //             title: 'Correct!',
-        //             html: 'All safe! Here is the answer from the tool:'
-        //         })
-        //     }
-        //
-        // }
 
     </script>
 {% endblock footerJavascript %}

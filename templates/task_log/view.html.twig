@@ -114,9 +114,11 @@
                             <div class="card">
                                 <div class="card-header d-lg-flex py-lg-0">
                                     <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }} - {{ taskLog.user.getFullName() }}</h5>
-                                    <div class="mt-1 my-lg-auto ms-lg-auto">
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
-                                    </div>
+                                    {% if not task.isDeleted %}
+                                        <div class="mt-1 my-lg-auto ms-lg-auto">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
+                                        </div>
+                                    {% endif %}
                                 </div>
 
                                 <!-- Vertical form modal -->
@@ -127,7 +129,16 @@
                                     <div class="row">
                                         <div class="col-xl-12 col-sm-12">
                                             <div class="card">
-                                                <div class="card-body">
+                                                {% if stopwatchesActive is empty %}
+                                                    <div class="card-body">
+
+                                                    <div class="mt-2">
+                                                        <h6 class="mb-1">Ne postoji vremenskih zapisa za ovaj dnevnik.</h6>
+                                                    </div>
+
+                                                </div>
+                                                {% else %}
+                                                    <div class="card-body">
                                                     <div class="d-flex mb-3">
                                                         <div class="d-inline-flex">
                                                             <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time.hours }}:{{ time.minutes }}h</span>
@@ -196,6 +207,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
@@ -217,6 +229,8 @@
                                                                 #{{ loop.index }}: {{ stopwatch.created | date("d.m.Y H:i:s")}} - {{ stopwatch.deletedBy.getFullName() }} <span class="badge bg-warning bg-opacity-20 text-warning mx-2">Obrisan</span>
                                                             {% elseif not stopwatch.deleted and stopwatch.edited %}
                                                                 #{{ loop.index }}: {{ stopwatch.created | date("d.m.Y H:i:s")}} - {{ stopwatch.editedBy.getFullName() }} <span class="badge bg-info bg-opacity-20 text-info mx-2">Manuelno</span>
+                                                            {% elseif stopwatch.manually and not stopwatch.deleted %}
+                                                                #{{ loop.index }}: {{ stopwatch.created | date("d.m.Y H:i:s")}} <span class="badge bg-danger bg-opacity-20 text-danger mx-2">Naknadno zatvoren</span> *Predlažemo da ovaj vremenski zapis obrišete kako ne bi uticao na izveštaj i kreirate novi ručno.
                                                             {% else %}
                                                                 #{{ loop.index }}: {{ stopwatch.created | date("d.m.Y H:i:s")}} <span class="badge bg-success bg-opacity-20 text-success mx-2">Automatsko</span>
                                                             {% endif %}
@@ -294,12 +308,12 @@
                                                                         </div>
                                                                         <div class="card-footer d-flex justify-content-between align-items-center">
                                                                             <div class="d-flex align-items-center">
-
                                                                             </div>
-
-                                                                            <div class="d-inline-flex mb-0">
-                                                                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal_{{ loop.index }}" class="text-body ms-2"><i class="ph-trash"></i></a>
-                                                                            </div>
+                                                                            {% if not stopwatch.deleted %}
+                                                                                <div class="d-inline-flex mb-0">
+                                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal_{{ loop.index }}" class="text-body ms-2"><i class="ph-trash"></i></a>
+                                                                                </div>
+                                                                            {% endif %}
                                                                         </div>
                                                                     </div>
                                                                 </div>

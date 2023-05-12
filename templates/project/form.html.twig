@@ -301,6 +301,13 @@
                                 <div class="row">
                                     <div class="col-lg-6 ">
                                         <div class="mb-3">
+                                            {{ form_label(form.timerPriority, 'Prioritet dnevnika:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.timerPriority, {attr: { class: 'form-control required select' }}) }}
+                                            <span class="form-text">Izaberite prioritet dnevnika koji će se uzimati u obzir prilikom obračuna.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 ">
+                                        <div class="mb-3">
                                             {{ form_label(form.isEstimate, 'Vremenska procena:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.isEstimate, {attr: { class: 'form-control required select' }}) }}
                                             <span class="form-text">Procena vremenskog trajanja za svaki zadatak u okviru projekta. Može se definisati kasnije i na nivou zadataka.</span>

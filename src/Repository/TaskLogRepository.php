@@ -6,6 +6,7 @@ use App\Entity\Image;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
@@ -21,6 +22,25 @@ use Doctrine\Persistence\ManagerRegistry;
 class TaskLogRepository extends ServiceEntityRepository {
   public function __construct(ManagerRegistry $registry) {
     parent::__construct($registry, TaskLog::class);
+  }
+
+  public function findOneByUserPosition(Task $task, int $userPosition): ?TaskLog {
+
+    $log = $this->createQueryBuilder('tl')
+      ->innerJoin(User::class, 'u', Join::WITH, 'u = tl.user')
+      ->andWhere('tl.task = :taskId')
+      ->andWhere('u.pozicija = :position')
+      ->setParameter(':taskId', $task->getId())
+      ->setParameter(':position', $userPosition)
+      ->setMaxResults(1)
+      ->getQuery()
+      ->getResult();
+
+    if (!empty($log)) {
+      return $log[0];
+    }
+    return null;
+
   }
 
   public function findLogs(Task $task): array {

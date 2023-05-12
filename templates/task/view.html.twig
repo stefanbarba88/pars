@@ -121,6 +121,56 @@
 
                                         <div class="list-group list-group-borderless py-2">
 
+                                            <div class="d-flex list-group-item align-items-start">
+                                                <div class="me-2">
+                                                    <i class="ph-timer"></i>
+                                                </div>
+
+                                                <div class="flex-fill overflow-hidden">
+                                                    <div class="fw-semibold text-truncate text-body">
+                                                        Vreme iz prioritetnog dnevnika
+                                                    </div>
+                                                    <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
+                                                        <li class="list-inline-item">{{ time.priority }}</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class="ms-3">
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time.hoursTimePriority }}:{{ time.minutesTimePriority }}h</span>
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time.hoursRealTimePriority }}:{{ time.minutesRealTimePriority }}h</span>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex list-group-item align-items-start">
+                                                <div class="me-2">
+                                                    <i class="ph-timer"></i>
+                                                </div>
+
+                                                <div class="flex-fill overflow-hidden">
+                                                    <div class="fw-semibold text-truncate text-body">
+                                                        Ukupno vreme zadatku
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="ms-3">
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time.hours }}:{{ time.minutes }}h</span>
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time.hoursReal }}:{{ time.minutesReal }}h</span>
+                                                </div>
+                                            </div>
+{#                                            <div class="sidebar-section-body">#}
+{#                                                <div class="d-flex justify-content-center text-center">#}
+{#                                                    <div id="time-elapsed"></div>#}
+{#                                                    <div>#}
+{#                                                        <span class="display-6 lh-1 m-0">00</span>#}
+{#                                                        <div class="mt-2">sati</div>#}
+{#                                                    </div>#}
+{#                                                    <div class="mx-1 my-2">:</div>#}
+{#                                                    <div>#}
+{#                                                        <span class="display-6 lh-1 m-0">00</span>#}
+{#                                                        <div class="mt-2">minuta</div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </div>#}
                                         </div>
                                     </div>
                                 </div>
@@ -374,93 +424,93 @@
 
 
 
-                        <!-- Right sidebar component User -->
-                        <div class="sidebar sidebar-component sidebar-collapsed bg-transparent shadow-none order-1 order-lg-2 ms-lg-3 mb-3">
+{#                        <!-- Right sidebar component User -->#}
+{#                        <div class="sidebar sidebar-component sidebar-collapsed bg-transparent shadow-none order-1 order-lg-2 ms-lg-3 mb-3">#}
 
-                            <!-- Sidebar content -->
-                            <div class="sidebar-content">
-                                <div class="card">
-                                    <div class="card-header d-flex">
-                                        <h5 class="mb-0">
-                                            <i class="ph-folder me-2"></i>
-                                            Downloaded files
-                                        </h5>
+{#                            <!-- Sidebar content -->#}
+{#                            <div class="sidebar-content">#}
+{#                                <div class="card">#}
+{#                                    <div class="card-header d-flex">#}
+{#                                        <h5 class="mb-0">#}
+{#                                            <i class="ph-folder me-2"></i>#}
+{#                                            Downloaded files#}
+{#                                        </h5>#}
 
-                                        <div class="ms-auto">
-                                            <span class="text-muted">(93)</span>
-                                        </div>
-                                    </div>
+{#                                        <div class="ms-auto">#}
+{#                                            <span class="text-muted">(93)</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
 
-                                    <div class="list-group list-group-borderless py-2">
-                                        <a href="#" class="list-group-item list-group-item-action">
-                                            <i class="ph-file-pdf me-3"></i>
-                                            Hello_exotic_staunch.pdf <span class="badge bg-success ms-auto">New</span>
-                                        </a>
+{#                                    <div class="list-group list-group-borderless py-2">#}
+{#                                        <a href="#" class="list-group-item list-group-item-action">#}
+{#                                            <i class="ph-file-pdf me-3"></i>#}
+{#                                            Hello_exotic_staunch.pdf <span class="badge bg-success ms-auto">New</span>#}
+{#                                        </a>#}
 
-                                        <a href="#" class="list-group-item list-group-item-action">
-                                            <i class="ph-file-doc me-3"></i>
-                                            That_well_ecstatically.docx
-                                        </a>
+{#                                        <a href="#" class="list-group-item list-group-item-action">#}
+{#                                            <i class="ph-file-doc me-3"></i>#}
+{#                                            That_well_ecstatically.docx#}
+{#                                        </a>#}
 
-                                        <a href="#" class="list-group-item list-group-item-action">
-                                            <i class="ph-file-csv me-3"></i>
-                                            Shared_coast_concurrent.csv
-                                            <span class="badge badge-secondary ml-auto">Draft</span>
-                                        </a>
+{#                                        <a href="#" class="list-group-item list-group-item-action">#}
+{#                                            <i class="ph-file-csv me-3"></i>#}
+{#                                            Shared_coast_concurrent.csv#}
+{#                                            <span class="badge badge-secondary ml-auto">Draft</span>#}
+{#                                        </a>#}
 
-                                        <a href="#" class="list-group-item list-group-item-action">
-                                            <i class="ph-file-doc me-3"></i>
-                                            Into_intrepid_belated.docx
-                                        </a>
+{#                                        <a href="#" class="list-group-item list-group-item-action">#}
+{#                                            <i class="ph-file-doc me-3"></i>#}
+{#                                            Into_intrepid_belated.docx#}
+{#                                        </a>#}
 
-                                        <a href="#" class="list-group-item list-group-item-action">
-                                            <i class="ph-arrow-right me-3"></i>
-                                            Show all files (93)
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- dnevnici -->
-                                <div class="card">
-                                    <div class="sidebar-section-header border-bottom">
-                                        <span class="fw-semibold">Zaduženi korisnici</span>
-                                        {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
-                                            <a href="{{ path('app_task_reassign', {id: task.id} ) }}"> <i class="ph-note-pencil mx-1"></i></a>
-                                        {% endif %}
-                                    </div>
+{#                                        <a href="#" class="list-group-item list-group-item-action">#}
+{#                                            <i class="ph-arrow-right me-3"></i>#}
+{#                                            Show all files (93)#}
+{#                                        </a>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <!-- dnevnici -->#}
+{#                                <div class="card">#}
+{#                                    <div class="sidebar-section-header border-bottom">#}
+{#                                        <span class="fw-semibold">Zaduženi korisnici</span>#}
+{#                                        {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}#}
+{#                                            <a href="{{ path('app_task_reassign', {id: task.id} ) }}"> <i class="ph-note-pencil mx-1"></i></a>#}
+{#                                        {% endif %}#}
+{#                                    </div>#}
 
-                                    <div class="sidebar-section-body">
-                                        {% for log in taskLogs %}
-                                            <div class="d-flex align-items-start mb-3">
-                                            <div class="me-2">
-                                                <i class="ph-clipboard"></i>
-                                            </div>
+{#                                    <div class="sidebar-section-body">#}
+{#                                        {% for log in taskLogs %}#}
+{#                                            <div class="d-flex align-items-start mb-3">#}
+{#                                            <div class="me-2">#}
+{#                                                <i class="ph-clipboard"></i>#}
+{#                                            </div>#}
 
-                                            <div class="flex-fill overflow-hidden">
-                                                <div class="fw-semibold text-truncate">
-                                                    <a href="{{ path('app_task_log_view',{id: log.log.id} ) }}" class="text-body">
-                                                        {{ log.log.user.getFullName }}
-                                                    </a>
-                                                </div>
-                                            {% if log.lastEdit is not null  %}
-                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                    <li class="list-inline-item">Izmena: {{ log.lastEdit.updated | date("d.m.Y H:i:s")}}</li>
-                                                </ul>
-                                            {% endif %}
-                                            </div>
+{#                                            <div class="flex-fill overflow-hidden">#}
+{#                                                <div class="fw-semibold text-truncate">#}
+{#                                                    <a href="{{ path('app_task_log_view',{id: log.log.id} ) }}" class="text-body">#}
+{#                                                        {{ log.log.user.getFullName }}#}
+{#                                                    </a>#}
+{#                                                </div>#}
+{#                                            {% if log.lastEdit is not null  %}#}
+{#                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">#}
+{#                                                    <li class="list-inline-item">Izmena: {{ log.lastEdit.updated | date("d.m.Y H:i:s")}}</li>#}
+{#                                                </ul>#}
+{#                                            {% endif %}#}
+{#                                            </div>#}
 
-                                            <div class="ms-3">
-                                                {% if log.count > 0  %}
-                                                    <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ log.count }}</span>
-                                                {% else %}
-                                                    <span class="badge bg-warning align-self-center rounded-pill ms-auto">{{ log.count }}</span>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        {% endfor %}
-                                    </div>
+{#                                            <div class="ms-3">#}
+{#                                                {% if log.count > 0  %}#}
+{#                                                    <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ log.count }}</span>#}
+{#                                                {% else %}#}
+{#                                                    <span class="badge bg-warning align-self-center rounded-pill ms-auto">{{ log.count }}</span>#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        {% endfor %}#}
+{#                                    </div>#}
 
-                                </div>
-                                <!-- /dnevnici -->
+{#                                </div>#}
+{#                                <!-- /dnevnici -->#}
 
 {#                                {% if not task.isDeleted %}#}
 {#                                    <!-- Attached files -->#}
@@ -501,11 +551,11 @@
 {#                                    </div>#}
 {#                                    <!-- /attached files -->#}
 {#                                {% endif %}#}
-                            </div>
-                            <!-- /sidebar content -->
+{#                            </div>#}
+{#                            <!-- /sidebar content -->#}
 
-                        </div>
-                        <!-- /right sidebar component user -->
+{#                        </div>#}
+{#                        <!-- /right sidebar component user -->#}
 
                     </div>
 

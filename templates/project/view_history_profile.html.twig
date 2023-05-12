@@ -206,6 +206,12 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">
+                                            <div class="col-4">Prioritet dnevnika:</div>
+                                            <div class="col-8">
+                                                {{ projectH.timerPriority }}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Vremenska procena:</div>
                                             <div class="col-8">
                                                 {% if projectH.getIsEstimate %}
@@ -215,7 +221,7 @@
                                                 {% endif %}
                                             </div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2 ">
                                             <div class="col-4">Zaokruživanje vremena:</div>
                                             <div class="col-8">
                                                 {% if projectH.getIsTimeRoundUp %}
@@ -226,13 +232,13 @@
                                             </div>
                                         </div>
                                         {% if projectH.getIsTimeRoundUp %}
-                                            <div class="row p-2">
+                                            <div class="row p-2 bg-light">
                                                 <div class="col-4">Interval zaokruživanja:</div>
                                                 <div class="col-8">
                                                     {{ projectH.roundingInterval }} min
                                                 </div>
                                             </div>
-                                            <div class="row p-2 bg-light">
+                                            <div class="row p-2">
                                                 <div class="col-4">Minimalni unos:</div>
                                                 <div class="col-8">
                                                     {{ projectH.minEntry }} min
@@ -248,11 +254,11 @@
                                         </div>
 
                                         <div class="card-body">
-                                            <div class="row p-2">
+                                            <div class="row p-2 bg-light">
                                                 <div class="col-4">Izmenio:</div>
                                                 <div class="col-8">{{ projectH.editBy | default('/') }}</div>
                                             </div>
-                                            <div class="row p-2 bg-light">
+                                            <div class="row p-2">
                                                 <div class="col-4">Vreme:</div>
                                                 <div class="col-8">{{ projectHistory.created | date("d.m.Y") }} u {{ projectHistory.created | date("H:i:s") }}</div>
                                             </div>

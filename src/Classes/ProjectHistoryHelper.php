@@ -13,6 +13,7 @@ class ProjectHistoryHelper {
   private $isClientView;
   private $category;
   private $client;
+  private $timerPriority;
   private $label;
   private $editBy;
   private $payment;
@@ -24,7 +25,7 @@ class ProjectHistoryHelper {
   private $roundingInterval;
   private $deadline;
 
-  public function __construct($id, $title, $description, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $category, $client, $label, $editBy, $payment, $price, $pricePerHour, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
+  public function __construct($id, $title, $description, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $category, $client, $timerPriority, $label, $editBy, $payment, $price, $pricePerHour, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
     $this->id = $id;
     $this->title = $title;
     $this->description = $description;
@@ -44,6 +45,7 @@ class ProjectHistoryHelper {
     $this->minEntry = $minEntry;
     $this->roundingInterval = $roundingInterval;
     $this->deadline = $deadline;
+    $this->timerPriority = $timerPriority;
   }
 
   /**
@@ -310,6 +312,20 @@ class ProjectHistoryHelper {
    */
   public function setDeadline($deadline): void {
     $this->deadline = $deadline;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getTimerPriority() {
+    return $this->timerPriority;
+  }
+
+  /**
+   * @param mixed $timerPriority
+   */
+  public function setTimerPriority($timerPriority): void {
+    $this->timerPriority = $timerPriority;
   }
 
 

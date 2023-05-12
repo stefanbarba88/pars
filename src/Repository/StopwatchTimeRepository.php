@@ -2,14 +2,19 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\PrioritetData;
+use App\Classes\Data\TimerPriorityData;
 use App\Classes\Data\UserRolesData;
+use App\Entity\Image;
 use App\Entity\StopwatchTime;
+use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -156,8 +161,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
     $hours = 0;
     $minutes = 0;
-    $hoursR = 0;
-    $minutesR = 0;
+    $hoursReal = 0;
+    $minutesReal = 0;
 
 //    $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog]);
     $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $taskLog, 'isDeleted' => false]);
@@ -165,17 +170,17 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     foreach ($times as $time) {
         $hours = $hours + intdiv($time->getDiffRounded(), 60);
         $minutes = $minutes + $time->getDiffRounded() % 60;
-        $hoursR = $hoursR + intdiv($time->getDiff(), 60);
-        $minutesR = $minutesR + $time->getDiff() % 60;
+        $hoursReal = $hoursReal + intdiv($time->getDiff(), 60);
+        $minutesReal = $minutesReal + $time->getDiff() % 60;
     }
 
     $minutesU = $hours*60 + $minutes;
-    $minutesRU = $hoursR*60 + $minutesR;
+    $minutesRealU = $hoursReal*60 + $minutesReal;
 
     $h = intdiv($minutesU, 60);
     $m = $minutesU % 60;
-    $hR = intdiv($minutesRU, 60);
-    $mR = $minutesRU % 60;
+    $hR = intdiv($minutesRealU, 60);
+    $mR = $minutesRealU % 60;
 
     return [
       'hours' => $h,
@@ -186,9 +191,142 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
   }
 
+  public function getStopwatchTimeByTask(Task $task): array {
+
+    $priority = $task->getProject()->getTimerPriority();
+    $priorityTitle = $task->getProject()->getTimerPriorityJson();
+
+    $hoursTotalRounded = 0;
+    $minutesTotalRounded = 0;
+    $hoursTotalReal = 0;
+    $minutesTotalReal = 0;
+
+    $hoursRounded = 0;
+    $minutesRounded = 0;
+    $hoursReal = 0;
+    $minutesReal = 0;
+
+    $logs = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $task]);
+
+    foreach ($logs as $log) {
+      $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $log, 'isDeleted' => false]);
+      foreach ($times as $time) {
+        $hoursTotalRounded = $hoursTotalRounded + intdiv($time->getDiffRounded(), 60);
+        $minutesTotalRounded = $minutesTotalRounded + $time->getDiffRounded() % 60;
+        $hoursTotalReal = $hoursTotalReal + intdiv($time->getDiff(), 60);
+        $minutesTotalReal = $minutesTotalReal + $time->getDiff() % 60;
+      }
+
+    }
+
+    $minutesRoundedU = $hoursTotalRounded * 60 + $minutesTotalRounded;
+    $minutesRealU = $hoursTotalReal * 60 + $minutesTotalReal;
+
+    $h = intdiv($minutesRoundedU, 60);
+    $m = $minutesRoundedU % 60;
+    $hR = intdiv($minutesRealU, 60);
+    $mR = $minutesRealU % 60;
+
+
+    if ($priority == TimerPriorityData::FIRST_ASSIGN) {
+      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $task], ['id' => 'ASC']);
+    } elseif ($priority == TimerPriorityData::ROLE_GEO) {
+      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneByUserPosition($task, 1);
+    } elseif ($priority == TimerPriorityData::ROLE_FIG) {
+      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneByUserPosition($task, 2);
+    }
+
+    if(!empty($logPriority)) {
+      $timesPriority = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $logPriority, 'isDeleted' => false]);
+      foreach ($timesPriority as $time) {
+        $hoursRounded = $hoursRounded + intdiv($time->getDiffRounded(), 60);
+        $minutesRounded = $minutesRounded + $time->getDiffRounded() % 60;
+        $hoursReal = $hoursReal + intdiv($time->getDiff(), 60);
+        $minutesReal = $minutesReal + $time->getDiff() % 60;
+      }
+      $minutes = $hoursRounded * 60 + $minutesRounded;
+      $minutesR = $hoursReal * 60 + $minutesReal;
+
+      $htP = intdiv($minutes, 60);
+      $mtP = $minutes % 60;
+      $hRtP = intdiv($minutesR, 60);
+      $mRtP = $minutesR % 60;
+
+      return [
+        'hours' => $h,
+        'minutes' => $m,
+        'hoursReal' => $hR,
+        'minutesReal' => $mR,
+        'hoursTimePriority' => $htP,
+        'minutesTimePriority' => $mtP,
+        'hoursRealTimePriority' => $hRtP,
+        'minutesRealTimePriority' => $mRtP,
+        'priority' => $priorityTitle
+      ];
+    }
+
+    return [
+      'hours' => $h,
+      'minutes' => $m,
+      'hoursReal' => $hR,
+      'minutesReal' => $mR,
+      'hoursTimePriority' => $h,
+      'minutesTimePriority' => $m,
+      'hoursRealTimePriority' => $hR,
+      'minutesRealTimePriority' => $mR,
+      'priority' => $priorityTitle
+    ];
+  }
+
   public function lastEdit(TaskLog $taskLog): ?StopwatchTime {
     return $this->getEntityManager()->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $taskLog],['updated' => 'DESC']);
   }
+
+//  public function findOneByUserPosition(TaskLog $taskLog, int $userPosition): ?StopwatchTime {
+//
+//      $stopwatches = [];
+//
+//    return $this->createQueryBuilder('s')
+//      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+//      ->innerJoin(StopwatchTime::class, 's', Join::WITH, 'tl = s.taskLog')
+//      ->innerJoin(Image::class, 'i', Join::WITH, 's = i.stopwatchTime')
+//      ->andWhere('t.id = :taskId')
+//      ->andWhere('s.isDeleted = 0')
+//      ->setParameter(':taskId', $task->getId())
+//      ->getQuery()
+//      ->getResult();
+////      foreach ($times as $time) {
+////        $stopwatches [] = [
+////          'id' => $time->getId(),
+////          'hours' => intdiv($time->getDiffRounded(), 60),
+////          'minutes' => $time->getDiffRounded() % 60,
+////          'hoursReal' => intdiv($time->getDiff(), 60),
+////          'minutesReal' => $time->getDiff() % 60,
+////          'start' => $time->getStart(),
+////          'stop' => $time->getStop(),
+////          'startLon' => $time->getLon(),
+////          'startLat' => $time->getLat(),
+////          'stopLon' => $time->getLonStop(),
+////          'stopLat' => $time->getLatStop(),
+////          'description' => $time->getDescription(),
+////          'min' => $time->getMin(),
+////          'activity' => $time->getActivity(),
+////          'images' => $time->getImage(),
+////          'pdfs' => $time->getPdf(),
+////          'created' => $time->getCreated(),
+////          'edited' => $time->isIsEdited(),
+////          'editedBy' => $time->getEditedBy(),
+////          'deleted' => $time->isIsDeleted(),
+////          'deletedBy' => $time->getDeletedBy(),
+////          'manually' => $time->isIsManuallyClosed(),
+////        ];
+////      }
+//
+//
+//
+//
+//    return $this->getEntityManager()->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $taskLog],['updated' => 'DESC']);
+//  }
 
   public function setTime(StopwatchTime $stopwatch, int $hours, int $minutes): StopwatchTime {
 

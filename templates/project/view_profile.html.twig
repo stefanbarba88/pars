@@ -211,6 +211,12 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">
+                                            <div class="col-4">Prioritet dnevnika:</div>
+                                            <div class="col-8">
+{{ project.getTimerPriorityJson() }}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Vremenska procena:</div>
                                             <div class="col-8">
                                                 {% if project.estimate %}
@@ -220,7 +226,7 @@
                                                 {% endif %}
                                             </div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2 ">
                                             <div class="col-4">Zaokruživanje vremena:</div>
                                             <div class="col-8">
                                                 {% if project.timeRoundUp %}
@@ -231,13 +237,13 @@
                                             </div>
                                         </div>
                                         {% if project.timeRoundUp %}
-                                            <div class="row p-2">
+                                            <div class="row p-2 bg-light">
                                                 <div class="col-4">Interval zaokruživanja:</div>
                                                 <div class="col-8">
                                                     {{ project.roundingInterval }} min
                                                 </div>
                                             </div>
-                                            <div class="row p-2 bg-light">
+                                            <div class="row p-2">
                                                 <div class="col-4">Minimalni unos:</div>
                                                 <div class="col-8">
                                                     {{ project.minEntry }} min
@@ -252,12 +258,12 @@
                                             <h5 class="mb-0">Verzija kreirana</h5>
                                         </div>
 
-                                        <div class="card-body">
+                                        <div class="card-body bg-light">
                                             <div class="row p-2">
                                                 <div class="col-4">Izmenio:</div>
                                                 <div class="col-8"><a href="{{ path('app_user_profile_view', { id: project.editBy.id}) }}">{{ project.editBy.getFullName() }}</a></div>
                                             </div>
-                                            <div class="row p-2 bg-light">
+                                            <div class="row p-2">
                                                 <div class="col-4">Vreme:</div>
                                                 <div class="col-8">{{ project.updated | date("d.m.Y") }} u {{ project.updated | date("H:i:s") }}</div>
                                             </div>

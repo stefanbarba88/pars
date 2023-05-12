@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\RoundingIntervalData;
+use App\Classes\Data\TimerPriorityData;
 use App\Classes\Data\VrstaPlacanjaData;
 use App\Entity\Category;
 use App\Entity\Client;
@@ -141,6 +142,17 @@ class ProjectFormType extends AbstractType {
         'required' => false,
         'placeholder' => '--Izaberite model zaokruživanja--',
         'choices' => RoundingIntervalData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+
+      ->add('timerPriority', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'required' => false,
+        'placeholder' => '--Izaberite prioritet dnevnika--',
+        'choices' => TimerPriorityData::form(),
         'expanded' => false,
         'multiple' => false,
       ])

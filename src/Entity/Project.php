@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Classes\Data\TimerPriorityData;
 use App\Classes\Slugify;
 use App\Repository\ProjectRepository;
 use DateTimeImmutable;
@@ -74,6 +75,9 @@ class Project implements JsonSerializable {
 
   #[ORM\Column(type: Types::SMALLINT)]
   private ?int $payment = null;
+
+  #[ORM\Column(type: Types::SMALLINT)]
+  private ?int $timerPriority = null;
 
   #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
   private ?string $price = null;
@@ -151,6 +155,7 @@ class Project implements JsonSerializable {
       'category' => $this->category->getTitle(),
       'editBy' => $this->getEditByJson(),
       'payment' => $this->getPayment(),
+      'timerPriority' => $this->getTimerPriorityJson(),
       'price' => $this->getPrice(),
       'pricePerHour' => $this->getPricePerHour(),
       'pricePerTask' => $this->getPricePerTask(),
@@ -371,6 +376,20 @@ class Project implements JsonSerializable {
     $this->payment = $payment;
 
     return $this;
+  }
+
+  public function getTimerPriority(): ?int {
+    return $this->timerPriority;
+  }
+
+  public function setTimerPriority(int $timerPriority): self {
+    $this->timerPriority = $timerPriority;
+
+    return $this;
+  }
+
+  public function getTimerPriorityJson(): ?string {
+    return TimerPriorityData::getPriorityByType($this->timerPriority);
   }
 
   public function getPrice(): ?string {

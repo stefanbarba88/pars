@@ -167,6 +167,15 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.isViewLog, 'Uvid u dnevnik:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.isViewLog, {attr: { class: 'form-control required select' }}) }}
+                                            <span class="form-text">Zaposleni koji rade na istom zadatku imaju uvid jedan drugom u dnevnik.</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </fieldset>
 
                             <fieldset class="mb-3">

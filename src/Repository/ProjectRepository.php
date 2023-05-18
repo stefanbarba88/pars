@@ -5,8 +5,11 @@ namespace App\Repository;
 use App\Classes\Data\VrstaPlacanjaData;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
+use App\Entity\Task;
+use App\Entity\TaskLog;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -41,6 +44,28 @@ class ProjectRepository extends ServiceEntityRepository {
     $project->setCreatedBy($user);
 
     return $this->save($project);
+
+  }
+
+  public function getProjectsByUser(User $user) {
+
+    return $this->createQueryBuilder('p')
+      ->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->andWhere('tl.user = :userId')
+      ->setParameter(':userId', $user->getId())
+      ->addOrderBy('p.isSuspended', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+  }
+
+  public function getAllProjects() {
+
+    return $this->createQueryBuilder('p')
+      ->addOrderBy('p.isSuspended', 'ASC')
+      ->getQuery()
+      ->getResult();
 
   }
 

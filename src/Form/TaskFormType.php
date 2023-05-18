@@ -24,26 +24,45 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class TaskFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
+
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getTask(): ?Task {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $task = $dataObject->getTask();
+
+   if (is_null($task->getProject())) {
+     $builder
+       ->add('project', EntityType::class, [
+         'placeholder' => '--Izaberite projekat--',
+         'class' => Project::class,
+         'query_builder' => function (EntityRepository $em) {
+           return $em->createQueryBuilder('g')
+             ->andWhere('g.isSuspended = :isSuspended')
+             ->setParameter(':isSuspended', 0)
+             ->orderBy('g.id', 'ASC');
+         },
+         'choice_label' => 'title',
+         'expanded' => false,
+         'multiple' => false,
+       ]);
+   }
+
     $builder
       ->add('title')
       ->add('description', TextareaType::class, [
         'required' => false
-      ])
-      ->add('project', EntityType::class, [
-        'placeholder' => '--Izaberite projekat--',
-        'class' => Project::class,
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.isSuspended = :isSuspended')
-            ->setParameter(':isSuspended', 0)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => false,
       ])
       ->add('label', EntityType::class, [
         'required' => false,

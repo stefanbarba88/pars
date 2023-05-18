@@ -8,7 +8,4 @@ class TaskStatusData {
   public const ZAVRSENO = 2;
 
 
-
-
-
 }

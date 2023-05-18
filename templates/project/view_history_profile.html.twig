@@ -133,6 +133,16 @@
                                                 {% endfor %}
                                             </div>
                                         </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Uvid u dnevnik:</div>
+                                            <div class="col-8">
+                                                {% if projectH.getIsViewLog %}
+                                                    <i class="ph-eye"></i>
+                                                {% else %}
+                                                    <i class="ph-eye-slash"></i>
+                                                {% endif %}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card">

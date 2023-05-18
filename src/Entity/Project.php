@@ -62,6 +62,9 @@ class Project implements JsonSerializable {
   private bool $isTimeRoundUp = false;
 
   #[ORM\Column]
+  private bool $isViewLog = false;
+
+  #[ORM\Column]
   private bool $isEstimate = false;
 
   #[ORM\Column]
@@ -150,6 +153,7 @@ class Project implements JsonSerializable {
       'isTimeRoundUp' => $this->isTimeRoundUp(),
       'isEstimate' => $this->isEstimate(),
       'isClientView' => $this->isClientView(),
+      'isViewLog' => $this->isViewLog(),
       'label' => $this->getLabelJson(),
       'client' => $this->getClientsJson(),
       'category' => $this->category->getTitle(),
@@ -305,6 +309,20 @@ class Project implements JsonSerializable {
    */
   public function setIsClientView(bool $isClientView): void {
     $this->isClientView = $isClientView;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isViewLog(): bool {
+    return $this->isViewLog;
+  }
+
+  /**
+   * @param bool $isViewLog
+   */
+  public function setIsViewLog(bool $isViewLog): void {
+    $this->isViewLog = $isViewLog;
   }
 
   /**

@@ -107,165 +107,165 @@
 
                         <!-- Left content -->
                         <div class="flex-1 order-2 order-lg-1">
-
-
-                            <div class="row">
-                                <div class="col-sm-6 col-xl-4">
-                                    <div class="card">
-                                        <div class="card-header d-flex">
-                                            <h5 class="mb-0">
-                                                <i class="ph-timer me-2"></i>
-                                                Vreme
-                                            </h5>
-                                        </div>
-
-                                        <div class="list-group list-group-borderless py-2">
-
-                                            <div class="d-flex list-group-item align-items-start">
-                                                <div class="me-2">
-                                                    <i class="ph-timer"></i>
-                                                </div>
-
-                                                <div class="flex-fill overflow-hidden">
-                                                    <div class="fw-semibold text-truncate text-body">
-                                                        Vreme iz prioritetnog dnevnika
-                                                    </div>
-                                                    <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                        <li class="list-inline-item">{{ time.priority }}</li>
-                                                    </ul>
-                                                </div>
-
-                                                <div class="ms-3">
-                                                    <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time.hoursTimePriority }}:{{ time.minutesTimePriority }}h</span>
-                                                    <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time.hoursRealTimePriority }}:{{ time.minutesRealTimePriority }}h</span>
-                                                </div>
+                            {% if not is_granted('ROLE_EMPLOYEE') %}
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-4">
+                                        <div class="card">
+                                            <div class="card-header d-flex">
+                                                <h5 class="mb-0">
+                                                    <i class="ph-timer me-2"></i>
+                                                    Vreme
+                                                </h5>
                                             </div>
-                                            <div class="d-flex list-group-item align-items-start">
-                                                <div class="me-2">
-                                                    <i class="ph-timer"></i>
-                                                </div>
 
-                                                <div class="flex-fill overflow-hidden">
-                                                    <div class="fw-semibold text-truncate text-body">
-                                                        Ukupno vreme zadatku
-                                                    </div>
+                                            <div class="list-group list-group-borderless py-2">
 
-                                                </div>
-
-                                                <div class="ms-3">
-                                                    <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time.hours }}:{{ time.minutes }}h</span>
-                                                    <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time.hoursReal }}:{{ time.minutesReal }}h</span>
-                                                </div>
-                                            </div>
-{#                                            <div class="sidebar-section-body">#}
-{#                                                <div class="d-flex justify-content-center text-center">#}
-{#                                                    <div id="time-elapsed"></div>#}
-{#                                                    <div>#}
-{#                                                        <span class="display-6 lh-1 m-0">00</span>#}
-{#                                                        <div class="mt-2">sati</div>#}
-{#                                                    </div>#}
-{#                                                    <div class="mx-1 my-2">:</div>#}
-{#                                                    <div>#}
-{#                                                        <span class="display-6 lh-1 m-0">00</span>#}
-{#                                                        <div class="mt-2">minuta</div>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4">
-                                    <div class="card">
-                                        <div class="card-header d-flex">
-                                            <h5 class="mb-0">
-                                                <i class="ph-users-three me-2"></i>
-                                                Zaduženi korisnici
-                                                {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
-                                                    <a href="{{ path('app_task_reassign', {id: task.id} ) }}"> <i class="ph-note-pencil mx-1"></i></a>
-                                                {% endif %}
-                                            </h5>
-                                        </div>
-
-                                        <div class="list-group list-group-borderless py-2">
-                                            {% for log in taskLogs %}
                                                 <div class="d-flex list-group-item align-items-start">
                                                     <div class="me-2">
-                                                        <i class="ph-clipboard"></i>
+                                                        <i class="ph-timer"></i>
                                                     </div>
 
                                                     <div class="flex-fill overflow-hidden">
-                                                        <div class="fw-semibold text-truncate">
-                                                            <a href="{{ path('app_task_log_view',{id: log.log.id} ) }}" class="text-body">
-                                                                {{ log.log.user.getFullName }}
-                                                            </a>
+                                                        <div class="fw-semibold text-truncate text-body">
+                                                            Vreme iz prioritetnog dnevnika
                                                         </div>
-                                                        {% if log.lastEdit is not null  %}
-                                                            <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
-                                                                <li class="list-inline-item">Izmena: {{ log.lastEdit.updated | date("d.m.Y H:i:s")}}</li>
-                                                            </ul>
-                                                        {% endif %}
+                                                        <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
+                                                            <li class="list-inline-item">{{ time.priority }}</li>
+                                                        </ul>
                                                     </div>
 
                                                     <div class="ms-3">
-                                                        {% if log.count > 0  %}
-                                                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ log.count }}</span>
-                                                        {% else %}
-                                                            <span class="badge bg-warning align-self-center rounded-pill ms-auto">{{ log.count }}</span>
-                                                        {% endif %}
+                                                        <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time.hoursTimePriority }}:{{ time.minutesTimePriority }}h</span>
+                                                        <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time.hoursRealTimePriority }}:{{ time.minutesRealTimePriority }}h</span>
                                                     </div>
                                                 </div>
-                                            {% endfor %}
+                                                <div class="d-flex list-group-item align-items-start">
+                                                    <div class="me-2">
+                                                        <i class="ph-timer"></i>
+                                                    </div>
+
+                                                    <div class="flex-fill overflow-hidden">
+                                                        <div class="fw-semibold text-truncate text-body">
+                                                            Ukupno vreme zadatku
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="ms-3">
+                                                        <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time.hours }}:{{ time.minutes }}h</span>
+                                                        <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time.hoursReal }}:{{ time.minutesReal }}h</span>
+                                                    </div>
+                                                </div>
+                                                {#                                            <div class="sidebar-section-body">#}
+                                                {#                                                <div class="d-flex justify-content-center text-center">#}
+                                                {#                                                    <div id="time-elapsed"></div>#}
+                                                {#                                                    <div>#}
+                                                {#                                                        <span class="display-6 lh-1 m-0">00</span>#}
+                                                {#                                                        <div class="mt-2">sati</div>#}
+                                                {#                                                    </div>#}
+                                                {#                                                    <div class="mx-1 my-2">:</div>#}
+                                                {#                                                    <div>#}
+                                                {#                                                        <span class="display-6 lh-1 m-0">00</span>#}
+                                                {#                                                        <div class="mt-2">minuta</div>#}
+                                                {#                                                    </div>#}
+                                                {#                                                </div>#}
+                                                {#                                            </div>#}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4">
-                                    <div class="card">
-                                        <div class="card-header d-flex">
-                                            <h5 class="mb-0">
-                                                <i class="ph-files me-2"></i>
-                                                Dokumenta
-                                            </h5>
-                                        </div>
+                                    <div class="col-sm-6 col-xl-4">
+                                        <div class="card">
+                                            <div class="card-header d-flex">
+                                                <h5 class="mb-0">
+                                                    <i class="ph-users-three me-2"></i>
+                                                    Zaduženi korisnici
+                                                    {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
+                                                        <a href="{{ path('app_task_reassign', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>
+                                                    {% endif %}
+                                                </h5>
+                                            </div>
 
-                                        <div class="list-group list-group-borderless py-2">
-                                            {% if pdfs is empty %}
-                                                <div class="d-flex align-items-start mb-3">
-                                                    <div class="list-group-item">
-                                                        <div class="fw-semibold text-truncate">Nema dokumenata</div>
-                                                    </div>
-
-                                                </div>
-                                            {% else %}
-                                                {% for pdf in pdfs %}
+                                            <div class="list-group list-group-borderless py-2">
+                                                {% for log in taskLogs %}
                                                     <div class="d-flex list-group-item align-items-start">
                                                         <div class="me-2">
-                                                            <i class="ph-file-pdf"></i>
+                                                            <i class="ph-clipboard"></i>
                                                         </div>
+
                                                         <div class="flex-fill overflow-hidden">
-                                                            <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+                                                            <div class="fw-semibold text-truncate">
+                                                                <a href="{{ path('app_task_log_view',{id: log.log.id} ) }}" class="text-body">
+                                                                    {{ log.log.user.getFullName }}
+                                                                </a>
+                                                            </div>
+                                                            {% if log.lastEdit is not null  %}
+                                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
+                                                                    <li class="list-inline-item">Izmena: {{ log.lastEdit.updated | date("d.m.Y H:i:s")}}</li>
+                                                                </ul>
+                                                            {% endif %}
                                                         </div>
+
                                                         <div class="ms-3">
-                                                            <a href="{{ asset(pdf.path) }}" download class="text-body">
-                                                                <i class="ph-download-simple"></i>
-                                                            </a>
+                                                            {% if log.count > 0  %}
+                                                                <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                            {% else %}
+                                                                <span class="badge bg-warning align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
                                                 {% endfor %}
-                                            {% endif %}
+                                            </div>
                                         </div>
                                     </div>
+                                    <div class="col-sm-6 col-xl-4">
+                                        <div class="card">
+                                            <div class="card-header d-flex">
+                                                <h5 class="mb-0">
+                                                    <i class="ph-files me-2"></i>
+                                                    Dokumenta
+                                                </h5>
+                                            </div>
+
+                                            <div class="list-group list-group-borderless py-2">
+                                                {% if pdfs is empty %}
+                                                    <div class="d-flex align-items-start mb-3">
+                                                        <div class="list-group-item">
+                                                            <div class="fw-semibold text-truncate">Nema dokumenata</div>
+                                                        </div>
+
+                                                    </div>
+                                                {% else %}
+                                                    {% for pdf in pdfs %}
+                                                        <div class="d-flex list-group-item align-items-start">
+                                                            <div class="me-2">
+                                                                <i class="ph-file-pdf"></i>
+                                                            </div>
+                                                            <div class="flex-fill overflow-hidden">
+                                                                <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+                                                            </div>
+                                                            <div class="ms-3">
+                                                                <a href="{{ asset(pdf.path) }}" download class="text-body">
+                                                                    <i class="ph-download-simple"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
                                 </div>
-
-
-
-                            </div>
-                            <!-- Task overview -->
-
+                            {% endif %}
                             <div class="card">
                                 <div class="card-header d-lg-flex py-lg-0">
                                     <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }}
                                         {% if not task.isDeleted %}
-                                            <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>
+                                            {% if not is_granted('ROLE_EMPLOYEE') or task.createdBy == app.user %}
+                                                <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>
+                                            {% endif %}
                                         {% endif %}
                                     </h5>
                                     {% if status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
@@ -402,9 +402,11 @@
                                         </div>
 
                                         <div class="d-inline-flex mb-0">
-                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task" class="text-body ms-2">
-                                                <i class="ph-trash"></i>
-                                            </a>
+                                            {% if not is_granted('ROLE_EMPLOYEE') or task.createdBy == app.user %}
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task" class="text-body ms-2">
+                                                    <i class="ph-trash"></i>
+                                                </a>
+                                            {% endif %}
                                         </div>
                                     {% else %}
                                         <div class="d-flex align-items-center">
@@ -415,10 +417,6 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            <!-- /task overview -->
-
-
-
                         </div>
                         <!-- /left content -->
 

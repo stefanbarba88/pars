@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\UserRolesData;
 use App\Classes\ProjectHelper;
 use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
@@ -31,7 +32,15 @@ class ProjectController extends AbstractController {
   #[Route('/list/', name: 'app_projects')]
   public function list(): Response {
     $args = [];
-    $args['projects'] = $this->em->getRepository(Project::class)->findBy([], ['isSuspended' => 'ASC']);
+    $user = $this->getUser();
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $args['projects'] = $this->em->getRepository(Project::class)->getProjectsByUser($user);
+    } else {
+      $args['projects'] = $this->em->getRepository(Project::class)->getAllProjects();
+    }
+
+
 
     return $this->render('project/list.html.twig', $args);
   }
@@ -42,8 +51,8 @@ class ProjectController extends AbstractController {
   public function form(Project $project, Request $request): Response {
     $history = null;
     //ovde izvlacimo ulogovanog usera
-//    $user = $this->getUser();
-    $user = $this->em->getRepository(User::class)->find(1);
+    $user = $this->getUser();
+
     if($project->getId()) {
       $history = $this->json($project, Response::HTTP_OK, [], [
           ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
@@ -113,7 +122,7 @@ class ProjectController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewTasks(Project $project): Response {
     $args['project'] = $project;
-    $args['tasks'] = $this->em->getRepository(Task::class)->findBy(['project' => $project], ['isDeleted' => 'ASC', 'isClosed' => 'ASC', 'isPriority' => 'DESC', 'id' => 'DESC']);;
+    $args['tasks'] = $this->em->getRepository(Task::class)->getTasksByProject($project);
 
     return $this->render('project/view_tasks.html.twig', $args);
   }

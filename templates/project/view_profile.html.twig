@@ -100,8 +100,11 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header">
-
-                                        <h5 class="mb-0">Osnovne informacije <a href="{{ path('app_project_form', {id: project.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                        <h5 class="mb-0">Osnovne informacije
+                                            {% if not is_granted('ROLE_EMPLOYEE')  %}
+                                                <a href="{{ path('app_project_form', {id: project.id}) }}"><i class="ph-note-pencil"></i></a>
+                                            {% endif %}
+                                        </h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">
@@ -119,157 +122,180 @@
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Kategorija:</div>
                                             <div class="col-8">
-                                                <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>
+                                                {% if is_granted('ROLE_EMPLOYEE') %}
+                                                    {{ project.category.title }}
+                                                {% else %}
+                                                    <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg">
                                             <div class="col-4">Oznaka:</div>
                                             <div class="col-8">
                                                 {% for label in project.label  %}
-                                                    <a href="{{ path('app_label_view', { id: label.id}) }}">{{ label.label | raw}}</a>
+                                                    {% if is_granted('ROLE_EMPLOYEE') %}
+                                                        {{ label.label | raw}}
+                                                    {% else %}
+                                                        <a href="{{ path('app_label_view', { id: label.id}) }}">{{ label.label | raw}}</a>
+                                                    {% endif %}
                                                 {% endfor %}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Kreirao:</div>
-                                            <div class="col-8"><a href="{{ path('app_user_profile_view', { id: project.createdBy.id}) }}">{{ project.createdBy.getFullName() }}</a></div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Vreme:</div>
-                                            <div class="col-8">{{ project.created | date("d.m.Y") }} u {{ project.created | date("H:i:s") }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Informacije o klijentu</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row p-2">
-                                            <div class="col-4" >Klijent:</div>
+                                            <div class="col-4">Uvid u dnevnik:</div>
                                             <div class="col-8">
-                                                {% for client in project.client %}
-                                                    <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title | upper }}</a>{% if  not loop.last %}<br>{% endif %}
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Klijent ima uvid u projekat:</div>
-                                            <div class="col-8">
-                                                {% if project.clientView %}
+                                                {% if project.isViewLog %}
                                                     <i class="ph-eye"></i>
                                                 {% else %}
                                                     <i class="ph-eye-slash"></i>
                                                 {% endif %}
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Informacije o finansiranju</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        {% if project.payment == 2 %}
-                                            <div class="row p-2">
-                                                <div class="col-4">Tip finansiranja:</div>
-                                                <div class="col-8">Fiksna cena</div>
-                                            </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Fiksna cena:</div>
-                                                <div class="col-8">{{ project.price | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
-                                            </div>
-                                        {% elseif project.payment == 3 %}
-                                            <div class="row p-2">
-                                                <div class="col-4">Tip finansiranja:</div>
-                                                <div class="col-8">Plaćanje po satu</div>
-                                            </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Cena po satu:</div>
-                                                <div class="col-8">{{ project.pricePerHour | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
-                                            </div>
-                                        {% elseif project.payment == 4 %}
-                                            <div class="row p-2">
-                                                <div class="col-4">Tip finansiranja:</div>
-                                                <div class="col-8">Plaćanje po zadatku</div>
-                                            </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Cena po satu:</div>
-                                                <div class="col-8">{{ project.pricePerTask | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
-                                            </div>
-                                        {% else %}
-                                            <div class="row p-2">
-                                                <div class="col-4">Tip finansiranja:</div>
-                                                <div class="col-8">Besplatno</div>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Praćenje vremena</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row p-2">
-                                            <div class="col-4">Prioritet dnevnika:</div>
-                                            <div class="col-8">
-{{ project.getTimerPriorityJson() }}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Vremenska procena:</div>
-                                            <div class="col-8">
-                                                {% if project.estimate %}
-                                                    <i class="ph-check-circle"></i>
-                                                {% else %}
-                                                    <i class="ph-minus-circle"></i>
-                                                {% endif %}
-                                            </div>
-                                        </div>
                                         <div class="row p-2 ">
-                                            <div class="col-4">Zaokruživanje vremena:</div>
+                                            <div class="col-4">Kreirao:</div>
                                             <div class="col-8">
-                                                {% if project.timeRoundUp %}
-                                                    <i class="ph-check-circle"></i>
+                                                {% if is_granted('ROLE_EMPLOYEE') %}
+                                                    {{ project.createdBy.getFullName() }}
                                                 {% else %}
-                                                    <i class="ph-minus-circle"></i>
-                                                {% endif %}
-                                            </div>
+                                                    <a href="{{ path('app_user_profile_view', { id: project.createdBy.id}) }}">{{ project.createdBy.getFullName() }}</a></div>
+                                                {% endif %} - {{ project.created | date("d.m.Y") }} u {{ project.created | date("H:i:s") }}
                                         </div>
-                                        {% if project.timeRoundUp %}
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Interval zaokruživanja:</div>
-                                                <div class="col-8">
-                                                    {{ project.roundingInterval }} min
-                                                </div>
-                                            </div>
-                                            <div class="row p-2">
-                                                <div class="col-4">Minimalni unos:</div>
-                                                <div class="col-8">
-                                                    {{ project.minEntry }} min
-                                                </div>
-                                            </div>
-                                        {% endif %}
                                     </div>
                                 </div>
-                                {% if project.editBy is not null %}
+
+                                {% if not is_granted('ROLE_EMPLOYEE') %}
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5 class="mb-0">Verzija kreirana</h5>
+                                            <h5 class="mb-0">Informacije o klijentu</h5>
                                         </div>
-
-                                        <div class="card-body bg-light">
+                                        <div class="card-body">
                                             <div class="row p-2">
-                                                <div class="col-4">Izmenio:</div>
-                                                <div class="col-8"><a href="{{ path('app_user_profile_view', { id: project.editBy.id}) }}">{{ project.editBy.getFullName() }}</a></div>
+                                                <div class="col-4" >Klijent:</div>
+                                                <div class="col-8">
+                                                    {% for client in project.client %}
+                                                        <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title | upper }}</a>{% if  not loop.last %}<br>{% endif %}
+                                                    {% endfor %}
+                                                </div>
                                             </div>
-                                            <div class="row p-2">
-                                                <div class="col-4">Vreme:</div>
-                                                <div class="col-8">{{ project.updated | date("d.m.Y") }} u {{ project.updated | date("H:i:s") }}</div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Klijent ima uvid u projekat:</div>
+                                                <div class="col-8">
+                                                    {% if project.clientView %}
+                                                        <i class="ph-eye"></i>
+                                                    {% else %}
+                                                        <i class="ph-eye-slash"></i>
+                                                    {% endif %}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Informacije o finansiranju</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if project.payment == 2 %}
+                                                <div class="row p-2">
+                                                    <div class="col-4">Tip finansiranja:</div>
+                                                    <div class="col-8">Fiksna cena</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Fiksna cena:</div>
+                                                    <div class="col-8">{{ project.price | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
+                                                </div>
+                                            {% elseif project.payment == 3 %}
+                                                <div class="row p-2">
+                                                    <div class="col-4">Tip finansiranja:</div>
+                                                    <div class="col-8">Plaćanje po satu</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Cena po satu:</div>
+                                                    <div class="col-8">{{ project.pricePerHour | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
+                                                </div>
+                                            {% elseif project.payment == 4 %}
+                                                <div class="row p-2">
+                                                    <div class="col-4">Tip finansiranja:</div>
+                                                    <div class="col-8">Plaćanje po zadatku</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Cena po satu:</div>
+                                                    <div class="col-8">{{ project.pricePerTask | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
+                                                </div>
+                                            {% else %}
+                                                <div class="row p-2">
+                                                    <div class="col-4">Tip finansiranja:</div>
+                                                    <div class="col-8">Besplatno</div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Praćenje vremena</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Prioritet dnevnika:</div>
+                                                <div class="col-8">
+                                                    {{ project.getTimerPriorityJson() }}
+                                                </div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Vremenska procena:</div>
+                                                <div class="col-8">
+                                                    {% if project.estimate %}
+                                                        <i class="ph-check-circle"></i>
+                                                    {% else %}
+                                                        <i class="ph-minus-circle"></i>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="row p-2 ">
+                                                <div class="col-4">Zaokruživanje vremena:</div>
+                                                <div class="col-8">
+                                                    {% if project.timeRoundUp %}
+                                                        <i class="ph-check-circle"></i>
+                                                    {% else %}
+                                                        <i class="ph-minus-circle"></i>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            {% if project.timeRoundUp %}
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Interval zaokruživanja:</div>
+                                                    <div class="col-8">
+                                                        {{ project.roundingInterval }} min
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2">
+                                                    <div class="col-4">Minimalni unos:</div>
+                                                    <div class="col-8">
+                                                        {{ project.minEntry }} min
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% if project.editBy is not null %}
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Verzija kreirana</h5>
+                                            </div>
+
+                                            <div class="card-body bg-light">
+                                                <div class="row p-2">
+                                                    <div class="col-4">Izmenio:</div>
+                                                    <div class="col-8"><a href="{{ path('app_user_profile_view', { id: project.editBy.id}) }}">{{ project.editBy.getFullName() }}</a></div>
+                                                </div>
+                                                <div class="row p-2">
+                                                    <div class="col-4">Vreme:</div>
+                                                    <div class="col-8">{{ project.updated | date("d.m.Y") }} u {{ project.updated | date("H:i:s") }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
+
                             </div>
                         </div>
                         <!-- /right content -->

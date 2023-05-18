@@ -31,18 +31,6 @@ class TaskRepository extends ServiceEntityRepository {
 
   public function taskStatus(Task $task): int {
 
-//    $stopwatches = $this->createQueryBuilder('t')
-//      ->select('s.diff', 's.start', 's.stop')
-//      ->from(TaskLog::class, 'tl')
-//      ->from(StopwatchTime::class, 's' )
-//      ->andWhere('t.id = tl.task')
-//      ->andWhere('t.id = :taskId')
-//      ->setParameter(':taskId', $task->getId())
-//      ->addOrderBy('s.created', 'DESC')
-//      ->setMaxResults(1)
-//      ->getQuery()
-//      ->getResult();
-
     $stopwatches = $this->createQueryBuilder('t')
 
       ->select('s.diff', 's.start', 's.stop')
@@ -145,6 +133,69 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
+  public function getTasksByProject(Project $project) {
+
+    $list = [];
+
+    $tasks = $this->getEntityManager()->getRepository(Task::class)->findBy(['project' => $project], ['isDeleted' => 'ASC', 'isClosed' => 'ASC', 'isPriority' => 'DESC', 'id' => 'DESC']);
+    foreach ($tasks as $task) {
+      $logs = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $task]);
+      $assigners = [];
+      foreach ($logs as $log) {
+         $assigners[] = $log->getUser();
+      }
+
+      $list[] = ['task' => $task, 'status' => $this->taskStatus($task), 'users' => $assigners];
+    }
+
+    usort($list, function ($a, $b) {
+      return $a['status'] <=> $b['status'];
+    });
+    return $list;
+  }
+
+  public function getTasksByUser(User $user) {
+
+    $list = [];
+    $tasks =  $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->andWhere('tl.user = :userId')
+      ->setParameter(':userId', $user->getId())
+      ->addOrderBy('t.isDeleted', 'ASC')
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($tasks as $task) {
+      $list[] = ['task' => $task, 'status' => $this->taskStatus($task)];
+    }
+    usort($list, function ($a, $b) {
+      return $a['status'] <=> $b['status'];
+    });
+    return $list;
+  }
+  public function getTasks() {
+
+    $list = [];
+    $tasks =  $this->createQueryBuilder('t')
+      ->addOrderBy('t.isDeleted', 'ASC')
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($tasks as $task) {
+      $list[] = ['task' => $task, 'status' => $this->taskStatus($task)];
+    }
+    usort($list, function ($a, $b) {
+      return $a['status'] <=> $b['status'];
+    });
+    return $list;
+  }
+
   public function saveTask(Task $task, User $user, ?string $history): Task  {
 
     $taskLogOld = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $task]);
@@ -203,13 +254,11 @@ class TaskRepository extends ServiceEntityRepository {
     }
   }
 
-  public function findForFormProject(Project $project = null, int $id = 0): Task {
-    if (empty($id)) {
+  public function findForFormProject(Project $project = null): Task {
+
       $task = new Task();
       $task->setProject($project);
       return $task;
-    }
-    return $this->getEntityManager()->getRepository(Task::class)->find($id);
 
   }
 

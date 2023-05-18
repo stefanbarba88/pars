@@ -119,7 +119,11 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>
+                                        {% if is_granted('ROLE_EMPLOYEE') %}
+                                            {{ project.category.title }}
+                                        {% else %}
+                                            <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         {% for client in project.client %}

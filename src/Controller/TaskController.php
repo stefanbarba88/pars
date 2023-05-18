@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\UserRolesData;
 use App\Classes\ProjectHelper;
 use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
@@ -40,7 +41,12 @@ class TaskController extends AbstractController {
   #[Route('/list/', name: 'app_tasks')]
   public function list(): Response {
     $args = [];
-    $args['tasks'] = $this->em->getRepository(Task::class)->findAll();
+    $user = $this->getUser();
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksByUser($user);
+    } else {
+      $args['tasks'] = $this->em->getRepository(Task::class)->getTasks();
+    }
 
     return $this->render('task/list.html.twig', $args);
   }
@@ -95,9 +101,12 @@ class TaskController extends AbstractController {
   #[Entity('task', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Task $task, Request $request, UploadService $uploadService): Response {
-    $history = null;
-    //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $task->addAssignedUser($user);
+    }
+    $history = null;
+
     if ($task->getId()) {
       $history = $this->json($task, Response::HTTP_OK, [], [
           ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
@@ -139,6 +148,69 @@ class TaskController extends AbstractController {
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
         return $this->redirectToRoute('app_tasks');
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['task'] = $task;
+
+    return $this->render('task/form.html.twig', $args);
+  }
+
+  #[Route('/form-project/{project}', name: 'app_task_project_form')]
+  #[Entity('project', expr: 'repository.find(project)')]
+  #[Entity('task', expr: 'repository.findForFormProject(project)')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formByProject(Task $task, Project $project, Request $request, UploadService $uploadService): Response {
+
+    $user = $this->getUser();
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $task->addAssignedUser($user);
+    }
+
+    $history = null;
+
+
+    if ($task->getId()) {
+      $history = $this->json($task, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
+
+    $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_project_form', ['project' => $project->getId()])]]);
+
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $uploadFiles = $request->files->all()['task_form']['pdf'];
+        if(!empty ($uploadFiles)) {
+          foreach ($uploadFiles as $uploadFile) {
+            $pdf = new Pdf();
+            $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+            $pdf->setTitle($file->getFileName());
+            $pdf->setPath($file->getUrl());
+            if (!is_null($task->getProject())) {
+              $pdf->setProject($task->getProject());
+            }
+            $task->addPdf($pdf);
+          }
+        }
+
+        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return $this->redirectToRoute('app_task_view_user', ['id' => $task->getId()]);
       }
     }
     $args['form'] = $form->createView();
@@ -306,6 +378,7 @@ class TaskController extends AbstractController {
     $args['pdfs'] = $this->em->getRepository(Task::class)->getPdfsByTask($task);
 
     $args['lastEdit'] = $this->em->getRepository(StopwatchTime::class)->lastEdit($args['taskLog']);
+
 
     return $this->render('task/view_user.html.twig', $args);
   }

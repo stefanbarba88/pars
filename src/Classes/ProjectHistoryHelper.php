@@ -11,6 +11,7 @@ class ProjectHistoryHelper {
   private $isTimeRoundUp;
   private $isEstimate;
   private $isClientView;
+  private $isViewLog;
   private $category;
   private $client;
   private $timerPriority;
@@ -25,7 +26,7 @@ class ProjectHistoryHelper {
   private $roundingInterval;
   private $deadline;
 
-  public function __construct($id, $title, $description, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $category, $client, $timerPriority, $label, $editBy, $payment, $price, $pricePerHour, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
+  public function __construct($id, $title, $description, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $isViewLog, $category, $client, $timerPriority, $label, $editBy, $payment, $price, $pricePerHour, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
     $this->id = $id;
     $this->title = $title;
     $this->description = $description;
@@ -46,6 +47,7 @@ class ProjectHistoryHelper {
     $this->roundingInterval = $roundingInterval;
     $this->deadline = $deadline;
     $this->timerPriority = $timerPriority;
+    $this->isViewLog = $isViewLog;
   }
 
   /**
@@ -326,6 +328,20 @@ class ProjectHistoryHelper {
    */
   public function setTimerPriority($timerPriority): void {
     $this->timerPriority = $timerPriority;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getIsViewLog() {
+    return $this->isViewLog;
+  }
+
+  /**
+   * @param mixed $isViewLog
+   */
+  public function setIsViewLog($isViewLog): void {
+    $this->isViewLog = $isViewLog;
   }
 
 

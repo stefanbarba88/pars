@@ -107,6 +107,8 @@
                     <div class="d-flex align-items-stretch align-items-lg-start flex-column flex-lg-row">
                         <!-- Left content -->
                         <div class="flex-1 order-2 order-lg-1">
+
+
                             <div class="row">
                                 <div class="col-sm-6 col-xl-4">
                                     <div class="card">
@@ -143,12 +145,10 @@
                                                                     <div id="time-elapsed"></div>
                                                                     <div>
                                                                         <span id="timeH" class="display-6 lh-1 m-0"></span>
-
                                                                     </div>
                                                                     <div class="mx-1 my-2">:</div>
                                                                     <div>
                                                                         <span id="timeM" class="display-6 lh-1 m-0"></span>
-
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -158,7 +158,6 @@
                                                                     <a href="#" id="stopTimer" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-stop"></i></a></div>
                                                             </div>
                                                         {% endif %}
-
                                                     <!-- /task timer -->
                                                 {% endif %}
                                         </div>
@@ -168,8 +167,11 @@
                                     <div class="card">
                                         <div class="card-header d-flex">
                                             <h5 class="mb-0">
-                                                <i class="ph-clipboard me-2"></i>
-                                                Dnevnik
+                                                <i class="ph-users-three me-2"></i>
+                                                Zaduženi korisnici
+                                                {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted and task.createdBy == app.user %}
+                                                    <a href="{{ path('app_task_reassign', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>
+                                                {% endif %}
                                             </h5>
                                         </div>
 
@@ -246,7 +248,7 @@
                             <div class="card">
                                 <div class="card-header d-lg-flex py-lg-0">
                                     <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }}
-                                        {% if not task.isDeleted %}
+                                        {% if not task.isDeleted and task.createdBy == app.user %}
                                             <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>
                                         {% endif %}
                                     </h5>
@@ -334,10 +336,33 @@
                                         </div>
 
                                         <div class="d-inline-flex mb-0">
-                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task" class="text-body ms-2">
-                                                <i class="ph-trash"></i>
-                                            </a>
+                                            {% if task.createdBy == app.user %}
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task" class="text-body ms-2">
+                                                    <i class="ph-trash"></i>
+                                                </a>
+                                            {% endif %}
                                         </div>
+                                        <!-- delete task modal -->
+                                        <div id="modal_delete_task" class="modal fade" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white border-0">
+                                                        <h6 class="modal-title">Potvrda</h6>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>
+                                                    </div>
+
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                        <a href="{{ path('app_task_delete', {id: task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /delete task modal -->
                                     {% else %}
                                         <div class="d-flex align-items-center">
                                         </div>
@@ -347,293 +372,10 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            <!-- /task overview -->
 
 
                         </div>
                         <!-- /left content -->
-
-{#                        <!-- Left content -->#}
-{#                        <div class="flex-1 order-2 order-lg-1">#}
-
-{#                            <!-- Task overview -->#}
-{#                            <div class="card">#}
-{#                                <div class="card-header d-lg-flex py-lg-0">#}
-{#                                    <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }}#}
-{#                                        {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}#}
-{#                                            <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>#}
-{#                                        {% endif %}#}
-{#                                    </h5>#}
-{#                                    {% if status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}#}
-{#                                        <div class="mt-1 my-lg-auto ms-lg-auto">#}
-{#                                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modal_close_task"><i class="ph-x me-2"></i>Zatvorite</button>#}
-{#                                        </div>#}
-{#                                    {% endif %}#}
-{#                                </div>#}
-
-{#                                <!-- close task modal -->#}
-{#                                <div id="modal_close_task" class="modal fade" tabindex="-1">#}
-{#                                    <div class="modal-dialog">#}
-{#                                        <div class="modal-content">#}
-{#                                            <div class="modal-header bg-primary text-white border-0">#}
-{#                                                <h6 class="modal-title">Potvrda</h6>#}
-{#                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                                            </div>#}
-
-{#                                            <div class="modal-body">#}
-{#                                                <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>#}
-{#                                            </div>#}
-
-{#                                            <div class="modal-footer">#}
-{#                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>#}
-{#                                                <a href="{{ path('app_task_close',{id: task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <!-- /close task modal -->#}
-
-{#                                <!-- Vertical form modal -->#}
-{#                                <div id="modal_form_vertical" class="modal fade" tabindex="-1">#}
-{#                                    <div class="modal-dialog">#}
-{#                                        <div class="modal-content">#}
-{#                                            <div class="modal-header bg-primary text-white border-0">#}
-{#                                                <h6 class="modal-title">Potvrda</h6>#}
-{#                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                                            </div>#}
-
-{#                                            <div class="modal-body">#}
-{#                                                <p>Da li ste sigurni da želite da zaustavite merenje vremena?</p>#}
-{#                                            </div>#}
-
-{#                                            <div class="modal-footer">#}
-{#                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>#}
-{#                                                <a href="#" id="link-stop" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <!-- /vertical form modal -->#}
-
-{#                                <!-- delete task modal -->#}
-{#                                <div id="modal_delete_task" class="modal fade" tabindex="-1">#}
-{#                                    <div class="modal-dialog">#}
-{#                                        <div class="modal-content">#}
-{#                                            <div class="modal-header bg-danger text-white border-0">#}
-{#                                                <h6 class="modal-title">Potvrda</h6>#}
-{#                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                                            </div>#}
-
-{#                                            <div class="modal-body">#}
-{#                                                <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>#}
-{#                                            </div>#}
-
-{#                                            <div class="modal-footer">#}
-{#                                                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>#}
-{#                                                <a href="{{ path('app_task_delete', {id: task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <!-- /delete task modal -->#}
-
-
-{#                                <div class="card-body">#}
-{#                                    <div class="mb-4">#}
-{#                                        <h6>Opis</h6>#}
-{#                                        {{ task.description | raw }}#}
-{#                                        </div>#}
-
-{#                                    <div class="mb-4">#}
-{#                                        <h6>Oprema</h6>#}
-{#                                    </div>#}
-
-{#                                    <div class="mb-4">#}
-{#                                        <h6>Vozila</h6>#}
-{#                                    </div>#}
-
-{#                                    <div class="mb-4">#}
-{#                                        <h6>Slike</h6>#}
-{#                                        <div class="row">#}
-{#                                            {% for image in images %}#}
-{#                                                <div class="col-xl-1 col-sm-2">#}
-{#                                                    <div class="card">#}
-{#                                                        <div class="card-img-actions">#}
-{#                                                            <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">#}
-{#                                                            <div class="card-img-actions-overlay card-img">#}
-{#                                                                <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">#}
-{#                                                                    <i class="ph-magnifying-glass-plus"></i>#}
-{#                                                                </a>#}
-{#                                                            </div>#}
-{#                                                        </div>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            {% endfor %}#}
-{#                                        </div>#}
-{#                                    </div>#}
-
-{#                                </div>#}
-
-{#                                <div class="card-footer d-flex justify-content-between align-items-center">#}
-{#                                    <div class="d-flex align-items-center">#}
-{#                                        <i class="ph-lightbulb me-2"></i>#}
-{#                                        {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}#}
-{#                                            <span class="badge bg-info">Nije startovan</span>#}
-{#                                        {% elseif status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}#}
-{#                                            <span class="badge bg-success">Otvoren</span>#}
-{#                                        {% else %}#}
-{#                                            <span class="badge bg-danger">Zatvoren</span>#}
-{#                                        {% endif %}#}
-{#                                    </div>#}
-
-{#                                    <div class="d-inline-flex mb-0">#}
-{#                                        {% if not task.isDeleted %}#}
-{#                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task" class="text-body ms-2">#}
-{#                                                <i class="ph-trash"></i>#}
-{#                                            </a>#}
-{#                                        {% else %}#}
-{#                                            <span class="badge bg-warning bg-opacity-20 text-warning mx-2">Obrisan</span>#}
-{#                                        {% endif %}#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                            <!-- /task overview -->#}
-
-
-
-{#                        </div>#}
-{#                        <!-- /left content -->#}
-
-
-
-{#                        <!-- Right sidebar component User -->#}
-{#                        <div class="sidebar sidebar-component sidebar-expand bg-transparent shadow-none order-1 order-lg-2 ms-lg-3 mb-3">#}
-
-{#                            <!-- Sidebar content -->#}
-{#                            <div class="sidebar-content">#}
-{#                                {% if not task.isDeleted %}#}
-{#                                    <!-- Task timer -->#}
-{#                                    <div class="card">#}
-{#                                        <div class="sidebar-section-header border-bottom">#}
-{#                                            <span class="fw-semibold">Vremenski zapis</span>#}
-{#                                        </div>#}
-{#                                        {% if not stopwatch %}#}
-{#                                            <div class="sidebar-section-body">#}
-{#                                                <div class="d-flex justify-content-center text-center">#}
-{#                                                    <div id="time-elapsed"></div>#}
-{#                                                    <div>#}
-{#                                                        <span class="display-6 lh-1 m-0">00</span>#}
-{#                                                        <div class="mt-2">sati</div>#}
-{#                                                    </div>#}
-{#                                                    <div class="mx-1 my-2">:</div>#}
-{#                                                    <div>#}
-{#                                                        <span class="display-6 lh-1 m-0">00</span>#}
-{#                                                        <div class="mt-2">minuta</div>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
-
-{#                                            <div class="card-footer d-flex justify-content-center text-center">#}
-{#                                                <div class="d-inline-flex">#}
-{#                                                    <a href="#" id="link-start" class="btn btn-success mx-2"><i class="ph-play"></i></a>#}
-{#                                                    <a href="#" class="btn btn-danger disabled" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-stop"></i></a></div>#}
-{#                                            </div>#}
-{#                                        {% else %}#}
-{#                                            <div class="sidebar-section-body">#}
-{#                                                <div class="d-flex justify-content-center text-center">#}
-{#                                                    <div id="time-elapsed"></div>#}
-{#                                                    <div>#}
-{#                                                        <span id="timeH" class="display-6 lh-1 m-0"></span>#}
-{#                                                        <div class="mt-2">sati</div>#}
-{#                                                    </div>#}
-{#                                                    <div class="mx-1 my-2">:</div>#}
-{#                                                    <div>#}
-{#                                                        <span id="timeM" class="display-6 lh-1 m-0"></span>#}
-{#                                                        <div class="mt-2">minuta</div>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
-
-{#                                            <div class="card-footer d-flex justify-content-center text-center">#}
-{#                                                <div class="d-inline-flex">#}
-{#                                                    <a href="#" id="link-start" class="btn btn-success mx-2 disabled"><i class="ph-play"></i></a>#}
-{#                                                    <a href="#" id="stopTimer" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-stop"></i></a></div>#}
-{#                                            </div>#}
-{#                                        {% endif %}#}
-{#                                    </div>#}
-{#                                    <!-- /task timer -->#}
-{#                                {% endif %}#}
-
-{#                                <!-- dnevnici -->#}
-{#                                <div class="card">#}
-{#                                        <div class="sidebar-section-header border-bottom">#}
-{#                                            <span class="fw-semibold">Dnevnik zadatka</span>#}
-{#                                        </div>#}
-
-{#                                            <div class="sidebar-section-body">#}
-{#                                            <div class="d-flex align-items-start mb-3">#}
-{#                                                <div class="me-2">#}
-{#                                                    <i class="ph-clipboard"></i>#}
-{#                                                </div>#}
-
-{#                                                <div class="flex-fill overflow-hidden">#}
-{#                                                    <div class="fw-semibold text-truncate">#}
-{#                                                        <a href="{{ path('app_task_log_view',{id: taskLog.id} ) }}" class="text-body">#}
-{#                                                            {{ taskLog.user.getFullName }}#}
-{#                                                        </a>#}
-{#                                                    </div>#}
-
-{#                                                    <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">#}
-{#                                                        <li class="list-inline-item">Izmena:</li>#}
-{#                                                        <li class="list-inline-item">{{ lastEdit ? lastEdit.updated | date("d.m.Y H:i:s") : '/'}}</li>#}
-{#                                                    </ul>#}
-
-{#                                                </div>#}
-
-{#                                                <div class="ms-3">#}
-{#                                                    <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countStopwatches }}</span>#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-
-{#                                    </div>#}
-{#                                <!-- /dnevnici -->#}
-
-{#                                {% if not task.isDeleted %}#}
-{#                                    <!-- Attached files -->#}
-{#                                    <div class="card">#}
-{#                                        <div class="sidebar-section-header border-bottom">#}
-{#                                            <span class="fw-semibold">Dokumenta</span>#}
-{#                                        </div>#}
-
-{#                                        <div class="sidebar-section-body">#}
-{#                                            {% for pdf in pdfs %}#}
-{#                                                <div class="d-flex align-items-start mb-3">#}
-{#                                                    <div class="me-2">#}
-{#                                                        <i class="ph-file-pdf"></i>#}
-{#                                                    </div>#}
-
-{#                                                    <div class="flex-fill overflow-hidden">#}
-{#                                                        <div class="fw-semibold text-truncate">{{ pdf.title }}</div>#}
-{#                                                    </div>#}
-
-{#                                                    <div class="ms-3">#}
-{#                                                        <a href="{{ asset(pdf.path) }}" download class="text-body">#}
-{#                                                            <i class="ph-download-simple"></i>#}
-{#                                                        </a>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            {% endfor %}#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                    <!-- /attached files -->#}
-{#                                {% endif %}#}
-{#                            </div>#}
-{#                            <!-- /sidebar content -->#}
-
-{#                        </div>#}
-{#                        <!-- /right sidebar component user -->#}
-
                     </div>
 
                 </div>

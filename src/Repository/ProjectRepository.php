@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Classes\Data\VrstaPlacanjaData;
+use App\Entity\Image;
+use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
+use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
@@ -66,6 +69,50 @@ class ProjectRepository extends ServiceEntityRepository {
       ->addOrderBy('p.isSuspended', 'ASC')
       ->getQuery()
       ->getResult();
+
+  }
+
+  public function getImagesByProject(Project $project): array {
+
+    return $this->createQueryBuilder('p')
+      ->select('i.thumbnail100', 'i.thumbnail500', 'i.thumbnail1024')
+      ->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->innerJoin(StopwatchTime::class, 's', Join::WITH, 'tl = s.taskLog')
+      ->innerJoin(Image::class, 'i', Join::WITH, 's = i.stopwatchTime')
+      ->andWhere('p.id = :projectId')
+      ->andWhere('s.isDeleted = 0')
+      ->setParameter(':projectId', $project->getId())
+      ->getQuery()
+      ->getResult();
+
+  }
+
+  public function getPdfsByProject(Project $project): array {
+
+    $pdfs = $this->createQueryBuilder('p')
+      ->select('i.title', 'i.path', 'i.created')
+      ->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->innerJoin(StopwatchTime::class, 's', Join::WITH, 'tl = s.taskLog')
+      ->innerJoin(Pdf::class, 'i', Join::WITH, 's = i.stopwatchTime')
+      ->andWhere('p.id = :projectId')
+      ->andWhere('s.isDeleted = 0')
+      ->setParameter(':projectId', $project->getId())
+      ->getQuery()
+      ->getResult();
+
+
+    $pdfsProject = $this->createQueryBuilder('p')
+      ->select('i.title', 'i.path', 'i.created')
+      ->innerJoin(Pdf::class, 'i', Join::WITH, 'p = i.project')
+      ->andWhere('p.id = :projectId')
+      ->andWhere('i.stopwatchTime IS NULL')
+      ->setParameter(':projectId', $project->getId())
+      ->getQuery()
+      ->getResult();
+
+    return array_merge($pdfs, $pdfsProject);
 
   }
 

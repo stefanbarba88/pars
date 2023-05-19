@@ -223,6 +223,11 @@
                                                 <h5 class="mb-0">
                                                     <i class="ph-files me-2"></i>
                                                     Dokumenta
+                                                    {% if not task.isDeleted %}
+                                                        {% if not is_granted('ROLE_EMPLOYEE') or task.createdBy == app.user %}
+                                                            <a href="{{ path('app_task_add_docs', {id: task.id} ) }}"><i class="ph-plus-circle"></i></a>
+                                                        {% endif %}
+                                                    {% endif %}
                                                 </h5>
                                             </div>
 

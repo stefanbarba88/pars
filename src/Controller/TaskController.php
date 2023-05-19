@@ -17,6 +17,7 @@ use App\Entity\TaskLog;
 use App\Entity\User;
 use App\Form\ProjectFormType;
 use App\Form\ReassignTaskFormType;
+use App\Form\TaskAddDocsType;
 use App\Form\TaskEditInfoType;
 use App\Form\TaskEditType;
 use App\Form\TaskFormType;
@@ -210,7 +211,7 @@ class TaskController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-        return $this->redirectToRoute('app_task_view_user', ['id' => $task->getId()]);
+        return $this->redirectToRoute('app_project_tasks_view', ['id' => $project->getId()]);
       }
     }
     $args['form'] = $form->createView();
@@ -243,7 +244,7 @@ class TaskController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
+        $this->em->getRepository(Task::class)->saveTaskInfo($task, $user, $history);
 
         notyf()
           ->position('x', 'right')
@@ -259,6 +260,62 @@ class TaskController extends AbstractController {
     $args['task'] = $task;
 
     return $this->render('task/edit_info.html.twig', $args);
+  }
+
+  #[Route('/add-docs/{id}', name: 'app_task_add_docs')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function addDocs(Task $task,UploadService $uploadService, Request $request): Response {
+    $history = null;
+    //ovde izvlacimo ulogovanog usera
+    $user = $this->getUser();
+
+    if ($task->getId()) {
+      $history = $this->json($task, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
+
+    $form = $this->createForm(TaskAddDocsType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_add_docs', ['id' => $task->getId()])]]);
+
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $uploadFiles = $request->files->all()['task_add_docs']['pdf'];
+        if(!empty ($uploadFiles)) {
+          foreach ($uploadFiles as $uploadFile) {
+            $pdf = new Pdf();
+            $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+            $pdf->setTitle($file->getFileName());
+            $pdf->setPath($file->getUrl());
+            if (!is_null($task->getProject())) {
+              $pdf->setProject($task->getProject());
+            }
+            $task->addPdf($pdf);
+          }
+        }
+
+        $this->em->getRepository(Task::class)->saveTaskInfo($task, $user, $history);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['task'] = $task;
+
+    return $this->render('task/add_pdf.html.twig', $args);
   }
 
   #[Route('/reassign/{id}', name: 'app_task_reassign')]
@@ -285,7 +342,7 @@ class TaskController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $this->em->getRepository(Task::class)->editTask($task, $user, $history);
+        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 
         notyf()
           ->position('x', 'right')
@@ -308,8 +365,8 @@ class TaskController extends AbstractController {
   public function edit(Task $task, Request $request): Response {
     $history = null;
     //ovde izvlacimo ulogovanog usera
-//    $user = $this->getUser();
-    $user = $this->em->getRepository(User::class)->find(1);
+    $user = $this->getUser();
+
     if ($task->getId()) {
       $history = $this->json($task, Response::HTTP_OK, [], [
           ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {

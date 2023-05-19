@@ -167,4 +167,30 @@ class ProjectController extends AbstractController {
     return $this->render('project/view_users.html.twig', $args);
   }
 
+//  #[Route('/view-notes/{id}', name: 'app_project_notes_view')]
+////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function viewNotes(Project $project): Response {
+//    $args['project'] = $project;
+//
+//    return $this->render('project/view_users.html.twig', $args);
+//  }
+
+  #[Route('/view-images/{id}', name: 'app_project_images_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewImages(Project $project): Response {
+    $args['project'] = $project;
+    $args['images'] = $this->em->getRepository(Project::class)->getImagesByProject($project);
+
+    return $this->render('project/view_images.html.twig', $args);
+  }
+
+  #[Route('/view-docs/{id}', name: 'app_project_docs_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewDocs(Project $project): Response {
+    $args['project'] = $project;
+    $args['pdfs'] = $this->em->getRepository(Project::class)->getPdfsByProject($project);
+
+    return $this->render('project/view_docs.html.twig', $args);
+  }
+
 }

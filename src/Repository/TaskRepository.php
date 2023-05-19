@@ -61,7 +61,7 @@ class TaskRepository extends ServiceEntityRepository {
 
   public function getPdfsByTask(Task $task): array {
 
-    return $this->createQueryBuilder('t')
+    $pdfs = $this->createQueryBuilder('t')
       ->select('i.title', 'i.path')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
       ->innerJoin(StopwatchTime::class, 's', Join::WITH, 'tl = s.taskLog')
@@ -71,6 +71,17 @@ class TaskRepository extends ServiceEntityRepository {
       ->setParameter(':taskId', $task->getId())
       ->getQuery()
       ->getResult();
+
+    $pdfsTask = $this->createQueryBuilder('t')
+      ->select('i.title', 'i.path', 'i.created')
+      ->innerJoin(Pdf::class, 'i', Join::WITH, 't = i.task')
+      ->andWhere('t.id = :taskId')
+      ->andWhere('i.stopwatchTime IS NULL')
+      ->setParameter(':taskId', $task->getId())
+      ->getQuery()
+      ->getResult();
+
+    return array_merge($pdfs, $pdfsTask);
 
   }
 
@@ -133,7 +144,7 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
-  public function getTasksByProject(Project $project) {
+  public function getTasksByProject(Project $project): array {
 
     $list = [];
 
@@ -154,7 +165,7 @@ class TaskRepository extends ServiceEntityRepository {
     return $list;
   }
 
-  public function getTasksByUser(User $user) {
+  public function getTasksByUser(User $user): array {
 
     $list = [];
     $tasks =  $this->createQueryBuilder('t')
@@ -176,7 +187,7 @@ class TaskRepository extends ServiceEntityRepository {
     });
     return $list;
   }
-  public function getTasks() {
+  public function getTasks(): array {
 
     $list = [];
     $tasks =  $this->createQueryBuilder('t')
@@ -225,17 +236,35 @@ class TaskRepository extends ServiceEntityRepository {
     return $this->save($task);
 
   }
+  public function saveTaskInfo(Task $task, User $user, ?string $history): Task  {
 
-  public function editTask(Task $task, User $user, ?string $history): Task  {
+    if (!is_null($task->getId())) {
 
-    $taskLogOld = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $task]);
-    foreach ($taskLogOld as $log) {
-      $task->removeTaskLog($log);
+      $historyTask = new TaskHistory();
+      $historyTask->setHistory($history);
+
+      $task->addTaskHistory($historyTask);
+      $task->setEditBy($user);
+
+      return $this->save($task);
     }
 
-    return $this->saveTask($task, $user, $history);
+    $task->setCreatedBy($user);
+
+    return $this->save($task);
 
   }
+
+//  public function editTask(Task $task, User $user, ?string $history): Task  {
+//
+//    $taskLogOld = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $task]);
+//    foreach ($taskLogOld as $log) {
+//      $task->removeTaskLog($log);
+//    }
+//
+//    return $this->saveTask($task, $user, $history);
+//
+//  }
 
   public function save(Task $task): Task {
     if (is_null($task->getId())) {

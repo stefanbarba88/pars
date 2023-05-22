@@ -7,6 +7,7 @@ use App\Classes\Data\UserRolesData;
 use App\Classes\ProjectHelper;
 use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
+use App\Entity\Comment;
 use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\Project;
@@ -51,52 +52,6 @@ class TaskController extends AbstractController {
 
     return $this->render('task/list.html.twig', $args);
   }
-
-//  #[Route('/form/{project}/{id}', name: 'app_task_project_form', defaults: ['id' => 0])]
-//  #[Entity('project', expr: 'repository.find(project)')]
-//  #[Entity('task', expr: 'repository.findForFormProject(project, id)')]
-////  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function formProject(Task $task, Request $request, Project $project): Response {
-////    $history = null;
-////    //ovde izvlacimo ulogovanog usera
-//////    $user = $this->getUser();
-////    $user = $this->em->getRepository(User::class)->find(1);
-////    if ($project->getId()) {
-////      $history = $this->json($project, Response::HTTP_OK, [], [
-////          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-////            return $object->getId();
-////          }
-////        ]
-////      );
-////      $history = $history->getContent();
-////    }
-////
-////    $form = $this->createForm(ProjectFormType::class, $project, ['attr' => ['action' => $this->generateUrl('app_project_form', ['id' => $project->getId()])]]);
-////
-////    if ($request->isMethod('POST')) {
-//////      $form->handleRequest($request);
-//////
-//////      if ($form->isSubmitted() && $form->isValid()) {
-//////
-////////        $test1 = $serializer->deserialize($test->getContent(), Project::class, 'json');
-//////
-//////        $this->em->getRepository(Project::class)->saveProject($project, $user, $history);
-//////
-//////        notyf()
-//////          ->position('x', 'right')
-//////          ->position('y', 'top')
-//////          ->duration(5000)
-//////          ->dismissible(true)
-//////          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
-//////
-//////        return $this->redirectToRoute('app_projects');
-//////      }
-////    }
-////    $args['form'] = $form->createView();
-////    $args['project'] = $project;
-//
-//    return $this->render('task/form.html.twig', $args);
-//  }
 
   #[Route('/form/{id}', name: 'app_task_form', defaults: ['id' => 0])]
   #[Entity('task', expr: 'repository.findForForm(id)')]
@@ -411,6 +366,7 @@ class TaskController extends AbstractController {
     $args['taskLogs'] = $this->em->getRepository(TaskLog::class)->findLogs($task);
     $args['images'] = $this->em->getRepository(Task::class)->getImagesByTask($task);
     $args['pdfs'] = $this->em->getRepository(Task::class)->getPdfsByTask($task);
+    $args['comments'] = $this->em->getRepository(Comment::class)->findBy(['task' => $task, 'isSuspended' => false], ['id' => 'DESC']);
 
     $args['time'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchTimeByTask($task);
 
@@ -433,6 +389,7 @@ class TaskController extends AbstractController {
     $args['countStopwatches'] = $this->em->getRepository(StopwatchTime::class)->countStopwatches($args['taskLog']);
     $args['images'] = $this->em->getRepository(Task::class)->getImagesByTask($task);
     $args['pdfs'] = $this->em->getRepository(Task::class)->getPdfsByTask($task);
+    $args['comments'] = $this->em->getRepository(Comment::class)->findBy(['task' => $task, 'isSuspended' => false], ['id' => 'DESC']);
 
     $args['lastEdit'] = $this->em->getRepository(StopwatchTime::class)->lastEdit($args['taskLog']);
 

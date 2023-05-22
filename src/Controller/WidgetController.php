@@ -35,11 +35,27 @@ class WidgetController extends AbstractController {
     return $this->render('widget/user_profil_sidebar.html.twig', $args);
   }
 
+  public function employeeProfilSidebar(User $user): Response {
+
+    $args['user'] = $user;
+//    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['user' => $user]);
+    $args['users'] = $this->em->getRepository(User::class)->findAll();
+
+    return $this->render('widget/employee_profil_sidebar.html.twig', $args);
+  }
+
   public function userProfilNavigation(User $user): Response {
 
     $args['user'] = $user;
 
     return $this->render('widget/users_nav.html.twig', $args);
+  }
+
+  public function employeeProfilNavigation(User $user): Response {
+
+    $args['user'] = $user;
+
+    return $this->render('widget/employee_nav.html.twig', $args);
   }
 
   public function projectProfilNavigation(Project $project): Response {
@@ -66,6 +82,22 @@ class WidgetController extends AbstractController {
     $args['message'] = $message;
 
     return $this->render('widget/confirmation_modal.html.twig', $args);
+  }
+
+  public function header(): Response {
+
+    $user = $this->getUser();
+    $args['logged'] = $user;
+
+    return $this->render('includes/header.html.twig', $args);
+  }
+
+  public function headerUser(): Response {
+
+    $user = $this->getUser();
+    $args['logged'] = $user;
+//    dd($args);
+    return $this->render('includes/header_user.html.twig', $args);
   }
 
 }

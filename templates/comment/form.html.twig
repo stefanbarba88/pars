@@ -1,0 +1,9 @@
+{{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation' }}) }}
+
+{{ form_widget(form.comment, {attr: { class: 'form-control form-control-content mb-3 required' }}) }}
+
+<div class="card-body text-end">
+    <button type="submit" class="btn btn-primary"><i class="ph-paper-plane-tilt me-2"></i> Postavite</button>
+</div>
+{{ form_end(form) }}
+

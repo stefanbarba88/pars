@@ -5,8 +5,11 @@ namespace App\Repository;
 use App\Classes\Data\UserRolesData;
 use App\Classes\DTO\UploadedFileDTO;
 use App\Entity\Image;
+use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
+use App\Entity\StopwatchTime;
+use App\Entity\TaskLog;
 use App\Entity\User;
 use App\Entity\UserHistory;
 use App\Service\MailService;
@@ -14,6 +17,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -196,6 +200,48 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       ];
     }
     return $usersList;
+  }
+
+  public function getPdfsByUser(User $user): array {
+
+    $pdfs = $this->createQueryBuilder('u')
+      ->select('i.title', 'i.path', 'i.created')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 'u = tl.user')
+      ->innerJoin(StopwatchTime::class, 's', Join::WITH, 'tl = s.taskLog')
+      ->innerJoin(Pdf::class, 'i', Join::WITH, 's = i.stopwatchTime')
+      ->andWhere('u.id = :userId')
+      ->andWhere('s.isDeleted = 0')
+      ->setParameter(':userId', $user->getId())
+      ->getQuery()
+      ->getResult();
+
+    return $pdfs;
+//    $pdfsProject = $this->createQueryBuilder('p')
+//      ->select('i.title', 'i.path', 'i.created')
+//      ->innerJoin(Pdf::class, 'i', Join::WITH, 'p = i.project')
+//      ->andWhere('p.id = :projectId')
+//      ->andWhere('i.stopwatchTime IS NULL')
+//      ->setParameter(':projectId', $project->getId())
+//      ->getQuery()
+//      ->getResult();
+//
+//    return array_merge($pdfs, $pdfsProject);
+
+  }
+
+  public function getImagesByUser(User $user): array {
+
+    return $this->createQueryBuilder('u')
+      ->select('i.thumbnail100', 'i.thumbnail500', 'i.thumbnail1024')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 'u = tl.user')
+      ->innerJoin(StopwatchTime::class, 's', Join::WITH, 'tl = s.taskLog')
+      ->innerJoin(Image::class, 'i', Join::WITH, 's = i.stopwatchTime')
+      ->andWhere('u.id = :userId')
+      ->andWhere('s.isDeleted = 0')
+      ->setParameter(':userId', $user->getId())
+      ->getQuery()
+      ->getResult();
+
   }
 
 //    /**

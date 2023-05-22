@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header_user.html.twig' %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -135,37 +135,39 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.vrstaZaposlenja, 'Vrsta zaposlenja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required' }}) }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.userType, 'Tip korisnika:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.userType, {attr: { class: 'form-control select required role' }}) }}
-                                                </div>
-                                            </div>
-                                            {% if user.pozicija is null %}
-                                                <div class="col-lg-6 hide ROLE_EMPLOYEE">
+                                        {% if not is_granted('ROLE_EMPLOYEE')  %}
+                                            <div class="row">
+                                                <div class="col-lg-6">
                                                     <div class="mb-3">
-                                                        {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                        {{ form_widget(form.pozicija, {attr: { class: 'form-control select' }}) }}
+                                                        {{ form_label(form.vrstaZaposlenja, 'Vrsta zaposlenja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required' }}) }}
                                                     </div>
                                                 </div>
-                                            {% else %}
-                                                <div class="col-lg-6 ROLE_EMPLOYEE">
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6">
                                                     <div class="mb-3">
-                                                        {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                        {{ form_widget(form.pozicija, {attr: { class: 'form-control select required' }}) }}
+                                                        {{ form_label(form.userType, 'Tip korisnika:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.userType, {attr: { class: 'form-control select required role' }}) }}
                                                     </div>
                                                 </div>
-                                            {% endif %}
-                                        </div>
+                                                {% if user.pozicija is null %}
+                                                    <div class="col-lg-6 hide ROLE_EMPLOYEE">
+                                                        <div class="mb-3">
+                                                            {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                            {{ form_widget(form.pozicija, {attr: { class: 'form-control select' }}) }}
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-lg-6 ROLE_EMPLOYEE">
+                                                        <div class="mb-3">
+                                                            {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                            {{ form_widget(form.pozicija, {attr: { class: 'form-control select required' }}) }}
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
                                         <div class="text-end">
                                             <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                                         </div>

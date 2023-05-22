@@ -1,7 +1,7 @@
-{% extends 'layout.html.twig' %}
+{% extends '../layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header_user.html.twig' %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -42,7 +42,7 @@
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_users') }}" class="breadcrumb-item">Korisnici</a>
                                 <a href="{{ path('app_user_profile_view', { id: user.id}) }}" class="breadcrumb-item">Profil</a>
-                                <span class="breadcrumb-item active">Oprema</span>
+                                <span class="breadcrumb-item active">Vozila</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -529,7 +529,7 @@
                 <!-- /content area -->
 
                 <!-- Footer -->
-                {% include 'includes/footer.html.twig' %}
+                {% include '../includes/footer.html.twig' %}
                 <!-- /footer -->
 
             </div>
@@ -540,7 +540,7 @@
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
 
     </div>
-    {% include 'includes/notification.html.twig' %}
+    {% include '../includes/notification.html.twig' %}
 {% endblock content %}
 
 {% block includeJavascript %}

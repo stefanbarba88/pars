@@ -111,6 +111,9 @@ class Task implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'task', targetEntity: TaskLog::class, cascade: ["persist", "remove"], orphanRemoval: true)]
   private Collection $taskLogs;
 
+  #[ORM\OneToMany(mappedBy: 'Task', targetEntity: Comment::class)]
+  private Collection $comments;
+
 
   public function __construct() {
     $this->assignedUsers = new ArrayCollection();
@@ -118,6 +121,7 @@ class Task implements JsonSerializable {
     $this->pdfs = new ArrayCollection();
     $this->label = new ArrayCollection();
     $this->taskLogs = new ArrayCollection();
+    $this->comments = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -541,6 +545,36 @@ class Task implements JsonSerializable {
           // set the owning side to null (unless already changed)
           if ($taskLog->getTask() === $this) {
               $taskLog->setTask(null);
+          }
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Comment>
+   */
+  public function getComments(): Collection
+  {
+      return $this->comments;
+  }
+
+  public function addComment(Comment $comment): self
+  {
+      if (!$this->comments->contains($comment)) {
+          $this->comments->add($comment);
+          $comment->setTask($this);
+      }
+
+      return $this;
+  }
+
+  public function removeComment(Comment $comment): self
+  {
+      if ($this->comments->removeElement($comment)) {
+          // set the owning side to null (unless already changed)
+          if ($comment->getTask() === $this) {
+              $comment->setTask(null);
           }
       }
 

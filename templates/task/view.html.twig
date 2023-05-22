@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header.html.twig' %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -422,144 +422,39 @@
                                     {% endif %}
                                 </div>
                             </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Komentari</h5>
+                                </div>
+
+                                <div class="card-body">
+                                    {% for comment in comments %}
+                                        <div class="d-flex flex-column flex-lg-row mb-3">
+                                        <div class="me-lg-3 mb-2 mb-lg-0">
+                                            <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}"><img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt=""></a>
+                                        </div>
+
+                                        <div class="flex-fill">
+                                            <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}" class="fw-semibold">{{ comment.user.getFullName() }}</a>
+                                            <span class="fs-sm text-muted ms-3">{{ comment.created | date("d.m.Y H:i:s")}}</span>
+
+                                            <p>{{ comment.comment }}</p>
+                                            {% if not is_granted('ROLE_EMPLOYEE') %}
+                                                <ul class="list-inline mb-0">
+                                                    <li class="list-inline-item">
+                                                        <a href="{{ path('app_comment_delete', { id: comment.id}) }}">Obrišite</a>
+                                                    </li>
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                                {{ render(controller('App\\Controller\\CommentController::form', { task: task.id } )) }}
+                            </div>
                         </div>
                         <!-- /left content -->
-
-
-
-{#                        <!-- Right sidebar component User -->#}
-{#                        <div class="sidebar sidebar-component sidebar-collapsed bg-transparent shadow-none order-1 order-lg-2 ms-lg-3 mb-3">#}
-
-{#                            <!-- Sidebar content -->#}
-{#                            <div class="sidebar-content">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-header d-flex">#}
-{#                                        <h5 class="mb-0">#}
-{#                                            <i class="ph-folder me-2"></i>#}
-{#                                            Downloaded files#}
-{#                                        </h5>#}
-
-{#                                        <div class="ms-auto">#}
-{#                                            <span class="text-muted">(93)</span>#}
-{#                                        </div>#}
-{#                                    </div>#}
-
-{#                                    <div class="list-group list-group-borderless py-2">#}
-{#                                        <a href="#" class="list-group-item list-group-item-action">#}
-{#                                            <i class="ph-file-pdf me-3"></i>#}
-{#                                            Hello_exotic_staunch.pdf <span class="badge bg-success ms-auto">New</span>#}
-{#                                        </a>#}
-
-{#                                        <a href="#" class="list-group-item list-group-item-action">#}
-{#                                            <i class="ph-file-doc me-3"></i>#}
-{#                                            That_well_ecstatically.docx#}
-{#                                        </a>#}
-
-{#                                        <a href="#" class="list-group-item list-group-item-action">#}
-{#                                            <i class="ph-file-csv me-3"></i>#}
-{#                                            Shared_coast_concurrent.csv#}
-{#                                            <span class="badge badge-secondary ml-auto">Draft</span>#}
-{#                                        </a>#}
-
-{#                                        <a href="#" class="list-group-item list-group-item-action">#}
-{#                                            <i class="ph-file-doc me-3"></i>#}
-{#                                            Into_intrepid_belated.docx#}
-{#                                        </a>#}
-
-{#                                        <a href="#" class="list-group-item list-group-item-action">#}
-{#                                            <i class="ph-arrow-right me-3"></i>#}
-{#                                            Show all files (93)#}
-{#                                        </a>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <!-- dnevnici -->#}
-{#                                <div class="card">#}
-{#                                    <div class="sidebar-section-header border-bottom">#}
-{#                                        <span class="fw-semibold">Zaduženi korisnici</span>#}
-{#                                        {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}#}
-{#                                            <a href="{{ path('app_task_reassign', {id: task.id} ) }}"> <i class="ph-note-pencil mx-1"></i></a>#}
-{#                                        {% endif %}#}
-{#                                    </div>#}
-
-{#                                    <div class="sidebar-section-body">#}
-{#                                        {% for log in taskLogs %}#}
-{#                                            <div class="d-flex align-items-start mb-3">#}
-{#                                            <div class="me-2">#}
-{#                                                <i class="ph-clipboard"></i>#}
-{#                                            </div>#}
-
-{#                                            <div class="flex-fill overflow-hidden">#}
-{#                                                <div class="fw-semibold text-truncate">#}
-{#                                                    <a href="{{ path('app_task_log_view',{id: log.log.id} ) }}" class="text-body">#}
-{#                                                        {{ log.log.user.getFullName }}#}
-{#                                                    </a>#}
-{#                                                </div>#}
-{#                                            {% if log.lastEdit is not null  %}#}
-{#                                                <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">#}
-{#                                                    <li class="list-inline-item">Izmena: {{ log.lastEdit.updated | date("d.m.Y H:i:s")}}</li>#}
-{#                                                </ul>#}
-{#                                            {% endif %}#}
-{#                                            </div>#}
-
-{#                                            <div class="ms-3">#}
-{#                                                {% if log.count > 0  %}#}
-{#                                                    <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ log.count }}</span>#}
-{#                                                {% else %}#}
-{#                                                    <span class="badge bg-warning align-self-center rounded-pill ms-auto">{{ log.count }}</span>#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        {% endfor %}#}
-{#                                    </div>#}
-
-{#                                </div>#}
-{#                                <!-- /dnevnici -->#}
-
-{#                                {% if not task.isDeleted %}#}
-{#                                    <!-- Attached files -->#}
-{#                                    <div class="card">#}
-{#                                        <div class="sidebar-section-header border-bottom">#}
-{#                                            <span class="fw-semibold">Dokumenta</span>#}
-{#                                        </div>#}
-
-{#                                        <div class="sidebar-section-body">#}
-{#                                            {% if pdfs is empty %}#}
-{#                                                <div class="d-flex align-items-start mb-3">#}
-
-{#                                                    <div class="flex-fill overflow-hidden">#}
-{#                                                        <div class="fw-semibold text-truncate">Nema dokumenata</div>#}
-{#                                                    </div>#}
-
-{#                                                </div>#}
-{#                                            {% else %}#}
-{#                                                {% for pdf in pdfs %}#}
-{#                                                    <div class="d-flex align-items-start mb-3">#}
-{#                                                        <div class="me-2">#}
-{#                                                            <i class="ph-file-pdf"></i>#}
-{#                                                        </div>#}
-
-{#                                                        <div class="flex-fill overflow-hidden">#}
-{#                                                            <div class="fw-semibold text-truncate">{{ pdf.title }}</div>#}
-{#                                                        </div>#}
-
-{#                                                        <div class="ms-3">#}
-{#                                                            <a href="{{ asset(pdf.path) }}" download class="text-body">#}
-{#                                                                <i class="ph-download-simple"></i>#}
-{#                                                            </a>#}
-{#                                                        </div>#}
-{#                                                    </div>#}
-{#                                                {% endfor %}#}
-{#                                            {% endif %}#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                    <!-- /attached files -->#}
-{#                                {% endif %}#}
-{#                            </div>#}
-{#                            <!-- /sidebar content -->#}
-
-{#                        </div>#}
-{#                        <!-- /right sidebar component user -->#}
-
                     </div>
 
                 </div>

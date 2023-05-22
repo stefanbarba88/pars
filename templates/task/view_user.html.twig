@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header.html.twig' %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -371,7 +371,37 @@
                                     {% endif %}
                                 </div>
                             </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Komentari</h5>
+                                </div>
 
+                                <div class="card-body">
+                                    {% for comment in comments %}
+                                        <div class="d-flex flex-column flex-lg-row mb-3">
+                                            <div class="me-lg-3 mb-2 mb-lg-0">
+                                                <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}"><img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt=""></a>
+                                            </div>
+
+                                            <div class="flex-fill">
+                                                <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}" class="fw-semibold">{{ comment.user.getFullName() }}</a>
+                                                <span class="fs-sm text-muted ms-3">{{ comment.created | date("d.m.Y H:i:s")}}</span>
+
+                                                <p>{{ comment.comment }}</p>
+                                                {% if task.createdBy == app.user %}
+                                                    <ul class="list-inline mb-0">
+                                                        <li class="list-inline-item">
+                                                            <a href="{{ path('app_comment_delete', { id: comment.id}) }}">Obrišite</a>
+                                                        </li>
+                                                    </ul>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                {{ render(controller('App\\Controller\\CommentController::form', { task: task.id } )) }}
+                            </div>
 
                         </div>
                         <!-- /left content -->

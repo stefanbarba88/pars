@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header_user.html.twig' %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -18,21 +18,6 @@
                             <h4 class="page-title mb-0">
                                 {{ user.getFullName() }}
                             </h4>
-
-                            <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
-                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
-                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
-                                <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_user_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
-                                        <i class="ph-plus"></i>
-                                    </a>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -42,7 +27,7 @@
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_users') }}" class="breadcrumb-item">Korisnici</a>
                                 <a href="{{ path('app_user_profile_view', { id: user.id}) }}" class="breadcrumb-item">Profil</a>
-                                <span class="breadcrumb-item active">Raspored</span>
+                                <span class="breadcrumb-item active">Komentari</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -87,7 +72,7 @@
                         </div>
                     </div>
 
-                    {{ render(controller('App\\Controller\\WidgetController::userProfilNavigation', { user: user } )) }}
+                    {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigation', { user: user } )) }}
 
                 </div>
                 <!-- /page header -->
@@ -99,39 +84,87 @@
                     <div class="d-lg-flex align-items-lg-start">
 
                         <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::userProfilSidebar', { user: user } )) }}
+                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
                         <!-- /left sidebar component -->
 
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
-                                <!-- Available hours -->
+
                                 <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Available hours</h5>
+                                    <div class="card-header d-lg-flex py-lg-0">
+                                        <h5 class="py-lg-3 mb-0">Komentari dodati od: {{ user.getFullName }}</h5>
                                     </div>
+                                    <table class="table datatable-colvis-state-pars">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Zadatak</th>
+                                            <th>Status</th>
+                                            <th>Kreiran</th>
+                                            <th>Izmenjen</th>
+                                            <th>Pregled</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for comment in comments %}
+                                            <tr>
+                                                <td>{{ comment.id }}</td>
+                                                <td>
+                                                    <a href="{{ path('app_task_view', { id: comment.task.id}) }}">{{ comment.task.title }}</a>
+                                                </td>
+                                                <td>status</td>
+                                                <td>
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ comment.created | date("d.m.Y H:i:s")}}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ comment.updated | date("d.m.Y H:i:s")}}
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-gear"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <a href="{{ path('app_task_view', { id: comment.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                        </div>
+                                                        <!-- delete comment modal -->
+                                                        <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header bg-danger text-white border-0">
+                                                                        <h6 class="modal-title">Potvrda</h6>
+                                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                    </div>
 
-                                    <div class="card-body">
-                                        <div class="chart-container">
-                                            <div class="chart has-fixed-height" id="available_hours"></div>
-                                        </div>
-                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <p>Da li ste sigurni da želite da obrišete ovaj komentar?</p>
+                                                                    </div>
+
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                        <a href="{{ path('app_comment_delete', {id: comment.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- /delete task modal -->
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <!-- /available hours -->
-
-
-                                <!-- Schedule -->
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">My schedule</h5>
-                                    </div>
-
-                                    <div class="card-body">
-                                        <div class="my-schedule"></div>
-                                    </div>
-                                </div>
-                                <!-- /schedule -->
                             </div>
                         </div>
                         <!-- /right content -->
@@ -161,12 +194,12 @@
     {{ parent() }}
 
     <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
 
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
@@ -192,6 +225,8 @@
     <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
     <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
     <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/media/glightbox.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
 
     <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>

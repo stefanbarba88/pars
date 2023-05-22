@@ -2,9 +2,9 @@
 
 {% block content %}
     {% if client.id is not null %}
-        {% include 'includes/header_user.html.twig' %}
+        {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
     {% else %}
-        {% include 'includes/header.html.twig' %}
+        {{ render(controller('App\\Controller\\WidgetController::header' )) }}
     {% endif %}
 
     <div class="page-content">

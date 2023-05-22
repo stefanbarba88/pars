@@ -5,10 +5,13 @@ namespace App\Repository;
 use App\Classes\DTO\UploadedFileDTO;
 use App\Entity\Image;
 use App\Entity\Pdf;
+use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**

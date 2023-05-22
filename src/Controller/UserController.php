@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Classes\Avatar;
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\Image;
 use App\Entity\User;
 use App\Entity\UserHistory;
 use App\Form\UserEditImageFormType;
 use App\Form\UserEditInfoFormType;
 use App\Form\UserEditAccountFormType;
+use App\Form\UserEditSelfAccountFormType;
 use App\Form\UserRegistrationFormType;
 use App\Form\UserSuspendedFormType;
 use App\Service\UploadService;
@@ -125,8 +127,12 @@ class UserController extends AbstractController {
       );
       $history = $history->getContent();
     }
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $form = $this->createForm(UserEditSelfAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId()])]]);
+    } else {
+      $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId()])]]);
+    }
 
-    $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
 
       $form->handleRequest($request);
@@ -205,41 +211,10 @@ class UserController extends AbstractController {
     return $this->render('user/view_profile.html.twig', $args);
   }
 
-  #[Route('/view-activity/{id}', name: 'app_user_activity_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewActivity(User $usr): Response {
-    $args['user'] = $usr;
-
-    return $this->render('user/view_activity.html.twig', $args);
-  }
-
-  #[Route('/view-calendar/{id}', name: 'app_user_calendar_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCalendar(User $usr): Response {
-    $args['user'] = $usr;
-
-    return $this->render('user/view_calendar.html.twig', $args);
-  }
-
-  #[Route('/view-cars/{id}', name: 'app_user_car_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCar(User $usr): Response {
-    $args['user'] = $usr;
-
-    return $this->render('user/view_cars.html.twig', $args);
-  }
-
-  #[Route('/view-tools/{id}', name: 'app_user_tools_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewTools(User $usr): Response {
-    $args['user'] = $usr;
-
-    return $this->render('user/view_tools.html.twig', $args);
-  }
-
   #[Route('/settings/{id}', name: 'app_user_settings_form')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function settings(User $usr, Request $request): Response {
+
     $history = null;
     if($usr->getId()) {
       $history = $this->json($usr, Response::HTTP_OK, [], [
@@ -251,6 +226,7 @@ class UserController extends AbstractController {
       $history = $history->getContent();
     }
     $args['user'] = $usr;
+
     $form = $this->createForm(UserSuspendedFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_settings_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
 
@@ -279,11 +255,9 @@ class UserController extends AbstractController {
         return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
       }
     }
+
     $args['form'] = $form->createView();
     $args['user'] = $usr;
-    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['user' => $usr]);
-
-
     return $this->render('user/settings.html.twig', $args);
   }
 

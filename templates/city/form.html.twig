@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header.html.twig' %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
         <!-- Main content -->

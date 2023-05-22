@@ -18,6 +18,7 @@ use Symfony\Component\Validator\Constraints\Regex;
 
 class UserEditAccountFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
+
     $builder
       ->add('plainPassword', TextType::class, [
         'required' => false,

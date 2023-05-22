@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% include 'includes/header.html.twig' %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
         <!-- Main content -->
@@ -132,12 +132,16 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
-                                                    <span class="badge bg-info">Nije startovan</span>
-                                                {% elseif task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
-                                                    <span class="badge bg-success">Otvoren</span>
+                                                {% if task.task.isDeleted %}
+                                                    <span class="badge bg-danger">Obrisan</span>
                                                 {% else %}
-                                                    <span class="badge bg-danger">Zatvoren</span>
+                                                    {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                        <span class="badge bg-info">Nije startovan</span>
+                                                    {% elseif task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                        <span class="badge bg-success">Otvoren</span>
+                                                    {% else %}
+                                                        <span class="badge bg-danger">Zatvoren</span>
+                                                    {% endif %}
                                                 {% endif %}
                                             </td>
                                             <td class="text-center">

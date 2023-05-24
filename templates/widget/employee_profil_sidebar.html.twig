@@ -10,7 +10,7 @@
                 <div class="card-img-actions d-inline-block mb-3">
                     <img class="img-fluid rounded-circle" src="{{ asset(user.image.thumbnail500) }}" width="150" height="150" alt="{{ user.fullName }}">
                     <div class="card-img-actions-overlay card-img rounded-circle">
-                        <a href="{{ path('app_user_edit_image_form', {id: user.id}) }}" class="btn btn-outline-white btn-icon rounded-pill">
+                        <a href="{{ path('app_user_edit_image_form', {id: user.id, type: 1}) }}" class="btn btn-outline-white btn-icon rounded-pill">
                             <i class="ph-note-pencil"></i>
                         </a>
                     </div>

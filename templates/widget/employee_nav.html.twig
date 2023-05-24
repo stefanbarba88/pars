@@ -88,18 +88,19 @@
                     </a>
 
                     <div class="dropdown-menu dropdown-menu-end">
-                        <a href="{{ path('app_user_edit_info_form', { id: user.id}) }}" class="dropdown-item">
+                        <a href="{{ path('app_user_edit_info_form', { id: user.id, type: 1}) }}" class="dropdown-item">
                             <i class="ph-note-pencil me-2"></i>
                             Lični i kontakt podaci
                         </a>
-                        <a href="{{ path('app_user_edit_account_form', { id: user.id}) }}" class="dropdown-item">
+                        <a href="{{ path('app_user_edit_account_form', { id: user.id, type: 1}) }}" class="dropdown-item">
                             <i class="ph-note-pencil me-2"></i>
                             Login podaci
                         </a>
-                        <a href="{{ path('app_user_edit_image_form', { id: user.id}) }}" class="dropdown-item">
+                        <a href="{{ path('app_user_edit_image_form', { id: user.id, type: 1}) }}" class="dropdown-item">
                             <i class="ph-image me-2"></i>
                             Profilna slika/avatar
                         </a>
+                        {% if not is_granted('ROLE_EMPLOYEE') %}
                         <a href="{{ path('app_user_history_list', { id: user.id}) }}" class="dropdown-item">
                             <i class="ph-clock-counter-clockwise me-2"></i>
                             Istorija izmena
@@ -109,6 +110,7 @@
                             <i class="ph-gear me-2"></i>
                             Podešavanja
                         </a>
+                        {% endif %}
                     </div>
                 </li>
             </ul>

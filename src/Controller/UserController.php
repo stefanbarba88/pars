@@ -43,8 +43,9 @@ class UserController extends AbstractController {
   #[Entity('usr', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, User $usr, UploadService $uploadService): Response {
-
-//    $request->query->getInt('user_type')
+//
+//    $type = $request->query->getInt('type');
+//    dd($type);
     $form = $this->createForm(UserRegistrationFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_form', ['id' => $usr->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -79,6 +80,9 @@ class UserController extends AbstractController {
   #[Route('/edit-info/{id}', name: 'app_user_edit_info_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editInfo(User $usr, Request $request): Response {
+
+    $type = $request->query->getInt('type');
+
     $history = null;
     if($usr->getId()) {
       $history = $this->json($usr, Response::HTTP_OK, [], [
@@ -90,7 +94,7 @@ class UserController extends AbstractController {
       $history = $history->getContent();
     }
 
-    $form = $this->createForm(UserEditInfoFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_info_form', ['id' => $usr->getId()])]]);
+    $form = $this->createForm(UserEditInfoFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_info_form', ['id' => $usr->getId(), 'type' => $type])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 
@@ -105,18 +109,28 @@ class UserController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
 
-        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+        if ($type != 1) {
+          return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+        }
+        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
       }
     }
     $args['form'] = $form->createView();
     $args['user'] = $usr;
+    $args['type'] = $type;
 
-    return $this->render('user/edit_info.html.twig', $args);
+    if ($type != 1) {
+      return $this->render('user/edit_info.html.twig', $args);
+    }
+
+    return $this->render('employee/edit_info.html.twig', $args);
   }
 
   #[Route('/edit-account/{id}', name: 'app_user_edit_account_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editAccount(User $usr, Request $request): Response {
+    $type = $request->query->getInt('type');
+
     $history = null;
     if($usr->getId()) {
       $history = $this->json($usr, Response::HTTP_OK, [], [
@@ -128,9 +142,9 @@ class UserController extends AbstractController {
       $history = $history->getContent();
     }
     if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      $form = $this->createForm(UserEditSelfAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId()])]]);
+      $form = $this->createForm(UserEditSelfAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId(), 'type' => $type])]]);
     } else {
-      $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId()])]]);
+      $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId(), 'type' => $type])]]);
     }
 
     if ($request->isMethod('POST')) {
@@ -148,21 +162,32 @@ class UserController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
 
-        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+        if ($type != 1) {
+          return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+        }
+        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
       }
     }
     $args['form'] = $form->createView();
     $args['user'] = $usr;
+    $args['type'] = $type;
 
-    return $this->render('user/edit_account.html.twig', $args);
+    if ($type != 1) {
+      return $this->render('user/edit_account.html.twig', $args);
+    }
+
+    return $this->render('employee/edit_account.html.twig', $args);
+
   }
 
   #[Route('/edit-image/{id}', name: 'app_user_edit_image_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editImage(User $usr, Request $request, UploadService $uploadService): Response {
+    $type = $request->query->getInt('type');
+
     $usr->setEditBy($this->getUser());
 
-    $form = $this->createForm(UserEditImageFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_image_form', ['id' => $usr->getId()])]]);
+    $form = $this->createForm(UserEditImageFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_image_form', ['id' => $usr->getId(), 'type' => $type])]]);
     if ($request->isMethod('POST')) {
       $history = null;
       if($usr->getId()) {
@@ -194,13 +219,21 @@ class UserController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_USER_IMAGE_SUCCESS);
 
-        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+        if ($type != 1) {
+          return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+        }
+        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
       }
     }
     $args['form'] = $form->createView();
     $args['user'] = $usr;
+    $args['type'] = $type;
 
-    return $this->render('user/edit_image.html.twig', $args);
+    if ($type != 1) {
+      return $this->render('user/edit_image.html.twig', $args);
+    }
+
+    return $this->render('employee/edit_image.html.twig', $args);
   }
 
   #[Route('/view-profile/{id}', name: 'app_user_profile_view')]

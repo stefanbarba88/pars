@@ -377,6 +377,13 @@
                                 </div>
 
                                 <div class="card-body">
+                                    {% if comments is empty %}
+                                    <div class="d-flex flex-column flex-lg-row mb-3">
+                                        <div class="me-lg-3 mb-2 mb-lg-0">
+                                            Nema komentara
+                                        </div>
+                                    </div>
+                                    {% else %}
                                     {% for comment in comments %}
                                         <div class="d-flex flex-column flex-lg-row mb-3">
                                             <div class="me-lg-3 mb-2 mb-lg-0">
@@ -388,19 +395,54 @@
                                                 <span class="fs-sm text-muted ms-3">{{ comment.created | date("d.m.Y H:i:s")}}</span>
 
                                                 <p>{{ comment.comment }}</p>
-                                                {% if task.createdBy == app.user %}
+                                                {% if comment.user == app.user %}
                                                     <ul class="list-inline mb-0">
                                                         <li class="list-inline-item">
-                                                            <a href="{{ path('app_comment_delete', { id: comment.id}) }}">Obrišite</a>
+                                                            <a href="{{ path('app_comment_edit', { id: comment.id}) }}">Izmenite</a>
+                                                        </li>
+                                                        <li class="list-inline-item">
+                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}">Obrišite</a>
                                                         </li>
                                                     </ul>
+                                                    <!-- delete note modal -->
+                                                    <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header bg-danger text-white border-0">
+                                                                    <h6 class="modal-title">Potvrda</h6>
+                                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                </div>
+
+                                                                <div class="modal-body">
+                                                                    <p>Da li ste sigurni da želite da obrišete ovaj komentar?</p>
+                                                                </div>
+
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                    <a href="{{ path('app_comment_delete', {id: comment.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i>Obrišite</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- /delete note modal -->
                                                 {% endif %}
                                             </div>
                                         </div>
                                     {% endfor %}
+                                    {% endif %}
                                 </div>
 
-                                {{ render(controller('App\\Controller\\CommentController::form', { task: task.id } )) }}
+                                <div class="card-footer d-flex justify-content-between align-items-center">
+                                    {% if not is_granted('ROLE_EMPLOYEE') or app.user in task.assignedUsers%}
+                                        <div class="d-flex align-items-center"></div>
+                                        <div class="d-inline-flex mb-0">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_comment"><i class="ph-plus me-2"></i> Dodajte</button>
+                                        </div>
+                                        {{ render(controller('App\\Controller\\CommentController::form', { task: task.id } )) }}
+                                    {% endif %}
+
+                                </div>
+
                             </div>
 
                         </div>

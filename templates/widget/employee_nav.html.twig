@@ -58,8 +58,14 @@
         <div class="navbar-collapse collapse" id="profile_nav">
             <ul class="navbar-nav ms-lg-auto mt-2 mt-lg-0">
                 <li class="nav-item ms-lg-1">
+                    <a href="{{ path('app_employee_notes_view', { id: user.id}) }}" class="navbar-nav-link rounded">
+                        <i class="ph-clipboard-text me-2"></i>
+                        Beleške
+                    </a>
+                </li>
+                <li class="nav-item ms-lg-1">
                     <a href="{{ path('app_employee_docs_view', { id: user.id}) }}" class="navbar-nav-link rounded">
-                        <i class="ph-note me-2"></i>
+                        <i class="ph-file me-2"></i>
                         Dokumenta
                     </a>
                 </li>

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\Notes;
 use App\Entity\Pdf;
 use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
@@ -85,5 +86,14 @@ class EmployeeController extends AbstractController {
     $args['comments'] =  $this->em->getRepository(Comment::class)->getCommentsByUser($usr);
 
     return $this->render('employee/view_comments.html.twig', $args);
+  }
+
+  #[Route('/view-notes/{id}', name: 'app_employee_notes_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewNotes(User $usr): Response {
+
+    $args['user'] = $usr;
+    $args['notes'] = $this->em->getRepository(Notes::class)->findBy(['user' => $usr], ['isSuspended' => 'ASC', 'id' => 'DESC']);
+    return $this->render('employee/view_notes.html.twig', $args);
   }
 }

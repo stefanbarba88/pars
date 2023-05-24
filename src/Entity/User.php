@@ -128,11 +128,15 @@ class User implements UserInterface, JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'User', targetEntity: Comment::class)]
   private Collection $comments;
 
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notes::class)]
+  private Collection $notes;
+
 
   public function __construct() {
     $this->userHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
     $this->comments = new ArrayCollection();
+    $this->notes = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -614,6 +618,36 @@ class User implements UserInterface, JsonSerializable {
           // set the owning side to null (unless already changed)
           if ($comment->getUser() === $this) {
               $comment->setUser(null);
+          }
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Notes>
+   */
+  public function getNotes(): Collection
+  {
+      return $this->notes;
+  }
+
+  public function addNote(Notes $note): self
+  {
+      if (!$this->notes->contains($note)) {
+          $this->notes->add($note);
+          $note->setUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeNote(Notes $note): self
+  {
+      if ($this->notes->removeElement($note)) {
+          // set the owning side to null (unless already changed)
+          if ($note->getUser() === $this) {
+              $note->setUser(null);
           }
       }
 

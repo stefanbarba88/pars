@@ -12,6 +12,11 @@ class NotifyMessagesData {
   public const EDIT_SUCCESS = 'Uspešno ste dodali/izmenili stavku.';
   public const COMMENT_ADD = 'Uspešno ste dodali komentar.';
   public const COMMENT_DELETE = 'Uspešno ste obrisali komentar.';
+  public const COMMENT_EDIT = 'Uspešno ste izmenili komentar.';
+
+  public const NOTE_ADD = 'Uspešno ste dodali belešku.';
+  public const NOTE_DELETE = 'Uspešno ste obrisali belešku.';
+  public const NOTE_EDIT = 'Uspešno ste izmenili belešku.';
 
 
 

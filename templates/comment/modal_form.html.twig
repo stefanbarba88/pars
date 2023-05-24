@@ -1,0 +1,29 @@
+<!-- Vertical form modal -->
+<div id="modal_form_comment" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Dodavanje komentara</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            {{ form_widget(form.comment, {attr: { class: 'form-control required' }}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i>Sačuvajte</button>
+                </div>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+<!-- /vertical form modal -->

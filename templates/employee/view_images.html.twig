@@ -25,8 +25,10 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_users') }}" class="breadcrumb-item">Korisnici</a>
-                                <a href="{{ path('app_user_profile_view', { id: user.id}) }}" class="breadcrumb-item">Profil</a>
+                                {% if not is_granted('ROLE_EMPLOYEE') %}
+                                    <a href="{{ path('app_employees') }}" class="breadcrumb-item">Zaposleni</a>
+                                {% endif %}
+                                <a href="{{ path('app_employee_profile_view', { id: user.id}) }}" class="breadcrumb-item">Profil</a>
                                 <span class="breadcrumb-item active">Slike</span>
                             </div>
 

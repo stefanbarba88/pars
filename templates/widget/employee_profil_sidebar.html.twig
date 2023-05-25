@@ -45,11 +45,17 @@
                             <i class="ph-sign-out me-2"></i>Odjavite se
                         </a>
                     {% endif %}
-                    <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="nav-link">
-                        <i class="ph-lightbulb me-2"></i>Status
-                        <span class="ms-auto">{{ user.badgeByStatus | raw }}</span>
-                    </a>
-
+                    {% if is_granted('ROLE_SUPERADMIN') %}
+                        <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="nav-link">
+                            <i class="ph-lightbulb me-2"></i>Status
+                            <span class="ms-auto">{{ user.badgeByStatus | raw }}</span>
+                        </a>
+                    {% else %}
+                        <a href="#" class="nav-link">
+                            <i class="ph-lightbulb me-2"></i>Status
+                            <span class="ms-auto">{{ user.badgeByStatus | raw }}</span>
+                        </a>
+                    {% endif %}
                 </li>
             </ul>
         </div>

@@ -102,7 +102,7 @@
                             <tbody>
                             {% for task in tasks %}
                                 <tr>
-                                    <td>#{{ task.task.id }}</td>
+                                    <td>{{ task.task.id }}</td>
                                     <td>
                                         <div class="fw-semibold">
                                             {% if is_granted('ROLE_EMPLOYEE') %}

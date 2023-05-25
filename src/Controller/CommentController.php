@@ -18,7 +18,7 @@ class CommentController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
 
-  #[Route('/list/', name: 'app_activities')]
+  #[Route('/list/', name: 'app_comments')]
   public function list(): Response {
     $args = [];
     $args['activities'] = $this->em->getRepository(Comment::class)->findAll();

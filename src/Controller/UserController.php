@@ -141,6 +141,7 @@ class UserController extends AbstractController {
       );
       $history = $history->getContent();
     }
+
     if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
       $form = $this->createForm(UserEditSelfAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId(), 'type' => $type])]]);
     } else {
@@ -174,9 +175,16 @@ class UserController extends AbstractController {
 
     if ($type != 1) {
       return $this->render('user/edit_account.html.twig', $args);
+    } else {
+      if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/edit_account.html.twig', $args);
+      } else {
+        return $this->render('employee/manager_edit_account.html.twig', $args);
+      }
+
     }
 
-    return $this->render('employee/edit_account.html.twig', $args);
+
 
   }
 

@@ -100,17 +100,17 @@
                             <i class="ph-image me-2"></i>
                             Profilna slika/avatar
                         </a>
-                        {% if not is_granted('ROLE_EMPLOYEE') %}
-                        <a href="{{ path('app_user_history_list', { id: user.id}) }}" class="dropdown-item">
-                            <i class="ph-clock-counter-clockwise me-2"></i>
-                            Istorija izmena
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="dropdown-item">
-                            <i class="ph-gear me-2"></i>
-                            Podešavanja
-                        </a>
-                        {% endif %}
+{#                        {% if not is_granted('ROLE_EMPLOYEE') %}#}
+{#                        <a href="{{ path('app_user_history_list', { id: user.id}) }}" class="dropdown-item">#}
+{#                            <i class="ph-clock-counter-clockwise me-2"></i>#}
+{#                            Istorija izmena#}
+{#                        </a>#}
+{#                        <div class="dropdown-divider"></div>#}
+{#                        <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="dropdown-item">#}
+{#                            <i class="ph-gear me-2"></i>#}
+{#                            Podešavanja#}
+{#                        </a>#}
+{#                        {% endif %}#}
                     </div>
                 </li>
             </ul>

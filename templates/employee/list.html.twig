@@ -91,7 +91,7 @@
                                 <th>Pozicija</th>
                                 <th>Datum rođenja</th>
                                 <th>Status</th>
-                                <th>Pregled</th>
+                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -106,11 +106,36 @@
                                     <td>{{ user.pozicija }}</td>
                                     <td>{{ user.datumRodjenja | date("d.m.Y")}}</td>
                                     <td>{{ user.isSuspended | raw }}</td>
-                                    <td>
-                                        <a href="{{ path('app_employee_profile_view', { id: user.id}) }}" class="btn btn-primary">
-                                            <i class="ph-eye me-2"></i>
-                                            Pregledajte
-                                        </a>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                <i class="ph-gear"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a href="{{ path('app_employee_profile_view', { id: user.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                <a href="{{ path('app_user_edit_info_form', { id: user.id, type: 1}) }}" class="dropdown-item">
+                                                    <i class="ph-note-pencil me-2"></i>
+                                                    Lični i kontakt podaci
+                                                </a>
+                                                <a href="{{ path('app_user_edit_account_form', { id: user.id, type: 1}) }}" class="dropdown-item">
+                                                    <i class="ph-note-pencil me-2"></i>
+                                                    Login podaci
+                                                </a>
+                                                <a href="{{ path('app_user_edit_image_form', { id: user.id, type: 1}) }}" class="dropdown-item">
+                                                    <i class="ph-image me-2"></i>
+                                                    Profilna slika/avatar
+                                                </a>
+{#                                                <a href="{{ path('app_user_history_list', { id: user.id, type: 1}) }}" class="dropdown-item">#}
+{#                                                    <i class="ph-clock-counter-clockwise me-2"></i>#}
+{#                                                    Istorija izmena#}
+{#                                                </a>#}
+{#                                                <div class="dropdown-divider"></div>#}
+{#                                                <a href="{{ path('app_user_settings_form', { id: user.id, type: 1}) }}" class="dropdown-item">#}
+{#                                                    <i class="ph-gear me-2"></i>#}
+{#                                                    Podešavanja#}
+{#                                                </a>#}
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             {% endfor %}

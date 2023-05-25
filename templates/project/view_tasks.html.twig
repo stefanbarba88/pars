@@ -17,21 +17,6 @@
                             <h4 class="page-title mb-0">
                                 {{project.title }}
                             </h4>
-
-                            <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
-                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
-                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
-                                <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_project_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
-                                        <i class="ph-plus"></i>
-                                    </a>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -116,7 +101,7 @@
                                     <tbody>
                                     {% for task in tasks %}
                                         <tr>
-                                            <td>#{{ task.task.id }}</td>
+                                            <td>{{ task.task.id }}</td>
                                             <td>
                                                 <div class="fw-semibold">
                                                     {% if app.user in task.users %}
@@ -152,8 +137,14 @@
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                {% if task.task.category %}
-                                                    <a href="{{ path('app_category_view', { id: task.task.category.id}) }}">{{ task.task.category.title }}</a>
+                                                {% if is_granted('ROLE_EMPLOYEE') %}
+                                                    {% if task.task.category %}
+                                                        {{ task.task.category.title }}
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% if task.task.category %}
+                                                        <a href="{{ path('app_category_view', { id: task.task.category.id}) }}">{{ task.task.category.title }}</a>
+                                                    {% endif %}
                                                 {% endif %}
                                             </td>
                                             <td>
@@ -169,9 +160,15 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                {% for user in task.task.assignedUsers %}
-                                                    <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}"></a>
-                                                {% endfor %}
+                                                {% if is_granted('ROLE_EMPLOYEE') %}
+                                                    {% for user in task.task.assignedUsers %}
+                                                        <img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}" title="{{ user.getFullName()}}" >
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% for user in task.task.assignedUsers %}
+                                                        <a href="{{ path('app_employee_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}" title="{{ user.getFullName()}}"></a>
+                                                    {% endfor %}
+                                                {% endif %}
                                             </td>
                                             <td class="text-center">
                                                 <div class="dropdown">

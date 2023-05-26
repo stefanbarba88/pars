@@ -119,9 +119,6 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\ManyToOne(inversedBy: 'users')]
   private ?Image $image = null;
 
-  #[ORM\ManyToOne(inversedBy: 'contact')]
-  private ?Client $client = null;
-
   #[ORM\ManyToMany(targetEntity: Task::class, mappedBy: 'assignedUsers')]
   private Collection $tasks;
 
@@ -131,12 +128,15 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notes::class)]
   private Collection $notes;
 
+  #[ORM\ManyToMany(targetEntity: Client::class, mappedBy: 'contact')]
+  private Collection $clients;
 
   public function __construct() {
     $this->userHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
     $this->comments = new ArrayCollection();
     $this->notes = new ArrayCollection();
+    $this->clients = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -560,16 +560,6 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     return $this;
   }
 
-  public function getClient(): ?Client {
-    return $this->client;
-  }
-
-  public function setClient(?Client $client): self {
-    $this->client = $client;
-
-    return $this;
-  }
-
   /**
    * @return Collection<int, Task>
    */
@@ -649,6 +639,33 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
           if ($note->getUser() === $this) {
               $note->setUser(null);
           }
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Client>
+   */
+  public function getClients(): Collection
+  {
+      return $this->clients;
+  }
+
+  public function addClient(Client $client): self
+  {
+      if (!$this->clients->contains($client)) {
+          $this->clients->add($client);
+          $client->addContact($this);
+      }
+
+      return $this;
+  }
+
+  public function removeClient(Client $client): self
+  {
+      if ($this->clients->removeElement($client)) {
+          $client->removeContact($this);
       }
 
       return $this;

@@ -77,7 +77,7 @@ class Client implements JsonSerializable {
   #[ORM\ManyToOne(inversedBy: 'clients')]
   private ?Image $image = null;
 
-  #[ORM\OneToMany(mappedBy: 'client', targetEntity: User::class)]
+  #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'clients')]
   private Collection $contact;
 
   public function __construct() {
@@ -322,28 +322,25 @@ class Client implements JsonSerializable {
   /**
    * @return Collection<int, User>
    */
-  public function getContact(): Collection {
-    return $this->contact;
+  public function getContact(): Collection
+  {
+      return $this->contact;
   }
 
-  public function addContact(User $contact): self {
-    if (!$this->contact->contains($contact)) {
-      $this->contact->add($contact);
-      $contact->setClient($this);
-    }
-
-    return $this;
-  }
-
-  public function removeContact(User $contact): self {
-    if ($this->contact->removeElement($contact)) {
-      // set the owning side to null (unless already changed)
-      if ($contact->getClient() === $this) {
-        $contact->setClient(null);
+  public function addContact(User $contact): self
+  {
+      if (!$this->contact->contains($contact)) {
+          $this->contact->add($contact);
       }
-    }
 
-    return $this;
+      return $this;
+  }
+
+  public function removeContact(User $contact): self
+  {
+      $this->contact->removeElement($contact);
+
+      return $this;
   }
 
 }

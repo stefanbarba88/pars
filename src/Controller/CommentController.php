@@ -21,7 +21,7 @@ class CommentController extends AbstractController {
   #[Route('/list/', name: 'app_comments')]
   public function list(): Response {
     $args = [];
-    $args['activities'] = $this->em->getRepository(Comment::class)->findAll();
+    $args['comments'] = $this->em->getRepository(Comment::class)->findAll();
 
     return $this->render('comment/list.html.twig', $args);
   }

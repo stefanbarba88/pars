@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Client;
+use App\Entity\Comment;
 use App\Entity\Image;
 use App\Entity\Project;
 use App\Entity\User;
@@ -22,6 +23,7 @@ class WidgetController extends AbstractController {
     $args['countEmployees'] = $this->em->getRepository(User::class)->countEmployees();
     $args['countClients'] = $this->em->getRepository(Client::class)->count([]);
     $args['countProjects'] = $this->em->getRepository(Project::class)->count([]);
+    $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
 //    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
     return $this->render('widget/main_admin_sidebar.html.twig', $args);
   }

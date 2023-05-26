@@ -37,7 +37,7 @@ class ClientController extends AbstractController {
   #[Entity('client', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, Client $client): Response {
-//    dd($client);
+
     $history = null;
     if($client->getId()) {
       $history = $this->json($client, Response::HTTP_OK, [], [
@@ -56,7 +56,7 @@ class ClientController extends AbstractController {
       if ($form->isSubmitted() && $form->isValid()) {
 
         $this->em->getRepository(Client::class)->save($client, $history);
-
+//        dd($client);
         notyf()
           ->position('x', 'right')
           ->position('y', 'top')
@@ -64,7 +64,7 @@ class ClientController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-        return $this->redirectToRoute('app_clients');
+        return $this->redirectToRoute('app_client_profile_view', ['id' => $client->getId()]);
       }
     }
     $args['form'] = $form->createView();

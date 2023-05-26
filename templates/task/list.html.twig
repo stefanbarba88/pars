@@ -18,9 +18,7 @@
                             <h4 class="page-title mb-0">
                                Zadaci
                             </h4>
-
                         </div>
-
                     </div>
 
                     <div class="page-header-content d-lg-flex border-top">
@@ -118,12 +116,16 @@
                                         </div>
                                     </td>
                                     <td>
-                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
-                                            <span class="badge bg-info">Nije startovan</span>
-                                        {% elseif task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
-                                            <span class="badge bg-success">Otvoren</span>
+                                        {% if task.task.isDeleted %}
+                                            <span class="badge bg-danger">Obrisan</span>
                                         {% else %}
-                                            <span class="badge bg-danger">Zatvoren</span>
+                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                <span class="badge bg-info">Nije startovan</span>
+                                            {% elseif task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                <span class="badge bg-success">Otvoren</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Zatvoren</span>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td class="text-center">
@@ -157,7 +159,7 @@
                                     </td>
                                     <td>
                                         {% for user in task.task.assignedUsers %}
-                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}"></a>
+                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}" title="{{ user.getFullName() }}"></a>
                                         {% endfor %}
                                     </td>
                                     <td class="text-center">
@@ -167,7 +169,11 @@
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end">
                                                 {% if is_granted('ROLE_EMPLOYEE') %}
-                                                    <a href="{{ path('app_task_view_user', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                    {% if app.user in task.users %}
+                                                        <a href="{{ path('app_task_view_user', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                    {% else %}
+                                                        <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                    {% endif %}
                                                     {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.task.isDeleted and task.task.createdBy == app.user %}
                                                         <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
                                                     {% endif %}

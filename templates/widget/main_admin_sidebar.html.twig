@@ -316,6 +316,46 @@
                     </li>
                     <!-- /Projekti -->
 
+                    <!-- Zadaci -->
+                    <li class="nav-item-header">
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Zadaci</div>
+                        <i class="ph-dots-three sidebar-resize-show"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_tasks') }}" class="nav-link">
+                            <i class="ph-folders"></i>
+                            <span>Lista</span>
+{#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjects }}</span>#}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_task_form') }}" class="nav-link">
+                            <i class="ph-folder-plus"></i>
+                            <span>Dodajte</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" class="nav-link">
+                            <i class="ph-file-text"></i>
+                            <span>Izveštaji</span>
+                        </a>
+                    </li>
+                    <!-- /Zadaci -->
+
+                    <!-- Komentari -->
+                    <li class="nav-item-header">
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Komentari</div>
+                        <i class="ph-dots-three sidebar-resize-show"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_comments') }}" class="nav-link">
+                            <i class="ph-chats-circle"></i>
+                            <span>Lista</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countComments }}</span>
+                        </a>
+                    </li>
+                    <!-- /Komentari -->
+
                     <!-- Page kits -->
                     <li class="nav-item-header">
                         <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Podašavanja</div>

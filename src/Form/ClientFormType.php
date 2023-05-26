@@ -85,9 +85,7 @@ class ClientFormType extends AbstractType {
         'query_builder' => function (EntityRepository $em) use ($clientId) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.userType = :userType')
-            ->andWhere('g.client IS NULL OR g.client = :client')
             ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
-            ->setParameter(':client', $clientId)
             ->orderBy('g.id', 'ASC');
         },
         'choice_label' => function ($user) {

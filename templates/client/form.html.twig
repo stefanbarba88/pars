@@ -27,21 +27,6 @@
                                     Klijenti
                                 {% endif %}
                             </h4>
-
-                            <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
-                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
-                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
-                                <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_client_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
-                                        <i class="ph-plus"></i>
-                                    </a>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -109,8 +94,9 @@
                     <!-- Content area -->
                     <div class="d-lg-flex align-items-lg-start">
                         {% if client.id is not null %}
-                            <div class="sidebar sidebar-component sidebar-expand-lg bg-transparent shadow-none me-lg-3">
-                                <!-- Sidebar content -->
+                            <div class="sidebar sidebar-component sidebar-expand-lg sidebar-expand-sm sidebar-expand-md sidebar-expand-xl sidebar-expand-xxl sidebar-mobile-expanded bg-transparent shadow-none me-lg-3">
+
+                            <!-- Sidebar content -->
                                 <div class="sidebar-content">
                                     <!-- Navigation -->
                                     <div class="card">

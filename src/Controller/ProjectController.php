@@ -81,7 +81,7 @@ class ProjectController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-        return $this->redirectToRoute('app_projects');
+        return $this->redirectToRoute('app_project_profile_view', ['id' => $project->getId()]);
       }
     }
     $args['form'] = $form->createView();

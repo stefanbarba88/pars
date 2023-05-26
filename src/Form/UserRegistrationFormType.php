@@ -30,7 +30,7 @@ class UserRegistrationFormType extends AbstractType {
       ->add('datumRodjenja', DateType::class, [
         'required' => false,
         'widget' => 'single_text',
-        'format' => 'dd.mm.yyyy',
+        'format' => 'dd.MM.yyyy',
         'html5' => false,
         'input' => 'datetime_immutable'
       ])

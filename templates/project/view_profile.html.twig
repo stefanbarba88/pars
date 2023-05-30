@@ -142,8 +142,9 @@
                                                 {% if is_granted('ROLE_EMPLOYEE') %}
                                                     {{ project.createdBy.getFullName() }}
                                                 {% else %}
-                                                    <a href="{{ path('app_user_profile_view', { id: project.createdBy.id}) }}">{{ project.createdBy.getFullName() }}</a></div>
+                                                    <a href="{{ path('app_user_profile_view', { id: project.createdBy.id}) }}">{{ project.createdBy.getFullName() }}</a>
                                                 {% endif %} - {{ project.created | date("d.m.Y") }} u {{ project.created | date("H:i:s") }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

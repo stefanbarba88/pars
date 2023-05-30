@@ -11,6 +11,7 @@ use App\Entity\Client;
 use App\Entity\Currency;
 use App\Entity\Label;
 use App\Entity\Project;
+use App\Entity\Team;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -103,6 +104,19 @@ class ProjectFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
+
+      ->add('team', EntityType::class, [
+        'required' => false,
+        'class' => Team::class,
+        'query_builder' => function (EntityRepository $em) {
+          return $em->createQueryBuilder('g')
+            ->orderBy('g.id', 'ASC');
+        },
+        'choice_label' => 'title',
+        'expanded' => false,
+        'multiple' => true,
+      ])
+
       ->add('price', NumberType::class, [
         'required' => false,
         'html5' => true,

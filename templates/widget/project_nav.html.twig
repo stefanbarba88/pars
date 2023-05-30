@@ -53,8 +53,16 @@
                 <li class="nav-item me-1">
                     <a href="{{ path('app_project_users_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
                         <div class="d-flex align-items-center mx-lg-1">
-                            <i class="ph-users"></i>
+                            <i class="ph-user"></i>
                             <span class="d-none d-lg-inline-block ms-2">Korisnici<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>
+                        </div>
+                    </a>
+                </li>
+                <li class="nav-item me-1">
+                    <a href="{{ path('app_project_teams_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                        <div class="d-flex align-items-center mx-lg-1">
+                            <i class="ph-users-three"></i>
+                            <span class="d-none d-lg-inline-block ms-2">Timovi<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>
                         </div>
                     </a>
                 </li>

@@ -128,6 +128,22 @@
                                                 {% endif %}
                                             </div>
                                         </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Tim:</div>
+                                            <div class="col-8">
+                                                {% if projectH.team is not empty %}
+                                                    {% for team in projectH.team %}
+                                                        {{ team[0] }} - (
+                                                        {% for member in team[1] %}
+                                                            {{ member }}{% if not loop.last %},{% endif %}
+                                                        {% endfor %}
+                                                        ){% if not loop.last %}<br>{% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    Nema zaduženih timova na ovom projektu
+                                                {% endif %}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card">

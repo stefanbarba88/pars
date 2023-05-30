@@ -16,16 +16,15 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                               Projekti
+                                Timovi
                             </h4>
                         </div>
                     </div>
-
                     <div class="page-header-content d-lg-flex border-top">
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Projekti</span>
+                                <span class="breadcrumb-item active">Timovi</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -77,72 +76,52 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-lg-flex py-lg-0">
-                            {% if type == 1 %}
-                                <h5 class="py-lg-3 mb-0">Lista projekata sa stalnom ekipom</h5>
-                            {% else %}
-                                <h5 class="py-lg-3 mb-0">Lista projekata</h5>
-                            {% endif %}
-                            {% if not is_granted('ROLE_EMPLOYEE') %}
-                                <div class="mt-1 my-lg-auto ms-lg-auto">
-                                    <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
-                                </div>
-                            {% endif %}
+                            <h5 class="py-lg-3 mb-0">Lista timova</h5>
+                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                <a href="{{ path('app_team_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                            </div>
                         </div>
                         <table class="table datatable-colvis-state-pars">
                             <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Naziv</th>
-                                <th>Kategorija</th>
-                                <th>Klijent</th>
+                                <th>Projekat</th>
+                                <th>Članovi</th>
+                                <th>Status</th>
                                 <th>Kreiran</th>
-                                <th>Rok</th>
                                 <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for project in projects %}
+                            {% for team in teams %}
                                 <tr>
-                                    <td>{{ project.id }}</td>
+                                    <td>{{ team.id }}</td>
                                     <td>
+                                        <div class="fw-semibold"><a href="{{ path('app_team_view', { id: team.id}) }}">{{ team.title }}</a></div>
+                                    </td>
+                                    <td>
+                                        {% for project in team.getProjects %}
+                                            <a href="{{ path('app_project_profile_view', { id: project.id}) }}">{{ project.title }}</a>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for member in team.getMember %}
+                                            <a href="{{ path('app_employee_profile_view', { id: member.id}) }}"><img src="{{ asset(member.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ member.getFullName() }}" title="{{ member.getFullName() }}"></a>
+                                        {% endfor %}
+                                    </td>
 
-                                        <div class="fw-semibold"><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></div>
-                                        {% if project.label is not empty %}
-                                            <div class="d-inline-flex">
-                                                {% for label in project.label %}
-                                                    {{label.label | raw}}
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    </td>
                                     <td>
-                                        {% if is_granted('ROLE_EMPLOYEE') %}
-                                            {{ project.category.title }}
+                                        {% if team.isDeleted %}
+                                            <span class="badge bg-danger">Neaktivan</span>
                                         {% else %}
-                                            <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if is_granted('ROLE_EMPLOYEE') %}
-                                            {% for client in project.client %}
-                                                {{ client.title }}{% if  not loop.last %},{% endif %}
-                                            {% endfor %}
-                                        {% else %}
-                                            {% for client in project.client %}
-                                                <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title }}</a>{% if  not loop.last %},{% endif %}
-                                            {% endfor %}
+                                            <span class="badge bg-success">Aktivan</span>
                                         {% endif %}
                                     </td>
                                     <td>
                                         <div class="d-inline-flex align-items-center">
                                             <i class="ph-calendar me-2"></i>
-                                            {{ project.created | date("d.m.Y")}}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-inline-flex align-items-center">
-                                            <i class="ph-bell-ringing me-2"></i>
-                                            {{ project.deadline ? project.deadline | date("d.m.Y") : '/' }}
+                                            {{ team.created | date("d.m.Y")}}
                                         </div>
                                     </td>
                                     <td class="text-center">
@@ -151,13 +130,8 @@
                                                 <i class="ph-gear"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end">
-                                                {% if is_granted('ROLE_EMPLOYEE') %}
-                                                    <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                {% else %}
-                                                    <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                    <a href="{{ path('app_project_form', { id: project.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
-
-                                                {% endif %}
+                                                <a href="{{ path('app_team_view', { id: team.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                <a href="{{ path('app_team_form', { id: team.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
                                             </div>
                                         </div>
                                     </td>

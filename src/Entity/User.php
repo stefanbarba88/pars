@@ -131,12 +131,16 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\ManyToMany(targetEntity: Client::class, mappedBy: 'contact')]
   private Collection $clients;
 
+  #[ORM\ManyToMany(targetEntity: Team::class, mappedBy: 'member')]
+  private Collection $teams;
+
   public function __construct() {
     $this->userHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
     $this->comments = new ArrayCollection();
     $this->notes = new ArrayCollection();
     $this->clients = new ArrayCollection();
+    $this->teams = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -587,85 +591,103 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   /**
    * @return Collection<int, Comment>
    */
-  public function getComments(): Collection
-  {
-      return $this->comments;
+  public function getComments(): Collection {
+    return $this->comments;
   }
 
-  public function addComment(Comment $comment): self
-  {
-      if (!$this->comments->contains($comment)) {
-          $this->comments->add($comment);
-          $comment->setUser($this);
-      }
+  public function addComment(Comment $comment): self {
+    if (!$this->comments->contains($comment)) {
+      $this->comments->add($comment);
+      $comment->setUser($this);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeComment(Comment $comment): self
-  {
-      if ($this->comments->removeElement($comment)) {
-          // set the owning side to null (unless already changed)
-          if ($comment->getUser() === $this) {
-              $comment->setUser(null);
-          }
+  public function removeComment(Comment $comment): self {
+    if ($this->comments->removeElement($comment)) {
+      // set the owning side to null (unless already changed)
+      if ($comment->getUser() === $this) {
+        $comment->setUser(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
   /**
    * @return Collection<int, Notes>
    */
-  public function getNotes(): Collection
-  {
-      return $this->notes;
+  public function getNotes(): Collection {
+    return $this->notes;
   }
 
-  public function addNote(Notes $note): self
-  {
-      if (!$this->notes->contains($note)) {
-          $this->notes->add($note);
-          $note->setUser($this);
-      }
+  public function addNote(Notes $note): self {
+    if (!$this->notes->contains($note)) {
+      $this->notes->add($note);
+      $note->setUser($this);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeNote(Notes $note): self
-  {
-      if ($this->notes->removeElement($note)) {
-          // set the owning side to null (unless already changed)
-          if ($note->getUser() === $this) {
-              $note->setUser(null);
-          }
+  public function removeNote(Notes $note): self {
+    if ($this->notes->removeElement($note)) {
+      // set the owning side to null (unless already changed)
+      if ($note->getUser() === $this) {
+        $note->setUser(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
   /**
    * @return Collection<int, Client>
    */
-  public function getClients(): Collection
-  {
-      return $this->clients;
+  public function getClients(): Collection {
+    return $this->clients;
   }
 
-  public function addClient(Client $client): self
+  public function addClient(Client $client): self {
+    if (!$this->clients->contains($client)) {
+      $this->clients->add($client);
+      $client->addContact($this);
+    }
+
+    return $this;
+  }
+
+  public function removeClient(Client $client): self {
+    if ($this->clients->removeElement($client)) {
+      $client->removeContact($this);
+    }
+
+    return $this;
+  }
+
+  /**
+   * @return Collection<int, Team>
+   */
+  public function getTeams(): Collection
   {
-      if (!$this->clients->contains($client)) {
-          $this->clients->add($client);
-          $client->addContact($this);
+      return $this->teams;
+  }
+
+  public function addTeam(Team $team): self
+  {
+      if (!$this->teams->contains($team)) {
+          $this->teams->add($team);
+          $team->addMember($this);
       }
 
       return $this;
   }
 
-  public function removeClient(Client $client): self
+  public function removeTeam(Team $team): self
   {
-      if ($this->clients->removeElement($client)) {
-          $client->removeContact($this);
+      if ($this->teams->removeElement($team)) {
+          $team->removeMember($this);
       }
 
       return $this;

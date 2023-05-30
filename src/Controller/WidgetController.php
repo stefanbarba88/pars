@@ -22,6 +22,8 @@ class WidgetController extends AbstractController {
     $args['countUsers'] = $this->em->getRepository(User::class)->count([]);
     $args['countEmployees'] = $this->em->getRepository(User::class)->countEmployees();
     $args['countClients'] = $this->em->getRepository(Client::class)->count([]);
+    $args['countProjectsPermanent'] = $this->em->getRepository(Project::class)->countProjectsPermanent();
+    $args['countProjectsChange'] = $this->em->getRepository(Project::class)->countProjectsChange();
     $args['countProjects'] = $this->em->getRepository(Project::class)->count([]);
     $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
 //    $args['projects'] = $this->em->getRepository(Project::class)->findAll();

@@ -63,14 +63,75 @@ class ProjectRepository extends ServiceEntityRepository {
 
   }
 
-  public function getAllProjects() {
-
-    return $this->createQueryBuilder('p')
+  public function getAllProjects(): array {
+    $projects = $this->createQueryBuilder('p')
       ->addOrderBy('p.isSuspended', 'ASC')
       ->getQuery()
       ->getResult();
 
+    $projectsChange = [];
+
+    foreach ($projects as $project) {
+      if(empty($project->getTeamJson())) {
+        $projectsChange[] = $project;
+      }
+    }
+    return $projectsChange;
+
   }
+
+  public function getAllProjectsPermanent(): array {
+
+    $projects = $this->createQueryBuilder('p')
+      ->addOrderBy('p.isSuspended', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+    $projectsPermanent = [];
+
+    foreach ($projects as $project) {
+      if(!empty($project->getTeamJson())) {
+        $projectsPermanent[] = $project;
+      }
+    }
+    return $projectsPermanent;
+  }
+
+
+  public function countProjectsChange(): int {
+    $projects = $this->createQueryBuilder('p')
+      ->addOrderBy('p.isSuspended', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+    $count = 0;
+
+    foreach ($projects as $project) {
+      if(empty($project->getTeamJson())) {
+        $count++;
+      }
+    }
+    return $count;
+
+  }
+
+  public function countProjectsPermanent(): int {
+
+    $projects = $this->createQueryBuilder('p')
+      ->addOrderBy('p.isSuspended', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+    $count = 0;
+
+    foreach ($projects as $project) {
+      if(!empty($project->getTeamJson())) {
+        $count++;
+      }
+    }
+    return $count;
+  }
+
 
   public function getImagesByProject(Project $project): array {
 

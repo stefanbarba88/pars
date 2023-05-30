@@ -25,8 +25,9 @@ class ProjectHistoryHelper {
   private $minEntry;
   private $roundingInterval;
   private $deadline;
+  private $team;
 
-  public function __construct($id, $title, $description, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $isViewLog, $category, $client, $timerPriority, $label, $editBy, $payment, $price, $pricePerHour, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
+  public function __construct($id, $title, $description, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $isViewLog, $team, $category, $client, $timerPriority, $label, $editBy, $payment, $price, $pricePerHour, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
     $this->id = $id;
     $this->title = $title;
     $this->description = $description;
@@ -48,6 +49,7 @@ class ProjectHistoryHelper {
     $this->deadline = $deadline;
     $this->timerPriority = $timerPriority;
     $this->isViewLog = $isViewLog;
+    $this->team = $team;
   }
 
   /**
@@ -343,6 +345,21 @@ class ProjectHistoryHelper {
   public function setIsViewLog($isViewLog): void {
     $this->isViewLog = $isViewLog;
   }
+
+  /**
+   * @return mixed
+   */
+  public function getTeam() {
+    return $this->team;
+  }
+
+  /**
+   * @param mixed $team
+   */
+  public function setTeam($team): void {
+    $this->team = $team;
+  }
+
 
 
 

@@ -10,8 +10,10 @@ use App\Classes\ResponseMessages;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
 use App\Entity\Task;
+use App\Entity\Team;
 use App\Entity\User;
 use App\Form\ProjectFormType;
+use App\Form\ProjectTeamListFormType;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,14 +32,24 @@ class ProjectController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_projects')]
-  public function list(): Response {
+  public function list(Request $request): Response {
     $args = [];
     $user = $this->getUser();
+
+    $permanent = $request->query->getInt('permanent');
 
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
       $args['projects'] = $this->em->getRepository(Project::class)->getProjectsByUser($user);
     } else {
-      $args['projects'] = $this->em->getRepository(Project::class)->getAllProjects();
+      if($permanent == 1) {
+        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsPermanent();
+        $args['type'] = 1;
+      } else {
+        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjects();
+        $args['type'] = 0;
+      }
+
+
     }
 
 
@@ -167,13 +179,58 @@ class ProjectController extends AbstractController {
     return $this->render('project/view_users.html.twig', $args);
   }
 
-//  #[Route('/view-notes/{id}', name: 'app_project_notes_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewNotes(Project $project): Response {
-//    $args['project'] = $project;
-//
-//    return $this->render('project/view_users.html.twig', $args);
-//  }
+  #[Route('/view-teams/{id}', name: 'app_project_teams_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewTeams(Project $project): Response {
+    $args['project'] = $project;
+    $args['teams'] = $project->getTeam();
+
+    return $this->render('project/view_teams.html.twig', $args);
+  }
+
+  #[Route('/team-list/{id}', name: 'app_project_team_list')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function teamList(Project $project, Request $request): Response {
+    $history = null;
+    //ovde izvlacimo ulogovanog usera
+    $user = $this->getUser();
+
+    if($project->getId()) {
+      $history = $this->json($project, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
+
+    $form = $this->createForm(ProjectTeamListFormType::class, $project, ['attr' => ['action' => $this->generateUrl('app_project_team_list', ['id' => $project->getId()])]]);
+
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+//        $test1 = $serializer->deserialize($test->getContent(), Project::class, 'json');
+
+        $this->em->getRepository(Project::class)->saveProject($project, $user, $history);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return $this->redirectToRoute('app_project_teams_view', ['id' => $project->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['project'] = $project;
+
+    return $this->render('project/edit_team_list.html.twig', $args);
+  }
 
   #[Route('/view-images/{id}', name: 'app_project_images_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]

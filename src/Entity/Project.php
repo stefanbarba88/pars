@@ -119,16 +119,12 @@ class Project implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'project', targetEntity: Pdf::class)]
   private Collection $pdfs;
 
-  #[ORM\ManyToMany(targetEntity: Team::class, inversedBy: 'projects')]
-  private Collection $team;
-
   public function __construct() {
     $this->client = new ArrayCollection();
     $this->projectHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
     $this->label = new ArrayCollection();
     $this->pdfs = new ArrayCollection();
-    $this->team = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -170,8 +166,7 @@ class Project implements JsonSerializable {
       'currency' => $this->getCurrencyJson(),
       'minEntry' => $this->getMinEntry(),
       'roundingInterval' => $this->getRoundingInterval(),
-      'deadline' => $this->getDeadline(),
-      'team' => $this->getTeamJson()
+      'deadline' => $this->getDeadline()
     ];
   }
 
@@ -601,42 +596,6 @@ class Project implements JsonSerializable {
                 $pdf->setProject(null);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Team>
-     */
-    public function getTeam(): Collection
-    {
-        return $this->team;
-    }
-
-  public function getTeamJson(): array {
-    $teams = [];
-    foreach ($this->team as $team) {
-      $members = [];
-      foreach ($team->getMember() as $member) {
-        $members[] = $member->getFullName();
-      }
-      $teams[] = [$team->getTitle(), $members];
-    }
-    return $teams;
-  }
-
-    public function addTeam(Team $team): self
-    {
-        if (!$this->team->contains($team)) {
-            $this->team->add($team);
-        }
-
-        return $this;
-    }
-
-    public function removeTeam(Team $team): self
-    {
-        $this->team->removeElement($team);
 
         return $this;
     }

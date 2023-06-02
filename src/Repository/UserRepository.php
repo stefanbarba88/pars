@@ -143,11 +143,34 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $this->getEntityManager()->getRepository(User::class)->find($id);
   }
 
-  public function getAll(): array {
-//    $qb = $this->createQueryBuilder('u');
-//    $qb->select('u.id','u.ime', 'u.prezime', 'u.slika', 'u.isSuspended', 'u.datumRodjenja', 'u.userType');
-//    $qb->orderBy('u.id')->getQuery()->getResult();
-    $users = $this->getEntityManager()->getRepository(User::class)->findBy([], ['isSuspended' => 'ASC', 'userType' => 'ASC']);
+  public function getAllByLoggedUser(User $loggedUser): array {
+
+    $users = match ($loggedUser->getUserType()) {
+      UserRolesData::ROLE_SUPER_ADMIN => $this->getEntityManager()->getRepository(User::class)->findBy([], ['isSuspended' => 'ASC', 'userType' => 'ASC']),
+      UserRolesData::ROLE_ADMIN => $this->createQueryBuilder('u')
+        ->andWhere('u.userType <> :userType')
+        ->andWhere('u.userType <> :userType1')
+        ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
+        ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
+        ->addOrderBy('u.isSuspended', 'ASC')
+        ->addOrderBy('u.userType', 'ASC')
+        ->getQuery()
+        ->getResult(),
+      default => $this->createQueryBuilder('u')
+        ->andWhere('u.userType <> :userType')
+        ->andWhere('u.userType <> :userType1')
+        ->andWhere('u.userType <> :userType2')
+        ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
+        ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
+        ->setParameter(':userType2', UserRolesData::ROLE_MANAGER)
+        ->addOrderBy('u.isSuspended', 'ASC')
+        ->addOrderBy('u.userType', 'ASC')
+        ->getQuery()
+        ->getResult(),
+    };
+
+
+
 
     $usersList = [];
     foreach ($users as $user) {

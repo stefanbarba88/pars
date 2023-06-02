@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Classes\Data\PolData;
+use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VrstaZaposlenjaData;
 use App\Entity\City;
@@ -33,6 +34,22 @@ class UserRegistrationFormType extends AbstractType {
         'format' => 'dd.MM.yyyy',
         'html5' => false,
         'input' => 'datetime_immutable'
+      ])
+      ->add('isMobile', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('isLaptop', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
       ])
       ->add('pol', ChoiceType::class, [
         'placeholder' => 'Izaberite pol',

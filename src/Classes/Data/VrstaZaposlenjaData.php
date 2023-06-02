@@ -7,6 +7,7 @@ use App\Classes\Interfaces\DataClassInterface;
 class VrstaZaposlenjaData implements DataClassInterface {
 
   public const VRSTA_ZAPOSLENJA = [
+    0 => 'Nije u radnom odnosu',
     1 => 'Neodređeno',
     2 => 'Određeno',
     3 => 'Privremeni i povremeni poslovi',

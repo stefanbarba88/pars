@@ -85,6 +85,12 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\Column]
   private bool $isSuspended = false;
 
+  #[ORM\Column]
+  private bool $isMobile = false;
+
+  #[ORM\Column]
+  private bool $isLaptop = false;
+
   #[ORM\Column(type: Types::SMALLINT)]
   private ?int $userType = null;
 
@@ -470,6 +476,34 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   }
 
   /**
+   * @return bool
+   */
+  public function isMobile(): bool {
+    return $this->isMobile;
+  }
+
+  /**
+   * @param bool $isMobile
+   */
+  public function setIsMobile(bool $isMobile): void {
+    $this->isMobile = $isMobile;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isLaptop(): bool {
+    return $this->isLaptop;
+  }
+
+  /**
+   * @param bool $isLaptop
+   */
+  public function setIsLaptop(bool $isLaptop): void {
+    $this->isLaptop = $isLaptop;
+  }
+
+  /**
    * @return DateTimeImmutable|null
    */
   public function getDatumRodjenja(): ?DateTimeImmutable {
@@ -521,6 +555,8 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
       'userType' => $this->getUserType(),
       'roles' => $this->getRoles(),
       'editBy' => $this->editBy,
+      'isLaptop' => $this->isLaptop(),
+      'isMobile' => $this->isMobile(),
       'isSuspended' => $this->isSuspended(),
       'email' => $this->getEmail(),
       'image' => $this->getImage()

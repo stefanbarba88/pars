@@ -34,41 +34,7 @@
                             </a>
                         </div>
 
-                        <div class="collapse d-lg-block ms-lg-auto" id="breadcrumb_elements">
-                            <div class="d-lg-flex mb-2 mb-lg-0">
-                                <a href="#" class="d-flex align-items-center text-body py-2">
-                                    <i class="ph-lifebuoy me-2"></i>
-                                    Support
-                                </a>
-
-                                <div class="dropdown ms-lg-3">
-                                    <a href="#" class="d-flex align-items-center text-body dropdown-toggle py-2" data-bs-toggle="dropdown">
-                                        <i class="ph-gear me-2"></i>
-                                        <span class="flex-1">Settings</span>
-                                    </a>
-
-                                    <div class="dropdown-menu dropdown-menu-end w-100 w-lg-auto">
-                                        <a href="#" class="dropdown-item">
-                                            <i class="ph-shield-warning me-2"></i>
-                                            Account security
-                                        </a>
-                                        <a href="#" class="dropdown-item">
-                                            <i class="ph-chart-bar me-2"></i>
-                                            Analytics
-                                        </a>
-                                        <a href="#" class="dropdown-item">
-                                            <i class="ph-lock-key me-2"></i>
-                                            Privacy
-                                        </a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="#" class="dropdown-item">
-                                            <i class="ph-gear me-2"></i>
-                                            All settings
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
                     </div>
                 </div>
                 <!-- /page header -->
@@ -150,6 +116,7 @@
                                     <div class="mb-3">
                                         {{ form_label(form.vrstaZaposlenja, 'Vrsta zaposlenja:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required' }}) }}
+                                        <span class="form-text">Ako se radi o klijentu izaberite opciju "Nije u radnom odnosu".</span>
                                     </div>
                                 </div>
                             </div>
@@ -209,8 +176,23 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="fw-bold border-bottom pb-2 mb-3">Zaduženi uređaji</div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.isMobile, 'Mobilni telefon:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.isMobile, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.isLaptop, 'Laptop:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.isLaptop, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                            </div>
                             <div class="text-end">
-                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i>Sačuvajte</button>
                             </div>
                         </div>
 

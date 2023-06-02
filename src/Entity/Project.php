@@ -119,12 +119,16 @@ class Project implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'project', targetEntity: Pdf::class)]
   private Collection $pdfs;
 
+  #[ORM\ManyToMany(targetEntity: Team::class, inversedBy: 'projects')]
+  private Collection $team;
+
   public function __construct() {
     $this->client = new ArrayCollection();
     $this->projectHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
     $this->label = new ArrayCollection();
     $this->pdfs = new ArrayCollection();
+    $this->team = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -166,7 +170,8 @@ class Project implements JsonSerializable {
       'currency' => $this->getCurrencyJson(),
       'minEntry' => $this->getMinEntry(),
       'roundingInterval' => $this->getRoundingInterval(),
-      'deadline' => $this->getDeadline()
+      'deadline' => $this->getDeadline(),
+      'team' => $this->getTeamJson()
     ];
   }
 
@@ -202,9 +207,9 @@ class Project implements JsonSerializable {
   }
 
   public function getEditByJson(): string {
-  if(is_null($this->editBy)) {
-    return '';
-  }
+    if(is_null($this->editBy)) {
+      return '';
+    }
     return $this->editBy->getFullName();
   }
 
@@ -561,7 +566,7 @@ class Project implements JsonSerializable {
     return $this;
   }
 
-    public function getLabelJson(): array {
+  public function getLabelJson(): array {
     $labels = [];
     foreach ($this->label as $lab) {
       $labels[] = $lab->getTitle();
@@ -570,34 +575,70 @@ class Project implements JsonSerializable {
     return $labels;
   }
 
-    /**
-     * @return Collection<int, Pdf>
-     */
-    public function getPdfs(): Collection
-    {
-        return $this->pdfs;
+  /**
+   * @return Collection<int, Pdf>
+   */
+  public function getPdfs(): Collection
+  {
+    return $this->pdfs;
+  }
+
+  public function addPdf(Pdf $pdf): self
+  {
+    if (!$this->pdfs->contains($pdf)) {
+      $this->pdfs->add($pdf);
+      $pdf->setProject($this);
     }
 
-    public function addPdf(Pdf $pdf): self
-    {
-        if (!$this->pdfs->contains($pdf)) {
-            $this->pdfs->add($pdf);
-            $pdf->setProject($this);
-        }
+    return $this;
+  }
 
-        return $this;
+  public function removePdf(Pdf $pdf): self
+  {
+    if ($this->pdfs->removeElement($pdf)) {
+      // set the owning side to null (unless already changed)
+      if ($pdf->getProject() === $this) {
+        $pdf->setProject(null);
+      }
     }
 
-    public function removePdf(Pdf $pdf): self
-    {
-        if ($this->pdfs->removeElement($pdf)) {
-            // set the owning side to null (unless already changed)
-            if ($pdf->getProject() === $this) {
-                $pdf->setProject(null);
-            }
-        }
+    return $this;
+  }
 
-        return $this;
+  /**
+   * @return Collection<int, Team>
+   */
+  public function getTeam(): Collection
+  {
+    return $this->team;
+  }
+
+  public function getTeamJson(): array {
+    $teams = [];
+    foreach ($this->team as $team) {
+      $members = [];
+      foreach ($team->getMember() as $member) {
+        $members[] = $member->getFullName();
+      }
+      $teams[] = [$team->getTitle(), $members];
     }
+    return $teams;
+  }
+
+  public function addTeam(Team $team): self
+  {
+    if (!$this->team->contains($team)) {
+      $this->team->add($team);
+    }
+
+    return $this;
+  }
+
+  public function removeTeam(Team $team): self
+  {
+    $this->team->removeElement($team);
+
+    return $this;
+  }
 
 }

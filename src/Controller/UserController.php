@@ -33,8 +33,10 @@ class UserController extends AbstractController {
 
   #[Route('/list/', name: 'app_users')]
   public function list(): Response {
+    $loggedUser = $this->getUser();
+
     $args=[];
-    $args['users'] = $this->em->getRepository(User::class)->getAll();
+    $args['users'] = $this->em->getRepository(User::class)->getAllByLoggedUser($loggedUser);
 
     return $this->render('user/list.html.twig', $args);
   }

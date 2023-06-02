@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Classes\Data\PolData;
+use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VrstaZaposlenjaData;
 use App\Entity\City;
@@ -52,6 +53,22 @@ class UserEditInfoFormType extends AbstractType {
 //          'minlength' => '13',
 //        ],
 //      ])
+      ->add('isMobile', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('isLaptop', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
       ->add('grad', EntityType::class, [
         'class' => City::class,
         'query_builder' => function (EntityRepository $em) {

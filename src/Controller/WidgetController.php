@@ -39,6 +39,11 @@ class WidgetController extends AbstractController {
     return $this->render('widget/user_profil_sidebar.html.twig', $args);
   }
 
+  public function support(): Response {
+
+    return $this->render('widget/support.html.twig');
+  }
+
   public function employeeProfilSidebar(User $user): Response {
 
     $args['user'] = $user;

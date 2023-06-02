@@ -16,10 +16,11 @@ class WidgetController extends AbstractController {
   }
 
   public function adminMainSidebar(): Response {
-
+    $loggedUser = $this->getUser();
     $args = [];
 
-    $args['countUsers'] = $this->em->getRepository(User::class)->count([]);
+    $args['countUsers'] = $this->em->getRepository(User::class)->countUsersByLoggedUser($loggedUser);
+//    $args['countUsers'] = $this->em->getRepository(User::class)->count([]);
     $args['countEmployees'] = $this->em->getRepository(User::class)->countEmployees();
     $args['countClients'] = $this->em->getRepository(Client::class)->count([]);
     $args['countProjectsPermanent'] = $this->em->getRepository(Project::class)->countProjectsPermanent();

@@ -75,11 +75,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       $user->setPozicija(null);
     }
 
-    if (is_null($user->getId())) {
-      //    $user->setEditBy($this->security->getUser());
-      $user->setCreatedBy($this->getEntityManager()->getRepository(User::class)->find(1));
-    } else {
-      $user->setEditBy($this->getEntityManager()->getRepository(User::class)->find(2));
+    if (!is_null($user->getId())) {
+      $user->setEditBy($this->security->getUser());
     }
 
     if (!empty($user->getPlainPassword())) {
@@ -138,7 +135,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function findForForm(int $id = 0): User {
     if (empty($id)) {
-      return new User();
+      $user = new User();
+      $user->setCreatedBy($this->security->getUser());
+      return $user;
     }
     return $this->getEntityManager()->getRepository(User::class)->find($id);
   }
@@ -169,9 +168,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ->getResult(),
     };
 
-
-
-
     $usersList = [];
     foreach ($users as $user) {
       $usersList [] = [
@@ -200,6 +196,36 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     $query = $qb->getQuery();
 
+    return $query->getSingleScalarResult();
+
+  }
+
+  public function countUsersByLoggedUser(User $loggedUser): int {
+
+
+    $qb = $this->createQueryBuilder('u');
+    switch ($loggedUser->getUserType()) {
+      case UserRolesData::ROLE_SUPER_ADMIN:
+        $qb->select($qb->expr()->count('u'));
+        break;
+      case UserRolesData::ROLE_ADMIN:
+        $qb->select($qb->expr()->count('u'))
+          ->andWhere('u.userType <> :userType')
+          ->andWhere('u.userType <> :userType1')
+          ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
+          ->setParameter(':userType1', UserRolesData::ROLE_ADMIN);
+        break;
+      default:
+        $qb->select($qb->expr()->count('u'))
+          ->andWhere('u.userType <> :userType')
+          ->andWhere('u.userType <> :userType1')
+          ->andWhere('u.userType <> :userType2')
+          ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
+          ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
+          ->setParameter(':userType2', UserRolesData::ROLE_MANAGER);
+    }
+
+    $query = $qb->getQuery();
     return $query->getSingleScalarResult();
 
   }

@@ -45,10 +45,10 @@ class UserController extends AbstractController {
   #[Entity('usr', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, User $usr, UploadService $uploadService): Response {
-//
-//    $type = $request->query->getInt('type');
-//    dd($type);
-    $form = $this->createForm(UserRegistrationFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_form', ['id' => $usr->getId()])]]);
+
+    $usr->setPlainUserType($this->getUser()->getUserType());
+    $type = $request->query->getInt('type');
+    $form = $this->createForm(UserRegistrationFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_form', ['id' => $usr->getId(), 'type' => $type])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 
@@ -71,7 +71,11 @@ class UserController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::REGISTRATION_USER_SUCCESS);
 
-        return $this->redirectToRoute('app_users');
+        if ($type != 1) {
+          return $this->redirectToRoute('app_users');
+        }
+        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+
       }
     }
     $args['form'] = $form->createView();
@@ -132,7 +136,7 @@ class UserController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editAccount(User $usr, Request $request): Response {
     $type = $request->query->getInt('type');
-
+    $usr->setPlainUserType($this->getUser()->getUserType());
     $history = null;
     if($usr->getId()) {
       $history = $this->json($usr, Response::HTTP_OK, [], [

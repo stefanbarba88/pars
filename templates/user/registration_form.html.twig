@@ -130,7 +130,7 @@
                                 <div class="col-lg-6 hide ROLE_EMPLOYEE">
                                     <div class="mb-3">
                                         {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.pozicija, {attr: { class: 'form-control select' }}) }}
+                                        {{ form_widget(form.pozicija, {attr: { class: 'form-control select pozicija' }}) }}
                                     </div>
                                 </div>
                             </div>
@@ -261,10 +261,10 @@
             $(".role").change(function() {
                 if ($(this).val() == "4") {
                     $('.ROLE_EMPLOYEE').removeClass('hide');
-                    $('.ROLE_EMPLOYEE [input]').addClass('required');
+                    $('.pozicija').addClass('required');
                 } else {
                     $('.ROLE_EMPLOYEE').addClass('hide');
-                    $('.ROLE_EMPLOYEE [input]').removeClass('required');
+                    $('.pozicija').removeClass('required');
                 }
             });
         });

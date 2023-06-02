@@ -63,6 +63,29 @@ class UserRolesData implements DataClassInterface {
         return $data;
     }
 
+  public static function formForFormByUserRole(int $userType): array {
+    $data = [];
+    foreach (self::DATA as $v) {
+      switch ($userType) {
+        case UserRolesData::ROLE_SUPER_ADMIN:
+          $data[$v['title']] = $v['id'];
+          break;
+        case UserRolesData::ROLE_ADMIN:
+          if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN ) {
+            $data[$v['title']] = $v['id'];
+          }
+          break;
+        default:
+        case UserRolesData::ROLE_MANAGER:
+          if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_MANAGER ) {
+            $data[$v['title']] = $v['id'];
+          }
+      }
+    }
+
+    return $data;
+  }
+
   public static function formByType(int $predefinedType = 0): array {
     $data = ['' => ''];
     if ($predefinedType > 0) {

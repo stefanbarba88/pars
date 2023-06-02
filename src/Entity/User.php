@@ -107,6 +107,11 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   */
   private ?string $plainPassword = null;
 
+  /*
+  * koristimo samo radi ogranicavanja koja rola moze da kreira
+  */
+  private ?int $plainUserType = null;
+
   /**
    * @var string The hashed password
    */
@@ -451,6 +456,22 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   public function setPlainPassword(?string $plainPassword): void {
     $this->plainPassword = $plainPassword;
   }
+
+  /**
+   * @return int|null
+   */
+  public function getPlainUserType(): ?int {
+    return $this->plainUserType;
+  }
+
+  /**
+   * @param int|null $plainUserType
+   */
+  public function setPlainUserType(?int $plainUserType): void {
+    $this->plainUserType = $plainUserType;
+  }
+
+
 
   /**
    * @see UserInterface

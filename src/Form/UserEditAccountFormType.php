@@ -19,6 +19,20 @@ use Symfony\Component\Validator\Constraints\Regex;
 class UserEditAccountFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
 
+
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getUser(): ?User {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $plainUserType = $dataObject->getUser()->getPlainUserType();
+
     $builder
       ->add('plainPassword', TextType::class, [
         'required' => false,
@@ -35,13 +49,14 @@ class UserEditAccountFormType extends AbstractType {
         ],
       ])
       ->add('userType', ChoiceType::class, [
-        'choices' => UserRolesData::formForForm(),
+        'placeholder' => '--Izaberite tip korisnika--',
+        'choices' => UserRolesData::formForFormByUserRole($plainUserType),
         'expanded' => false,
         'multiple' => false,
       ])
       ->add('pozicija', EntityType::class, [
         'required' => false,
-        'placeholder' => 'Izaberite poziciju',
+        'placeholder' => '--Izaberite poziciju--',
         'class' => ZaposleniPozicija::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')

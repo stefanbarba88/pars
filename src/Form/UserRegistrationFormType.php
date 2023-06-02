@@ -25,6 +25,20 @@ use Symfony\Component\Validator\Constraints\Regex;
 
 class UserRegistrationFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
+
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getUser(): ?User {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $plainUserType = $dataObject->getUser()->getPlainUserType();
+
     $builder
       ->add('ime')
       ->add('prezime')
@@ -93,8 +107,8 @@ class UserRegistrationFormType extends AbstractType {
       ])
 
       ->add('userType', ChoiceType::class, [
-        'placeholder' => 'Izaberite tip korisnika',
-        'choices' => UserRolesData::formForForm(),
+        'placeholder' => '--Izaberite tip korisnika--',
+        'choices' => UserRolesData::formForFormByUserRole($plainUserType),
         'expanded' => false,
         'multiple' => false,
       ])

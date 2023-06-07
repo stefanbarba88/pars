@@ -8,6 +8,7 @@ use App\Entity\Pdf;
 use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -17,9 +18,10 @@ class EmployeeController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
   #[Route('/list/', name: 'app_employees')]
-  public function list(): Response {
-    $args = [];
-    $args['users'] = $this->em->getRepository(User::class)->getEmployees();
+  public function list(Request $request): Response {
+    $type = $request->query->getInt('type');
+
+    $args['users'] = $this->em->getRepository(User::class)->getEmployees($type);
 
     return $this->render('employee/list.html.twig', $args);
   }

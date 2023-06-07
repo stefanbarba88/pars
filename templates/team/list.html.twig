@@ -24,7 +24,15 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Timovi</span>
+                                {% if type == 1 %}
+                                    <a href="{{ path('app_teams') }}" class="breadcrumb-item">Timovi</a>
+                                    <span class="breadcrumb-item active">Aktivni timovi</span>
+                                {% elseif type == 2 %}
+                                    <a href="{{ path('app_teams') }}" class="breadcrumb-item">Timovi</a>
+                                    <span class="breadcrumb-item active">Neaktivni timovi</span>
+                                {% else %}
+                                    <span class="breadcrumb-item active">Timovi</span>
+                                {% endif %}
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -64,21 +72,25 @@
                                 <tr>
                                     <td>{{ team.id }}</td>
                                     <td>
-                                        <div class="fw-semibold"><a href="{{ path('app_team_view', { id: team.id}) }}">{{ team.title }}</a></div>
+                                        <div class="fw-semibold"><a href="{{ path('app_team_view', { id: team.id}) }}">{{ team.naziv }}</a></div>
                                     </td>
                                     <td>
-                                        {% for project in team.getProjects %}
-                                            <a href="{{ path('app_project_profile_view', { id: project.id}) }}">{{ project.title }}</a>
-                                        {% endfor %}
+                                        {% if team.projekat is empty %}
+                                            Nema dodeljenog projekta
+                                        {% else %}
+                                            {% for project in team.projekat %}
+                                                <a href="{{ path('app_project_profile_view', { id: project.id}) }}">{{ project.title }}</a>
+                                            {% endfor %}
+                                        {% endif %}
                                     </td>
                                     <td>
-                                        {% for member in team.getMember %}
+                                        {% for member in team.clanovi %}
                                             <a href="{{ path('app_employee_profile_view', { id: member.id}) }}"><img src="{{ asset(member.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ member.getFullName() }}" title="{{ member.getFullName() }}"></a>
                                         {% endfor %}
                                     </td>
 
                                     <td>
-                                        {% if team.isDeleted %}
+                                        {% if team.status %}
                                             <span class="badge bg-danger">Neaktivan</span>
                                         {% else %}
                                             <span class="badge bg-success">Aktivan</span>
@@ -87,7 +99,7 @@
                                     <td>
                                         <div class="d-inline-flex align-items-center">
                                             <i class="ph-calendar me-2"></i>
-                                            {{ team.created | date("d.m.Y")}}
+                                            {{ team.kreiran | date("d.m.Y")}}
                                         </div>
                                     </td>
                                     <td class="text-center">

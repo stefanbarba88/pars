@@ -64,7 +64,7 @@ class ClientController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-        return $this->redirectToRoute('app_client_profile_view', ['id' => $client->getId()]);
+        return $this->redirectToRoute('app_clients');
       }
     }
     $args['form'] = $form->createView();

@@ -220,22 +220,9 @@
                         <a href="{{ path('app_users') }}" class="nav-link">
                             <i class="ph-users"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countUsers }}</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countUsersActive }}/{{ countUsers }}</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_user_form') }}" class="nav-link">
-                            <i class="ph-user-plus"></i>
-                            <span>Registracija</span>
-                        </a>
-                    </li>
-                    {#                <li class="nav-item">#}
-                    {#                    <a href="" class="nav-link">#}
-                    {#                        <i class="ph-user-minus"></i>#}
-                    {#                        <span>Deaktivirani</span>#}
-                    {#                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>#}
-                    {#                    </a>#}
-                    {#                </li>#}
                     <li class="nav-item">
                         <a href="" class="nav-link">
                             <i class="ph-file-text"></i>
@@ -253,13 +240,21 @@
                         <a href="{{ path('app_employees') }}" class="nav-link">
                             <i class="ph-user-circle"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countEmployees }}</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countEmployeesActive }}/{{ countEmployees }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="" class="nav-link">
+                        <a href="{{ path('app_employees', { type : 1 }) }}" class="nav-link">
                             <i class="ph-user-circle-gear"></i>
                             <span>Aktivni</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_employees', { type : 2 }) }}" class="nav-link">
+                            <i class="ph-user-circle-gear"></i>
+                            <span>Neaktivni</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -279,13 +274,21 @@
                         <a href="{{ path('app_teams') }}" class="nav-link">
                             <i class="ph-user-circle"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countEmployees }}</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeams }}/{{ countAllTeams }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="" class="nav-link">
-                            <i class="ph-user-circle-gear"></i>
+                        <a href="{{ path('app_teams', { type : 1 }) }}" class="nav-link">
+                            <i class="ph-user-circle"></i>
                             <span>Aktivni</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeamsActive }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_teams', { type : 2 }) }}" class="nav-link">
+                            <i class="ph-user-circle-gear"></i>
+                            <span>Neaktivni</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeamsInactive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -304,8 +307,15 @@
                     <li class="nav-item">
                         <a href="{{ path('app_clients') }}" class="nav-link">
                             <i class="ph-factory"></i>
-                            <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countClients }}</span>
+                            <span>Lista klijenata</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countClientsActive }}/{{ countClients }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_users_contact') }}" class="nav-link">
+                            <i class="ph-factory"></i>
+                            <span>Lista kontakt lica</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countContactsActive }}/{{ countContacts }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -336,12 +346,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_project_form') }}" class="nav-link">
-                            <i class="ph-folder-plus"></i>
-                            <span>Dodajte</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a href="" class="nav-link">
                             <i class="ph-file-text"></i>
                             <span>Izveštaji</span>
@@ -364,7 +368,7 @@
                     <li class="nav-item">
                         <a href="{{ path('app_task_form') }}" class="nav-link">
                             <i class="ph-folder-plus"></i>
-                            <span>Dodajte</span>
+                            <span>Arhiva</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -384,7 +388,7 @@
                         <a href="{{ path('app_comments') }}" class="nav-link">
                             <i class="ph-chats-circle"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countComments }}</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>
                         </a>
                     </li>
                     <!-- /Komentari -->

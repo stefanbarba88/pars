@@ -6,6 +6,7 @@ use App\Entity\Client;
 use App\Entity\Comment;
 use App\Entity\Image;
 use App\Entity\Project;
+use App\Entity\Team;
 use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,14 +21,29 @@ class WidgetController extends AbstractController {
     $args = [];
 
     $args['countUsers'] = $this->em->getRepository(User::class)->countUsersByLoggedUser($loggedUser);
-//    $args['countUsers'] = $this->em->getRepository(User::class)->count([]);
-    $args['countEmployees'] = $this->em->getRepository(User::class)->countEmployees();
+    $args['countUsersActive'] = $this->em->getRepository(User::class)->countUsersActiveByLoggedUser($loggedUser);
+
+    $args['countContacts'] = $this->em->getRepository(User::class)->countContacts();
+    $args['countContactsActive'] = $this->em->getRepository(User::class)->countContactsActive();
     $args['countClients'] = $this->em->getRepository(Client::class)->count([]);
+    $args['countClientsActive'] = $this->em->getRepository(Client::class)->countClientsActive();
+
+    $args['countEmployees'] = $this->em->getRepository(User::class)->countEmployees();
+    $args['countEmployeesActive'] = $this->em->getRepository(User::class)->countEmployeesActive();
+
     $args['countProjectsPermanent'] = $this->em->getRepository(Project::class)->countProjectsPermanent();
     $args['countProjectsChange'] = $this->em->getRepository(Project::class)->countProjectsChange();
     $args['countProjects'] = $this->em->getRepository(Project::class)->count([]);
+
     $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
-//    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
+    $args['countCommentsActive'] = $this->em->getRepository(Comment::class)->countCommentsActive();
+
+
+    $args['countAllTeams'] = $this->em->getRepository(Team::class)->count([]);
+    $args['countTeams'] = $this->em->getRepository(Team::class)->countTeams();
+    $args['countTeamsActive'] = $this->em->getRepository(Team::class)->countTeamsActive();
+    $args['countTeamsInactive'] = $this->em->getRepository(Team::class)->countTeamsInactive();
+
     return $this->render('widget/main_admin_sidebar.html.twig', $args);
   }
 

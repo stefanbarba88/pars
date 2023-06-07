@@ -71,6 +71,19 @@ class ClientRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(Client::class)->find($id);
   }
 
+  public function countClientsActive(): int{
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->select($qb->expr()->count('u'))
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->setParameter(':isSuspended', 0);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+
 //    /**
 //     * @return Client[] Returns an array of Client objects
 //     */

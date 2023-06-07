@@ -38,6 +38,95 @@ class TeamRepository extends ServiceEntityRepository {
     }
   }
 
+  public function countTeams(): int {
+    $qb = $this->createQueryBuilder('c');
+
+    $qb->select($qb->expr()->count('c'))
+      ->andWhere('c.isDeleted = :isDeleted')
+      ->setParameter(':isDeleted', 0);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+
+  public function countTeamsActive(): int {
+
+    $teams = $this->getEntityManager()->getRepository(Team::class)->findBy(['isDeleted' => false]);
+    $count = 0;
+    foreach ($teams as $team) {
+      if (!is_null($team->getProjects())) {
+        $count++;
+      }
+    }
+  return $count;
+  }
+
+  public function countTeamsInactive(): int {
+
+    $teams = $this->getEntityManager()->getRepository(Team::class)->findBy(['isDeleted' => false]);
+    $count = 0;
+    foreach ($teams as $team) {
+      if (is_null($team->getProjects())) {
+        $count++;
+      }
+    }
+    return $count;
+  }
+
+
+
+  public function getTeams(int $type): array {
+
+    $teams = $this->getEntityManager()->getRepository(Team::class)->findBy([], ['isDeleted' => 'ASC']);
+    $teamList = [];
+
+    switch ($type) {
+      case 1:
+        foreach ($teams as $team) {
+          if (!is_null($team->getProjects())) {
+            $teamList [] = [
+              'id' => $team->getId(),
+              'naziv' => $team->getTitle(),
+              'projekat' => $team->getProjects(),
+              'clanovi' => $team->getMember(),
+              'status' => $team->getIsDeleted(),
+              'kreiran' => $team->getCreated()
+            ];
+          }
+        }
+        break;
+      case 2:
+        foreach ($teams as $team) {
+          if (is_null($team->getProjects())) {
+            $teamList [] = [
+              'id' => $team->getId(),
+              'naziv' => $team->getTitle(),
+              'projekat' => $team->getProjects(),
+              'clanovi' => $team->getMember(),
+              'status' => $team->getIsDeleted(),
+              'kreiran' => $team->getCreated()
+            ];
+          }
+        }
+        break;
+      default:
+        foreach ($teams as $team) {
+            $teamList [] = [
+              'id' => $team->getId(),
+              'naziv' => $team->getTitle(),
+              'projekat' => $team->getProjects(),
+              'clanovi' => $team->getMember(),
+              'status' => $team->getIsDeleted(),
+              'kreiran' => $team->getCreated()
+            ];
+          }
+    }
+
+    return $teamList;
+  }
+
   public function findForForm(int $id = 0): Team {
     if (empty($id)) {
       return new Team();

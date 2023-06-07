@@ -53,6 +53,19 @@ class CommentRepository extends ServiceEntityRepository {
 
   }
 
+  public function countCommentsActive(): int {
+    $qb = $this->createQueryBuilder('c');
+
+    $qb->select($qb->expr()->count('c'))
+      ->andWhere('c.isSuspended = :isSuspended')
+      ->setParameter(':isSuspended', 0);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+
   public function findForFormTask(Task $task = null): Comment {
 
     $comment = new Comment();

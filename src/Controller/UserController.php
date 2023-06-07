@@ -41,6 +41,15 @@ class UserController extends AbstractController {
     return $this->render('user/list.html.twig', $args);
   }
 
+  #[Route('/list-contact/', name: 'app_users_contact')]
+  public function listContacts(): Response {
+
+    $args=[];
+    $args['users'] = $this->em->getRepository(User::class)->getAllContacts();
+
+    return $this->render('user/contact_list.html.twig', $args);
+  }
+
   #[Route('/form/{id}', name: 'app_user_form', defaults: ['id' => 0])]
   #[Entity('usr', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -74,7 +83,7 @@ class UserController extends AbstractController {
         if ($type != 1) {
           return $this->redirectToRoute('app_users');
         }
-        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+        return $this->redirectToRoute('app_employees');
 
       }
     }

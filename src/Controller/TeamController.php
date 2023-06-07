@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
-use App\Entity\City;
 use App\Entity\Team;
-use App\Form\CityFormType;
 use App\Form\TeamFormType;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -20,9 +18,11 @@ class TeamController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_teams')]
-  public function list(): Response {
+  public function list(Request $request): Response {
+    $type = $request->query->getInt('type');
     $args = [];
-    $args['teams'] = $this->em->getRepository(Team::class)->findAll();
+    $args['teams'] = $this->em->getRepository(Team::class)->getTeams($type);
+    $args['type'] = $type;
 
     return $this->render('team/list.html.twig', $args);
   }
@@ -47,7 +47,7 @@ class TeamController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-        return $this->redirectToRoute('app_team_view', ['id' => $team->getId()]);
+        return $this->redirectToRoute('app_teams');
       }
     }
     $args['form'] = $form->createView();

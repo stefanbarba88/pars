@@ -183,6 +183,25 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $usersList;
   }
 
+  public function getAllContacts(): array {
+
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_CLIENT], ['isSuspended' => 'ASC']);
+
+    $usersList = [];
+    foreach ($users as $user) {
+      $usersList [] = [
+        'id' => $user->getId(),
+        'ime' => $user->getFullName(),
+        'email' => $user->getEmail(),
+        'mobilni' => $user->getTelefon1(),
+        'slika' => $user->getImage(),
+        'firma' => $user->getClients(),
+        'isSuspended' => $user->getBadgeByStatus(),
+      ];
+    }
+    return $usersList;
+  }
+
   /**
    * @throws NonUniqueResultException
    * @throws NoResultException
@@ -193,6 +212,57 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     $qb->select($qb->expr()->count('u'))
       ->andWhere('u.userType = :userType')
       ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+
+  /**
+   * @throws NonUniqueResultException
+   * @throws NoResultException
+   */
+  public function countEmployeesActive(): int{
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->select($qb->expr()->count('u'))
+      ->andWhere('u.userType = :userType')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+      ->setParameter(':isSuspended', 0);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+
+  /**
+   * @throws NonUniqueResultException
+   * @throws NoResultException
+   */
+  public function countContacts(): int{
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->select($qb->expr()->count('u'))
+      ->andWhere('u.userType = :userType')
+      ->setParameter(':userType', UserRolesData::ROLE_CLIENT);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+
+  public function countContactsActive(): int{
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->select($qb->expr()->count('u'))
+      ->andWhere('u.userType = :userType')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
+      ->setParameter(':isSuspended', 0);
 
     $query = $qb->getQuery();
 
@@ -229,7 +299,44 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $query->getSingleScalarResult();
 
   }
-  public function getEmployees(): array {
+
+  public function countUsersActiveByLoggedUser(User $loggedUser): int {
+
+    $qb = $this->createQueryBuilder('u');
+    switch ($loggedUser->getUserType()) {
+      case UserRolesData::ROLE_SUPER_ADMIN:
+        $qb->select($qb->expr()->count('u'))
+          ->andWhere('u.isSuspended = :isSuspended')
+          ->setParameter(':isSuspended', 0);
+        break;
+      case UserRolesData::ROLE_ADMIN:
+        $qb->select($qb->expr()->count('u'))
+          ->andWhere('u.userType <> :userType')
+          ->andWhere('u.userType <> :userType1')
+          ->andWhere('u.isSuspended = :isSuspended')
+          ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
+          ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
+          ->setParameter(':isSuspended', 0);
+        break;
+      default:
+        $qb->select($qb->expr()->count('u'))
+          ->andWhere('u.userType <> :userType')
+          ->andWhere('u.userType <> :userType1')
+          ->andWhere('u.userType <> :userType2')
+          ->andWhere('u.isSuspended = :isSuspended')
+          ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
+          ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
+          ->setParameter(':userType2', UserRolesData::ROLE_MANAGER)
+          ->setParameter(':isSuspended', 0);
+    }
+
+    $query = $qb->getQuery();
+    return $query->getSingleScalarResult();
+
+  }
+
+
+  public function getEmployees(int $type): array {
 //    $qb = $this->createQueryBuilder('u');
 //    $qb->select('u.id','u.ime', 'u.prezime', 'u.slika', 'u.isSuspended', 'u.datumRodjenja', 'u.userType');
 //    $qb->orderBy('u.id')->getQuery()->getResult();

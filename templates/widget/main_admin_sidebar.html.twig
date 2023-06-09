@@ -335,14 +335,21 @@
                         <a href="{{ path('app_projects') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjectsChange }}/{{ countProjects }}</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjectsActive }}/{{ countProjects }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_projects', {'permanent': 1}) }}" class="nav-link">
                             <i class="ph-folders"></i>
-                            <span>Lista sa stalnom ekipom</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjectsPermanent }}/{{ countProjects }}</span>
+                            <span>Sa stalnom ekipom</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjectsPermanent }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_projects', {'permanent': 2}) }}" class="nav-link">
+                            <i class="ph-folders"></i>
+                            <span>Sa letećom ekipom</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjectsChange }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -378,6 +385,38 @@
                         </a>
                     </li>
                     <!-- /Zadaci -->
+
+                    <!-- Vozila -->
+                    <li class="nav-item-header">
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Vozila</div>
+                        <i class="ph-dots-three sidebar-resize-show"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_cars') }}" class="nav-link">
+                            <i class="ph-car"></i>
+                            <span>Lista</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjects }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_task_form') }}" class="nav-link">
+                            <i class="ph-car"></i>
+                            <span>Aktivna</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_task_form') }}" class="nav-link">
+                            <i class="ph-car"></i>
+                            <span>Neaktivna</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" class="nav-link">
+                            <i class="ph-file-text"></i>
+                            <span>Izveštaji</span>
+                        </a>
+                    </li>
+                    <!-- /Vozila -->
 
                     <!-- Komentari -->
                     <li class="nav-item-header">

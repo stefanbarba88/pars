@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Classes\Data\TaskStatusData;
 use App\Classes\Slugify;
 use App\Repository\TaskRepository;
 use DateTimeImmutable;
@@ -70,7 +71,7 @@ class Task implements JsonSerializable {
   private ?bool $isClientView = null;
 
   #[ORM\Column(nullable: true)]
-  private ?bool $isExpenses = null;
+  private ?bool $isExpenses = false;
 
   #[ORM\Column]
   private ?bool $isDeleted = false;
@@ -79,13 +80,16 @@ class Task implements JsonSerializable {
   private ?bool $isClosed = false;
 
   #[ORM\Column(nullable: true)]
-  private ?bool $isTimeRoundUp = null;
+  private ?bool $isTimeRoundUp = true;
 
   #[ORM\Column(nullable: true)]
-  private ?int $minEntry = null;
+  private ?int $minEntry = 30;
 
   #[ORM\Column(nullable: true)]
   private ?int $roundingInterval = null;
+
+  #[ORM\Column]
+  private ?int $status = TaskStatusData::NIJE_ZAPOCETO;
 
   #[ORM\ManyToOne(inversedBy: 'tasks')]
   private ?Project $project = null;
@@ -320,6 +324,22 @@ class Task implements JsonSerializable {
 
     return $this;
   }
+
+  /**
+   * @return int|null
+   */
+  public function getStatus(): ?int {
+    return $this->status;
+  }
+
+  /**
+   * @param int|null $status
+   */
+  public function setStatus(?int $status): void {
+    $this->status = $status;
+  }
+
+
 
   /**
    * @return User|null

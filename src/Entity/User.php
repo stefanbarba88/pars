@@ -145,6 +145,10 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\ManyToMany(targetEntity: Team::class, mappedBy: 'member')]
   private Collection $teams;
 
+  #[ORM\OneToMany(mappedBy: 'driver', targetEntity: CarReservation::class)]
+  private Collection $carReservations;
+
+
   public function __construct() {
     $this->userHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
@@ -152,6 +156,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     $this->notes = new ArrayCollection();
     $this->clients = new ArrayCollection();
     $this->teams = new ArrayCollection();
+    $this->carReservations = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -472,7 +477,6 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   }
 
 
-
   /**
    * @see UserInterface
    */
@@ -726,25 +730,52 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   /**
    * @return Collection<int, Team>
    */
-  public function getTeams(): Collection
-  {
-      return $this->teams;
+  public function getTeams(): Collection {
+    return $this->teams;
   }
 
-  public function addTeam(Team $team): self
+  public function addTeam(Team $team): self {
+    if (!$this->teams->contains($team)) {
+      $this->teams->add($team);
+      $team->addMember($this);
+    }
+
+    return $this;
+  }
+
+  public function removeTeam(Team $team): self {
+    if ($this->teams->removeElement($team)) {
+      $team->removeMember($this);
+    }
+
+    return $this;
+  }
+
+  /**
+   * @return Collection<int, CarReservation>
+   */
+  public function getCarReservations(): Collection
   {
-      if (!$this->teams->contains($team)) {
-          $this->teams->add($team);
-          $team->addMember($this);
+      return $this->carReservations;
+  }
+
+  public function addCarReservation(CarReservation $carReservation): self
+  {
+      if (!$this->carReservations->contains($carReservation)) {
+          $this->carReservations->add($carReservation);
+          $carReservation->setDriver($this);
       }
 
       return $this;
   }
 
-  public function removeTeam(Team $team): self
+  public function removeCarReservation(CarReservation $carReservation): self
   {
-      if ($this->teams->removeElement($team)) {
-          $team->removeMember($this);
+      if ($this->carReservations->removeElement($carReservation)) {
+          // set the owning side to null (unless already changed)
+          if ($carReservation->getDriver() === $this) {
+              $carReservation->setDriver(null);
+          }
       }
 
       return $this;

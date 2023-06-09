@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Car;
 use App\Entity\Client;
 use App\Entity\Comment;
 use App\Entity\Image;
@@ -34,6 +35,7 @@ class WidgetController extends AbstractController {
     $args['countProjectsPermanent'] = $this->em->getRepository(Project::class)->countProjectsPermanent();
     $args['countProjectsChange'] = $this->em->getRepository(Project::class)->countProjectsChange();
     $args['countProjects'] = $this->em->getRepository(Project::class)->count([]);
+    $args['countProjectsActive'] = $this->em->getRepository(Project::class)->countProjectsActive();
 
     $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
     $args['countCommentsActive'] = $this->em->getRepository(Comment::class)->countCommentsActive();
@@ -82,6 +84,13 @@ class WidgetController extends AbstractController {
     $args['user'] = $user;
 
     return $this->render('widget/employee_nav.html.twig', $args);
+  }
+
+  public function carProfilNavigation(Car $car): Response {
+
+    $args['car'] = $car;
+
+    return $this->render('widget/car_nav.html.twig', $args);
   }
 
   public function projectProfilNavigation(Project $project): Response {

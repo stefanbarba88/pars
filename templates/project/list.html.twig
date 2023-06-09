@@ -25,7 +25,15 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Projekti</span>
+                                {% if type == 1 %}
+                                    <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
+                                    <span class="breadcrumb-item active">Projekti sa stalnim ekipama</span>
+                                {% elseif type == 2 %}
+                                    <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
+                                    <span class="breadcrumb-item active">Projekti sa letećim ekipama</span>
+                                {% else %}
+                                    <span class="breadcrumb-item active">Projekti</span>
+                                {% endif %}
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -44,7 +52,9 @@
                     <div class="card">
                         <div class="card-header d-lg-flex py-lg-0">
                             {% if type == 1 %}
-                                <h5 class="py-lg-3 mb-0">Lista projekata sa stalnom ekipom</h5>
+                                <h5 class="py-lg-3 mb-0">Lista projekata sa stalnim ekipama</h5>
+                            {% elseif type == 2 %}
+                                <h5 class="py-lg-3 mb-0">Lista projekata sa letećim ekipama</h5>
                             {% else %}
                                 <h5 class="py-lg-3 mb-0">Lista projekata</h5>
                             {% endif %}
@@ -63,6 +73,7 @@
                                 <th>Klijent</th>
                                 <th>Kreiran</th>
                                 <th>Rok</th>
+                                <th>Stalni/Leteći</th>
                                 <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
                             </tr>
                             </thead>
@@ -110,6 +121,13 @@
                                             <i class="ph-bell-ringing me-2"></i>
                                             {{ project.deadline ? project.deadline | date("d.m.Y") : '/' }}
                                         </div>
+                                    </td>
+                                    <td>
+                                        {% if project.getTeamJson is not empty %}
+                                            <div class="d-inline-flex align-items-center">
+                                                <i class="ph-anchor me-2"></i>
+                                            </div>
+                                        {% endif %}
                                     </td>
                                     <td class="text-center">
                                         <div class="dropdown">

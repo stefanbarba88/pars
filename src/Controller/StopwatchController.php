@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\TaskStatusData;
 use App\Entity\Image;
 use App\Entity\Pdf;
+use App\Entity\Project;
 use App\Entity\StopwatchTime;
+use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Form\StopwatchTimeAddFormType;
 use App\Form\StopwatchTimeFormType;
@@ -34,6 +37,7 @@ class StopwatchController extends AbstractController {
     $stopwatch->setLat($request->query->get('lat'));
 
     $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
+    $this->em->getRepository(Task::class)->changeStatus($taskLog->getTask(), TaskStatusData::ZAPOCETO);
 
     return $this->redirectToRoute('app_task_view_user', ['id' => $taskLog->getTask()->getId()]);
   }

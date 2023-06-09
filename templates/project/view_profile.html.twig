@@ -108,8 +108,9 @@
                                                 {% if is_granted('ROLE_EMPLOYEE') %}
                                                     {{ project.createdBy.getFullName() }}
                                                 {% else %}
-                                                    <a href="{{ path('app_user_profile_view', { id: project.createdBy.id}) }}">{{ project.createdBy.getFullName() }}</a></div>
+                                                    <a href="{{ path('app_user_profile_view', { id: project.createdBy.id}) }}">{{ project.createdBy.getFullName() }}</a>
                                                 {% endif %} - {{ project.created | date("d.m.Y") }} u {{ project.created | date("H:i:s") }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -172,6 +173,24 @@
                                                     <div class="col-4">Cena po satu:</div>
                                                     <div class="col-8">{{ project.pricePerTask | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
                                                 </div>
+                                            {% elseif project.payment == 5 %}
+                                                <div class="row p-2">
+                                                    <div class="col-4">Tip finansiranja:</div>
+                                                    <div class="col-8">Plaćanje po danu</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Cena po danu:</div>
+                                                    <div class="col-8">{{ project.pricePerDay | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
+                                                </div>
+                                            {% elseif project.payment == 6 %}
+                                                <div class="row p-2">
+                                                    <div class="col-4">Tip finansiranja:</div>
+                                                    <div class="col-8">Plaćanje po mesecu</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Cena po mesecu:</div>
+                                                    <div class="col-8">{{ project.pricePerMonth | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
+                                                </div>
                                             {% else %}
                                                 <div class="row p-2">
                                                     <div class="col-4">Tip finansiranja:</div>
@@ -233,12 +252,12 @@
                                                 <h5 class="mb-0">Verzija kreirana</h5>
                                             </div>
 
-                                            <div class="card-body bg-light">
+                                            <div class="card-body">
                                                 <div class="row p-2">
                                                     <div class="col-4">Izmenio:</div>
                                                     <div class="col-8"><a href="{{ path('app_user_profile_view', { id: project.editBy.id}) }}">{{ project.editBy.getFullName() }}</a></div>
                                                 </div>
-                                                <div class="row p-2">
+                                                <div class="row p-2  bg-light">
                                                     <div class="col-4">Vreme:</div>
                                                     <div class="col-8">{{ project.updated | date("d.m.Y") }} u {{ project.updated | date("H:i:s") }}</div>
                                                 </div>

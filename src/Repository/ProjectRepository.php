@@ -64,25 +64,15 @@ class ProjectRepository extends ServiceEntityRepository {
   }
 
   public function getAllProjects(): array {
-    $projects = $this->createQueryBuilder('p')
+    return $this->createQueryBuilder('p')
       ->addOrderBy('p.isSuspended', 'ASC')
       ->getQuery()
       ->getResult();
-
-    $projectsChange = [];
-
-    foreach ($projects as $project) {
-      if(empty($project->getTeamJson())) {
-        $projectsChange[] = $project;
-      }
-    }
-    return $projectsChange;
-
   }
-
   public function getAllProjectsPermanent(): array {
 
     $projects = $this->createQueryBuilder('p')
+      ->andWhere('p.isSuspended = 0')
       ->addOrderBy('p.isSuspended', 'ASC')
       ->getQuery()
       ->getResult();
@@ -96,40 +86,50 @@ class ProjectRepository extends ServiceEntityRepository {
     }
     return $projectsPermanent;
   }
-
-
-  public function countProjectsChange(): int {
+  public function getAllProjectsChange(): array {
     $projects = $this->createQueryBuilder('p')
+      ->andWhere('p.isSuspended = 0')
       ->addOrderBy('p.isSuspended', 'ASC')
       ->getQuery()
       ->getResult();
 
-    $count = 0;
+    $projectsChange = [];
 
     foreach ($projects as $project) {
       if(empty($project->getTeamJson())) {
-        $count++;
+        $projectsChange[] = $project;
       }
     }
-    return $count;
+    return $projectsChange;
+  }
+  public function countProjectsChange(): int {
+    $db = $this->getEntityManager()->getConnection();
+    $sql = "SELECT projects.id  
+            FROM projects LEFT JOIN project_team ON projects.id = project_team.project_id 
+            WHERE project_team.project_id IS NULL AND projects.is_suspended = 0";
+
+    $query = $db->prepare($sql);
+    return $query->executeStatement();
 
   }
-
   public function countProjectsPermanent(): int {
+    $db = $this->getEntityManager()->getConnection();
+    $sql = "SELECT projects.id  
+            FROM projects LEFT JOIN project_team ON projects.id = project_team.project_id 
+            WHERE project_team.project_id IS NOT NULL AND projects.is_suspended = 0";
 
-    $projects = $this->createQueryBuilder('p')
-      ->addOrderBy('p.isSuspended', 'ASC')
+    $query = $db->prepare($sql);
+    return $query->executeStatement();
+
+  }
+  public function countProjectsActive(): int {
+
+    return $this->createQueryBuilder('p')
+      ->select('count(p.id)')
+      ->andWhere('p.isSuspended = 0')
       ->getQuery()
-      ->getResult();
+      ->getSingleScalarResult();
 
-    $count = 0;
-
-    foreach ($projects as $project) {
-      if(!empty($project->getTeamJson())) {
-        $count++;
-      }
-    }
-    return $count;
   }
 
 
@@ -200,15 +200,33 @@ class ProjectRepository extends ServiceEntityRepository {
       $project->setPrice(null);
       $project->setPricePerHour(null);
       $project->setPricePerTask(null);
+      $project->setPricePerDay(null);
+      $project->setPricePerMonth(null);
     } else if ($project->getPayment() == VrstaPlacanjaData::FIKSNA_CENA) {
       $project->setPricePerHour(null);
       $project->setPricePerTask(null);
+      $project->setPricePerDay(null);
+      $project->setPricePerMonth(null);
     } else if ($project->getPayment() == VrstaPlacanjaData::PLACANJE_PO_SATU) {
       $project->setPrice(null);
       $project->setPricePerTask(null);
+      $project->setPricePerDay(null);
+      $project->setPricePerMonth(null);
+    } else if ($project->getPayment() == VrstaPlacanjaData::PLACANJE_PO_DANU) {
+      $project->setPrice(null);
+      $project->setPricePerTask(null);
+      $project->setPricePerHour(null);
+      $project->setPricePerMonth(null);
+    } else if ($project->getPayment() == VrstaPlacanjaData::PLACANJE_PO_MESECU) {
+      $project->setPrice(null);
+      $project->setPricePerTask(null);
+      $project->setPricePerDay(null);
+      $project->setPricePerHour(null);
     } else {
       $project->setPricePerHour(null);
       $project->setPrice(null);
+      $project->setPricePerDay(null);
+      $project->setPricePerMonth(null);
     }
 
     if (!$project->isTimeRoundUp()) {

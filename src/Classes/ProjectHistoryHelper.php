@@ -21,13 +21,15 @@ class ProjectHistoryHelper {
   private $price;
   private $pricePerHour;
   private $pricePerTask;
+  private $pricePerDay;
+  private $pricePerMonth;
   private $currency;
   private $minEntry;
   private $roundingInterval;
   private $deadline;
   private $team;
 
-  public function __construct($id, $title, $description, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $isViewLog, $team, $category, $client, $timerPriority, $label, $editBy, $payment, $price, $pricePerHour, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
+  public function __construct($id, $title, $description, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $isViewLog, $team, $category, $client, $timerPriority, $label, $editBy, $payment, $price, $pricePerHour, $pricePerDay, $pricePerMonth, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
     $this->id = $id;
     $this->title = $title;
     $this->description = $description;
@@ -43,6 +45,8 @@ class ProjectHistoryHelper {
     $this->price = $price;
     $this->pricePerHour = $pricePerHour;
     $this->pricePerTask = $pricePerTask;
+    $this->pricePerDay = $pricePerDay;
+    $this->pricePerMonth = $pricePerMonth;
     $this->currency = $currency;
     $this->minEntry = $minEntry;
     $this->roundingInterval = $roundingInterval;
@@ -359,6 +363,35 @@ class ProjectHistoryHelper {
   public function setTeam($team): void {
     $this->team = $team;
   }
+
+  /**
+   * @return mixed
+   */
+  public function getPricePerDay() {
+    return $this->pricePerDay;
+  }
+
+  /**
+   * @param mixed $pricePerDay
+   */
+  public function setPricePerDay($pricePerDay): void {
+    $this->pricePerDay = $pricePerDay;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getPricePerMonth() {
+    return $this->pricePerMonth;
+  }
+
+  /**
+   * @param mixed $pricePerMonth
+   */
+  public function setPricePerMonth($pricePerMonth): void {
+    $this->pricePerMonth = $pricePerMonth;
+  }
+
 
 
 

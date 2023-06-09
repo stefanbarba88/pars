@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Project;
 use App\Entity\Team;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use PDO;
 
 /**
  * @extends ServiceEntityRepository<Team>
@@ -53,78 +55,68 @@ class TeamRepository extends ServiceEntityRepository {
 
   public function countTeamsActive(): int {
 
-    $teams = $this->getEntityManager()->getRepository(Team::class)->findBy(['isDeleted' => false]);
-    $count = 0;
-    foreach ($teams as $team) {
-      if (!is_null($team->getProjects())) {
-        $count++;
-      }
-    }
-  return $count;
+
+    $db = $this->getEntityManager()->getConnection();
+    $sql = "SELECT teams.id  
+            FROM teams LEFT JOIN project_team ON teams.id = project_team.team_id 
+            WHERE project_team.team_id IS NOT NULL AND teams.is_deleted = 0";
+
+    $query = $db->prepare($sql);
+    return $query->executeStatement();
+
+//
+//
+//
+//    $teams = $this->getEntityManager()->getRepository(Team::class)->findBy(['isDeleted' => false]);
+//    $count = 0;
+//    foreach ($teams as $team) {
+//      if (!is_null($team->getProjects())) {
+//        $count++;
+//      }
+//    }
+//  return $count;
   }
 
   public function countTeamsInactive(): int {
 
-    $teams = $this->getEntityManager()->getRepository(Team::class)->findBy(['isDeleted' => false]);
-    $count = 0;
-    foreach ($teams as $team) {
-      if (is_null($team->getProjects())) {
-        $count++;
-      }
-    }
-    return $count;
+    $db = $this->getEntityManager()->getConnection();
+    $sql = "SELECT teams.id  
+            FROM teams LEFT JOIN project_team ON teams.id = project_team.team_id 
+            WHERE project_team.team_id IS NULL AND teams.is_deleted = 0";
+
+    $query = $db->prepare($sql);
+    return $query->executeStatement();
   }
-
-
 
   public function getTeams(int $type): array {
 
-    $teams = $this->getEntityManager()->getRepository(Team::class)->findBy([], ['isDeleted' => 'ASC']);
     $teamList = [];
+    $db = $this->getEntityManager()->getConnection();
+    $sql = match ($type) {
+      1 => "SELECT teams.id  
+            FROM teams LEFT JOIN project_team ON teams.id = project_team.team_id 
+            WHERE project_team.team_id IS NOT NULL",
+      2 => "SELECT teams.id
+            FROM teams LEFT JOIN project_team ON teams.id = project_team.team_id 
+            WHERE project_team.team_id IS NULL",
+      default => "SELECT teams.id FROM teams",
+    };
 
-    switch ($type) {
-      case 1:
-        foreach ($teams as $team) {
-          if (!is_null($team->getProjects())) {
-            $teamList [] = [
-              'id' => $team->getId(),
-              'naziv' => $team->getTitle(),
-              'projekat' => $team->getProjects(),
-              'clanovi' => $team->getMember(),
-              'status' => $team->getIsDeleted(),
-              'kreiran' => $team->getCreated()
-            ];
-          }
-        }
-        break;
-      case 2:
-        foreach ($teams as $team) {
-          if (is_null($team->getProjects())) {
-            $teamList [] = [
-              'id' => $team->getId(),
-              'naziv' => $team->getTitle(),
-              'projekat' => $team->getProjects(),
-              'clanovi' => $team->getMember(),
-              'status' => $team->getIsDeleted(),
-              'kreiran' => $team->getCreated()
-            ];
-          }
-        }
-        break;
-      default:
-        foreach ($teams as $team) {
-            $teamList [] = [
-              'id' => $team->getId(),
-              'naziv' => $team->getTitle(),
-              'projekat' => $team->getProjects(),
-              'clanovi' => $team->getMember(),
-              'status' => $team->getIsDeleted(),
-              'kreiran' => $team->getCreated()
-            ];
-          }
+    $query = $db->prepare($sql);
+    $result = $query->executeQuery()->fetchAllNumeric();
+
+    foreach ($result as $rs) {
+      $team = $this->getEntityManager()->getRepository(Team::class)->find($rs[0]);
+      $teamList [] = [
+        'id' => $team->getId(),
+        'naziv' => $team->getTitle(),
+        'projekat' => $team->getProjects(),
+        'clanovi' => $team->getMember(),
+        'status' => $team->getIsDeleted(),
+        'kreiran' => $team->getCreated()
+      ];
     }
-
-    return $teamList;
+  return $teamList;
   }
 
   public function findForForm(int $id = 0): Team {

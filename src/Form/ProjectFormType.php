@@ -92,18 +92,6 @@ class ProjectFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('currency', EntityType::class, [
-        'class' => Currency::class,
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => function ($currency) {
-          return $currency->getFormTitle();
-        },
-        'expanded' => false,
-        'multiple' => false,
-      ])
 
       ->add('team', EntityType::class, [
         'required' => false,
@@ -117,6 +105,18 @@ class ProjectFormType extends AbstractType {
         'multiple' => true,
       ])
 
+      ->add('currency', EntityType::class, [
+        'class' => Currency::class,
+        'query_builder' => function (EntityRepository $em) {
+          return $em->createQueryBuilder('g')
+            ->orderBy('g.id', 'ASC');
+        },
+        'choice_label' => function ($currency) {
+          return $currency->getFormTitle();
+        },
+        'expanded' => false,
+        'multiple' => false,
+      ])
       ->add('price', NumberType::class, [
         'required' => false,
         'html5' => true,
@@ -134,6 +134,22 @@ class ProjectFormType extends AbstractType {
         ],
       ])
       ->add('pricePerTask', NumberType::class, [
+        'required' => false,
+        'html5' => true,
+        'attr' => [
+          'min' => '0.01',
+          'step' => '0.01'
+        ],
+      ])
+      ->add('pricePerDay', NumberType::class, [
+        'required' => false,
+        'html5' => true,
+        'attr' => [
+          'min' => '0.01',
+          'step' => '0.01'
+        ],
+      ])
+      ->add('pricePerMonth', NumberType::class, [
         'required' => false,
         'html5' => true,
         'attr' => [
@@ -166,6 +182,7 @@ class ProjectFormType extends AbstractType {
         'choices' => RoundingIntervalData::form(),
         'expanded' => false,
         'multiple' => false,
+        'data' => RoundingIntervalData::MIN_15,
       ])
 
       ->add('timerPriority', ChoiceType::class, [
@@ -177,6 +194,7 @@ class ProjectFormType extends AbstractType {
         'choices' => TimerPriorityData::form(),
         'expanded' => false,
         'multiple' => false,
+        'data' => TimerPriorityData::ROLE_GEO
       ])
 
       ->add('isEstimate', ChoiceType::class, [

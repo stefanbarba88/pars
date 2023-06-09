@@ -18,7 +18,9 @@ class NotifyMessagesData {
   public const NOTE_DELETE = 'Uspešno ste obrisali belešku.';
   public const NOTE_EDIT = 'Uspešno ste izmenili belešku.';
 
-
+  public const CAR_ADD = 'Uspešno ste dodali/izmenili vozilo.';
+  public const CAR_DEACTIVATE = 'Uspešno ste dekativirali vozilo.';
+  public const CAR_ACTIVATE = 'Uspešno ste aktivirali vozilo.';
 
 
 }

@@ -114,8 +114,6 @@ class TaskFormType extends AbstractType {
       ])
 
       ->add('isTimeRoundUp', ChoiceType::class, [
-        'required' => false,
-        'placeholder' => '--Zaokruživanje vremena--',
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],
@@ -139,6 +137,7 @@ class TaskFormType extends AbstractType {
         'choices' => RoundingIntervalData::form(),
         'expanded' => false,
         'multiple' => false,
+        'data' => RoundingIntervalData::MIN_15,
       ])
 
 //      ->add('isEstimate', ChoiceType::class, [
@@ -150,8 +149,6 @@ class TaskFormType extends AbstractType {
 //        'multiple' => false,
 //      ])
       ->add('isExpenses', ChoiceType::class, [
-        'required' => false,
-        'placeholder' => '--Praćenja troškova--',
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],
@@ -159,18 +156,15 @@ class TaskFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('isClientView', ChoiceType::class, [
-        'placeholder' => '--Vidljivo klijentu--',
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('isClientView', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'choices' => PotvrdaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
       ->add('isPriority', ChoiceType::class, [
-        'placeholder' => '--Prioritetan zadatak--',
-        'required' => false,
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],

@@ -76,11 +76,13 @@
                                                         <a href="{{ path('app_task_view', { id: task.task.id}) }}">{{ task.task.title }}</a>
                                                     {% endif %}
                                                 </div>
-                                                <div class="d-inline-flex">
-                                                    {% for label in task.task.label %}
-                                                        {{label.label | raw}}
-                                                    {% endfor %}
-                                                </div>
+                                                {% if label is defined %}
+                                                    <div class="d-inline-flex">
+                                                        {% for label in task.task.label %}
+                                                            {{label.label | raw}}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
                                             </td>
                                             <td>
                                                 {% if task.task.isDeleted %}

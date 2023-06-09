@@ -169,6 +169,24 @@
                                                 <div class="col-4">Cena po satu:</div>
                                                 <div class="col-8">{{ projectH.pricePerTask | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>
                                             </div>
+                                        {% elseif projectH.payment == 5 %}
+                                            <div class="row p-2">
+                                                <div class="col-4">Tip finansiranja:</div>
+                                                <div class="col-8">Plaćanje po danu</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Cena po danu:</div>
+                                                <div class="col-8">{{ projectH.pricePerDay | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>
+                                            </div>
+                                        {% elseif projectH.payment == 6 %}
+                                            <div class="row p-2">
+                                                <div class="col-4">Tip finansiranja:</div>
+                                                <div class="col-8">Plaćanje po mesecu</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Cena po mesecu:</div>
+                                                <div class="col-8">{{ projectH.pricePerMonth | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>
+                                            </div>
                                         {% else %}
                                             <div class="row p-2">
                                                 <div class="col-4">Tip finansiranja:</div>

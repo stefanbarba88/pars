@@ -482,7 +482,7 @@
 {% block footerJavascript %}
     <script type="text/javascript">
 
-        $(document).ready(function() {
+        $(function () {
 
             {% if stopwatch is not null  %}
                 let startDateTime = new Date({{ stopwatch ? stopwatch.start | date('Y, (m-1), d, H, i, s') : '2014,8,26,2,1,0,0' }});// YYYY (M-1) D H m s (start time and date from DB)
@@ -522,42 +522,54 @@
                 setInterval(updateClock, 1000);
 
             const modalBtn = document.getElementById('stopTimer');
-            modalBtn.addEventListener('click', function() {
-                // Get the user's current position
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    // Get the longitude and latitude from the position
-                    const lon = position.coords.longitude;
-                    const lat = position.coords.latitude;
+            {#modalBtn.addEventListener('click', function() {#}
+            {#    // Get the user's current position#}
+            {#    navigator.geolocation.getCurrentPosition(function(position) {#}
+            {#        // Get the longitude and latitude from the position#}
+            {#        const lon = position.coords.longitude;#}
+            {#        const lat = position.coords.latitude;#}
 
-                    // Do something with the coordinates, like logging them to the console
+            {#        // Do something with the coordinates, like logging them to the console#}
+            {#        {% if stopwatch %}#}
+            {#        let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+lon+'&lat='+lat;#}
+            {#        $('#link-stop').attr('href', urlStop);#}
+            {#        {% endif %}#}
+            {#    }, function(error) {#}
+            {#        // Handle error#}
+            {#        console.error(error);#}
+            {#    });#}
+            {#});#}
+
+                //dok se ne sredi na serveru ssl sertifikat
+                modalBtn.addEventListener('click', function() {
                     {% if stopwatch %}
-                    let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+lon+'&lat='+lat;
-                    $('#link-stop').attr('href', urlStop);
+                        let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+123+'&lat='+456;
+                        $('#link-stop').attr('href', urlStop);
                     {% endif %}
-                }, function(error) {
-                    // Handle error
-                    console.error(error);
                 });
-            });
             {% endif %}
             // Get the current position
-            navigator.geolocation.getCurrentPosition(
-                function success(position) {
+            {#navigator.geolocation.getCurrentPosition(#}
+            {#    function success(position) {#}
 
-                    // Get the longitude and latitude from the position
-                    let lon = position.coords.longitude;
-                    let lat = position.coords.latitude;
+            {#        // Get the longitude and latitude from the position#}
+            {#        let lon = position.coords.longitude;#}
+            {#        let lat = position.coords.latitude;#}
 
-                    // Create the URL with the coordinates as parameters
-                    let urlStart = '{{ path('app_stopwatch_start', {id: taskLog.id}) }}?lon='+lon+'&lat='+lat;
-                    $('#link-start').attr('href', urlStart);
+            {#        // Create the URL with the coordinates as parameters#}
+            {#        let urlStart = '{{ path('app_stopwatch_start', {id: taskLog.id}) }}?lon='+lon+'&lat='+lat;#}
+            {#        $('#link-start').attr('href', urlStart);#}
 
 
-                },
-                function error(error) {
-                    // Handle error
-                }
-            );
+            {#    },#}
+            {#    function error(error) {#}
+            {#        // Handle error#}
+            {#    }#}
+            {#);#}
+
+            //dok se ne sredi na serveru ssl sertifikat
+            let urlStart = '{{ path('app_stopwatch_start', {id: taskLog.id}) }}?lon='+123+'&lat='+456;
+            $('#link-start').attr('href', urlStart);
 
 
 

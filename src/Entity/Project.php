@@ -59,7 +59,7 @@ class Project implements JsonSerializable {
   private bool $isClientView = false;
 
   #[ORM\Column]
-  private bool $isTimeRoundUp = false;
+  private bool $isTimeRoundUp = true;
 
   #[ORM\Column]
   private bool $isViewLog = false;
@@ -91,6 +91,12 @@ class Project implements JsonSerializable {
   #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
   private ?string $pricePerTask = null;
 
+  #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
+  private ?string $pricePerDay = null;
+
+  #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
+  private ?string $pricePerMonth = null;
+
   #[ORM\ManyToOne(inversedBy: 'projects')]
   private ?Currency $currency = null;
 
@@ -98,7 +104,7 @@ class Project implements JsonSerializable {
   private ?int $roundingInterval = null;
 
   #[ORM\Column(nullable: true)]
-  private ?int $minEntry = null;
+  private ?int $minEntry = 30;
 
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $deadline = null;
@@ -167,6 +173,8 @@ class Project implements JsonSerializable {
       'price' => $this->getPrice(),
       'pricePerHour' => $this->getPricePerHour(),
       'pricePerTask' => $this->getPricePerTask(),
+      'pricePerDay' => $this->getPricePerDay(),
+      'pricePerMonth' => $this->getPricePerMonth(),
       'currency' => $this->getCurrencyJson(),
       'minEntry' => $this->getMinEntry(),
       'roundingInterval' => $this->getRoundingInterval(),
@@ -445,11 +453,34 @@ class Project implements JsonSerializable {
     return $this;
   }
 
+  public function getPricePerDay(): ?string {
+    return $this->pricePerDay;
+  }
+
+  public function setPricePerDay(?string $pricePerDay): self {
+    $this->pricePerDay = $pricePerDay;
+
+    return $this;
+  }
+
+  public function getPricePerMonth(): ?string {
+    return $this->pricePerMonth;
+  }
+
+  public function setPricePerMonth(?string $pricePerMonth): self {
+    $this->pricePerMonth = $pricePerMonth;
+
+    return $this;
+  }
+
   public function getCurrency(): ?Currency {
     return $this->currency;
   }
 
   public function getCurrencyJson(): string {
+    if(is_null($this->currency)) {
+      return '';
+    }
 
     return $this->currency->getFormTitle();
   }

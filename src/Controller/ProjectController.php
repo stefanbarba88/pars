@@ -44,6 +44,9 @@ class ProjectController extends AbstractController {
       if($permanent == 1) {
         $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsPermanent();
         $args['type'] = 1;
+      } elseif ($permanent == 2) {
+        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsChange();
+        $args['type'] = 2;
       } else {
         $args['projects'] = $this->em->getRepository(Project::class)->getAllProjects();
         $args['type'] = 0;

@@ -197,21 +197,21 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-4">
+                                <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.isExpenses, 'Praćenje troškova:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.isExpenses, {attr: { class: 'form-control required select' }}) }}
                                         <span class="form-text">Zaposleni u svom dnevniku može uneti troškove vezane za ovaj zadatak.</span>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isClientView, 'Klijent ima uvid u projekat:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isClientView, {attr: { class: 'form-control required select' }}) }}
-                                        <span class="form-text">Klijent ima uvid u razvoj projekta.</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
+{#                                <div class="col-lg-4">#}
+{#                                    <div class="mb-3">#}
+{#                                        {{ form_label(form.isClientView, 'Klijent ima uvid u projekat:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        {{ form_widget(form.isClientView, {attr: { class: 'form-control required select' }}) }}#}
+{#                                        <span class="form-text">Klijent ima uvid u razvoj projekta.</span>#}
+{#                                    </div>#}
+{#                                </div>#}
+                                <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.isPriority, 'Visok prioritet:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.isPriority, {attr: { class: 'form-control select' }}) }}

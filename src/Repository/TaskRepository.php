@@ -255,6 +255,18 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
+  public function changeStatus(Task $task, int $status): Task  {
+
+    if($status == TaskStatusData::ZAPOCETO) {
+      $task->setStatus($status);
+    } else {
+
+    }
+
+  }
+
+
+
 //  public function editTask(Task $task, User $user, ?string $history): Task  {
 //
 //    $taskLogOld = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $task]);

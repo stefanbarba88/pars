@@ -30,6 +30,9 @@ class Car implements JsonSerializable {
   #[ORM\Column(length: 255)]
   private ?string $plate = null;
 
+  #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
+  private ?string $price = null;
+
   #[ORM\Column(name: 'datum_registracije', type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $datumRegistracije = null;
 
@@ -44,6 +47,9 @@ class Car implements JsonSerializable {
 
   #[ORM\Column]
   private bool $isSuspended = false;
+
+  #[ORM\Column]
+  private bool $isReserved = true;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: false)]
@@ -74,6 +80,8 @@ class Car implements JsonSerializable {
       'dateNextReg' => $this->getDatumNaredneRegistracije(),
       'created' => $this->getCreated(),
       'createdBy' => $this->getCreatedBy()->getFullName(),
+      'price' => $this->getPrice(),
+      'reservation' => $this->isReserved(),
     ];
   }
 
@@ -273,6 +281,31 @@ class Car implements JsonSerializable {
 
       return $this;
   }
+
+  public function getPrice(): ?string {
+    return $this->price;
+  }
+
+  public function setPrice(?string $price): self {
+    $this->price = $price;
+
+    return $this;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isReserved(): bool {
+    return $this->isReserved;
+  }
+
+  /**
+   * @param bool $isReserved
+   */
+  public function setIsReserved(bool $isReserved): void {
+    $this->isReserved = $isReserved;
+  }
+
 
 
 }

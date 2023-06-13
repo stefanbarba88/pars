@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ car.getCarName }}
+                                {{ reservation.car.getCarName }}
                             </h4>
                         </div>
                     </div>
@@ -26,6 +26,7 @@
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
+                                <a href="{{ path('app_cars_reservations', {id:reservation.car.id}) }}" class="breadcrumb-item">Rezervacije</a>
                                 <span class="breadcrumb-item active">Profil</span>
                             </div>
 
@@ -36,7 +37,7 @@
 
                         {{ render(controller('App\\Controller\\WidgetController::support' )) }}
                     </div>
-                    {{ render(controller('App\\Controller\\WidgetController::carProfilNavigation', { car: car } )) }}
+                    {{ render(controller('App\\Controller\\WidgetController::carProfilNavigation', { car: reservation.car } )) }}
                 </div>
                 <!-- /page header -->
 
@@ -51,76 +52,34 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">{{ car.getCarName() }} <a href="{{ path('app_car_form', {id: car.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                        <h5 class="mb-0">{{ reservation.car.getCarName() }}</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">
-                                            <div class="col-4">Proizvođač:</div>
-                                            <div class="col-8">{{ car.brand }}</div>
+                                            <div class="col-4">Vozilo:</div>
+                                            <div class="col-8">{{ reservation.car.carName }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Model:</div>
-                                            <div class="col-8">{{ car.model }}</div>
+                                            <div class="col-4">Vozač:</div>
+                                            <div class="col-8">{{ reservation.driver.fullName }}</div>
                                         </div>
                                         <div class="row p-2">
-                                            <div class="col-4">Registracioni broj:</div>
-                                            <div class="col-8">{{ car.plate }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Datum registracije:</div>
-                                            <div class="col-8">{{ car.datumRegistracije | date("d.m.Y")}}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Datum naredne registracije:</div>
-                                            <div class="col-8">{{ car.datumNaredneRegistracije | date("d.m.Y")}}
+                                            <div class="col-4">Zadužen:</div>
+                                            <div class="col-8">{{ reservation.created | date("d.m.Y H:i:s")}}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Status:</div>
+                                            <div class="col-4">Razdužen:</div>
                                             <div class="col-8">
-                                                {% if car.isSuspended %}
-                                                    <span class="badge bg-danger">Obrisan</span>
+                                                {% if reservation.finished is null %}
+                                                    /
                                                 {% else %}
-                                                    <span class="badge bg-success">Aktivan</span>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Kupovna cena:</div>
-                                            <div class="col-8">{{ car.price | number_format(2, '.', ',') }} RSD
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Rezervacija:</div>
-                                            <div class="col-8">
-                                                {% if car.isReserved %}
-                                                    <span class="badge bg-warning">Zadužen</span>
-                                                {% else %}
-                                                    <span class="badge bg-success">Slobodan</span>
+                                                    {{ reservation.finished | date("d.m.Y H:i:s")}}
                                                 {% endif %}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                {% if car.editBy is not null %}
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Poslednja verzija</h5>
-                                    </div>
-
-                                    <div class="card-body">
-                                        <div class="row p-2">
-                                            <div class="col-4">Izmenio:</div>
-                                            <div class="col-8">{{ car.editBy.getFullName() | default('/') }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Vreme:</div>
-                                            <div class="col-8">{{ car.updated | date("d.m.Y") }} u {{ car.updated | date("H:i:s") }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endif %}
                             </div>
                         </div>
                         <!-- /right content -->

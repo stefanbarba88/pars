@@ -69,7 +69,13 @@
                                     <td><div class="fw-semibold"><a href="{{ path('app_car_view', { id: car.id}) }}">{{ car.plate }}</a></div></td>
                                     <td>{{ car.brand }}</td>
                                     <td>{{ car.model }}</td>
-                                    <td></td>
+                                    <td>
+                                        {% if car.isReserved %}
+                                            <span class="badge bg-warning">Zadužen</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Slobodan</span>
+                                        {% endif %}
+                                    </td>
                                     <td>
                                         <div class="d-inline-flex align-items-center">
                                             <i class="ph-calendar me-2"></i>
@@ -96,12 +102,17 @@
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end">
                                                 <a href="{{ path('app_car_view', { id: car.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                {% if car.isReserved %}
+                                                    <a href="{{ path('app_car_reservation_stop', { id: car.id}) }}" class="dropdown-item"><i class="ph-car-simple me-2"></i> Razdužite</a>
+                                                {% else %}
+                                                    <a href="{{ path('app_car_reservation_form', { id: car.id}) }}" class="dropdown-item"><i class="ph-car-simple me-2"></i> Zadužite</a>
+                                                {% endif %}
+                                                <a href="{{ path('app_car_form', { id: car.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
                                                 {% if car.isSuspended %}
                                                     <a href="{{ path('app_car_activate', { id: car.id}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>
                                                 {% else %}
                                                     <a href="{{ path('app_car_activate', { id: car.id}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>
                                                 {% endif %}
-                                                <a href="{{ path('app_car_form', { id: car.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
                                             </div>
                                         </div>
                                     </td>

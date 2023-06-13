@@ -95,6 +95,13 @@
                                         <span class="form-text">Format: BG9999AA</span>
                                     </div>
                                 </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.price, 'Kupovna cena:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.price, {attr: { class: 'form-control priceValue required' }}) }}
+                                        <span class="form-text">Format: 0.00</span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-6">

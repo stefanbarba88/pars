@@ -7,14 +7,12 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Car;
 use App\Entity\CarHistory;
 use App\Entity\CarReservation;
-use App\Entity\City;
+use DateTimeImmutable;
 use App\Form\CarFormType;
 use App\Form\CarReservationFormType;
-use App\Form\CityFormType;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -105,6 +103,8 @@ class CarController extends AbstractController {
         ->addSuccess(NotifyMessagesData::CAR_ACTIVATE);
     } else {
       $car->setIsSuspended(true);
+
+      //dodaj kad se deaktivira da razduzi vozilo ako je bilo zaduzeno
       notyf()
         ->position('x', 'right')
         ->position('y', 'top')
@@ -140,7 +140,7 @@ class CarController extends AbstractController {
   #[Route('/list-reservations/{id}', name: 'app_cars_reservations')]
   public function listReservations(Car $car): Response {
     $args = [];
-//    $args['cars'] = $this->em->getRepository(Car::class)->findAll();
+    $args['reservations'] = $this->em->getRepository(CarReservation::class)->findBy(['car' => $car], ['id' => 'desc']);
     $args['car'] = $car;
 
     return $this->render('car/list_reservations.html.twig', $args);
@@ -163,9 +163,10 @@ class CarController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
-        dd($reservation);
 
         $this->em->getRepository(CarReservation::class)->save($reservation);
+
+
         notyf()
           ->position('x', 'right')
           ->position('y', 'top')
@@ -181,5 +182,33 @@ class CarController extends AbstractController {
     $args['reservation'] = $reservation;
 
     return $this->render('car/form_reservation.html.twig', $args);
+  }
+
+  #[Route('/stop-reservation/{id}', name: 'app_car_reservation_stop')]
+  public function stopReservation(Car $car): Response {
+
+    $reservation = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'desc']);
+
+    $reservation->setFinished(new DateTimeImmutable());
+    $this->em->getRepository(CarReservation::class)->save($reservation);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+    $this->em->getRepository(CarReservation::class)->save($reservation);
+
+    return $this->redirectToRoute('app_cars_reservations', ['id' => $car->getId()]);
+  }
+
+  #[Route('/view-reservation/{id}', name: 'app_car_reservation_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewReservation(CarReservation $reservation): Response {
+    $args['reservation'] = $reservation;
+
+    return $this->render('car/view_reservation.html.twig', $args);
   }
 }

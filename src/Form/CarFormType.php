@@ -14,6 +14,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,6 +28,14 @@ class CarFormType extends AbstractType {
       ->add('brand')
       ->add('model')
       ->add('plate')
+      ->add('price', NumberType::class, [
+        'required' => false,
+        'html5' => true,
+        'attr' => [
+          'min' => '0.01',
+          'step' => '0.01'
+        ],
+      ])
       ->add('datumRegistracije', DateType::class, [
         'required' => false,
         'widget' => 'single_text',

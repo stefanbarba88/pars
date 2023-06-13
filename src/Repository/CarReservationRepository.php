@@ -20,13 +20,27 @@ class CarReservationRepository extends ServiceEntityRepository {
     parent::__construct($registry, CarReservation::class);
   }
 
-  public function save(CarReservation $entity, bool $flush = false): void {
-    $this->getEntityManager()->persist($entity);
+  public function save(CarReservation $carReservation): CarReservation {
 
-    if ($flush) {
-      $this->getEntityManager()->flush();
+    $car = $carReservation->getCar();
+
+    if (is_null($carReservation->getFinished())) {
+      $car->setIsReserved(true);
+    } else {
+      $car->setIsReserved(false);
     }
+
+    $this->getEntityManager()->getRepository(Car::class)->save($car);
+
+    if (is_null($carReservation->getId())) {
+      $this->getEntityManager()->persist($carReservation);
+    }
+
+    $this->getEntityManager()->flush();
+
+    return $carReservation;
   }
+
 
   public function remove(CarReservation $entity, bool $flush = false): void {
     $this->getEntityManager()->remove($entity);

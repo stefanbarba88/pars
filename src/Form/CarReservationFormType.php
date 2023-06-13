@@ -52,14 +52,6 @@ class CarReservationFormType extends AbstractType {
         },
         'expanded' => false,
         'multiple' => false,
-      ])
-      ->add('startKm',TextType::class, [
-        'constraints' => [
-          new Regex('/^\d{1,10}$/', 'Startnu kilometražu morate uneti u odgovarajućem formatu!'),
-        ],
-        'attr' => [
-          'maxlength' => '10'
-        ],
       ]);
   }
 

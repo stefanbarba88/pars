@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\CarReservationRepository;
 use DateTimeImmutable;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CarReservationRepository::class)]
@@ -23,20 +24,14 @@ class CarReservation {
   #[ORM\JoinColumn(nullable: false)]
   private ?User $driver = null;
 
-  #[ORM\Column(length: 255, nullable: true)]
-  private ?string $startKm = null;
-
-  #[ORM\Column(length: 255, nullable: true)]
-  private ?string $stopKm = null;
-
   #[ORM\Column]
   private DateTimeImmutable $created;
 
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\Column]
-  private DateTimeImmutable $finished;
+  #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+  private ?DateTimeImmutable $finished = null;
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -77,18 +72,14 @@ class CarReservation {
     $this->updated = $updated;
   }
 
-  /**
-   * @return DateTimeImmutable
-   */
-  public function getFinished(): DateTimeImmutable {
+  public function getFinished(): ?DateTimeImmutable {
     return $this->finished;
   }
 
-  /**
-   * @param DateTimeImmutable $finished
-   */
-  public function setFinished(DateTimeImmutable $finished): void {
+  public function setFinished(?DateTimeImmutable $finished): self {
     $this->finished = $finished;
+
+    return $this;
   }
 
   public function getId(): ?int {
@@ -113,34 +104,6 @@ class CarReservation {
     $this->driver = $driver;
 
     return $this;
-  }
-
-  /**
-   * @return string|null
-   */
-  public function getStartKm(): ?string {
-    return $this->startKm;
-  }
-
-  /**
-   * @param string|null $startKm
-   */
-  public function setStartKm(?string $startKm): void {
-    $this->startKm = $startKm;
-  }
-
-  /**
-   * @return string|null
-   */
-  public function getStopKm(): ?string {
-    return $this->stopKm;
-  }
-
-  /**
-   * @param string|null $stopKm
-   */
-  public function setStopKm(?string $stopKm): void {
-    $this->stopKm = $stopKm;
   }
 
 

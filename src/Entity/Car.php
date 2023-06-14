@@ -49,7 +49,7 @@ class Car implements JsonSerializable {
   private bool $isSuspended = false;
 
   #[ORM\Column]
-  private bool $isReserved = true;
+  private bool $isReserved = false;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: false)]
@@ -64,9 +64,13 @@ class Car implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'car', targetEntity: CarReservation::class)]
   private Collection $carReservations;
 
+  #[ORM\OneToMany(mappedBy: 'car', targetEntity: Expense::class)]
+  private Collection $expenses;
+
   public function __construct() {
     $this->carHistories = new ArrayCollection();
     $this->carReservations = new ArrayCollection();
+    $this->expenses = new ArrayCollection();
   }
 
   public function jsonSerialize(): array {
@@ -304,6 +308,36 @@ class Car implements JsonSerializable {
    */
   public function setIsReserved(bool $isReserved): void {
     $this->isReserved = $isReserved;
+  }
+
+  /**
+   * @return Collection<int, Expense>
+   */
+  public function getExpenses(): Collection
+  {
+      return $this->expenses;
+  }
+
+  public function addExpense(Expense $expense): self
+  {
+      if (!$this->expenses->contains($expense)) {
+          $this->expenses->add($expense);
+          $expense->setCar($this);
+      }
+
+      return $this;
+  }
+
+  public function removeExpense(Expense $expense): self
+  {
+      if ($this->expenses->removeElement($expense)) {
+          // set the owning side to null (unless already changed)
+          if ($expense->getCar() === $this) {
+              $expense->setCar(null);
+          }
+      }
+
+      return $this;
   }
 
 

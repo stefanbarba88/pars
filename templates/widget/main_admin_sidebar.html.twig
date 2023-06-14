@@ -395,19 +395,21 @@
                         <a href="{{ path('app_cars') }}" class="nav-link">
                             <i class="ph-car"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjects }}</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countActiveCars }}/{{ countCars }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_task_form') }}" class="nav-link">
+                        <a href="{{ path('app_cars', {type:1}) }}" class="nav-link">
                             <i class="ph-car"></i>
                             <span>Aktivna</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCarsActive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_task_form') }}" class="nav-link">
+                        <a href="{{ path('app_cars', {type:2}) }}" class="nav-link">
                             <i class="ph-car"></i>
                             <span>Neaktivna</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCarsInactive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">

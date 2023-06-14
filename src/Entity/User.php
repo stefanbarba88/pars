@@ -73,6 +73,9 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\Column(name: 'vrsta_zaposlenja', length: 2, nullable: true)]
   private ?int $vrstaZaposlenja = null;
 
+  #[ORM\Column(name: 'car', length: 3, nullable: true)]
+  private ?int $car = null;
+
   #[ORM\Column(name: 'datum_rodjenja', type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $datumRodjenja = null;
 
@@ -368,6 +371,21 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   public function getVrstaZaposlenjaData(): string {
     return VrstaZaposlenjaData::VRSTA_ZAPOSLENJA[$this->getVrstaZaposlenja()];
   }
+
+  /**
+   * @return int|null
+   */
+  public function getCar(): ?int {
+    return $this->car;
+  }
+
+  /**
+   * @param int|null $car
+   */
+  public function setCar(?int $car): void {
+    $this->car = $car;
+  }
+
 
 
   /**
@@ -754,31 +772,28 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   /**
    * @return Collection<int, CarReservation>
    */
-  public function getCarReservations(): Collection
-  {
-      return $this->carReservations;
+  public function getCarReservations(): Collection {
+    return $this->carReservations;
   }
 
-  public function addCarReservation(CarReservation $carReservation): self
-  {
-      if (!$this->carReservations->contains($carReservation)) {
-          $this->carReservations->add($carReservation);
-          $carReservation->setDriver($this);
-      }
+  public function addCarReservation(CarReservation $carReservation): self {
+    if (!$this->carReservations->contains($carReservation)) {
+      $this->carReservations->add($carReservation);
+      $carReservation->setDriver($this);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeCarReservation(CarReservation $carReservation): self
-  {
-      if ($this->carReservations->removeElement($carReservation)) {
-          // set the owning side to null (unless already changed)
-          if ($carReservation->getDriver() === $this) {
-              $carReservation->setDriver(null);
-          }
+  public function removeCarReservation(CarReservation $carReservation): self {
+    if ($this->carReservations->removeElement($carReservation)) {
+      // set the owning side to null (unless already changed)
+      if ($carReservation->getDriver() === $this) {
+        $carReservation->setDriver(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
 }

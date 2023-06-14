@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Car;
+use App\Entity\CarReservation;
 use App\Entity\Client;
 use App\Entity\Comment;
+use App\Entity\Expense;
 use App\Entity\Image;
 use App\Entity\Project;
 use App\Entity\Team;
@@ -45,6 +47,11 @@ class WidgetController extends AbstractController {
     $args['countTeams'] = $this->em->getRepository(Team::class)->countTeams();
     $args['countTeamsActive'] = $this->em->getRepository(Team::class)->countTeamsActive();
     $args['countTeamsInactive'] = $this->em->getRepository(Team::class)->countTeamsInactive();
+
+    $args['countCars'] = $this->em->getRepository(Car::class)->count([]);
+    $args['countActiveCars'] = $this->em->getRepository(Car::class)->count(['isSuspended' => true]);
+    $args['countCarsActive'] = $this->em->getRepository(Car::class)->count(['isReserved' => true, 'isSuspended' => false]);
+    $args['countCarsInactive'] = $this->em->getRepository(Car::class)->count(['isReserved' => false, 'isSuspended' => false]);
 
     return $this->render('widget/main_admin_sidebar.html.twig', $args);
   }
@@ -89,6 +96,8 @@ class WidgetController extends AbstractController {
   public function carProfilNavigation(Car $car): Response {
 
     $args['car'] = $car;
+    $args['countExpenses'] = $this->em->getRepository(Expense::class)->countExpenseByCar($car);
+    $args['countReservations'] = $this->em->getRepository(CarReservation::class)->countReservationByCar($car);
 
     return $this->render('widget/car_nav.html.twig', $args);
   }

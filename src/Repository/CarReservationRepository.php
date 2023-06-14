@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Car;
 use App\Entity\CarReservation;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -23,14 +24,18 @@ class CarReservationRepository extends ServiceEntityRepository {
   public function save(CarReservation $carReservation): CarReservation {
 
     $car = $carReservation->getCar();
+    $driver = $carReservation->getDriver();
 
     if (is_null($carReservation->getFinished())) {
       $car->setIsReserved(true);
+      $driver->setCar($car->getId());
     } else {
       $car->setIsReserved(false);
+      $driver->setCar(null);
     }
 
     $this->getEntityManager()->getRepository(Car::class)->save($car);
+    $this->getEntityManager()->getRepository(User::class)->save($driver);
 
     if (is_null($carReservation->getId())) {
       $this->getEntityManager()->persist($carReservation);
@@ -41,6 +46,18 @@ class CarReservationRepository extends ServiceEntityRepository {
     return $carReservation;
   }
 
+  public function countReservationByCar(Car $car): int {
+    $qb = $this->createQueryBuilder('e');
+
+    $qb->select($qb->expr()->count('e'))
+      ->andWhere('e.car = :car')
+      ->setParameter(':car', $car);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
 
   public function remove(CarReservation $entity, bool $flush = false): void {
     $this->getEntityManager()->remove($entity);

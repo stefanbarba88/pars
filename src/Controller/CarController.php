@@ -7,6 +7,8 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Car;
 use App\Entity\CarHistory;
 use App\Entity\CarReservation;
+use App\Entity\Expense;
+use App\Form\ExpenseFormType;
 use DateTimeImmutable;
 use App\Form\CarFormType;
 use App\Form\CarReservationFormType;
@@ -26,10 +28,20 @@ class CarController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_cars')]
-  public function list(): Response {
+  public function list(Request $request): Response {
+    $type = $request->query->getInt('type');
     $args = [];
-    $args['cars'] = $this->em->getRepository(Car::class)->findAll();
-
+    switch ($type) {
+      case 1:
+        $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isReserved' => true, 'isSuspended' => false]);
+        break;
+      case 2:
+        $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isReserved' => false, 'isSuspended' => false]);
+        break;
+      default:
+        $args['cars'] = $this->em->getRepository(Car::class)->findAll();
+    }
+$args['type'] = $type;
     return $this->render('car/list.html.twig', $args);
   }
 
@@ -38,6 +50,7 @@ class CarController extends AbstractController {
   #[Entity('car', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, Car $car): Response {
+    $type = $request->query->getInt('type');
     $history = null;
     if($car->getId()) {
       $history = $this->json($car, Response::HTTP_OK, [], [
@@ -49,7 +62,7 @@ class CarController extends AbstractController {
       $history = $history->getContent();
     }
 
-    $form = $this->createForm(CarFormType::class, $car, ['attr' => ['action' => $this->generateUrl('app_car_form', ['id' => $car->getId()])]]);
+    $form = $this->createForm(CarFormType::class, $car, ['attr' => ['action' => $this->generateUrl('app_car_form', ['id' => $car->getId(), 'type' => $type])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 
@@ -63,7 +76,11 @@ class CarController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::CAR_ADD);
 
-        return $this->redirectToRoute('app_cars');
+
+        if ($type == 1) {
+          return $this->redirectToRoute('app_cars');
+        }
+        return $this->redirectToRoute('app_car_view', ['id' => $car->getId()]);
       }
     }
     $args['form'] = $form->createView();
@@ -81,7 +98,10 @@ class CarController extends AbstractController {
   }
 
   #[Route('/activate/{id}', name: 'app_car_activate')]
-  public function delete(Car $car): Response {
+  public function delete(Car $car, Request $request): Response {
+
+    $type = $request->query->getInt('type');
+
     $history = null;
     if($car->getId()) {
       $history = $this->json($car, Response::HTTP_OK, [], [
@@ -104,7 +124,13 @@ class CarController extends AbstractController {
     } else {
       $car->setIsSuspended(true);
 
-      //dodaj kad se deaktivira da razduzi vozilo ako je bilo zaduzeno
+      $reservation = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'desc']);
+
+      if (!is_null($reservation)) {
+        $reservation->setFinished(new DateTimeImmutable());
+        $this->em->getRepository(CarReservation::class)->save($reservation);
+      }
+
       notyf()
         ->position('x', 'right')
         ->position('y', 'top')
@@ -113,7 +139,12 @@ class CarController extends AbstractController {
         ->addSuccess(NotifyMessagesData::CAR_DEACTIVATE);
     }
 
+
     $this->em->getRepository(Car::class)->save($car, $history);
+
+    if ($type == 1) {
+      return $this->redirectToRoute('app_cars');
+    }
 
     return $this->redirectToRoute('app_car_view', ['id' => $car->getId()]);
   }
@@ -141,6 +172,8 @@ class CarController extends AbstractController {
   public function listReservations(Car $car): Response {
     $args = [];
     $args['reservations'] = $this->em->getRepository(CarReservation::class)->findBy(['car' => $car], ['id' => 'desc']);
+    $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'desc']);
+
     $args['car'] = $car;
 
     return $this->render('car/list_reservations.html.twig', $args);
@@ -152,13 +185,13 @@ class CarController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
 
   public function formReservation(CarReservation $reservation, Car $car, Request $request): Response {
-
+    $type = $request->query->getInt('type');
     $user = $this->getUser();
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
       $reservation->setDriver($user);
     }
 
-    $form = $this->createForm(CarReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_reservation_form', ['id' => $car->getId()])]]);
+    $form = $this->createForm(CarReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_reservation_form', ['id' => $car->getId(), 'type' => $type])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 
@@ -173,8 +206,10 @@ class CarController extends AbstractController {
           ->duration(5000)
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::CAR_ADD);
-
-        return $this->redirectToRoute('app_cars_reservations');
+        if ($type == 1) {
+          return $this->redirectToRoute('app_cars');
+        }
+        return $this->redirectToRoute('app_cars_reservations', ['id' => $car->getId()]);
       }
     }
     $args['form'] = $form->createView();
@@ -185,8 +220,8 @@ class CarController extends AbstractController {
   }
 
   #[Route('/stop-reservation/{id}', name: 'app_car_reservation_stop')]
-  public function stopReservation(Car $car): Response {
-
+  public function stopReservation(Car $car, Request $request): Response {
+    $type = $request->query->getInt('type');
     $reservation = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'desc']);
 
     $reservation->setFinished(new DateTimeImmutable());
@@ -200,7 +235,9 @@ class CarController extends AbstractController {
       ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
     $this->em->getRepository(CarReservation::class)->save($reservation);
-
+    if ($type == 1) {
+      return $this->redirectToRoute('app_cars');
+    }
     return $this->redirectToRoute('app_cars_reservations', ['id' => $car->getId()]);
   }
 
@@ -210,5 +247,88 @@ class CarController extends AbstractController {
     $args['reservation'] = $reservation;
 
     return $this->render('car/view_reservation.html.twig', $args);
+  }
+
+  #[Route('/list-expenses/{id}', name: 'app_cars_expenses')]
+  public function listExpenses(Car $car): Response {
+    $args = [];
+    $args['expenses'] = $this->em->getRepository(Expense::class)->findBy(['car' => $car], ['id' => 'desc']);
+
+    $args['car'] = $car;
+
+    return $this->render('car/list_expenses.html.twig', $args);
+  }
+
+  #[Route('/form-expense/{id}', name: 'app_car_expense_form')]
+  #[Entity('car', expr: 'repository.find(id)')]
+  #[Entity('expense', expr: 'repository.findForFormCar(car)')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formExpense(Expense $expense, Car $car, Request $request): Response {
+    $type = $request->query->getInt('type');
+
+    $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_expense_form', ['id' => $car->getId(), 'type' => $type])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(Expense::class)->save($expense);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::CAR_ADD);
+        if ($type == 1) {
+          return $this->redirectToRoute('app_cars');
+        }
+        return $this->redirectToRoute('app_cars_expenses', ['id' => $car->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['car'] = $car;
+    $args['expense'] = $expense;
+
+    return $this->render('car/form_expense.html.twig', $args);
+  }
+
+
+  #[Route('/edit-expense/{id}', name: 'app_car_expense_edit')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function editExpense(Expense $expense, Request $request): Response {
+
+    $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_expense_edit', ['id' => $expense->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(Expense::class)->save($expense);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::CAR_ADD);
+
+        return $this->redirectToRoute('app_cars_expenses', ['id' => $expense->getCar()->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['car'] = $expense->getCar();
+    $args['expense'] = $expense;
+
+    return $this->render('car/form_expense.html.twig', $args);
+  }
+
+
+  #[Route('/view-expense/{id}', name: 'app_car_expense_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewExpense(Expense $expense): Response {
+    $args['expense'] = $expense;
+
+    return $this->render('car/view_expense.html.twig', $args);
   }
 }

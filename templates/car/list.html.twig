@@ -25,7 +25,15 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Vozila</span>
+                                {% if type == 1 %}
+                                    <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
+                                    <span class="breadcrumb-item active">Aktivna vozila</span>
+                                {% elseif type == 2 %}
+                                    <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
+                                    <span class="breadcrumb-item active">Neaktivna vozila</span>
+                                {% else %}
+                                    <span class="breadcrumb-item active">Vozila</span>
+                                {% endif %}
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -43,9 +51,17 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista vozila</h5>
+                            <h5 class="py-lg-3 mb-0">
+                                {% if type == 1 %}
+                                    Lista aktivnih vozila
+                                {% elseif type == 2 %}
+                                    Lista neaktivnih vozila
+                                {% else %}
+                                    Lista vozila
+                                {% endif %}
+                            </h5>
                             <div class="mt-1 my-lg-auto ms-lg-auto">
-                                <a href="{{ path('app_car_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                <a href="{{ path('app_car_form', {type: 1}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
                         <table class="table datatable-colvis-state-pars">
@@ -70,10 +86,12 @@
                                     <td>{{ car.brand }}</td>
                                     <td>{{ car.model }}</td>
                                     <td>
-                                        {% if car.isReserved %}
-                                            <span class="badge bg-warning">Zadužen</span>
-                                        {% else %}
-                                            <span class="badge bg-success">Slobodan</span>
+                                        {% if car.isSuspended == false %}
+                                            {% if car.isReserved %}
+                                                <span class="badge bg-warning">Zadužen</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Slobodan</span>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>
@@ -102,16 +120,17 @@
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end">
                                                 <a href="{{ path('app_car_view', { id: car.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                {% if car.isReserved %}
-                                                    <a href="{{ path('app_car_reservation_stop', { id: car.id}) }}" class="dropdown-item"><i class="ph-car-simple me-2"></i> Razdužite</a>
-                                                {% else %}
-                                                    <a href="{{ path('app_car_reservation_form', { id: car.id}) }}" class="dropdown-item"><i class="ph-car-simple me-2"></i> Zadužite</a>
-                                                {% endif %}
-                                                <a href="{{ path('app_car_form', { id: car.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
                                                 {% if car.isSuspended %}
-                                                    <a href="{{ path('app_car_activate', { id: car.id}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>
+                                                    <a href="{{ path('app_car_activate', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>
                                                 {% else %}
-                                                    <a href="{{ path('app_car_activate', { id: car.id}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>
+                                                    {% if car.isReserved %}
+                                                        <a href="{{ path('app_car_reservation_stop', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Razdužite</a>
+                                                    {% else %}
+                                                        <a href="{{ path('app_car_reservation_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Zadužite</a>
+                                                    {% endif %}
+                                                    <a href="{{ path('app_car_expense_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-money me-2"></i> Trošak</a>
+                                                    <a href="{{ path('app_car_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                    <a href="{{ path('app_car_activate', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>
                                                 {% endif %}
                                             </div>
                                         </div>

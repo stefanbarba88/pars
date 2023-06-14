@@ -27,8 +27,9 @@
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
+                                <a href="{{ path('app_cars_reservations', {id:car.id}) }}" class="breadcrumb-item">Rezervacije</a>
                                 <span class="breadcrumb-item active">
-                                    {% if car.id is not null %}
+                                    {% if reservation.id is not null %}
                                         Izmena
                                     {% else %}
                                         Dodavanje

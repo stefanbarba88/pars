@@ -10,6 +10,7 @@ use App\Entity\City;
 use App\Entity\Client;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -24,27 +25,31 @@ use Symfony\Component\Validator\Constraints\Regex;
 class CarReservationFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
 
-    $builder
-      ->add('driver', EntityType::class, [
-        'class' => User::class,
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.userType = :userType')
-            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => function ($user) {
-          return $user->getNameForForm();
-        },
-        'expanded' => false,
-        'multiple' => false,
-      ])
+
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getReservation(): ?CarReservation {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $car = $dataObject->getReservation()->getCar();
+    $driver = $dataObject->getReservation()->getDriver();
+
+    if (is_null($car)) {
+      $builder
       ->add('car', EntityType::class, [
         'class' => Car::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('c')
-//            ->andWhere('g.userType = :userType')
-//            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+            ->andWhere('c.isReserved = :isReserved')
+            ->andWhere('c.isSuspended = :isSuspended')
+            ->setParameter(':isReserved', 0)
+            ->setParameter(':isSuspended', 0)
             ->orderBy('c.id', 'ASC');
         },
         'choice_label' => function ($car) {
@@ -53,6 +58,58 @@ class CarReservationFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ]);
+    } else {
+      $builder
+        ->add('car', EntityType::class, [
+          'class' => Car::class,
+          'query_builder' => function (EntityRepository $em) use ($car) {
+            return $em->createQueryBuilder('c')
+              ->andWhere('c.id = :id')
+              ->setParameter(':id', $car)
+              ->orderBy('c.id', 'ASC');
+          },
+          'choice_label' => function ($car) {
+            return $car->getCarName();
+          },
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+    }
+
+    if (is_null($driver)) {
+      $builder
+        ->add('driver', EntityType::class, [
+          'class' => User::class,
+          'query_builder' => function (EntityRepository $em) {
+            return $em->createQueryBuilder('d')
+              ->andWhere('d.car IS NULL')
+              ->andWhere('d.isSuspended = :isSuspended')
+              ->setParameter(':isSuspended', 0)
+              ->orderBy('d.id', 'ASC');
+          },
+          'choice_label' => function ($user) {
+            return $user->getFullName();
+          },
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+    } else {
+      $builder
+        ->add('driver', EntityType::class, [
+          'class' => User::class,
+          'query_builder' => function (EntityRepository $em) use ($driver) {
+            return $em->createQueryBuilder('d')
+              ->andWhere('d.id = :id')
+              ->setParameter(':id', $driver->getId())
+              ->orderBy('d.id', 'ASC');
+          },
+          'choice_label' => function ($user) {
+            return $user->getFullName();
+          },
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+    }
   }
 
   public function configureOptions(OptionsResolver $resolver): void {

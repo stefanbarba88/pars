@@ -30,6 +30,7 @@ class ProjectFormType extends AbstractType {
     $builder
       ->add('title')
       ->add('description', TextareaType::class)
+      ->add('important', TextareaType::class)
       ->add('label', EntityType::class, [
         'required' => false,
         'class' => Label::class,
@@ -44,6 +45,7 @@ class ProjectFormType extends AbstractType {
         'multiple' => true,
       ])
       ->add('category', EntityType::class, [
+        'required' => false,
         'class' => Category::class,
         'placeholder' => '--Izaberite kategoriju--',
         'query_builder' => function (EntityRepository $em) {

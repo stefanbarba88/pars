@@ -32,7 +32,9 @@ class ProjectController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_projects')]
-  public function list(Request $request): Response {
+  public function list(Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
     $user = $this->getUser();
 
@@ -51,8 +53,6 @@ class ProjectController extends AbstractController {
         $args['projects'] = $this->em->getRepository(Project::class)->getAllProjects();
         $args['type'] = 0;
       }
-
-
     }
 
 
@@ -63,7 +63,9 @@ class ProjectController extends AbstractController {
   #[Route('/form/{id}', name: 'app_project_form', defaults: ['id' => 0])]
   #[Entity('project', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Project $project, Request $request): Response {
+  public function form(Project $project, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
@@ -107,7 +109,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-profile/{id}', name: 'app_project_profile_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewProfile(Project $project): Response {
+  public function viewProfile(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['project'] = $project;
 
     return $this->render('project/view_profile.html.twig', $args);
@@ -115,7 +119,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/history-project-list/{id}', name: 'app_project_profile_history_list')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function listProjectHistory(Project $project): Response {
+  public function listProjectHistory(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['project'] = $project;
     $args['historyProjects'] = $this->em->getRepository(ProjectHistory::class)->findBy(['project' => $project], ['id' => 'DESC']);
 
@@ -124,7 +130,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/history-project-view/{id}', name: 'app_project_profile_history_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewProjectHistory(ProjectHistory $projectHistory, SerializerInterface $serializer): Response {
+  public function viewProjectHistory(ProjectHistory $projectHistory, SerializerInterface $serializer)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $args['projectH'] = $serializer->deserialize($projectHistory->getHistory(), ProjectHistoryHelper::class, 'json');
 
@@ -135,7 +143,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-tasks/{id}', name: 'app_project_tasks_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewTasks(Project $project): Response {
+  public function viewTasks(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['project'] = $project;
     $args['tasks'] = $this->em->getRepository(Task::class)->getTasksByProject($project);
 
@@ -144,7 +154,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-activity/{id}', name: 'app_project_activity_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewActivity(Project $project): Response {
+  public function viewActivity(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['project'] = $project;
 
     return $this->render('project/view_activity.html.twig', $args);
@@ -152,7 +164,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-calendar/{id}', name: 'app_project_calendar_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCalendar(Project $project): Response {
+  public function viewCalendar(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['project'] = $project;
 
     return $this->render('project/view_calendar.html.twig', $args);
@@ -160,7 +174,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-time/{id}', name: 'app_project_time_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewTime(Project $project): Response {
+  public function viewTime(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['project'] = $project;
 
     return $this->render('project/view_time.html.twig', $args);
@@ -168,7 +184,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-expenses/{id}', name: 'app_project_expenses_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewExpenses(Project $project): Response {
+  public function viewExpenses(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['project'] = $project;
 
     return $this->render('project/view_expenses.html.twig', $args);
@@ -176,7 +194,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-users/{id}', name: 'app_project_users_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewUsers(Project $project): Response {
+  public function viewUsers(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['project'] = $project;
 
     return $this->render('project/view_users.html.twig', $args);
@@ -184,7 +204,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-teams/{id}', name: 'app_project_teams_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewTeams(Project $project): Response {
+  public function viewTeams(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['project'] = $project;
     $args['teams'] = $project->getTeam();
 
@@ -193,7 +215,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/team-list/{id}', name: 'app_project_team_list')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function teamList(Project $project, Request $request): Response {
+  public function teamList(Project $project, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
@@ -237,7 +261,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-images/{id}', name: 'app_project_images_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewImages(Project $project): Response {
+  public function viewImages(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['project'] = $project;
     $args['images'] = $this->em->getRepository(Project::class)->getImagesByProject($project);
 
@@ -246,7 +272,9 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-docs/{id}', name: 'app_project_docs_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewDocs(Project $project): Response {
+  public function viewDocs(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['project'] = $project;
     $args['pdfs'] = $this->em->getRepository(Project::class)->getPdfsByProject($project);
 

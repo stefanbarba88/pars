@@ -28,7 +28,9 @@ class StopwatchController extends AbstractController {
   }
 
   #[Route('/start/{id}', name: 'app_stopwatch_start')]
-  public function start(TaskLog $taskLog, Request $request): Response {
+  public function start(TaskLog $taskLog, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $stopwatch = new StopwatchTime();
     $stopwatch->setTaskLog($taskLog);
@@ -37,13 +39,15 @@ class StopwatchController extends AbstractController {
     $stopwatch->setLat($request->query->get('lat'));
 
     $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
-    $this->em->getRepository(Task::class)->changeStatus($taskLog->getTask(), TaskStatusData::ZAPOCETO);
+//    $this->em->getRepository(Task::class)->changeStatus($taskLog->getTask(), TaskStatusData::ZAPOCETO);
 
     return $this->redirectToRoute('app_task_view_user', ['id' => $taskLog->getTask()->getId()]);
   }
 
   #[Route('/form/{id}', name: 'app_stopwatch_form')]
-  public function form(StopwatchTime $stopwatch, Request $request, UploadService $uploadService): Response {
+  public function form(StopwatchTime $stopwatch, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
 
   if (is_null($stopwatch->getStop())) {
@@ -113,6 +117,7 @@ class StopwatchController extends AbstractController {
         }
 
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
+//        $this->em->getRepository(Task::class)->changeStatus($stopwatch->getTaskLog()->getTask(), TaskStatusData::ZAVRSENO);
 
         notyf()
           ->position('x', 'right')
@@ -136,7 +141,9 @@ class StopwatchController extends AbstractController {
   #[Route('/form-add/{taskLog}/{id}', name: 'app_stopwatch_add_form', defaults: ['id' => 0])]
   #[Entity('taskLog', expr: 'repository.find(taskLog)')]
   #[Entity('stopwatch', expr: 'repository.findForForm(taskLog, id)')]
-  public function add(TaskLog $taskLog, StopwatchTime $stopwatch, Request $request, UploadService $uploadService): Response {
+  public function add(TaskLog $taskLog, StopwatchTime $stopwatch, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
 
     $history = null;
@@ -237,7 +244,9 @@ class StopwatchController extends AbstractController {
   }
 
   #[Route('/delete/{id}', name: 'app_stopwatch_delete')]
-  public function delete(StopwatchTime $stopwatch): Response {
+  public function delete(StopwatchTime $stopwatch)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $taskLogId = $stopwatch->getTaskLog()->getId();
     $user = $this->getUser();
 
@@ -254,7 +263,9 @@ class StopwatchController extends AbstractController {
   }
 
   #[Route('/close/{id}', name: 'app_stopwatch_close')]
-  public function close(StopwatchTime $stopwatch): Response {
+  public function close(StopwatchTime $stopwatch)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $this->em->getRepository(StopwatchTime::class)->close($stopwatch);
 

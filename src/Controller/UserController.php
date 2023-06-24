@@ -32,7 +32,9 @@ class UserController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_users')]
-  public function list(): Response {
+  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $loggedUser = $this->getUser();
 
     $args=[];
@@ -42,7 +44,9 @@ class UserController extends AbstractController {
   }
 
   #[Route('/list-contact/', name: 'app_users_contact')]
-  public function listContacts(): Response {
+  public function listContacts()    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $args=[];
     $args['users'] = $this->em->getRepository(User::class)->getAllContacts();
@@ -53,7 +57,9 @@ class UserController extends AbstractController {
   #[Route('/form/{id}', name: 'app_user_form', defaults: ['id' => 0])]
   #[Entity('usr', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, User $usr, UploadService $uploadService): Response {
+  public function form(Request $request, User $usr, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $usr->setPlainUserType($this->getUser()->getUserType());
     $type = $request->query->getInt('type');
@@ -94,7 +100,9 @@ class UserController extends AbstractController {
 
   #[Route('/edit-info/{id}', name: 'app_user_edit_info_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editInfo(User $usr, Request $request): Response {
+  public function editInfo(User $usr, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $type = $request->query->getInt('type');
 
@@ -143,7 +151,9 @@ class UserController extends AbstractController {
 
   #[Route('/edit-account/{id}', name: 'app_user_edit_account_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editAccount(User $usr, Request $request): Response {
+  public function editAccount(User $usr, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $type = $request->query->getInt('type');
     $usr->setPlainUserType($this->getUser()->getUserType());
     $history = null;
@@ -205,7 +215,9 @@ class UserController extends AbstractController {
 
   #[Route('/edit-image/{id}', name: 'app_user_edit_image_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editImage(User $usr, Request $request, UploadService $uploadService): Response {
+  public function editImage(User $usr, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $type = $request->query->getInt('type');
 
     $usr->setEditBy($this->getUser());
@@ -261,7 +273,9 @@ class UserController extends AbstractController {
 
   #[Route('/view-profile/{id}', name: 'app_user_profile_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewProfile(User $usr): Response {
+  public function viewProfile(User $usr)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['user'] = $usr;
 
     return $this->render('user/view_profile.html.twig', $args);
@@ -269,7 +283,9 @@ class UserController extends AbstractController {
 
   #[Route('/settings/{id}', name: 'app_user_settings_form')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function settings(User $usr, Request $request): Response {
+  public function settings(User $usr, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $history = null;
     if($usr->getId()) {
@@ -319,7 +335,9 @@ class UserController extends AbstractController {
 
   #[Route('/history-user-list/{id}', name: 'app_user_history_list')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function listUserHistory(User $user): Response {
+  public function listUserHistory(User $user)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['user'] = $user;
     $args['historyUsers'] = $this->em->getRepository(UserHistory::class)->findBy(['user' => $user], ['id' => 'ASC']);
 
@@ -328,7 +346,9 @@ class UserController extends AbstractController {
 
   #[Route('/history-user-view/{id}', name: 'app_user_profile_history_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewUserHistory(UserHistory $userHistory, SerializerInterface $serializer): Response {
+  public function viewUserHistory(UserHistory $userHistory, SerializerInterface $serializer)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $args['userH'] = $serializer->deserialize($userHistory->getHistory(), user::class, 'json');
     $args['userHistory'] = $userHistory;

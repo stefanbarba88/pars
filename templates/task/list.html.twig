@@ -57,7 +57,7 @@
                                 <th>Prioritet</th>
                                 <th>Kategorija</th>
                                 <th>Projekat</th>
-                                <th>Poslednja promena</th>
+                                <th>Datum zadatka</th>
                                 <th>Kreiran</th>
                                 <th>Zaduženi</th>
                                 <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
@@ -114,7 +114,7 @@
                                     <td>
                                         <div class="d-inline-flex align-items-center">
                                             <i class="ph-calendar me-2"></i>
-                                            {{ task.task.updated | date("d.m.Y H:i:s")}}
+                                            {{ task.task.datumKreiranja | date("d.m.Y")}}
                                         </div>
                                     </td>
                                     <td>
@@ -135,7 +135,7 @@
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end">
                                                 {% if is_granted('ROLE_EMPLOYEE') %}
-                                                    {% if app.user in task.users %}
+                                                    {% if app.user in task.task.getAssignedUsers %}
                                                         <a href="{{ path('app_task_view_user', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                     {% else %}
                                                         <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
@@ -148,6 +148,7 @@
                                                         <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
                                                     {% endif %}
                                                 {% else %}
+                                                    {{ dump(task) }}
                                                     <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                     {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.task.isDeleted %}
                                                         <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>

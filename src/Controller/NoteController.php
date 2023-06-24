@@ -20,7 +20,9 @@ class NoteController extends AbstractController {
   #[Route('/form/{id}', name: 'app_note_form', defaults: ['id' => 0])]
   #[Entity('notes', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Notes $notes): Response {
+  public function form(Request $request, Notes $notes)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $notes->setUser($this->getUser());
 
@@ -51,7 +53,9 @@ class NoteController extends AbstractController {
 
   #[Route('/edit/{id}', name: 'app_note_edit')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function edit(Request $request, Notes $notes): Response {
+  public function edit(Request $request, Notes $notes)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
 
     $form = $this->createForm(NoteFormType::class, $notes, ['attr' => ['action' => $this->generateUrl('app_note_edit', ['id' => $notes->getId()])]]);
@@ -81,7 +85,9 @@ class NoteController extends AbstractController {
 
 
   #[Route('/note-delete/{id}', name: 'app_note_delete')]
-  public function delete(Notes $notes): Response {
+  public function delete(Notes $notes)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $notes->setIsSuspended(true);
     $this->em->getRepository(Notes::class)->save($notes);
 

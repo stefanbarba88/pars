@@ -6,6 +6,7 @@ use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\PrioritetData;
 use App\Classes\Data\RoundingIntervalData;
 use App\Classes\Data\UserRolesData;
+use App\Entity\Activity;
 use App\Entity\Category;
 use App\Entity\Label;
 use App\Entity\Project;
@@ -64,6 +65,9 @@ class TaskFormType extends AbstractType {
       ->add('description', TextareaType::class, [
         'required' => false
       ])
+      ->add('oprema', TextareaType::class, [
+        'required' => false
+      ])
       ->add('label', EntityType::class, [
         'required' => false,
         'class' => Label::class,
@@ -92,6 +96,13 @@ class TaskFormType extends AbstractType {
         'multiple' => false,
       ])
       ->add('deadline', DateType::class, [
+        'required' => false,
+        'widget' => 'single_text',
+        'format' => 'dd.MM.yyyy',
+        'html5' => false,
+        'input' => 'datetime_immutable'
+      ])
+      ->add('datumKreiranja', DateType::class, [
         'required' => false,
         'widget' => 'single_text',
         'format' => 'dd.MM.yyyy',
@@ -156,14 +167,18 @@ class TaskFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-//      ->add('isClientView', ChoiceType::class, [
-//        'attr' => [
-//          'data-minimum-results-for-search' => 'Infinity',
-//        ],
-//        'choices' => PotvrdaData::form(),
-//        'expanded' => false,
-//        'multiple' => false,
-//      ])
+      ->add('activity', EntityType::class, [
+        'class' => Activity::class,
+        'query_builder' => function (EntityRepository $em) {
+          return $em->createQueryBuilder('a')
+//            ->andWhere('g.userType = :userType')
+//            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+            ->orderBy('a.id', 'ASC');
+        },
+        'choice_label' => 'title',
+        'expanded' => false,
+        'multiple' => true,
+      ])
       ->add('isPriority', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',

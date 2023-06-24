@@ -25,12 +25,16 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                {% if type == 1 %}
-                                    <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
-                                    <span class="breadcrumb-item active">Projekti sa stalnim ekipama</span>
-                                {% elseif type == 2 %}
-                                    <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
-                                    <span class="breadcrumb-item active">Projekti sa letećim ekipama</span>
+                                {% if type is defined %}
+                                    {% if type == 1 %}
+                                        <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
+                                        <span class="breadcrumb-item active">Projekti sa stalnim ekipama</span>
+                                    {% elseif type == 2 %}
+                                        <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
+                                        <span class="breadcrumb-item active">Projekti sa letećim ekipama</span>
+                                    {% else %}
+                                        <span class="breadcrumb-item active">Projekti</span>
+                                    {% endif %}
                                 {% else %}
                                     <span class="breadcrumb-item active">Projekti</span>
                                 {% endif %}
@@ -51,10 +55,14 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-lg-flex py-lg-0">
-                            {% if type == 1 %}
-                                <h5 class="py-lg-3 mb-0">Lista projekata sa stalnim ekipama</h5>
-                            {% elseif type == 2 %}
-                                <h5 class="py-lg-3 mb-0">Lista projekata sa letećim ekipama</h5>
+                            {% if type is defined %}
+                                {% if type == 1 %}
+                                    <h5 class="py-lg-3 mb-0">Lista projekata sa stalnim ekipama</h5>
+                                {% elseif type == 2 %}
+                                    <h5 class="py-lg-3 mb-0">Lista projekata sa letećim ekipama</h5>
+                                {% else %}
+                                    <h5 class="py-lg-3 mb-0">Lista projekata</h5>
+                                {% endif %}
                             {% else %}
                                 <h5 class="py-lg-3 mb-0">Lista projekata</h5>
                             {% endif %}
@@ -93,11 +101,11 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if is_granted('ROLE_EMPLOYEE') %}
-                                            {{ project.category.title }}
-                                        {% else %}
-                                            <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>
-                                        {% endif %}
+{#                                        {% if is_granted('ROLE_EMPLOYEE') %}#}
+{#                                            {{ project.category.title }}#}
+{#                                        {% else %}#}
+{#                                            <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>#}
+{#                                        {% endif %}#}
                                     </td>
                                     <td>
                                         {% if is_granted('ROLE_EMPLOYEE') %}

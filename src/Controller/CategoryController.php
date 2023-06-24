@@ -19,7 +19,9 @@ class CategoryController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_categories')]
-  public function list(): Response {
+  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
     $args['categories'] = $this->em->getRepository(Category::class)->findAll();
 
@@ -29,7 +31,9 @@ class CategoryController extends AbstractController {
   #[Route('/form/{id}', name: 'app_category_form', defaults: ['id' => 0])]
   #[Entity('category', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Category $category): Response {
+  public function form(Request $request, Category $category)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $category->setEditBy($this->getUser());
 
     $form = $this->createForm(CategoryFormType::class, $category, ['attr' => ['action' => $this->generateUrl('app_category_form', ['id' => $category->getId()])]]);
@@ -59,7 +63,9 @@ class CategoryController extends AbstractController {
 
   #[Route('/view/{id}', name: 'app_category_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(Category $category): Response {
+  public function view(Category $category)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['category'] = $category;
 
     return $this->render('category/view.html.twig', $args);

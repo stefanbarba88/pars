@@ -108,19 +108,49 @@
                             <span>Izveštaji</span>
                         </a>
                     </li>
+
                     <!-- /taskovi -->
 
-                    <!-- Page kits -->
                     <li class="nav-item-header">
-                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Podašavanja</div>
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Vozila</div>
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
-                    <li class="nav-item nav-item-submenu">
-                        <a href="#" class="nav-link">
-                            <i class="ph-wrench"></i>
-                            <span>Podešavanja</span>
+                    <li class="nav-item">
+                        <a href="{{ path('app_cars') }}" class="nav-link">
+                            <i class="ph-car"></i>
+                            <span>Lista</span>
                         </a>
-                        <ul class="nav-group-sub collapse">
+                    </li>
+                    <li class="nav-item">
+                        <a href="" class="nav-link">
+                            <i class="ph-file-text"></i>
+                            <span>Izveštaji</span>
+                        </a>
+                    </li>
+                    <!-- /Vozila -->
+
+                    <li class="nav-item-header">
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Kalendar</div>
+                        <i class="ph-calendar sidebar-resize-show"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_calendar_list') }}" class="nav-link">
+                            <i class="ph-calendar"></i>
+                            <span>Lista</span>
+                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+{#                    <!-- Page kits -->#}
+{#                    <li class="nav-item-header">#}
+{#                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Podašavanja</div>#}
+{#                        <i class="ph-dots-three sidebar-resize-show"></i>#}
+{#                    </li>#}
+{#                    <li class="nav-item nav-item-submenu">#}
+{#                        <a href="#" class="nav-link">#}
+{#                            <i class="ph-wrench"></i>#}
+{#                            <span>Podešavanja</span>#}
+{#                        </a>#}
+{#                        <ul class="nav-group-sub collapse">#}
 {#                            <li class="nav-item nav-item-submenu">#}
 {#                                <a href="#" class="nav-link">Katalog</a>#}
 {#                                <ul class="nav-group-sub collapse">#}
@@ -131,10 +161,10 @@
 {#                                    <li class="nav-item"><a href="{{ path('app_labels') }}" class="nav-link">Oznake</a></li>#}
 {#                                </ul>#}
 {#                            </li>#}
-                        </ul>
-                    </li>
+{#                        </ul>#}
+{#                    </li>#}
 
-                    <!-- /page kits -->
+{#                    <!-- /page kits -->#}
 
                 </ul>
             </div>
@@ -265,39 +295,39 @@
                     </li>
                     <!-- /Zaposleni -->
 
-                    <!-- Timovi -->
-                    <li class="nav-item-header">
-                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Timovi</div>
-                        <i class="ph-dots-three sidebar-resize-show"></i>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_teams') }}" class="nav-link">
-                            <i class="ph-user-circle"></i>
-                            <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeams }}/{{ countAllTeams }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_teams', { type : 1 }) }}" class="nav-link">
-                            <i class="ph-user-circle"></i>
-                            <span>Aktivni</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeamsActive }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_teams', { type : 2 }) }}" class="nav-link">
-                            <i class="ph-user-circle-gear"></i>
-                            <span>Neaktivni</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeamsInactive }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="" class="nav-link">
-                            <i class="ph-file-text"></i>
-                            <span>Izveštaji</span>
-                        </a>
-                    </li>
-                    <!-- /Timovi -->
+{#                    <!-- Timovi -->#}
+{#                    <li class="nav-item-header">#}
+{#                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Timovi</div>#}
+{#                        <i class="ph-dots-three sidebar-resize-show"></i>#}
+{#                    </li>#}
+{#                    <li class="nav-item">#}
+{#                        <a href="{{ path('app_teams') }}" class="nav-link">#}
+{#                            <i class="ph-user-circle"></i>#}
+{#                            <span>Lista</span>#}
+{#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeams }}/{{ countAllTeams }}</span>#}
+{#                        </a>#}
+{#                    </li>#}
+{#                    <li class="nav-item">#}
+{#                        <a href="{{ path('app_teams', { type : 1 }) }}" class="nav-link">#}
+{#                            <i class="ph-user-circle"></i>#}
+{#                            <span>Aktivni</span>#}
+{#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeamsActive }}</span>#}
+{#                        </a>#}
+{#                    </li>#}
+{#                    <li class="nav-item">#}
+{#                        <a href="{{ path('app_teams', { type : 2 }) }}" class="nav-link">#}
+{#                            <i class="ph-user-circle-gear"></i>#}
+{#                            <span>Neaktivni</span>#}
+{#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeamsInactive }}</span>#}
+{#                        </a>#}
+{#                    </li>#}
+{#                    <li class="nav-item">#}
+{#                        <a href="" class="nav-link">#}
+{#                            <i class="ph-file-text"></i>#}
+{#                            <span>Izveštaji</span>#}
+{#                        </a>#}
+{#                    </li>#}
+{#                    <!-- /Timovi -->#}
 
                     <!-- Klijenti -->
                     <li class="nav-item-header">
@@ -364,6 +394,20 @@
                     <li class="nav-item-header">
                         <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Zadaci</div>
                         <i class="ph-dots-three sidebar-resize-show"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_quick_tasks') }}" class="nav-link">
+                            <i class="ph-folders"></i>
+                            <span>Brzi zadaci</span>
+                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjects }}</span>#}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_checklist_list') }}" class="nav-link">
+                            <i class="ph-folders"></i>
+                            <span>Operativa</span>
+                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjects }}</span>#}
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tasks') }}" class="nav-link">
@@ -433,6 +477,20 @@
                         </a>
                     </li>
                     <!-- /Komentari -->
+
+                    <!-- Kalendar -->
+                    <li class="nav-item-header">
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Kalendar</div>
+                        <i class="ph-calendar sidebar-resize-show"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_calendar_list') }}" class="nav-link">
+                            <i class="ph-calendar"></i>
+                            <span>Lista</span>
+{#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+                    <!-- /Kalendar -->
 
                     <!-- Page kits -->
                     <li class="nav-item-header">

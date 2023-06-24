@@ -17,7 +17,9 @@ class PositionController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
   #[Route('/list', name: 'app_positions')]
-  public function list(): Response {
+  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
     $args['positions'] = $this->em->getRepository(ZaposleniPozicija::class)->findAll();
 
@@ -27,7 +29,9 @@ class PositionController extends AbstractController {
   #[Route('/form/{id}', name: 'app_position_form', defaults: ['id' => 0])]
   #[Entity('pozicija', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, ZaposleniPozicija $pozicija): Response {
+  public function form(Request $request, ZaposleniPozicija $pozicija)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $pozicija->setEditBy($this->getUser());
 
     $form = $this->createForm(PositionFormType::class, $pozicija, ['attr' => ['action' => $this->generateUrl('app_position_form', ['id' => $pozicija->getId()])]]);
@@ -56,7 +60,9 @@ class PositionController extends AbstractController {
 
   #[Route('/view/{id}', name: 'app_position_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(ZaposleniPozicija $pozicija): Response {
+  public function view(ZaposleniPozicija $pozicija)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['position'] = $pozicija;
 
     return $this->render('position/view.html.twig', $args);

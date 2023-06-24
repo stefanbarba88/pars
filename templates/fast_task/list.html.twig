@@ -1,0 +1,258 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Brzi zadaci
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <span class="breadcrumb-item active">Brzi zadaci</span>
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-lg-flex py-lg-0">
+                            <h5 class="py-lg-3 mb-0">Liste brzih zadataka</h5>
+                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                <a href="{{ path('app_quick_tasks_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                            </div>
+                        </div>
+                        <table class="table datatable-colvis-state-pars">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Datum</th>
+                                <th>Status</th>
+                                <th>Broj zadataka</th>
+                                <th>Kreiran</th>
+                                <th>Poslednja promena</th>
+                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for fast in fastTasks %}
+                                <tr>
+                                    <td>{{ fast.id }}</td>
+                                    <td>
+                                        <div class="d-inline-flex align-items-center">
+                                            <i class="ph-calendar me-2"></i>
+                                            {{ fast.datum | date("d.m.Y")}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if fast.status == constant('App\\Classes\\Data\\FastTaskData::OPEN') %}
+                                            <span class="badge bg-info">Kreiran</span>
+                                        {% elseif fast.status == constant('App\\Classes\\Data\\FastTaskData::SAVED') %}
+                                            <span class="badge bg-success">Sačuvan</span>
+                                        {% elseif  fast.status == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
+                                            <span class="badge bg-danger">Izmenjen</span>
+                                        {% elseif  fast.status == constant('App\\Classes\\Data\\FastTaskData::FINAL') %}
+                                            <span class="badge bg-dark">Finaliziran</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ fast.noTasks }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-inline-flex align-items-center">
+                                            <i class="ph-calendar me-2"></i>
+                                            {{ fast.created | date("d.m.Y H:i:s")}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if fast.status == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
+                                            <div class="d-inline-flex align-items-center">
+                                                <i class="ph-calendar me-2"></i>
+                                                {{ fast.updated | date("d.m.Y H:i:s")}}
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                <i class="ph-gear"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a href="{{ path('app_quick_task_edit', { id: fast.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+{#                                                {% if fast.status == constant('App\\Classes\\Data\\FastTaskData::OPEN') %}#}
+{#                                                    <a href="" class="dropdown-item"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>#}
+{#                                                {% endif %}#}
+                                                {% if fast.status != constant('App\\Classes\\Data\\FastTaskData::FINAL') %}
+                                                    <a href="{{ path('app_create_tasks', {id: fast.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Kreirajte zadatke</a>
+                                                {% endif %}
+                                            </div>
+{#                                            <!-- delete task modal -->#}
+{#                                            <div id="modal_delete_task{{ task.task.id }}" class="modal fade" tabindex="-1">#}
+{#                                                <div class="modal-dialog">#}
+{#                                                    <div class="modal-content">#}
+{#                                                        <div class="modal-header bg-danger text-white border-0">#}
+{#                                                            <h6 class="modal-title">Potvrda</h6>#}
+{#                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                                                        </div>#}
+
+{#                                                        <div class="modal-body">#}
+{#                                                            <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>#}
+{#                                                        </div>#}
+
+{#                                                        <div class="modal-footer">#}
+{#                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>#}
+{#                                                            <a href="{{ path('app_task_delete', {id: task.task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                            <!-- /delete task modal -->#}
+{#                                            <!-- close task modal -->#}
+{#                                            <div id="modal_close_task{{ task.task.id }}" class="modal fade" tabindex="-1">#}
+{#                                                <div class="modal-dialog">#}
+{#                                                    <div class="modal-content">#}
+{#                                                        <div class="modal-header bg-primary text-white border-0">#}
+{#                                                            <h6 class="modal-title">Potvrda</h6>#}
+{#                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                                                        </div>#}
+
+{#                                                        <div class="modal-body">#}
+{#                                                            <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>#}
+{#                                                        </div>#}
+
+{#                                                        <div class="modal-footer">#}
+{#                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>#}
+{#                                                            <a href="{{ path('app_task_close',{id: task.task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                            <!-- /close task modal -->#}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+{#                            {% for task in tasks %}#}
+{#                                <tr>#}
+{#                                    <td>#{{ task.id }}</td>#}
+{#                                    <td><a href="{{ path('app_task_tasks_view', { id: task.id}) }}">{{ task.title }}</a></td>#}
+{#                                    <td>#}
+{#                                        <div class="fw-semibold"><a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a></div>#}
+{#                                        <div class="d-inline-flex">#}
+{#                                            {% for label in task.label %}#}
+{#                                                {{label.label | raw}}#}
+{#                                            {% endfor %}#}
+{#                                        </div>#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        {% if task.project is null %}#}
+{#                                            /#}
+{#                                        {% else %}#}
+{#                                            <a href="{{ path('app_project_profile_view', { id: task.project.id}) }}">{{ task.project.title }}</a>#}
+{#                                        {% endif %}#}
+{#                                    </td>#}
+{#                                    <td class="text-center">#}
+{#                                        {% if task.isPriority %}#}
+{#                                            <span class="badge bg-danger rounded-pill p-1">#}
+{#												<i class="ph-warning-circle"></i>#}
+{#											</span>#}
+{#                                        {% endif %}#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        <div class="d-inline-flex align-items-center">#}
+{#                                            <i class="ph-calendar me-2"></i>#}
+{#                                            {{ task.updated | date("d.m.Y H:i:s")}}#}
+{#                                        </div>#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        <div class="d-inline-flex align-items-center">#}
+{#                                            <i class="ph-calendar me-2"></i>#}
+{#                                            {{ task.created | date("d.m.Y")}}#}
+{#                                        </div>#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        {% for user in task.assignedUsers %}#}
+{#                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}"></a>#}
+{#                                        {% endfor %}#}
+{#                                    </td>#}
+{#                                    <td class="text-center">#}
+{#                                        <div class="dropdown">#}
+{#                                            <a href="#" class="text-body" data-bs-toggle="dropdown">#}
+{#                                                <i class="ph-gear"></i>#}
+{#                                            </a>#}
+{#                                            <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Check in</a>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-paperclip me-2"></i> Attach screenshot</a>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-user-switch me-2"></i> Reassign</a>#}
+{#                                                <div class="dropdown-divider"></div>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-x me-2"></i> Remove</a>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </td>#}
+{#                                </tr>#}
+{#                            {% endfor %}#}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fab.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/prism.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
+{% endblock includeJavascript %}

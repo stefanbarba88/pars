@@ -44,6 +44,9 @@ class Task implements JsonSerializable {
   #[ORM\Column(type: Types::TEXT, nullable: true)]
   private ?string $description = null;
 
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $oprema = null;
+
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?User $editBy = null;
@@ -60,6 +63,9 @@ class Task implements JsonSerializable {
 
   #[ORM\Column(nullable: true)]
   private ?DateTimeImmutable $deadline;
+
+  #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+  private ?DateTimeImmutable $datumKreiranja = null;
 
   #[ORM\Column]
   private ?bool $isPriority = false;
@@ -118,6 +124,9 @@ class Task implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'Task', targetEntity: Comment::class)]
   private Collection $comments;
 
+  #[ORM\ManyToMany(targetEntity: Activity::class)]
+  private Collection $activity;
+
 
   public function __construct() {
     $this->assignedUsers = new ArrayCollection();
@@ -126,6 +135,7 @@ class Task implements JsonSerializable {
     $this->label = new ArrayCollection();
     $this->taskLogs = new ArrayCollection();
     $this->comments = new ArrayCollection();
+    $this->activity = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -145,6 +155,7 @@ class Task implements JsonSerializable {
       'title' => $this->getTitle(),
       'project' => $this->getProjectJson(),
       'description' => $this->getDescription(),
+      'oprema' => $this->getOprema(),
       'isTimeRoundUp' => $this->isIsTimeRoundUp(),
       'isEstimate' => $this->isIsEstimate(),
       'isClientView' => $this->isIsClientView(),
@@ -158,7 +169,9 @@ class Task implements JsonSerializable {
       'pdfs' => $this->getJsonPdfs(),
       'minEntry' => $this->getMinEntry(),
       'roundingInterval' => $this->getRoundingInterval(),
-      'deadline' => $this->getDeadline()
+      'deadline' => $this->getDeadline(),
+      'datumKreiranja' => $this->getDatumKreiranja(),
+      'activity' => $this->getActivityJson()
     ];
   }
 
@@ -216,6 +229,16 @@ class Task implements JsonSerializable {
 
   public function setDescription(string $description): self {
     $this->description = $description;
+
+    return $this;
+  }
+
+  public function getOprema(): ?string {
+    return $this->oprema;
+  }
+
+  public function setOprema(string $oprema): self {
+    $this->oprema = $oprema;
 
     return $this;
   }
@@ -599,6 +622,46 @@ class Task implements JsonSerializable {
       }
 
       return $this;
+  }
+  public function getActivityJson(): array {
+    $activities = [];
+    foreach ($this->activity as $act) {
+      $activities[] = $act->getTitle();
+    }
+
+    return $activities;
+  }
+  /**
+   * @return Collection<int, Activity>
+   */
+  public function getActivity(): Collection
+  {
+      return $this->activity;
+  }
+
+  public function addActivity(Activity $activity): self
+  {
+      if (!$this->activity->contains($activity)) {
+          $this->activity->add($activity);
+      }
+
+      return $this;
+  }
+
+  public function removeActivity(Activity $activity): self
+  {
+      $this->activity->removeElement($activity);
+
+      return $this;
+  }
+  public function getDatumKreiranja(): ?DateTimeImmutable {
+    return $this->datumKreiranja;
+  }
+
+  public function setDatumKreiranja(?DateTimeImmutable $datumKreiranja): self {
+    $this->datumKreiranja = $datumKreiranja;
+
+    return $this;
   }
 
 }

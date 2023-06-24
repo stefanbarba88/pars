@@ -19,7 +19,9 @@ class CommentController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_comments')]
-  public function list(): Response {
+  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
     $args['comments'] = $this->em->getRepository(Comment::class)->findAll();
 
@@ -30,7 +32,9 @@ class CommentController extends AbstractController {
   #[Entity('task', expr: 'repository.find(task)')]
   #[Entity('comment', expr: 'repository.findForFormTask(task)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Comment $comment, Task $task): Response {
+  public function form(Request $request, Comment $comment, Task $task)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $comment->setUser($this->getUser());
     $form = $this->createForm(CommentFormType::class, $comment, ['attr' => ['action' => $this->generateUrl('app_comment_form', ['task' => $task->getId()])]]);
@@ -59,7 +63,9 @@ class CommentController extends AbstractController {
 
   #[Route('/edit/{id}', name: 'app_comment_edit')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function edit(Request $request, Comment $comment): Response {
+  public function edit(Request $request, Comment $comment)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
 
     $form = $this->createForm(CommentFormType::class, $comment, ['attr' => ['action' => $this->generateUrl('app_comment_edit', ['id' => $comment->getId()])]]);
@@ -88,7 +94,9 @@ class CommentController extends AbstractController {
   }
 
   #[Route('/comment-delete/{id}', name: 'app_comment_delete')]
-  public function delete(Comment $comment): Response {
+  public function delete(Comment $comment)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $comment->setIsSuspended(true);
     $this->em->getRepository(Comment::class)->save($comment);
 

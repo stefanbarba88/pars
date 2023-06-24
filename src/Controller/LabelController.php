@@ -20,7 +20,9 @@ class LabelController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_labels')]
-  public function list(): Response {
+  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
     $args['labels'] = $this->em->getRepository(Label::class)->findAll();
 
@@ -30,7 +32,9 @@ class LabelController extends AbstractController {
   #[Route('/form/{id}', name: 'app_label_form', defaults: ['id' => 0])]
   #[Entity('label', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Label $label): Response {
+  public function form(Request $request, Label $label)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $label->setEditBy($this->getUser());
 
     $form = $this->createForm(LabelFormType::class, $label, ['attr' => ['action' => $this->generateUrl('app_label_form', ['id' => $label->getId()])]]);
@@ -87,7 +91,9 @@ class LabelController extends AbstractController {
 
   #[Route('/view/{id}', name: 'app_label_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(Label $label): Response {
+  public function view(Label $label)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['label'] = $label;
 
     return $this->render('label/view.html.twig', $args);

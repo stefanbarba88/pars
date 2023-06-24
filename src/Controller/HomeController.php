@@ -2,7 +2,15 @@
 
 namespace App\Controller;
 
+use App\Classes\Data\UserRolesData;
 use App\Classes\JMBGcheck\JMBGcheck;
+use App\Entity\Car;
+use App\Entity\FastTask;
+use App\Entity\ManagerChecklist;
+use App\Entity\TaskLog;
+use App\Entity\User;
+use DateTimeImmutable;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,13 +19,29 @@ use Symfony\Component\Routing\Annotation\Route;
 //#[IsGranted('ROLE_USER', message: 'Nemas pristup', statusCode: 403)]
 
 class HomeController extends AbstractController {
+  public function __construct(private readonly ManagerRegistry $em) {
+  }
   #[Route('/', name: 'app_home')]
-  public function index(): Response {
+  public function index()    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+    $user = $this->getUser();
+    $args['danas'] = new DateTimeImmutable();
+    $args['timetable'] = $this->em->getRepository(FastTask::class)->getTimetable();
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
 
+      $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUser($user);
+      $args['countLogs'] = $this->em->getRepository(TaskLog::class)->countLogsByUser($user);
 
-    return $this->render('home/index.html.twig', [
-      'controller_name' => 'HomeController',
-    ]);
+      return $this->render('home/index_employee.html.twig', $args);
+    } else {
+      if ($user->getUserType() != UserRolesData::ROLE_ADMIN && $user->getUserType() != UserRolesData::ROLE_SUPER_ADMIN) {
+        $args['checklist'] = $user->getManagerChecklists();
+      }
+      return $this->render('home/index_admin.html.twig', $args);
+    }
   }
 
   public function nav(): Response {

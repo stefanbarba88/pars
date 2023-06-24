@@ -49,6 +49,17 @@
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
+                            {% if project.important is not null %}
+                                <div class="card">
+                                    <div class="card-header bg-danger text-white border-bottom-0">
+                                        <h6 class="mb-0">Važno</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        {{ project.important }}
+                                    </div>
+                                </div>
+                            {% endif %}
+
                                 <div class="card">
                                     <div class="card-header">
                                         <h5 class="mb-0">Osnovne informacije
@@ -73,11 +84,11 @@
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Kategorija:</div>
                                             <div class="col-8">
-                                                {% if is_granted('ROLE_EMPLOYEE') %}
-                                                    {{ project.category.title }}
-                                                {% else %}
-                                                    <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>
-                                                {% endif %}
+{#                                                {% if is_granted('ROLE_EMPLOYEE') %}#}
+{#                                                    {{ project.category.title }}#}
+{#                                                {% else %}#}
+{#                                                    <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>#}
+{#                                                {% endif %}#}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg">

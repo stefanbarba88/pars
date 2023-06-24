@@ -2,11 +2,13 @@
 
 namespace App\Repository;
 
+use App\Entity\Car;
 use App\Entity\Image;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
@@ -42,6 +44,54 @@ class TaskLogRepository extends ServiceEntityRepository {
     return null;
 
   }
+
+  public function findByUser(User $user): array {
+
+    $logs = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['user' => $user]);
+    $taskLogs = [];
+    if (!empty($logs)) {
+      foreach ($logs as $log) {
+        $task = $log->getTask();
+
+        $format = "d.m.Y";
+        $datumZadatka = $task->getDatumKreiranja();
+        $currentTime = new DateTimeImmutable();
+
+        if ($datumZadatka->format($format) === $currentTime->format($format)) {
+          $car = null;
+          foreach ($task->getAssignedUsers() as $driver) {
+            if (!is_null($driver->getCar())) {
+               $car = $this->getEntityManager()->getRepository(Car::class)->find($driver->getCar());
+            }
+          }
+          $taskLogs[] = [$log, $car];
+        }
+      }
+    }
+    return $taskLogs;
+  }
+
+  public function countLogsByUser(User $user): int {
+
+    $logs = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['user' => $user]);
+    $count = 0;
+    if (!empty($logs)) {
+      foreach ($logs as $log) {
+        $task = $log->getTask();
+
+        $format = "d.m.Y";
+        $datumZadatka = $task->getDatumKreiranja();
+        $currentTime = new DateTimeImmutable();
+
+        if ($datumZadatka->format($format) === $currentTime->format($format)) {
+          $count++;
+        }
+      }
+    }
+    return $count;
+  }
+
+
 
   public function findLogs(Task $task): array {
     $logs = [];

@@ -26,7 +26,9 @@ class ClientController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_clients')]
-  public function list(): Response {
+  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args=[];
     $args['clients'] = $this->em->getRepository(Client::class)->findBy([], ['isSuspended' => 'ASC']);
 
@@ -36,7 +38,9 @@ class ClientController extends AbstractController {
   #[Route('/form/{id}', name: 'app_client_form', defaults: ['id' => 0])]
   #[Entity('client', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Client $client): Response {
+  public function form(Request $request, Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $history = null;
     if($client->getId()) {
@@ -75,7 +79,9 @@ class ClientController extends AbstractController {
 
   #[Route('/view-profile/{id}', name: 'app_client_profile_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewProfile(Client $client): Response {
+  public function viewProfile(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['client'] = $client;
 
     return $this->render('client/view_profile.html.twig', $args);
@@ -83,7 +89,9 @@ class ClientController extends AbstractController {
 
   #[Route('/view-activity/{id}', name: 'app_client_activity_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewActivity(Client $client): Response {
+  public function viewActivity(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['client'] = $client;
 
     return $this->render('client/view_activity.html.twig', $args);
@@ -91,7 +99,9 @@ class ClientController extends AbstractController {
 
   #[Route('/view-calendar/{id}', name: 'app_client_calendar_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCalendar(Client $client): Response {
+  public function viewCalendar(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['client'] = $client;
 
     return $this->render('client/view_calendar.html.twig', $args);
@@ -99,7 +109,9 @@ class ClientController extends AbstractController {
 
   #[Route('/view-cars/{id}', name: 'app_client_car_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCar(Client $client): Response {
+  public function viewCar(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['client'] = $client;
 
     return $this->render('client/view_cars.html.twig', $args);
@@ -107,7 +119,9 @@ class ClientController extends AbstractController {
 
   #[Route('/view-tools/{id}', name: 'app_client_tools_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewTools(Client $client): Response {
+  public function viewTools(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['client'] = $client;
 
     return $this->render('client/view_tools.html.twig', $args);
@@ -115,7 +129,9 @@ class ClientController extends AbstractController {
 
   #[Route('/settings/{id}', name: 'app_client_settings_form')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function settings(Client $client, Request $request): Response {
+  public function settings(Client $client, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $history = null;
     if($client->getId()) {
       $history = $this->json($client, Response::HTTP_OK, [], [
@@ -186,7 +202,9 @@ class ClientController extends AbstractController {
 
   #[Route('/history-client-list/{id}', name: 'app_client_history_list')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function listClientHistory(Client $client): Response {
+  public function listClientHistory(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['client'] = $client;
     $args['historyClients'] = $this->em->getRepository(ClientHistory::class)->findBy(['client' => $client], ['id' => 'DESC']);
 
@@ -195,7 +213,9 @@ class ClientController extends AbstractController {
 
   #[Route('/history-client-view/{id}', name: 'app_client_profile_history_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewClientHistory(ClientHistory $clientHistory, SerializerInterface $serializer): Response {
+  public function viewClientHistory(ClientHistory $clientHistory, SerializerInterface $serializer)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $args['clientH'] = $serializer->deserialize($clientHistory->getHistory(), Client::class, 'json');
     $args['clientHistory'] = $clientHistory;

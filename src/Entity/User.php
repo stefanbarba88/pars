@@ -151,6 +151,12 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\OneToMany(mappedBy: 'driver', targetEntity: CarReservation::class)]
   private Collection $carReservations;
 
+  #[ORM\ManyToMany(targetEntity: ManagerChecklist::class, mappedBy: 'user')]
+  private Collection $managerChecklists;
+
+  #[ORM\ManyToMany(targetEntity: Calendar::class, mappedBy: 'user')]
+  private Collection $calendars;
+
 
   public function __construct() {
     $this->userHistories = new ArrayCollection();
@@ -160,6 +166,8 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     $this->clients = new ArrayCollection();
     $this->teams = new ArrayCollection();
     $this->carReservations = new ArrayCollection();
+    $this->managerChecklists = new ArrayCollection();
+    $this->calendars = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -794,6 +802,60 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     }
 
     return $this;
+  }
+
+  /**
+   * @return Collection<int, ManagerChecklist>
+   */
+  public function getManagerChecklists(): Collection
+  {
+      return $this->managerChecklists;
+  }
+
+  public function addManagerChecklist(ManagerChecklist $managerChecklist): self
+  {
+      if (!$this->managerChecklists->contains($managerChecklist)) {
+          $this->managerChecklists->add($managerChecklist);
+          $managerChecklist->addUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeManagerChecklist(ManagerChecklist $managerChecklist): self
+  {
+      if ($this->managerChecklists->removeElement($managerChecklist)) {
+          $managerChecklist->removeUser($this);
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Calendar>
+   */
+  public function getCalendars(): Collection
+  {
+      return $this->calendars;
+  }
+
+  public function addCalendar(Calendar $calendar): self
+  {
+      if (!$this->calendars->contains($calendar)) {
+          $this->calendars->add($calendar);
+          $calendar->addUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeCalendar(Calendar $calendar): self
+  {
+      if ($this->calendars->removeElement($calendar)) {
+          $calendar->removeUser($this);
+      }
+
+      return $this;
   }
 
 }

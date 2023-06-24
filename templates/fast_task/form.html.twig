@@ -1,0 +1,907 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Nova lista zadataka
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <a href="{{ path('app_quick_tasks') }}" class="breadcrumb-item">Brzi zadaci</a>
+                                <span class="breadcrumb-item active">Nova lista zadataka</span>
+                            </div>
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
+                    </div>
+{#                    {% if task.project is not null %}#}
+{#                        {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}#}
+{#                    {% endif %}#}
+
+                </div>
+
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+{#                    {% if not form.vars.valid %}#}
+{#                        {% for child in form.children %}#}
+{#                            {%for error in child.vars.errors%}#}
+{#                                <div class="alert alert-danger alert-dismissible fade show">#}
+{#                                    <span class="fw-semibold">{{error.message}}</span>#}
+{#                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>#}
+{#                                </div>#}
+{#                            {%endfor%}#}
+{#                        {%endfor%}#}
+{#                    {%endif%}#}
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                Dodavanje zadatka
+                            </h6>
+                        </div>
+                        <form name="task_quick_form" method="post" action="{{ path('app_quick_tasks_form') }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="task_quick_form">
+                            <div class="card-body">
+                                <div class="fw-bold border-bottom mb-1">Datum zadataka</div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_datum">Datum:</label>
+                                            <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                                <input type="text" id="task_form_datum" name="task_quick_form_datum" class="form-control datepicker-date-format-custom required"  />
+                                            </div>
+                                            <span class="form-text">Format: 31.12.1900.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="fw-bold border-bottom mb-1">Zadatak #1</div>
+                                <div class="row">
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_projekat1">Projekat:</label>
+                                            <select id="task_form_projekat1" name="task_quick_form1[projekat]" class="form-control select">
+                                                <option>---</option>
+                                                {% for project in projects %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo1">Geodete:</label>
+                                            <select id="task_form_geodeta1_1" name="task_quick_form1[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta2_1" name="task_quick_form1[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta3_1" name="task_quick_form1[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media1">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_aktivnosti1">Aktivnosti:</label>
+                                            <select id="task_form_aktivnosti1" name="task_quick_form1[aktivnosti][]"  class="form-control select" multiple>
+                                                {% for activity in activities %}
+                                                    <option value="{{ activity.id }}">{{ activity.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_oprema1">Oprema:</label>
+                                            <textarea id="task_form_oprema1" name="task_quick_form1[oprema]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena1">Napomena:</label>
+                                            <textarea id="task_form_napomena1" name="task_quick_form1[napomena]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="fw-bold border-bottom mb-1">Zadatak #2</div>
+                                <div class="row">
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_projekat2">Projekat:</label>
+                                            <select id="task_form_projekat2" name="task_quick_form2[projekat]" class="form-control select">
+                                                <option>---</option>
+                                                {% for project in projects %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo2">Geodete:</label>
+                                            <select id="task_form_geodeta1_2" name="task_quick_form2[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta2_2" name="task_quick_form2[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta3_2" name="task_quick_form2[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media1">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_aktivnosti2">Aktivnosti:</label>
+                                            <select id="task_form_aktivnosti2" name="task_quick_form2[aktivnosti][]"  class="form-control select" multiple>
+                                                {% for activity in activities %}
+                                                    <option value="{{ activity.id }}">{{ activity.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_oprema2">Oprema:</label>
+                                            <textarea id="task_form_oprema2" name="task_quick_form2[oprema]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena2">Napomena:</label>
+                                            <textarea id="task_form_napomena2" name="task_quick_form2[napomena]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="fw-bold border-bottom mb-1">Zadatak #3</div>
+                                <div class="row">
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_projekat3">Projekat:</label>
+                                            <select id="task_form_projekat3" name="task_quick_form3[projekat]" class="form-control select">
+                                                <option>---</option>
+                                                {% for project in projects %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo3">Geodete:</label>
+                                            <select id="task_form_geodeta1_3" name="task_quick_form3[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta2_3" name="task_quick_form3[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta3_3" name="task_quick_form3[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media1">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_aktivnosti3">Aktivnosti:</label>
+                                            <select id="task_form_aktivnosti3" name="task_quick_form3[aktivnosti][]"  class="form-control select" multiple>
+                                                {% for activity in activities %}
+                                                    <option value="{{ activity.id }}">{{ activity.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_oprema3">Oprema:</label>
+                                            <textarea id="task_form_oprema3" name="task_quick_form3[oprema]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena3">Napomena:</label>
+                                            <textarea id="task_form_napomena3" name="task_quick_form3[napomena]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="fw-bold border-bottom mb-1">Zadatak #4</div>
+                                <div class="row">
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_projekat4">Projekat:</label>
+                                            <select id="task_form_projekat4" name="task_quick_form4[projekat]" class="form-control select">
+                                                <option>---</option>
+                                                {% for project in projects %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo4">Geodete:</label>
+                                            <select id="task_form_geodeta1_4" name="task_quick_form4[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta2_4" name="task_quick_form4[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta3_4" name="task_quick_form4[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media1">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_aktivnosti4">Aktivnosti:</label>
+                                            <select id="task_form_aktivnosti4" name="task_quick_form4[aktivnosti][]"  class="form-control select" multiple>
+                                                {% for activity in activities %}
+                                                    <option value="{{ activity.id }}">{{ activity.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_oprema4">Oprema:</label>
+                                            <textarea id="task_form_oprema4" name="task_quick_form4[oprema]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena4">Napomena:</label>
+                                            <textarea id="task_form_napomena4" name="task_quick_form4[napomena]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="fw-bold border-bottom mb-1">Zadatak #5</div>
+                                <div class="row">
+                                <div class="col-lg-2 quick-form-media">
+                                    <div class="mb-1">
+                                        <label class="form-category" for="task_form_projekat5">Projekat:</label>
+                                        <select id="task_form_projekat5" name="task_quick_form5[projekat]" class="form-control select">
+                                            <option>---</option>
+                                            {% for project in projects %}
+                                                <option value="{{ project.id }}">{{ project.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 quick-form-media">
+                                    <div class="mb-1">
+                                        <label class="form-category" for="task_form_geo5">Geodete:</label>
+                                        <select id="task_form_geodeta1_5" name="task_quick_form5[geo][]" class="form-control select">
+                                            <option>---</option>
+                                            {% for user in users %}
+                                                <option value="{{ user.id }}">{{ user.ime }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-1">
+                                        <select id="task_form_geodeta2_5" name="task_quick_form5[geo][]" class="form-control select">
+                                            <option>---</option>
+                                            {% for user in users %}
+                                                <option value="{{ user.id }}">{{ user.ime }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-1">
+                                        <select id="task_form_geodeta3_5" name="task_quick_form5[geo][]" class="form-control select">
+                                            <option>---</option>
+                                            {% for user in users %}
+                                                <option value="{{ user.id }}">{{ user.ime }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 quick-form-media1">
+                                    <div class="mb-1">
+                                        <label class="form-category" for="task_form_aktivnosti5">Aktivnosti:</label>
+                                        <select id="task_form_aktivnosti5" name="task_quick_form5[aktivnosti][]"  class="form-control select" multiple>
+                                            {% for activity in activities %}
+                                                <option value="{{ activity.id }}">{{ activity.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 quick-form-media3">
+                                    <div class="mb-1">
+                                        <label class="form-category" for="task_form_oprema5">Oprema:</label>
+                                        <textarea id="task_form_oprema5" name="task_quick_form5[oprema]" class="form-control"  rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 quick-form-media3">
+                                    <div class="mb-1">
+                                        <label class="form-category" for="task_form_napomena5">Napomena:</label>
+                                        <textarea id="task_form_napomena5" name="task_quick_form5[napomena]" class="form-control"  rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                                <div class="fw-bold border-bottom mb-1">Zadatak #6</div>
+                                <div class="row">
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_projekat6">Projekat:</label>
+                                            <select id="task_form_projekat6" name="task_quick_form6[projekat]" class="form-control select">
+                                                <option>---</option>
+                                                {% for project in projects %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo6">Geodete:</label>
+                                            <select id="task_form_geodeta1_6" name="task_quick_form6[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta2_6" name="task_quick_form6[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta3_6" name="task_quick_form6[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media1">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_aktivnosti6">Aktivnosti:</label>
+                                            <select id="task_form_aktivnosti6" name="task_quick_form6[aktivnosti][]"  class="form-control select" multiple>
+                                                {% for activity in activities %}
+                                                    <option value="{{ activity.id }}">{{ activity.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_oprema6">Oprema:</label>
+                                            <textarea id="task_form_oprema6" name="task_quick_form6[oprema]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena6">Napomena:</label>
+                                            <textarea id="task_form_napomena6" name="task_quick_form6[napomena]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="fw-bold border-bottom mb-1">Zadatak #7</div>
+                                <div class="row">
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_projekat7">Projekat:</label>
+                                            <select id="task_form_projekat7" name="task_quick_form7[projekat]" class="form-control select">
+                                                <option>---</option>
+                                                {% for project in projects %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo7">Geodete:</label>
+                                            <select id="task_form_geodeta1_7" name="task_quick_form7[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta2_7" name="task_quick_form7[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta3_7" name="task_quick_form7[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media1">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_aktivnosti7">Aktivnosti:</label>
+                                            <select id="task_form_aktivnosti7" name="task_quick_form7[aktivnosti][]"  class="form-control select" multiple>
+                                                {% for activity in activities %}
+                                                    <option value="{{ activity.id }}">{{ activity.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_oprema7">Oprema:</label>
+                                            <textarea id="task_form_oprema7" name="task_quick_form7[oprema]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena7">Napomena:</label>
+                                            <textarea id="task_form_napomena7" name="task_quick_form7[napomena]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="fw-bold border-bottom mb-1">Zadatak #8</div>
+                                <div class="row">
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_projekat8">Projekat:</label>
+                                            <select id="task_form_projekat8" name="task_quick_form8[projekat]" class="form-control select">
+                                                <option>---</option>
+                                                {% for project in projects %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo8">Geodete:</label>
+                                            <select id="task_form_geodeta1_8" name="task_quick_form8[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta2_8" name="task_quick_form8[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta3_8" name="task_quick_form8[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media1">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_aktivnosti8">Aktivnosti:</label>
+                                            <select id="task_form_aktivnosti8" name="task_quick_form8[aktivnosti][]"  class="form-control select" multiple>
+                                                {% for activity in activities %}
+                                                    <option value="{{ activity.id }}">{{ activity.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_oprema8">Oprema:</label>
+                                            <textarea id="task_form_oprema8" name="task_quick_form8[oprema]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena8">Napomena:</label>
+                                            <textarea id="task_form_napomena8" name="task_quick_form8[napomena]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="fw-bold border-bottom mb-1">Zadatak #9</div>
+                                <div class="row">
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_projekat9">Projekat:</label>
+                                            <select id="task_form_projekat9" name="task_quick_form9[projekat]" class="form-control select">
+                                                <option>---</option>
+                                                {% for project in projects %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo9">Geodete:</label>
+                                            <select id="task_form_geodeta1_9" name="task_quick_form9[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta2_9" name="task_quick_form9[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta3_9" name="task_quick_form9[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media1">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_aktivnosti9">Aktivnosti:</label>
+                                            <select id="task_form_aktivnosti9" name="task_quick_form9[aktivnosti][]"  class="form-control select" multiple>
+                                                {% for activity in activities %}
+                                                    <option value="{{ activity.id }}">{{ activity.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_oprema9">Oprema:</label>
+                                            <textarea id="task_form_oprema9" name="task_quick_form9[oprema]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena9">Napomena:</label>
+                                            <textarea id="task_form_napomena9" name="task_quick_form9[napomena]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="fw-bold border-bottom mb-1">Zadatak #10</div>
+                                <div class="row">
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_projekat10">Projekat:</label>
+                                            <select id="task_form_projekat10" name="task_quick_form10[projekat]" class="form-control select">
+                                                <option>---</option>
+                                                {% for project in projects %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo10">Geodete:</label>
+                                            <select id="task_form_geodeta1_10" name="task_quick_form10[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta2_10" name="task_quick_form10[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <select id="task_form_geodeta3_10" name="task_quick_form10[geo][]" class="form-control select">
+                                                <option>---</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 quick-form-media1">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_aktivnosti10">Aktivnosti:</label>
+                                            <select id="task_form_aktivnosti10" name="task_quick_form10[aktivnosti][]"  class="form-control select" multiple>
+                                                {% for activity in activities %}
+                                                    <option value="{{ activity.id }}">{{ activity.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_oprema10">Oprema:</label>
+                                            <textarea id="task_form_oprema10" name="task_quick_form10[oprema]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena10">Napomena:</label>
+                                            <textarea id="task_form_napomena10" name="task_quick_form10[napomena]" class="form-control"  rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <!-- /wizard with validation -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+{% endblock includeJavascript %}
+
+{% block footerJavascript %}
+
+    <script>
+
+//        $(document).ready(function() {
+//
+//        });
+        // $('select[id^="task_form_geodeta"]').on('change', function() {
+        //     var selectedUser = $(this).val();
+        //
+        //     // Resetuj select polja za korisnike
+        //     $('select[id^="task_form_geodeta"]').not(this).find('option[value="' + selectedUser + '"]').removeProp('selected');
+        //
+        //     // Poništi izbor korisnika iz prethodnog polja
+        //     $('select[id^="task_form_geodeta"]').not(this).each(function() {
+        //         if ($(this).val() === selectedUser) {
+        //             $(this).val('');
+        //         }
+        //     });
+        //
+        //     // Omogući sve opcije u svim poljima
+        //     $('select[id^="task_form_geodeta"] option').prop('disabled', false);
+        //
+        //     // Onemogući izabrane korisnike u drugim poljima
+        //     $('select[id^="task_form_geodeta"]').not(this).find('option[value="' + selectedUser + '"]').prop('disabled', true);
+        // });
+
+        // $(document).ready(function() {
+        //     // Dodavanje event listenera na sva polja koja sadrže "task_form_geodeta" u imenu
+        //     $('[id^="task_form_geodeta"]').on('change', function() {
+        //         var currentField = $(this);
+        //         var selectedValue = currentField.val();
+        //
+        //         // Provera svih ostalih polja sa istim prefiksom
+        //         $('[id^="task_form_geodeta"]').not(currentField).each(function() {
+        //             var field = $(this);
+        //             if (field.val() === selectedValue) {
+        //                 $('select[id^="task_form_geodeta"]').not(this).find('option[value="' + selectedUser + '"]').prop('disabled', true);
+        //                 // field.val(''); // Resetovanje vrednosti na prazan string
+        //             }
+        //         });
+        //     });
+        // });
+        // $(document).ready(function() {
+        //     // Inicijalno omogući sve opcije
+        //     $('select[name*="geo"]').find('option').prop('disabled', false);
+        //
+        //     // Prati izabrane korisnike i onemogući ih u drugim poljima
+        //     $('select[name*="geo"]').on('change', function() {
+        //         var selectedUser = $(this).val();
+        //         console.log(selectedUser);
+        //
+        //         if (selectedUser === "") {
+        //             // Omogući sve opcije u svim poljima
+        //             $('select[name*="geo"]').find('option[value="' + selectedUser + '"]').prop('disabled', false);
+        //         } else {
+        //             // Onemogući izabranu opciju u drugim poljima
+        //             $('select[name*="geo"]').not(this).find('option[value="' + selectedUser + '"]').prop('disabled', true);
+        //         }
+        //
+        //         //
+        //         // // Onemogući izabranu opciju u drugim poljima
+        //         // $('select[name*="geo"]').not(this).find('option[value="' + selectedUser + '"]').prop('disabled', true);
+        //     });
+        // });
+        // $(document).ready(function() {
+        //     var selectedUsers = []; // Niz za praćenje izabranih korisnika
+        //
+        //     // Prati izabrane korisnike i onemogući ih u drugim poljima
+        //     $('select[name*="geo"]').on('change', function() {
+        //         var selectedUser = $(this).val();
+        //
+        //         // Proveri da li je nova vrednost prazna
+        //         if (selectedUser === "") {
+        //             // Ukloni korisnika iz niza
+        //             selectedUsers = selectedUsers.filter(user => user !== $(this).data('selectedUser'));
+        //         } else {
+        //             // Dodaj korisnika u niz ako nije već dodat
+        //             if (!selectedUsers.includes(selectedUser)) {
+        //                 selectedUsers.push(selectedUser);
+        //             }
+        //         }
+        //
+        //         // Onemogući izabrane korisnike u drugim poljima
+        //         $('select[name*="geo"]').not(this).find('option').prop('disabled', false);
+        //         $('select[name*="geo"]').not(this).find('option[value="' + selectedUsers.join('"], option[value="') + '"]').prop('disabled', true);
+        //
+        //         // Sačuvaj izabranog korisnika za trenutno polje
+        //         $(this).data('selectedUser', selectedUser);
+        //     });
+        // });
+
+        // $(document).ready(function() {
+        //     var userSelect = $('#userSelect');
+        //
+        //     // Ajax zahtev za dobavljanje liste korisnika
+        //     $.ajax({
+        //         url: '/tasks/app_ajax',
+        //         type: 'GET',
+        //         dataType: 'json',
+        //         success: function(response) {
+        //             // Procesiranje odgovora i popunjavanje selekcije
+        //             if (response && response.users) {
+        //                 var users = response.users;
+        //
+        //                 // Popuni selekciju sa korisnicima
+        //                 users.forEach(function(user) {
+        //                     userSelect.append($('<option></option>').attr('value', user.id).text(user.name));
+        //                 });
+        //             }
+        //         },
+        //         error: function(xhr, status, error) {
+        //             console.error('Ajax zahtev nije uspeo:', error);
+        //         }
+        //     });
+        // });
+    </script>
+
+{% endblock footerJavascript %}
+
+

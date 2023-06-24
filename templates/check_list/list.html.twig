@@ -1,0 +1,135 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Zadaci
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <span class="breadcrumb-item active">Zadaci</span>
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-lg-flex py-lg-0">
+                            <h5 class="py-lg-3 mb-0">Lista zadataka</h5>
+                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                            </div>
+                        </div>
+                        <table class="table datatable-colvis-state-pars">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Zaposleni</th>
+                                <th>Zadatak</th>
+                                <th>Status</th>
+                                <th>Završen</th>
+                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for check in checklist %}
+                                <tr>
+                                    <td>{{ check.id }}</td>
+                                    <td>
+                                        {% for user in check.user %}
+                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}" title="{{ user.getFullName() }}"></a>
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{ check.task }}</td>
+                                    <td>
+                                        {% if check.status == 1 %}
+                                            <span class="badge bg-info">Kreiran</span>
+                                        {% elseif task.status == 2 %}
+                                            <span class="badge bg-success">Završen</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Obrisan</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if check.finish is not null %}
+                                        <div class="d-inline-flex align-items-center">
+                                            <i class="ph-calendar me-2"></i>
+                                            {{ check.finish | date("d.m.Y H:i:s")}}
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                <i class="ph-gear"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a href="{{ path('app_checklist_view', { id: check.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                <a href="{{ path('app_checklist_delete', { id: check.id}) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

@@ -7,6 +7,7 @@ class ProjectHistoryHelper {
   private $id;
   private $title;
   private $description;
+  private $important;
   private $isSuspended;
   private $isTimeRoundUp;
   private $isEstimate;
@@ -29,10 +30,11 @@ class ProjectHistoryHelper {
   private $deadline;
   private $team;
 
-  public function __construct($id, $title, $description, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $isViewLog, $team, $category, $client, $timerPriority, $label, $editBy, $payment, $price, $pricePerHour, $pricePerDay, $pricePerMonth, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
+  public function __construct($id, $title, $description, $important, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $isViewLog, $team, $category, $client, $timerPriority, $label, $editBy, $payment, $price, $pricePerHour, $pricePerDay, $pricePerMonth, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
     $this->id = $id;
     $this->title = $title;
     $this->description = $description;
+    $this->important = $important;
     $this->isSuspended = $isSuspended;
     $this->isTimeRoundUp = $isTimeRoundUp;
     $this->isEstimate = $isEstimate;
@@ -390,6 +392,20 @@ class ProjectHistoryHelper {
    */
   public function setPricePerMonth($pricePerMonth): void {
     $this->pricePerMonth = $pricePerMonth;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getImportant() {
+    return $this->important;
+  }
+
+  /**
+   * @param mixed $important
+   */
+  public function setImportant($important): void {
+    $this->important = $important;
   }
 
 

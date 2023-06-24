@@ -44,9 +44,9 @@ security:
     access_control:
 #        - { path: ^/login$, role: PUBLIC_ACCESS }
 #        - { path: ^/$, roles: ROLE_USER }
-    #        - { path: ^/logout$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-    #        - { path: ^/password-send, role: IS_AUTHENTICATED_ANONYMOUSLY }
-    #        - { path: ^/admin, roles: ROLE_ADMIN }
+#            - { path: ^/logout$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+#            - { path: ^/password-send, role: IS_AUTHENTICATED_ANONYMOUSLY }
+#            - { path: ^/admin, roles: ROLE_ADMIN }
 
 when@test:
     security:

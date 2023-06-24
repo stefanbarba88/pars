@@ -17,7 +17,9 @@ class TaskLogController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
   #[Route('/form/{id}', name: 'app_task_log_form')]
-  public function form(TaskLog $taskLog, Request $request, UploadService $uploadService): Response {
+  public function form(TaskLog $taskLog, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $history = null;
     //ovde izvlacimo ulogovanog usera
 //    $user = $this->getUser();
@@ -72,7 +74,9 @@ dd($request);
 
   #[Route('/view/{id}', name: 'app_task_log_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(TaskLog $taskLog): Response {
+  public function view(TaskLog $taskLog)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['task'] = $taskLog->getTask();
     $args['taskLog'] = $taskLog;
 

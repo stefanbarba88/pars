@@ -20,7 +20,9 @@ class CityController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_cities')]
-  public function list(): Response {
+  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
     $args['cities'] = $this->em->getRepository(City::class)->findAll();
 
@@ -31,7 +33,9 @@ class CityController extends AbstractController {
   #[Route('/form/{id}', name: 'app_city_form', defaults: ['id' => 0])]
   #[Entity('city', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, City $city): Response {
+  public function form(Request $request, City $city)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $city->setEditBy($this->getUser());
 
     $form = $this->createForm(CityFormType::class, $city, ['attr' => ['action' => $this->generateUrl('app_city_form', ['id' => $city->getId()])]]);
@@ -69,7 +73,9 @@ class CityController extends AbstractController {
 
   #[Route('/view/{id}', name: 'app_city_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(City $city): Response {
+  public function view(City $city)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['city'] = $city;
 
     return $this->render('city/view.html.twig', $args);

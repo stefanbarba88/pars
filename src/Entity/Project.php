@@ -44,6 +44,9 @@ class Project implements JsonSerializable {
   #[ORM\Column(type: Types::TEXT, nullable: true,)]
   private ?string $description = null;
 
+  #[ORM\Column(type: Types::TEXT, nullable: true,)]
+  private ?string $important = null;
+
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?User $editBy = null;
@@ -159,6 +162,7 @@ class Project implements JsonSerializable {
       'id' => $this->getId(),
       'title' => $this->getTitle(),
       'description' => $this->getDescription(),
+      'important' => $this->getImportant(),
       'isSuspended' => $this->isSuspended(),
       'isTimeRoundUp' => $this->isTimeRoundUp(),
       'isEstimate' => $this->isEstimate(),
@@ -206,6 +210,22 @@ class Project implements JsonSerializable {
 
     return $this;
   }
+
+  /**
+   * @return string|null
+   */
+  public function getImportant(): ?string {
+    return $this->important;
+  }
+
+  /**
+   * @param string|null $important
+   */
+  public function setImportant(?string $important): void {
+    $this->important = $important;
+  }
+
+
 
   /**
    * @return User|null
@@ -671,5 +691,6 @@ class Project implements JsonSerializable {
 
     return $this;
   }
+
 
 }

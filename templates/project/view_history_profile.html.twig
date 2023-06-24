@@ -51,6 +51,16 @@
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
+                                {% if projectH.important is not null %}
+                                    <div class="card">
+                                        <div class="card-header bg-danger text-white border-bottom-0">
+                                            <h6 class="mb-0">Važno</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            {{ projectH.important }}
+                                        </div>
+                                    </div>
+                                {% endif %}
                                 <div class="card">
                                     <div class="card-header">
                                         <h5 class="mb-0">Osnovne informacije</h5>

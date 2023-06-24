@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Classes\Data\UserRolesData;
 use App\Classes\DTO\UploadedFileDTO;
+use App\Entity\Car;
 use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\Project;
@@ -197,6 +198,26 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         'slika' => $user->getImage(),
         'firma' => $user->getClients(),
         'isSuspended' => $user->getBadgeByStatus(),
+      ];
+    }
+    return $usersList;
+  }
+
+  public function getUsersCars(): array {
+
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false]);
+
+    $usersList = [];
+    foreach ($users as $user) {
+      $ime = $user->getFullName();
+      $car = $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' =>$user->getCar()]);
+      if (!is_null($car)) {
+        $ime = $ime . ' (' . $car->getCarName() . ')';
+      }
+
+      $usersList [] = [
+        'id' => $user->getId(),
+        'ime' => $ime
       ];
     }
     return $usersList;

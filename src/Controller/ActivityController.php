@@ -19,6 +19,9 @@ class ActivityController extends AbstractController {
 
   #[Route('/list/', name: 'app_activities')]
   public function list(): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
     $args['activities'] = $this->em->getRepository(Activity::class)->findAll();
 
@@ -29,6 +32,9 @@ class ActivityController extends AbstractController {
   #[Entity('activity', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, Activity $activity): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $activity->setEditBy($this->getUser());
 
     $form = $this->createForm(ActivityFormType::class, $activity, ['attr' => ['action' => $this->generateUrl('app_activity_form', ['id' => $activity->getId()])]]);
@@ -58,6 +64,9 @@ class ActivityController extends AbstractController {
   #[Route('/view/{id}', name: 'app_activity_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function view(Activity $activity): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['activity'] = $activity;
 
     return $this->render('activity/view.html.twig', $args);

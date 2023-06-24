@@ -158,8 +158,9 @@ class UserRegistrationFormType extends AbstractType {
 
       ->add('adresa')
       ->add('telefon1',TextType::class, [
+        'required' => false,
         'constraints' => [
-          new Regex('/^\d{1,10}$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
+          new Regex('/^\d{1,10}$/', 'Broj službenog telefona morate uneti u odgovarajućem formatu'),
         ],
           'attr' => [
             'maxlength' => '10'
@@ -168,7 +169,7 @@ class UserRegistrationFormType extends AbstractType {
       ->add('telefon2',TextType::class, [
         'required' => false,
         'constraints' => [
-          new Regex('/^\d{1,10}$/', 'Broj telefona#2 morate uneti u odgovarajućem formatu'),
+          new Regex('/^\d{1,10}$/', 'Broj privatnog telefona morate uneti u odgovarajućem formatu'),
         ],
         'attr' => [
             'maxlength' => '10'

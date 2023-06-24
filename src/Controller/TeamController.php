@@ -18,7 +18,9 @@ class TeamController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_teams')]
-  public function list(Request $request): Response {
+  public function list(Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $type = $request->query->getInt('type');
     $args = [];
     $args['teams'] = $this->em->getRepository(Team::class)->getTeams($type);
@@ -30,7 +32,9 @@ class TeamController extends AbstractController {
   #[Route('/form/{id}', name: 'app_team_form', defaults: ['id' => 0])]
   #[Entity('team', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Team $team): Response {
+  public function form(Request $request, Team $team)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $form = $this->createForm(TeamFormType::class, $team, ['attr' => ['action' => $this->generateUrl('app_team_form', ['id' => $team->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -58,7 +62,9 @@ class TeamController extends AbstractController {
 
   #[Route('/view/{id}', name: 'app_team_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(Team $team): Response {
+  public function view(Team $team)    : Response { if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args['team'] = $team;
 
     return $this->render('team/view.html.twig', $args);

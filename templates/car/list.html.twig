@@ -124,7 +124,11 @@
                                                     <a href="{{ path('app_car_activate', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>
                                                 {% else %}
                                                     {% if car.isReserved %}
-                                                        <a href="{{ path('app_car_reservation_stop', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Razdužite</a>
+                                                        {% for res in car.carReservations %}
+                                                            {% if res.finished is null%}
+                                                                <a href="{{ path('app_car_reservation_stop', { id: res.id, type:1}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Razdužite</a>
+                                                            {% endif %}
+                                                        {% endfor %}
                                                     {% else %}
                                                         <a href="{{ path('app_car_reservation_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Zadužite</a>
                                                     {% endif %}

@@ -8,6 +8,7 @@ use App\Entity\Car;
 use App\Entity\CarHistory;
 use App\Entity\CarReservation;
 use App\Entity\Expense;
+use App\Form\CarStopReservationFormType;
 use App\Form\ExpenseFormType;
 use DateTimeImmutable;
 use App\Form\CarFormType;
@@ -247,28 +248,40 @@ class CarController extends AbstractController {
   }
 
   #[Route('/stop-reservation/{id}', name: 'app_car_reservation_stop')]
-  public function stopReservation(Car $car, Request $request): Response {
+  public function stopReservation(CarReservation $reservation, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+
     $type = $request->query->getInt('type');
-    $reservation = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'desc']);
+    $form = $this->createForm(CarStopReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_reservation_stop', ['id' => $reservation->getId(), 'type' => $type])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
 
-    $reservation->setFinished(new DateTimeImmutable());
-    $this->em->getRepository(CarReservation::class)->save($reservation);
+      if ($form->isSubmitted() && $form->isValid()) {
 
-    notyf()
-      ->position('x', 'right')
-      ->position('y', 'top')
-      ->duration(5000)
-      ->dismissible(true)
-      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+        $reservation->setFinished(new DateTimeImmutable());
+        $this->em->getRepository(CarReservation::class)->save($reservation);
 
-    $this->em->getRepository(CarReservation::class)->save($reservation);
-    if ($type == 1) {
-      return $this->redirectToRoute('app_cars');
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::CAR_ADD);
+        if ($type == 1) {
+          return $this->redirectToRoute('app_cars');
+        }
+        return $this->redirectToRoute('app_cars_reservations', ['id' => $reservation->getCar()->getId()]);
+      }
     }
-    return $this->redirectToRoute('app_cars_reservations', ['id' => $car->getId()]);
+
+    $args['form'] = $form->createView();
+    $args['reservation'] = $reservation;
+    $args['car'] = $reservation->getCar();
+
+    return $this->render('car/form_reservation_stop.html.twig', $args);
   }
 
   #[Route('/view-reservation/{id}', name: 'app_car_reservation_view')]

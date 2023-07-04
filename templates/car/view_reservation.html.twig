@@ -63,23 +63,130 @@
                                             <div class="col-4">Vozač:</div>
                                             <div class="col-8">{{ reservation.driver.fullName }}</div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Zaduženje</h5>
+                                    </div>
+                                    <div class="card-body">
                                         <div class="row p-2">
-                                            <div class="col-4">Zadužen:</div>
+                                            <div class="col-4">Datum i vreme:</div>
                                             <div class="col-8">{{ reservation.created | date("d.m.Y H:i:s")}}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Razdužen:</div>
+                                            <div class="col-4">Kilometraža:</div>
+                                            <div class="col-8">{{ reservation.kmStart }} km</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Nivo goriva:</div>
                                             <div class="col-8">
-                                                {% if reservation.finished is null %}
-                                                    /
-                                                {% else %}
-                                                    {{ reservation.finished | date("d.m.Y H:i:s")}}
+                                                {% if reservation.fuelStart == constant('App\\Classes\\Data\\FuelData::PRAZNO') %}
+                                                    Prazan rezervoar
+                                                {% endif %}
+                                                {% if reservation.fuelStart == constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                                    1/4
+                                                {% endif %}
+                                                {% if reservation.fuelStart == constant('App\\Classes\\Data\\FuelData::POLA') %}
+                                                    1/2
+                                                {% endif %}
+                                                {% if reservation.fuelStart == constant('App\\Classes\\Data\\FuelData::TRI_CETVRTI') %}
+                                                    3/4
+                                                {% endif %}
+                                                {% if reservation.fuelStart == constant('App\\Classes\\Data\\FuelData::PUN') %}
+                                                    Pun rezervoar
                                                 {% endif %}
                                             </div>
                                         </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Nivo čistoće:</div>
+                                            <div class="col-8">
+                                                {% if reservation.cleanStart == constant('App\\Classes\\Data\\CleanData::LOSE') %}
+                                                    Loše
+                                                {% endif %}
+                                                {% if reservation.cleanStart == constant('App\\Classes\\Data\\CleanData::DOVOLJNO') %}
+                                                    Dovoljno
+                                                {% endif %}
+                                                {% if reservation.cleanStart == constant('App\\Classes\\Data\\CleanData::DOBRO') %}
+                                                    Dobro
+                                                {% endif %}
+                                                {% if reservation.cleanStart == constant('App\\Classes\\Data\\CleanData::VRLO_DOBRO') %}
+                                                    Vrlo dobro
+                                                {% endif %}
+                                                {% if reservation.cleanStart == constant('App\\Classes\\Data\\CleanData::ODLICNO') %}
+                                                    Odlično
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Napomena:</div>
+                                            <div class="col-8"> {{ reservation.descStart }}</div>
+                                        </div>
                                     </div>
                                 </div>
+                                {% if reservation.finished is not null %}
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Razduženje</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Datum i vreme:</div>
+                                                <div class="col-8">{{ reservation.finished | date("d.m.Y H:i:s")}}
+                                                </div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Kilometraža:</div>
+                                                <div class="col-8">{{ reservation.kmStop }} km</div>
+                                            </div>
+                                            <div class="row p-2">
+                                                <div class="col-4">Nivo goriva:</div>
+                                                <div class="col-8">
+                                                    {% if reservation.fuelStop == constant('App\\Classes\\Data\\FuelData::PRAZNO') %}
+                                                        Prazan rezervoar
+                                                    {% endif %}
+                                                    {% if reservation.fuelStop == constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                                        1/4
+                                                    {% endif %}
+                                                    {% if reservation.fuelStop == constant('App\\Classes\\Data\\FuelData::POLA') %}
+                                                        1/2
+                                                    {% endif %}
+                                                    {% if reservation.fuelStop == constant('App\\Classes\\Data\\FuelData::TRI_CETVRTI') %}
+                                                        3/4
+                                                    {% endif %}
+                                                    {% if reservation.fuelStop == constant('App\\Classes\\Data\\FuelData::PUN') %}
+                                                        Pun rezervoar
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Nivo čistoće:</div>
+                                                <div class="col-8">
+                                                    {% if reservation.cleanStop == constant('App\\Classes\\Data\\CleanData::LOSE') %}
+                                                        Loše
+                                                    {% endif %}
+                                                    {% if reservation.cleanStop == constant('App\\Classes\\Data\\CleanData::DOVOLJNO') %}
+                                                        Dovoljno
+                                                    {% endif %}
+                                                    {% if reservation.cleanStop == constant('App\\Classes\\Data\\CleanData::DOBRO') %}
+                                                        Dobro
+                                                    {% endif %}
+                                                    {% if reservation.cleanStop == constant('App\\Classes\\Data\\CleanData::VRLO_DOBRO') %}
+                                                        Vrlo dobro
+                                                    {% endif %}
+                                                    {% if reservation.cleanStop == constant('App\\Classes\\Data\\CleanData::ODLICNO') %}
+                                                        Odlično
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="row p-2">
+                                                <div class="col-4">Napomena:</div>
+                                                <div class="col-8"> {{ reservation.descStop }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                         <!-- /right content -->

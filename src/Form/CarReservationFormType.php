@@ -2,6 +2,8 @@
 
 namespace App\Form;
 
+use App\Classes\Data\CleanData;
+use App\Classes\Data\FuelData;
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Car;
@@ -16,6 +18,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -57,7 +60,24 @@ class CarReservationFormType extends AbstractType {
         },
         'expanded' => false,
         'multiple' => false,
-      ]);
+      ])
+        ->add('fuelStart', ChoiceType::class, [
+          'placeholder' => '--Izaberite nivo goriva--',
+          'choices' => FuelData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('cleanStart', ChoiceType::class, [
+          'placeholder' => '--Izaberite nivo čistoće--',
+          'choices' => CleanData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('descStart')
+        ->add('kmStart', NumberType::class, [
+          'required' => true,
+          'html5' => true,
+        ]);
     } else {
       $builder
         ->add('car', EntityType::class, [
@@ -73,6 +93,23 @@ class CarReservationFormType extends AbstractType {
           },
           'expanded' => false,
           'multiple' => false,
+        ])
+        ->add('fuelStart', ChoiceType::class, [
+          'placeholder' => '--Izaberite nivo goriva--',
+          'choices' => FuelData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('cleanStart', ChoiceType::class, [
+          'placeholder' => '--Izaberite nivo čistoće--',
+          'choices' => CleanData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('descStart')
+        ->add('kmStart', NumberType::class, [
+          'required' => true,
+          'html5' => true,
         ]);
     }
 

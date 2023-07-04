@@ -29,11 +29,7 @@
                                 <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
                                 <a href="{{ path('app_cars_reservations', {id:car.id}) }}" class="breadcrumb-item">Rezervacije</a>
                                 <span class="breadcrumb-item active">
-                                    {% if reservation.id is not null %}
-                                        Izmena
-                                    {% else %}
-                                        Dodavanje
-                                    {% endif %}
+                                    Razduživanje
                                 </span>
                             </div>
 
@@ -63,11 +59,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
-                                 {% if reservation.id is not null %}
-                                     Izmena rezervacije
-                                 {% else %}
-                                     Dodavanje rezervacije
-                                 {% endif %}
+                            Razduživanje
                             </h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
@@ -75,44 +67,44 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.car, 'Vozilo:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.car, {attr: { class: 'form-control select required' }}) }}
+{#                                        {{ form_label(form.car, 'Vozilo:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        {{ form_widget(form.car, {attr: { class: 'form-control select required' }}) }}#}
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.driver, 'Vozač:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.driver, {attr: { class: 'form-control select required' }}) }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.kmStart, 'Početna kilometraža:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.kmStart, {attr: { class: 'form-control required' }}) }}
+{#                                        {{ form_label(form.driver, 'Vozač:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        {{ form_widget(form.driver, {attr: { class: 'form-control select required' }}) }}#}
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.fuelStart, 'Nivo goriva:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.fuelStart, {attr: { class: 'form-control select required' }}) }}
+                                        {{ form_label(form.kmStop, 'Krajnja kilometraža:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.kmStop, {attr: { class: 'form-control required' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.fuelStop, 'Nivo goriva:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.fuelStop, {attr: { class: 'form-control select required' }}) }}
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.cleanStart, 'Nivo čistoće:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.cleanStart, {attr: { class: 'form-control select required' }}) }}
+                                        {{ form_label(form.cleanStop, 'Nivo čistoće:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.cleanStop, {attr: { class: 'form-control select required' }}) }}
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
-                                        {{ form_label(form.descStart, 'Napomena:', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.descStart, {attr: { class: 'form-control' }}) }}
+                                        {{ form_label(form.descStop, 'Napomena:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.descStop, {attr: { class: 'form-control' }}) }}
                                     </div>
                             </div>
 

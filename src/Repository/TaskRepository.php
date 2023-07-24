@@ -6,6 +6,7 @@ use App\Classes\Data\FastTaskData;
 use App\Classes\Data\TaskStatusData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
+use App\Entity\Car;
 use App\Entity\FastTask;
 use App\Entity\Image;
 use App\Entity\Pdf;
@@ -14,7 +15,9 @@ use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskHistory;
 use App\Entity\TaskLog;
+use App\Entity\Tool;
 use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
@@ -328,26 +331,84 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
-  public function createTasksFromList(FastTask $fastTask, User $user): FastTask  {
+  public function getAssignedUsersByTask(Task $task): array  {
+    $niz = [];
 
+    $users = $task->getAssignedUsers();
+
+    foreach ($users as $user) {
+      $niz[] = $user->getId();
+    }
+
+    $primary = $task->getPriorityUserLog();
+
+    $nizBezElementa = array_diff($niz, [$primary]);
+    $nizBezElementa = array_values($nizBezElementa);
+
+    $user1 = $this->getEntityManager()->getRepository(User::class)->find($primary);
+
+    if (isset($nizBezElementa[0])) {
+      $user2 = $this->getEntityManager()->getRepository(User::class)->find($nizBezElementa[0]);
+    } else {
+      $user2 = null;
+    }
+    if (isset($nizBezElementa[1])) {
+      $user3 = $this->getEntityManager()->getRepository(User::class)->find($nizBezElementa[1]);
+    } else {
+      $user3 = null;
+    }
+
+    return [$user1, $user2, $user3];
+
+  }
+
+
+  public function getTasksByDate(DateTimeImmutable $date): array  {
+
+    $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->orderBy('t.time', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+    $lista = [];
+    foreach ($taskovi as $tsk) {
+       $lista[] = [
+         'task' => $tsk,
+         'status' => $this->taskStatus($tsk),
+         'car' => $this->getEntityManager()->getRepository(Car::class)->findBy(['id' => $tsk->getCar()]),
+         'driver' => $this->getEntityManager()->getRepository(User::class)->findBy(['id' => $tsk->getDriver()])
+       ];
+    }
+    return $lista;
+  }
+
+  public function createTasksFromList(FastTask $fastTask, User $user): FastTask  {
+    $format = "H:i";
    if(!is_null($fastTask->getProject1())) {
       $task1 = new Task();
       $project1 = $this->getEntityManager()->getRepository(Project::class)->find($fastTask->getProject1());
       $task1->setProject($project1);
-
+      $task1->setDatumKreiranja($fastTask->getDatum());
       $task1->setTitle($project1->getTitle() . ' - ' . $fastTask->getDatum()->format('d.m.Y'));
       $task1->setIsTimeRoundUp(true);
       $task1->setRoundingInterval(15);
-      $task1->setDatumKreiranja($fastTask->getDatum());
+      $task1->setCreatedBy($user);
+
 
       if(!is_null($fastTask->getDescription1())) {
         $task1->setDescription($fastTask->getDescription1());
       }
-      if(!is_null($fastTask->getOprema1())) {
-        $task1->setOprema($fastTask->getOprema1());
-      }
+
       if(!is_null($fastTask->getGeo11())) {
         $task1->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo11()));
+        $task1->setPriorityUserLog($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo11())->getId());
       }
       if(!is_null($fastTask->getGeo21())) {
         $task1->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo21()));
@@ -360,6 +421,28 @@ class TaskRepository extends ServiceEntityRepository {
           $task1->addActivity($this->getEntityManager()->getRepository(Activity::class)->find($act));
         }
       }
+      if(!empty($fastTask->getOprema1())) {
+       foreach ($fastTask->getOprema1() as $opr) {
+         $task1->addOprema($this->getEntityManager()->getRepository(Tool::class)->find($opr));
+       }
+     }
+
+     if(!is_null($fastTask->getTime1())) {
+       $task1->setTime($fastTask->getDatum()->modify($fastTask->getTime1()));
+     } else {
+       $task1->setTime($fastTask->getDatum());
+     }
+
+
+     if(!is_null($fastTask->getCar1())) {
+       $task1->setCar($fastTask->getCar1());
+       if (!is_null($task1->getDriver())) {
+         $task1->setDriver($fastTask->getDriver1());
+       } else {
+         $task1->setDriver($fastTask->getGeo11());
+       }
+     }
+
       $this->saveTaskFromList($task1, $user);
    }
 
@@ -376,11 +459,14 @@ class TaskRepository extends ServiceEntityRepository {
       if(!is_null($fastTask->getDescription2())) {
         $task2->setDescription($fastTask->getDescription2());
       }
-      if(!is_null($fastTask->getOprema2())) {
-        $task2->setOprema($fastTask->getOprema2());
-      }
+     if(!empty($fastTask->getOprema2())) {
+       foreach ($fastTask->getOprema2() as $opr) {
+         $task2->addOprema($this->getEntityManager()->getRepository(Tool::class)->find($opr));
+       }
+     }
       if(!is_null($fastTask->getGeo12())) {
         $task2->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo12()));
+        $task2->setPriorityUserLog($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo12())->getId());
       }
       if(!is_null($fastTask->getGeo22())) {
         $task2->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo22()));
@@ -393,6 +479,20 @@ class TaskRepository extends ServiceEntityRepository {
           $task2->addActivity($this->getEntityManager()->getRepository(Activity::class)->find($act));
         }
       }
+
+     if(!is_null($fastTask->getTime2())) {
+       $task2->setTime($fastTask->getDatum()->modify($fastTask->getTime2()));
+     } else {
+         $task2->setTime($fastTask->getDatum());
+     }
+     if(!is_null($fastTask->getCar2())) {
+       $task2->setCar($fastTask->getCar2());
+       if (!is_null($task2->getDriver())) {
+         $task2->setDriver($fastTask->getDriver2());
+       } else {
+         $task2->setDriver($fastTask->getGeo12());
+       }
+     }
      $this->saveTaskFromList($task2, $user);
     }
 
@@ -409,11 +509,14 @@ class TaskRepository extends ServiceEntityRepository {
       if(!is_null($fastTask->getDescription3())) {
         $task3->setDescription($fastTask->getDescription3());
       }
-      if(!is_null($fastTask->getOprema3())) {
-        $task3->setOprema($fastTask->getOprema3());
-      }
+     if(!empty($fastTask->getOprema3())) {
+       foreach ($fastTask->getOprema3() as $opr) {
+         $task3->addOprema($this->getEntityManager()->getRepository(Tool::class)->find($opr));
+       }
+     }
       if(!is_null($fastTask->getGeo13())) {
         $task3->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo13()));
+        $task3->setPriorityUserLog($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo13())->getId());
       }
       if(!is_null($fastTask->getGeo23())) {
         $task3->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo23()));
@@ -426,6 +529,20 @@ class TaskRepository extends ServiceEntityRepository {
           $task3->addActivity($this->getEntityManager()->getRepository(Activity::class)->find($act));
         }
       }
+
+     if(!is_null($fastTask->getTime3())) {
+       $task3->setTime($fastTask->getDatum()->modify($fastTask->getTime3()));
+     } else {
+       $task3->setTime($fastTask->getDatum());
+     }
+     if(!is_null($fastTask->getCar3())) {
+       $task3->setCar($fastTask->getCar3());
+       if (!is_null($task3->getDriver())) {
+         $task3->setDriver($fastTask->getDriver3());
+       } else {
+         $task3->setDriver($fastTask->getGeo13());
+       }
+     }
      $this->saveTaskFromList($task3, $user);
     }
 
@@ -442,11 +559,14 @@ class TaskRepository extends ServiceEntityRepository {
       if(!is_null($fastTask->getDescription4())) {
         $task4->setDescription($fastTask->getDescription4());
       }
-      if(!is_null($fastTask->getOprema4())) {
-        $task4->setOprema($fastTask->getOprema4());
-      }
+     if(!empty($fastTask->getOprema4())) {
+       foreach ($fastTask->getOprema4() as $opr) {
+         $task4->addOprema($this->getEntityManager()->getRepository(Tool::class)->find($opr));
+       }
+     }
       if(!is_null($fastTask->getGeo14())) {
         $task4->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo14()));
+        $task4->setPriorityUserLog($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo14())->getId());
       }
       if(!is_null($fastTask->getGeo24())) {
         $task4->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo24()));
@@ -459,6 +579,20 @@ class TaskRepository extends ServiceEntityRepository {
           $task4->addActivity($this->getEntityManager()->getRepository(Activity::class)->find($act));
         }
       }
+
+     if(!is_null($fastTask->getTime4())) {
+       $task4->setTime($fastTask->getDatum()->modify($fastTask->getTime4()));
+     } else {
+       $task4->setTime($fastTask->getDatum());
+     }
+     if(!is_null($fastTask->getCar4())) {
+       $task4->setCar($fastTask->getCar4());
+       if (!is_null($task4->getDriver())) {
+         $task4->setDriver($fastTask->getDriver4());
+       } else {
+         $task4->setDriver($fastTask->getGeo14());
+       }
+     }
      $this->saveTaskFromList($task4, $user);
     }
 
@@ -475,11 +609,14 @@ class TaskRepository extends ServiceEntityRepository {
       if(!is_null($fastTask->getDescription5())) {
         $task5->setDescription($fastTask->getDescription5());
       }
-      if(!is_null($fastTask->getOprema5())) {
-        $task5->setOprema($fastTask->getOprema5());
-      }
+     if(!empty($fastTask->getOprema5())) {
+       foreach ($fastTask->getOprema5() as $opr) {
+         $task5->addOprema($this->getEntityManager()->getRepository(Tool::class)->find($opr));
+       }
+     }
       if(!is_null($fastTask->getGeo15())) {
         $task5->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo15()));
+        $task5->setPriorityUserLog($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo15())->getId());
       }
       if(!is_null($fastTask->getGeo25())) {
         $task5->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo25()));
@@ -492,6 +629,20 @@ class TaskRepository extends ServiceEntityRepository {
           $task5->addActivity($this->getEntityManager()->getRepository(Activity::class)->find($act));
         }
       }
+
+     if(!is_null($fastTask->getTime5())) {
+       $task5->setTime($fastTask->getDatum()->modify($fastTask->getTime5()));
+     } else {
+       $task5->setTime($fastTask->getDatum());
+     }
+     if(!is_null($fastTask->getCar5())) {
+       $task5->setCar($fastTask->getCar5());
+       if (!is_null($task5->getDriver())) {
+         $task5->setDriver($fastTask->getDriver5());
+       } else {
+         $task5->setDriver($fastTask->getGeo15());
+       }
+     }
      $this->saveTaskFromList($task5, $user);
     }
 
@@ -508,11 +659,14 @@ class TaskRepository extends ServiceEntityRepository {
       if(!is_null($fastTask->getDescription6())) {
         $task6->setDescription($fastTask->getDescription6());
       }
-      if(!is_null($fastTask->getOprema6())) {
-        $task6->setOprema($fastTask->getOprema6());
-      }
+     if(!empty($fastTask->getOprema6())) {
+       foreach ($fastTask->getOprema6() as $opr) {
+         $task6->addOprema($this->getEntityManager()->getRepository(Tool::class)->find($opr));
+       }
+     }
       if(!is_null($fastTask->getGeo16())) {
         $task6->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo16()));
+        $task6->setPriorityUserLog($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo16())->getId());
       }
       if(!is_null($fastTask->getGeo26())) {
         $task6->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo26()));
@@ -525,6 +679,20 @@ class TaskRepository extends ServiceEntityRepository {
           $task6->addActivity($this->getEntityManager()->getRepository(Activity::class)->find($act));
         }
       }
+
+     if(!is_null($fastTask->getTime6())) {
+       $task6->setTime($fastTask->getDatum()->modify($fastTask->getTime6()));
+     } else {
+       $task6->setTime($fastTask->getDatum());
+     }
+     if(!is_null($fastTask->getCar6())) {
+       $task6->setCar($fastTask->getCar6());
+       if (!is_null($task6->getDriver())) {
+         $task6->setDriver($fastTask->getDriver6());
+       } else {
+         $task6->setDriver($fastTask->getGeo16());
+       }
+     }
      $this->saveTaskFromList($task6, $user);
     }
 
@@ -541,11 +709,14 @@ class TaskRepository extends ServiceEntityRepository {
       if(!is_null($fastTask->getDescription7())) {
         $task7->setDescription($fastTask->getDescription7());
       }
-      if(!is_null($fastTask->getOprema7())) {
-        $task7->setOprema($fastTask->getOprema7());
-      }
+     if(!empty($fastTask->getOprema7())) {
+       foreach ($fastTask->getOprema7() as $opr) {
+         $task7->addOprema($this->getEntityManager()->getRepository(Tool::class)->find($opr));
+       }
+     }
       if(!is_null($fastTask->getGeo17())) {
         $task7->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo17()));
+        $task7->setPriorityUserLog($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo17())->getId());
       }
       if(!is_null($fastTask->getGeo27())) {
         $task7->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo27()));
@@ -558,6 +729,20 @@ class TaskRepository extends ServiceEntityRepository {
           $task7->addActivity($this->getEntityManager()->getRepository(Activity::class)->find($act));
         }
       }
+
+     if(!is_null($fastTask->getTime7())) {
+       $task7->setTime($fastTask->getDatum()->modify($fastTask->getTime7()));
+     } else {
+       $task7->setTime($fastTask->getDatum());
+     }
+     if(!is_null($fastTask->getCar7())) {
+       $task7->setCar($fastTask->getCar7());
+       if (!is_null($task7->getDriver())) {
+         $task7->setDriver($fastTask->getDriver7());
+       } else {
+         $task7->setDriver($fastTask->getGeo17());
+       }
+     }
      $this->saveTaskFromList($task7, $user);
     }
 
@@ -574,11 +759,14 @@ class TaskRepository extends ServiceEntityRepository {
       if(!is_null($fastTask->getDescription8())) {
         $task8->setDescription($fastTask->getDescription8());
       }
-      if(!is_null($fastTask->getOprema8())) {
-        $task8->setOprema($fastTask->getOprema8());
-      }
+     if(!empty($fastTask->getOprema8())) {
+       foreach ($fastTask->getOprema8() as $opr) {
+         $task8->addOprema($this->getEntityManager()->getRepository(Tool::class)->find($opr));
+       }
+     }
       if(!is_null($fastTask->getGeo18())) {
         $task8->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo18()));
+        $task8->setPriorityUserLog($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo18())->getId());
       }
       if(!is_null($fastTask->getGeo28())) {
         $task8->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo28()));
@@ -591,6 +779,20 @@ class TaskRepository extends ServiceEntityRepository {
           $task8->addActivity($this->getEntityManager()->getRepository(Activity::class)->find($act));
         }
       }
+
+     if(!is_null($fastTask->getTime8())) {
+       $task8->setTime($fastTask->getDatum()->modify($fastTask->getTime8()));
+     } else {
+       $task8->setTime($fastTask->getDatum());
+     }
+     if(!is_null($fastTask->getCar8())) {
+       $task8->setCar($fastTask->getCar8());
+       if (!is_null($task8->getDriver())) {
+         $task8->setDriver($fastTask->getDriver8());
+       } else {
+         $task8->setDriver($fastTask->getGeo18());
+       }
+     }
      $this->saveTaskFromList($task8, $user);
     }
 
@@ -607,11 +809,14 @@ class TaskRepository extends ServiceEntityRepository {
       if(!is_null($fastTask->getDescription9())) {
         $task9->setDescription($fastTask->getDescription9());
       }
-      if(!is_null($fastTask->getOprema9())) {
-        $task9->setOprema($fastTask->getOprema9());
-      }
+     if(!empty($fastTask->getOprema9())) {
+       foreach ($fastTask->getOprema9() as $opr) {
+         $task9->addOprema($this->getEntityManager()->getRepository(Tool::class)->find($opr));
+       }
+     }
       if(!is_null($fastTask->getGeo19())) {
         $task9->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo19()));
+        $task9->setPriorityUserLog($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo19())->getId());
       }
       if(!is_null($fastTask->getGeo29())) {
         $task9->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo29()));
@@ -624,6 +829,20 @@ class TaskRepository extends ServiceEntityRepository {
           $task9->addActivity($this->getEntityManager()->getRepository(Activity::class)->find($act));
         }
       }
+
+     if(!is_null($fastTask->getTime9())) {
+       $task9->setTime($fastTask->getDatum()->modify($fastTask->getTime9()));
+     } else {
+       $task9->setTime($fastTask->getDatum());
+     }
+     if(!is_null($fastTask->getCar9())) {
+       $task9->setCar($fastTask->getCar9());
+       if (!is_null($task9->getDriver())) {
+         $task9->setDriver($fastTask->getDriver9());
+       } else {
+         $task9->setDriver($fastTask->getGeo19());
+       }
+     }
      $this->saveTaskFromList($task9, $user);
     }
 
@@ -640,11 +859,14 @@ class TaskRepository extends ServiceEntityRepository {
       if(!is_null($fastTask->getDescription10())) {
         $task10->setDescription($fastTask->getDescription10());
       }
-      if(!is_null($fastTask->getOprema10())) {
-        $task10->setOprema($fastTask->getOprema10());
-      }
+     if(!empty($fastTask->getOprema10())) {
+       foreach ($fastTask->getOprema10() as $opr) {
+         $task10->addOprema($this->getEntityManager()->getRepository(Tool::class)->find($opr));
+       }
+     }
       if(!is_null($fastTask->getGeo110())) {
         $task10->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo110()));
+        $task10->setPriorityUserLog($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo110())->getId());
       }
       if(!is_null($fastTask->getGeo210())) {
         $task10->addAssignedUser($this->getEntityManager()->getRepository(User::class)->find($fastTask->getGeo210()));
@@ -657,6 +879,20 @@ class TaskRepository extends ServiceEntityRepository {
           $task10->addActivity($this->getEntityManager()->getRepository(Activity::class)->find($act));
         }
       }
+
+     if(!is_null($fastTask->getTime10())) {
+       $task10->setTime($fastTask->getDatum()->modify($fastTask->getTime10()));
+     } else {
+       $task10->setTime($fastTask->getDatum());
+     }
+     if(!is_null($fastTask->getCar10())) {
+       $task10->setCar($fastTask->getCar10());
+       if (!is_null($task10->getDriver())) {
+         $task10->setDriver($fastTask->getDriver10());
+       } else {
+         $task10->setDriver($fastTask->getGeo110());
+       }
+     }
      $this->saveTaskFromList($task10, $user);
     }
 
@@ -664,6 +900,8 @@ class TaskRepository extends ServiceEntityRepository {
    return $this->getEntityManager()->getRepository(FastTask::class)->save($fastTask);
 
   }
+
+
 
 
   public function save(Task $task): Task {

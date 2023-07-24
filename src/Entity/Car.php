@@ -27,8 +27,17 @@ class Car implements JsonSerializable {
   #[ORM\Column(length: 255)]
   private ?string $model = null;
 
+  #[ORM\Column(length: 255, nullable: true)]
+  private ?string $km = null;
+
   #[ORM\Column(length: 255)]
   private ?string $plate = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $opremaGeo = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $opremaZakonska = null;
 
   #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
   private ?string $price = null;
@@ -80,12 +89,15 @@ class Car implements JsonSerializable {
       'brand' => $this->getBrand(),
       'model' => $this->getModel(),
       'plate' => $this->getPlate(),
+      'opremaGeo' => $this->getOpremaGeo(),
+      'opremaZakonska' => $this->getOpremaZakonska(),
       'dateReg' => $this->getDatumRegistracije(),
       'dateNextReg' => $this->getDatumNaredneRegistracije(),
       'created' => $this->getCreated(),
       'createdBy' => $this->getCreatedBy()->getFullName(),
       'price' => $this->getPrice(),
       'reservation' => $this->isReserved(),
+      'km' => $this->getKm(),
     ];
   }
 
@@ -339,6 +351,49 @@ class Car implements JsonSerializable {
 
       return $this;
   }
+
+  /**
+   * @return string|null
+   */
+  public function getOpremaGeo(): ?string {
+    return $this->opremaGeo;
+  }
+
+  /**
+   * @param string|null $opremaGeo
+   */
+  public function setOpremaGeo(?string $opremaGeo): void {
+    $this->opremaGeo = $opremaGeo;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getOpremaZakonska(): ?string {
+    return $this->opremaZakonska;
+  }
+
+  /**
+   * @param string|null $opremaZakonska
+   */
+  public function setOpremaZakonska(?string $opremaZakonska): void {
+    $this->opremaZakonska = $opremaZakonska;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getKm(): ?string {
+    return $this->km;
+  }
+
+  /**
+   * @param string|null $km
+   */
+  public function setKm(?string $km): void {
+    $this->km = $km;
+  }
+
 
 
 

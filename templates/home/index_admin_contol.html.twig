@@ -1,0 +1,298 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+{#                <!-- Page header -->#}
+{#                <div class="page-header page-header-light shadow">#}
+{#                    <div class="page-header-content d-lg-flex">#}
+{#                        <div class="d-flex">#}
+{#                            <h4 class="page-title mb-0">#}
+{#                                Kontrolna tabla#}
+{#                            </h4>#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="page-header-content d-lg-flex border-top">#}
+{#                        <div class="d-flex">#}
+{#                            <div class="breadcrumb py-2">#}
+{#                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>#}
+{#                            </div>#}
+
+{#                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">#}
+{#                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>#}
+{#                            </a>#}
+{#                        </div>#}
+
+{#                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}#}
+{#                    </div>#}
+{#                </div>#}
+{#                <!-- /page header -->#}
+
+
+                <div class="content">
+                    {% if app.user.userType != constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') and app.user.userType != constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') %}
+                    <div class="row">
+                        <div class="col-xl-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Lista zadataka</h5>
+                                </div>
+
+                                <div class="card-body">
+                                    <p class="mb-3">Lista zadataka zadatih od strane administratora</p>
+
+                                    <ul class="list list-unstyled mb-0">
+                                        {% if checklist is not empty %}
+                                            {% for task in checklist | slice(0,4) %}
+                                                {% if task.status == 1  %}
+                                                    <li>
+                                                        <a href="{{ path('app_checklist_finish', {id: task.id}) }}"><i class="ph-x-circle text-danger me-2"></i></a>
+                                                        {{ task.task }}
+                                                    </li>
+                                                {% elseif task.status == 2 %}
+                                                    <li>
+                                                        <i class="ph-check-circle text-success me-2"></i>
+                                                        {{ task.task }}
+                                                    </li>
+                                                {% else %}
+                                                    <li>
+                                                        <del>{{ task.task }}</del>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            Nemate zadatih zadataka
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="row d-none d-sm-block">
+                        <div class="col-xl-12">
+                            <!-- Marketing campaigns -->
+                            <div class="card">
+
+                                <div class="card-header d-lg-flex py-lg-0">
+                                    <h5 class="py-lg-3 mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>
+                                    <div class="mt-1 my-lg-auto ms-lg-auto">
+{#                                        <a href="{{ path('app_task_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>#}
+                                        <a href="{{ path('app_quick_tasks') }}" class="btn btn-light">
+                                            <i class="ph-clock-afternoon me-2"></i>
+                                            Brzi zadaci
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="table-responsive ">
+                                    <table class="table table-hover table-bordered table-sm">
+                                        <thead>
+                                        <tr class="table-light">
+                                            <th colspan="7">PARS raspored</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Projekat</th>
+                                            <th>Geodete</th>
+                                            <th>Aktivnosti</th>
+                                            <th>Oprema</th>
+                                            <th>Vozilo</th>
+                                            <th>Vreme</th>
+                                            <th>Napomena</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if timetable is not empty %}
+                                            {% for task in timetable %}
+                                                {% if task['projekat'] is not null %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ task['projekat'].title }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% if task['geo1'] is not null %}
+                                                                    {{ task['geo1'].fullName }} <br>
+                                                                {% endif %}
+                                                                {% if task['geo2'] is not null %}
+                                                                    {{ task['geo2'].fullName }} <br>
+                                                                {% endif %}
+                                                                {% if task['geo3'] is not null %}
+                                                                    {{ task['geo3'].fullName }}
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% for akt in task['aktivnosti'] %}
+                                                                    {{ akt.title }} <br>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ task.oprema }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {% if task.vozilo is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-car me-2"></i>
+                                                                    {{ task.vozilo.getCarName }}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if task.vreme is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ task.vreme}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ task['napomena'] }}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /marketing campaigns -->
+                        </div>
+                    </div>
+
+                    <div class="row d-none d-sm-block">
+                        <div class="col-xl-12">
+                            <!-- Marketing campaigns -->
+                            <div class="card">
+
+                                <div class="card-header d-lg-flex py-lg-0">
+                                    <h5 class="py-lg-3 mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
+                                    <div class="mt-1 my-lg-auto ms-lg-auto">
+                                        <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-eye me-2"></i> Vidite</a>
+                                    </div>
+                                </div>
+                                <div class="table-responsive ">
+                                    <table class="table table-hover table-bordered table-sm">
+                                        <thead>
+                                        <tr class="table-light">
+                                            <th colspan="7">PARS raspored</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Projekat</th>
+                                            <th>Geodete</th>
+                                            <th>Aktivnosti</th>
+                                            <th>Oprema</th>
+                                            <th>Vozilo</th>
+                                            <th>Vreme</th>
+                                            <th>Napomena</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if tomorrowTimetable is not empty %}
+                                            {% for task in tomorrowTimetable %}
+                                                {% if task['projekat'] is not null %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ task['projekat'].title }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% if task['geo1'] is not null %}
+                                                                    {{ task['geo1'].fullName }} <br>
+                                                                {% endif %}
+                                                                {% if task['geo2'] is not null %}
+                                                                    {{ task['geo2'].fullName }} <br>
+                                                                {% endif %}
+                                                                {% if task['geo3'] is not null %}
+                                                                    {{ task['geo3'].fullName }}
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% for akt in task['aktivnosti'] %}
+                                                                    {{ akt.title }} <br>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ task.oprema }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {% if task.vozilo is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-car me-2"></i>
+                                                                    {{ task.vozilo.getCarName }}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if task.vreme is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ task.vreme}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ task['napomena'] }}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /marketing campaigns -->
+                        </div>
+                    </div>
+
+                    <!-- /dashboard content -->
+
+                </div>
+                <!-- /content area -->
+
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+    <script src="{{ asset('assets/demo/pages/dashboard.js') }}"></script>
+
+{% endblock includeJavascript %}

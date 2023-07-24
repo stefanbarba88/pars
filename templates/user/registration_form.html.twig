@@ -176,6 +176,36 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="fw-bold border-bottom pb-2 mb-3">Ostale informacije</div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        {{ form_label(form.vozacki, 'Vozačka dozvola:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.vozacki, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        {{ form_label(form.isLekarski, 'Lekarski pregled:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.isLekarski, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        {{ form_label(form.isPrvaPomoc, 'Prva pomoć:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.isPrvaPomoc, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.slava, {attr: { class: 'form-control' }}) }}
+                                        <span class="form-text">Format: Sveti Nikola, 19.12.</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="fw-bold border-bottom pb-2 mb-3">Zaduženi uređaji</div>
                             <div class="row">
                                 <div class="col-lg-6">

@@ -46,6 +46,9 @@ class Expense {
   #[ORM\ManyToOne]
   private ?User $editBy = null;
 
+  #[ORM\Column]
+  private bool $isSuspended = false;
+
   #[ORM\PrePersist]
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();
@@ -165,4 +168,19 @@ class Expense {
 
     return $this;
   }
+
+  /**
+   * @return bool
+   */
+  public function isSuspended(): bool {
+    return $this->isSuspended;
+  }
+
+  /**
+   * @param bool $isSuspended
+   */
+  public function setIsSuspended(bool $isSuspended): void {
+    $this->isSuspended = $isSuspended;
+  }
+
 }

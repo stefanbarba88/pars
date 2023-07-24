@@ -7,6 +7,7 @@ use App\Classes\JMBGcheck\JMBGcheck;
 use App\Entity\Car;
 use App\Entity\FastTask;
 use App\Entity\ManagerChecklist;
+use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
 use DateTimeImmutable;
@@ -28,8 +29,15 @@ class HomeController extends AbstractController {
     }
     $args = [];
     $user = $this->getUser();
+
+    $args['sutra'] = new DateTimeImmutable('tomorrow');
     $args['danas'] = new DateTimeImmutable();
-    $args['timetable'] = $this->em->getRepository(FastTask::class)->getTimetable();
+
+    $args['timetable'] = $this->em->getRepository(Task::class)->getTasksByDate($args['danas']);
+
+    $args['tomorrowTimetable'] = $this->em->getRepository(FastTask::class)->getTimetable($args['sutra']);
+    $args['tomorrowTimetableId'] = $this->em->getRepository(FastTask::class)->getTimetableId($args['sutra']);
+
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
 
       $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUser($user);

@@ -44,8 +44,6 @@ class Task implements JsonSerializable {
   #[ORM\Column(type: Types::TEXT, nullable: true)]
   private ?string $description = null;
 
-  #[ORM\Column(type: Types::TEXT, nullable: true)]
-  private ?string $oprema = null;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
@@ -67,8 +65,14 @@ class Task implements JsonSerializable {
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $datumKreiranja = null;
 
+  #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+  private ?DateTimeImmutable $time = null;
+
   #[ORM\Column]
   private ?bool $isPriority = false;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $priorityUserLog = null;
 
   #[ORM\Column(nullable: true)]
   private ?bool $isEstimate = null;
@@ -90,6 +94,12 @@ class Task implements JsonSerializable {
 
   #[ORM\Column(nullable: true)]
   private ?int $minEntry = 30;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $car = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver = null;
 
   #[ORM\Column(nullable: true)]
   private ?int $roundingInterval = null;
@@ -127,6 +137,9 @@ class Task implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Activity::class)]
   private Collection $activity;
 
+  #[ORM\ManyToMany(targetEntity: Tool::class, inversedBy: 'tasks')]
+  private Collection $oprema;
+
 
   public function __construct() {
     $this->assignedUsers = new ArrayCollection();
@@ -136,6 +149,7 @@ class Task implements JsonSerializable {
     $this->taskLogs = new ArrayCollection();
     $this->comments = new ArrayCollection();
     $this->activity = new ArrayCollection();
+    $this->oprema = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -155,7 +169,6 @@ class Task implements JsonSerializable {
       'title' => $this->getTitle(),
       'project' => $this->getProjectJson(),
       'description' => $this->getDescription(),
-      'oprema' => $this->getOprema(),
       'isTimeRoundUp' => $this->isIsTimeRoundUp(),
       'isEstimate' => $this->isIsEstimate(),
       'isClientView' => $this->isIsClientView(),
@@ -171,7 +184,8 @@ class Task implements JsonSerializable {
       'roundingInterval' => $this->getRoundingInterval(),
       'deadline' => $this->getDeadline(),
       'datumKreiranja' => $this->getDatumKreiranja(),
-      'activity' => $this->getActivityJson()
+      'activity' => $this->getActivityJson(),
+      'oprema' => $this->getOpremaJson()
     ];
   }
 
@@ -233,15 +247,6 @@ class Task implements JsonSerializable {
     return $this;
   }
 
-  public function getOprema(): ?string {
-    return $this->oprema;
-  }
-
-  public function setOprema(string $oprema): self {
-    $this->oprema = $oprema;
-
-    return $this;
-  }
 
   public function getDeadline(): ?\DateTimeImmutable {
     return $this->deadline;
@@ -631,6 +636,15 @@ class Task implements JsonSerializable {
 
     return $activities;
   }
+
+  public function getOpremaJson(): array {
+    $oprema = [];
+    foreach ($this->oprema as $opr) {
+      $oprema[] = $opr->getTitle();
+    }
+
+    return $oprema;
+  }
   /**
    * @return Collection<int, Activity>
    */
@@ -663,5 +677,86 @@ class Task implements JsonSerializable {
 
     return $this;
   }
+
+  /**
+   * @return int|null
+   */
+  public function getCar(): ?int {
+    return $this->car;
+  }
+
+  /**
+   * @param int|null $car
+   */
+  public function setCar(?int $car): void {
+    $this->car = $car;
+  }
+
+  /**
+   * @return DateTimeImmutable|null
+   */
+  public function getTime(): ?DateTimeImmutable {
+    return $this->time;
+  }
+
+  /**
+   * @param DateTimeImmutable|null $time
+   */
+  public function setTime(?DateTimeImmutable $time): void {
+    $this->time = $time;
+  }
+
+  /**
+   * @return Collection<int, Tool>
+   */
+  public function getOprema(): Collection
+  {
+      return $this->oprema;
+  }
+
+  public function addOprema(Tool $oprema): self
+  {
+      if (!$this->oprema->contains($oprema)) {
+          $this->oprema->add($oprema);
+      }
+
+      return $this;
+  }
+
+  public function removeOprema(Tool $oprema): self
+  {
+      $this->oprema->removeElement($oprema);
+
+      return $this;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getPriorityUserLog(): ?int {
+    return $this->priorityUserLog;
+  }
+
+  /**
+   * @param int|null $priorityUserLog
+   */
+  public function setPriorityUserLog(?int $priorityUserLog): void {
+    $this->priorityUserLog = $priorityUserLog;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getDriver(): ?int {
+    return $this->driver;
+  }
+
+  /**
+   * @param int|null $driver
+   */
+  public function setDriver(?int $driver): void {
+    $this->driver = $driver;
+  }
+
 
 }

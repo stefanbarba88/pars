@@ -1,0 +1,122 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ tool.title }}
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <a href="{{ path('app_tools') }}" class="breadcrumb-item">Oprema</a>
+                                <a href="{{ path('app_tool_view', { id: tool.id}) }}" class="breadcrumb-item">Profil</a>
+                                <span class="breadcrumb-item active">Istorija izmena</span>
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
+                    </div>
+                    {{ render(controller('App\\Controller\\WidgetController::toolProfilNavigation', { tool:tool} )) }}
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header d-lg-flex py-lg-0">
+                                        <h5 class="py-lg-3 mb-0">Lista izmena</h5>
+                                    </div>
+                                    <table class="table datatable-colvis-state-pars">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Verzija</th>
+                                            <th>Naziv</th>
+                                            <th>Datum i vreme izmene</th>
+                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for toolH in historyTools %}
+                                            <tr>
+                                                <td>{{ toolH.id }}</td>
+                                                <td><div class="fw-semibold">
+                                                        <a href="{{ path('app_tool_profile_history_view', { id: toolH.id}) }}">V.{{ toolH.version }}</a>
+                                                    </div></td>
+                                                <td><a href="{{ path('app_tool_profile_history_view', { id: toolH.id}) }}">{{ tool.title | upper }}</a></td>
+                                                <td>{{ toolH.created | date("d.m.Y H:i:s")}}</td>
+                                                <td>
+                                                    <a href="{{ path('app_tool_profile_history_view', { id: toolH.id}) }}">
+                                                        <i class="ph-eye me-2"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

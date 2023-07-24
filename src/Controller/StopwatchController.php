@@ -10,6 +10,7 @@ use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
+use App\Entity\User;
 use App\Form\StopwatchTimeAddFormType;
 use App\Form\StopwatchTimeFormType;
 use App\Service\UploadService;
@@ -19,6 +20,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/stopwatch')]
@@ -28,7 +30,8 @@ class StopwatchController extends AbstractController {
   }
 
   #[Route('/start/{id}', name: 'app_stopwatch_start')]
-  public function start(TaskLog $taskLog, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function start(TaskLog $taskLog, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -39,24 +42,44 @@ class StopwatchController extends AbstractController {
     $stopwatch->setLat($request->query->get('lat'));
 
     $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
+    $user = $this->getUser();
+    $user->setIsInTask(true);
+    $this->em->getRepository(User::class)->save($user);
 //    $this->em->getRepository(Task::class)->changeStatus($taskLog->getTask(), TaskStatusData::ZAPOCETO);
 
     return $this->redirectToRoute('app_task_view_user', ['id' => $taskLog->getTask()->getId()]);
   }
 
   #[Route('/form/{id}', name: 'app_stopwatch_form')]
-  public function form(StopwatchTime $stopwatch, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function form(StopwatchTime $stopwatch, Request $request, UploadService $uploadService, SessionInterface $session) : Response
+  { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
 
+
   if (is_null($stopwatch->getStop())) {
     $stopwatch->setStop(new DateTimeImmutable());
-    $stopwatch->setLonStop($request->query->get('lon'));
-    $stopwatch->setLatStop($request->query->get('lat'));
+    if ($session->has('LonStop')) {
+      $stopwatch->setLonStop($session->get('LonStop'));
+      $session->remove('LonStop');
+    } else {
+      $stopwatch->setLonStop($request->query->get('lon'));
+      $session->set('LonStop', $request->query->get('lon'));
+    }
+
+    if ($session->has('LatStop')) {
+      $stopwatch->setLatStop($session->get('LatStop'));
+      $session->remove('LatStop');
+    } else {
+      $stopwatch->setLatStop($request->query->get('lat'));
+      $session->set('LatStop', $request->query->get('lat'));
+    }
+
     $hours = $stopwatch->getStart()->diff($stopwatch->getStop())->h;
     $minutes = $stopwatch->getStart()->diff($stopwatch->getStop())->i;
     $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTime($stopwatch, $hours, $minutes);
+
   }
     $history = null;
     //ovde izvlacimo ulogovanog usera
@@ -72,9 +95,12 @@ class StopwatchController extends AbstractController {
 //      $history = $history->getContent();
 //    }
 //    dd($stopwatch);
+
+
     $form = $this->createForm(StopwatchTimeFormType::class, $stopwatch, ['attr' => ['action' => $this->generateUrl('app_stopwatch_form', ['id' => $stopwatch->getId()])]]);
 
     if ($request->isMethod('POST')) {
+
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
@@ -117,6 +143,13 @@ class StopwatchController extends AbstractController {
         }
 
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
+//        dd($stopwatch);
+        $user = $this->getUser();
+        $user->setIsInTask(false);
+        $this->em->getRepository(User::class)->save($user);
+        $session->remove('LonStop');
+        $session->remove('LatStop');
+
 //        $this->em->getRepository(Task::class)->changeStatus($stopwatch->getTaskLog()->getTask(), TaskStatusData::ZAVRSENO);
 
         notyf()
@@ -134,6 +167,14 @@ class StopwatchController extends AbstractController {
     $args['hours'] = intdiv($stopwatch->getDiffRounded(), 60);
     $args['minutes'] = $stopwatch->getDiffRounded() % 60;
 
+    if ($args['hours'] < 10) {
+      $args['hours'] = '0' . $args['hours'];
+    }
+
+    // Provjerava da li su minute jednocifren broj i dodaje nulu ispred
+    if ($args['minutes'] < 10) {
+      $args['minutes'] = '0' . $args['minutes'];
+    }
 
     return $this->render('task/stopwatch_form.html.twig', $args);
   }

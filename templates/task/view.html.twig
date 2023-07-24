@@ -212,9 +212,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-
-
                                 </div>
                             {% endif %}
                             <div class="card">
@@ -301,13 +298,13 @@
 
 
                                 <div class="card-body">
-                                    <div class="fw-bold border-bottom pb-2 mb-3">Datum zadatka</div>
+                                    <div class="fw-bold border-bottom pb-2 mb-3">Datum i vreme zadatka</div>
                                     <div class="row">
                                         <div class="col-lg-6 ">
                                             <div class="mb-3">
                                             <div class="d-inline-flex align-items-center">
                                                 <i class="ph-calendar me-2"></i>
-                                                {{ task.datumKreiranja | date("d.m.Y")}}
+                                                {{ task.time | date("d.m.Y H:i")}}
                                             </div>
                                         </div>
                                         </div>
@@ -352,12 +349,10 @@
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="mb-3">
-                                            {% if task.oprema is not null %}
-                                                {{ task.oprema | raw }}
-                                            {% else %}
-                                                Nema dodeljene opreme za ovaj zadatak.
-                                            {% endif %}
-                                        </div>
+                                                {% for oprema in task.oprema %}
+                                                    <li>{{ oprema.title }}</li>
+                                                {% endfor %}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -365,10 +360,8 @@
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="mb-3">
-                                            {% if cars is not empty %}
-                                                {% for car in cars %}
-                                                    {{ car.carName }}
-                                                {% endfor %}
+                                            {% if car is not null %}
+                                                {{ car.carName }}
                                             {% else %}
                                                 Nema dodeljenog vozila za ovaj zadatak.
                                             {% endif %}

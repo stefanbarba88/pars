@@ -57,17 +57,28 @@ class TaskLogRepository extends ServiceEntityRepository {
         $datumZadatka = $task->getDatumKreiranja();
         $currentTime = new DateTimeImmutable();
 
+//        if ($datumZadatka->format($format) === $currentTime->format($format)) {
+//          $car = null;
+//          foreach ($task->getAssignedUsers() as $driver) {
+//            if (!is_null($driver->getCar())) {
+//               $car = $this->getEntityManager()->getRepository(Car::class)->find($driver->getCar());
+//            }
+//          }
+//          $taskLogs[] = [$log, $car];
+//        }
         if ($datumZadatka->format($format) === $currentTime->format($format)) {
           $car = null;
-          foreach ($task->getAssignedUsers() as $driver) {
-            if (!is_null($driver->getCar())) {
-               $car = $this->getEntityManager()->getRepository(Car::class)->find($driver->getCar());
-            }
+          if (!is_null($task->getCar())) {
+            $car = $this->getEntityManager()->getRepository(Car::class)->find($task->getCar());
           }
-          $taskLogs[] = [$log, $car];
+          $taskLogs[] = [$log, $car, $task->getTime()];
+          usort($taskLogs, function($a, $b) {
+            return $a[2] <=> $b[2];
+          });
         }
       }
     }
+
     return $taskLogs;
   }
 

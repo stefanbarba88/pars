@@ -88,18 +88,24 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.plate, 'Registracioni broj:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.plate, {attr: { class: 'form-control required' }}) }}
                                         <span class="form-text">Format: BG9999AA</span>
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.price, 'Kupovna cena:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.price, {attr: { class: 'form-control priceValue required' }}) }}
                                         <span class="form-text">Format: 0.00</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        {{ form_label(form.km, 'Kilometraža:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.km, {attr: { class: 'form-control required' }}) }}
                                     </div>
                                 </div>
                             </div>
@@ -126,6 +132,22 @@
                                             {{ form_widget(form.datumNaredneRegistracije, {attr: { class: 'form-control required datepicker-date-format-custom1' }}) }}
                                         </div>
                                         <span class="form-text">Format: 31.12.1900</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        {{ form_label(form.opremaZakonska, 'Obavezna zakonska oprema:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.opremaZakonska, {attr: { class: 'form-control required' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        {{ form_label(form.opremaGeo, 'Obavezna geodetska oprema:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.opremaGeo, {attr: { class: 'form-control required' }}) }}
                                     </div>
                                 </div>
                             </div>

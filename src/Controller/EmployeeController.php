@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\CarReservation;
 use App\Entity\Comment;
+use App\Entity\Expense;
 use App\Entity\Notes;
 use App\Entity\Pdf;
+use App\Entity\ToolReservation;
 use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -69,6 +72,9 @@ class EmployeeController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['user'] = $usr;
+    $args['reservations'] = $usr->getCarReservations();
+    $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $usr], ['id' => 'desc']);
+    $args['expenses'] = $this->em->getRepository(Expense::class)->findBy(['createdBy' => $usr, 'isSuspended' => false], ['id' => 'desc']);
 
     return $this->render('employee/view_cars.html.twig', $args);
   }
@@ -80,6 +86,7 @@ class EmployeeController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['user'] = $usr;
+    $args['reservations'] = $usr->getToolReservations();
 
     return $this->render('employee/view_tools.html.twig', $args);
   }
@@ -131,4 +138,6 @@ class EmployeeController extends AbstractController {
       return $this->render('employee/view_notes.html.twig', $args);
 
   }
+
+
 }

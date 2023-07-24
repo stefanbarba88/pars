@@ -182,6 +182,21 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     $hR = intdiv($minutesRealU, 60);
     $mR = $minutesRealU % 60;
 
+
+    if ($h < 10) {
+      $h = '0' . $h;
+    }
+    if ($m < 10) {
+      $m = '0' . $m;
+    }
+    if ($hR < 10) {
+      $hR = '0' . $hR;
+    }
+    if ($mR < 10) {
+      $mR = '0' . $mR;
+    }
+
+
     return [
       'hours' => $h,
       'minutes' => $m,
@@ -390,7 +405,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     $stopwatch->setDiff($diff);
     $stopwatch->setDiffRounded($diffRound);
 
-    return $this->save($stopwatch);
+    return $stopwatch;
+//    return $this->save($stopwatch);
 
   }
 

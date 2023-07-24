@@ -1,0 +1,248 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Kontrolna tabla
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
+                    </div>
+                </div>
+                <!-- /page header -->
+
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Dashboard content -->
+                    <div class="row">
+                        <div class="col-xl-12">
+
+                            <!-- Marketing campaigns -->
+                            <div class="card">
+                                <div class="card-header d-lg-flex py-lg-0">
+                                    <h5 class="py-lg-3 mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>
+                                    <div class="mt-1 my-lg-auto ms-lg-auto">
+                                        <a href="{{ path('app_task_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                    </div>
+                                </div>
+
+
+                                <div class="table-responsive">
+                                    <table class="table text-nowrap">
+                                            <thead>
+                                            <tr class="table-light">
+                                                <th colspan="5">Aktivni zadaci za {{ app.user.fullName }}</th>
+                                                <th class="text-end">
+                                                    <span class="badge bg-primary rounded-pill">{{ countLogs }}</span>
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <th>Datum</th>
+                                                <th>Projekat</th>
+                                                <th>Zadatak</th>
+                                                <th>Vozilo</th>
+                                                <th>Zaduženi</th>
+                                                <th class="text-center" style="width: 20px;">
+                                                    <i class="ph-dots-three"></i>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            {% if logs is not empty %}
+                                                {% for log in logs %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-inline-flex align-items-center">
+                                                                <div class="fw-semibold">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ log[0].task.datumKreiranja | date("d.m.Y")}}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <a href="" class="text-body">
+                                                                <div class="fw-semibold">{{ log[0].task.project.title }}</div>
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <a href="" class="text-body">
+                                                                <div class="fw-semibold">{{ log[0].task.title }}</div>
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <a href="" class="text-body">
+                                                                <div class="fw-semibold">
+                                                                    {% if log[1] is not null %}
+                                                                        {{ log[1].carName }}
+                                                                    {% endif %}
+                                                                </div>
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            {% for user in log[0].task.assignedUsers %}
+                                                                <div class="fw-semibold text-body">{{ user.fullName }}</div>
+                                                            {% endfor %}
+                                                        </td>
+                                                        <td>
+                                                            <a href="{{ path('app_task_view_user', { id: log[0].task.id}) }}" class="btn btn-primary"><i class="ph-clipboard me-2"></i> Dnevnik</a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %}
+
+                                            </tbody>
+                                        </table>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table text-nowrap">
+                                        <thead>
+                                        <tr class="table-light">
+                                            <th colspan="8">PARS raspored</th>
+                                            {#                                            <td class="text-end">#}
+                                            {#                                                <span class="progress-meter" id="today-progress" data-progress="30"></span>#}
+                                            {#                                            </td>#}
+                                        </tr>
+                                        <tr>
+                                            <th>Projekat</th>
+                                            <th>Geodeta #1</th>
+                                            <th>Geodeta #2</th>
+                                            <th>Geodeta #3</th>
+                                            <th>Aktivnosti</th>
+                                            <th>Oprema</th>
+                                            <th>Vozilo</th>
+                                            <th>Napomena</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if timetable is not empty %}
+                                            {% for task in timetable %}
+                                                {% if task['projekat'] is not null %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ task['projekat'].title }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% if task['geo1'] is not null %}
+                                                                    {{ task['geo1'].fullName }}
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% if task['geo2'] is not null %}
+                                                                    {{ task['geo2'].fullName }}
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% if task['geo3'] is not null %}
+                                                                    {{ task['geo3'].fullName }}
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% for akt in task['aktivnosti'] %}
+                                                                {{ akt.title }} <br>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ task['oprema'] }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% for car in task['vozilo'] %}
+                                                                    {% if car is not null %}
+                                                                    {{ car.carName }} <br>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ task['napomena'] }}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /marketing campaigns -->
+
+
+                        </div>
+                    </div>
+                    <!-- /dashboard content -->
+
+                </div>
+                <!-- /content area -->
+
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+    <script src="{{ asset('assets/demo/pages/dashboard.js') }}"></script>
+{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/streamgraph.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/sparklines.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/lines.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/areas.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/donuts.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/bars.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/progress.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/heatmaps.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/pies.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/bullets.js') }}"></script>#}
+{% endblock includeJavascript %}

@@ -31,6 +31,7 @@ class CarReservationRepository extends ServiceEntityRepository {
       $driver->setCar($car->getId());
     } else {
       $car->setIsReserved(false);
+      $car->setKm($carReservation->getKmStop());
       $driver->setCar(null);
     }
 
@@ -67,10 +68,12 @@ class CarReservationRepository extends ServiceEntityRepository {
     }
   }
 
+
   public function findForFormCar(Car $car = null): CarReservation {
 
     $reservation = new CarReservation();
     $reservation->setCar($car);
+    $reservation->setKmStart($car->getKm());
     return $reservation;
 
   }

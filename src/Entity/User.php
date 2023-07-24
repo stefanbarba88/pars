@@ -10,6 +10,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -65,6 +66,21 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
   #[ORM\Column(type: Types::SMALLINT)]
   private ?int $pol = null;
+
+  #[ORM\Column(type: Types::SMALLINT)]
+  private ?int $vozacki = null;
+
+  #[ORM\Column]
+  private bool $isLekarski = false;
+
+  #[ORM\Column]
+  private bool $isPrvaPomoc = false;
+
+  #[ORM\Column]
+  private bool $isInTask = false;
+
+  #[ORM\Column(length: 255, nullable: true)]
+  private ?string $slava = null;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
@@ -157,6 +173,9 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\ManyToMany(targetEntity: Calendar::class, mappedBy: 'user')]
   private Collection $calendars;
 
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: ToolReservation::class)]
+  private Collection $toolReservations;
+
 
   public function __construct() {
     $this->userHistories = new ArrayCollection();
@@ -168,6 +187,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     $this->carReservations = new ArrayCollection();
     $this->managerChecklists = new ArrayCollection();
     $this->calendars = new ArrayCollection();
+    $this->toolReservations = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -254,6 +274,16 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
   public function getFullName(): string {
     return $this->ime . ' ' . $this->prezime;
+  }
+
+  public function getInitials(): string {
+
+    return (mb_substr($this->ime, 0, 1) . '. ' . mb_substr($this->prezime, 0, 1) . '.');
+  }
+
+  public function getNameWithFirstLetter(): string {
+
+    return $this->ime . ' ' . (mb_substr($this->prezime, 0, 1) . '.');
   }
 
   public function getNameForForm(): string {
@@ -608,6 +638,10 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
       'editBy' => $this->editBy,
       'isLaptop' => $this->isLaptop(),
       'isMobile' => $this->isMobile(),
+      'isLekarski' => $this->isLekarski(),
+      'isPrvaPomoc' => $this->isPrvaPomoc(),
+      'vozacki' => $this->getVozacki(),
+      'slava' => $this->getSlava(),
       'isSuspended' => $this->isSuspended(),
       'email' => $this->getEmail(),
       'image' => $this->getImage()
@@ -857,5 +891,110 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
       return $this;
   }
+
+  /**
+   * @return int|null
+   */
+  public function getVozacki(): ?int {
+    return $this->vozacki;
+  }
+
+  /**
+   * @param int|null $vozacki
+   */
+  public function setVozacki(?int $vozacki): void {
+    $this->vozacki = $vozacki;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isLekarski(): bool {
+    return $this->isLekarski;
+  }
+
+  /**
+   * @param bool $isLekarski
+   */
+  public function setIsLekarski(bool $isLekarski): void {
+    $this->isLekarski = $isLekarski;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isPrvaPomoc(): bool {
+    return $this->isPrvaPomoc;
+  }
+
+  /**
+   * @param bool $isPrvaPomoc
+   */
+  public function setIsPrvaPomoc(bool $isPrvaPomoc): void {
+    $this->isPrvaPomoc = $isPrvaPomoc;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getSlava(): ?string {
+    return $this->slava;
+  }
+
+  /**
+   * @param string|null $slava
+   */
+  public function setSlava(?string $slava): void {
+    $this->slava = $slava;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isInTask(): bool {
+    return $this->isInTask;
+  }
+
+  /**
+   * @param bool $isInTask
+   */
+  public function setIsInTask(bool $isInTask): void {
+    $this->isInTask = $isInTask;
+  }
+
+  /**
+   * @return Collection<int, ToolReservation>
+   */
+  public function getToolReservations(): Collection
+  {
+      return $this->toolReservations;
+  }
+
+  public function addToolReservation(ToolReservation $toolReservation): self
+  {
+      if (!$this->toolReservations->contains($toolReservation)) {
+          $this->toolReservations->add($toolReservation);
+          $toolReservation->setUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeToolReservation(ToolReservation $toolReservation): self
+  {
+      if ($this->toolReservations->removeElement($toolReservation)) {
+          // set the owning side to null (unless already changed)
+          if ($toolReservation->getUser() === $this) {
+              $toolReservation->setUser(null);
+          }
+      }
+
+      return $this;
+  }
+
+
+
+
+
 
 }

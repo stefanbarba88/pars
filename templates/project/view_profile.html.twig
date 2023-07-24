@@ -84,11 +84,13 @@
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Kategorija:</div>
                                             <div class="col-8">
-{#                                                {% if is_granted('ROLE_EMPLOYEE') %}#}
-{#                                                    {{ project.category.title }}#}
-{#                                                {% else %}#}
-{#                                                    <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>#}
-{#                                                {% endif %}#}
+                                                {% if project.category is not null %}
+                                                    {% if is_granted('ROLE_EMPLOYEE') %}
+                                                        {{ project.category.title }}
+                                                    {% else %}
+                                                        <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>
+                                                    {% endif %}
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg">
@@ -114,6 +116,20 @@
                                             </div>
                                         </div>
                                         <div class="row p-2 ">
+                                            <div class="col-4">Tip projekta:</div>
+                                            <div class="col-8">
+                                                {% if project.type == 1 %}
+                                                    Fiksni
+                                                {% endif %}
+                                                {% if project.type == 2 %}
+                                                    Leteći
+                                                {% endif %}
+                                                {% if project.type == 3 %}
+                                                    Kombinovani
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Kreirao:</div>
                                             <div class="col-8">
                                                 {% if is_granted('ROLE_EMPLOYEE') %}
@@ -162,46 +178,46 @@
                                                     <div class="col-4">Tip finansiranja:</div>
                                                     <div class="col-8">Fiksna cena</div>
                                                 </div>
-                                                <div class="row p-2 bg-light">
-                                                    <div class="col-4">Fiksna cena:</div>
-                                                    <div class="col-8">{{ project.price | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
-                                                </div>
+{#                                                <div class="row p-2 bg-light">#}
+{#                                                    <div class="col-4">Fiksna cena:</div>#}
+{#                                                    <div class="col-8">{{ project.price | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>#}
+{#                                                </div>#}
                                             {% elseif project.payment == 3 %}
                                                 <div class="row p-2">
                                                     <div class="col-4">Tip finansiranja:</div>
                                                     <div class="col-8">Plaćanje po satu</div>
                                                 </div>
-                                                <div class="row p-2 bg-light">
-                                                    <div class="col-4">Cena po satu:</div>
-                                                    <div class="col-8">{{ project.pricePerHour | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
-                                                </div>
+{#                                                <div class="row p-2 bg-light">#}
+{#                                                    <div class="col-4">Cena po satu:</div>#}
+{#                                                    <div class="col-8">{{ project.pricePerHour | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>#}
+{#                                                </div>#}
                                             {% elseif project.payment == 4 %}
                                                 <div class="row p-2">
                                                     <div class="col-4">Tip finansiranja:</div>
                                                     <div class="col-8">Plaćanje po zadatku</div>
                                                 </div>
-                                                <div class="row p-2 bg-light">
-                                                    <div class="col-4">Cena po satu:</div>
-                                                    <div class="col-8">{{ project.pricePerTask | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
-                                                </div>
+{#                                                <div class="row p-2 bg-light">#}
+{#                                                    <div class="col-4">Cena po satu:</div>#}
+{#                                                    <div class="col-8">{{ project.pricePerTask | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>#}
+{#                                                </div>#}
                                             {% elseif project.payment == 5 %}
                                                 <div class="row p-2">
                                                     <div class="col-4">Tip finansiranja:</div>
                                                     <div class="col-8">Plaćanje po danu</div>
                                                 </div>
-                                                <div class="row p-2 bg-light">
-                                                    <div class="col-4">Cena po danu:</div>
-                                                    <div class="col-8">{{ project.pricePerDay | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
-                                                </div>
+{#                                                <div class="row p-2 bg-light">#}
+{#                                                    <div class="col-4">Cena po danu:</div>#}
+{#                                                    <div class="col-8">{{ project.pricePerDay | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>#}
+{#                                                </div>#}
                                             {% elseif project.payment == 6 %}
                                                 <div class="row p-2">
                                                     <div class="col-4">Tip finansiranja:</div>
                                                     <div class="col-8">Plaćanje po mesecu</div>
                                                 </div>
-                                                <div class="row p-2 bg-light">
-                                                    <div class="col-4">Cena po mesecu:</div>
-                                                    <div class="col-8">{{ project.pricePerMonth | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>
-                                                </div>
+{#                                                <div class="row p-2 bg-light">#}
+{#                                                    <div class="col-4">Cena po mesecu:</div>#}
+{#                                                    <div class="col-8">{{ project.pricePerMonth | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>#}
+{#                                                </div>#}
                                             {% else %}
                                                 <div class="row p-2">
                                                     <div class="col-4">Tip finansiranja:</div>
@@ -221,17 +237,17 @@
                                                     {{ project.getTimerPriorityJson() }}
                                                 </div>
                                             </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Vremenska procena:</div>
-                                                <div class="col-8">
-                                                    {% if project.estimate %}
-                                                        <i class="ph-check-circle"></i>
-                                                    {% else %}
-                                                        <i class="ph-minus-circle"></i>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <div class="row p-2 ">
+{#                                            <div class="row p-2 bg-light">#}
+{#                                                <div class="col-4">Vremenska procena:</div>#}
+{#                                                <div class="col-8">#}
+{#                                                    {% if project.estimate %}#}
+{#                                                        <i class="ph-check-circle"></i>#}
+{#                                                    {% else %}#}
+{#                                                        <i class="ph-minus-circle"></i>#}
+{#                                                    {% endif %}#}
+{#                                                </div>#}
+{#                                            </div>#}
+                                            <div class="row p-2 bg-light ">
                                                 <div class="col-4">Zaokruživanje vremena:</div>
                                                 <div class="col-8">
                                                     {% if project.timeRoundUp %}
@@ -242,13 +258,13 @@
                                                 </div>
                                             </div>
                                             {% if project.timeRoundUp %}
-                                                <div class="row p-2 bg-light">
+                                                <div class="row p-2 ">
                                                     <div class="col-4">Interval zaokruživanja:</div>
                                                     <div class="col-8">
                                                         {{ project.roundingInterval }} min
                                                     </div>
                                                 </div>
-                                                <div class="row p-2">
+                                                <div class="row p-2 bg-light">
                                                     <div class="col-4">Minimalni unos:</div>
                                                     <div class="col-8">
                                                         {{ project.minEntry }} min

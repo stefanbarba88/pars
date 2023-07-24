@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Classes\Data\PolData;
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\UserRolesData;
+use App\Classes\Data\VozackiData;
 use App\Classes\Data\VrstaZaposlenjaData;
 use App\Entity\City;
 use App\Entity\User;
@@ -48,6 +49,31 @@ class UserRegistrationFormType extends AbstractType {
         'format' => 'dd.MM.yyyy',
         'html5' => false,
         'input' => 'datetime_immutable'
+      ])
+      ->add('slava')
+      ->add('isPrvaPomoc', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('isLekarski', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('vozacki', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => VozackiData::form(),
+        'expanded' => false,
+        'multiple' => false,
       ])
       ->add('isMobile', ChoiceType::class, [
         'attr' => [

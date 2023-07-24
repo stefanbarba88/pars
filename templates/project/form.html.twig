@@ -97,8 +97,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="mb-3">
-                                            {{ form_label(form.description, 'Opis:*', {'label_attr': {'class': 'form-category'}}) }}
-                                            {{ form_widget(form.description, {attr: { class: 'form-control required ckeditor' }}) }}
+                                            {{ form_label(form.description, 'Opis:', {'label_attr': {'class': 'form-category'}}) }}
+                                            {{ form_widget(form.description, {attr: { class: 'form-control ckeditor' }}) }}
                                         </div>
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             {{ form_label(form.important, 'Važna napomena:', {'label_attr': {'class': 'form-category'}}) }}
-                                            {{ form_widget(form.important, {attr: { class: 'form-control required' }}) }}
+                                            {{ form_widget(form.important, {attr: { class: 'form-control' }}) }}
                                         </div>
                                     </div>
                                 </div>
@@ -129,11 +129,17 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            {{ form_label(form.team, 'Tim:', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.team, {attr: { class: 'form-control select' }}) }}
-                                            <span class="form-text">Projekat može imati i stalne timove.</span>
+                                            {{ form_label(form.type, 'Tip:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.type, {attr: { class: 'form-control select required' }}) }}
                                         </div>
                                     </div>
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.team, 'Tim:', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.team, {attr: { class: 'form-control select' }}) }}#}
+{#                                            <span class="form-text">Projekat može imati i stalne timove.</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             {{ form_label(form.isViewLog, 'Uvid u dnevnik:*', {'label_attr': {'class': 'form-label'}}) }}
@@ -171,154 +177,153 @@
                                         <div class="mb-3">
                                             {{ form_label(form.payment, 'Tip finansiranja:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.payment, {attr: { class: 'form-control required select payment' }}) }}
-                                            <span class="form-text">Može se definisati kasnije i na nivou zadataka.</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::FIKSNA_CENA') %}
-                                        <div class="col-lg-3 payment_price">
-                                            <div class="mb-3">
-                                                {{ form_label(form.price, 'Fiksna cena:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.price, {attr: { class: 'form-control priceValue required' }}) }}
-                                                <span class="form-text">Format: 0.00</span>
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <div class="col-lg-3 hide payment_price">
-                                            <div class="mb-3">
-                                                {{ form_label(form.price, 'Fiksna cena:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.price, {attr: { class: 'form-control priceValue' }}) }}
-                                                <span class="form-text">Format: 0.00</span>
-                                            </div>
-                                        </div>
-                                    {% endif %}
+{#                                <div class="row">#}
+{#                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::FIKSNA_CENA') %}#}
+{#                                        <div class="col-lg-3 payment_price">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.price, 'Fiksna cena:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.price, {attr: { class: 'form-control priceValue required' }}) }}#}
+{#                                                <span class="form-text">Format: 0.00</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% else %}#}
+{#                                        <div class="col-lg-3 hide payment_price">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.price, 'Fiksna cena:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.price, {attr: { class: 'form-control priceValue' }}) }}#}
+{#                                                <span class="form-text">Format: 0.00</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% endif %}#}
 
-                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_SATU') %}
-                                        <div class="col-lg-3 payment_ph">
-                                            <div class="mb-3">
-                                                {{ form_label(form.pricePerHour, 'Cena po satu:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.pricePerHour, {attr: { class: 'form-control phValue required' }}) }}
-                                                <span class="form-text">Format: 0.00</span>
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <div class="col-lg-3 hide payment_ph">
-                                            <div class="mb-3">
-                                                {{ form_label(form.pricePerHour, 'Cena po satu:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.pricePerHour, {attr: { class: 'form-control phValue' }}) }}
-                                                <span class="form-text">Format: 0.00</span>
-                                            </div>
-                                        </div>
-                                    {% endif %}
+{#                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_SATU') %}#}
+{#                                        <div class="col-lg-3 payment_ph">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.pricePerHour, 'Cena po satu:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.pricePerHour, {attr: { class: 'form-control phValue required' }}) }}#}
+{#                                                <span class="form-text">Format: 0.00</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% else %}#}
+{#                                        <div class="col-lg-3 hide payment_ph">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.pricePerHour, 'Cena po satu:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.pricePerHour, {attr: { class: 'form-control phValue' }}) }}#}
+{#                                                <span class="form-text">Format: 0.00</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% endif %}#}
 
-                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_ZADATKU') %}
-                                        <div class="col-lg-3 payment_pt">
-                                            <div class="mb-3">
-                                                {{ form_label(form.pricePerTask, 'Cena po zadatku:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.pricePerTask, {attr: { class: 'form-control ptValue required' }}) }}
-                                                <span class="form-text">Format: 0.00</span>
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <div class="col-lg-3 hide payment_pt">
-                                            <div class="mb-3">
-                                                {{ form_label(form.pricePerTask, 'Cena po zadatku:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.pricePerTask, {attr: { class: 'form-control ptValue' }}) }}
-                                                <span class="form-text">Format: 0.00</span>
-                                            </div>
-                                        </div>
-                                    {% endif %}
+{#                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_ZADATKU') %}#}
+{#                                        <div class="col-lg-3 payment_pt">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.pricePerTask, 'Cena po zadatku:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.pricePerTask, {attr: { class: 'form-control ptValue required' }}) }}#}
+{#                                                <span class="form-text">Format: 0.00</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% else %}#}
+{#                                        <div class="col-lg-3 hide payment_pt">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.pricePerTask, 'Cena po zadatku:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.pricePerTask, {attr: { class: 'form-control ptValue' }}) }}#}
+{#                                                <span class="form-text">Format: 0.00</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% endif %}#}
 
-                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_DANU') %}
-                                        <div class="col-lg-3 payment_pd">
-                                            <div class="mb-3">
-                                                {{ form_label(form.pricePerDay, 'Cena po danu:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.pricePerDay, {attr: { class: 'form-control pdValue required' }}) }}
-                                                <span class="form-text">Format: 0.00</span>
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <div class="col-lg-3 hide payment_pd">
-                                            <div class="mb-3">
-                                                {{ form_label(form.pricePerDay, 'Cena po danu:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.pricePerDay, {attr: { class: 'form-control pdValue' }}) }}
-                                                <span class="form-text">Format: 0.00</span>
-                                            </div>
-                                        </div>
-                                    {% endif %}
+{#                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_DANU') %}#}
+{#                                        <div class="col-lg-3 payment_pd">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.pricePerDay, 'Cena po danu:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.pricePerDay, {attr: { class: 'form-control pdValue required' }}) }}#}
+{#                                                <span class="form-text">Format: 0.00</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% else %}#}
+{#                                        <div class="col-lg-3 hide payment_pd">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.pricePerDay, 'Cena po danu:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.pricePerDay, {attr: { class: 'form-control pdValue' }}) }}#}
+{#                                                <span class="form-text">Format: 0.00</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% endif %}#}
 
-                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_MESECU') %}
-                                        <div class="col-lg-3 payment_pm">
-                                            <div class="mb-3">
-                                                {{ form_label(form.pricePerMonth, 'Cena po mesecu:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.pricePerMonth, {attr: { class: 'form-control pmValue required' }}) }}
-                                                <span class="form-text">Format: 0.00</span>
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <div class="col-lg-3 hide payment_pm">
-                                            <div class="mb-3">
-                                                {{ form_label(form.pricePerMonth, 'Cena po mesecu:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.pricePerMonth, {attr: { class: 'form-control pmValue' }}) }}
-                                                <span class="form-text">Format: 0.00</span>
-                                            </div>
-                                        </div>
-                                    {% endif %}
+{#                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_MESECU') %}#}
+{#                                        <div class="col-lg-3 payment_pm">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.pricePerMonth, 'Cena po mesecu:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.pricePerMonth, {attr: { class: 'form-control pmValue required' }}) }}#}
+{#                                                <span class="form-text">Format: 0.00</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% else %}#}
+{#                                        <div class="col-lg-3 hide payment_pm">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.pricePerMonth, 'Cena po mesecu:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.pricePerMonth, {attr: { class: 'form-control pmValue' }}) }}#}
+{#                                                <span class="form-text">Format: 0.00</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% endif %}#}
 
-                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::BESPLATNO') %}
-                                        <div class="col-lg-3 hide payment_currency">
-                                            <div class="mb-3">
-                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue' }}) }}
-                                            </div>
-                                        </div>
-                                    {% elseif project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_ZADATKU') %}
-                                        <div class="col-lg-3 payment_currency">
-                                            <div class="mb-3">
-                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue required' }}) }}
-                                            </div>
-                                        </div>
-                                    {% elseif project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_SATU') %}
-                                        <div class="col-lg-3 payment_currency">
-                                            <div class="mb-3">
-                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue required' }}) }}
-                                            </div>
-                                        </div>
-                                    {% elseif project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::FIKSNA_CENA') %}
-                                        <div class="col-lg-3 payment_currency">
-                                            <div class="mb-3">
-                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue required' }}) }}
-                                            </div>
-                                        </div>
-                                    {% elseif project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_DANU') %}
-                                        <div class="col-lg-3 payment_currency">
-                                            <div class="mb-3">
-                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue required' }}) }}
-                                            </div>
-                                        </div>
-                                    {% elseif project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_MESECU') %}
-                                        <div class="col-lg-3 payment_currency">
-                                            <div class="mb-3">
-                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue required' }}) }}
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <div class="col-lg-3 hide payment_currency">
-                                            <div class="mb-3">
-                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue' }}) }}
-                                            </div>
-                                        </div>
-                                    {% endif %}
+{#                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::BESPLATNO') %}#}
+{#                                        <div class="col-lg-3 hide payment_currency">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue' }}) }}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% elseif project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_ZADATKU') %}#}
+{#                                        <div class="col-lg-3 payment_currency">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue required' }}) }}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% elseif project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_SATU') %}#}
+{#                                        <div class="col-lg-3 payment_currency">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue required' }}) }}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% elseif project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::FIKSNA_CENA') %}#}
+{#                                        <div class="col-lg-3 payment_currency">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue required' }}) }}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% elseif project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_DANU') %}#}
+{#                                        <div class="col-lg-3 payment_currency">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue required' }}) }}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% elseif project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::PLACANJE_PO_MESECU') %}#}
+{#                                        <div class="col-lg-3 payment_currency">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue required' }}) }}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% else %}#}
+{#                                        <div class="col-lg-3 hide payment_currency">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.currency, 'Valuta:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.currency, {attr: { class: 'form-control select currencyValue' }}) }}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% endif %}#}
 
-                                </div>
+{#                                </div>#}
                             </fieldset>
 
                             <fieldset class="mb-3">
@@ -331,13 +336,13 @@
                                             <span class="form-text">Izaberite prioritet dnevnika koji će se uzimati u obzir prilikom obračuna.</span>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 ">
-                                        <div class="mb-3">
-                                            {{ form_label(form.isEstimate, 'Vremenska procena:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.isEstimate, {attr: { class: 'form-control required select' }}) }}
-                                            <span class="form-text">Procena vremenskog trajanja za svaki zadatak u okviru projekta. Može se definisati kasnije i na nivou zadataka.</span>
-                                        </div>
-                                    </div>
+{#                                    <div class="col-lg-6 ">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.isEstimate, 'Vremenska procena:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.isEstimate, {attr: { class: 'form-control required select' }}) }}#}
+{#                                            <span class="form-text">Procena vremenskog trajanja za svaki zadatak u okviru projekta. Može se definisati kasnije i na nivou zadataka.</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-6 ">

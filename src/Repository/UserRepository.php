@@ -205,15 +205,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getUsersCars(): array {
 
-    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false]);
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['prezime' => 'ASC']);
 
     $usersList = [];
     foreach ($users as $user) {
       $ime = $user->getFullName();
-      $car = $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' =>$user->getCar()]);
-      if (!is_null($car)) {
-        $ime = $ime . ' (' . $car->getCarName() . ')';
-      }
+//      $car = $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' =>$user->getCar()]);
+//      if (!is_null($car)) {
+//        $ime = $ime . ' (' . $car->getCarName() . ')';
+//      }
 
       $usersList [] = [
         'id' => $user->getId(),

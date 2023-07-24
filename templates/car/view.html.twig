@@ -101,6 +101,26 @@
                                                 {% endif %}
                                             </div>
                                         </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Kilometraža:</div>
+                                            <div class="col-8">{{ car.km }} km
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Oprema u vozilu</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Obavezna zakonska oprema:</div>
+                                            <div class="col-8">{{ car.opremaZakonska }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Obavezna geodetska oprema:</div>
+                                            <div class="col-8">{{ car.opremaGeo }}</div>
+                                        </div>
                                     </div>
                                 </div>
                                 {% if car.editBy is not null %}

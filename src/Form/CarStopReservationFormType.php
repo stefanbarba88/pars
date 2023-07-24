@@ -28,7 +28,21 @@ use Symfony\Component\Validator\Constraints\Regex;
 class CarStopReservationFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
 
-      $builder
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getReservation(): ?CarReservation {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $minKm = $dataObject->getReservation()->getKmStart();
+
+
+    $builder
 
         ->add('fuelStop', ChoiceType::class, [
           'placeholder' => '--Izaberite nivo goriva--',
@@ -44,6 +58,9 @@ class CarStopReservationFormType extends AbstractType {
         ])
         ->add('descStop')
         ->add('kmStop', NumberType::class, [
+          'attr' => [
+            'min' => $minKm,
+          ],
           'required' => true,
           'html5' => true,
         ]);

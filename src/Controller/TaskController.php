@@ -19,6 +19,7 @@ use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
+use App\Form\PhoneTaskFormType;
 use App\Form\ProjectFormType;
 use App\Form\ReassignTaskFormType;
 use App\Form\TaskAddDocsType;
@@ -26,6 +27,8 @@ use App\Form\TaskEditInfoType;
 use App\Form\TaskEditType;
 use App\Form\TaskFormType;
 use App\Service\UploadService;
+use DateTimeImmutable;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -65,21 +68,12 @@ class TaskController extends AbstractController {
   public function form(Task $task, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+
+    $mobileDetect = new MobileDetect();
+
     $user = $this->getUser();
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $teams = [];
-      foreach ($user->getTeams() as $tm) {
-        $teams[] = $tm;
-      }
-      if (!empty($teams)) {
-        foreach ($teams as $tim) {
-          foreach ($tim->getMember() as $member) {
-            $task->addAssignedUser($member);
-          }
-        }
-      } else {
         $task->addAssignedUser($user);
-      }
     }
 
     $history = null;
@@ -93,25 +87,101 @@ class TaskController extends AbstractController {
       );
       $history = $history->getContent();
     }
-
-    $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
+    if (!$mobileDetect->isMobile()) {
+      $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
+    } else {
+      $form = $this->createForm(PhoneTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
+    }
 
     if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
 
+      $form->handleRequest($request);
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $uploadFiles = $request->files->all()['task_form']['pdf'];
-        if(!empty ($uploadFiles)) {
-          foreach ($uploadFiles as $uploadFile) {
-            $pdf = new Pdf();
-            $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
-            $pdf->setTitle($file->getFileName());
-            $pdf->setPath($file->getUrl());
-            if (!is_null($task->getProject())) {
-              $pdf->setProject($task->getProject());
+        if (!$mobileDetect->isMobile()) {
+          $uploadFiles = $request->files->all()['task_form']['pdf'];
+          if(!empty ($uploadFiles)) {
+            foreach ($uploadFiles as $uploadFile) {
+              $pdf = new Pdf();
+              $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+              $pdf->setTitle($file->getFileName());
+              $pdf->setPath($file->getUrl());
+              if (!is_null($task->getProject())) {
+                $pdf->setProject($task->getProject());
+              }
+              $task->addPdf($pdf);
             }
-            $task->addPdf($pdf);
+          }
+          if (!empty($request->request->all('task_form')['car'])) {
+            $task->setCar($request->request->all('task_form')['car']);
+            if (!empty($request->request->all('task_form')['driver'])) {
+              $task->setDriver($request->request->all('task_form')['driver']);
+            }
+            $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
+          }
+          $date = $task->getDatumKreiranja();
+          if (!empty($request->request->all('task_form')['vreme'])) {
+            $time = $request->request->all('task_form')['vreme'];
+            $time1 = $date->modify($time);
+            $task->setTime($time1);
+          }
+          else {
+            $task->setTime($date);
+          }
+          foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
+
+            if (!empty($assignedUser)){
+              $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+              if(!is_null($member)) {
+                $task->addAssignedUser($member);
+
+                if ($key === 0) {
+                  $task->setPriorityUserLog($assignedUser);
+                }
+              }
+            }
+          }
+        } else {
+          $uploadFiles = $request->files->all()['phone_task_form']['pdf'];
+          if(!empty ($uploadFiles)) {
+            foreach ($uploadFiles as $uploadFile) {
+              $pdf = new Pdf();
+              $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+              $pdf->setTitle($file->getFileName());
+              $pdf->setPath($file->getUrl());
+              if (!is_null($task->getProject())) {
+                $pdf->setProject($task->getProject());
+              }
+              $task->addPdf($pdf);
+            }
+          }
+          if (!empty($request->request->all('phone_task_form')['car'])) {
+            $task->setCar($request->request->all('phone_task_form')['car']);
+            if (!empty($request->request->all('phone_task_form')['driver'])) {
+              $task->setDriver($request->request->all('phone_task_form')['driver']);
+            }
+            $task->setDriver($request->request->all('phone_task_form')['assignedUsers'][0]);
+          }
+          $date = $task->getDatumKreiranja();
+          if (!empty($request->request->all('phone_task_form')['vreme'])) {
+            $time = $request->request->all('phone_task_form')['vreme'];
+            $time1 = $date->modify($time);
+            $task->setTime($time1);
+          }
+          else {
+            $task->setTime($date);
+          }
+          foreach ($request->request->all('phone_task_form')['assignedUsers'] as $key => $assignedUser) {
+            if (!empty($assignedUser)){
+              $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+              if(!is_null($member)) {
+                $task->addAssignedUser($member);
+
+                if ($key === 0) {
+                  $task->setPriorityUserLog($assignedUser);
+                }
+              }
+            }
           }
         }
 
@@ -127,10 +197,23 @@ class TaskController extends AbstractController {
         return $this->redirectToRoute('app_tasks');
       }
     }
-    $args['form'] = $form->createView();
-    $args['task'] = $task;
 
-    return $this->render('task/form.html.twig', $args);
+
+    $args['form'] = $form->createView();
+    $args['korisnik'] = $user;
+    $args['task'] = $task;
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
+
+//    if ($mobileDetect->isMobile()) {
+//      return $this->render('task/mobile_form.html.twig', $args);
+//    }
+//    return $this->render('task/form.html.twig', $args);
+
+    if (!$mobileDetect->isMobile()) {
+      return $this->render('task/form.html.twig', $args);
+    }
+    return $this->render('task/mobile_form.html.twig', $args);
   }
 
   #[Route('/form-project/{project}', name: 'app_task_project_form')]
@@ -141,21 +224,11 @@ class TaskController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
+    $mobileDetect = new MobileDetect();
+
     $user = $this->getUser();
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $teams = [];
-      foreach ($user->getTeams() as $tm) {
-        $teams[] = $tm;
-      }
-      if (!empty($teams)) {
-        foreach ($teams as $tim) {
-          foreach ($tim->getMember() as $member) {
-            $task->addAssignedUser($member);
-          }
-        }
-      } else {
-        $task->addAssignedUser($user);
-      }
+      $task->addAssignedUser($user);
     }
 
     $history = null;
@@ -171,24 +244,100 @@ class TaskController extends AbstractController {
       $history = $history->getContent();
     }
 
-    $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_project_form', ['project' => $project->getId()])]]);
+    if (!$mobileDetect->isMobile()) {
+      $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_project_form', ['project' => $project->getId()])]]);
+    } else {
+      $form = $this->createForm(PhoneTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_project_form', ['project' => $project->getId()])]]);
+    }
 
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $uploadFiles = $request->files->all()['task_form']['pdf'];
-        if(!empty ($uploadFiles)) {
-          foreach ($uploadFiles as $uploadFile) {
-            $pdf = new Pdf();
-            $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
-            $pdf->setTitle($file->getFileName());
-            $pdf->setPath($file->getUrl());
-            if (!is_null($task->getProject())) {
-              $pdf->setProject($task->getProject());
+        if (!$mobileDetect->isMobile()) {
+          $uploadFiles = $request->files->all()['task_form']['pdf'];
+          if(!empty ($uploadFiles)) {
+            foreach ($uploadFiles as $uploadFile) {
+              $pdf = new Pdf();
+              $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+              $pdf->setTitle($file->getFileName());
+              $pdf->setPath($file->getUrl());
+              if (!is_null($task->getProject())) {
+                $pdf->setProject($task->getProject());
+              }
+              $task->addPdf($pdf);
             }
-            $task->addPdf($pdf);
+          }
+          if (!empty($request->request->all('task_form')['car'])) {
+            $task->setCar($request->request->all('task_form')['car']);
+            if (!empty($request->request->all('task_form')['driver'])) {
+              $task->setDriver($request->request->all('task_form')['driver']);
+            }
+            $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
+          }
+          $date = $task->getDatumKreiranja();
+          if (!empty($request->request->all('task_form')['vreme'])) {
+            $time = $request->request->all('task_form')['vreme'];
+            $time1 = $date->modify($time);
+            $task->setTime($time1);
+          }
+          else {
+            $task->setTime($date);
+          }
+          foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
+            if (!empty($assignedUser)){
+              $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+              if(!is_null($member)) {
+                $task->addAssignedUser($member);
+
+                if ($key === 0) {
+                  $task->setPriorityUserLog($assignedUser);
+                }
+              }
+            }
+          }
+        } else {
+          $uploadFiles = $request->files->all()['phone_task_form']['pdf'];
+          if(!empty ($uploadFiles)) {
+            foreach ($uploadFiles as $uploadFile) {
+              $pdf = new Pdf();
+              $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+              $pdf->setTitle($file->getFileName());
+              $pdf->setPath($file->getUrl());
+              if (!is_null($task->getProject())) {
+                $pdf->setProject($task->getProject());
+              }
+              $task->addPdf($pdf);
+            }
+          }
+          if (!empty($request->request->all('phone_task_form')['car'])) {
+            $task->setCar($request->request->all('phone_task_form')['car']);
+            if (!empty($request->request->all('phone_task_form')['driver'])) {
+              $task->setDriver($request->request->all('phone_task_form')['driver']);
+            }
+            $task->setDriver($request->request->all('phone_task_form')['assignedUsers'][0]);
+          }
+          $date = $task->getDatumKreiranja();
+          if (!empty($request->request->all('phone_task_form')['vreme'])) {
+            $time = $request->request->all('phone_task_form')['vreme'];
+            $time1 = $date->modify($time);
+            $task->setTime($time1);
+          }
+          else {
+            $task->setTime($date);
+          }
+          foreach ($request->request->all('phone_task_form')['assignedUsers'] as $key => $assignedUser) {
+            if (!empty($assignedUser)){
+              $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+              if(!is_null($member)) {
+                $task->addAssignedUser($member);
+
+                if ($key === 0) {
+                  $task->setPriorityUserLog($assignedUser);
+                }
+              }
+            }
           }
         }
 
@@ -206,8 +355,14 @@ class TaskController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['task'] = $task;
+    $args['korisnik'] = $user;
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
 
-    return $this->render('task/form.html.twig', $args);
+    if (!$mobileDetect->isMobile()) {
+      return $this->render('task/form.html.twig', $args);
+    }
+    return $this->render('task/mobile_form.html.twig', $args);
   }
 
   #[Route('/edit-info/{id}', name: 'app_task_edit_info')]
@@ -331,13 +486,31 @@ class TaskController extends AbstractController {
       $history = $history->getContent();
     }
 
-    $form = $this->createForm(ReassignTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_reassign', ['id' => $task->getId()])]]);
+//    $form = $this->createForm(ReassignTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_reassign', ['id' => $task->getId()])]]);
 
     if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
 
-      if ($form->isSubmitted() && $form->isValid()) {
 
+      if (!empty($request->request->all('task_form')['car'])) {
+        $task->setCar($request->request->all('task_form')['car']);
+        if (!empty($request->request->all('task_form')['driver'])) {
+          $task->setDriver($request->request->all('task_form')['driver']);
+        }
+        $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
+      }
+
+      foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
+        if (!empty($assignedUser)){
+          $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+          if(!is_null($member)) {
+            $task->addAssignedUser($member);
+
+            if ($key === 0) {
+              $task->setPriorityUserLog($assignedUser);
+            }
+          }
+        }
+      }
         $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 
         notyf()
@@ -348,10 +521,13 @@ class TaskController extends AbstractController {
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
         return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
-      }
+
     }
-    $args['form'] = $form->createView();
+
     $args['task'] = $task;
+    $args['assignedUsers'] = $this->em->getRepository(Task::class)->getAssignedUsersByTask($task);
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
 
     return $this->render('task/reassign.html.twig', $args);
   }
@@ -412,14 +588,15 @@ class TaskController extends AbstractController {
     $args['taskLogs'] = $this->em->getRepository(TaskLog::class)->findLogs($task);
     $args['images'] = $this->em->getRepository(Task::class)->getImagesByTask($task);
     $args['pdfs'] = $this->em->getRepository(Task::class)->getPdfsByTask($task);
+    $args['car'] = $this->em->getRepository(Car::class)->findOneBy(['id' => $task->getCar()]);
     $args['comments'] = $this->em->getRepository(Comment::class)->findBy(['task' => $task, 'isSuspended' => false], ['id' => 'DESC']);
 
-    $args['cars'] = [];
-    foreach ($task->getAssignedUsers() as $driver) {
-      if (!is_null($driver->getCar())) {
-        $args['cars'][] = $this->em->getRepository(Car::class)->find($driver->getCar());
-      }
-    }
+//    $args['cars'] = [];
+//    foreach ($task->getAssignedUsers() as $driver) {
+//      if (!is_null($driver->getCar())) {
+//        $args['cars'][] = $this->em->getRepository(Car::class)->find($driver->getCar());
+//      }
+//    }
 
 
     $args['time'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchTimeByTask($task);
@@ -446,13 +623,13 @@ class TaskController extends AbstractController {
     $args['images'] = $this->em->getRepository(Task::class)->getImagesByTask($task);
     $args['pdfs'] = $this->em->getRepository(Task::class)->getPdfsByTask($task);
     $args['comments'] = $this->em->getRepository(Comment::class)->findBy(['task' => $task, 'isSuspended' => false], ['id' => 'DESC']);
-
-    $args['cars'] = [];
-    foreach ($task->getAssignedUsers() as $driver) {
-      if (!is_null($driver->getCar())) {
-        $args['cars'][] = $this->em->getRepository(Car::class)->find($driver->getCar());
-      }
-    }
+    $args['car'] = $this->em->getRepository(Car::class)->findOneBy(['id' => $task->getCar()]);
+//    $args['cars'] = [];
+//    foreach ($task->getAssignedUsers() as $driver) {
+//      if (!is_null($driver->getCar())) {
+//        $args['cars'][] = $this->em->getRepository(Car::class)->find($driver->getCar());
+//      }
+//    }
 
     $args['lastEdit'] = $this->em->getRepository(StopwatchTime::class)->lastEdit($args['taskLog']);
 

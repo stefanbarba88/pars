@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header page-header-light shadow d-none d-sm-block">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -67,13 +67,9 @@
                     <!-- Wizard with validation -->
                     <div class="card">
                         <div class="card-header">
-{#                            <h6 class="mb-0">#}
-{#                                {% if task.id is not null %}#}
-{#                                    Izmena zadatka#}
-{#                                {% else %}#}
-{#                                    Dodavanje zadatka#}
-{#                                {% endif %}#}
-{#                            </h6>#}
+                            <h6 class="mb-0">
+                                Dodavanje dnevnika
+                            </h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
                         <div class="card-body">
@@ -89,7 +85,7 @@
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         {{ form_label(form.activity, 'Odrađene aktivnosti:', {'label_attr': {'class': 'form-category'}}) }}
-                                        {{ form_widget(form.activity, {attr: { class: 'form-control listbox-basic' }}) }}
+                                        {{ form_widget(form.activity, {attr: { class: 'form-control select' }}) }}
                                     </div>
                                 </div>
                             </div>
@@ -97,7 +93,8 @@
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         {{ form_label(form.description, 'Opis:', {'label_attr': {'class': 'form-category'}}) }}
-                                        {{ form_widget(form.description, {attr: { class: 'form-control ckeditor_simple1' }}) }}
+{#                                        {{ form_widget(form.description, {attr: { class: 'form-control ckeditor_simple1' }}) }}#}
+                                        {{ form_widget(form.description, {attr: { class: 'form-control' }}) }}
                                     </div>
                                 </div>
                             </div>

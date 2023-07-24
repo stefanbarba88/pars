@@ -45,17 +45,6 @@
 
                 <!-- Content area -->
                 <div class="content">
-{#                    {% if not form.vars.valid %}#}
-{#                        {% for child in form.children %}#}
-{#                            {%for error in child.vars.errors%}#}
-{#                                <div class="alert alert-danger alert-dismissible fade show">#}
-{#                                    <span class="fw-semibold">{{error.message}}</span>#}
-{#                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>#}
-{#                                </div>#}
-{#                            {%endfor%}#}
-{#                        {%endfor%}#}
-{#                    {%endif%}#}
-
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
@@ -96,16 +85,20 @@
                                             </select>
                                         </div>
                                         <div class="mb-1">
+                                            <label class="form-category" for="task_form_vreme1">Vreme:</label>
+                                            <input id="task_form_vreme1" name="task_quick_form1[vreme]" class="form-control form-control-sm project1"  type="time" value="{{ fastTask.time1 }}">
+                                        </div>
+                                        <div class="mb-1">
                                             {% if fastTask.status1 == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
                                                 <span class="badge bg-danger">Izmenjen</span>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_geo1">Geodete:</label>
-                                            <select id="task_form_geodeta1_1" name="task_quick_form1[geo][]" class="form-control select">
-                                                <option>---</option>
+                                            <select id="task_form_geodeta1_1" name="task_quick_form1[geo][]" class="form-control select project1">
+                                                <option value="">---</option>
                                                 {% for user in users %}
                                                     {% if user.id == fastTask.geo11 %}
                                                         <option value="{{ user.id }}" selected>{{ user.ime }}</option>
@@ -140,10 +133,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media1">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_aktivnosti1">Aktivnosti:</label>
-                                            <select id="task_form_aktivnosti1" name="task_quick_form1[aktivnosti][]"  class="form-control select" multiple>
+                                            <select id="task_form_aktivnosti1" name="task_quick_form1[aktivnosti][]"  class="form-control select project1" multiple>
                                                 {% for activity in activities %}
                                                     {% if activity.id in fastTask.activity1 %}
                                                         <option value="{{ activity.id }}" selected>{{ activity.title }}</option>
@@ -154,18 +147,54 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_oprema1">Oprema:</label>
-                                            <textarea id="task_form_oprema1" name="task_quick_form1[oprema]" class="form-control"  rows="3">{% if fastTask.oprema1 is not null %}{{ fastTask.oprema1 | trim }}{% endif %}
+                                            <select id="task_form_oprema1" name="task_quick_form1[oprema][]"  class="form-control select" multiple>
+                                                {% for tool in tools %}
+                                                    {% if tool.id in fastTask.oprema1 %}
+                                                        <option value="{{ tool.id }}" selected>{{ tool.title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ tool.id }}">{{ tool.title }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena1">Napomena:</label>
+                                            <textarea id="task_form_napomena1" name="task_quick_form1[napomena]" class="form-control"  rows="1">{% if fastTask.description1 is not null %}{{ fastTask.description1 | trim }}{% endif %}
                                             </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
+
                                         <div class="mb-1">
-                                            <label class="form-category" for="task_form_napomena1">Napomena:</label>
-                                            <textarea id="task_form_napomena1" name="task_quick_form1[napomena]" class="form-control"  rows="3">{% if fastTask.description1 is not null %}{{ fastTask.description1 | trim }}{% endif %}
-                                            </textarea>
+                                            <label class="form-category" for="task_form_vozilo1">Vozilo:</label>
+                                            <select id="task_form_vozilo1" name="task_quick_form1[vozilo]" class="form-control select">
+                                                <option>---</option>
+                                                {% for car in cars %}
+                                                    {% if car.id == fastTask.car1 %}
+                                                        <option value="{{ car.id }}" selected>{{ car.plate }}</option>
+                                                    {% else %}
+                                                        <option value="{{ car.id }}">{{ car.plate }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_vozac1">Vozač:</label>
+                                            <select id="task_form_vozac1" name="task_quick_form1[vozac]" class="form-control select">
+                                                <option>---</option>
+                                                {% for driver in drivers %}
+                                                    {% if driver.id == fastTask.driver1 %}
+                                                        <option value="{{ driver.id }}" selected>{{ driver.ime }}</option>
+                                                    {% else %}
+                                                        <option value="{{ driver.id }}">{{ driver.ime }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -187,16 +216,20 @@
                                             </select>
                                         </div>
                                         <div class="mb-1">
+                                            <label class="form-category" for="task_form_vreme2">Vreme:</label>
+                                            <input id="task_form_vreme2" name="task_quick_form2[vreme]" class="form-control form-control-sm project2"  type="time" value="{{ fastTask.time2 }}">
+                                        </div>
+                                        <div class="mb-1">
                                             {% if fastTask.status2 == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
                                                 <span class="badge bg-danger">Izmenjen</span>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_geo2">Geodete:</label>
-                                            <select id="task_form_geodeta1_2" name="task_quick_form2[geo][]" class="form-control select">
-                                                <option>---</option>
+                                            <select id="task_form_geodeta1_2" name="task_quick_form2[geo][]" class="form-control select project2">
+                                                <option value="">---</option>
                                                 {% for user in users %}
                                                     {% if user.id == fastTask.geo12 %}
                                                         <option value="{{ user.id }}" selected>{{ user.ime }}</option>
@@ -231,10 +264,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media1">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_aktivnosti2">Aktivnosti:</label>
-                                            <select id="task_form_aktivnosti2" name="task_quick_form2[aktivnosti][]"  class="form-control select" multiple>
+                                            <select id="task_form_aktivnosti2" name="task_quick_form2[aktivnosti][]"  class="form-control select project2" multiple>
                                                 {% for activity in activities %}
                                                     {% if activity.id in fastTask.activity2 %}
                                                         <option value="{{ activity.id }}" selected>{{ activity.title }}</option>
@@ -245,18 +278,54 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_oprema2">Oprema:</label>
-                                            <textarea id="task_form_oprema2" name="task_quick_form2[oprema]" class="form-control"  rows="3">{% if fastTask.oprema2 is not null %}{{ fastTask.oprema2 | trim }}{% endif %}
+                                            <select id="task_form_oprema2" name="task_quick_form2[oprema][]"  class="form-control select" multiple>
+                                                {% for tool in tools %}
+                                                    {% if tool.id in fastTask.oprema2 %}
+                                                        <option value="{{ tool.id }}" selected>{{ tool.title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ tool.id }}">{{ tool.title }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena2">Napomena:</label>
+                                            <textarea id="task_form_napomena2" name="task_quick_form2[napomena]" class="form-control"  rows="1">{% if fastTask.description2 is not null %}{{ fastTask.description2 | trim }}{% endif %}
                                             </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
+
                                         <div class="mb-1">
-                                            <label class="form-category" for="task_form_napomena2">Napomena:</label>
-                                            <textarea id="task_form_napomena2" name="task_quick_form2[napomena]" class="form-control"  rows="3">{% if fastTask.description2 is not null %}{{ fastTask.description2 | trim }}{% endif %}
-                                            </textarea>
+                                            <label class="form-category" for="task_form_vozilo2">Vozilo:</label>
+                                            <select id="task_form_vozilo2" name="task_quick_form2[vozilo]" class="form-control select">
+                                                <option>---</option>
+                                                {% for car in cars %}
+                                                    {% if car.id == fastTask.car2 %}
+                                                        <option value="{{ car.id }}" selected>{{ car.plate }}</option>
+                                                    {% else %}
+                                                        <option value="{{ car.id }}">{{ car.plate }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_vozac2">Vozač:</label>
+                                            <select id="task_form_vozac2" name="task_quick_form2[vozac]" class="form-control select">
+                                                <option>---</option>
+                                                {% for driver in drivers %}
+                                                    {% if driver.id == fastTask.driver2 %}
+                                                        <option value="{{ driver.id }}" selected>{{ driver.ime }}</option>
+                                                    {% else %}
+                                                        <option value="{{ driver.id }}">{{ driver.ime }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -278,16 +347,20 @@
                                             </select>
                                         </div>
                                         <div class="mb-1">
+                                            <label class="form-category" for="task_form_vreme3">Vreme:</label>
+                                            <input id="task_form_vreme3" name="task_quick_form3[vreme]" class="form-control form-control-sm project3"  type="time" value="{{ fastTask.time3 }}">
+                                        </div>
+                                        <div class="mb-1">
                                             {% if fastTask.status3 == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
                                                 <span class="badge bg-danger">Izmenjen</span>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_geo3">Geodete:</label>
-                                            <select id="task_form_geodeta1_3" name="task_quick_form3[geo][]" class="form-control select">
-                                                <option>---</option>
+                                            <select id="task_form_geodeta1_3" name="task_quick_form3[geo][]" class="form-control select project3">
+                                                <option value="">---</option>
                                                 {% for user in users %}
                                                     {% if user.id == fastTask.geo13 %}
                                                         <option value="{{ user.id }}" selected>{{ user.ime }}</option>
@@ -322,10 +395,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media1">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_aktivnosti3">Aktivnosti:</label>
-                                            <select id="task_form_aktivnosti3" name="task_quick_form3[aktivnosti][]"  class="form-control select" multiple>
+                                            <select id="task_form_aktivnosti3" name="task_quick_form3[aktivnosti][]"  class="form-control select project3" multiple>
                                                 {% for activity in activities %}
                                                     {% if activity.id in fastTask.activity3 %}
                                                         <option value="{{ activity.id }}" selected>{{ activity.title }}</option>
@@ -336,18 +409,53 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_oprema3">Oprema:</label>
-                                            <textarea id="task_form_oprema3" name="task_quick_form3[oprema]" class="form-control"  rows="3">{% if fastTask.oprema3 is not null %}{{ fastTask.oprema3 | trim }}{% endif %}
+                                            <select id="task_form_oprema3" name="task_quick_form3[oprema][]"  class="form-control select" multiple>
+                                                {% for tool in tools %}
+                                                    {% if tool.id in fastTask.oprema3 %}
+                                                        <option value="{{ tool.id }}" selected>{{ tool.title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ tool.id }}">{{ tool.title }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena3">Napomena:</label>
+                                            <textarea id="task_form_napomena3" name="task_quick_form3[napomena]" class="form-control"  rows="1">{% if fastTask.description3 is not null %}{{ fastTask.description3 | trim }}{% endif %}
                                             </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
-                                            <label class="form-category" for="task_form_napomena3">Napomena:</label>
-                                            <textarea id="task_form_napomena3" name="task_quick_form3[napomena]" class="form-control"  rows="3">{% if fastTask.description3 is not null %}{{ fastTask.description3 | trim }}{% endif %}
-                                            </textarea>
+                                            <label class="form-category" for="task_form_vozilo3">Vozilo:</label>
+                                            <select id="task_form_vozilo3" name="task_quick_form3[vozilo]" class="form-control select">
+                                                <option>---</option>
+                                                {% for car in cars %}
+                                                    {% if car.id == fastTask.car3 %}
+                                                        <option value="{{ car.id }}" selected>{{ car.plate }}</option>
+                                                    {% else %}
+                                                        <option value="{{ car.id }}">{{ car.plate }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_vozac3">Vozač:</label>
+                                            <select id="task_form_vozac3" name="task_quick_form3[vozac]" class="form-control select">
+                                                <option>---</option>
+                                                {% for driver in drivers %}
+                                                    {% if driver.id == fastTask.driver3 %}
+                                                        <option value="{{ driver.id }}" selected>{{ driver.ime }}</option>
+                                                    {% else %}
+                                                        <option value="{{ driver.id }}">{{ driver.ime }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -369,16 +477,20 @@
                                             </select>
                                         </div>
                                         <div class="mb-1">
+                                            <label class="form-category" for="task_form_vreme4">Vreme:</label>
+                                            <input id="task_form_vreme4" name="task_quick_form4[vreme]" class="form-control form-control-sm project4"  type="time" value="{{ fastTask.time4 }}">
+                                        </div>
+                                        <div class="mb-1">
                                             {% if fastTask.status4 == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
                                                 <span class="badge bg-danger">Izmenjen</span>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_geo3">Geodete:</label>
-                                            <select id="task_form_geodeta1_4" name="task_quick_form4[geo][]" class="form-control select">
-                                                <option>---</option>
+                                            <select id="task_form_geodeta1_4" name="task_quick_form4[geo][]" class="form-control select project4">
+                                                <option value="">---</option>
                                                 {% for user in users %}
                                                     {% if user.id == fastTask.geo14 %}
                                                         <option value="{{ user.id }}" selected>{{ user.ime }}</option>
@@ -413,10 +525,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media1">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_aktivnosti4">Aktivnosti:</label>
-                                            <select id="task_form_aktivnosti4" name="task_quick_form4[aktivnosti][]"  class="form-control select" multiple>
+                                            <select id="task_form_aktivnosti4" name="task_quick_form4[aktivnosti][]"  class="form-control select project4" multiple>
                                                 {% for activity in activities %}
                                                     {% if activity.id in fastTask.activity4 %}
                                                         <option value="{{ activity.id }}" selected>{{ activity.title }}</option>
@@ -427,18 +539,53 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_oprema4">Oprema:</label>
-                                            <textarea id="task_form_oprema4" name="task_quick_form4[oprema]" class="form-control"  rows="3">{% if fastTask.oprema4 is not null %}{{ fastTask.oprema4 | trim }}{% endif %}
+                                            <select id="task_form_oprema4" name="task_quick_form4[oprema][]"  class="form-control select" multiple>
+                                                {% for tool in tools %}
+                                                    {% if tool.id in fastTask.oprema4 %}
+                                                        <option value="{{ tool.id }}" selected>{{ tool.title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ tool.id }}">{{ tool.title }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena4">Napomena:</label>
+                                            <textarea id="task_form_napomena4" name="task_quick_form4[napomena]" class="form-control"  rows="1">{% if fastTask.description4 is not null %}{{ fastTask.description4 | trim }}{% endif %}
                                             </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
-                                            <label class="form-category" for="task_form_napomena4">Napomena:</label>
-                                            <textarea id="task_form_napomena4" name="task_quick_form4[napomena]" class="form-control"  rows="3">{% if fastTask.description4 is not null %}{{ fastTask.description4 | trim }}{% endif %}
-                                            </textarea>
+                                            <label class="form-category" for="task_form_vozilo4">Vozilo:</label>
+                                            <select id="task_form_vozilo4" name="task_quick_form4[vozilo]" class="form-control select">
+                                                <option>---</option>
+                                                {% for car in cars %}
+                                                    {% if car.id == fastTask.car4 %}
+                                                        <option value="{{ car.id }}" selected>{{ car.plate }}</option>
+                                                    {% else %}
+                                                        <option value="{{ car.id }}">{{ car.plate }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_vozac4">Vozač:</label>
+                                            <select id="task_form_vozac4" name="task_quick_form4[vozac]" class="form-control select">
+                                                <option>---</option>
+                                                {% for driver in drivers %}
+                                                    {% if driver.id == fastTask.driver4 %}
+                                                        <option value="{{ driver.id }}" selected>{{ driver.ime }}</option>
+                                                    {% else %}
+                                                        <option value="{{ driver.id }}">{{ driver.ime }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -460,16 +607,20 @@
                                             </select>
                                         </div>
                                         <div class="mb-1">
+                                            <label class="form-category" for="task_form_vreme5">Vreme:</label>
+                                            <input id="task_form_vreme5" name="task_quick_form5[vreme]" class="form-control form-control-sm project5"  type="time" value="{{ fastTask.time5 }}">
+                                        </div>
+                                        <div class="mb-1">
                                             {% if fastTask.status5 == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
                                                 <span class="badge bg-danger">Izmenjen</span>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_geo3">Geodete:</label>
-                                            <select id="task_form_geodeta1_5" name="task_quick_form5[geo][]" class="form-control select">
-                                                <option>---</option>
+                                            <select id="task_form_geodeta1_5" name="task_quick_form5[geo][]" class="form-control select project5">
+                                                <option value="">---</option>
                                                 {% for user in users %}
                                                     {% if user.id == fastTask.geo15 %}
                                                         <option value="{{ user.id }}" selected>{{ user.ime }}</option>
@@ -504,10 +655,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media1">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_aktivnosti5">Aktivnosti:</label>
-                                            <select id="task_form_aktivnosti5" name="task_quick_form5[aktivnosti][]"  class="form-control select" multiple>
+                                            <select id="task_form_aktivnosti5" name="task_quick_form5[aktivnosti][]"  class="form-control select project5" multiple>
                                                 {% for activity in activities %}
                                                     {% if activity.id in fastTask.activity5 %}
                                                         <option value="{{ activity.id }}" selected>{{ activity.title }}</option>
@@ -518,18 +669,53 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_oprema5">Oprema:</label>
-                                            <textarea id="task_form_oprema5" name="task_quick_form5[oprema]" class="form-control"  rows="3">{% if fastTask.oprema5 is not null %}{{ fastTask.oprema5 | trim }}{% endif %}
+                                            <select id="task_form_oprema5" name="task_quick_form5[oprema][]"  class="form-control select" multiple>
+                                                {% for tool in tools %}
+                                                    {% if tool.id in fastTask.oprema5 %}
+                                                        <option value="{{ tool.id }}" selected>{{ tool.title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ tool.id }}">{{ tool.title }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena5">Napomena:</label>
+                                            <textarea id="task_form_napomena5" name="task_quick_form5[napomena]" class="form-control"  rows="1">{% if fastTask.description5 is not null %}{{ fastTask.description5 | trim }}{% endif %}
                                             </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
-                                            <label class="form-category" for="task_form_napomena5">Napomena:</label>
-                                            <textarea id="task_form_napomena5" name="task_quick_form5[napomena]" class="form-control"  rows="3">{% if fastTask.description5 is not null %}{{ fastTask.description5 | trim }}{% endif %}
-                                            </textarea>
+                                            <label class="form-category" for="task_form_vozilo5">Vozilo:</label>
+                                            <select id="task_form_vozilo5" name="task_quick_form5[vozilo]" class="form-control select">
+                                                <option>---</option>
+                                                {% for car in cars %}
+                                                    {% if car.id == fastTask.car5 %}
+                                                        <option value="{{ car.id }}" selected>{{ car.plate }}</option>
+                                                    {% else %}
+                                                        <option value="{{ car.id }}">{{ car.plate }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_vozac5">Vozač:</label>
+                                            <select id="task_form_vozac5" name="task_quick_form5[vozac]" class="form-control select">
+                                                <option>---</option>
+                                                {% for driver in drivers %}
+                                                    {% if driver.id == fastTask.driver5 %}
+                                                        <option value="{{ driver.id }}" selected>{{ driver.ime }}</option>
+                                                    {% else %}
+                                                        <option value="{{ driver.id }}">{{ driver.ime }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -551,16 +737,20 @@
                                             </select>
                                         </div>
                                         <div class="mb-1">
+                                            <label class="form-category" for="task_form_vreme6">Vreme:</label>
+                                            <input id="task_form_vreme6" name="task_quick_form6[vreme]" class="form-control form-control-sm project6"  type="time" value="{{ fastTask.time6 }}">
+                                        </div>
+                                        <div class="mb-1">
                                             {% if fastTask.status6 == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
                                                 <span class="badge bg-danger">Izmenjen</span>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_geo3">Geodete:</label>
-                                            <select id="task_form_geodeta1_6" name="task_quick_form6[geo][]" class="form-control select">
-                                                <option>---</option>
+                                            <select id="task_form_geodeta1_6" name="task_quick_form6[geo][]" class="form-control select project6">
+                                                <option value="">---</option>
                                                 {% for user in users %}
                                                     {% if user.id == fastTask.geo16 %}
                                                         <option value="{{ user.id }}" selected>{{ user.ime }}</option>
@@ -595,10 +785,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media1">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_aktivnosti6">Aktivnosti:</label>
-                                            <select id="task_form_aktivnosti6" name="task_quick_form6[aktivnosti][]"  class="form-control select" multiple>
+                                            <select id="task_form_aktivnosti6" name="task_quick_form6[aktivnosti][]"  class="form-control select project6" multiple>
                                                 {% for activity in activities %}
                                                     {% if activity.id in fastTask.activity6 %}
                                                         <option value="{{ activity.id }}" selected>{{ activity.title }}</option>
@@ -609,18 +799,53 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_oprema6">Oprema:</label>
-                                            <textarea id="task_form_oprema6" name="task_quick_form6[oprema]" class="form-control"  rows="3">{% if fastTask.oprema6 is not null %}{{ fastTask.oprema6 | trim }}{% endif %}
+                                            <select id="task_form_oprema6" name="task_quick_form6[oprema][]"  class="form-control select" multiple>
+                                                {% for tool in tools %}
+                                                    {% if tool.id in fastTask.oprema6 %}
+                                                        <option value="{{ tool.id }}" selected>{{ tool.title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ tool.id }}">{{ tool.title }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena6">Napomena:</label>
+                                            <textarea id="task_form_napomena6" name="task_quick_form6[napomena]" class="form-control"  rows="1">{% if fastTask.description6 is not null %}{{ fastTask.description6 | trim }}{% endif %}
                                             </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
-                                            <label class="form-category" for="task_form_napomena6">Napomena:</label>
-                                            <textarea id="task_form_napomena6" name="task_quick_form6[napomena]" class="form-control"  rows="3">{% if fastTask.description6 is not null %}{{ fastTask.description6 | trim }}{% endif %}
-                                            </textarea>
+                                            <label class="form-category" for="task_form_vozilo6">Vozilo:</label>
+                                            <select id="task_form_vozilo6" name="task_quick_form6[vozilo]" class="form-control select">
+                                                <option>---</option>
+                                                {% for car in cars %}
+                                                    {% if car.id == fastTask.car6 %}
+                                                        <option value="{{ car.id }}" selected>{{ car.plate }}</option>
+                                                    {% else %}
+                                                        <option value="{{ car.id }}">{{ car.plate }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_vozac6">Vozač:</label>
+                                            <select id="task_form_vozac6" name="task_quick_form6[vozac]" class="form-control select">
+                                                <option>---</option>
+                                                {% for driver in drivers %}
+                                                    {% if driver.id == fastTask.driver6 %}
+                                                        <option value="{{ driver.id }}" selected>{{ driver.ime }}</option>
+                                                    {% else %}
+                                                        <option value="{{ driver.id }}">{{ driver.ime }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -642,16 +867,20 @@
                                             </select>
                                         </div>
                                         <div class="mb-1">
+                                            <label class="form-category" for="task_form_vreme7">Vreme:</label>
+                                            <input id="task_form_vreme7" name="task_quick_form7[vreme]" class="form-control form-control-sm project7"  type="time" value="{{ fastTask.time7 }}">
+                                        </div>
+                                        <div class="mb-1">
                                             {% if fastTask.status7 == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
                                                 <span class="badge bg-danger">Izmenjen</span>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_geo3">Geodete:</label>
-                                            <select id="task_form_geodeta1_7" name="task_quick_form7[geo][]" class="form-control select">
-                                                <option>---</option>
+                                            <select id="task_form_geodeta1_7" name="task_quick_form7[geo][]" class="form-control select project7">
+                                                <option value="">---</option>
                                                 {% for user in users %}
                                                     {% if user.id == fastTask.geo17 %}
                                                         <option value="{{ user.id }}" selected>{{ user.ime }}</option>
@@ -686,10 +915,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media1">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_aktivnosti7">Aktivnosti:</label>
-                                            <select id="task_form_aktivnosti7" name="task_quick_form7[aktivnosti][]"  class="form-control select" multiple>
+                                            <select id="task_form_aktivnosti7" name="task_quick_form7[aktivnosti][]"  class="form-control select project7" multiple>
                                                 {% for activity in activities %}
                                                     {% if activity.id in fastTask.activity7 %}
                                                         <option value="{{ activity.id }}" selected>{{ activity.title }}</option>
@@ -700,18 +929,54 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_oprema7">Oprema:</label>
-                                            <textarea id="task_form_oprema7" name="task_quick_form7[oprema]" class="form-control"  rows="3">{% if fastTask.oprema7 is not null %}{{ fastTask.oprema7 | trim }}{% endif %}
+                                            <select id="task_form_oprema7" name="task_quick_form7[oprema][]"  class="form-control select" multiple>
+                                                {% for tool in tools %}
+                                                    {% if tool.id in fastTask.oprema7 %}
+                                                        <option value="{{ tool.id }}" selected>{{ tool.title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ tool.id }}">{{ tool.title }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena7">Napomena:</label>
+                                            <textarea id="task_form_napomena7" name="task_quick_form7[napomena]" class="form-control"  rows="1">{% if fastTask.description7 is not null %}{{ fastTask.description7 | trim }}{% endif %}
                                             </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
+
                                         <div class="mb-1">
-                                            <label class="form-category" for="task_form_napomena7">Napomena:</label>
-                                            <textarea id="task_form_napomena7" name="task_quick_form7[napomena]" class="form-control"  rows="3">{% if fastTask.description7 is not null %}{{ fastTask.description7 | trim }}{% endif %}
-                                            </textarea>
+                                            <label class="form-category" for="task_form_vozilo7">Vozilo:</label>
+                                            <select id="task_form_vozilo7" name="task_quick_form7[vozilo]" class="form-control select">
+                                                <option>---</option>
+                                                {% for car in cars %}
+                                                    {% if car.id == fastTask.car7 %}
+                                                        <option value="{{ car.id }}" selected>{{ car.plate }}</option>
+                                                    {% else %}
+                                                        <option value="{{ car.id }}">{{ car.plate }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_vozac7">Vozač:</label>
+                                            <select id="task_form_vozac7" name="task_quick_form7[vozac]" class="form-control select">
+                                                <option>---</option>
+                                                {% for driver in drivers %}
+                                                    {% if driver.id == fastTask.driver7 %}
+                                                        <option value="{{ driver.id }}" selected>{{ driver.ime }}</option>
+                                                    {% else %}
+                                                        <option value="{{ driver.id }}">{{ driver.ime }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -733,16 +998,20 @@
                                             </select>
                                         </div>
                                         <div class="mb-1">
+                                            <label class="form-category" for="task_form_vreme8">Vreme:</label>
+                                            <input id="task_form_vreme8" name="task_quick_form8[vreme]" class="form-control form-control-sm project8"  type="time" value="{{ fastTask.time8 }}">
+                                        </div>
+                                        <div class="mb-1">
                                             {% if fastTask.status8 == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
                                                 <span class="badge bg-danger">Izmenjen</span>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_geo3">Geodete:</label>
-                                            <select id="task_form_geodeta1_8" name="task_quick_form8[geo][]" class="form-control select">
-                                                <option>---</option>
+                                            <select id="task_form_geodeta1_8" name="task_quick_form8[geo][]" class="form-control select project8">
+                                                <option value="">---</option>
                                                 {% for user in users %}
                                                     {% if user.id == fastTask.geo18 %}
                                                         <option value="{{ user.id }}" selected>{{ user.ime }}</option>
@@ -777,10 +1046,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media1">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_aktivnosti8">Aktivnosti:</label>
-                                            <select id="task_form_aktivnosti8" name="task_quick_form8[aktivnosti][]"  class="form-control select" multiple>
+                                            <select id="task_form_aktivnosti8" name="task_quick_form8[aktivnosti][]"  class="form-control select project8" multiple>
                                                 {% for activity in activities %}
                                                     {% if activity.id in fastTask.activity8 %}
                                                         <option value="{{ activity.id }}" selected>{{ activity.title }}</option>
@@ -791,18 +1060,54 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_oprema8">Oprema:</label>
-                                            <textarea id="task_form_oprema8" name="task_quick_form8[oprema]" class="form-control"  rows="3">{% if fastTask.oprema8 is not null %}{{ fastTask.oprema8 | trim }}{% endif %}
+                                            <select id="task_form_oprema8" name="task_quick_form8[oprema][]"  class="form-control select" multiple>
+                                                {% for tool in tools %}
+                                                    {% if tool.id in fastTask.oprema8 %}
+                                                        <option value="{{ tool.id }}" selected>{{ tool.title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ tool.id }}">{{ tool.title }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena8">Napomena:</label>
+                                            <textarea id="task_form_napomena8" name="task_quick_form8[napomena]" class="form-control"  rows="1">{% if fastTask.description8 is not null %}{{ fastTask.description8 | trim }}{% endif %}
                                             </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
+
                                         <div class="mb-1">
-                                            <label class="form-category" for="task_form_napomena8">Napomena:</label>
-                                            <textarea id="task_form_napomena8" name="task_quick_form8[napomena]" class="form-control"  rows="3">{% if fastTask.description8 is not null %}{{ fastTask.description8 | trim }}{% endif %}
-                                            </textarea>
+                                            <label class="form-category" for="task_form_vozilo8">Vozilo:</label>
+                                            <select id="task_form_vozilo8" name="task_quick_form8[vozilo]" class="form-control select">
+                                                <option>---</option>
+                                                {% for car in cars %}
+                                                    {% if car.id == fastTask.car8 %}
+                                                        <option value="{{ car.id }}" selected>{{ car.plate }}</option>
+                                                    {% else %}
+                                                        <option value="{{ car.id }}">{{ car.plate }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_vozac8">Vozač:</label>
+                                            <select id="task_form_vozac8" name="task_quick_form8[vozac]" class="form-control select">
+                                                <option>---</option>
+                                                {% for driver in drivers %}
+                                                    {% if driver.id == fastTask.driver8 %}
+                                                        <option value="{{ driver.id }}" selected>{{ driver.ime }}</option>
+                                                    {% else %}
+                                                        <option value="{{ driver.id }}">{{ driver.ime }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -824,16 +1129,20 @@
                                             </select>
                                         </div>
                                         <div class="mb-1">
+                                            <label class="form-category" for="task_form_vreme9">Vreme:</label>
+                                            <input id="task_form_vreme9" name="task_quick_form9[vreme]" class="form-control form-control-sm project9"  type="time" value="{{ fastTask.time9 }}">
+                                        </div>
+                                        <div class="mb-1">
                                             {% if fastTask.status9 == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
                                                 <span class="badge bg-danger">Izmenjen</span>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_geo3">Geodete:</label>
-                                            <select id="task_form_geodeta1_9" name="task_quick_form9[geo][]" class="form-control select">
-                                                <option>---</option>
+                                            <select id="task_form_geodeta1_9" name="task_quick_form9[geo][]" class="form-control select project9">
+                                                <option value="">---</option>
                                                 {% for user in users %}
                                                     {% if user.id == fastTask.geo19 %}
                                                         <option value="{{ user.id }}" selected>{{ user.ime }}</option>
@@ -868,10 +1177,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media1">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_aktivnosti9">Aktivnosti:</label>
-                                            <select id="task_form_aktivnosti9" name="task_quick_form9[aktivnosti][]"  class="form-control select" multiple>
+                                            <select id="task_form_aktivnosti9" name="task_quick_form9[aktivnosti][]"  class="form-control select project9" multiple>
                                                 {% for activity in activities %}
                                                     {% if activity.id in fastTask.activity9 %}
                                                         <option value="{{ activity.id }}" selected>{{ activity.title }}</option>
@@ -882,18 +1191,54 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_oprema9">Oprema:</label>
-                                            <textarea id="task_form_oprema9" name="task_quick_form9[oprema]" class="form-control"  rows="3">{% if fastTask.oprema9 is not null %}{{ fastTask.oprema9 | trim }}{% endif %}
+                                            <select id="task_form_oprema9" name="task_quick_form9[oprema][]"  class="form-control select" multiple>
+                                                {% for tool in tools %}
+                                                    {% if tool.id in fastTask.oprema9 %}
+                                                        <option value="{{ tool.id }}" selected>{{ tool.title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ tool.id }}">{{ tool.title }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena9">Napomena:</label>
+                                            <textarea id="task_form_napomena9" name="task_quick_form9[napomena]" class="form-control"  rows="1">{% if fastTask.description9 is not null %}{{ fastTask.description9 | trim }}{% endif %}
                                             </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
+
                                         <div class="mb-1">
-                                            <label class="form-category" for="task_form_napomena9">Napomena:</label>
-                                            <textarea id="task_form_napomena9" name="task_quick_form9[napomena]" class="form-control"  rows="3">{% if fastTask.description9 is not null %}{{ fastTask.description9 | trim }}{% endif %}
-                                            </textarea>
+                                            <label class="form-category" for="task_form_vozilo9">Vozilo:</label>
+                                            <select id="task_form_vozilo9" name="task_quick_form9[vozilo]" class="form-control select">
+                                                <option>---</option>
+                                                {% for car in cars %}
+                                                    {% if car.id == fastTask.car9 %}
+                                                        <option value="{{ car.id }}" selected>{{ car.plate }}</option>
+                                                    {% else %}
+                                                        <option value="{{ car.id }}">{{ car.plate }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_vozac9">Vozač:</label>
+                                            <select id="task_form_vozac9" name="task_quick_form9[vozac]" class="form-control select">
+                                                <option>---</option>
+                                                {% for driver in drivers %}
+                                                    {% if driver.id == fastTask.driver9 %}
+                                                        <option value="{{ driver.id }}" selected>{{ driver.ime }}</option>
+                                                    {% else %}
+                                                        <option value="{{ driver.id }}">{{ driver.ime }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -915,16 +1260,20 @@
                                             </select>
                                         </div>
                                         <div class="mb-1">
+                                            <label class="form-category" for="task_form_vreme10">Vreme:</label>
+                                            <input id="task_form_vreme10" name="task_quick_form10[vreme]" class="form-control form-control-sm project10"  type="time" value="{{ fastTask.time10 }}">
+                                        </div>
+                                        <div class="mb-1">
                                             {% if fastTask.status10 == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
                                                 <span class="badge bg-danger">Izmenjen</span>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_geo3">Geodete:</label>
-                                            <select id="task_form_geodeta1_10" name="task_quick_form10[geo][]" class="form-control select">
-                                                <option>---</option>
+                                            <select id="task_form_geodeta1_10" name="task_quick_form10[geo][]" class="form-control select project10">
+                                                <option value="">---</option>
                                                 {% for user in users %}
                                                     {% if user.id == fastTask.geo110 %}
                                                         <option value="{{ user.id }}" selected>{{ user.ime }}</option>
@@ -959,10 +1308,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 quick-form-media1">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_aktivnosti10">Aktivnosti:</label>
-                                            <select id="task_form_aktivnosti10" name="task_quick_form10[aktivnosti][]"  class="form-control select" multiple>
+                                            <select id="task_form_aktivnosti10" name="task_quick_form10[aktivnosti][]"  class="form-control select project10" multiple>
                                                 {% for activity in activities %}
                                                     {% if activity.id in fastTask.activity10 %}
                                                         <option value="{{ activity.id }}" selected>{{ activity.title }}</option>
@@ -973,18 +1322,54 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
                                             <label class="form-category" for="task_form_oprema10">Oprema:</label>
-                                            <textarea id="task_form_oprema10" name="task_quick_form10[oprema]" class="form-control"  rows="3">{% if fastTask.oprema10 is not null %}{{ fastTask.oprema10 | trim }}{% endif %}
+                                            <select id="task_form_oprema10" name="task_quick_form10[oprema][]"  class="form-control select" multiple>
+                                                {% for tool in tools %}
+                                                    {% if tool.id in fastTask.oprema10 %}
+                                                        <option value="{{ tool.id }}" selected>{{ tool.title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ tool.id }}">{{ tool.title }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 quick-form-media">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_napomena10">Napomena:</label>
+                                            <textarea id="task_form_napomena10" name="task_quick_form10[napomena]" class="form-control"  rows="1">{% if fastTask.description10 is not null %}{{ fastTask.description10 | trim }}{% endif %}
                                             </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2 quick-form-media3">
+                                    <div class="col-lg-2 quick-form-media">
+
                                         <div class="mb-1">
-                                            <label class="form-category" for="task_form_napomena10">Napomena:</label>
-                                            <textarea id="task_form_napomena10" name="task_quick_form10[napomena]" class="form-control"  rows="3">{% if fastTask.description10 is not null %}{{ fastTask.description10 | trim }}{% endif %}
-                                            </textarea>
+                                            <label class="form-category" for="task_form_vozilo10">Vozilo:</label>
+                                            <select id="task_form_vozilo10" name="task_quick_form10[vozilo]" class="form-control select">
+                                                <option>---</option>
+                                                {% for car in cars %}
+                                                    {% if car.id == fastTask.car10 %}
+                                                        <option value="{{ car.id }}" selected>{{ car.plate }}</option>
+                                                    {% else %}
+                                                        <option value="{{ car.id }}">{{ car.plate }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_vozac10">Vozač:</label>
+                                            <select id="task_form_vozac10" name="task_quick_form10[vozac]" class="form-control select">
+                                                <option>---</option>
+                                                {% for driver in drivers %}
+                                                    {% if driver.id == fastTask.driver10 %}
+                                                        <option value="{{ driver.id }}" selected>{{ driver.ime }}</option>
+                                                    {% else %}
+                                                        <option value="{{ driver.id }}">{{ driver.ime }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -1047,8 +1432,7 @@
 
     <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>
-    <script src="{{ asset('assets/demo/pages/editor_ckeditor_classic.js') }}"></script>
+
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
     {% endif %}
@@ -1056,128 +1440,880 @@
 
 {% endblock includeJavascript %}
 
-{#{% block footerJavascript %}#}
+{% block footerJavascript %}
 
-{#    <script>#}
-{#        // $(document).ready(function() {#}
-{#        //     // Prati izabrane korisnike i onemogući ih u drugim poljima#}
-{#        //     $('select[name*="geo"]').on('change', function() {#}
-{#        //         var selectedUser = $(this).val();#}
-{#        //         $('select[name*="geo"]').not(this).find('option[value="' + selectedUser + '"]').prop('disabled', true);#}
-{#        //#}
-{#        //     });#}
-{#        // });#}
-{#        // $('select[id^="task_form_geodeta"]').on('change', function() {#}
-{#        //     var selectedUser = $(this).val();#}
-{#        //#}
-{#        //     // Resetuj select polja za korisnike#}
-{#        //     $('select[id^="task_form_geodeta"]').not(this).find('option[value="' + selectedUser + '"]').removeProp('selected');#}
-{#        //#}
-{#        //     // Poništi izbor korisnika iz prethodnog polja#}
-{#        //     $('select[id^="task_form_geodeta"]').not(this).each(function() {#}
-{#        //         if ($(this).val() === selectedUser) {#}
-{#        //             $(this).val('');#}
-{#        //         }#}
-{#        //     });#}
-{#        //#}
-{#        //     // Omogući sve opcije u svim poljima#}
-{#        //     $('select[id^="task_form_geodeta"] option').prop('disabled', false);#}
-{#        //#}
-{#        //     // Onemogući izabrane korisnike u drugim poljima#}
-{#        //     $('select[id^="task_form_geodeta"]').not(this).find('option[value="' + selectedUser + '"]').prop('disabled', true);#}
-{#        // });#}
+    <script>
 
-{#        // $(document).ready(function() {#}
-{#        //     // Dodavanje event listenera na sva polja koja sadrže "task_form_geodeta" u imenu#}
-{#        //     $('[id^="task_form_geodeta"]').on('change', function() {#}
-{#        //         var currentField = $(this);#}
-{#        //         var selectedValue = currentField.val();#}
-{#        //#}
-{#        //         // Provera svih ostalih polja sa istim prefiksom#}
-{#        //         $('[id^="task_form_geodeta"]').not(currentField).each(function() {#}
-{#        //             var field = $(this);#}
-{#        //             if (field.val() === selectedValue) {#}
-{#        //                 $('select[id^="task_form_geodeta"]').not(this).find('option[value="' + selectedUser + '"]').prop('disabled', true);#}
-{#        //                 // field.val(''); // Resetovanje vrednosti na prazan string#}
-{#        //             }#}
-{#        //         });#}
-{#        //     });#}
-{#        // });#}
-{#        // $(document).ready(function() {#}
-{#        //     // Inicijalno omogući sve opcije#}
-{#        //     $('select[name*="geo"]').find('option').prop('disabled', false);#}
-{#        //#}
-{#        //     // Prati izabrane korisnike i onemogući ih u drugim poljima#}
-{#        //     $('select[name*="geo"]').on('change', function() {#}
-{#        //         var selectedUser = $(this).val();#}
-{#        //         console.log(selectedUser);#}
-{#        //#}
-{#        //         if (selectedUser === "") {#}
-{#        //             // Omogući sve opcije u svim poljima#}
-{#        //             $('select[name*="geo"]').find('option[value="' + selectedUser + '"]').prop('disabled', false);#}
-{#        //         } else {#}
-{#        //             // Onemogući izabranu opciju u drugim poljima#}
-{#        //             $('select[name*="geo"]').not(this).find('option[value="' + selectedUser + '"]').prop('disabled', true);#}
-{#        //         }#}
-{#        //#}
-{#        //         //#}
-{#        //         // // Onemogući izabranu opciju u drugim poljima#}
-{#        //         // $('select[name*="geo"]').not(this).find('option[value="' + selectedUser + '"]').prop('disabled', true);#}
-{#        //     });#}
-{#        // });#}
-{#        // $(document).ready(function() {#}
-{#        //     var selectedUsers = []; // Niz za praćenje izabranih korisnika#}
-{#        //#}
-{#        //     // Prati izabrane korisnike i onemogući ih u drugim poljima#}
-{#        //     $('select[name*="geo"]').on('change', function() {#}
-{#        //         var selectedUser = $(this).val();#}
-{#        //#}
-{#        //         // Proveri da li je nova vrednost prazna#}
-{#        //         if (selectedUser === "") {#}
-{#        //             // Ukloni korisnika iz niza#}
-{#        //             selectedUsers = selectedUsers.filter(user => user !== $(this).data('selectedUser'));#}
-{#        //         } else {#}
-{#        //             // Dodaj korisnika u niz ako nije već dodat#}
-{#        //             if (!selectedUsers.includes(selectedUser)) {#}
-{#        //                 selectedUsers.push(selectedUser);#}
-{#        //             }#}
-{#        //         }#}
-{#        //#}
-{#        //         // Onemogući izabrane korisnike u drugim poljima#}
-{#        //         $('select[name*="geo"]').not(this).find('option').prop('disabled', false);#}
-{#        //         $('select[name*="geo"]').not(this).find('option[value="' + selectedUsers.join('"], option[value="') + '"]').prop('disabled', true);#}
-{#        //#}
-{#        //         // Sačuvaj izabranog korisnika za trenutno polje#}
-{#        //         $(this).data('selectedUser', selectedUser);#}
-{#        //     });#}
-{#        // });#}
+        $(document).ready(function() {
+            var selectedValues1 = {
+                task_form_geodeta1_1: "",
+                task_form_geodeta2_1: "",
+                task_form_geodeta3_1: ""
+            };
+            // Function to handle the change event of any of the three select elements
+            $("#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1").change(function() {
+                // Get the ID of the current select element
+                var currentId = $(this).attr("id");
 
-{#        $(document).ready(function() {#}
-{#            var userSelect = $('#userSelect');#}
+                // Get the selected value
+                var selectedValue = $(this).val();
 
-{#            // Ajax zahtev za dobavljanje liste korisnika#}
-{#            $.ajax({#}
-{#                url: '/tasks/app_ajax',#}
-{#                type: 'GET',#}
-{#                dataType: 'json',#}
-{#                success: function(response) {#}
-{#                    // Procesiranje odgovora i popunjavanje selekcije#}
-{#                    if (response && response.users) {#}
-{#                        var users = response.users;#}
+                // Re-enable the previously disabled option
+                if (selectedValues1[currentId] !== "") {
+                    $("#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1")
+                        .not(this)
+                        .find("option[value='" + selectedValues1[currentId] + "']")
+                        .prop("disabled", false);
+                }
 
-{#                        // Popuni selekciju sa korisnicima#}
-{#                        users.forEach(function(user) {#}
-{#                            userSelect.append($('<option></option>').attr('value', user.id).text(user.name));#}
-{#                        });#}
-{#                    }#}
-{#                },#}
-{#                error: function(xhr, status, error) {#}
-{#                    console.error('Ajax zahtev nije uspeo:', error);#}
-{#                }#}
-{#            });#}
-{#        });#}
-{#    </script>#}
+                // Disable the newly selected option in the other two select elements
+                $("#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1")
+                    .not(this)
+                    .find("option[value='" + selectedValue + "']")
+                    .prop("disabled", true);
 
-{#{% endblock footerJavascript %}#}
+                // Update the selected value in the array
+                selectedValues1[currentId] = selectedValue;
+            });
+            function updateDriversOptions1() {
+                var selectedGeodete11Ids = $('#task_form_geodeta1_1').val() || [];
+                var selectedGeodete12Ids = $('#task_form_geodeta2_1').val() || [];
+                var selectedGeodete13Ids = $('#task_form_geodeta3_1').val() || [];
+
+                // Spojimo vrednosti iz svih polja "Geodete" kako bismo dobili izbor za polje "Vozač"
+                // var selectedGeodeteIds = [...selectedGeodete1Ids, ...selectedGeodete2Ids, ...selectedGeodete3Ids];
+                var selectedGeodete1Ids = selectedGeodete11Ids.concat(selectedGeodete12Ids, selectedGeodete13Ids);
+
+                // Omogućavanje svih opcija u polju "Vozač"
+                $('#task_form_vozac1 option').prop('disabled', false);
+
+                // Onemogućavanje opcija koje nisu izabrane u poljima "Geodete"
+                $('#task_form_vozac1 option').each(function() {
+                    var driverId = $(this).val();
+                    if (selectedGeodete1Ids.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Resetovanje izbora u polju "Vozač" ako izabrani vozač više nije dostupan
+                var selectedDriverId = $('#task_form_vozac1').val();
+                if (selectedDriverId && selectedGeodete1Ids.indexOf(selectedDriverId) === -1) {
+                    $('#task_form_vozac1').val('');
+                }
+            }
+            // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
+            $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').change(function() {
+                updateDriversOptions1();
+            });
+            // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
+            updateDriversOptions1();
+
+            var selectedValues2 = {
+                task_form_geodeta1_2: "",
+                task_form_geodeta2_2: "",
+                task_form_geodeta3_2: ""
+            };
+            // Function to handle the change event of any of the three select elements
+            $("#task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2").change(function() {
+                // Get the ID of the current select element
+                var currentId = $(this).attr("id");
+
+                // Get the selected value
+                var selectedValue = $(this).val();
+
+                // Re-enable the previously disabled option
+                if (selectedValues2[currentId] !== "") {
+                    $("#task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2")
+                        .not(this)
+                        .find("option[value='" + selectedValues2[currentId] + "']")
+                        .prop("disabled", false);
+                }
+
+                // Disable the newly selected option in the other two select elements
+                $("#task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2")
+                    .not(this)
+                    .find("option[value='" + selectedValue + "']")
+                    .prop("disabled", true);
+
+                // Update the selected value in the array
+                selectedValues2[currentId] = selectedValue;
+            });
+            function updateDriversOptions2() {
+                var selectedGeodete21Ids = $('#task_form_geodeta1_2').val() || [];
+                var selectedGeodete22Ids = $('#task_form_geodeta2_2').val() || [];
+                var selectedGeodete23Ids = $('#task_form_geodeta3_2').val() || [];
+
+                // Spojimo vrednosti iz svih polja "Geodete" kako bismo dobili izbor za polje "Vozač"
+                // var selectedGeodeteIds = [...selectedGeodete2Ids, ...selectedGeodete2Ids, ...selectedGeodete3Ids];
+                var selectedGeodete2Ids = selectedGeodete21Ids.concat(selectedGeodete22Ids, selectedGeodete23Ids);
+
+                // Omogućavanje svih opcija u polju "Vozač"
+                $('#task_form_vozac2 option').prop('disabled', false);
+
+                // Onemogućavanje opcija koje nisu izabrane u poljima "Geodete"
+                $('#task_form_vozac2 option').each(function() {
+                    var driverId = $(this).val();
+                    if (selectedGeodete2Ids.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Resetovanje izbora u polju "Vozač" ako izabrani vozač više nije dostupan
+                var selectedDriverId = $('#task_form_vozac2').val();
+                if (selectedDriverId && selectedGeodete2Ids.indexOf(selectedDriverId) === -1) {
+                    $('#task_form_vozac2').val('');
+                }
+            }
+            // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
+            $('#task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2').change(function() {
+                updateDriversOptions2();
+            });
+            // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
+            updateDriversOptions2();
+
+            var selectedValues3 = {
+                task_form_geodeta1_3: "",
+                task_form_geodeta2_3: "",
+                task_form_geodeta3_3: ""
+            };
+            // Function to handle the change event of any of the three select elements
+            $("#task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3").change(function() {
+                // Get the ID of the current select element
+                var currentId = $(this).attr("id");
+
+                // Get the selected value
+                var selectedValue = $(this).val();
+
+                // Re-enable the previously disabled option
+                if (selectedValues3[currentId] !== "") {
+                    $("#task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3")
+                        .not(this)
+                        .find("option[value='" + selectedValues3[currentId] + "']")
+                        .prop("disabled", false);
+                }
+
+                // Disable the newly selected option in the other two select elements
+                $("#task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3")
+                    .not(this)
+                    .find("option[value='" + selectedValue + "']")
+                    .prop("disabled", true);
+
+                // Update the selected value in the array
+                selectedValues3[currentId] = selectedValue;
+            });
+            function updateDriversOptions3() {
+                var selectedGeodete31Ids = $('#task_form_geodeta1_3').val() || [];
+                var selectedGeodete32Ids = $('#task_form_geodeta2_3').val() || [];
+                var selectedGeodete33Ids = $('#task_form_geodeta3_3').val() || [];
+
+                // Spojimo vrednosti iz svih polja "Geodete" kako bismo dobili izbor za polje "Vozač"
+                // var selectedGeodeteIds = [...selectedGeodete2Ids, ...selectedGeodete2Ids, ...selectedGeodete3Ids];
+                var selectedGeodete3Ids = selectedGeodete31Ids.concat(selectedGeodete32Ids, selectedGeodete33Ids);
+
+                // Omogućavanje svih opcija u polju "Vozač"
+                $('#task_form_vozac3 option').prop('disabled', false);
+
+                // Onemogućavanje opcija koje nisu izabrane u poljima "Geodete"
+                $('#task_form_vozac3 option').each(function() {
+                    var driverId = $(this).val();
+                    if (selectedGeodete3Ids.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Resetovanje izbora u polju "Vozač" ako izabrani vozač više nije dostupan
+                var selectedDriverId = $('#task_form_vozac3').val();
+                if (selectedDriverId && selectedGeodete3Ids.indexOf(selectedDriverId) === -1) {
+                    $('#task_form_vozac3').val('');
+                }
+            }
+            // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
+            $('#task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3').change(function() {
+                updateDriversOptions3();
+            });
+            // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
+            updateDriversOptions3();
+
+            var selectedValues4 = {
+                task_form_geodeta1_4: "",
+                task_form_geodeta2_4: "",
+                task_form_geodeta3_4: ""
+            };
+            // Function to handle the change event of any of the three select elements
+            $("#task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4").change(function() {
+                // Get the ID of the current select element
+                var currentId = $(this).attr("id");
+
+                // Get the selected value
+                var selectedValue = $(this).val();
+
+                // Re-enable the previously disabled option
+                if (selectedValues4[currentId] !== "") {
+                    $("#task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4")
+                        .not(this)
+                        .find("option[value='" + selectedValues4[currentId] + "']")
+                        .prop("disabled", false);
+                }
+
+                // Disable the newly selected option in the other two select elements
+                $("#task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4")
+                    .not(this)
+                    .find("option[value='" + selectedValue + "']")
+                    .prop("disabled", true);
+
+                // Update the selected value in the array
+                selectedValues4[currentId] = selectedValue;
+            });
+            function updateDriversOptions4() {
+                var selectedGeodete41Ids = $('#task_form_geodeta1_4').val() || [];
+                var selectedGeodete42Ids = $('#task_form_geodeta2_4').val() || [];
+                var selectedGeodete43Ids = $('#task_form_geodeta3_4').val() || [];
+
+                // Spojimo vrednosti iz svih polja "Geodete" kako bismo dobili izbor za polje "Vozač"
+                // var selectedGeodeteIds = [...selectedGeodete2Ids, ...selectedGeodete2Ids, ...selectedGeodete4Ids];
+                var selectedGeodete4Ids = selectedGeodete41Ids.concat(selectedGeodete42Ids, selectedGeodete43Ids);
+
+                // Omogućavanje svih opcija u polju "Vozač"
+                $('#task_form_vozac4 option').prop('disabled', false);
+
+                // Onemogućavanje opcija koje nisu izabrane u poljima "Geodete"
+                $('#task_form_vozac4 option').each(function() {
+                    var driverId = $(this).val();
+                    if (selectedGeodete4Ids.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Resetovanje izbora u polju "Vozač" ako izabrani vozač više nije dostupan
+                var selectedDriverId = $('#task_form_vozac4').val();
+                if (selectedDriverId && selectedGeodete4Ids.indexOf(selectedDriverId) === -1) {
+                    $('#task_form_vozac4').val('');
+                }
+            }
+            // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
+            $('#task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4').change(function() {
+                updateDriversOptions4();
+            });
+            // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
+            updateDriversOptions4();
+
+            var selectedValues5 = {
+                task_form_geodeta1_5: "",
+                task_form_geodeta2_5: "",
+                task_form_geodeta3_5: ""
+            };
+            // Function to handle the change event of any of the three select elements
+            $("#task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5").change(function() {
+                // Get the ID of the current select element
+                var currentId = $(this).attr("id");
+
+                // Get the selected value
+                var selectedValue = $(this).val();
+
+                // Re-enable the previously disabled option
+                if (selectedValues5[currentId] !== "") {
+                    $("#task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5")
+                        .not(this)
+                        .find("option[value='" + selectedValues5[currentId] + "']")
+                        .prop("disabled", false);
+                }
+
+                // Disable the newly selected option in the other two select elements
+                $("#task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5")
+                    .not(this)
+                    .find("option[value='" + selectedValue + "']")
+                    .prop("disabled", true);
+
+                // Update the selected value in the array
+                selectedValues5[currentId] = selectedValue;
+            });
+            function updateDriversOptions5() {
+                var selectedGeodete51Ids = $('#task_form_geodeta1_5').val() || [];
+                var selectedGeodete52Ids = $('#task_form_geodeta2_5').val() || [];
+                var selectedGeodete53Ids = $('#task_form_geodeta3_5').val() || [];
+
+                // Spojimo vrednosti iz svih polja "Geodete" kako bismo dobili izbor za polje "Vozač"
+                // var selectedGeodeteIds = [...selectedGeodete2Ids, ...selectedGeodete2Ids, ...selectedGeodete5Ids];
+                var selectedGeodete5Ids = selectedGeodete51Ids.concat(selectedGeodete52Ids, selectedGeodete53Ids);
+
+                // Omogućavanje svih opcija u polju "Vozač"
+                $('#task_form_vozac5 option').prop('disabled', false);
+
+                // Onemogućavanje opcija koje nisu izabrane u poljima "Geodete"
+                $('#task_form_vozac5 option').each(function() {
+                    var driverId = $(this).val();
+                    if (selectedGeodete5Ids.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Resetovanje izbora u polju "Vozač" ako izabrani vozač više nije dostupan
+                var selectedDriverId = $('#task_form_vozac5').val();
+                if (selectedDriverId && selectedGeodete5Ids.indexOf(selectedDriverId) === -1) {
+                    $('#task_form_vozac5').val('');
+                }
+            }
+            // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
+            $('#task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5').change(function() {
+                updateDriversOptions5();
+            });
+            // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
+            updateDriversOptions5();
+
+            var selectedValues6 = {
+                task_form_geodeta1_6: "",
+                task_form_geodeta2_6: "",
+                task_form_geodeta3_6: ""
+            };
+            // Function to handle the change event of any of the three select elements
+            $("#task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6").change(function() {
+                // Get the ID of the current select element
+                var currentId = $(this).attr("id");
+
+                // Get the selected value
+                var selectedValue = $(this).val();
+
+                // Re-enable the previously disabled option
+                if (selectedValues6[currentId] !== "") {
+                    $("#task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6")
+                        .not(this)
+                        .find("option[value='" + selectedValues6[currentId] + "']")
+                        .prop("disabled", false);
+                }
+
+                // Disable the newly selected option in the other two select elements
+                $("#task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6")
+                    .not(this)
+                    .find("option[value='" + selectedValue + "']")
+                    .prop("disabled", true);
+
+                // Update the selected value in the array
+                selectedValues6[currentId] = selectedValue;
+            });
+            function updateDriversOptions6() {
+                var selectedGeodete61Ids = $('#task_form_geodeta1_6').val() || [];
+                var selectedGeodete62Ids = $('#task_form_geodeta2_6').val() || [];
+                var selectedGeodete63Ids = $('#task_form_geodeta3_6').val() || [];
+
+                // Spojimo vrednosti iz svih polja "Geodete" kako bismo dobili izbor za polje "Vozač"
+                // var selectedGeodeteIds = [...selectedGeodete2Ids, ...selectedGeodete2Ids, ...selectedGeodete6Ids];
+                var selectedGeodete6Ids = selectedGeodete61Ids.concat(selectedGeodete62Ids, selectedGeodete63Ids);
+
+                // Omogućavanje svih opcija u polju "Vozač"
+                $('#task_form_vozac6 option').prop('disabled', false);
+
+                // Onemogućavanje opcija koje nisu izabrane u poljima "Geodete"
+                $('#task_form_vozac6 option').each(function() {
+                    var driverId = $(this).val();
+                    if (selectedGeodete6Ids.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Resetovanje izbora u polju "Vozač" ako izabrani vozač više nije dostupan
+                var selectedDriverId = $('#task_form_vozac6').val();
+                if (selectedDriverId && selectedGeodete6Ids.indexOf(selectedDriverId) === -1) {
+                    $('#task_form_vozac6').val('');
+                }
+            }
+            // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
+            $('#task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6').change(function() {
+                updateDriversOptions6();
+            });
+            // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
+            updateDriversOptions6();
+
+            var selectedValues7 = {
+                task_form_geodeta1_7: "",
+                task_form_geodeta2_7: "",
+                task_form_geodeta3_7: ""
+            };
+            // Function to handle the change event of any of the three select elements
+            $("#task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7").change(function() {
+                // Get the ID of the current select element
+                var currentId = $(this).attr("id");
+
+                // Get the selected value
+                var selectedValue = $(this).val();
+
+                // Re-enable the previously disabled option
+                if (selectedValues7[currentId] !== "") {
+                    $("#task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7")
+                        .not(this)
+                        .find("option[value='" + selectedValues7[currentId] + "']")
+                        .prop("disabled", false);
+                }
+
+                // Disable the newly selected option in the other two select elements
+                $("#task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7")
+                    .not(this)
+                    .find("option[value='" + selectedValue + "']")
+                    .prop("disabled", true);
+
+                // Update the selected value in the array
+                selectedValues7[currentId] = selectedValue;
+            });
+            function updateDriversOptions7() {
+                var selectedGeodete71Ids = $('#task_form_geodeta1_7').val() || [];
+                var selectedGeodete72Ids = $('#task_form_geodeta2_7').val() || [];
+                var selectedGeodete73Ids = $('#task_form_geodeta3_7').val() || [];
+
+                // Spojimo vrednosti iz svih polja "Geodete" kako bismo dobili izbor za polje "Vozač"
+                // var selectedGeodeteIds = [...selectedGeodete2Ids, ...selectedGeodete2Ids, ...selectedGeodete7Ids];
+                var selectedGeodete7Ids = selectedGeodete71Ids.concat(selectedGeodete72Ids, selectedGeodete73Ids);
+
+                // Omogućavanje svih opcija u polju "Vozač"
+                $('#task_form_vozac7 option').prop('disabled', false);
+
+                // Onemogućavanje opcija koje nisu izabrane u poljima "Geodete"
+                $('#task_form_vozac7 option').each(function() {
+                    var driverId = $(this).val();
+                    if (selectedGeodete7Ids.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Resetovanje izbora u polju "Vozač" ako izabrani vozač više nije dostupan
+                var selectedDriverId = $('#task_form_vozac7').val();
+                if (selectedDriverId && selectedGeodete7Ids.indexOf(selectedDriverId) === -1) {
+                    $('#task_form_vozac7').val('');
+                }
+            }
+            // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
+            $('#task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7').change(function() {
+                updateDriversOptions7();
+            });
+            // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
+            updateDriversOptions7();
+
+            var selectedValues8 = {
+                task_form_geodeta1_8: "",
+                task_form_geodeta2_8: "",
+                task_form_geodeta3_8: ""
+            };
+            // Function to handle the change event of any of the three select elements
+            $("#task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8").change(function() {
+                // Get the ID of the current select element
+                var currentId = $(this).attr("id");
+
+                // Get the selected value
+                var selectedValue = $(this).val();
+
+                // Re-enable the previously disabled option
+                if (selectedValues8[currentId] !== "") {
+                    $("#task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8")
+                        .not(this)
+                        .find("option[value='" + selectedValues8[currentId] + "']")
+                        .prop("disabled", false);
+                }
+
+                // Disable the newly selected option in the other two select elements
+                $("#task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8")
+                    .not(this)
+                    .find("option[value='" + selectedValue + "']")
+                    .prop("disabled", true);
+
+                // Update the selected value in the array
+                selectedValues8[currentId] = selectedValue;
+            });
+            function updateDriversOptions8() {
+                var selectedGeodete81Ids = $('#task_form_geodeta1_8').val() || [];
+                var selectedGeodete82Ids = $('#task_form_geodeta2_8').val() || [];
+                var selectedGeodete83Ids = $('#task_form_geodeta3_8').val() || [];
+
+                // Spojimo vrednosti iz svih polja "Geodete" kako bismo dobili izbor za polje "Vozač"
+                // var selectedGeodeteIds = [...selectedGeodete2Ids, ...selectedGeodete2Ids, ...selectedGeodete8Ids];
+                var selectedGeodete8Ids = selectedGeodete81Ids.concat(selectedGeodete82Ids, selectedGeodete83Ids);
+
+                // Omogućavanje svih opcija u polju "Vozač"
+                $('#task_form_vozac8 option').prop('disabled', false);
+
+                // Onemogućavanje opcija koje nisu izabrane u poljima "Geodete"
+                $('#task_form_vozac8 option').each(function() {
+                    var driverId = $(this).val();
+                    if (selectedGeodete8Ids.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Resetovanje izbora u polju "Vozač" ako izabrani vozač više nije dostupan
+                var selectedDriverId = $('#task_form_vozac8').val();
+                if (selectedDriverId && selectedGeodete8Ids.indexOf(selectedDriverId) === -1) {
+                    $('#task_form_vozac8').val('');
+                }
+            }
+            // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
+            $('#task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8').change(function() {
+                updateDriversOptions8();
+            });
+            // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
+            updateDriversOptions8();
+
+            var selectedValues9 = {
+                task_form_geodeta1_9: "",
+                task_form_geodeta2_9: "",
+                task_form_geodeta3_9: ""
+            };
+            // Function to handle the change event of any of the three select elements
+            $("#task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9").change(function() {
+                // Get the ID of the current select element
+                var currentId = $(this).attr("id");
+
+                // Get the selected value
+                var selectedValue = $(this).val();
+
+                // Re-enable the previously disabled option
+                if (selectedValues9[currentId] !== "") {
+                    $("#task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9")
+                        .not(this)
+                        .find("option[value='" + selectedValues9[currentId] + "']")
+                        .prop("disabled", false);
+                }
+
+                // Disable the newly selected option in the other two select elements
+                $("#task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9")
+                    .not(this)
+                    .find("option[value='" + selectedValue + "']")
+                    .prop("disabled", true);
+
+                // Update the selected value in the array
+                selectedValues9[currentId] = selectedValue;
+            });
+            function updateDriversOptions9() {
+                var selectedGeodete91Ids = $('#task_form_geodeta1_9').val() || [];
+                var selectedGeodete92Ids = $('#task_form_geodeta2_9').val() || [];
+                var selectedGeodete93Ids = $('#task_form_geodeta3_9').val() || [];
+
+                // Spojimo vrednosti iz svih polja "Geodete" kako bismo dobili izbor za polje "Vozač"
+                // var selectedGeodeteIds = [...selectedGeodete2Ids, ...selectedGeodete2Ids, ...selectedGeodete9Ids];
+                var selectedGeodete9Ids = selectedGeodete91Ids.concat(selectedGeodete92Ids, selectedGeodete93Ids);
+
+                // Omogućavanje svih opcija u polju "Vozač"
+                $('#task_form_vozac9 option').prop('disabled', false);
+
+                // Onemogućavanje opcija koje nisu izabrane u poljima "Geodete"
+                $('#task_form_vozac9 option').each(function() {
+                    var driverId = $(this).val();
+                    if (selectedGeodete9Ids.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Resetovanje izbora u polju "Vozač" ako izabrani vozač više nije dostupan
+                var selectedDriverId = $('#task_form_vozac9').val();
+                if (selectedDriverId && selectedGeodete9Ids.indexOf(selectedDriverId) === -1) {
+                    $('#task_form_vozac9').val('');
+                }
+            }
+            // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
+            $('#task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9').change(function() {
+                updateDriversOptions9();
+            });
+            // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
+            updateDriversOptions9();
+
+            var selectedValues10 = {
+                task_form_geodeta1_10: "",
+                task_form_geodeta2_10: "",
+                task_form_geodeta3_10: ""
+            };
+            // Function to handle the change event of any of the three select elements
+            $("#task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10").change(function() {
+                // Get the ID of the current select element
+                var currentId = $(this).attr("id");
+
+                // Get the selected value
+                var selectedValue = $(this).val();
+
+                // Re-enable the previously disabled option
+                if (selectedValues10[currentId] !== "") {
+                    $("#task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10")
+                        .not(this)
+                        .find("option[value='" + selectedValues10[currentId] + "']")
+                        .prop("disabled", false);
+                }
+
+                // Disable the newly selected option in the other two select elements
+                $("#task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10")
+                    .not(this)
+                    .find("option[value='" + selectedValue + "']")
+                    .prop("disabled", true);
+
+                // Update the selected value in the array
+                selectedValues10[currentId] = selectedValue;
+            });
+            function updateDriversOptions10() {
+                var selectedGeodete101Ids = $('#task_form_geodeta1_10').val() || [];
+                var selectedGeodete102Ids = $('#task_form_geodeta2_10').val() || [];
+                var selectedGeodete103Ids = $('#task_form_geodeta3_10').val() || [];
+
+                // Spojimo vrednosti iz svih polja "Geodete" kako bismo dobili izbor za polje "Vozač"
+                // var selectedGeodeteIds = [...selectedGeodete2Ids, ...selectedGeodete2Ids, ...selectedGeodete10Ids];
+                var selectedGeodete10Ids = selectedGeodete101Ids.concat(selectedGeodete102Ids, selectedGeodete103Ids);
+
+                // Omogućavanje svih opcija u polju "Vozač"
+                $('#task_form_vozac10 option').prop('disabled', false);
+
+                // Onemogućavanje opcija koje nisu izabrane u poljima "Geodete"
+                $('#task_form_vozac10 option').each(function() {
+                    var driverId = $(this).val();
+                    if (selectedGeodete10Ids.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Resetovanje izbora u polju "Vozač" ako izabrani vozač više nije dostupan
+                var selectedDriverId = $('#task_form_vozac10').val();
+                if (selectedDriverId && selectedGeodete10Ids.indexOf(selectedDriverId) === -1) {
+                    $('#task_form_vozac10').val('');
+                }
+            }
+            // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
+            $('#task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10').change(function() {
+                updateDriversOptions10();
+            });
+            // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
+            updateDriversOptions10();
+
+
+
+
+            // Funkcija koja će postaviti stanje input polja na osnovu izbora u select elementu
+            function updateInputFields1() {
+                var selectedProject = $('#task_form_projekat1').val();
+                var disabledState = selectedProject === '---';
+
+                $('#task_form_vreme1, #task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1, #task_form_aktivnosti1, #task_form_oprema1, #task_form_napomena1, #task_form_vozilo1, #task_form_vozac1').prop('disabled', disabledState);
+            }
+            function updateInputFieldsRequired1() {
+                var selectedProject = $('#task_form_projekat1').val();
+                var requiredState = selectedProject !== '---';
+
+                // Dodajte ili uklonite klasu "required" na odgovarajućim input poljima
+                $('.project1').toggleClass('required', requiredState);
+            }
+            // Postavite event listener na select element kako bismo pratili promene u izboru
+            $('#task_form_projekat1').change(function() {
+                updateInputFields1();
+                updateInputFieldsRequired1();
+            });
+
+            function updateInputFields2() {
+                var selectedProject = $('#task_form_projekat2').val();
+                var disabledState = selectedProject === '---';
+
+                $('#task_form_vreme2, #task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2, #task_form_aktivnosti2, #task_form_oprema2, #task_form_napomena2, #task_form_vozilo2, #task_form_vozac2').prop('disabled', disabledState);
+            }
+            function updateInputFieldsRequired2() {
+                var selectedProject = $('#task_form_projekat2').val();
+                var requiredState = selectedProject !== '---';
+
+                // Dodajte ili uklonite klasu "required" na odgovarajućim input poljima
+                $('.project2').toggleClass('required', requiredState);
+            }
+            // Postavite event listener na select element kako bismo pratili promene u izboru
+            $('#task_form_projekat2').change(function() {
+                updateInputFields2();
+                updateInputFieldsRequired2();
+            });
+
+            function updateInputFields3() {
+                var selectedProject = $('#task_form_projekat3').val();
+                var disabledState = selectedProject === '---';
+
+                $('#task_form_vreme3, #task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3, #task_form_aktivnosti3, #task_form_oprema3, #task_form_napomena3, #task_form_vozilo3, #task_form_vozac3').prop('disabled', disabledState);
+            }
+            function updateInputFieldsRequired3() {
+                var selectedProject = $('#task_form_projekat3').val();
+                var requiredState = selectedProject !== '---';
+
+                // Dodajte ili uklonite klasu "required" na odgovarajućim input poljima
+                $('.project3').toggleClass('required', requiredState);
+            }
+            // Postavite event listener na select element kako bismo pratili promene u izboru
+            $('#task_form_projekat3').change(function() {
+                updateInputFields3();
+                updateInputFieldsRequired3();
+            });
+
+            function updateInputFields4() {
+                var selectedProject = $('#task_form_projekat4').val();
+                var disabledState = selectedProject === '---';
+
+                $('#task_form_vreme4, #task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4, #task_form_aktivnosti4, #task_form_oprema4, #task_form_napomena4, #task_form_vozilo4, #task_form_vozac4').prop('disabled', disabledState);
+            }
+            function updateInputFieldsRequired4() {
+                var selectedProject = $('#task_form_projekat4').val();
+                var requiredState = selectedProject !== '---';
+
+                // Dodajte ili uklonite klasu "required" na odgovarajućim input poljima
+                $('.project4').toggleClass('required', requiredState);
+            }
+            // Postavite event listener na select element kako bismo pratili promene u izboru
+            $('#task_form_projekat4').change(function() {
+                updateInputFields4();
+                updateInputFieldsRequired4();
+            });
+
+            function updateInputFields5() {
+                var selectedProject = $('#task_form_projekat5').val();
+                var disabledState = selectedProject === '---';
+
+                $('#task_form_vreme5, #task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5, #task_form_aktivnosti5, #task_form_oprema5, #task_form_napomena5, #task_form_vozilo5, #task_form_vozac5').prop('disabled', disabledState);
+            }
+            function updateInputFieldsRequired5() {
+                var selectedProject = $('#task_form_projekat5').val();
+                var requiredState = selectedProject !== '---';
+
+                // Dodajte ili uklonite klasu "required" na odgovarajućim input poljima
+                $('.project5').toggleClass('required', requiredState);
+            }
+            // Postavite event listener na select element kako bismo pratili promene u izboru
+            $('#task_form_projekat5').change(function() {
+                updateInputFields5();
+                updateInputFieldsRequired5();
+            });
+
+            function updateInputFields6() {
+                var selectedProject = $('#task_form_projekat6').val();
+                var disabledState = selectedProject === '---';
+
+                $('#task_form_vreme6, #task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6, #task_form_aktivnosti6, #task_form_oprema6, #task_form_napomena6, #task_form_vozilo6, #task_form_vozac6').prop('disabled', disabledState);
+            }
+            function updateInputFieldsRequired6() {
+                var selectedProject = $('#task_form_projekat6').val();
+                var requiredState = selectedProject !== '---';
+
+                // Dodajte ili uklonite klasu "required" na odgovarajućim input poljima
+                $('.project6').toggleClass('required', requiredState);
+            }
+            // Postavite event listener na select element kako bismo pratili promene u izboru
+            $('#task_form_projekat6').change(function() {
+                updateInputFields6();
+                updateInputFieldsRequired6();
+            });
+
+            function updateInputFields7() {
+                var selectedProject = $('#task_form_projekat7').val();
+                var disabledState = selectedProject === '---';
+
+                $('#task_form_vreme7, #task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7, #task_form_aktivnosti7, #task_form_oprema7, #task_form_napomena7, #task_form_vozilo7, #task_form_vozac7').prop('disabled', disabledState);
+            }
+            function updateInputFieldsRequired7() {
+                var selectedProject = $('#task_form_projekat7').val();
+                var requiredState = selectedProject !== '---';
+
+                // Dodajte ili uklonite klasu "required" na odgovarajućim input poljima
+                $('.project7').toggleClass('required', requiredState);
+            }
+            // Postavite event listener na select element kako bismo pratili promene u izboru
+            $('#task_form_projekat7').change(function() {
+                updateInputFields7();
+                updateInputFieldsRequired7();
+            });
+
+            function updateInputFields8() {
+                var selectedProject = $('#task_form_projekat8').val();
+                var disabledState = selectedProject === '---';
+
+                $('#task_form_vreme8, #task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8, #task_form_aktivnosti8, #task_form_oprema8, #task_form_napomena8, #task_form_vozilo8, #task_form_vozac8').prop('disabled', disabledState);
+            }
+            function updateInputFieldsRequired8() {
+                var selectedProject = $('#task_form_projekat8').val();
+                var requiredState = selectedProject !== '---';
+
+                // Dodajte ili uklonite klasu "required" na odgovarajućim input poljima
+                $('.project8').toggleClass('required', requiredState);
+            }
+            // Postavite event listener na select element kako bismo pratili promene u izboru
+            $('#task_form_projekat8').change(function() {
+                updateInputFields8();
+                updateInputFieldsRequired8();
+            });
+
+            function updateInputFields9() {
+                var selectedProject = $('#task_form_projekat9').val();
+                var disabledState = selectedProject === '---';
+
+                $('#task_form_vreme9, #task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9, #task_form_aktivnosti9, #task_form_oprema9, #task_form_napomena9, #task_form_vozilo9, #task_form_vozac9').prop('disabled', disabledState);
+            }
+            function updateInputFieldsRequired9() {
+                var selectedProject = $('#task_form_projekat9').val();
+                var requiredState = selectedProject !== '---';
+
+                // Dodajte ili uklonite klasu "required" na odgovarajućim input poljima
+                $('.project9').toggleClass('required', requiredState);
+            }
+            // Postavite event listener na select element kako bismo pratili promene u izboru
+            $('#task_form_projekat9').change(function() {
+                updateInputFields9();
+                updateInputFieldsRequired9();
+            });
+
+            function updateInputFields10() {
+                var selectedProject = $('#task_form_projekat10').val();
+                var disabledState = selectedProject === '---';
+
+                $('#task_form_vreme10, #task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10, #task_form_aktivnosti10, #task_form_oprema10, #task_form_napomena10, #task_form_vozilo10, #task_form_vozac10').prop('disabled', disabledState);
+            }
+            function updateInputFieldsRequired10() {
+                var selectedProject = $('#task_form_projekat10').val();
+                var requiredState = selectedProject !== '---';
+
+                // Dodajte ili uklonite klasu "required" na odgovarajućim input poljima
+                $('.project10').toggleClass('required', requiredState);
+            }
+            // Postavite event listener na select element kako bismo pratili promene u izboru
+            $('#task_form_projekat10').change(function() {
+                updateInputFields10();
+                updateInputFieldsRequired10();
+            });
+
+
+            // Pozovite funkciju za inicijalno postavljanje stanja input polja prilikom učitavanja stranice
+            updateInputFields1();
+            updateInputFieldsRequired1();
+            updateDriversOptions1();
+
+            updateInputFields2();
+            updateInputFieldsRequired2();
+            updateDriversOptions2();
+
+            updateInputFields3();
+            updateInputFieldsRequired3();
+            updateDriversOptions3();
+
+            updateInputFields4();
+            updateInputFieldsRequired4();
+            updateDriversOptions4();
+
+            updateInputFields5();
+            updateInputFieldsRequired5();
+            updateDriversOptions5();
+
+            updateInputFields6();
+            updateInputFieldsRequired6();
+            updateDriversOptions6();
+
+            updateInputFields7();
+            updateInputFieldsRequired7();
+            updateDriversOptions7();
+
+            updateInputFields8();
+            updateInputFieldsRequired8();
+            updateDriversOptions8();
+
+            updateInputFields9();
+            updateInputFieldsRequired9();
+            updateDriversOptions9();
+
+            updateInputFields10();
+            updateInputFieldsRequired10();
+            updateDriversOptions10();
+        });
+
+    </script>
+
+{% endblock footerJavascript %}
 
 

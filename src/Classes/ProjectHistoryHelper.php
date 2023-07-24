@@ -19,6 +19,7 @@ class ProjectHistoryHelper {
   private $label;
   private $editBy;
   private $payment;
+  private $type;
   private $price;
   private $pricePerHour;
   private $pricePerTask;
@@ -30,7 +31,7 @@ class ProjectHistoryHelper {
   private $deadline;
   private $team;
 
-  public function __construct($id, $title, $description, $important, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $isViewLog, $team, $category, $client, $timerPriority, $label, $editBy, $payment, $price, $pricePerHour, $pricePerDay, $pricePerMonth, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
+  public function __construct($id, $title, $description, $important, $type, $isSuspended, $isTimeRoundUp, $isEstimate, $isClientView, $isViewLog, $team, $category, $client, $timerPriority, $label, $editBy, $payment, $price, $pricePerHour, $pricePerDay, $pricePerMonth, $pricePerTask, $currency, $minEntry, $roundingInterval, $deadline) {
     $this->id = $id;
     $this->title = $title;
     $this->description = $description;
@@ -56,6 +57,7 @@ class ProjectHistoryHelper {
     $this->timerPriority = $timerPriority;
     $this->isViewLog = $isViewLog;
     $this->team = $team;
+    $this->type = $type;
   }
 
   /**
@@ -406,6 +408,20 @@ class ProjectHistoryHelper {
    */
   public function setImportant($important): void {
     $this->important = $important;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getType() {
+    return $this->type;
+  }
+
+  /**
+   * @param mixed $type
+   */
+  public function setType($type): void {
+    $this->type = $type;
   }
 
 

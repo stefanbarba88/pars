@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\RoundingIntervalData;
 use App\Classes\Data\TimerPriorityData;
+use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\VrstaPlacanjaData;
 use App\Entity\Category;
 use App\Entity\Client;
@@ -29,8 +30,12 @@ class ProjectFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
     $builder
       ->add('title')
-      ->add('description', TextareaType::class)
-      ->add('important', TextareaType::class)
+      ->add('description', TextareaType::class, [
+        'required' => false,
+      ])
+      ->add('important', TextareaType::class, [
+        'required' => false,
+      ])
       ->add('label', EntityType::class, [
         'required' => false,
         'class' => Label::class,
@@ -95,70 +100,70 @@ class ProjectFormType extends AbstractType {
         'multiple' => false,
       ])
 
-      ->add('team', EntityType::class, [
-        'required' => false,
-        'class' => Team::class,
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => true,
-      ])
+//      ->add('team', EntityType::class, [
+//        'required' => false,
+//        'class' => Team::class,
+//        'query_builder' => function (EntityRepository $em) {
+//          return $em->createQueryBuilder('g')
+//            ->orderBy('g.id', 'ASC');
+//        },
+//        'choice_label' => 'title',
+//        'expanded' => false,
+//        'multiple' => true,
+//      ])
 
-      ->add('currency', EntityType::class, [
-        'class' => Currency::class,
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => function ($currency) {
-          return $currency->getFormTitle();
-        },
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('price', NumberType::class, [
-        'required' => false,
-        'html5' => true,
-        'attr' => [
-          'min' => '0.01',
-          'step' => '0.01'
-        ],
-      ])
-      ->add('pricePerHour', NumberType::class, [
-        'required' => false,
-        'html5' => true,
-        'attr' => [
-          'min' => '0.01',
-          'step' => '0.01'
-        ],
-      ])
-      ->add('pricePerTask', NumberType::class, [
-        'required' => false,
-        'html5' => true,
-        'attr' => [
-          'min' => '0.01',
-          'step' => '0.01'
-        ],
-      ])
-      ->add('pricePerDay', NumberType::class, [
-        'required' => false,
-        'html5' => true,
-        'attr' => [
-          'min' => '0.01',
-          'step' => '0.01'
-        ],
-      ])
-      ->add('pricePerMonth', NumberType::class, [
-        'required' => false,
-        'html5' => true,
-        'attr' => [
-          'min' => '0.01',
-          'step' => '0.01'
-        ],
-      ])
+//      ->add('currency', EntityType::class, [
+//        'class' => Currency::class,
+//        'query_builder' => function (EntityRepository $em) {
+//          return $em->createQueryBuilder('g')
+//            ->orderBy('g.id', 'ASC');
+//        },
+//        'choice_label' => function ($currency) {
+//          return $currency->getFormTitle();
+//        },
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
+//      ->add('price', NumberType::class, [
+//        'required' => false,
+//        'html5' => true,
+//        'attr' => [
+//          'min' => '0.01',
+//          'step' => '0.01'
+//        ],
+//      ])
+//      ->add('pricePerHour', NumberType::class, [
+//        'required' => false,
+//        'html5' => true,
+//        'attr' => [
+//          'min' => '0.01',
+//          'step' => '0.01'
+//        ],
+//      ])
+//      ->add('pricePerTask', NumberType::class, [
+//        'required' => false,
+//        'html5' => true,
+//        'attr' => [
+//          'min' => '0.01',
+//          'step' => '0.01'
+//        ],
+//      ])
+//      ->add('pricePerDay', NumberType::class, [
+//        'required' => false,
+//        'html5' => true,
+//        'attr' => [
+//          'min' => '0.01',
+//          'step' => '0.01'
+//        ],
+//      ])
+//      ->add('pricePerMonth', NumberType::class, [
+//        'required' => false,
+//        'html5' => true,
+//        'attr' => [
+//          'min' => '0.01',
+//          'step' => '0.01'
+//        ],
+//      ])
 
       ->add('isTimeRoundUp', ChoiceType::class, [
         'attr' => [
@@ -199,14 +204,24 @@ class ProjectFormType extends AbstractType {
         'data' => TimerPriorityData::ROLE_GEO
       ])
 
-      ->add('isEstimate', ChoiceType::class, [
+      ->add('type', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],
-        'choices' => PotvrdaData::form(),
+        'placeholder' => '--Izaberite tip projekta--',
+        'choices' => TipProjektaData::form(),
         'expanded' => false,
         'multiple' => false,
       ])
+
+//      ->add('isEstimate', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'choices' => PotvrdaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
       ->add('deadline', DateType::class, [
         'required' => false,
         'widget' => 'single_text',

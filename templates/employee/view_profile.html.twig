@@ -28,6 +28,7 @@
                                 {% if not is_granted('ROLE_EMPLOYEE') %}
                                     <a href="{{ path('app_employees') }}" class="breadcrumb-item">Zaposleni</a>
                                 {% endif %}
+                                <span class="breadcrumb-item">{{ user.getFullName() }}</span>
                                 <span class="breadcrumb-item active">Profil</span>
                             </div>
 
@@ -84,14 +85,52 @@
                                                             <div class="col-8">{{ user.adresa }}</div>
                                                         </div>
                                                         <div class="row p-2 bg-light">
-                                                            <div class="col-4">Telefon#1:</div>
+                                                            <div class="col-4">Službeni telefon:</div>
                                                             <div class="col-8">{{ user.telefon1 }}</div>
                                                         </div>
                                                         <div class="row p-2">
-                                                            <div class="col-4">Telefon#2:</div>
+                                                            <div class="col-4">Privatni telefon:</div>
                                                             <div class="col-8">{{ user.telefon2 | default('/') }}</div>
                                                         </div>
+                                                        <div class="row p-2">
+                                                            <div class="col-4">Vozačka dozvola:</div>
+                                                            <div class="col-8">
+                                                                {% if user.vozacki == constant('App\\Classes\\Data\\VozackiData::NOT')%}
+                                                                    Nema vozačku dozvolu
+                                                                {% endif %}
+                                                                {% if user.vozacki == constant('App\\Classes\\Data\\VozackiData::INACTIVE')%}
+                                                                    Neaktivan vozač
+                                                                {% endif %}
+                                                                {% if user.vozacki == constant('App\\Classes\\Data\\VozackiData::ACTIVE')%}
+                                                                    Aktivan vozač
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
                                                         <div class="row p-2 bg-light">
+                                                            <div class="col-4">Lekarski pregled:</div>
+                                                            <div class="col-8">
+                                                                {% if user.lekarski %}
+                                                                    Ima lekarski pregled
+                                                                {% else %}
+                                                                    Nema lekarski pregled
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row p-2">
+                                                            <div class="col-4">Prva pomoć:</div>
+                                                            <div class="col-8">
+                                                                {% if user.prvaPomoc %}
+                                                                    Ima prvu pomoć
+                                                                {% else %}
+                                                                    Nema prvu pomoć
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row p-2 bg-light">
+                                                            <div class="col-4">Slava:</div>
+                                                            <div class="col-8">{{ user.slava | default('/') }}</div>
+                                                        </div>
+                                                        <div class="row p-2">
                                                             <div class="col-4">Zaduženi uređaji:</div>
                                                             <div class="col-8">
                                                                 {% if user.mobile %}

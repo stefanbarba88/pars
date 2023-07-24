@@ -4,6 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Car;
 use App\Entity\CarHistory;
+use App\Entity\CarReservation;
+use App\Entity\FastTask;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -58,6 +61,7 @@ class CarRepository extends ServiceEntityRepository {
       $this->getEntityManager()->flush();
     }
   }
+
 
   public function findForForm(int $id = 0): Car {
     if (empty($id)) {

@@ -61,6 +61,23 @@ class MailService {
 
   }
 
+  public function plan($plan, $users, $datum): void {
+
+    $args = [];
+    $subject = 'Plan rada za ' .  $datum->format('d.m.Y');
+    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/plan.html.twig';
+    $args['timetable'] = $plan;
+    $args['danas'] = $datum;
+
+    foreach ($users as $user) {
+      $to = $user->getEmail();
+      $args['user'] = $user;
+      $this->sendMail($to, $subject, $from, $sender, $template, $args);
+    }
+  }
+
   public function edit(User $user): void {
     $args = [];
     $to = $user->getEmail();

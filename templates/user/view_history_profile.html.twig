@@ -96,7 +96,45 @@
                                             <div class="col-4">Privatni telefon:</div>
                                             <div class="col-8">{{ userH.telefon2 | default('/') }}</div>
                                         </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Vozačka dozvola:</div>
+                                            <div class="col-8">
+                                                {% if userH.vozacki == constant('App\\Classes\\Data\\VozackiData::NOT')%}
+                                                    Nema vozačku dozvolu
+                                                {% endif %}
+                                                {% if userH.vozacki == constant('App\\Classes\\Data\\VozackiData::INACTIVE')%}
+                                                    Neaktivan vozač
+                                                {% endif %}
+                                                {% if userH.vozacki == constant('App\\Classes\\Data\\VozackiData::ACTIVE')%}
+                                                    Aktivan vozač
+                                                {% endif %}
+                                            </div>
+                                        </div>
                                         <div class="row p-2 bg-light">
+                                            <div class="col-4">Lekarski pregled:</div>
+                                            <div class="col-8">
+                                                {% if userH.lekarski %}
+                                                    Ima lekarski pregled
+                                                {% else %}
+                                                    Nema lekarski pregled
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Prva pomoć:</div>
+                                            <div class="col-8">
+                                                {% if userH.prvaPomoc %}
+                                                    Ima prvu pomoć
+                                                {% else %}
+                                                    Nema prvu pomoć
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Slava:</div>
+                                            <div class="col-8">{{ userH.slava | default('/') }}</div>
+                                        </div>
+                                        <div class="row p-2">
                                             <div class="col-4">Zaduženi uređaji:</div>
                                             <div class="col-8">
                                                 {% if userH.mobile %}

@@ -105,21 +105,35 @@
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Tim:</div>
+                                            <div class="col-4">Tip projekta:</div>
                                             <div class="col-8">
-                                                {% if projectH.team is not empty %}
-                                                    {% for team in projectH.team %}
-                                                        {{ team[0] }} - (
-                                                        {% for member in team[1] %}
-                                                            {{ member }}{% if not loop.last %},{% endif %}
-                                                        {% endfor %}
-                                                        ){% if not loop.last %}<br>{% endif %}
-                                                    {% endfor %}
-                                                {% else %}
-                                                    Nema zaduženih timova na ovom projektu
+                                                {% if projectH.type == 1 %}
+                                                    Fiksni
+                                                {% endif %}
+                                                {% if projectH.type == 2 %}
+                                                    Leteći
+                                                {% endif %}
+                                                {% if projectH.type == 3 %}
+                                                    Kombinovani
                                                 {% endif %}
                                             </div>
                                         </div>
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Tim:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if projectH.team is not empty %}#}
+{#                                                    {% for team in projectH.team %}#}
+{#                                                        {{ team[0] }} - (#}
+{#                                                        {% for member in team[1] %}#}
+{#                                                            {{ member }}{% if not loop.last %},{% endif %}#}
+{#                                                        {% endfor %}#}
+{#                                                        ){% if not loop.last %}<br>{% endif %}#}
+{#                                                    {% endfor %}#}
+{#                                                {% else %}#}
+{#                                                    Nema zaduženih timova na ovom projektu#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
                                     </div>
                                 </div>
                                 <div class="card">
@@ -157,46 +171,46 @@
                                                 <div class="col-4">Tip finansiranja:</div>
                                                 <div class="col-8">Fiksna cena</div>
                                             </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Fiksna cena:</div>
-                                                <div class="col-8">{{ projectH.price | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>
-                                            </div>
+{#                                            <div class="row p-2 bg-light">#}
+{#                                                <div class="col-4">Fiksna cena:</div>#}
+{#                                                <div class="col-8">{{ projectH.price | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>#}
+{#                                            </div>#}
                                         {% elseif projectH.payment == 3 %}
                                             <div class="row p-2">
                                                 <div class="col-4">Tip finansiranja:</div>
                                                 <div class="col-8">Plaćanje po satu</div>
                                             </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Cena po satu:</div>
-                                                <div class="col-8">{{ projectH.pricePerHour | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>
-                                            </div>
+{#                                            <div class="row p-2 bg-light">#}
+{#                                                <div class="col-4">Cena po satu:</div>#}
+{#                                                <div class="col-8">{{ projectH.pricePerHour | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>#}
+{#                                            </div>#}
                                         {% elseif projectH.payment == 4 %}
                                             <div class="row p-2">
                                                 <div class="col-4">Tip finansiranja:</div>
                                                 <div class="col-8">Plaćanje po zadatku</div>
                                             </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Cena po satu:</div>
-                                                <div class="col-8">{{ projectH.pricePerTask | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>
-                                            </div>
+{#                                            <div class="row p-2 bg-light">#}
+{#                                                <div class="col-4">Cena po satu:</div>#}
+{#                                                <div class="col-8">{{ projectH.pricePerTask | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>#}
+{#                                            </div>#}
                                         {% elseif projectH.payment == 5 %}
                                             <div class="row p-2">
                                                 <div class="col-4">Tip finansiranja:</div>
                                                 <div class="col-8">Plaćanje po danu</div>
                                             </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Cena po danu:</div>
-                                                <div class="col-8">{{ projectH.pricePerDay | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>
-                                            </div>
+{#                                            <div class="row p-2 bg-light">#}
+{#                                                <div class="col-4">Cena po danu:</div>#}
+{#                                                <div class="col-8">{{ projectH.pricePerDay | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>#}
+{#                                            </div>#}
                                         {% elseif projectH.payment == 6 %}
                                             <div class="row p-2">
                                                 <div class="col-4">Tip finansiranja:</div>
                                                 <div class="col-8">Plaćanje po mesecu</div>
                                             </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Cena po mesecu:</div>
-                                                <div class="col-8">{{ projectH.pricePerMonth | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>
-                                            </div>
+{#                                            <div class="row p-2 bg-light">#}
+{#                                                <div class="col-4">Cena po mesecu:</div>#}
+{#                                                <div class="col-8">{{ projectH.pricePerMonth | number_format(2, '.', ',') }} - {{ projectH.currency }}</div>#}
+{#                                            </div>#}
                                         {% else %}
                                             <div class="row p-2">
                                                 <div class="col-4">Tip finansiranja:</div>
@@ -216,17 +230,17 @@
                                                 {{ projectH.timerPriority }}
                                             </div>
                                         </div>
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Vremenska procena:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if projectH.getIsEstimate %}#}
+{#                                                    <i class="ph-check-circle"></i>#}
+{#                                                {% else %}#}
+{#                                                    <i class="ph-minus-circle"></i>#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Vremenska procena:</div>
-                                            <div class="col-8">
-                                                {% if projectH.getIsEstimate %}
-                                                    <i class="ph-check-circle"></i>
-                                                {% else %}
-                                                    <i class="ph-minus-circle"></i>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 ">
                                             <div class="col-4">Zaokruživanje vremena:</div>
                                             <div class="col-8">
                                                 {% if projectH.getIsTimeRoundUp %}
@@ -237,13 +251,13 @@
                                             </div>
                                         </div>
                                         {% if projectH.getIsTimeRoundUp %}
-                                            <div class="row p-2 bg-light">
+                                            <div class="row p-2 ">
                                                 <div class="col-4">Interval zaokruživanja:</div>
                                                 <div class="col-8">
                                                     {{ projectH.roundingInterval }} min
                                                 </div>
                                             </div>
-                                            <div class="row p-2">
+                                            <div class="row p-2 bg-light">
                                                 <div class="col-4">Minimalni unos:</div>
                                                 <div class="col-8">
                                                     {{ projectH.minEntry }} min

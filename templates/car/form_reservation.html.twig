@@ -127,15 +127,14 @@
                 </div>
                 <!-- /content area -->
 
+            </div>
+                <!-- /inner content -->
+
                 <!-- Footer -->
                 {% include 'includes/footer.html.twig' %}
                 <!-- /footer -->
-
-            </div>
-            <!-- /inner content -->
-
         </div>
-
+        </div>
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
     {% include 'includes/notification.html.twig' %}

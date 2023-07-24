@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header page-header-light shadow d-none d-sm-block">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -51,7 +51,13 @@
                                     <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
                                     <a href="{{ path('app_project_profile_view', {id: task.project.id} ) }}" class="breadcrumb-item">Informacije</a>
                                     <a href="{{ path('app_project_tasks_view', {id: task.project.id} ) }}" class="breadcrumb-item">Zadaci</a>
-                                    <a href="{{ path('app_task_view', {id: task.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
+                                    {% if app.user in task.getAssignedUsers %}
+                                        <a href="{{ path('app_task_view_user', {id: task.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
+                                    {% else %}
+                                        <a href="{{ path('app_task_view', {id: task.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
+                                    {% endif %}
+
+
                                     <span class="breadcrumb-item active">Dnevnik: {{ taskLog.user.getFullName() }}</span>
                                 </div>
                             {% endif %}
@@ -87,9 +93,7 @@
                                     {% endif %}
                                 </div>
 
-                                <!-- Vertical form modal -->
                                 {{ render(controller('App\\Controller\\StopwatchController::add', { taskLog: taskLog.id, id:0 } )) }}
-                                <!-- /vertical form modal -->
 
                                 <div class="card-body">
                                     <div class="row">
@@ -142,8 +146,6 @@
                                                                     {% for stopwatch in stopwatchesActive %}
                                                                         {% if stopwatch.description is not null %}
                                                                             {{ stopwatch.description | raw }}
-                                                                        {% else %}
-                                                                            Nema dodatnog opisa.
                                                                         {% endif %}
                                                                     {% endfor %}
                                                                 </div>
@@ -345,27 +347,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            <!-- Vertical form modal -->
-                                            <div id="modal_{{ loop.index }}" class="modal fade" tabindex="-1">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header bg-danger text-white border-0">
-                                                            <h6 class="modal-title">Potvrda</h6>
-                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                        </div>
 
-                                                        <div class="modal-body">
-                                                            <p>Da li ste sigurni da želite da obrišete ovaj vremenski zapis?</p>
-                                                        </div>
-
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                            <a href="{{ path('app_stopwatch_delete', {id: stopwatch.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- /vertical form modal -->
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -392,7 +374,33 @@
 
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
+
+
     {% include 'includes/notification.html.twig' %}
+    <!-- Vertical form modal -->
+
+    {% for stopwatch in stopwatches %}
+        <div id="modal_{{ loop.index }}" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white border-0">
+                    <h6 class="modal-title">Potvrda</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>Da li ste sigurni da želite da obrišete ovaj vremenski zapis?</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                    <a href="{{ path('app_stopwatch_delete', {id: stopwatch.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <!-- /vertical form modal -->
 {% endblock content %}
 
 {% block includeJavascript %}
@@ -444,10 +452,6 @@
     <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
     <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
 
-    <script src="{{ asset('assets/js/vendor/forms/inputs/dual_listbox.min.js') }}"></script>
-    <script src="{{ asset('assets/demo/pages/form_dual_listboxes.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>
-    <script src="{{ asset('assets/demo/pages/editor_ckeditor_classic.js') }}"></script>
 
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>

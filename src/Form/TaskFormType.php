@@ -11,6 +11,7 @@ use App\Entity\Category;
 use App\Entity\Label;
 use App\Entity\Project;
 use App\Entity\Task;
+use App\Entity\Tool;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -65,8 +66,20 @@ class TaskFormType extends AbstractType {
       ->add('description', TextareaType::class, [
         'required' => false
       ])
-      ->add('oprema', TextareaType::class, [
-        'required' => false
+      ->add('oprema', EntityType::class, [
+        'required' => false,
+        'class' => Tool::class,
+        'query_builder' => function (EntityRepository $em) {
+          return $em->createQueryBuilder('o')
+            ->andWhere('o.type <> :laptop')
+            ->andWhere('o.type <> :telefon')
+            ->setParameter(':laptop', 1)
+            ->setParameter(':telefon', 2)
+            ->orderBy('o.id', 'ASC');
+        },
+        'choice_label' => 'title',
+        'expanded' => false,
+        'multiple' => true,
       ])
       ->add('label', EntityType::class, [
         'required' => false,
@@ -109,20 +122,36 @@ class TaskFormType extends AbstractType {
         'html5' => false,
         'input' => 'datetime_immutable'
       ])
-      ->add('assignedUsers', EntityType::class, [
-        'class' => User::class,
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.userType = :userType')
-            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => function ($user) {
-          return $user->getNameForForm();
-        },
-        'expanded' => false,
-        'multiple' => true,
-      ])
+//      ->add('assignedUsers', EntityType::class, [
+//        'class' => User::class,
+//        'query_builder' => function (EntityRepository $em) {
+//          return $em->createQueryBuilder('g')
+//            ->andWhere('g.userType = :userType')
+//            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+//            ->orderBy('g.id', 'ASC');
+//        },
+//        'choice_label' => function ($user) {
+//          return $user->getNameForForm();
+//        },
+//        'expanded' => false,
+//        'multiple' => true,
+//      ])
+//      ->add('priorityUserLog', EntityType::class, [
+//        'class' => User::class,
+//        'placeholder' => '--Izaberite dnevnik--',
+//        'query_builder' => function (EntityRepository $em) {
+//          return $em->createQueryBuilder('g')
+//            ->andWhere('g.userType = :userType')
+//            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+//            ->orderBy('g.id', 'ASC');
+//        },
+//        'choice_label' => function ($user) {
+//          return $user->getNameForForm();
+//        },
+//        'expanded' => false,
+//        'multiple' => false,
+//        'choice_value' => 'id',
+//      ])
 
       ->add('isTimeRoundUp', ChoiceType::class, [
         'attr' => [
@@ -217,6 +246,7 @@ class TaskFormType extends AbstractType {
   public function configureOptions(OptionsResolver $resolver): void {
     $resolver->setDefaults([
       'data_class' => Task::class,
+      'allow_extra_fields' => true,
     ]);
   }
 }

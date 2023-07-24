@@ -83,6 +83,9 @@ class Project implements JsonSerializable {
   private ?int $payment = null;
 
   #[ORM\Column(type: Types::SMALLINT)]
+  private ?int $type = 1;
+
+  #[ORM\Column(type: Types::SMALLINT)]
   private ?int $timerPriority = null;
 
   #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
@@ -170,9 +173,10 @@ class Project implements JsonSerializable {
       'isViewLog' => $this->isViewLog(),
       'label' => $this->getLabelJson(),
       'client' => $this->getClientsJson(),
-      'category' => $this->category->getTitle(),
+      'category' => $this->getCategoryJson(),
       'editBy' => $this->getEditByJson(),
       'payment' => $this->getPayment(),
+      'type' => $this->getType(),
       'timerPriority' => $this->getTimerPriorityJson(),
       'price' => $this->getPrice(),
       'pricePerHour' => $this->getPricePerHour(),
@@ -429,6 +433,16 @@ class Project implements JsonSerializable {
     return $this;
   }
 
+  public function getType(): ?int {
+    return $this->type;
+  }
+
+  public function setType(int $type): self {
+    $this->type = $type;
+
+    return $this;
+  }
+
   public function getTimerPriority(): ?int {
     return $this->timerPriority;
   }
@@ -594,6 +608,14 @@ class Project implements JsonSerializable {
     $this->category = $category;
 
     return $this;
+  }
+
+  public function getCategoryJson(): string {
+    if(is_null($this->category)) {
+      return '';
+    }
+
+    return $this->category->getTitle();
   }
 
   /**

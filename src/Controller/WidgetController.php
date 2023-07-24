@@ -10,6 +10,7 @@ use App\Entity\Expense;
 use App\Entity\Image;
 use App\Entity\Project;
 use App\Entity\Team;
+use App\Entity\Tool;
 use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -52,6 +53,9 @@ class WidgetController extends AbstractController {
     $args['countActiveCars'] = $this->em->getRepository(Car::class)->count(['isSuspended' => true]);
     $args['countCarsActive'] = $this->em->getRepository(Car::class)->count(['isReserved' => true, 'isSuspended' => false]);
     $args['countCarsInactive'] = $this->em->getRepository(Car::class)->count(['isReserved' => false, 'isSuspended' => false]);
+
+    $args['user'] = $loggedUser;
+    $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $loggedUser, 'finished' => null], ['id' => 'desc']);
 
     return $this->render('widget/main_admin_sidebar.html.twig', $args);
   }
@@ -100,6 +104,15 @@ class WidgetController extends AbstractController {
     $args['countReservations'] = $this->em->getRepository(CarReservation::class)->countReservationByCar($car);
 
     return $this->render('widget/car_nav.html.twig', $args);
+  }
+
+  public function toolProfilNavigation(Tool $tool): Response {
+
+    $args['tool'] = $tool;
+//    $args['countExpenses'] = $this->em->getRepository(Expense::class)->countExpenseByCar($car);
+//    $args['countReservations'] = $this->em->getRepository(CarReservation::class)->countReservationByCar($car);
+
+    return $this->render('widget/tool_nav.html.twig', $args);
   }
 
   public function projectProfilNavigation(Project $project): Response {

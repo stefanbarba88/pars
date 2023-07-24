@@ -1,0 +1,416 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+        <!-- Main content -->
+
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {% if tool.id is not null %}
+                                    {{ tool.title}}
+                                {% else %}
+                                    Oprema
+                                {% endif %}
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <a href="{{ path('app_tools') }}" class="breadcrumb-item">Oprema</a>
+                                <span class="breadcrumb-item active">
+                                    {% if tool.id is not null %}
+                                        Izmena
+                                    {% else %}
+                                        Dodavanje
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    {% if not form.vars.valid %}
+                        {% for child in form.children %}
+                            {%for error in child.vars.errors%}
+                                <div class="alert alert-danger alert-dismissible fade show">
+                                    <span class="fw-semibold">{{error.message}}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {%endfor%}
+                        {%endfor%}
+                    {%endif%}
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                 {% if tool.id is not null %}
+                                        Izmena opreme
+                                    {% else %}
+                                        Dodavanje opreme
+                                    {% endif %}
+                                    </h6>
+                        </div>
+                        {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.type, 'Tip opreme:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.type, {attr: { class: 'form-control required select tip' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.serial, 'Serijski broj:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.serial, {attr: { class: 'form-control' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% if tool.type == 1 or tool.type == 2 %}
+                                <div class="row uredjaj">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.model, 'Model:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.model, {attr: { class: 'form-control ur1' }}) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.ocena, 'Ocena:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.ocena, {attr: { class: 'form-control select ur2' }}) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row oprema hide">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.sertifikat, 'Sertifikat:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.sertifikat, {attr: { class: 'form-control' }}) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.datumSertifikata, 'Sertifikat ističe:', {'label_attr': {'class': 'form-label'}}) }}
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="ph-calendar"></i>
+                                                </span>
+                                                {{ form_widget(form.datumSertifikata, {attr: { class: 'form-control datepicker-date-format-custom' }}) }}
+                                            </div>
+                                            <span class="form-text">Format: 31.12.1900</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row oprema hide">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.duzina, 'Dužina:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.duzina, {attr: { class: 'form-control' }}) }}
+                                        </div>
+
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="row uredjaj hide">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.model, 'Model:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.model, {attr: { class: 'form-control ur1' }}) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.ocena, 'Ocena:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.ocena, {attr: { class: 'form-control select ur2' }}) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row oprema">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.sertifikat, 'Sertifikat:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.sertifikat, {attr: { class: 'form-control' }}) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.datumSertifikata, 'Sertifikat ističe:', {'label_attr': {'class': 'form-label'}}) }}
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="ph-calendar"></i>
+                                                </span>
+                                                {{ form_widget(form.datumSertifikata, {attr: { class: 'form-control datepicker-date-format-custom' }}) }}
+                                            </div>
+                                            <span class="form-text">Format: 31.12.1900</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row oprema">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.duzina, 'Dužina:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.duzina, {attr: { class: 'form-control' }}) }}
+                                        </div>
+
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                            </div>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                                                <!-- /wizard with validation -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+
+{% endblock includeJavascript %}
+{% block footerJavascript %}
+
+    <script>
+        $(function () {
+            // $(".payment").change(function(e) {
+            //     e.preventDefault();
+            //     if ($(this).val() == '2') {
+            //
+            //         $('.payment_price').removeClass('hide');
+            //         $('.priceValue').addClass('required');
+            //
+            //         $('.payment_ph').addClass('hide');
+            //         $('.phValue').val('').removeClass('required');
+            //
+            //         $('.payment_pt').addClass('hide');
+            //         $('.ptValue').val('').removeClass('required');
+            //
+            //         $('.payment_pd').addClass('hide');
+            //         $('.pdValue').val('').removeClass('required');
+            //
+            //         $('.payment_pm').addClass('hide');
+            //         $('.pmValue').val('').removeClass('required');
+            //
+            //         $('.payment_currency').removeClass('hide');
+            //         $('.currencyValue').addClass('required');
+            //
+            //     }
+            //     else if ($(this).val() == '3') {
+            //         $('.payment_ph').removeClass('hide');
+            //         $('.phValue').addClass('required');
+            //
+            //         $('.payment_price').addClass('hide');
+            //         $('.priceValue').val('').removeClass('required');
+            //
+            //         $('.payment_pt').addClass('hide');
+            //         $('.ptValue').val('').removeClass('required');
+            //
+            //         $('.payment_pd').addClass('hide');
+            //         $('.pdValue').val('').removeClass('required');
+            //
+            //         $('.payment_pm').addClass('hide');
+            //         $('.pmValue').val('').removeClass('required');
+            //
+            //         $('.payment_currency').removeClass('hide');
+            //         $('.currencyValue').addClass('required');
+            //
+            //
+            //     }
+            //     else if ($(this).val() == '4') {
+            //         $('.payment_ph').addClass('hide');
+            //         $('.phValue').val('').removeClass('required');
+            //
+            //         $('.payment_price').addClass('hide');
+            //         $('.priceValue').val('').removeClass('required');
+            //
+            //         $('.payment_pt').removeClass('hide');
+            //         $('.ptValue').addClass('required');
+            //
+            //         $('.payment_pd').addClass('hide');
+            //         $('.pdValue').val('').removeClass('required');
+            //
+            //         $('.payment_pm').addClass('hide');
+            //         $('.pmValue').val('').removeClass('required');
+            //
+            //         $('.payment_currency').removeClass('hide');
+            //         $('.currencyValue').addClass('required');
+            //     }
+            //     else if ($(this).val() == '1') {
+            //         $('.payment_ph').addClass('hide');
+            //         $('.phValue').val('').removeClass('required');
+            //
+            //         $('.payment_price').addClass('hide');
+            //         $('.priceValue').val('').removeClass('required');
+            //
+            //         $('.payment_pt').addClass('hide');
+            //         $('.ptValue').val('').removeClass('required');
+            //
+            //         $('.payment_pd').addClass('hide');
+            //         $('.pdValue').val('').removeClass('required');
+            //
+            //         $('.payment_pm').addClass('hide');
+            //         $('.pmValue').val('').removeClass('required');
+            //
+            //         $('.payment_currency').addClass('hide');
+            //         $('.currencyValue').val('').removeClass('required');
+            //     }
+            //     else if ($(this).val() == '5') {
+            //         $('.payment_ph').addClass('hide');
+            //         $('.phValue').removeClass('required');
+            //
+            //         $('.payment_price').addClass('hide');
+            //         $('.priceValue').val('').removeClass('required');
+            //
+            //         $('.payment_pt').addClass('hide');
+            //         $('.ptValue').val('').removeClass('required');
+            //
+            //         $('.payment_pd').removeClass('hide');
+            //         $('.pdValue').val('').addClass('required');
+            //
+            //         $('.payment_pm').addClass('hide');
+            //         $('.pmValue').val('').removeClass('required');
+            //
+            //         $('.payment_currency').removeClass('hide');
+            //         $('.currencyValue').addClass('required');
+            //     }
+            //     else if ($(this).val() == '6') {
+            //         $('.payment_ph').addClass('hide');
+            //         $('.phValue').val('').removeClass('required');
+            //
+            //         $('.payment_price').addClass('hide');
+            //         $('.priceValue').val('').removeClass('required');
+            //
+            //         $('.payment_pt').addClass('hide');
+            //         $('.ptValue').val('').removeClass('required');
+            //
+            //         $('.payment_pd').addClass('hide');
+            //         $('.pdValue').val('').removeClass('required');
+            //
+            //         $('.payment_pm').removeClass('hide');
+            //         $('.pmValue').val('').addClass('required');
+            //
+            //         $('.payment_currency').removeClass('hide');
+            //         $('.currencyValue').val('').addClass('required');
+            //     }
+            //     else {
+            //         $('.payment_price').addClass('hide');
+            //         $('.priceValue').val('').removeClass('required');
+            //         $('.payment_ph').addClass('hide');
+            //         $('.phValue').val('').removeClass('required');
+            //         $('.payment_pt').addClass('hide');
+            //         $('.ptValue').val('').removeClass('required');
+            //         $('.payment_pd').addClass('hide');
+            //         $('.pdValue').val('').removeClass('required');
+            //         $('.payment_pm').addClass('hide');
+            //         $('.pmValue').val('').removeClass('required');
+            //         $('.payment_currency').addClass('hide');
+            //         $('.currencyValue').val('').removeClass('required');
+            //
+            //     }
+            // });
+            $(".tip").change(function(e) {
+                e.preventDefault();
+                if ($(this).val() == "1") {
+                    $('.uredjaj').removeClass('hide');
+                    $('.ur1').addClass('required');
+                    $('.ur2').addClass('required');
+                    $('.oprema').val('').addClass('hide');
+
+                } else if ($(this).val() == "2") {
+                    $('.uredjaj').removeClass('hide');
+                    $('.ur1').addClass('required');
+                    $('.ur2').addClass('required');
+                    $('.oprema').val('').addClass('hide');
+                } else {
+                    $('.uredjaj').addClass('hide');
+                    $('.ur1').val('').removeClass('required');
+                    $('.ur2').val('').removeClass('required');
+                    $('.oprema').removeClass('hide');
+
+                }
+            });
+
+        });
+    </script>
+
+{% endblock footerJavascript %}

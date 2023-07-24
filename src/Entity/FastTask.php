@@ -273,6 +273,97 @@ class FastTask {
   private ?int $noTasks = null;
 
 
+  #[ORM\Column(nullable: true)]
+  private ?int $car1 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $car2 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $car3 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $car4 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $car5 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $car6 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $car7 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $car8 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $car9 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $car10 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver1 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver2 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver3 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver4 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver5 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver6 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver7 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver8 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver9 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver10 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $time1 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $time2 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $time3 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $time4 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $time5 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $time6 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $time7 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $time8 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $time9 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $time10 = null;
+
+
   #[ORM\PrePersist]
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();
@@ -349,12 +440,12 @@ class FastTask {
     return $this;
   }
 
-  public function getOprema1(): ?string {
-    return $this->oprema1;
+  public function getOprema1(): ?array {
+    return json_decode($this->oprema1, true);
   }
 
-  public function setOprema1(?string $oprema1): self {
-    $this->oprema1 = $oprema1;
+  public function setOprema1(?array $oprema1): self {
+    $this->oprema1 = json_encode($oprema1);
 
     return $this;
   }
@@ -487,19 +578,6 @@ class FastTask {
     $this->description2 = $description2;
   }
 
-  /**
-   * @return string|null
-   */
-  public function getOprema2(): ?string {
-    return $this->oprema2;
-  }
-
-  /**
-   * @param string|null $oprema2
-   */
-  public function setOprema2(?string $oprema2): void {
-    $this->oprema2 = $oprema2;
-  }
 
   /**
    * @return int|null
@@ -595,19 +673,6 @@ class FastTask {
     $this->description3 = $description3;
   }
 
-  /**
-   * @return string|null
-   */
-  public function getOprema3(): ?string {
-    return $this->oprema3;
-  }
-
-  /**
-   * @param string|null $oprema3
-   */
-  public function setOprema3(?string $oprema3): void {
-    $this->oprema3 = $oprema3;
-  }
 
   /**
    * @return int|null
@@ -703,19 +768,6 @@ class FastTask {
     $this->description4 = $description4;
   }
 
-  /**
-   * @return string|null
-   */
-  public function getOprema4(): ?string {
-    return $this->oprema4;
-  }
-
-  /**
-   * @param string|null $oprema4
-   */
-  public function setOprema4(?string $oprema4): void {
-    $this->oprema4 = $oprema4;
-  }
 
   /**
    * @return int|null
@@ -812,20 +864,6 @@ class FastTask {
   }
 
   /**
-   * @return string|null
-   */
-  public function getOprema5(): ?string {
-    return $this->oprema5;
-  }
-
-  /**
-   * @param string|null $oprema5
-   */
-  public function setOprema5(?string $oprema5): void {
-    $this->oprema5 = $oprema5;
-  }
-
-  /**
    * @return int|null
    */
   public function getStatus5(): ?int {
@@ -919,19 +957,6 @@ class FastTask {
     $this->description6 = $description6;
   }
 
-  /**
-   * @return string|null
-   */
-  public function getOprema6(): ?string {
-    return $this->oprema6;
-  }
-
-  /**
-   * @param string|null $oprema6
-   */
-  public function setOprema6(?string $oprema6): void {
-    $this->oprema6 = $oprema6;
-  }
 
   /**
    * @return int|null
@@ -1027,19 +1052,6 @@ class FastTask {
     $this->description7 = $description7;
   }
 
-  /**
-   * @return string|null
-   */
-  public function getOprema7(): ?string {
-    return $this->oprema7;
-  }
-
-  /**
-   * @param string|null $oprema7
-   */
-  public function setOprema7(?string $oprema7): void {
-    $this->oprema7 = $oprema7;
-  }
 
   /**
    * @return int|null
@@ -1135,19 +1147,6 @@ class FastTask {
     $this->description8 = $description8;
   }
 
-  /**
-   * @return string|null
-   */
-  public function getOprema8(): ?string {
-    return $this->oprema8;
-  }
-
-  /**
-   * @param string|null $oprema8
-   */
-  public function setOprema8(?string $oprema8): void {
-    $this->oprema8 = $oprema8;
-  }
 
   /**
    * @return int|null
@@ -1244,20 +1243,6 @@ class FastTask {
   }
 
   /**
-   * @return string|null
-   */
-  public function getOprema9(): ?string {
-    return $this->oprema9;
-  }
-
-  /**
-   * @param string|null $oprema9
-   */
-  public function setOprema9(?string $oprema9): void {
-    $this->oprema9 = $oprema9;
-  }
-
-  /**
    * @return int|null
    */
   public function getStatus9(): ?int {
@@ -1351,19 +1336,6 @@ class FastTask {
     $this->description10 = $description10;
   }
 
-  /**
-   * @return string|null
-   */
-  public function getOprema10(): ?string {
-    return $this->oprema10;
-  }
-
-  /**
-   * @param string|null $oprema10
-   */
-  public function setOprema10(?string $oprema10): void {
-    $this->oprema10 = $oprema10;
-  }
 
   /**
    * @return int|null
@@ -1404,6 +1376,518 @@ class FastTask {
 
       return $this;
   }
+
+
+  public function getCar1(): ?int
+  {
+      return $this->car1;
+  }
+
+  public function setCar1(?int $car1): self
+  {
+      $this->car1 = $car1;
+
+      return $this;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getCar2(): ?int {
+    return $this->car2;
+  }
+
+  /**
+   * @param int|null $car2
+   */
+  public function setCar2(?int $car2): void {
+    $this->car2 = $car2;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getCar3(): ?int {
+    return $this->car3;
+  }
+
+  /**
+   * @param int|null $car3
+   */
+  public function setCar3(?int $car3): void {
+    $this->car3 = $car3;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getCar4(): ?int {
+    return $this->car4;
+  }
+
+  /**
+   * @param int|null $car4
+   */
+  public function setCar4(?int $car4): void {
+    $this->car4 = $car4;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getCar5(): ?int {
+    return $this->car5;
+  }
+
+  /**
+   * @param int|null $car5
+   */
+  public function setCar5(?int $car5): void {
+    $this->car5 = $car5;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getCar6(): ?int {
+    return $this->car6;
+  }
+
+  /**
+   * @param int|null $car6
+   */
+  public function setCar6(?int $car6): void {
+    $this->car6 = $car6;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getCar7(): ?int {
+    return $this->car7;
+  }
+
+  /**
+   * @param int|null $car7
+   */
+  public function setCar7(?int $car7): void {
+    $this->car7 = $car7;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getCar8(): ?int {
+    return $this->car8;
+  }
+
+  /**
+   * @param int|null $car8
+   */
+  public function setCar8(?int $car8): void {
+    $this->car8 = $car8;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getCar9(): ?int {
+    return $this->car9;
+  }
+
+  /**
+   * @param int|null $car9
+   */
+  public function setCar9(?int $car9): void {
+    $this->car9 = $car9;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getCar10(): ?int {
+    return $this->car10;
+  }
+
+  /**
+   * @param int|null $car10
+   */
+  public function setCar10(?int $car10): void {
+    $this->car10 = $car10;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getDriver1(): ?int {
+    return $this->driver1;
+  }
+
+  /**
+   * @param int|null $driver1
+   */
+  public function setDriver1(?int $driver1): void {
+    $this->driver1 = $driver1;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getDriver2(): ?int {
+    return $this->driver2;
+  }
+
+  /**
+   * @param int|null $driver2
+   */
+  public function setDriver2(?int $driver2): void {
+    $this->driver2 = $driver2;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getDriver3(): ?int {
+    return $this->driver3;
+  }
+
+  /**
+   * @param int|null $driver3
+   */
+  public function setDriver3(?int $driver3): void {
+    $this->driver3 = $driver3;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getDriver4(): ?int {
+    return $this->driver4;
+  }
+
+  /**
+   * @param int|null $driver4
+   */
+  public function setDriver4(?int $driver4): void {
+    $this->driver4 = $driver4;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getDriver5(): ?int {
+    return $this->driver5;
+  }
+
+  /**
+   * @param int|null $driver5
+   */
+  public function setDriver5(?int $driver5): void {
+    $this->driver5 = $driver5;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getDriver6(): ?int {
+    return $this->driver6;
+  }
+
+  /**
+   * @param int|null $driver6
+   */
+  public function setDriver6(?int $driver6): void {
+    $this->driver6 = $driver6;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getDriver7(): ?int {
+    return $this->driver7;
+  }
+
+  /**
+   * @param int|null $driver7
+   */
+  public function setDriver7(?int $driver7): void {
+    $this->driver7 = $driver7;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getDriver8(): ?int {
+    return $this->driver8;
+  }
+
+  /**
+   * @param int|null $driver8
+   */
+  public function setDriver8(?int $driver8): void {
+    $this->driver8 = $driver8;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getDriver9(): ?int {
+    return $this->driver9;
+  }
+
+  /**
+   * @param int|null $driver9
+   */
+  public function setDriver9(?int $driver9): void {
+    $this->driver9 = $driver9;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getDriver10(): ?int {
+    return $this->driver10;
+  }
+
+  /**
+   * @param int|null $driver10
+   */
+  public function setDriver10(?int $driver10): void {
+    $this->driver10 = $driver10;
+  }
+
+
+
+  /**
+   * @return string|null
+   */
+  public function getTime1(): ?string {
+    return $this->time1;
+  }
+
+  /**
+   * @param string|null $time1
+   */
+  public function setTime1(?string $time1): void {
+    $this->time1 = $time1;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getTime2(): ?string {
+    return $this->time2;
+  }
+
+  /**
+   * @param string|null $time2
+   */
+  public function setTime2(?string $time2): void {
+    $this->time2 = $time2;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getTime3(): ?string {
+    return $this->time3;
+  }
+
+  /**
+   * @param string|null $time3
+   */
+  public function setTime3(?string $time3): void {
+    $this->time3 = $time3;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getTime4(): ?string {
+    return $this->time4;
+  }
+
+  /**
+   * @param string|null $time4
+   */
+  public function setTime4(?string $time4): void {
+    $this->time4 = $time4;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getTime5(): ?string {
+    return $this->time5;
+  }
+
+  /**
+   * @param string|null $time5
+   */
+  public function setTime5(?string $time5): void {
+    $this->time5 = $time5;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getTime6(): ?string {
+    return $this->time6;
+  }
+
+  /**
+   * @param string|null $time6
+   */
+  public function setTime6(?string $time6): void {
+    $this->time6 = $time6;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getTime7(): ?string {
+    return $this->time7;
+  }
+
+  /**
+   * @param string|null $time7
+   */
+  public function setTime7(?string $time7): void {
+    $this->time7 = $time7;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getTime8(): ?string {
+    return $this->time8;
+  }
+
+  /**
+   * @param string|null $time8
+   */
+  public function setTime8(?string $time8): void {
+    $this->time8 = $time8;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getTime9(): ?string {
+    return $this->time9;
+  }
+
+  /**
+   * @param string|null $time9
+   */
+  public function setTime9(?string $time9): void {
+    $this->time9 = $time9;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getTime10(): ?string {
+    return $this->time10;
+  }
+
+  /**
+   * @param string|null $time10
+   */
+  public function setTime10(?string $time10): void {
+    $this->time10 = $time10;
+  }
+
+  public function getOprema2(): ?array {
+    return json_decode($this->oprema2, true);
+  }
+
+  public function setOprema2(?array $oprema2): self {
+    $this->oprema2 = json_encode($oprema2);
+
+    return $this;
+  }
+
+  public function getOprema3(): ?array {
+    return json_decode($this->oprema3, true);
+  }
+
+  public function setOprema3(?array $oprema3): self {
+    $this->oprema3 = json_encode($oprema3);
+
+    return $this;
+  }
+  public function getOprema4(): ?array {
+    return json_decode($this->oprema4, true);
+  }
+
+  public function setOprema4(?array $oprema4): self {
+    $this->oprema4 = json_encode($oprema4);
+
+    return $this;
+  }
+  public function getOprema5(): ?array {
+    return json_decode($this->oprema5, true);
+  }
+
+  public function setOprema5(?array $oprema5): self {
+    $this->oprema5 = json_encode($oprema5);
+
+    return $this;
+  }
+  public function getOprema6(): ?array {
+    return json_decode($this->oprema6, true);
+  }
+
+  public function setOprema6(?array $oprema6): self {
+    $this->oprema6 = json_encode($oprema6);
+
+    return $this;
+  }
+  public function getOprema7(): ?array {
+    return json_decode($this->oprema7, true);
+  }
+
+  public function setOprema7(?array $oprema7): self {
+    $this->oprema7 = json_encode($oprema7);
+
+    return $this;
+  }
+  public function getOprema8(): ?array {
+    return json_decode($this->oprema8, true);
+  }
+
+  public function setOprema8(?array $oprema8): self {
+    $this->oprema8 = json_encode($oprema8);
+
+    return $this;
+  }
+  public function getOprema9(): ?array {
+    return json_decode($this->oprema9, true);
+  }
+
+  public function setOprema9(?array $oprema9): self {
+    $this->oprema9 = json_encode($oprema9);
+
+    return $this;
+  }
+  public function getOprema10(): ?array {
+    return json_decode($this->oprema10, true);
+  }
+
+  public function setOprema10(?array $oprema10): self {
+    $this->oprema10 = json_encode($oprema10);
+
+    return $this;
+  }
+
+
+
+
+
+
+
+
 
 
 

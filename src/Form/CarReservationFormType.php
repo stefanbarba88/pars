@@ -43,6 +43,10 @@ class CarReservationFormType extends AbstractType {
     $car = $dataObject->getReservation()->getCar();
     $driver = $dataObject->getReservation()->getDriver();
 
+    if (!is_null($car)){
+      $minKm = $car->getKm();
+    }
+
     if (is_null($car)) {
       $builder
       ->add('car', EntityType::class, [
@@ -75,6 +79,9 @@ class CarReservationFormType extends AbstractType {
         ])
         ->add('descStart')
         ->add('kmStart', NumberType::class, [
+          'attr' => [
+            'min' => 0,
+          ],
           'required' => true,
           'html5' => true,
         ]);
@@ -82,10 +89,12 @@ class CarReservationFormType extends AbstractType {
       $builder
         ->add('car', EntityType::class, [
           'class' => Car::class,
-          'query_builder' => function (EntityRepository $em) use ($car) {
+          'query_builder' => function (EntityRepository $em) {
             return $em->createQueryBuilder('c')
-              ->andWhere('c.id = :id')
-              ->setParameter(':id', $car)
+              ->andWhere('c.isReserved = :isReserved')
+              ->andWhere('c.isSuspended = :isSuspended')
+              ->setParameter(':isReserved', 0)
+              ->setParameter(':isSuspended', 0)
               ->orderBy('c.id', 'ASC');
           },
           'choice_label' => function ($car) {
@@ -93,6 +102,7 @@ class CarReservationFormType extends AbstractType {
           },
           'expanded' => false,
           'multiple' => false,
+          'data' => $car
         ])
         ->add('fuelStart', ChoiceType::class, [
           'placeholder' => '--Izaberite nivo goriva--',
@@ -108,6 +118,9 @@ class CarReservationFormType extends AbstractType {
         ])
         ->add('descStart')
         ->add('kmStart', NumberType::class, [
+          'attr' => [
+            'min' => $minKm,
+          ],
           'required' => true,
           'html5' => true,
         ]);

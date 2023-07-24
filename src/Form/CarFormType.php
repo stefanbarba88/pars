@@ -28,6 +28,8 @@ class CarFormType extends AbstractType {
       ->add('brand')
       ->add('model')
       ->add('plate')
+      ->add('opremaGeo')
+      ->add('opremaZakonska')
       ->add('price', NumberType::class, [
         'required' => false,
         'html5' => true,
@@ -49,6 +51,10 @@ class CarFormType extends AbstractType {
         'format' => 'dd.MM.yyyy',
         'html5' => false,
         'input' => 'datetime_immutable'
+      ])
+      ->add('km', NumberType::class, [
+        'required' => true,
+        'html5' => true,
       ]);
   }
 

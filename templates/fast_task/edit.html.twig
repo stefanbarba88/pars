@@ -1445,36 +1445,307 @@
     <script>
 
         $(document).ready(function() {
-            var selectedValues1 = {
-                task_form_geodeta1_1: "",
-                task_form_geodeta2_1: "",
-                task_form_geodeta3_1: ""
-            };
-            // Function to handle the change event of any of the three select elements
-            $("#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1").change(function() {
-                // Get the ID of the current select element
-                var currentId = $(this).attr("id");
 
-                // Get the selected value
-                var selectedValue = $(this).val();
+            function updateGeodeteOptions1() {
+                // var selectedValues1 = {
+                //     task_form_geodeta1_1: "",
+                //     task_form_geodeta2_1: "",
+                //     task_form_geodeta3_1: ""
+                // };
+                // Function to handle the change event of any of the three select elements
+                $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').each(function() {
+                    var currentId = $(this).attr('id');
+                    var selectedValue = $(this).val();
 
-                // Re-enable the previously disabled option
-                if (selectedValues1[currentId] !== "") {
-                    $("#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1")
-                        .not(this)
-                        .find("option[value='" + selectedValues1[currentId] + "']")
-                        .prop("disabled", false);
-                }
+                    // Omogućimo sve opcije u trenutnom polju "Geodeta"
+                    $(this).find('option').prop('disabled', false);
 
-                // Disable the newly selected option in the other two select elements
-                $("#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1")
-                    .not(this)
-                    .find("option[value='" + selectedValue + "']")
-                    .prop("disabled", true);
-
-                // Update the selected value in the array
-                selectedValues1[currentId] = selectedValue;
+                    // Onemogućimo izabrane vrednosti u drugim poljima "Geodeta"
+                    $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').not(this).each(function() {
+                        var otherSelectedValue = $(this).val();
+                        if (otherSelectedValue) {
+                            $('#' + currentId + ' option[value="' + otherSelectedValue + '"]').prop('disabled', true);
+                        }
+                    });
+                });
+            }
+            $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').change(function() {
+                updateGeodeteOptions1();
             });
+
+            function updateGeodeteOptions2() {
+                // var selectedValues1 = {
+                //     task_form_geodeta1_1: "",
+                //     task_form_geodeta2_1: "",
+                //     task_form_geodeta3_1: ""
+                // };
+                // Function to handle the change event of any of the three select elements
+                $('#task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2').each(function() {
+                    var currentId = $(this).attr('id');
+                    var selectedValue = $(this).val();
+
+                    // Omogućimo sve opcije u trenutnom polju "Geodeta"
+                    $(this).find('option').prop('disabled', false);
+
+                    // Onemogućimo izabrane vrednosti u drugim poljima "Geodeta"
+                    $('#task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2').not(this).each(function() {
+                        var otherSelectedValue = $(this).val();
+                        if (otherSelectedValue) {
+                            $('#' + currentId + ' option[value="' + otherSelectedValue + '"]').prop('disabled', true);
+                        }
+                    });
+                });
+            }
+            $('#task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2').change(function() {
+                updateGeodeteOptions2();
+            });
+
+            function updateGeodeteOptions3() {
+                // var selectedValues1 = {
+                //     task_form_geodeta1_1: "",
+                //     task_form_geodeta2_1: "",
+                //     task_form_geodeta3_1: ""
+                // };
+                // Function to handle the change event of any of the three select elements
+                $('#task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3').each(function() {
+                    var currentId = $(this).attr('id');
+                    var selectedValue = $(this).val();
+
+                    // Omogućimo sve opcije u trenutnom polju "Geodeta"
+                    $(this).find('option').prop('disabled', false);
+
+                    // Onemogućimo izabrane vrednosti u drugim poljima "Geodeta"
+                    $('#task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3').not(this).each(function() {
+                        var otherSelectedValue = $(this).val();
+                        if (otherSelectedValue) {
+                            $('#' + currentId + ' option[value="' + otherSelectedValue + '"]').prop('disabled', true);
+                        }
+                    });
+                });
+            }
+            $('#task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3').change(function() {
+                updateGeodeteOptions3();
+            });
+
+            function updateGeodeteOptions4() {
+                // var selectedValues1 = {
+                //     task_form_geodeta1_1: "",
+                //     task_form_geodeta2_1: "",
+                //     task_form_geodeta3_1: ""
+                // };
+                // Function to handle the change event of any of the three select elements
+                $('#task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4').each(function() {
+                    var currentId = $(this).attr('id');
+                    var selectedValue = $(this).val();
+
+                    // Omogućimo sve opcije u trenutnom polju "Geodeta"
+                    $(this).find('option').prop('disabled', false);
+
+                    // Onemogućimo izabrane vrednosti u drugim poljima "Geodeta"
+                    $('#task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4').not(this).each(function() {
+                        var otherSelectedValue = $(this).val();
+                        if (otherSelectedValue) {
+                            $('#' + currentId + ' option[value="' + otherSelectedValue + '"]').prop('disabled', true);
+                        }
+                    });
+                });
+            }
+            $('#task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4').change(function() {
+                updateGeodeteOptions4();
+            });
+
+            function updateGeodeteOptions5() {
+                // var selectedValues1 = {
+                //     task_form_geodeta1_1: "",
+                //     task_form_geodeta2_1: "",
+                //     task_form_geodeta3_1: ""
+                // };
+                // Function to handle the change event of any of the three select elements
+                $('#task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5').each(function() {
+                    var currentId = $(this).attr('id');
+                    var selectedValue = $(this).val();
+
+                    // Omogućimo sve opcije u trenutnom polju "Geodeta"
+                    $(this).find('option').prop('disabled', false);
+
+                    // Onemogućimo izabrane vrednosti u drugim poljima "Geodeta"
+                    $('#task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5').not(this).each(function() {
+                        var otherSelectedValue = $(this).val();
+                        if (otherSelectedValue) {
+                            $('#' + currentId + ' option[value="' + otherSelectedValue + '"]').prop('disabled', true);
+                        }
+                    });
+                });
+            }
+            $('#task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5').change(function() {
+                updateGeodeteOptions5();
+            });
+
+            function updateGeodeteOptions6() {
+                // var selectedValues1 = {
+                //     task_form_geodeta1_1: "",
+                //     task_form_geodeta2_1: "",
+                //     task_form_geodeta3_1: ""
+                // };
+                // Function to handle the change event of any of the three select elements
+                $('#task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6').each(function() {
+                    var currentId = $(this).attr('id');
+                    var selectedValue = $(this).val();
+
+                    // Omogućimo sve opcije u trenutnom polju "Geodeta"
+                    $(this).find('option').prop('disabled', false);
+
+                    // Onemogućimo izabrane vrednosti u drugim poljima "Geodeta"
+                    $('#task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6').not(this).each(function() {
+                        var otherSelectedValue = $(this).val();
+                        if (otherSelectedValue) {
+                            $('#' + currentId + ' option[value="' + otherSelectedValue + '"]').prop('disabled', true);
+                        }
+                    });
+                });
+            }
+            $('#task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6').change(function() {
+                updateGeodeteOptions6();
+            });
+
+            function updateGeodeteOptions7() {
+                // var selectedValues1 = {
+                //     task_form_geodeta1_1: "",
+                //     task_form_geodeta2_1: "",
+                //     task_form_geodeta3_1: ""
+                // };
+                // Function to handle the change event of any of the three select elements
+                $('#task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7').each(function() {
+                    var currentId = $(this).attr('id');
+                    var selectedValue = $(this).val();
+
+                    // Omogućimo sve opcije u trenutnom polju "Geodeta"
+                    $(this).find('option').prop('disabled', false);
+
+                    // Onemogućimo izabrane vrednosti u drugim poljima "Geodeta"
+                    $('#task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7').not(this).each(function() {
+                        var otherSelectedValue = $(this).val();
+                        if (otherSelectedValue) {
+                            $('#' + currentId + ' option[value="' + otherSelectedValue + '"]').prop('disabled', true);
+                        }
+                    });
+                });
+            }
+            $('#task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7').change(function() {
+                updateGeodeteOptions7();
+            });
+
+            function updateGeodeteOptions8() {
+                // var selectedValues1 = {
+                //     task_form_geodeta1_1: "",
+                //     task_form_geodeta2_1: "",
+                //     task_form_geodeta3_1: ""
+                // };
+                // Function to handle the change event of any of the three select elements
+                $('#task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8').each(function() {
+                    var currentId = $(this).attr('id');
+                    var selectedValue = $(this).val();
+
+                    // Omogućimo sve opcije u trenutnom polju "Geodeta"
+                    $(this).find('option').prop('disabled', false);
+
+                    // Onemogućimo izabrane vrednosti u drugim poljima "Geodeta"
+                    $('#task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8').not(this).each(function() {
+                        var otherSelectedValue = $(this).val();
+                        if (otherSelectedValue) {
+                            $('#' + currentId + ' option[value="' + otherSelectedValue + '"]').prop('disabled', true);
+                        }
+                    });
+                });
+            }
+            $('#task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8').change(function() {
+                updateGeodeteOptions8();
+            });
+
+            function updateGeodeteOptions9() {
+                // var selectedValues1 = {
+                //     task_form_geodeta1_1: "",
+                //     task_form_geodeta2_1: "",
+                //     task_form_geodeta3_1: ""
+                // };
+                // Function to handle the change event of any of the three select elements
+                $('#task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9').each(function() {
+                    var currentId = $(this).attr('id');
+                    var selectedValue = $(this).val();
+
+                    // Omogućimo sve opcije u trenutnom polju "Geodeta"
+                    $(this).find('option').prop('disabled', false);
+
+                    // Onemogućimo izabrane vrednosti u drugim poljima "Geodeta"
+                    $('#task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9').not(this).each(function() {
+                        var otherSelectedValue = $(this).val();
+                        if (otherSelectedValue) {
+                            $('#' + currentId + ' option[value="' + otherSelectedValue + '"]').prop('disabled', true);
+                        }
+                    });
+                });
+            }
+            $('#task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9').change(function() {
+                updateGeodeteOptions9();
+            });
+
+            function updateGeodeteOptions10() {
+                // var selectedValues1 = {
+                //     task_form_geodeta1_1: "",
+                //     task_form_geodeta2_1: "",
+                //     task_form_geodeta3_1: ""
+                // };
+                // Function to handle the change event of any of the three select elements
+                $('#task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10').each(function() {
+                    var currentId = $(this).attr('id');
+                    var selectedValue = $(this).val();
+
+                    // Omogućimo sve opcije u trenutnom polju "Geodeta"
+                    $(this).find('option').prop('disabled', false);
+
+                    // Onemogućimo izabrane vrednosti u drugim poljima "Geodeta"
+                    $('#task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10').not(this).each(function() {
+                        var otherSelectedValue = $(this).val();
+                        if (otherSelectedValue) {
+                            $('#' + currentId + ' option[value="' + otherSelectedValue + '"]').prop('disabled', true);
+                        }
+                    });
+                });
+            }
+            $('#task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10').change(function() {
+                updateGeodeteOptions10();
+            });
+            // var selectedValues1 = {
+            //     task_form_geodeta1_1: "",
+            //     task_form_geodeta2_1: "",
+            //     task_form_geodeta3_1: ""
+            // };
+            // // Function to handle the change event of any of the three select elements
+            // $("#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1").change(function() {
+            //     // Get the ID of the current select element
+            //     var currentId = $(this).attr("id");
+            //
+            //     // Get the selected value
+            //     var selectedValue = $(this).val();
+            //
+            //     // Re-enable the previously disabled option
+            //     if (selectedValues1[currentId] !== "") {
+            //         $("#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1")
+            //             .not(this)
+            //             .find("option[value='" + selectedValues1[currentId] + "']")
+            //             .prop("disabled", false);
+            //     }
+            //
+            //     // Disable the newly selected option in the other two select elements
+            //     $("#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1")
+            //         .not(this)
+            //         .find("option[value='" + selectedValue + "']")
+            //         .prop("disabled", true);
+            //
+            //     // Update the selected value in the array
+            //     selectedValues1[currentId] = selectedValue;
+            // });
+
             function updateDriversOptions1() {
                 var selectedGeodete11Ids = $('#task_form_geodeta1_1').val() || [];
                 var selectedGeodete12Ids = $('#task_form_geodeta2_1').val() || [];
@@ -1508,36 +1779,7 @@
             // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
             updateDriversOptions1();
 
-            var selectedValues2 = {
-                task_form_geodeta1_2: "",
-                task_form_geodeta2_2: "",
-                task_form_geodeta3_2: ""
-            };
-            // Function to handle the change event of any of the three select elements
-            $("#task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2").change(function() {
-                // Get the ID of the current select element
-                var currentId = $(this).attr("id");
 
-                // Get the selected value
-                var selectedValue = $(this).val();
-
-                // Re-enable the previously disabled option
-                if (selectedValues2[currentId] !== "") {
-                    $("#task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2")
-                        .not(this)
-                        .find("option[value='" + selectedValues2[currentId] + "']")
-                        .prop("disabled", false);
-                }
-
-                // Disable the newly selected option in the other two select elements
-                $("#task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2")
-                    .not(this)
-                    .find("option[value='" + selectedValue + "']")
-                    .prop("disabled", true);
-
-                // Update the selected value in the array
-                selectedValues2[currentId] = selectedValue;
-            });
             function updateDriversOptions2() {
                 var selectedGeodete21Ids = $('#task_form_geodeta1_2').val() || [];
                 var selectedGeodete22Ids = $('#task_form_geodeta2_2').val() || [];
@@ -1571,36 +1813,7 @@
             // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
             updateDriversOptions2();
 
-            var selectedValues3 = {
-                task_form_geodeta1_3: "",
-                task_form_geodeta2_3: "",
-                task_form_geodeta3_3: ""
-            };
-            // Function to handle the change event of any of the three select elements
-            $("#task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3").change(function() {
-                // Get the ID of the current select element
-                var currentId = $(this).attr("id");
 
-                // Get the selected value
-                var selectedValue = $(this).val();
-
-                // Re-enable the previously disabled option
-                if (selectedValues3[currentId] !== "") {
-                    $("#task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3")
-                        .not(this)
-                        .find("option[value='" + selectedValues3[currentId] + "']")
-                        .prop("disabled", false);
-                }
-
-                // Disable the newly selected option in the other two select elements
-                $("#task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3")
-                    .not(this)
-                    .find("option[value='" + selectedValue + "']")
-                    .prop("disabled", true);
-
-                // Update the selected value in the array
-                selectedValues3[currentId] = selectedValue;
-            });
             function updateDriversOptions3() {
                 var selectedGeodete31Ids = $('#task_form_geodeta1_3').val() || [];
                 var selectedGeodete32Ids = $('#task_form_geodeta2_3').val() || [];
@@ -1634,36 +1847,7 @@
             // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
             updateDriversOptions3();
 
-            var selectedValues4 = {
-                task_form_geodeta1_4: "",
-                task_form_geodeta2_4: "",
-                task_form_geodeta3_4: ""
-            };
-            // Function to handle the change event of any of the three select elements
-            $("#task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4").change(function() {
-                // Get the ID of the current select element
-                var currentId = $(this).attr("id");
 
-                // Get the selected value
-                var selectedValue = $(this).val();
-
-                // Re-enable the previously disabled option
-                if (selectedValues4[currentId] !== "") {
-                    $("#task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4")
-                        .not(this)
-                        .find("option[value='" + selectedValues4[currentId] + "']")
-                        .prop("disabled", false);
-                }
-
-                // Disable the newly selected option in the other two select elements
-                $("#task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4")
-                    .not(this)
-                    .find("option[value='" + selectedValue + "']")
-                    .prop("disabled", true);
-
-                // Update the selected value in the array
-                selectedValues4[currentId] = selectedValue;
-            });
             function updateDriversOptions4() {
                 var selectedGeodete41Ids = $('#task_form_geodeta1_4').val() || [];
                 var selectedGeodete42Ids = $('#task_form_geodeta2_4').val() || [];
@@ -1697,36 +1881,6 @@
             // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
             updateDriversOptions4();
 
-            var selectedValues5 = {
-                task_form_geodeta1_5: "",
-                task_form_geodeta2_5: "",
-                task_form_geodeta3_5: ""
-            };
-            // Function to handle the change event of any of the three select elements
-            $("#task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5").change(function() {
-                // Get the ID of the current select element
-                var currentId = $(this).attr("id");
-
-                // Get the selected value
-                var selectedValue = $(this).val();
-
-                // Re-enable the previously disabled option
-                if (selectedValues5[currentId] !== "") {
-                    $("#task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5")
-                        .not(this)
-                        .find("option[value='" + selectedValues5[currentId] + "']")
-                        .prop("disabled", false);
-                }
-
-                // Disable the newly selected option in the other two select elements
-                $("#task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5")
-                    .not(this)
-                    .find("option[value='" + selectedValue + "']")
-                    .prop("disabled", true);
-
-                // Update the selected value in the array
-                selectedValues5[currentId] = selectedValue;
-            });
             function updateDriversOptions5() {
                 var selectedGeodete51Ids = $('#task_form_geodeta1_5').val() || [];
                 var selectedGeodete52Ids = $('#task_form_geodeta2_5').val() || [];
@@ -1760,36 +1914,6 @@
             // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
             updateDriversOptions5();
 
-            var selectedValues6 = {
-                task_form_geodeta1_6: "",
-                task_form_geodeta2_6: "",
-                task_form_geodeta3_6: ""
-            };
-            // Function to handle the change event of any of the three select elements
-            $("#task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6").change(function() {
-                // Get the ID of the current select element
-                var currentId = $(this).attr("id");
-
-                // Get the selected value
-                var selectedValue = $(this).val();
-
-                // Re-enable the previously disabled option
-                if (selectedValues6[currentId] !== "") {
-                    $("#task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6")
-                        .not(this)
-                        .find("option[value='" + selectedValues6[currentId] + "']")
-                        .prop("disabled", false);
-                }
-
-                // Disable the newly selected option in the other two select elements
-                $("#task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6")
-                    .not(this)
-                    .find("option[value='" + selectedValue + "']")
-                    .prop("disabled", true);
-
-                // Update the selected value in the array
-                selectedValues6[currentId] = selectedValue;
-            });
             function updateDriversOptions6() {
                 var selectedGeodete61Ids = $('#task_form_geodeta1_6').val() || [];
                 var selectedGeodete62Ids = $('#task_form_geodeta2_6').val() || [];
@@ -1823,36 +1947,6 @@
             // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
             updateDriversOptions6();
 
-            var selectedValues7 = {
-                task_form_geodeta1_7: "",
-                task_form_geodeta2_7: "",
-                task_form_geodeta3_7: ""
-            };
-            // Function to handle the change event of any of the three select elements
-            $("#task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7").change(function() {
-                // Get the ID of the current select element
-                var currentId = $(this).attr("id");
-
-                // Get the selected value
-                var selectedValue = $(this).val();
-
-                // Re-enable the previously disabled option
-                if (selectedValues7[currentId] !== "") {
-                    $("#task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7")
-                        .not(this)
-                        .find("option[value='" + selectedValues7[currentId] + "']")
-                        .prop("disabled", false);
-                }
-
-                // Disable the newly selected option in the other two select elements
-                $("#task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7")
-                    .not(this)
-                    .find("option[value='" + selectedValue + "']")
-                    .prop("disabled", true);
-
-                // Update the selected value in the array
-                selectedValues7[currentId] = selectedValue;
-            });
             function updateDriversOptions7() {
                 var selectedGeodete71Ids = $('#task_form_geodeta1_7').val() || [];
                 var selectedGeodete72Ids = $('#task_form_geodeta2_7').val() || [];
@@ -1886,36 +1980,6 @@
             // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
             updateDriversOptions7();
 
-            var selectedValues8 = {
-                task_form_geodeta1_8: "",
-                task_form_geodeta2_8: "",
-                task_form_geodeta3_8: ""
-            };
-            // Function to handle the change event of any of the three select elements
-            $("#task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8").change(function() {
-                // Get the ID of the current select element
-                var currentId = $(this).attr("id");
-
-                // Get the selected value
-                var selectedValue = $(this).val();
-
-                // Re-enable the previously disabled option
-                if (selectedValues8[currentId] !== "") {
-                    $("#task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8")
-                        .not(this)
-                        .find("option[value='" + selectedValues8[currentId] + "']")
-                        .prop("disabled", false);
-                }
-
-                // Disable the newly selected option in the other two select elements
-                $("#task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8")
-                    .not(this)
-                    .find("option[value='" + selectedValue + "']")
-                    .prop("disabled", true);
-
-                // Update the selected value in the array
-                selectedValues8[currentId] = selectedValue;
-            });
             function updateDriversOptions8() {
                 var selectedGeodete81Ids = $('#task_form_geodeta1_8').val() || [];
                 var selectedGeodete82Ids = $('#task_form_geodeta2_8').val() || [];
@@ -1949,36 +2013,6 @@
             // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
             updateDriversOptions8();
 
-            var selectedValues9 = {
-                task_form_geodeta1_9: "",
-                task_form_geodeta2_9: "",
-                task_form_geodeta3_9: ""
-            };
-            // Function to handle the change event of any of the three select elements
-            $("#task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9").change(function() {
-                // Get the ID of the current select element
-                var currentId = $(this).attr("id");
-
-                // Get the selected value
-                var selectedValue = $(this).val();
-
-                // Re-enable the previously disabled option
-                if (selectedValues9[currentId] !== "") {
-                    $("#task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9")
-                        .not(this)
-                        .find("option[value='" + selectedValues9[currentId] + "']")
-                        .prop("disabled", false);
-                }
-
-                // Disable the newly selected option in the other two select elements
-                $("#task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9")
-                    .not(this)
-                    .find("option[value='" + selectedValue + "']")
-                    .prop("disabled", true);
-
-                // Update the selected value in the array
-                selectedValues9[currentId] = selectedValue;
-            });
             function updateDriversOptions9() {
                 var selectedGeodete91Ids = $('#task_form_geodeta1_9').val() || [];
                 var selectedGeodete92Ids = $('#task_form_geodeta2_9').val() || [];
@@ -2012,36 +2046,6 @@
             // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
             updateDriversOptions9();
 
-            var selectedValues10 = {
-                task_form_geodeta1_10: "",
-                task_form_geodeta2_10: "",
-                task_form_geodeta3_10: ""
-            };
-            // Function to handle the change event of any of the three select elements
-            $("#task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10").change(function() {
-                // Get the ID of the current select element
-                var currentId = $(this).attr("id");
-
-                // Get the selected value
-                var selectedValue = $(this).val();
-
-                // Re-enable the previously disabled option
-                if (selectedValues10[currentId] !== "") {
-                    $("#task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10")
-                        .not(this)
-                        .find("option[value='" + selectedValues10[currentId] + "']")
-                        .prop("disabled", false);
-                }
-
-                // Disable the newly selected option in the other two select elements
-                $("#task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10")
-                    .not(this)
-                    .find("option[value='" + selectedValue + "']")
-                    .prop("disabled", true);
-
-                // Update the selected value in the array
-                selectedValues10[currentId] = selectedValue;
-            });
             function updateDriversOptions10() {
                 var selectedGeodete101Ids = $('#task_form_geodeta1_10').val() || [];
                 var selectedGeodete102Ids = $('#task_form_geodeta2_10').val() || [];
@@ -2074,8 +2078,6 @@
             });
             // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
             updateDriversOptions10();
-
-
 
 
             // Funkcija koja će postaviti stanje input polja na osnovu izbora u select elementu
@@ -2271,6 +2273,7 @@
 
 
             // Pozovite funkciju za inicijalno postavljanje stanja input polja prilikom učitavanja stranice
+            updateGeodeteOptions1()
             updateInputFields1();
             updateInputFieldsRequired1();
             updateDriversOptions1();
@@ -2278,38 +2281,47 @@
             updateInputFields2();
             updateInputFieldsRequired2();
             updateDriversOptions2();
+            updateGeodeteOptions2();
 
             updateInputFields3();
             updateInputFieldsRequired3();
             updateDriversOptions3();
+            updateGeodeteOptions3();
 
             updateInputFields4();
             updateInputFieldsRequired4();
             updateDriversOptions4();
+            updateGeodeteOptions4();
 
             updateInputFields5();
             updateInputFieldsRequired5();
             updateDriversOptions5();
+            updateGeodeteOptions5();
 
             updateInputFields6();
             updateInputFieldsRequired6();
             updateDriversOptions6();
+            updateGeodeteOptions6();
 
             updateInputFields7();
             updateInputFieldsRequired7();
             updateDriversOptions7();
+            updateGeodeteOptions7();
 
             updateInputFields8();
             updateInputFieldsRequired8();
             updateDriversOptions8();
+            updateGeodeteOptions8();
 
             updateInputFields9();
             updateInputFieldsRequired9();
             updateDriversOptions9();
+            updateGeodeteOptions9();
 
             updateInputFields10();
             updateInputFieldsRequired10();
             updateDriversOptions10();
+            updateGeodeteOptions10();
         });
 
     </script>

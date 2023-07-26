@@ -275,6 +275,7 @@
                 var selectedDriverText = $('#task_form_driver option:selected').text();
                 $('#task_form_driver').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
             });
+
             function updateGeodeteOptions() {
                     $('#task_form_geo1, #task_form_geo2, #task_form_geo3').each(function() {
                         var currentId = $(this).attr('id');

@@ -109,10 +109,48 @@
                                                 </div>
                                                 {% else %}
                                                     <div class="card-body">
-                                                        <div class="d-flex mb-3">
-                                                            <div class="d-inline-flex">
-                                                                Zaokruženo vreme: <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time.hours }}:{{ time.minutes }}h</span>
-                                                                Vreme bez zaokruživanja: <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time.hoursR }}:{{ time.minutesR }}h</span>
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Vreme</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-4">
+                                                                <div class="mb-3">
+                                                                    <div class="d-flex list-group-item align-items-start">
+                                                                        <div class="me-2">
+                                                                            <i class="ph-timer"></i>
+                                                                        </div>
+
+                                                                        <div class="flex-fill overflow-hidden">
+                                                                            <div class="fw-semibold text-truncate text-body">
+                                                                                Zaokruženo
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="ms-3">
+                                                                            <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time.hours }}:{{ time.minutes }}h</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-lg-4">
+                                                                <div class="mb-3">
+                                                                    <div class="d-flex list-group-item align-items-start">
+                                                                        <div class="me-2">
+                                                                            <i class="ph-timer"></i>
+                                                                        </div>
+
+                                                                        <div class="flex-fill overflow-hidden">
+                                                                            <div class="fw-semibold text-truncate text-body">
+                                                                                Bez zaokruživanja
+                                                                            </div>
+
+                                                                        </div>
+
+                                                                        <div class="ms-3">
+                                                                            <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time.hoursR }}:{{ time.minutesR }}h</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
 
@@ -239,10 +277,48 @@
                                                                 <div class="col-xl-12 col-sm-12">
                                                                     <div class="card">
                                                                         <div class="card-body">
-                                                                            <div class="d-flex mb-3">
-                                                                                <div class="d-inline-flex">
-                                                                                    Zaokruženo vreme: <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ stopwatch.hours }}:{{ stopwatch.minutes }}h</span>
-                                                                                    Vreme bez zaokruživanja: <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ stopwatch.hoursReal }}:{{ stopwatch.minutesReal }}h</span>
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Vreme</div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-4">
+                                                                                    <div class="mb-3">
+                                                                                        <div class="d-flex list-group-item align-items-start">
+                                                                                            <div class="me-2">
+                                                                                                <i class="ph-timer"></i>
+                                                                                            </div>
+
+                                                                                            <div class="flex-fill overflow-hidden">
+                                                                                                <div class="fw-semibold text-truncate text-body">
+                                                                                                    Zaokruženo
+                                                                                                </div>
+                                                                                            </div>
+
+                                                                                            <div class="ms-3">
+                                                                                                <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ stopwatch.hours }}:{{ stopwatch.minutes }}h</span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-4">
+                                                                                    <div class="mb-3">
+                                                                                        <div class="d-flex list-group-item align-items-start">
+                                                                                            <div class="me-2">
+                                                                                                <i class="ph-timer"></i>
+                                                                                            </div>
+
+                                                                                            <div class="flex-fill overflow-hidden">
+                                                                                                <div class="fw-semibold text-truncate text-body">
+                                                                                                    Bez zaokruživanja
+                                                                                                </div>
+
+                                                                                            </div>
+
+                                                                                            <div class="ms-3">
+                                                                                                <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ stopwatch.hoursReal }}:{{ stopwatch.minutesReal }}h</span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
 
@@ -302,7 +378,6 @@
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-
 
                                                                             <div class="fw-bold border-bottom pb-2 mb-3">Dokumenta</div>
                                                                             <div class="row">

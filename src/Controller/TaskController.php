@@ -590,6 +590,12 @@ class TaskController extends AbstractController {
     $args['pdfs'] = $this->em->getRepository(Task::class)->getPdfsByTask($task);
     $args['car'] = $this->em->getRepository(Car::class)->findOneBy(['id' => $task->getCar()]);
     $args['comments'] = $this->em->getRepository(Comment::class)->findBy(['task' => $task, 'isSuspended' => false], ['id' => 'DESC']);
+    $primaryUser = $this->em->getRepository(User::class)->find($task->getPriorityUserLog());
+    $args['taskLog'] = $this->em->getRepository(TaskLog::class)->findOneBy(['task' => $task, 'user' => $primaryUser]);
+
+    $args['stopwatches'] = $this->em->getRepository(StopwatchTime::class)->getStopwatches($args['taskLog']);
+    $args['stopwatchesActive'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchesActive($args['taskLog']);
+    $args['time1'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchTime($args['taskLog']);
 
 //    $args['cars'] = [];
 //    foreach ($task->getAssignedUsers() as $driver) {

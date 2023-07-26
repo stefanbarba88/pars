@@ -340,9 +340,13 @@
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="mb-3">
-                                                {% for oprema in task.oprema %}
-                                                    <li>{{ oprema.title }}</li>
-                                                {% endfor %}
+                                                {% if task.oprema is not empty %}
+                                                    {% for oprema in task.oprema %}
+                                                        <li>{{ oprema.title }}</li>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    Nema dodeljene opreme za ovaj zadatak.
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>

@@ -71,12 +71,31 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       ->getResult();
 
     foreach ($times as $time) {
+
+      $h = intdiv($time->getDiffRounded(), 60);
+      $m = $time->getDiffRounded() % 60;
+      $hR = intdiv($time->getDiff(), 60);
+      $mR = $time->getDiff() % 60;
+      if ($h < 10) {
+        $h = '0' . $h;
+      }
+      if ($m < 10) {
+        $m = '0' . $m;
+      }
+      if ($hR < 10) {
+        $hR = '0' . $hR;
+      }
+      if ($mR < 10) {
+        $mR = '0' . $mR;
+      }
+
+
       $stopwatches [] = [
         'id' => $time->getId(),
-        'hours' => intdiv($time->getDiffRounded(), 60),
-        'minutes' => $time->getDiffRounded() % 60,
-        'hoursReal' => intdiv($time->getDiff(), 60),
-        'minutesReal' => $time->getDiff() % 60,
+        'hours' => $h,
+        'minutes' => $m,
+        'hoursReal' => $hR,
+        'minutesReal' => $mR,
         'start' => $time->getStart(),
         'stop' => $time->getStop(),
         'startLon' => $time->getLon(),
@@ -208,8 +227,13 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
   public function getStopwatchTimeByTask(Task $task): array {
 
-    $priority = $task->getProject()->getTimerPriority();
-    $priorityTitle = $task->getProject()->getTimerPriorityJson();
+//    $priority = $task->getProject()->getTimerPriority();
+//    $priorityTitle = $task->getProject()->getTimerPriorityJson();
+
+    $priorityUserLog = $task->getPriorityUserLog();
+    $priorityLogUser = $this->getEntityManager()->getRepository(User::class)->find($priorityUserLog);
+
+
 
     $hoursTotalRounded = 0;
     $minutesTotalRounded = 0;
@@ -243,13 +267,15 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     $mR = $minutesRealU % 60;
 
 
-    if ($priority == TimerPriorityData::FIRST_ASSIGN) {
-      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $task], ['id' => 'ASC']);
-    } elseif ($priority == TimerPriorityData::ROLE_GEO) {
-      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneByUserPosition($task, 1);
-    } elseif ($priority == TimerPriorityData::ROLE_FIG) {
-      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneByUserPosition($task, 2);
-    }
+//    if ($priority == TimerPriorityData::FIRST_ASSIGN) {
+//      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $task], ['id' => 'ASC']);
+//    } elseif ($priority == TimerPriorityData::ROLE_GEO) {
+//      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneByUserPosition($task, 1);
+//    } elseif ($priority == TimerPriorityData::ROLE_FIG) {
+//      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneByUserPosition($task, 2);
+//    }
+
+    $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $task, 'user' => $priorityLogUser]);
 
     if(!empty($logPriority)) {
       $timesPriority = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $logPriority, 'isDeleted' => false]);
@@ -267,6 +293,32 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       $hRtP = intdiv($minutesR, 60);
       $mRtP = $minutesR % 60;
 
+      if ($h < 10) {
+        $h = '0' . $h;
+      }
+      if ($m < 10) {
+        $m = '0' . $m;
+      }
+      if ($hR < 10) {
+        $hR = '0' . $hR;
+      }
+      if ($mR < 10) {
+        $mR = '0' . $mR;
+      }
+      if ($htP < 10) {
+        $htP = '0' . $htP;
+      }
+      if ($mtP < 10) {
+        $mtP = '0' . $mtP;
+      }
+      if ($hRtP < 10) {
+        $hRtP = '0' . $hRtP;
+      }
+      if ($mRtP < 10) {
+        $mRtP = '0' . $mRtP;
+      }
+
+
       return [
         'hours' => $h,
         'minutes' => $m,
@@ -276,8 +328,33 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'minutesTimePriority' => $mtP,
         'hoursRealTimePriority' => $hRtP,
         'minutesRealTimePriority' => $mRtP,
-        'priority' => $priorityTitle
+        'priority' => $priorityLogUser->getFullName()
       ];
+    }
+
+    if ($h < 10) {
+      $h = '0' . $h;
+    }
+    if ($m < 10) {
+      $m = '0' . $m;
+    }
+    if ($hR < 10) {
+      $hR = '0' . $hR;
+    }
+    if ($mR < 10) {
+      $mR = '0' . $mR;
+    }
+    if ($htP < 10) {
+      $htP = '0' . $htP;
+    }
+    if ($mtP < 10) {
+      $mtP = '0' . $mtP;
+    }
+    if ($hRtP < 10) {
+      $hRtP = '0' . $hRtP;
+    }
+    if ($mRtP < 10) {
+      $mRtP = '0' . $mRtP;
     }
 
     return [
@@ -289,7 +366,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       'minutesTimePriority' => $m,
       'hoursRealTimePriority' => $hR,
       'minutesRealTimePriority' => $mR,
-      'priority' => $priorityTitle
+      'priority' => $priorityLogUser->getFullName()
     ];
   }
 

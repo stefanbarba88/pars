@@ -70,7 +70,6 @@
                                             </div>
 
                                             <div class="list-group list-group-borderless py-2">
-
                                                 <div class="d-flex list-group-item align-items-start">
                                                     <div class="me-2">
                                                         <i class="ph-timer"></i>
@@ -80,14 +79,10 @@
                                                         <div class="fw-semibold text-truncate text-body">
                                                             Zaokruženo
                                                         </div>
-{#                                                        <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">#}
-{#                                                            <li class="list-inline-item">{{ time.priority }}</li>#}
-{#                                                        </ul>#}
                                                     </div>
 
                                                     <div class="ms-3">
                                                         <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time.hoursTimePriority }}:{{ time.minutesTimePriority }}h</span>
-{#                                                        <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time.hoursRealTimePriority }}:{{ time.minutesRealTimePriority }}h</span>#}
                                                     </div>
                                                 </div>
                                                 <div class="d-flex list-group-item align-items-start">
@@ -104,25 +99,8 @@
 
                                                     <div class="ms-3">
                                                         <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time.hoursRealTimePriority }}:{{ time.minutesRealTimePriority }}h</span>
-
-{#                                                        <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time.hours }}:{{ time.minutes }}h</span>#}
-{#                                                        <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time.hoursReal }}:{{ time.minutesReal }}h</span>#}
                                                     </div>
                                                 </div>
-                                                {#                                            <div class="sidebar-section-body">#}
-                                                {#                                                <div class="d-flex justify-content-center text-center">#}
-                                                {#                                                    <div id="time-elapsed"></div>#}
-                                                {#                                                    <div>#}
-                                                {#                                                        <span class="display-6 lh-1 m-0">00</span>#}
-                                                {#                                                        <div class="mt-2">sati</div>#}
-                                                {#                                                    </div>#}
-                                                {#                                                    <div class="mx-1 my-2">:</div>#}
-                                                {#                                                    <div>#}
-                                                {#                                                        <span class="display-6 lh-1 m-0">00</span>#}
-                                                {#                                                        <div class="mt-2">minuta</div>#}
-                                                {#                                                    </div>#}
-                                                {#                                                </div>#}
-                                                {#                                            </div>#}
                                             </div>
                                         </div>
                                     </div>
@@ -230,195 +208,269 @@
                                     {% endif %}
                                 </div>
 
-                                <!-- close task modal -->
-                                <div id="modal_close_task" class="modal fade" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header bg-primary text-white border-0">
-                                                <h6 class="modal-title">Potvrda</h6>
-                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                            </div>
-
-                                            <div class="modal-body">
-                                                <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>
-                                            </div>
-
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                <a href="{{ path('app_task_close',{id: task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /close task modal -->
-
-                                <!-- Vertical form modal -->
-                                <div id="modal_form_vertical" class="modal fade" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header bg-primary text-white border-0">
-                                                <h6 class="modal-title">Potvrda</h6>
-                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                            </div>
-
-                                            <div class="modal-body">
-                                                <p>Da li ste sigurni da želite da zaustavite merenje vremena?</p>
-                                            </div>
-
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                <a href="#" id="link-stop" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /vertical form modal -->
-
-                                <!-- delete task modal -->
-                                <div id="modal_delete_task" class="modal fade" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header bg-danger text-white border-0">
-                                                <h6 class="modal-title">Potvrda</h6>
-                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                            </div>
-
-                                            <div class="modal-body">
-                                                <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>
-                                            </div>
-
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                <a href="{{ path('app_task_delete', {id: task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /delete task modal -->
-
-
                                 <div class="card-body">
-                                    <div class="fw-bold border-bottom pb-2 mb-3">Datum i vreme zadatka</div>
                                     <div class="row">
-                                        <div class="col-lg-6 ">
-                                            <div class="mb-3">
-                                            <div class="d-inline-flex align-items-center">
-                                                <i class="ph-calendar me-2"></i>
-                                                {{ task.time | date("d.m.Y H:i")}}
+                                        <div class="col-xl-6">
+                                            <div class="card">
+                                                <div class="card-header d-lg-flex py-lg-0">
+                                                    <h6 class="py-lg-3 mb-0">Informacije o zadatku</h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="fw-bold border-bottom pb-2 mb-3">Datum i vreme zadatka</div>
+                                                    <div class="row">
+                                                        <div class="col-lg-6 ">
+                                                            <div class="mb-3">
+                                                            <div class="d-inline-flex align-items-center">
+                                                                <i class="ph-calendar me-2"></i>
+                                                                {{ task.time | date("d.m.Y H:i")}}
+                                                            </div>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="fw-bold border-bottom pb-2 mb-3">Zaduženi</div>
+                                                    <div class="row">
+                                                        <div class="col-lg-6 ">
+                                                            <div class="mb-3">
+                                                            {% for user in task.assignedUsers %}
+                                                                <li>{{ user.getFullName }}</li>
+                                                            {% endfor %}
+                                                        </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="fw-bold border-bottom pb-2 mb-3">Aktivnosti</div>
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <div class="mb-3">
+                                                            {% for activity in task.activity %}
+                                                                <li>{{ activity.title }}</li>
+                                                            {% endfor %}
+                                                        </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="fw-bold border-bottom pb-2 mb-3">Napomena</div>
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <div class="mb-3">
+                                                            {% if task.description is not null %}
+                                                                {{ task.description | raw }}
+                                                            {% else %}
+                                                                Nema posebne napomene za ovaj zadatak.
+                                                            {% endif %}
+                                                        </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="fw-bold border-bottom pb-2 mb-3">Oprema</div>
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <div class="mb-3">
+                                                                {% if task.oprema is not empty %}
+                                                                    {% for oprema in task.oprema %}
+                                                                        <li>{{ oprema.title }}</li>
+                                                                    {% endfor %}
+                                                                {% else %}
+                                                                    Nema dodeljene opreme za ovaj zadatak.
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="fw-bold border-bottom pb-2 mb-3">Vozilo</div>
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <div class="mb-3">
+                                                            {% if car is not null %}
+                                                                {{ car.carName }}
+                                                            {% else %}
+                                                                Nema dodeljenog vozila za ovaj zadatak.
+                                                            {% endif %}
+                                                        </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="fw-bold border-bottom pb-2 mb-3">Slike</div>
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <div class="mb-3">
+                                                                {% if images is not empty %}
+                                                                    {% for image in images %}
+                                                                        <div class="col-xl-1 col-sm-2">
+                                                                            <div class="card">
+                                                                                <div class="card-img-actions">
+                                                                                    <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
+                                                                                    <div class="card-img-actions-overlay card-img">
+                                                                                        <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
+                                                                                            <i class="ph-magnifying-glass-plus"></i>
+                                                                                        </a>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    {% endfor %}
+                                                                {% else %}
+                                                                    Nema dodatih slika za ovaj zadatak.
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        </div>
-                                    </div>
+                                        <div class="col-xl-6">
+                                            <div class="card">
+                                                <div class="card-header d-lg-flex py-lg-0">
+                                                    <h6 class="py-lg-3 mb-0">Primarni dnevnik: {{ taskLog.user.fullName}}</h6>
+                                                </div>
+                                                {% if stopwatchesActive is empty %}
+                                                    <div class="card-body">
 
-                                    <div class="fw-bold border-bottom pb-2 mb-3">Zaduženi</div>
-                                    <div class="row">
-                                        <div class="col-lg-6 ">
-                                            <div class="mb-3">
-                                            {% for user in task.assignedUsers %}
-                                                <li>{{ user.getFullName }}</li>
-                                            {% endfor %}
-                                        </div>
-                                        </div>
-                                    </div>
+                                                        <div class="mt-2">
+                                                            <h6 class="mb-1">Ne postoji vremenskih zapisa za ovaj dnevnik.</h6>
+                                                        </div>
 
-                                    <div class="fw-bold border-bottom pb-2 mb-3">Aktivnosti</div>
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="mb-3">
-                                            {% for activity in task.activity %}
-                                                <li>{{ activity.title }}</li>
-                                            {% endfor %}
-                                        </div>
-                                        </div>
-                                    </div>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="card-body">
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Vreme</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+                                                                    <div class="d-flex list-group-item align-items-start">
+                                                                        <div class="me-2">
+                                                                            <i class="ph-timer"></i>
+                                                                        </div>
 
-                                    <div class="fw-bold border-bottom pb-2 mb-3">Napomena</div>
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="mb-3">
-                                            {% if task.description is not null %}
-                                                {{ task.description | raw }}
-                                            {% else %}
-                                                Nema posebne napomene za ovaj zadatak.
-                                            {% endif %}
-                                        </div>
-                                        </div>
-                                    </div>
+                                                                        <div class="flex-fill overflow-hidden">
+                                                                            <div class="fw-semibold text-truncate text-body">
+                                                                                Zaokruženo
+                                                                            </div>
+                                                                        </div>
 
-                                    <div class="fw-bold border-bottom pb-2 mb-3">Oprema</div>
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="mb-3">
-                                                {% for oprema in task.oprema %}
-                                                    <li>{{ oprema.title }}</li>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="fw-bold border-bottom pb-2 mb-3">Vozilo</div>
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="mb-3">
-                                            {% if car is not null %}
-                                                {{ car.carName }}
-                                            {% else %}
-                                                Nema dodeljenog vozila za ovaj zadatak.
-                                            {% endif %}
-                                        </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="fw-bold border-bottom pb-2 mb-3">Slike</div>
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="mb-3">
-                                                {% if images is not empty %}
-                                                    {% for image in images %}
-                                                        <div class="col-xl-1 col-sm-2">
-                                                            <div class="card">
-                                                                <div class="card-img-actions">
-                                                                    <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
-                                                                    <div class="card-img-actions-overlay card-img">
-                                                                        <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                                            <i class="ph-magnifying-glass-plus"></i>
-                                                                        </a>
+                                                                        <div class="ms-3">
+                                                                            <span class="badge bg-warning bg-opacity-20 text-warning me-2">{{ time1.hours }}:{{ time1.minutes }}h</span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    {% endfor %}
-                                                {% else %}
-                                                    Nema dodatih slika za ovaj zadatak.
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+                                                                    <div class="d-flex list-group-item align-items-start">
+                                                                        <div class="me-2">
+                                                                            <i class="ph-timer"></i>
+                                                                        </div>
+
+                                                                        <div class="flex-fill overflow-hidden">
+                                                                            <div class="fw-semibold text-truncate text-body">
+                                                                                Bez zaokruživanja
+                                                                            </div>
+
+                                                                        </div>
+
+                                                                        <div class="ms-3">
+                                                                            <span class="badge bg-danger bg-opacity-20 text-danger me-2">{{ time1.hoursR }}:{{ time1.minutesR }}h</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Odrađene aktivnosti</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+                                                                    <ul class="list mb-0">
+                                                                        {% set newActivity = [] %}
+                                                                        {% for stopwatch in stopwatchesActive %}
+                                                                            {% if stopwatch.activity is not empty %}
+                                                                                {% for activity in stopwatch.activity %}
+                                                                                    {% if activity not in newActivity %}
+                                                                                        <li>{{ activity.title }}</li>
+                                                                                        {% set newActivity = newActivity|merge([activity]) %}
+                                                                                    {% endif %}
+                                                                                {% endfor %}
+                                                                            {% else %}
+                                                                                Nema odrađenih aktivnosti.
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Dodatni opis</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+                                                                    {% for stopwatch in stopwatchesActive %}
+                                                                        {% if stopwatch.description is not null %}
+                                                                            {{ stopwatch.description | raw }}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Slike</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+
+                                                                    {% for stopwatch in stopwatchesActive %}
+                                                                        {% for image in stopwatch.images %}
+                                                                            <div class="col-xl-1 col-sm-2">
+                                                                                <div class="card">
+                                                                                    <div class="card-img-actions">
+                                                                                        <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
+                                                                                        <div class="card-img-actions-overlay card-img">
+                                                                                            <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
+                                                                                                <i class="ph-magnifying-glass-plus"></i>
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        {% endfor %}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Dokumenta</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+                                                                    {% for stopwatch in stopwatchesActive %}
+                                                                        {% for pdf in stopwatch.pdfs %}
+                                                                            <div class="d-flex align-items-start mb-3">
+                                                                                <div class="me-2">
+                                                                                    <i class="ph-file-pdf"></i>
+                                                                                </div>
+
+                                                                                <div class="flex-fill overflow-hidden">
+                                                                                    <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+                                                                                </div>
+
+                                                                                <div class="ms-3">
+                                                                                    <a href="{{ asset(pdf.path) }}" download class="text-body">
+                                                                                        <i class="ph-download-simple"></i>
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>
+                                                                        {% endfor %}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 {% endif %}
                                             </div>
                                         </div>
                                     </div>
-
-{#                                    <div class="mb-4">#}
-{#                                        <h6>Oznake</h6>#}
-{#                                        {% for label in task.label %}#}
-{#                                            {{ label.label | raw }}#}
-{#                                        {% endfor %}#}
-{#                                    </div>#}
-{#                                    <div class="mb-4">#}
-{#                                        <h6>Kategorija</h6>#}
-{#                                        {{ task.category.title | default('') }}#}
-{#                                    </div>#}
-{#                                    <div class="mb-4">#}
-{#                                        <h6>Opis</h6>#}
-{#                                        {{ task.description | raw }}#}
-{#                                    </div>#}
-
-{#                                    <div class="mb-4">#}
-{#                                        <h6>Oprema</h6>#}
-{#                                    </div>#}
-
-{#                                    <div class="mb-4">#}
-{#                                        <h6>Vozila</h6>#}
-{#                                    </div>#}
-
-
                                 </div>
 
                                 <div class="card-footer d-flex justify-content-between align-items-center">
@@ -542,6 +594,67 @@
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
     {% include 'includes/notification.html.twig' %}
+    <div id="modal_close_task" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white border-0">
+                    <h6 class="modal-title">Potvrda</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                    <a href="{{ path('app_task_close',{id: task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /close task modal -->
+    <!-- Vertical form modal -->
+    <div id="modal_form_vertical" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white border-0">
+                    <h6 class="modal-title">Potvrda</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>Da li ste sigurni da želite da zaustavite merenje vremena?</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                    <a href="#" id="link-stop" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /vertical form modal -->
+    <!-- delete task modal -->
+    <div id="modal_delete_task" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white border-0">
+                    <h6 class="modal-title">Potvrda</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                    <a href="{{ path('app_task_delete', {id: task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
 
 {% block includeJavascript %}

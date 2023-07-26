@@ -166,6 +166,7 @@ class StopwatchController extends AbstractController {
     $args['stopwatch'] = $stopwatch;
     $args['hours'] = intdiv($stopwatch->getDiffRounded(), 60);
     $args['minutes'] = $stopwatch->getDiffRounded() % 60;
+    $args['task'] = $stopwatch->getTaskLog()->getTask();
 
     if ($args['hours'] < 10) {
       $args['hours'] = '0' . $args['hours'];

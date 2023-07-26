@@ -73,7 +73,16 @@
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
                         <div class="card-body">
-                            <div class="fw-bold border-bottom pb-2 mb-3">Dnevnik zadatka</div>
+                            <div class="row">
+                                <div class="fw-bold border-bottom pb-2 mb-3">Zadate aktivnosti</div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {% for activity in task.activity %}
+                                            <li>{{ activity.title }}</li>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">

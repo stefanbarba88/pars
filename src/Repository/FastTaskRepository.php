@@ -1573,6 +1573,7 @@ class FastTaskRepository extends ServiceEntityRepository {
               'napomena' => $task->getDescription1(),
               'vozilo' => $car1,
               'vreme' => $task->getTime1(),
+              'status' => $task->getStatus1(),
             ],
             [
               'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getProject2()]),
@@ -1584,6 +1585,7 @@ class FastTaskRepository extends ServiceEntityRepository {
               'napomena' => $task->getDescription2(),
               'vozilo' => $car2,
               'vreme' => $task->getTime2(),
+              'status' => $task->getStatus2(),
             ],
             [
               'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getProject3()]),
@@ -1595,6 +1597,7 @@ class FastTaskRepository extends ServiceEntityRepository {
               'napomena' => $task->getDescription3(),
               'vozilo' => $car3,
               'vreme' => $task->getTime3(),
+              'status' => $task->getStatus3(),
             ],
             [
               'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getProject4()]),
@@ -1606,6 +1609,7 @@ class FastTaskRepository extends ServiceEntityRepository {
               'napomena' => $task->getDescription4(),
               'vozilo' => $car4,
               'vreme' => $task->getTime4(),
+              'status' => $task->getStatus4(),
             ],
             [
               'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getProject5()]),
@@ -1617,6 +1621,7 @@ class FastTaskRepository extends ServiceEntityRepository {
               'napomena' => $task->getDescription5(),
               'vozilo' => $car5,
               'vreme' => $task->getTime5(),
+              'status' => $task->getStatus5(),
             ],
             [
               'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getProject6()]),
@@ -1628,6 +1633,7 @@ class FastTaskRepository extends ServiceEntityRepository {
               'napomena' => $task->getDescription6(),
               'vozilo' => $car6,
               'vreme' => $task->getTime6(),
+              'status' => $task->getStatus6(),
             ],
             [
               'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getProject7()]),
@@ -1639,6 +1645,7 @@ class FastTaskRepository extends ServiceEntityRepository {
               'napomena' => $task->getDescription7(),
               'vozilo' => $car7,
               'vreme' => $task->getTime7(),
+              'status' => $task->getStatus7(),
             ],
             [
               'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getProject8()]),
@@ -1650,6 +1657,7 @@ class FastTaskRepository extends ServiceEntityRepository {
               'napomena' => $task->getDescription8(),
               'vozilo' => $car8,
               'vreme' => $task->getTime8(),
+              'status' => $task->getStatus8(),
             ],
             [
               'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getProject9()]),
@@ -1661,6 +1669,7 @@ class FastTaskRepository extends ServiceEntityRepository {
               'napomena' => $task->getDescription9(),
               'vozilo' => $car9,
               'vreme' => $task->getTime9(),
+              'status' => $task->getStatus9(),
             ],
             [
               'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getProject10()]),
@@ -1672,6 +1681,7 @@ class FastTaskRepository extends ServiceEntityRepository {
               'napomena' => $task->getDescription10(),
               'vozilo' => $car10,
               'vreme' => $task->getTime10(),
+              'status' => $task->getStatus10(),
             ]
           ];
 
@@ -1681,39 +1691,103 @@ class FastTaskRepository extends ServiceEntityRepository {
     return $tasks;
   }
 
-  public function getUsersForEmail(FastTask $task): array {
+  public function getUsersForEmail(FastTask $task, int $status): array {
 
     $users = [];
-    $users[] = $task->getGeo11();
-    $users[] = $task->getGeo21();
-    $users[] = $task->getGeo31();
-    $users[] = $task->getGeo12();
-    $users[] = $task->getGeo22();
-    $users[] = $task->getGeo32();
-    $users[] = $task->getGeo13();
-    $users[] = $task->getGeo23();
-    $users[] = $task->getGeo33();
-    $users[] = $task->getGeo14();
-    $users[] = $task->getGeo24();
-    $users[] = $task->getGeo34();
-    $users[] = $task->getGeo15();
-    $users[] = $task->getGeo25();
-    $users[] = $task->getGeo35();
-    $users[] = $task->getGeo16();
-    $users[] = $task->getGeo26();
-    $users[] = $task->getGeo36();
-    $users[] = $task->getGeo17();
-    $users[] = $task->getGeo27();
-    $users[] = $task->getGeo37();
-    $users[] = $task->getGeo18();
-    $users[] = $task->getGeo28();
-    $users[] = $task->getGeo38();
-    $users[] = $task->getGeo19();
-    $users[] = $task->getGeo29();
-    $users[] = $task->getGeo39();
-    $users[] = $task->getGeo110();
-    $users[] = $task->getGeo210();
-    $users[] = $task->getGeo310();
+    if ($status == FastTaskData::EDIT) {
+      if ($task->getStatus1() == FastTaskData::EDIT) {
+        $users[] = $task->getGeo11();
+        $users[] = $task->getGeo21();
+        $users[] = $task->getGeo31();
+      }
+
+      if ($task->getStatus2() == FastTaskData::EDIT) {
+        $users[] = $task->getGeo12();
+        $users[] = $task->getGeo22();
+        $users[] = $task->getGeo32();
+      }
+
+      if ($task->getStatus3() == FastTaskData::EDIT) {
+        $users[] = $task->getGeo13();
+        $users[] = $task->getGeo23();
+        $users[] = $task->getGeo33();
+      }
+
+      if ($task->getStatus4() == FastTaskData::EDIT) {
+        $users[] = $task->getGeo14();
+        $users[] = $task->getGeo24();
+        $users[] = $task->getGeo34();
+      }
+
+      if ($task->getStatus5() == FastTaskData::EDIT) {
+        $users[] = $task->getGeo15();
+        $users[] = $task->getGeo25();
+        $users[] = $task->getGeo35();
+      }
+
+      if ($task->getStatus6() == FastTaskData::EDIT) {
+        $users[] = $task->getGeo16();
+        $users[] = $task->getGeo26();
+        $users[] = $task->getGeo36();
+      }
+
+      if ($task->getStatus7() == FastTaskData::EDIT) {
+        $users[] = $task->getGeo17();
+        $users[] = $task->getGeo27();
+        $users[] = $task->getGeo37();
+      }
+
+      if ($task->getStatus8() == FastTaskData::EDIT) {
+        $users[] = $task->getGeo18();
+        $users[] = $task->getGeo28();
+        $users[] = $task->getGeo38();
+      }
+
+      if ($task->getStatus9() == FastTaskData::EDIT) {
+        $users[] = $task->getGeo19();
+        $users[] = $task->getGeo29();
+        $users[] = $task->getGeo39();
+      }
+
+      if ($task->getStatus10() == FastTaskData::EDIT) {
+        $users[] = $task->getGeo110();
+        $users[] = $task->getGeo210();
+        $users[] = $task->getGeo310();
+      }
+
+
+    } else {
+      $users[] = $task->getGeo11();
+      $users[] = $task->getGeo21();
+      $users[] = $task->getGeo31();
+      $users[] = $task->getGeo12();
+      $users[] = $task->getGeo22();
+      $users[] = $task->getGeo32();
+      $users[] = $task->getGeo13();
+      $users[] = $task->getGeo23();
+      $users[] = $task->getGeo33();
+      $users[] = $task->getGeo14();
+      $users[] = $task->getGeo24();
+      $users[] = $task->getGeo34();
+      $users[] = $task->getGeo15();
+      $users[] = $task->getGeo25();
+      $users[] = $task->getGeo35();
+      $users[] = $task->getGeo16();
+      $users[] = $task->getGeo26();
+      $users[] = $task->getGeo36();
+      $users[] = $task->getGeo17();
+      $users[] = $task->getGeo27();
+      $users[] = $task->getGeo37();
+      $users[] = $task->getGeo18();
+      $users[] = $task->getGeo28();
+      $users[] = $task->getGeo38();
+      $users[] = $task->getGeo19();
+      $users[] = $task->getGeo29();
+      $users[] = $task->getGeo39();
+      $users[] = $task->getGeo110();
+      $users[] = $task->getGeo210();
+      $users[] = $task->getGeo310();
+    }
     $users = array_filter(array_unique($users));
 
     $usersList = [];
@@ -1734,8 +1808,11 @@ class FastTaskRepository extends ServiceEntityRepository {
     $qb = $this->createQueryBuilder('f');
     $qb
       ->where($qb->expr()->between('f.datum', ':start', ':end'))
+      ->andWhere('f.status = :status1 OR f.status = :status2')
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
+      ->setParameter('status1', FastTaskData::SAVED)
+      ->setParameter('status2', FastTaskData::EDIT)
       ->setMaxResults(1);
 
     $query = $qb->getQuery();
@@ -1754,9 +1831,9 @@ class FastTaskRepository extends ServiceEntityRepository {
     $datum = $data['task_quick_form_datum'];
     $format = "d.m.Y H:i:s";
     $dateTime = DateTimeImmutable::createFromFormat($format, $datum . '15:00:00');
-//    $currentTime = new DateTimeImmutable();
+    $currentTime = new DateTimeImmutable();
 
-    $currentTime = DateTimeImmutable::createFromFormat($format, '29.8.2023 15:00:00');
+//    $currentTime = DateTimeImmutable::createFromFormat($format, '29.8.2023 15:00:00');
 
     if ($currentTime > $dateTime) {
       $fastTask->setStatus(FastTaskData::EDIT);
@@ -1818,42 +1895,51 @@ class FastTaskRepository extends ServiceEntityRepository {
         $vozac1 = null;
       }
 
+      if (isset($task1['napomena'])) {
+        $napomena1 = trim($task1['napomena']);
+        if (empty($napomena1)) {
+          $napomena1 = null;
+        }
+      } else {
+        $napomena1 = null;
+      }
+
       if ($fastTask->getProject1() != $proj1 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus1(FastTaskData::EDIT);
-        dd('1');
       }
       if ($fastTask->getGeo11() != $geo11 && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);dd('2');
+        $fastTask->setStatus1(FastTaskData::EDIT);
       }
       if ($fastTask->getGeo21() != $geo21 && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);dd('3');
+        $fastTask->setStatus1(FastTaskData::EDIT);
       }
       if ($fastTask->getGeo31() != $geo31 && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);dd('4');
+        $fastTask->setStatus1(FastTaskData::EDIT);
       }
       if (isset($task1['aktivnosti']) && $fastTask->getStatus() == FastTaskData::EDIT) {
-        if (!empty (array_diff($fastTask->getActivity1(), $task1['aktivnosti']))) {
-          $fastTask->setStatus1(FastTaskData::EDIT);dd('5');
+        if ($fastTask->getActivity1() != $task1['aktivnosti']) {
+          $fastTask->setStatus1(FastTaskData::EDIT);
         }
       }
 
-      if (isset($task1['oprema']) && $fastTask->getOprema1() != $task1['oprema'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);dd('6');
+      if (isset($task1['oprema']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getOprema1() != $task1['oprema']) {
+          $fastTask->setStatus1(FastTaskData::EDIT);
+        }
       }
-
-      if (isset($task1['napomena']) && $fastTask->getDescription1() != trim($task1['napomena']) && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);dd('7');
+      if ($fastTask->getDescription1() != $napomena1 && $fastTask->getStatus() == FastTaskData::EDIT) {
+        $fastTask->setStatus1(FastTaskData::EDIT);
       }
       if (isset($task1['vreme']) && $fastTask->getTime1() != $task1['vreme'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);dd('8');
+        $fastTask->setStatus1(FastTaskData::EDIT);
       }
       if ($fastTask->getCar1() != $vozilo1 && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);dd('9');
+        $fastTask->setStatus1(FastTaskData::EDIT);
       }
       if ($fastTask->getDriver1() != $vozac1 && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);dd('10');
+        $fastTask->setStatus1(FastTaskData::EDIT);
       }
-dd($fastTask);
+
     }
     if (($task1['projekat']) !== '---') {
       $noTasks++;
@@ -1886,8 +1972,8 @@ dd($fastTask);
         $fastTask->setOprema1(null);
       }
 
-      if (!empty($task1['napomena'])) {
-        $fastTask->setDescription1($task1['napomena']);
+      if (!empty(trim($task1['napomena']))) {
+        $fastTask->setDescription1(trim($task1['napomena']));
       } else {
         $fastTask->setDescription1(null);
       }
@@ -1969,6 +2055,16 @@ dd($fastTask);
         $vozac2 = null;
       }
 
+      if (isset($task2['napomena'])) {
+        $napomena2 = trim($task2['napomena']);
+        if (empty($napomena2)) {
+          $napomena2 = null;
+        }
+      } else {
+        $napomena2 = null;
+      }
+
+
       if ($fastTask->getProject2() != $proj2 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus2(FastTaskData::EDIT);
       }
@@ -1981,13 +2077,17 @@ dd($fastTask);
       if ($fastTask->getGeo32() != $geo32 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus2(FastTaskData::EDIT);
       }
-      if (isset($task2['aktivnosti']) && $fastTask->getActivity2() != $task2['aktivnosti'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus2(FastTaskData::EDIT);
+      if (isset($task2['aktivnosti']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getActivity2() != $task2['aktivnosti']) {
+          $fastTask->setStatus2(FastTaskData::EDIT);
+        }
       }
-      if (isset($task2['oprema']) && $fastTask->getOprema2() != $task2['oprema'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus2(FastTaskData::EDIT);
+      if (isset($task2['oprema']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getOprema2() != $task2['oprema']) {
+          $fastTask->setStatus2(FastTaskData::EDIT);
+        }
       }
-      if (isset($task2['napomena']) && $fastTask->getDescription2() != trim($task2['napomena']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+      if ($fastTask->getDescription2() != $napomena2 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus2(FastTaskData::EDIT);
       }
       if (isset($task2['vreme']) && $fastTask->getTime2() != $task2['vreme'] && $fastTask->getStatus() == FastTaskData::EDIT) {
@@ -2115,6 +2215,15 @@ dd($fastTask);
         $vozac3 = null;
       }
 
+      if (isset($task3['napomena'])) {
+        $napomena3 = trim($task3['napomena']);
+        if (empty($napomena3)) {
+          $napomena3 = null;
+        }
+      } else {
+        $napomena3 = null;
+      }
+
       if ($fastTask->getProject3() != $proj3 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus3(FastTaskData::EDIT);
       }
@@ -2127,13 +2236,17 @@ dd($fastTask);
       if ($fastTask->getGeo33() != $geo33 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus3(FastTaskData::EDIT);
       }
-      if (isset($task3['aktivnosti']) && $fastTask->getActivity3() != $task3['aktivnosti'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus3(FastTaskData::EDIT);
+      if (isset($task3['aktivnosti']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getActivity3() != $task3['aktivnosti']) {
+          $fastTask->setStatus3(FastTaskData::EDIT);
+        }
       }
-      if (isset($task3['oprema']) && $fastTask->getOprema3() != $task3['oprema'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus3(FastTaskData::EDIT);
+      if (isset($task3['oprema']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getOprema3() != $task3['oprema']) {
+          $fastTask->setStatus3(FastTaskData::EDIT);
+        }
       }
-      if (isset($task3['napomena']) && $fastTask->getDescription3() != trim($task3['napomena']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+      if ($fastTask->getDescription3() != $napomena3 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus3(FastTaskData::EDIT);
       }
       if (isset($task3['vreme']) && $fastTask->getTime3() != $task3['vreme'] && $fastTask->getStatus() == FastTaskData::EDIT) {
@@ -2261,6 +2374,15 @@ dd($fastTask);
         $vozac4 = null;
       }
 
+      if (isset($task4['napomena'])) {
+        $napomena4 = trim($task4['napomena']);
+        if (empty($napomena4)) {
+          $napomena4 = null;
+        }
+      } else {
+        $napomena4 = null;
+      }
+
       if ($fastTask->getProject4() != $proj4 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus4(FastTaskData::EDIT);
       }
@@ -2273,13 +2395,17 @@ dd($fastTask);
       if ($fastTask->getGeo34() != $geo34 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus4(FastTaskData::EDIT);
       }
-      if (isset($task4['aktivnosti']) && $fastTask->getActivity4() != $task4['aktivnosti'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus4(FastTaskData::EDIT);
+      if (isset($task4['aktivnosti']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getActivity4() != $task4['aktivnosti']) {
+          $fastTask->setStatus4(FastTaskData::EDIT);
+        }
       }
-      if (isset($task4['oprema']) && $fastTask->getOprema4() != $task4['oprema'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus4(FastTaskData::EDIT);
+      if (isset($task4['oprema']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getOprema4() != $task4['oprema']) {
+          $fastTask->setStatus4(FastTaskData::EDIT);
+        }
       }
-      if (isset($task4['napomena']) &&  $fastTask->getDescription4() != trim($task4['napomena']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+      if ($fastTask->getDescription4() != $napomena4 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus4(FastTaskData::EDIT);
       }
       if (isset($task4['vreme']) && $fastTask->getTime4() != $task4['vreme'] && $fastTask->getStatus() == FastTaskData::EDIT) {
@@ -2407,6 +2533,15 @@ dd($fastTask);
         $vozac5 = null;
       }
 
+      if (isset($task5['napomena'])) {
+        $napomena5 = trim($task5['napomena']);
+        if (empty($napomena5)) {
+          $napomena5 = null;
+        }
+      } else {
+        $napomena5 = null;
+      }
+
       if ($fastTask->getProject5() != $proj5 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus5(FastTaskData::EDIT);
       }
@@ -2419,13 +2554,17 @@ dd($fastTask);
       if ($fastTask->getGeo35() != $geo35 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus5(FastTaskData::EDIT);
       }
-      if (isset($task5['aktivnosti']) && $fastTask->getActivity5() != $task5['aktivnosti'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus5(FastTaskData::EDIT);
+      if (isset($task5['aktivnosti']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getActivity5() != $task5['aktivnosti']) {
+          $fastTask->setStatus5(FastTaskData::EDIT);
+        }
       }
-      if (isset($task5['oprema']) && $fastTask->getOprema5() != $task5['oprema'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus5(FastTaskData::EDIT);
+      if (isset($task5['oprema']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getOprema5() != $task5['oprema']) {
+          $fastTask->setStatus5(FastTaskData::EDIT);
+        }
       }
-      if (isset($task5['napomena']) && $fastTask->getDescription5() != trim($task5['napomena']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+      if ($fastTask->getDescription5() != $napomena5 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus5(FastTaskData::EDIT);
       }
       if (isset($task5['vreme']) && $fastTask->getTime5() != $task5['vreme'] && $fastTask->getStatus() == FastTaskData::EDIT) {
@@ -2553,6 +2692,15 @@ dd($fastTask);
         $vozac6 = null;
       }
 
+      if (isset($task6['napomena'])) {
+        $napomena6 = trim($task6['napomena']);
+        if (empty($napomena6)) {
+          $napomena6 = null;
+        }
+      } else {
+        $napomena6 = null;
+      }
+
       if ($fastTask->getProject6() != $proj6 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus6(FastTaskData::EDIT);
       }
@@ -2565,13 +2713,17 @@ dd($fastTask);
       if ($fastTask->getGeo36() != $geo36 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus6(FastTaskData::EDIT);
       }
-      if (isset($task6['aktivnosti']) && $fastTask->getActivity6() != $task6['aktivnosti'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus6(FastTaskData::EDIT);
+      if (isset($task6['aktivnosti']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getActivity6() != $task6['aktivnosti']) {
+          $fastTask->setStatus6(FastTaskData::EDIT);
+        }
       }
-      if (isset($task6['oprema']) && $fastTask->getOprema6() != $task6['oprema'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus6(FastTaskData::EDIT);
+      if (isset($task6['oprema']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getOprema6() != $task6['oprema']) {
+          $fastTask->setStatus6(FastTaskData::EDIT);
+        }
       }
-      if (isset($task6['napomena']) && $fastTask->getDescription6() != trim($task6['napomena']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+      if ($fastTask->getDescription6() != $napomena6 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus6(FastTaskData::EDIT);
       }
       if (isset($task6['vreme']) && $fastTask->getTime6() != $task6['vreme'] && $fastTask->getStatus() == FastTaskData::EDIT) {
@@ -2700,6 +2852,15 @@ dd($fastTask);
         $vozac7 = null;
       }
 
+      if (isset($task7['napomena'])) {
+        $napomena7 = trim($task7['napomena']);
+        if (empty($napomena7)) {
+          $napomena7 = null;
+        }
+      } else {
+        $napomena7 = null;
+      }
+
       if ($fastTask->getProject7() != $proj7 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus7(FastTaskData::EDIT);
       }
@@ -2712,13 +2873,17 @@ dd($fastTask);
       if ($fastTask->getGeo37() != $geo37 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus7(FastTaskData::EDIT);
       }
-      if (isset($task7['aktivnosti']) && $fastTask->getActivity7() != $task7['aktivnosti'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus7(FastTaskData::EDIT);
+      if (isset($task7['aktivnosti']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getActivity7() != $task7['aktivnosti']) {
+          $fastTask->setStatus7(FastTaskData::EDIT);
+        }
       }
-      if (isset($task7['oprema']) && $fastTask->getOprema7() != $task7['oprema'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus7(FastTaskData::EDIT);
+      if (isset($task7['oprema']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getOprema7() != $task7['oprema']) {
+          $fastTask->setStatus7(FastTaskData::EDIT);
+        }
       }
-      if (isset($task7['napomena']) && $fastTask->getDescription7() != trim($task7['napomena']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+      if ($fastTask->getDescription7() != $napomena7 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus7(FastTaskData::EDIT);
       }
       if (isset($task7['vreme']) && $fastTask->getTime7() != $task7['vreme'] && $fastTask->getStatus() == FastTaskData::EDIT) {
@@ -2846,6 +3011,15 @@ if ($task7['vozac'] !== '---') {
         $vozac8 = null;
       }
 
+      if (isset($task8['napomena'])) {
+        $napomena8 = trim($task8['napomena']);
+        if (empty($napomena8)) {
+          $napomena8 = null;
+        }
+      } else {
+        $napomena8 = null;
+      }
+
       if ($fastTask->getProject8() != $proj8 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus8(FastTaskData::EDIT);
       }
@@ -2858,13 +3032,17 @@ if ($task7['vozac'] !== '---') {
       if ($fastTask->getGeo38() != $geo38 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus8(FastTaskData::EDIT);
       }
-      if (isset($task8['aktivnosti']) && $fastTask->getActivity8() != $task8['aktivnosti'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus8(FastTaskData::EDIT);
+      if (isset($task8['aktivnosti']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getActivity8() != $task8['aktivnosti']) {
+          $fastTask->setStatus8(FastTaskData::EDIT);
+        }
       }
-      if (isset($task8['oprema']) && $fastTask->getOprema8() != $task8['oprema'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus8(FastTaskData::EDIT);
+      if (isset($task8['oprema']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getOprema8() != $task8['oprema']) {
+          $fastTask->setStatus8(FastTaskData::EDIT);
+        }
       }
-      if (isset($task8['napomena']) && $fastTask->getDescription8() != trim($task8['napomena']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+      if ($fastTask->getDescription8() != $napomena8 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus8(FastTaskData::EDIT);
       }
       if (isset($task8['vreme']) && $fastTask->getTime8() != $task8['vreme'] && $fastTask->getStatus() == FastTaskData::EDIT) {
@@ -2992,6 +3170,15 @@ if ($task7['vozac'] !== '---') {
         $vozac9 = null;
       }
 
+      if (isset($task9['napomena'])) {
+        $napomena9 = trim($task9['napomena']);
+        if (empty($napomena9)) {
+          $napomena9 = null;
+        }
+      } else {
+        $napomena9 = null;
+      }
+
       if ($fastTask->getProject9() != $proj9 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus9(FastTaskData::EDIT);
       }
@@ -3004,13 +3191,17 @@ if ($task7['vozac'] !== '---') {
       if ($fastTask->getGeo39() != $geo39 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus9(FastTaskData::EDIT);
       }
-      if (isset($task9['aktivnosti']) && $fastTask->getActivity9() != $task9['aktivnosti'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus9(FastTaskData::EDIT);
+      if (isset($task9['aktivnosti']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getActivity9() != $task9['aktivnosti']) {
+          $fastTask->setStatus9(FastTaskData::EDIT);
+        }
       }
-      if (isset($task9['oprema']) && $fastTask->getOprema9() != $task9['oprema'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus9(FastTaskData::EDIT);
+      if (isset($task9['oprema']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getOprema9() != $task9['oprema']) {
+          $fastTask->setStatus9(FastTaskData::EDIT);
+        }
       }
-      if (isset($task9['napomena']) && $fastTask->getDescription9() != trim($task9['napomena']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+      if ($fastTask->getDescription9() != $napomena9 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus9(FastTaskData::EDIT);
       }
       if (isset($task9['vreme']) && $fastTask->getTime9() != $task9['vreme'] && $fastTask->getStatus() == FastTaskData::EDIT) {
@@ -3138,6 +3329,15 @@ if ($task7['vozac'] !== '---') {
         $vozac10 = null;
       }
 
+      if (isset($task10['napomena'])) {
+        $napomena10 = trim($task10['napomena']);
+        if (empty($napomena10)) {
+          $napomena10 = null;
+        }
+      } else {
+        $napomena10 = null;
+      }
+
       if ($fastTask->getProject10() != $proj10 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus10(FastTaskData::EDIT);
       }
@@ -3150,13 +3350,17 @@ if ($task7['vozac'] !== '---') {
       if ($fastTask->getGeo310() != $geo310 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus10(FastTaskData::EDIT);
       }
-      if (isset($task10['aktivnosti']) && $fastTask->getActivity10() != $task10['aktivnosti'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus10(FastTaskData::EDIT);
+      if (isset($task10['aktivnosti']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getActivity10() != $task10['aktivnosti']) {
+          $fastTask->setStatus10(FastTaskData::EDIT);
+        }
       }
-      if (isset($task10['oprema']) && $fastTask->getOprema10() != $task10['oprema'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus10(FastTaskData::EDIT);
+      if (isset($task10['oprema']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if ($fastTask->getOprema10() != $task10['oprema']) {
+          $fastTask->setStatus10(FastTaskData::EDIT);
+        }
       }
-      if (isset($task10['napomena']) && $fastTask->getDescription10() != trim($task10['napomena']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+      if ($fastTask->getDescription10() != $napomena10 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus10(FastTaskData::EDIT);
       }
       if (isset($task10['vreme']) && $fastTask->getTime10() != $task10['vreme'] && $fastTask->getStatus() == FastTaskData::EDIT) {

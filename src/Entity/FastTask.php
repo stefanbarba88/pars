@@ -424,8 +424,12 @@ class FastTask {
   }
 
   public function setActivity1(?array $activity1): self {
-    $this->activity1 = json_encode($activity1);
 
+    if(!is_null($activity1)) {
+      $this->activity1 = json_encode($activity1);
+    } else {
+      $this->activity1 = null;
+    }
     return $this;
   }
 
@@ -445,8 +449,11 @@ class FastTask {
   }
 
   public function setOprema1(?array $oprema1): self {
-    $this->oprema1 = json_encode($oprema1);
-
+    if(!is_null($oprema1)) {
+      $this->oprema1 = json_encode($oprema1);
+    } else {
+      $this->oprema1 = NULL;
+    }
     return $this;
   }
 
@@ -559,8 +566,12 @@ class FastTask {
   }
 
   public function setActivity2(?array $activity2): self {
-    $this->activity2 = json_encode($activity2);
+    if(!is_null($activity2)) {
+      $this->activity2 = json_encode($activity2);
 
+    } else {
+      $this->activity2 = NULL;
+    }
     return $this;
   }
 
@@ -654,8 +665,12 @@ class FastTask {
   }
 
   public function setActivity3(?array $activity3): self {
-    $this->activity3 = json_encode($activity3);
+    if(!is_null($activity3)) {
+      $this->activity3 = json_encode($activity3);
 
+    } else {
+      $this->activity3 = NULL;
+    }
     return $this;
   }
 
@@ -748,11 +763,6 @@ class FastTask {
     return json_decode($this->activity4, true);
   }
 
-  public function setActivity4(?array $activity4): self {
-    $this->activity4 = json_encode($activity4);
-
-    return $this;
-  }
 
   /**
    * @return string|null
@@ -843,11 +853,7 @@ class FastTask {
     return json_decode($this->activity5, true);
   }
 
-  public function setActivity5(?array $activity5): self {
-    $this->activity5 = json_encode($activity5);
 
-    return $this;
-  }
 
   /**
    * @return string|null
@@ -937,11 +943,7 @@ class FastTask {
     return json_decode($this->activity6, true);
   }
 
-  public function setActivity6(?array $activity6): self {
-    $this->activity6 = json_encode($activity6);
 
-    return $this;
-  }
 
   /**
    * @return string|null
@@ -1032,11 +1034,7 @@ class FastTask {
     return json_decode($this->activity7, true);
   }
 
-  public function setActivity7(?array $activity7): self {
-    $this->activity7 = json_encode($activity7);
 
-    return $this;
-  }
 
   /**
    * @return string|null
@@ -1127,11 +1125,7 @@ class FastTask {
     return json_decode($this->activity8, true);
   }
 
-  public function setActivity8(?array $activity8): self {
-    $this->activity8 = json_encode($activity8);
 
-    return $this;
-  }
 
   /**
    * @return string|null
@@ -1222,11 +1216,7 @@ class FastTask {
     return json_decode($this->activity9, true);
   }
 
-  public function setActivity9(?array $activity9): self {
-    $this->activity9 = json_encode($activity9);
 
-    return $this;
-  }
 
   /**
    * @return string|null
@@ -1316,11 +1306,6 @@ class FastTask {
     return json_decode($this->activity10, true);
   }
 
-  public function setActivity10(?array $activity10): self {
-    $this->activity10 = json_encode($activity10);
-
-    return $this;
-  }
 
   /**
    * @return string|null
@@ -1803,8 +1788,12 @@ class FastTask {
   }
 
   public function setOprema2(?array $oprema2): self {
-    $this->oprema2 = json_encode($oprema2);
+    if(!is_null($oprema2)) {
+      $this->oprema2 = json_encode($oprema2);
 
+    } else {
+      $this->oprema2 = NULL;
+    }
     return $this;
   }
 
@@ -1813,8 +1802,12 @@ class FastTask {
   }
 
   public function setOprema3(?array $oprema3): self {
-    $this->oprema3 = json_encode($oprema3);
+    if(!is_null($oprema3)) {
+      $this->oprema3 = json_encode($oprema3);
 
+    } else {
+      $this->oprema3 = NULL;
+    }
     return $this;
   }
   public function getOprema4(): ?array {
@@ -1822,8 +1815,12 @@ class FastTask {
   }
 
   public function setOprema4(?array $oprema4): self {
-    $this->oprema4 = json_encode($oprema4);
+    if(!is_null($oprema4)) {
+      $this->oprema4 = json_encode($oprema4);
 
+    } else {
+      $this->oprema4 = NULL;
+    }
     return $this;
   }
   public function getOprema5(): ?array {
@@ -1831,8 +1828,12 @@ class FastTask {
   }
 
   public function setOprema5(?array $oprema5): self {
-    $this->oprema5 = json_encode($oprema5);
+    if(!is_null($oprema5)) {
+      $this->oprema5= json_encode($oprema5);
 
+    } else {
+      $this->oprema5 = NULL;
+    }
     return $this;
   }
   public function getOprema6(): ?array {
@@ -1840,8 +1841,12 @@ class FastTask {
   }
 
   public function setOprema6(?array $oprema6): self {
-    $this->oprema6 = json_encode($oprema6);
+    if(!is_null($oprema6)) {
+      $this->oprema6 = json_encode($oprema6);
 
+    } else {
+      $this->oprema6 = NULL;
+    }
     return $this;
   }
   public function getOprema7(): ?array {
@@ -1849,8 +1854,12 @@ class FastTask {
   }
 
   public function setOprema7(?array $oprema7): self {
-    $this->oprema7 = json_encode($oprema7);
+    if(!is_null($oprema7)) {
+      $this->oprema7 = json_encode($oprema7);
 
+    } else {
+      $this->oprema7 = NULL;
+    }
     return $this;
   }
   public function getOprema8(): ?array {
@@ -1858,8 +1867,12 @@ class FastTask {
   }
 
   public function setOprema8(?array $oprema8): self {
-    $this->oprema8 = json_encode($oprema8);
+    if(!is_null($oprema8)) {
+      $this->oprema8 = json_encode($oprema8);
 
+    } else {
+      $this->oprema8 = NULL;
+    }
     return $this;
   }
   public function getOprema9(): ?array {
@@ -1867,8 +1880,12 @@ class FastTask {
   }
 
   public function setOprema9(?array $oprema9): self {
-    $this->oprema9 = json_encode($oprema9);
+    if(!is_null($oprema9)) {
+      $this->oprema9 = json_encode($oprema9);
 
+    } else {
+      $this->oprema9 = NULL;
+    }
     return $this;
   }
   public function getOprema10(): ?array {
@@ -1876,19 +1893,84 @@ class FastTask {
   }
 
   public function setOprema10(?array $oprema10): self {
-    $this->oprema10 = json_encode($oprema10);
+    if(!is_null($oprema10)) {
+      $this->oprema10 = json_encode($oprema10);
 
+    } else {
+      $this->oprema10 = NULL;
+    }
     return $this;
   }
 
+  public function setActivity4(?array $activity4): self {
+    if(!is_null($activity4)) {
+      $this->activity4 = json_encode($activity4);
 
+    } else {
+      $this->activity4 = NULL;
+    }
+    return $this;
+  }
 
+  public function setActivity5(?array $activity5): self {
+    if(!is_null($activity5)) {
+      $this->activity5 = json_encode($activity5);
 
+    } else {
+      $this->activity5 = NULL;
+    }
+    return $this;
+  }
 
+  public function setActivity6(?array $activity6): self {
+    if(!is_null($activity6)) {
+      $this->activity6 = json_encode($activity6);
 
+    } else {
+      $this->activity6 = NULL;
+    }
+    return $this;
+  }
 
+  public function setActivity7(?array $activity7): self {
+    if(!is_null($activity7)) {
+      $this->activity7 = json_encode($activity7);
 
+    } else {
+      $this->activity7 = NULL;
+    }
+    return $this;
+  }
 
+  public function setActivity8(?array $activity8): self {
+    if(!is_null($activity8)) {
+      $this->activity8 = json_encode($activity8);
+
+    } else {
+      $this->activity8 = NULL;
+    }
+    return $this;
+  }
+
+  public function setActivity9(?array $activity9): self {
+    if(!is_null($activity9)) {
+      $this->activity9 = json_encode($activity9);
+
+    } else {
+      $this->activity9 = NULL;
+    }
+    return $this;
+  }
+
+  public function setActivity10(?array $activity10): self {
+    if(!is_null($activity10)) {
+      $this->activity10 = json_encode($activity10);
+
+    } else {
+      $this->activity10 = NULL;
+    }
+    return $this;
+  }
 
 
 }

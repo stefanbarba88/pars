@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classes\Data\FastTaskData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
 use App\Entity\Car;
@@ -19,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/quick_tasks')]
+#[Route('/quick-tasks')]
 class FastTaskController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
@@ -85,13 +86,8 @@ class FastTaskController extends AbstractController {
     if ($request->isMethod('POST')) {
 
       $data = $request->request->all();
-//
-
-
       $fastTask = $this->em->getRepository(FastTask::class)->saveFastTask($fastTask, $data);
 
-
-//        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 //
 //        notyf()
 //          ->position('x', 'right')
@@ -156,7 +152,7 @@ class FastTaskController extends AbstractController {
 
   }
 
-  #[Route('/email-timetable/{id}', name: 'app_email-timetable')]
+  #[Route('/email-timetable/{id}', name: 'app_email_timetable')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function emailTimetable(FastTask $fastTask, MailService $mail, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
@@ -171,6 +167,61 @@ class FastTaskController extends AbstractController {
     $mail->plan($args['timetable'], $args['users'], $args['datum']);
 
     return $this->redirectToRoute('app_quick_tasks');
+
+  }
+  #[Route('/save-plan/', name: 'app_save_plan')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function saveTimetable(Request $request, MailService $mail) {
+
+
+    $plan = $this->em->getRepository(FastTask::class)->findOneBy(['status' => FastTaskData::OPEN],['datum' => 'ASC']);
+    $plan->setStatus(FastTaskData::SAVED);
+    $plan = $this->em->getRepository(FastTask::class)->save($plan);
+
+    $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
+
+    $datum = $plan->getDatum();
+    $users= $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::OPEN);
+    $mail->plan($timetable, $users, $datum);
+
+
+  }
+
+  #[Route('/edit-plan/', name: 'app_edit_plan')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function editTimetable(Request $request, MailService $mail) {
+
+    $plan = $this->em->getRepository(FastTask::class)->findOneBy(['status' => FastTaskData::EDIT],['datum' => 'ASC']);
+    if (!is_null($plan)) {
+        $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
+        $datum = $plan->getDatum();
+        $users= $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::EDIT);
+        $mail->plan($timetable, $users, $datum);
+
+    }
+  }
+
+  #[Route('/final-plan/', name: 'app_final_tasks')]
+
+  public function createTasksByTimetable(MailService $mail, Request $request)    : Response {
+
+    $plan = $this->em->getRepository(FastTask::class)->getTimeTableId(new DateTimeImmutable());
+
+//    $plan = $this->em->getRepository(FastTask::class)->getTimeTableId(DateTimeImmutable::createFromFormat('d.m.Y H:i:s', '31.8.2023 15:00:00'));
+
+    if ($plan != 0) {
+      $fastTask = $this->em->getRepository(FastTask::class)->find($plan);
+      $fastTask->setStatus(FastTaskData::FINAL);
+      $fastTask = $this->em->getRepository(FastTask::class)->save($fastTask);
+
+      $this->em->getRepository(Task::class)->createTasksFromList($fastTask, $this->em->getRepository(User::class)->find(1));
+    }
+
+    $args['timetable'] = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
+    $args['datum']= $fastTask->getDatum();
+    $args['users']= $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask, FastTaskData::FINAL);
+    $mail->plan($args['timetable'], $args['users'], $args['datum']);
+
 
   }
 }

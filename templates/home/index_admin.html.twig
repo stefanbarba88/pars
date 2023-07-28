@@ -20,8 +20,6 @@
                                 </div>
 
                                 <div class="card-body">
-                                    <p class="mb-3">Lista zadataka zadatih od strane administratora</p>
-
                                     <ul class="list list-unstyled mb-0">
                                         {% if checklist is not empty %}
                                             {% for task in checklist | slice(0,4) %}

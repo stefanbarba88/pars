@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ManagerChecklist;
+use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

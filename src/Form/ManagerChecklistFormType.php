@@ -35,17 +35,18 @@ class ManagerChecklistFormType extends AbstractType {
       ->add('task', TextareaType::class)
       ->add('user', EntityType::class, [
         'class' => User::class,
+        'placeholder' => "---Izaberite zaposlenog---",
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
-            ->andWhere('g.userType <> :userType')
-            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+            ->andWhere('g.userType = :userType')
+            ->setParameter(':userType', UserRolesData::ROLE_MANAGER)
             ->orderBy('g.id', 'ASC');
         },
         'choice_label' => function ($user) {
           return $user->getFullName();
         },
         'expanded' => false,
-        'multiple' => true,
+        'multiple' => false,
       ])
     ;
   }

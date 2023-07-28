@@ -64,9 +64,7 @@
                                 <tr>
                                     <td>{{ check.id }}</td>
                                     <td>
-                                        {% for user in check.user %}
-                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}" title="{{ user.getFullName() }}"></a>
-                                        {% endfor %}
+                                        <a href="{{ path('app_user_profile_view', { id: check.user.id}) }}"><img src="{{ asset(check.user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ check.user.getFullName() }}" title="{{ check.user.getFullName() }}"></a>
                                     </td>
                                     <td>{{ check.task }}</td>
                                     <td>

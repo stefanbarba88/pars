@@ -90,7 +90,7 @@ class FastTaskController extends AbstractController {
 
       $fastTask = $this->em->getRepository(FastTask::class)->saveFastTask($fastTask, $data);
 
-      dd($data, $fastTask);
+
 //        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 //
 //        notyf()

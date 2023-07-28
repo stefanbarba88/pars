@@ -1754,9 +1754,9 @@ class FastTaskRepository extends ServiceEntityRepository {
     $datum = $data['task_quick_form_datum'];
     $format = "d.m.Y H:i:s";
     $dateTime = DateTimeImmutable::createFromFormat($format, $datum . '15:00:00');
-    $currentTime = new DateTimeImmutable();
+//    $currentTime = new DateTimeImmutable();
 
-//    $currentTime = DateTimeImmutable::createFromFormat($format, '24.6.2023 15:00:00');
+    $currentTime = DateTimeImmutable::createFromFormat($format, '29.8.2023 15:00:00');
 
     if ($currentTime > $dateTime) {
       $fastTask->setStatus(FastTaskData::EDIT);
@@ -1764,6 +1764,7 @@ class FastTaskRepository extends ServiceEntityRepository {
       $fastTask->setStatus(FastTaskData::OPEN);
     }
 
+//    dd($fastTask->getStatus());
     $fastTask->setDatum($dateTime);
     $noTasks = 0;
 
@@ -1819,37 +1820,40 @@ class FastTaskRepository extends ServiceEntityRepository {
 
       if ($fastTask->getProject1() != $proj1 && $fastTask->getStatus() == FastTaskData::EDIT) {
         $fastTask->setStatus1(FastTaskData::EDIT);
+        dd('1');
       }
       if ($fastTask->getGeo11() != $geo11 && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);
+        $fastTask->setStatus1(FastTaskData::EDIT);dd('2');
       }
       if ($fastTask->getGeo21() != $geo21 && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);
+        $fastTask->setStatus1(FastTaskData::EDIT);dd('3');
       }
       if ($fastTask->getGeo31() != $geo31 && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);
+        $fastTask->setStatus1(FastTaskData::EDIT);dd('4');
       }
-      if (isset($task1['aktivnosti']) && $fastTask->getActivity1() != $task1['aktivnosti'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);
+      if (isset($task1['aktivnosti']) && $fastTask->getStatus() == FastTaskData::EDIT) {
+        if (!empty (array_diff($fastTask->getActivity1(), $task1['aktivnosti']))) {
+          $fastTask->setStatus1(FastTaskData::EDIT);dd('5');
+        }
       }
 
       if (isset($task1['oprema']) && $fastTask->getOprema1() != $task1['oprema'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);
+        $fastTask->setStatus1(FastTaskData::EDIT);dd('6');
       }
 
       if (isset($task1['napomena']) && $fastTask->getDescription1() != trim($task1['napomena']) && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);
+        $fastTask->setStatus1(FastTaskData::EDIT);dd('7');
       }
       if (isset($task1['vreme']) && $fastTask->getTime1() != $task1['vreme'] && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);
+        $fastTask->setStatus1(FastTaskData::EDIT);dd('8');
       }
       if ($fastTask->getCar1() != $vozilo1 && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);
+        $fastTask->setStatus1(FastTaskData::EDIT);dd('9');
       }
       if ($fastTask->getDriver1() != $vozac1 && $fastTask->getStatus() == FastTaskData::EDIT) {
-        $fastTask->setStatus1(FastTaskData::EDIT);
+        $fastTask->setStatus1(FastTaskData::EDIT);dd('10');
       }
-
+dd($fastTask);
     }
     if (($task1['projekat']) !== '---') {
       $noTasks++;

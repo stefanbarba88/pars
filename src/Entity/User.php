@@ -167,14 +167,14 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\OneToMany(mappedBy: 'driver', targetEntity: CarReservation::class)]
   private Collection $carReservations;
 
-  #[ORM\ManyToMany(targetEntity: ManagerChecklist::class, mappedBy: 'user')]
-  private Collection $managerChecklists;
 
   #[ORM\ManyToMany(targetEntity: Calendar::class, mappedBy: 'user')]
   private Collection $calendars;
 
   #[ORM\OneToMany(mappedBy: 'user', targetEntity: ToolReservation::class)]
   private Collection $toolReservations;
+
+
 
 
   public function __construct() {
@@ -185,9 +185,9 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     $this->clients = new ArrayCollection();
     $this->teams = new ArrayCollection();
     $this->carReservations = new ArrayCollection();
-    $this->managerChecklists = new ArrayCollection();
     $this->calendars = new ArrayCollection();
     $this->toolReservations = new ArrayCollection();
+
   }
 
   #[ORM\PrePersist]
@@ -838,32 +838,6 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     return $this;
   }
 
-  /**
-   * @return Collection<int, ManagerChecklist>
-   */
-  public function getManagerChecklists(): Collection
-  {
-      return $this->managerChecklists;
-  }
-
-  public function addManagerChecklist(ManagerChecklist $managerChecklist): self
-  {
-      if (!$this->managerChecklists->contains($managerChecklist)) {
-          $this->managerChecklists->add($managerChecklist);
-          $managerChecklist->addUser($this);
-      }
-
-      return $this;
-  }
-
-  public function removeManagerChecklist(ManagerChecklist $managerChecklist): self
-  {
-      if ($this->managerChecklists->removeElement($managerChecklist)) {
-          $managerChecklist->removeUser($this);
-      }
-
-      return $this;
-  }
 
   /**
    * @return Collection<int, Calendar>
@@ -991,6 +965,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
       return $this;
   }
+
 
 
 

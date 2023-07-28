@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\City;
 use App\Entity\ManagerChecklist;
 use App\Form\CityFormType;
@@ -24,7 +25,13 @@ class CheckListController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
-    $args['checklist'] = $this->em->getRepository(ManagerChecklist::class)->findAll();
+    $user = $this->getUser();
+    if($user->getUserType() == UserRolesData::ROLE_ADMIN || $user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN) {
+      $args['checklist'] = $this->em->getRepository(ManagerChecklist::class)->findAll();
+    }
+    if($user->getUserType() == UserRolesData::ROLE_MANAGER) {
+      $args['checklist'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $user]);
+    }
 
     return $this->render('check_list/list.html.twig', $args);
   }

@@ -22,8 +22,6 @@ class ManagerChecklist {
   #[ORM\Column(type: Types::TEXT)]
   private ?string $task = null;
 
-  #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'managerChecklists')]
-  private Collection $user;
 
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $finish = null;
@@ -37,6 +35,9 @@ class ManagerChecklist {
   #[ORM\Column]
   private ?int $status = 1;
 
+  #[ORM\ManyToOne]
+  private ?User $user = null;
+
   #[ORM\PrePersist]
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();
@@ -48,9 +49,6 @@ class ManagerChecklist {
     $this->updated = new DateTimeImmutable();
   }
 
-  public function __construct() {
-    $this->user = new ArrayCollection();
-  }
 
   public function getId(): ?int {
     return $this->id;
@@ -62,27 +60,6 @@ class ManagerChecklist {
 
   public function setTask(string $task): self {
     $this->task = $task;
-
-    return $this;
-  }
-
-  /**
-   * @return Collection<int, User>
-   */
-  public function getUser(): Collection {
-    return $this->user;
-  }
-
-  public function addUser(User $user): self {
-    if (!$this->user->contains($user)) {
-      $this->user->add($user);
-    }
-
-    return $this;
-  }
-
-  public function removeUser(User $user): self {
-    $this->user->removeElement($user);
 
     return $this;
   }
@@ -138,4 +115,17 @@ class ManagerChecklist {
   public function setStatus(?int $status): void {
     $this->status = $status;
   }
+
+  public function getUser(): ?User
+  {
+      return $this->user;
+  }
+
+  public function setUser(?User $user): self
+  {
+      $this->user = $user;
+
+      return $this;
+  }
+
 }

@@ -45,8 +45,8 @@ class HomeController extends AbstractController {
 
       return $this->render('home/index_employee.html.twig', $args);
     } else {
-      if ($user->getUserType() != UserRolesData::ROLE_ADMIN && $user->getUserType() != UserRolesData::ROLE_SUPER_ADMIN) {
-        $args['checklist'] = $user->getManagerChecklists();
+      if ($user->getUserType() == UserRolesData::ROLE_MANAGER) {
+        $args['checklist'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $user], ['id' => 'DESC'], 5);
       }
       return $this->render('home/index_admin.html.twig', $args);
     }

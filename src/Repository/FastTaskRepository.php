@@ -541,14 +541,15 @@ class FastTaskRepository extends ServiceEntityRepository {
     }
 
     $listaOpreme = [];
-    foreach (reset($noviNiz) as $list) {
-      $tool = $this->getEntityManager()->getRepository(Tool::class)->find($list['tool']);
-      $listaOpreme[] = [
-        'tool' => $tool,
-        'lastReservation' => $this->getEntityManager()->getRepository(ToolReservation::class)->findOneBy(['tool' => $tool], ['id' => 'desc'])
-      ];
+    if (!empty($noviNiz)) {
+      foreach (reset($noviNiz) as $list) {
+        $tool = $this->getEntityManager()->getRepository(Tool::class)->find($list['tool']);
+        $listaOpreme[] = [
+          'tool' => $tool,
+          'lastReservation' => $this->getEntityManager()->getRepository(ToolReservation::class)->findOneBy(['tool' => $tool], ['id' => 'desc'])
+        ];
+      }
     }
-
     return $listaOpreme;
   }
 

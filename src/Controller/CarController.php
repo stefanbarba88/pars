@@ -433,6 +433,7 @@ class CarController extends AbstractController {
     $args['form'] = $form->createView();
     $args['user'] = $user;
     $args['reservation'] = $reservation;
+    $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
 
     return $this->render('car/form_reservation_employee.html.twig', $args);
   }
@@ -664,7 +665,7 @@ class CarController extends AbstractController {
     $user = $this->getUser();
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
       $reservation->setDriver($user);
-      $reservation->setKmStart(null);
+      $reservation->setKmStart($car->getKm());
     }
 
     $form = $this->createForm(CarReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_details_form', ['id' => $car->getId()])]]);
@@ -690,6 +691,7 @@ class CarController extends AbstractController {
     $args['form'] = $form->createView();
     $args['car'] = $car;
     $args['reservation'] = $reservation;
+    $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
 
     return $this->render('car/form_reservation_employee_details_form.html.twig', $args);
   }

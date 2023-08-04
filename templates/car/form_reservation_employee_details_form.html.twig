@@ -154,3 +154,37 @@
 
 
 {% endblock includeJavascript %}
+{% block footerJavascript %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Definišemo mapu sa podacima carId -> kmStart
+            var carKmMap = {
+                {% for vozilo in minKm %}
+                    {{ vozilo.id }}: {{ vozilo.minKm }},
+                {% endfor %}
+            }
+
+            // Funkcija za podešavanje vrednosti polja "kmStart"
+            function updateKmStartField(selectedCarId) {
+                if (carKmMap.hasOwnProperty(selectedCarId)) {
+                    var kmStart = carKmMap[selectedCarId];
+                    $("#car_reservation_form_details_kmStart").val(kmStart);
+                    $("#car_reservation_form_details_kmStart").attr("min", kmStart);
+                } else {
+                    $("#car_reservation_form_details_kmStart").val("");
+                    $("#car_reservation_form_details_kmStart").removeAttr("min");
+                }
+            }
+
+            // Pozivamo funkciju pri učitavanju stranice
+            updateKmStartField($("#car_reservation_form_details_car").val());
+
+            // Handler za promenu polja "car"
+            $("#car_reservation_form_details_car").on("change", function() {
+                var selectedCarId = $(this).val();
+                updateKmStartField(selectedCarId);
+            });
+        });
+
+    </script>
+{% endblock footerJavascript %}

@@ -70,6 +70,23 @@ class CarRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(Car::class)->find($id);
   }
 
+  public function getCarsKm(): array {
+    $vozila = [];
+    $cars = $this->getEntityManager()->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
+    foreach ($cars as $car) {
+      if (is_null($car->getKm())) {
+        $min = 0;
+      } else {
+        $min = $car->getKm();
+      }
+      $vozila [] = [
+        'id' => $car->getId(),
+        'minKm' => $min
+      ];
+    }
+    return $vozila;
+  }
+
 //    /**
 //     * @return Car[] Returns an array of Car objects
 //     */

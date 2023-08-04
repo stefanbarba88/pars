@@ -15,6 +15,7 @@ use App\Form\StopwatchTimeAddFormType;
 use App\Form\StopwatchTimeFormType;
 use App\Service\UploadService;
 use DateTimeImmutable;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -95,7 +96,7 @@ class StopwatchController extends AbstractController {
 //      $history = $history->getContent();
 //    }
 //    dd($stopwatch);
-
+    $mobileDetect = new MobileDetect();
 
     $form = $this->createForm(StopwatchTimeFormType::class, $stopwatch, ['attr' => ['action' => $this->generateUrl('app_stopwatch_form', ['id' => $stopwatch->getId()])]]);
 
@@ -175,6 +176,10 @@ class StopwatchController extends AbstractController {
     // Provjerava da li su minute jednocifren broj i dodaje nulu ispred
     if ($args['minutes'] < 10) {
       $args['minutes'] = '0' . $args['minutes'];
+    }
+
+    if ($mobileDetect->isMobile()) {
+      return $this->render('task/mobile_stopwatch_form.html.twig', $args);
     }
 
     return $this->render('task/stopwatch_form.html.twig', $args);

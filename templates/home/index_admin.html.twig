@@ -246,9 +246,11 @@
 
                                 <div class="card-header d-lg-flex py-lg-0">
                                     <h5 class="py-lg-3 mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
-                                    <div class="mt-1 my-lg-auto ms-lg-auto">
-                                        <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-eye me-2"></i> Vidite</a>
-                                    </div>
+                                    {% if tomorrowTimetableId != 0 %}
+                                        <div class="mt-1 my-lg-auto ms-lg-auto">
+                                            <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-eye me-2"></i> Vidite</a>
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="table-responsive ">
                                     <table class="table table-hover table-bordered table-sm table-condensed">
@@ -350,9 +352,11 @@
 
                                 <div class="card-header d-lg-flex py-lg-0">
                                     <h5 class="py-lg-3 mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
-                                    <div class="mt-1 my-lg-auto ms-lg-auto">
-                                        <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-eye me-2"></i> Vidite</a>
-                                    </div>
+                                    {% if tomorrowTimetableId != 0 %}
+                                        <div class="mt-1 my-lg-auto ms-lg-auto">
+                                            <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-eye me-2"></i> Vidite</a>
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="table-responsive ">
                                     <table class="table table-hover table-bordered table-sm table-condensed">

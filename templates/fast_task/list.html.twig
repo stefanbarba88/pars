@@ -108,10 +108,10 @@
 {#                                                {% if fast.status == constant('App\\Classes\\Data\\FastTaskData::OPEN') %}#}
 {#                                                    <a href="" class="dropdown-item"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>#}
 {#                                                {% endif %}#}
-                                                {% if fast.status != constant('App\\Classes\\Data\\FastTaskData::FINAL') %}
-                                                    <a href="{{ path('app_email_timetable', { id: fast.id}) }}" class="dropdown-item"><i class="ph-envelope me-2"></i> Pošaljite plan</a>
-                                                    <a href="{{ path('app_create_tasks', {id: fast.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Kreirajte zadatke</a>
-                                                {% endif %}
+{#                                                {% if fast.status != constant('App\\Classes\\Data\\FastTaskData::FINAL') %}#}
+{#                                                    <a href="{{ path('app_email_timetable', { id: fast.id}) }}" class="dropdown-item"><i class="ph-envelope me-2"></i> Pošaljite plan</a>#}
+{#                                                    <a href="{{ path('app_create_tasks', {id: fast.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Kreirajte zadatke</a>#}
+{#                                                {% endif %}#}
                                             </div>
 {#                                            <!-- delete task modal -->#}
 {#                                            <div id="modal_delete_task{{ task.task.id }}" class="modal fade" tabindex="-1">#}

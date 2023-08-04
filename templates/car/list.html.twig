@@ -72,6 +72,7 @@
                                 <th>Brend</th>
                                 <th>Model</th>
                                 <th>Dostupnost</th>
+                                <th>Zaduženi</th>
                                 <th>Datum registracije</th>
                                 <th>Naredna registracija</th>
                                 <th>Status</th>
@@ -93,6 +94,13 @@
                                                 <span class="badge bg-success">Slobodan</span>
                                             {% endif %}
                                         {% endif %}
+                                    </td>
+                                    <td>
+                                        {% for res in car.carReservations %}
+                                            {% if res.finished is null %}
+                                                {{ res.driver.fullName }}
+                                            {% endif %}
+                                        {% endfor %}
                                     </td>
                                     <td>
                                         <div class="d-inline-flex align-items-center">

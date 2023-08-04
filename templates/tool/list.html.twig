@@ -57,6 +57,7 @@
                                 <th>Naziv</th>
                                 <th>Tip</th>
                                 <th>Dostupnost</th>
+                                <th>Zaduženi</th>
                                 <th>Status</th>
                                 <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
                             </tr>
@@ -97,6 +98,13 @@
                                                 <span class="badge bg-success">Slobodan</span>
                                             {% endif %}
                                         {% endif %}
+                                    </td>
+                                    <td>
+                                        {% for res in tool.toolReservations %}
+                                            {% if res.finished is null %}
+                                                {{ res.user.fullName }}
+                                            {% endif %}
+                                        {% endfor %}
                                     </td>
                                     <td>
                                         {% if tool.isSuspended %}

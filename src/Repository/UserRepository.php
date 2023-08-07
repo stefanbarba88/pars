@@ -51,9 +51,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     $image = $this->getEntityManager()->getRepository(Image::class)->addImage($file, $user->getThumbUploadPath(), $kernelPath);
     $user->setImage($image);
-    $this->save($user);
 
+    if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+      $user->setPozicija(null);
+    }
+
+    if (!empty($user->getPlainPassword())) {
+      $this->hashPlainPassword($user);
+    }
+
+    if (is_null($user->getId())) {
+      $this->getEntityManager()->persist($user);
+    }
+
+    $this->getEntityManager()->flush();
     $this->mail->registration($user);
+
     return $user;
   }
 
@@ -92,6 +105,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     $this->getEntityManager()->flush();
     return $user;
   }
+
 
   public function hashPlainPassword(User $user): User {
     $hashedPassword = $this->passwordHasher->hashPassword(
@@ -181,6 +195,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         'role' => $user->getBadgeByUserType(),
       ];
     }
+
     return $usersList;
   }
 

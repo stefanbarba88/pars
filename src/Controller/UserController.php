@@ -69,6 +69,7 @@ class UserController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
+
         $file = $request->files->all()['user_registration_form']['slika'];
 
         if(is_null($file)) {

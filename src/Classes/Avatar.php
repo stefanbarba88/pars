@@ -29,40 +29,45 @@ class Avatar {
 
     $url = self::URL_PATH . $user->getIme() . '+' . $user->getPrezime() . '&background=' . self::BACKGROUND . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
 
-    $fp = fopen($file->getPath(), 'w');
-    $ch = curl_init($url);
+    $data = file_get_contents($url);
 
-//    if (!empty($authorization)) {
-//      curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', $authorization]);
-//    }
-
-    curl_setopt($ch, CURLOPT_FILE, $fp);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-//    if (!empty($username)) {
-//      curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-//      curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
-//    }
-
-    $data = curl_exec($ch);
-
-//    if (curl_errno($ch)) {
-//      unlink($path);
-//      throw new ApiConnectionException(curl_error($ch) . ' :: ' . $url);
-//    }
-
-    curl_close($ch);
-    fclose($fp);
+    if ($data !== false) {
+      file_put_contents($file->getPath(), $data);
+    }
+//    $fp = fopen($file->getPath(), 'w');
+//    $ch = curl_init($url);
 //
-//    if (!file_exists($path)) {
-//      throw new OidlMissingFileException($path);
-//    }
+////    if (!empty($authorization)) {
+////      curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', $authorization]);
+////    }
 //
-//    if (!filesize($path)) {
-//      unlink($path);
-//      throw new OidlEmptyFileException($path);
-//    }
+//    curl_setopt($ch, CURLOPT_FILE, $fp);
+//    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+//    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+//
+////    if (!empty($username)) {
+////      curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+////      curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
+////    }
+//
+//    $data = curl_exec($ch);
+//
+////    if (curl_errno($ch)) {
+////      unlink($path);
+////      throw new ApiConnectionException(curl_error($ch) . ' :: ' . $url);
+////    }
+//
+//    curl_close($ch);
+//    fclose($fp);
+////
+////    if (!file_exists($path)) {
+////      throw new OidlMissingFileException($path);
+////    }
+////
+////    if (!filesize($path)) {
+////      unlink($path);
+////      throw new OidlEmptyFileException($path);
+////    }
 
     return $file;
   }

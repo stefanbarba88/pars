@@ -109,6 +109,7 @@ class FastTaskController extends AbstractController {
     $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false]);
     $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isSuspended' => false]);
     $args['fastTask'] = $fastTask;
+    $args['tasks'] = $this->em->getRepository(Task::class)->getTasksByFastTask($fastTask);
 
     return $this->render('fast_task/edit.html.twig', $args);
 

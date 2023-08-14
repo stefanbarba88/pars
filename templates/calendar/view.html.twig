@@ -57,7 +57,7 @@
                                                     <i class="ph-gear"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end">
-                                                    {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') %}
+                                                    {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
                                                         <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
                                                             <i class="ph-check me-2"></i>
                                                             Dozvolite

@@ -272,6 +272,35 @@ class FastTask {
   #[ORM\Column(nullable: true)]
   private ?int $noTasks = null;
 
+  #[ORM\Column(nullable: true)]
+  private ?int $task1 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $task2 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $task3 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $task4 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $task5 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $task6 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $task7 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $task8 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $task9 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $task10 = null;
 
   #[ORM\Column(nullable: true)]
   private ?int $car1 = null;
@@ -1970,6 +1999,146 @@ class FastTask {
       $this->activity10 = NULL;
     }
     return $this;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTask1(): ?int {
+    return $this->task1;
+  }
+
+  /**
+   * @param int|null $task1
+   */
+  public function setTask1(?int $task1): void {
+    $this->task1 = $task1;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTask2(): ?int {
+    return $this->task2;
+  }
+
+  /**
+   * @param int|null $task2
+   */
+  public function setTask2(?int $task2): void {
+    $this->task2 = $task2;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTask3(): ?int {
+    return $this->task3;
+  }
+
+  /**
+   * @param int|null $task3
+   */
+  public function setTask3(?int $task3): void {
+    $this->task3 = $task3;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTask4(): ?int {
+    return $this->task4;
+  }
+
+  /**
+   * @param int|null $task4
+   */
+  public function setTask4(?int $task4): void {
+    $this->task4 = $task4;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTask5(): ?int {
+    return $this->task5;
+  }
+
+  /**
+   * @param int|null $task5
+   */
+  public function setTask5(?int $task5): void {
+    $this->task5 = $task5;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTask6(): ?int {
+    return $this->task6;
+  }
+
+  /**
+   * @param int|null $task6
+   */
+  public function setTask6(?int $task6): void {
+    $this->task6 = $task6;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTask7(): ?int {
+    return $this->task7;
+  }
+
+  /**
+   * @param int|null $task7
+   */
+  public function setTask7(?int $task7): void {
+    $this->task7 = $task7;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTask8(): ?int {
+    return $this->task8;
+  }
+
+  /**
+   * @param int|null $task8
+   */
+  public function setTask8(?int $task8): void {
+    $this->task8 = $task8;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTask9(): ?int {
+    return $this->task9;
+  }
+
+  /**
+   * @param int|null $task9
+   */
+  public function setTask9(?int $task9): void {
+    $this->task9 = $task9;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTask10(): ?int {
+    return $this->task10;
+  }
+
+  /**
+   * @param int|null $task10
+   */
+  public function setTask10(?int $task10): void {
+    $this->task10 = $task10;
   }
 
 

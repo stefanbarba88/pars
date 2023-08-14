@@ -28,13 +28,13 @@ class CalendarController extends AbstractController {
     $args = [];
     $user = $this->getUser();
 
-    if ($user->getUserType() == UserRolesData::ROLE_ADMIN || $user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN) {
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
 
-      $args['calendars'] = $this->em->getRepository(Calendar::class)->findAll();
+      $args['calendars'] = $user->getCalendars();
 
     } else {
 
-      $args['calendars'] = $user->getCalendars();
+      $args['calendars'] = $this->em->getRepository(Calendar::class)->findAll();
 
     }
 

@@ -197,6 +197,7 @@ class TaskFormType extends AbstractType {
         'multiple' => false,
       ])
       ->add('activity', EntityType::class, [
+        'required' => false,
         'class' => Activity::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('a')

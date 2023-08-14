@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Classes\Data\FastTaskData;
 use App\Entity\Activity;
 use App\Entity\FastTask;
+use App\Entity\Task;
 use App\Entity\User;
 use App\Service\ImportService;
 use App\Service\MailService;
@@ -41,13 +42,10 @@ class SaveTimetableCommand extends Command {
     $plan = $this->em->getRepository(FastTask::class)->findOneBy(['status' => FastTaskData::OPEN],['datum' => 'ASC']);
 
     if(!is_null($plan)) {
-      $plan->setStatus(FastTaskData::SAVED);
-      $plan = $this->em->getRepository(FastTask::class)->save($plan);
-
+      $this->em->getRepository(Task::class)->createTasksFromList($plan, $this->em->getRepository(User::class)->find(1));
       $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
-
       $datum = $plan->getDatum();
-      $users= $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::OPEN);
+      $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::SAVED);
       $this->mail->plan($timetable, $users, $datum);
     }
 

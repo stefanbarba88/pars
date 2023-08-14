@@ -176,6 +176,21 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     return $query->getSingleScalarResult();
 
   }
+
+  public function countActiveStopwatches($taskLog): int{
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->select($qb->expr()->count('u'))
+      ->andWhere('u.taskLog = :taskLog')
+      ->setParameter(':taskLog', $taskLog)
+      ->andWhere('u.isDeleted = 0')
+      ->andWhere('u.diff is NULL');
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
   public function getStopwatchTime(TaskLog $taskLog): array {
 
     $hours = 0;

@@ -511,7 +511,7 @@ class TaskController extends AbstractController {
           }
         }
       }
-        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
+        $this->em->getRepository(Task::class)->save($task, $user, $history);
 
         notyf()
           ->position('x', 'right')
@@ -530,6 +530,139 @@ class TaskController extends AbstractController {
     $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
 
     return $this->render('task/reassign.html.twig', $args);
+  }
+
+  #[Route('/reassign-primary-log/{id}', name: 'app_task_reassign_primary_log')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function reassignPrimaryLog(Task $task, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $history = null;
+    //ovde izvlacimo ulogovanog usera
+    $user = $this->getUser();
+
+    if ($task->getId()) {
+      $history = $this->json($task, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
+
+    if ($request->isMethod('POST')) {
+      $task->setPriorityUserLog($request->request->all('task_form')['primaryLog']);
+      $this->em->getRepository(Task::class)->save($task);
+
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+      return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+
+    }
+
+    $args['task'] = $task;
+    $args['users'] = $this->em->getRepository(Task::class)->getAssignedUsersByTask($task);
+
+    return $this->render('task/reassign_primary_log.html.twig', $args);
+  }
+
+  #[Route('/assign-remove/{id}', name: 'app_task_assign_remove_user')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function assignRemove(TaskLog $taskLog, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $history = null;
+
+    $user = $this->getUser();
+    $task = $taskLog->getTask();
+    $zaduzeni = $taskLog->getUser();
+    $countStopwatches = $this->em->getRepository(StopwatchTime::class)->countStopwatches($taskLog);
+
+    if ($task->getId()) {
+      $history = $this->json($task, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
+
+    if ($countStopwatches == 0) {
+      $task->removeAssignedUser($zaduzeni);
+      $task->removeTaskLog($taskLog);
+      $this->em->getRepository(Task::class)->save($task);
+    }
+
+
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+      return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+
+  }
+
+  #[Route('/assign-add/{id}', name: 'app_task_assign_add_user')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function assignAdd(Task $task, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $history = null;
+    //ovde izvlacimo ulogovanog usera
+    $user = $this->getUser();
+
+    if ($task->getId()) {
+      $history = $this->json($task, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
+
+    if ($request->isMethod('POST')) {
+
+      foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
+        if (!empty($assignedUser)){
+          $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+          if(!is_null($member)) {
+            $task->addAssignedUser($member);
+            $taskLog = new TaskLog();
+            $taskLog->setUser($member);
+            $task->addTaskLog($taskLog);
+          }
+        }
+      }
+      $this->em->getRepository(Task::class)->save($task);
+
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+      return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+
+    }
+
+    $args['task'] = $task;
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+
+    return $this->render('task/reassign_task.html.twig', $args);
   }
 
   #[Route('/edit-task/{id}', name: 'app_task_edit')]

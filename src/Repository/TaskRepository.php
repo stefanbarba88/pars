@@ -363,7 +363,31 @@ class TaskRepository extends ServiceEntityRepository {
       $user3 = null;
     }
 
-    return [$user1, $user2, $user3];
+    if (isset($nizBezElementa[2])) {
+      $user4 = $this->getEntityManager()->getRepository(User::class)->find($nizBezElementa[2]);
+    } else {
+      $user4 = null;
+    }
+
+    if (isset($nizBezElementa[3])) {
+      $user5 = $this->getEntityManager()->getRepository(User::class)->find($nizBezElementa[3]);
+    } else {
+      $user5 = null;
+    }
+
+    if (isset($nizBezElementa[4])) {
+      $user6 = $this->getEntityManager()->getRepository(User::class)->find($nizBezElementa[4]);
+    } else {
+      $user6 = null;
+    }
+
+    if (isset($nizBezElementa[5])) {
+      $user7 = $this->getEntityManager()->getRepository(User::class)->find($nizBezElementa[5]);
+    } else {
+      $user7 = null;
+    }
+
+    return [$user1, $user2, $user3, $user4, $user5, $user6, $user7];
 
   }
 

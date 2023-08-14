@@ -111,8 +111,9 @@ class TaskLogRepository extends ServiceEntityRepository {
 
     foreach ($taskLogs as $log) {
       $count = $this->getEntityManager()->getRepository(StopwatchTime::class)->countStopwatches($log);
+      $countActive = $this->getEntityManager()->getRepository(StopwatchTime::class)->countActiveStopwatches($log);
       $lastEdit = $this->getEntityManager()->getRepository(StopwatchTime::class)->lastEdit($log);
-      $logs[] = ['log' => $log, 'count' => $count, 'lastEdit' => $lastEdit];
+      $logs[] = ['log' => $log, 'count' => $count, 'countActive' => $countActive, 'lastEdit' => $lastEdit];
     }
 
     return $logs;

@@ -113,12 +113,16 @@
                                                     {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
                                                         <a href="{{ path('app_task_reassign', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>
                                                     {% endif %}
+                                                    {% if status != constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
+                                                        <a href="{{ path('app_task_assign_add_user', {id: task.id} ) }}"><i class="ph-plus-circle"></i></a>
+                                                    {% endif %}
                                                 </h5>
                                             </div>
 
                                             <div class="list-group list-group-borderless py-2">
                                                 {% for log in taskLogs %}
-                                                    <div class="d-flex list-group-item align-items-start">
+                                                    {% if log.log.user.id == task.priorityUserLog %}
+                                                        <div class="d-flex list-group-item align-items-start">
                                                         <div class="me-2">
                                                             <i class="ph-clipboard"></i>
                                                         </div>
@@ -144,6 +148,40 @@
                                                             {% endif %}
                                                         </div>
                                                     </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% for log in taskLogs %}
+                                                    {% if log.log.user.id != task.priorityUserLog %}
+                                                        <div class="d-flex list-group-item align-items-start">
+                                                            <div class="me-2">
+                                                                <i class="ph-clipboard"></i>
+                                                            </div>
+
+                                                            <div class="flex-fill overflow-hidden">
+                                                                <div class="fw-semibold text-truncate">
+                                                                    <a href="{{ path('app_task_log_view',{id: log.log.id} ) }}" class="text-body">
+                                                                        {{ log.log.user.getFullName }}
+                                                                    </a>
+                                                                    {% if log.countActive == 0  %}
+                                                                        <a href="{{ path('app_task_assign_remove_user', {id: log.log.id}) }}"><i class="ph-trash"></i></a>
+                                                                    {% endif %}
+                                                                </div>
+                                                                {% if log.lastEdit is not null  %}
+                                                                    <ul class="list-inline list-inline-bullet fs-sm text-muted mb-0">
+                                                                        <li class="list-inline-item">Izmena: {{ log.lastEdit.updated | date("d.m.Y H:i:s")}}</li>
+                                                                    </ul>
+                                                                {% endif %}
+                                                            </div>
+
+                                                            <div class="ms-3">
+                                                                {% if log.count > 0  %}
+                                                                    <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                                {% else %}
+                                                                    <span class="badge bg-warning align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
                                                 {% endfor %}
                                             </div>
                                         </div>
@@ -323,6 +361,9 @@
                                             <div class="card">
                                                 <div class="card-header d-lg-flex py-lg-0">
                                                     <h6 class="py-lg-3 mb-0">Primarni dnevnik: {{ taskLog.user.fullName}}</h6>
+                                                    <div class="mt-1 my-lg-auto ms-lg-auto">
+                                                        <a href="{{ path('app_task_reassign_primary_log', {id: task.id}) }}" class="btn btn-primary"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                    </div>
                                                 </div>
                                                 {% if stopwatchesActive is empty %}
                                                     <div class="card-body">

@@ -132,7 +132,13 @@
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Slava:</div>
-                                            <div class="col-8">{{ userH.slava | default('/') }}</div>
+                                            <div class="col-8">
+                                                {% if userH.slava is not null %}
+                                                    {{ userH.slava | date("d.m")}}
+                                                {% else %}
+                                                    /
+                                                {% endif %}
+                                            </div>
                                         </div>
                                         <div class="row p-2">
                                             <div class="col-4">Zaduženi uređaji:</div>

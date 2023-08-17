@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Nova lista zadataka
+                                Novi plan
                             </h4>
                         </div>
                     </div>
@@ -25,8 +25,8 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_quick_tasks') }}" class="breadcrumb-item">Brzi zadaci</a>
-                                <span class="breadcrumb-item active">Nova lista zadataka</span>
+                                <a href="{{ path('app_quick_tasks') }}" class="breadcrumb-item">Planovi</a>
+                                <span class="breadcrumb-item active">Novi plan</span>
                             </div>
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
                                 <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
@@ -48,12 +48,12 @@
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
-                                Dodavanje zadatka
+                                Dodavanje plana
                             </h6>
                         </div>
                         <form name="task_quick_form" method="post" action="{{ path('app_quick_tasks_form') }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="task_quick_form">
                             <div class="card-body">
-                                <div class="fw-bold border-bottom mb-1">Datum zadataka</div>
+                                <div class="fw-bold border-bottom mb-1">Datum plana</div>
                                 <div class="row ">
                                     <div class="col-lg-3">
                                         <div class="mb-1">

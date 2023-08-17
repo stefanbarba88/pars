@@ -79,8 +79,8 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\Column]
   private bool $isInTask = false;
 
-  #[ORM\Column(length: 255, nullable: true)]
-  private ?string $slava = null;
+  #[ORM\Column(name: 'slava', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+  private ?DateTimeImmutable $slava = null;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
@@ -909,18 +909,20 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   }
 
   /**
-   * @return string|null
+   * @return DateTimeImmutable|null
    */
-  public function getSlava(): ?string {
+  public function getSlava(): ?DateTimeImmutable {
     return $this->slava;
   }
 
   /**
-   * @param string|null $slava
+   * @param DateTimeImmutable|null $slava
    */
-  public function setSlava(?string $slava): void {
+  public function setSlava(?DateTimeImmutable $slava): void {
     $this->slava = $slava;
   }
+
+
 
   /**
    * @return bool

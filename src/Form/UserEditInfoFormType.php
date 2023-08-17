@@ -27,7 +27,13 @@ use Symfony\Component\Validator\Constraints\Regex;
 class UserEditInfoFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
     $builder
-      ->add('slava')
+      ->add('slava', DateType::class, [
+      'required' => false,
+      'widget' => 'single_text',
+      'format' => 'dd.MM.yyyy',
+      'html5' => false,
+      'input' => 'datetime_immutable'
+    ])
       ->add('isPrvaPomoc', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
@@ -109,6 +115,7 @@ class UserEditInfoFormType extends AbstractType {
       ])
       ->add('adresa')
       ->add('telefon1',TextType::class, [
+        'required' => false,
         'constraints' => [
           new Regex('/^\d{1,10}$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
         ],

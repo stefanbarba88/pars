@@ -6,6 +6,7 @@ use App\Classes\Data\PrioritetData;
 use App\Classes\Data\TimerPriorityData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Image;
+use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
@@ -55,6 +56,27 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     if ($flush) {
       $this->getEntityManager()->flush();
     }
+  }
+
+  public function getStopwatchesByProject($start, $stop, Project $project): array {
+    $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProject($start, $stop, $project);
+    $projectStopwatches = [];
+
+    foreach ($tasks as $task) {
+      if (!is_null($task['log'])) {
+        $projectStopwatches[] = [
+          'datum' => $task['datum'],
+          'zaduzeni' => $task['task']->getAssignedUsers(),
+          'klijent' => $task['task']->getProject()->getClient(),
+          'stopwatches' => $this->getStopwatchesActive($task['log']),
+          'time' => $this->getStopwatchTimeByTask($task['task']),
+          'activity' => $this->getStopwatchesActivity($task['log']),
+          'description' => $this->getStopwatchesDescription($task['log']),
+        ];
+      }
+    }
+
+    return $projectStopwatches;
   }
 
   public function getStopwatches(TaskLog $taskLog): array {
@@ -153,6 +175,51 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'deleted' => $time->isIsDeleted(),
         'deletedBy' => $time->getDeletedBy(),
         'manually' => $time->isIsManuallyClosed(),
+      ];
+    }
+    return $stopwatches;
+  }
+
+  public function getStopwatchesActivity(TaskLog $taskLog): array {
+    $stopwatches = [];
+
+    $times = $this->createQueryBuilder('u')
+      ->andWhere('u.taskLog = :taskLog')
+      ->setParameter(':taskLog', $taskLog)
+      ->andWhere('u.diff is NOT NULL')
+      ->andWhere('u.isDeleted = 0')
+      ->getQuery()
+      ->getResult();
+    $aktivnosti = [];
+    foreach ($times as $time) {
+      if(!($time->getActivity()->isEmpty())) {
+        foreach ($time->getActivity() as $akt) {
+          $aktivnosti[] = [
+            $akt->getId() => $akt->getTitle()
+          ];
+        }
+      }
+    }
+      $stopwatches [] = [
+        'activity' => $aktivnosti,
+      ];
+
+    return $aktivnosti;
+  }
+  public function getStopwatchesDescription(TaskLog $taskLog): array {
+    $stopwatches = [];
+
+    $times = $this->createQueryBuilder('u')
+      ->andWhere('u.taskLog = :taskLog')
+      ->setParameter(':taskLog', $taskLog)
+      ->andWhere('u.diff is NOT NULL')
+      ->andWhere('u.isDeleted = 0')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($times as $time) {
+      $stopwatches [] = [
+        'description' => $time->getDescription(),
       ];
     }
     return $stopwatches;
@@ -346,43 +413,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'priority' => $priorityLogUser->getFullName()
       ];
     }
-
-    if ($h < 10) {
-      $h = '0' . $h;
-    }
-    if ($m < 10) {
-      $m = '0' . $m;
-    }
-    if ($hR < 10) {
-      $hR = '0' . $hR;
-    }
-    if ($mR < 10) {
-      $mR = '0' . $mR;
-    }
-    if ($htP < 10) {
-      $htP = '0' . $htP;
-    }
-    if ($mtP < 10) {
-      $mtP = '0' . $mtP;
-    }
-    if ($hRtP < 10) {
-      $hRtP = '0' . $hRtP;
-    }
-    if ($mRtP < 10) {
-      $mRtP = '0' . $mRtP;
-    }
-
-    return [
-      'hours' => $h,
-      'minutes' => $m,
-      'hoursReal' => $hR,
-      'minutesReal' => $mR,
-      'hoursTimePriority' => $h,
-      'minutesTimePriority' => $m,
-      'hoursRealTimePriority' => $hR,
-      'minutesRealTimePriority' => $mR,
-      'priority' => $priorityLogUser->getFullName()
-    ];
+    return [];
   }
 
   public function lastEdit(TaskLog $taskLog): ?StopwatchTime {

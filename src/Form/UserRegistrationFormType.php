@@ -50,7 +50,13 @@ class UserRegistrationFormType extends AbstractType {
         'html5' => false,
         'input' => 'datetime_immutable'
       ])
-      ->add('slava')
+      ->add('slava', DateType::class, [
+        'required' => false,
+        'widget' => 'single_text',
+        'format' => 'dd.MM.yyyy',
+        'html5' => false,
+        'input' => 'datetime_immutable'
+      ])
       ->add('isPrvaPomoc', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',

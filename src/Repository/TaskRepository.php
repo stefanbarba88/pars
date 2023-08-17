@@ -392,6 +392,36 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
 
+  public function getTasksByDateAndProject(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project): array  {
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('t.project = :project')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->setParameter('project', $project->getId())
+      ->orderBy('t.time', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+    $lista = [];
+    foreach ($taskovi as $tsk) {
+      $primaryUser = $this->getEntityManager()->getRepository(User::class)->find($tsk->getPriorityUserLog());
+       $lista[] = [
+         'task' => $tsk,
+         'datum' => $tsk->getDatumKreiranja(),
+         'status' => $this->taskStatus($tsk),
+         'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $primaryUser]),
+       ];
+    }
+    return $lista;
+  }
   public function getTasksByDate(DateTimeImmutable $date): array  {
 
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana

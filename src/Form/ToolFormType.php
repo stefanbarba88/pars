@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Classes\Data\CleanData;
+use App\Classes\Data\OcenaData;
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\TipOpremeData;
 use App\Classes\Data\UserRolesData;
@@ -41,7 +42,7 @@ class ToolFormType extends AbstractType {
       ->add('ocena', ChoiceType::class, [
         'required' => false,
         'placeholder' => '--Ocenite uređaj--',
-        'choices' => CleanData::form(),
+        'choices' => OcenaData::form(),
         'expanded' => false,
         'multiple' => false,
       ])

@@ -11,6 +11,7 @@ use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
@@ -49,7 +50,6 @@ class ProjectRepository extends ServiceEntityRepository {
     return $this->save($project);
 
   }
-
   public function getProjectsByUser(User $user) {
 
     return $this->createQueryBuilder('p')
@@ -62,7 +62,6 @@ class ProjectRepository extends ServiceEntityRepository {
       ->getResult();
 
   }
-
   public function getAllProjects(): array {
     return $this->createQueryBuilder('p')
       ->addOrderBy('p.isSuspended', 'ASC')
@@ -131,8 +130,6 @@ class ProjectRepository extends ServiceEntityRepository {
       ->getSingleScalarResult();
 
   }
-
-
   public function getImagesByProject(Project $project): array {
 
     return $this->createQueryBuilder('p')
@@ -148,7 +145,6 @@ class ProjectRepository extends ServiceEntityRepository {
       ->getResult();
 
   }
-
   public function getPdfsByProject(Project $project): array {
 
     $pdfs = $this->createQueryBuilder('p')
@@ -176,7 +172,6 @@ class ProjectRepository extends ServiceEntityRepository {
     return array_merge($pdfs, $pdfsProject);
 
   }
-
   public function save(Project $project): Project {
     if (is_null($project->getId())) {
       $this->getEntityManager()->persist($project);
@@ -185,7 +180,6 @@ class ProjectRepository extends ServiceEntityRepository {
     $this->getEntityManager()->flush();
     return $project;
   }
-
   public function remove(Project $entity, bool $flush = false): void {
     $this->getEntityManager()->remove($entity);
 
@@ -193,7 +187,6 @@ class ProjectRepository extends ServiceEntityRepository {
       $this->getEntityManager()->flush();
     }
   }
-
   public function paymentTimeSet(Project $project): Project {
 
     if ($project->getPayment() == VrstaPlacanjaData::BESPLATNO) {
@@ -235,13 +228,27 @@ class ProjectRepository extends ServiceEntityRepository {
     }
     return $project;
   }
-
   public function findForForm(int $id = 0): Project {
     if (empty($id)) {
       return new Project();
     }
     return $this->getEntityManager()->getRepository(Project::class)->find($id);
   }
+
+
+
+
+  public function getReport(array $data): array {
+    $dates = explode(' - ', $data['period']);
+
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+    $project = $this->getEntityManager()->getRepository(Project::class)->find($data['project']);
+
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project);
+  }
+
 
 //    /**
 //     * @return Project[] Returns an array of Project objects

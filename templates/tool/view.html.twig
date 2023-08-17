@@ -109,21 +109,7 @@
                                         <div class="row p-2">
                                             <div class="col-4">Ocena:</div>
                                             <div class="col-8">
-                                                {% if tool.ocena == constant('App\\Classes\\Data\\CleanData::LOSE') %}
-                                                    Loše
-                                                {% endif %}
-                                                {% if tool.ocena == constant('App\\Classes\\Data\\CleanData::DOVOLJNO') %}
-                                                    Dovoljno
-                                                {% endif %}
-                                                {% if tool.ocena == constant('App\\Classes\\Data\\CleanData::DOBRO') %}
-                                                    Dobro
-                                                {% endif %}
-                                                {% if tool.ocena == constant('App\\Classes\\Data\\CleanData::VRLO_DOBRO') %}
-                                                    Vrlo dobro
-                                                {% endif %}
-                                                {% if tool.ocena == constant('App\\Classes\\Data\\CleanData::ODLICNO') %}
-                                                    Odlično
-                                                {% endif %}
+                             {{ tool.ocena }}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">

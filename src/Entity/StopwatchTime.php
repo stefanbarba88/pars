@@ -58,6 +58,9 @@ class StopwatchTime {
   #[ORM\Column(type: Types::TEXT, nullable: true,)]
   private ?string $description = null;
 
+  #[ORM\Column(type: Types::TEXT, nullable: true,)]
+  private ?string $additionalActivity = null;
+
   #[ORM\Column]
   private DateTimeImmutable $created;
 
@@ -82,6 +85,9 @@ class StopwatchTime {
 
   #[ORM\ManyToOne]
   private ?User $editedBy = null;
+
+  #[ORM\ManyToOne(inversedBy: 'stopwatchTimes')]
+  private ?Client $client = null;
 
   public function __construct()
   {
@@ -384,4 +390,31 @@ class StopwatchTime {
 
       return $this;
   }
+
+  /**
+   * @return string|null
+   */
+  public function getAdditionalActivity(): ?string {
+    return $this->additionalActivity;
+  }
+
+  /**
+   * @param string|null $additionalActivity
+   */
+  public function setAdditionalActivity(?string $additionalActivity): void {
+    $this->additionalActivity = $additionalActivity;
+  }
+
+  public function getClient(): ?Client
+  {
+      return $this->client;
+  }
+
+  public function setClient(?Client $client): self
+  {
+      $this->client = $client;
+
+      return $this;
+  }
+
 }

@@ -213,7 +213,8 @@ class StopwatchController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
-        $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTime($stopwatch, $request->request->get('hours'), $request->request->get('minutes'));
+
+        $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTimeManual($stopwatch, $request->request->get('stopwatch_time_add_form_period'));
 
         $uploadFiles = $request->files->all()['stopwatch_time_add_form']['pdf'];
         if (!empty ($uploadFiles)) {

@@ -11,35 +11,12 @@
             <div class="card-body">
                 <div class="fw-bold border-bottom pb-2 mb-3">Utrošeno vreme</div>
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-12">
                         <div class="mb-3">
-                            <div class="col">
-                                <label class="form-category" for="stopwatch_time_add_form_hours">Utrošeni sati:</label>
-                                <div class="input-group">
-                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                        <i class="ph-minus ph-sm"></i>
-                                    </button>
-                                    <input class="form-control form-control-number text-center" type="number" name="hours" value="0" min="0">
-                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                                        <i class="ph-plus ph-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="mb-3">
-                            <div class="col">
-                                <label class="form-category" for="stopwatch_time_add_form_minutes">Utrošeni minuti:</label>
-                                <div class="input-group">
-                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                        <i class="ph-minus ph-sm"></i>
-                                    </button>
-                                    <input class="form-control form-control-number text-center" type="number" name="minutes"  value="0" min="0" max="59" step="{{ step }}" >
-                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                                        <i class="ph-plus ph-sm"></i>
-                                    </button>
-                                </div>
+                            <label class="form-category" for="stopwatch_time_add_form_period">Vreme:*</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="ph-calendar"></i></span>
+                                <input type="text" class="form-control daterange-locale-sr-stopwatch required" id="stopwatch_time_add_form_period" name="stopwatch_time_add_form_period">
                             </div>
                         </div>
                     </div>
@@ -48,7 +25,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="mb-3">
-                            {{ form_label(form.activity, 'Odrađene aktivnosti:*', {'label_attr': {'class': 'form-category'}}) }}
+                            {{ form_label(form.activity, 'Odrađene aktivnosti:', {'label_attr': {'class': 'form-category'}}) }}
                             {{ form_widget(form.activity, {attr: { class: 'form-control select' }}) }}
                         </div>
                     </div>
@@ -56,8 +33,26 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="mb-3">
-                            {{ form_label(form.description, 'Opis:', {'label_attr': {'class': 'form-category'}}) }}
+                            {{ form_label(form.additionalActivity, 'Dodatne aktivnosti:', {'label_attr': {'class': 'form-category'}}) }}
+                            {{ form_widget(form.additionalActivity, {attr: { class: 'form-control' }}) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            {{ form_label(form.description, 'Napomena:', {'label_attr': {'class': 'form-category'}}) }}
                             {{ form_widget(form.description, {attr: { class: 'form-control' }}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-client" aria-expanded="false">Klijent</div>
+                <div class="row collapse" id="collapse-client">
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            {{ form_label(form.client, 'Klijent:', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.client, {attr: { class: 'form-control select' }}) }}
                         </div>
                     </div>
                 </div>

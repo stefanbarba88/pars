@@ -36,9 +36,10 @@ class ResetPasswordController extends AbstractController {
    * Display & process form to request a password reset.
    */
   #[Route('', name: 'app_forgot_password_request')]
-  public function request(Request $request, MailerInterface $mailer, TranslatorInterface $translator)    : Response { if (!$this->isGranted('ROLE_ADMIN')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+  public function request(Request $request, MailerInterface $mailer, TranslatorInterface $translator)    : Response {
+//    if (!$this->isGranted('ROLE_ADMIN')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
     $form = $this->createForm(ResetPasswordRequestFormType::class);
     $form->handleRequest($request);
 

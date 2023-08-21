@@ -177,13 +177,41 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="fw-bold border-bottom pb-2 mb-3">Dodatni opis</div>
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Dodatne aktivnosti</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+                                                                    <ul class="list mb-0">
+                                                                        {% for stopwatch in stopwatchesActive %}
+                                                                            {% if stopwatch.additionalActivity is not null %}
+                                                                                <li>{{ stopwatch.additionalActivity}}</li>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Napomena</div>
                                                         <div class="row">
                                                             <div class="col-lg-12">
                                                                 <div class="mb-3">
                                                                     {% for stopwatch in stopwatchesActive %}
                                                                         {% if stopwatch.description is not null %}
                                                                             {{ stopwatch.description | raw }}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Klijent</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+                                                                    {% for stopwatch in stopwatchesActive %}
+                                                                        {% if stopwatch.client is not empty %}
+                                                                            {{ stopwatch.client.title }}
                                                                         {% endif %}
                                                                     {% endfor %}
                                                                 </div>
@@ -339,7 +367,22 @@
                                                                                 </div>
                                                                             </div>
 
-                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Dodatni opis</div>
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Dodatne aktivnosti</div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-12">
+                                                                                    <div class="mb-3">
+
+                                                                                        {% if stopwatch.additionalActivity is not null %}
+                                                                                            {{ stopwatch.additionalActivity }}
+                                                                                        {% else %}
+                                                                                            Nema dodatnog opisa.
+                                                                                        {% endif %}
+
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Napomena</div>
                                                                             <div class="row">
                                                                                 <div class="col-lg-12">
                                                                                     <div class="mb-3">
@@ -350,6 +393,17 @@
                                                                                                 Nema dodatnog opisa.
                                                                                             {% endif %}
 
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Klijent</div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-12">
+                                                                                    <div class="mb-3">
+                                                                                        {% if stopwatch.client is not empty %}
+                                                                                            {{ stopwatch.client.title }}
+                                                                                        {% endif %}
                                                                                     </div>
                                                                                 </div>
                                                                             </div>

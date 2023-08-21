@@ -102,7 +102,40 @@ class TaskLogRepository extends ServiceEntityRepository {
     return $count;
   }
 
+  public function getLogStatus(Task $task): array {
 
+    $users = $task->getAssignedUsers();
+    $status = [];
+    foreach ($users as $user) {
+      $log = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['user' => $user, 'task' => $task]);
+      $stopwatches = $log->getStopwatch();
+      if ($stopwatches->isEmpty()) {
+        $status[$user->getId()] = [
+          'nije_zapocet' => 1,
+          'otvoren' => 0,
+          'zatvoren' => 0,
+        ];
+      } else {
+        $otvoren = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $log, 'stop' => null]);
+        if (!is_null($otvoren)) {
+          $status[$user->getId()] = [
+            'nije_zapocet' => 0,
+            'otvoren' => 1,
+            'zatvoren' => 0,
+          ];
+        } else {
+          $status[$user->getId()] = [
+            'nije_zapocet' => 0,
+            'otvoren' => 0,
+            'zatvoren' => 1,
+          ];
+        }
+      }
+    }
+
+    return $status;
+
+  }
 
   public function findLogs(Task $task): array {
     $logs = [];

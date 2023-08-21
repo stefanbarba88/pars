@@ -52,7 +52,11 @@
                                                         <td>
                                                             {% if log[0].task.time is not null %}
                                                                 <div class="fw-semibold">
-                                                                    {{ log[0].task.time | date("H:i")}} h
+                                                                    {% if log[0].task.time|date('H:i') != '00:00' %}
+                                                                        {{ log[0].task.time|date('H:i') }}h
+                                                                    {% else %}
+                                                                        Vreme nije zadato
+                                                                    {% endif %}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -115,7 +119,10 @@
                                             {% for log in logs %}
                                                 <tr>
                                                     <td style="width: 40%;">
-                                                        <div class="fw-semibold">{{ log[0].task.project.title }} {% if log[0].task.time is not null %}({{ log[0].task.time | date("H:i")}}h){% endif %}
+                                                        <div class="fw-semibold">{{ log[0].task.project.title }}
+                                                            {% if log[0].task.time|date('H:i') != '00:00' %}
+                                                                ({{ task.task.time|date('H:i') }})h
+                                                            {% endif %}
                                                         </div>
                                                     </td>
                                                     <td style="width: 50%;">
@@ -201,7 +208,11 @@
                                                     <td>
                                                         {% if task.task.time is not null %}
                                                             <div class="text-body">
-                                                                {{ task.task.time | date('H:i')}}h
+                                                                {% if task.task.time|date('H:i') != '00:00' %}
+                                                                    {{ task.task.time|date('H:i') }}h
+                                                                {% else %}
+                                                                    Vreme nije zadato
+                                                                {% endif %}
                                                             </div>
                                                         {% endif %}
                                                     </td>
@@ -253,7 +264,9 @@
                                                     {% endfor %}
                                                     <td style="width: 40%;">
                                                         <div class="fw-semibold">
-                                                            {{ task.task.project.title }}{% if task.task.time is not null %}({{ task.task.time | date('H:i')}}h){% endif %}
+                                                            {{ task.task.project.title }} {% if task.task.time|date('H:i') != '00:00' %}
+                                                                ({{ task.task.time|date('H:i') }})h
+                                                            {% endif %}
                                                         </div>
                                                     </td>
                                                     <td style="width: 50%;">
@@ -343,6 +356,10 @@
                                                                 <div class="text-body">
                                                                     {{ task.vreme}}h
                                                                 </div>
+                                                            {% else %}
+                                                                <div class="text-body">
+                                                                    Vreme nije zadato
+                                                                </div>
                                                             {% endif %}
                                                         </td>
                                                         <td>
@@ -387,7 +404,7 @@
                                                     <tr>
                                                         <td style="width: 40%;">
                                                             <div class="fw-semibold">
-                                                                {{ task['projekat'].title }} {% if task.vreme is not null %} ({{ task.vreme}}) {% endif %}
+                                                                {{ task['projekat'].title }} {% if task.vreme is not null %} ({{ task.vreme}})h {% endif %}
                                                             </div>
                                                         </td>
                                                         <td style="width: 50%;">
@@ -498,6 +515,8 @@
                                             <div class="col-8">
                                                 {% if task.vreme is not null %}
                                                     {{ task.vreme}}
+                                                {% else %}
+                                                    Vreme nije zadato
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -571,7 +590,11 @@
                                         <div class="col-4">Vreme:</div>
                                         <div class="col-8">
                                             {% if task.task.time is not null %}
-                                                {{ task.task.time | date('H:i')}}h
+                                                {% if task.task.time|date('H:i') != '00:00' %}
+                                                    {{ task.task.time|date('H:i') }}h
+                                                {% else %}
+                                                    Vreme nije zadato
+                                                {% endif %}
                                             {% endif %}
                                         </div>
                                     </div>

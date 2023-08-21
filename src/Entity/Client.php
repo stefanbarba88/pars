@@ -80,9 +80,13 @@ class Client implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'clients')]
   private Collection $contact;
 
+  #[ORM\OneToMany(mappedBy: 'client', targetEntity: StopwatchTime::class)]
+  private Collection $stopwatchTimes;
+
   public function __construct() {
     $this->clientHistories = new ArrayCollection();
     $this->contact = new ArrayCollection();
+    $this->stopwatchTimes = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -339,6 +343,36 @@ class Client implements JsonSerializable {
   public function removeContact(User $contact): self
   {
       $this->contact->removeElement($contact);
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, StopwatchTime>
+   */
+  public function getStopwatchTimes(): Collection
+  {
+      return $this->stopwatchTimes;
+  }
+
+  public function addStopwatchTime(StopwatchTime $stopwatchTime): self
+  {
+      if (!$this->stopwatchTimes->contains($stopwatchTime)) {
+          $this->stopwatchTimes->add($stopwatchTime);
+          $stopwatchTime->setClient($this);
+      }
+
+      return $this;
+  }
+
+  public function removeStopwatchTime(StopwatchTime $stopwatchTime): self
+  {
+      if ($this->stopwatchTimes->removeElement($stopwatchTime)) {
+          // set the owning side to null (unless already changed)
+          if ($stopwatchTime->getClient() === $this) {
+              $stopwatchTime->setClient(null);
+          }
+      }
 
       return $this;
   }

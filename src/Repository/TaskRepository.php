@@ -441,10 +441,12 @@ class TaskRepository extends ServiceEntityRepository {
        $lista[] = [
          'task' => $tsk,
          'status' => $this->taskStatus($tsk),
+         'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($tsk),
          'car' => $this->getEntityManager()->getRepository(Car::class)->findBy(['id' => $tsk->getCar()]),
          'driver' => $this->getEntityManager()->getRepository(User::class)->findBy(['id' => $tsk->getDriver()])
        ];
     }
+//    dd($lista);
     return $lista;
   }
 

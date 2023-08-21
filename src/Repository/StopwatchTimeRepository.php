@@ -135,6 +135,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'deleted' => $time->isIsDeleted(),
         'deletedBy' => $time->getDeletedBy(),
         'manually' => $time->isIsManuallyClosed(),
+        'additionalActivity' => $time->getAdditionalActivity(),
+        'client' => $time->getClient(),
       ];
     }
     return $stopwatches;
@@ -175,6 +177,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'deleted' => $time->isIsDeleted(),
         'deletedBy' => $time->getDeletedBy(),
         'manually' => $time->isIsManuallyClosed(),
+        'additionalActivity' => $time->getAdditionalActivity(),
+        'client' => $time->getClient(),
       ];
     }
     return $stopwatches;
@@ -533,6 +537,29 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
   }
 
+  public function setTimeManual(StopwatchTime $stopwatch, string $range): StopwatchTime {
+
+
+    list($pocetak, $kraj) = explode(' - ', $range);
+
+    $format = 'd.m.Y H:i';
+
+    $start = DateTimeImmutable::createFromFormat($format, $pocetak);
+    $stop = DateTimeImmutable::createFromFormat($format, $kraj);
+
+    $task = $stopwatch->getTaskLog()->getTask();
+    $project = $task->getProject();
+
+
+    $stopwatch->setStart($start);
+    $stopwatch->setStop($stop);
+
+    $hours = $stopwatch->getStart()->diff($stopwatch->getStop())->h;
+    $minutes = $stopwatch->getStart()->diff($stopwatch->getStop())->i;
+    $stopwatch = $this->getEntityManager()->getRepository(StopwatchTime::class)->setTime($stopwatch, $hours, $minutes);
+
+    return $stopwatch;
+  }
   public function deleteStopwatch(StopwatchTime $stopwatch, User $user): StopwatchTime {
 
     $stopwatch->setIsDeleted(true);

@@ -7,6 +7,7 @@ use App\Classes\Data\PrioritetData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
 use App\Entity\Category;
+use App\Entity\Client;
 use App\Entity\Label;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
@@ -35,7 +36,23 @@ class StopwatchTimeFormType extends AbstractType {
       ->add('description', TextareaType::class, [
         'required' => false
       ])
-
+      ->add('additionalActivity', TextareaType::class, [
+        'required' => false
+      ])
+      ->add('client', EntityType::class, [
+        'placeholder' => '--Izaberite klijenta--',
+        'required' => false,
+        'class' => Client::class,
+        'query_builder' => function (EntityRepository $em) {
+          return $em->createQueryBuilder('a')
+            ->andWhere('a.isSuspended <> 1')
+//            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+            ->orderBy('a.id', 'ASC');
+        },
+        'choice_label' => 'title',
+        'expanded' => false,
+        'multiple' => false,
+      ])
       ->add('pdf', FileType::class, [
         'attr' => ['accept' => '.pdf', 'data-show-upload' => 'false'],
         'multiple' => true,

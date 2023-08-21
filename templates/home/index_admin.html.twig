@@ -104,7 +104,17 @@
                                                         <td>
                                                             <div class="text-body">
                                                                 {% for user in task.task.assignedUsers %}
-                                                                    {{ user.fullName }} <br>
+                                                                        {% for userId, userStatus in task.logStatus %}
+                                                                        {% if userId == user.id and userStatus.otvoren == 1 %}
+                                                                            <span class="fw-semibold text-danger">{{ user.fullName }}</span>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.zatvoren == 1 %}
+                                                                            <span class="fw-semibold text-success">{{ user.fullName }}</span>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.nije_zapocet == 1 %}
+                                                                            <span class="fw-semibold text-dark">{{ user.fullName }}</span>
+                                                                        {% endif %}
+                                                                    {% endfor %}<br>
                                                                 {% endfor %}
                                                             </div>
                                                         </td>
@@ -132,7 +142,11 @@
                                                         <td>
                                                             {% if task.task.time is not null %}
                                                                 <div class="text-body">
-                                                                    {{ task.task.time | date('H:i')}}h
+                                                                    {% if task.task.time|date('H:i') != '00:00' %}
+                                                                        {{ task.task.time|date('H:i') }}h
+                                                                    {% else %}
+                                                                        Vreme nije zadato
+                                                                    {% endif %}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -206,13 +220,25 @@
                                                     {% endif %}
                                                         <td style="width: 40%;">
                                                             <div class="fw-semibold">
-                                                                <a href="{{ path('app_task_view', {id:task.task.id}) }}">{{ task.task.project.title }}</a> {% if task.task.time is not null %}({{ task.task.time | date('H:i')}}h){% endif %}
+                                                                <a href="{{ path('app_task_view', {id:task.task.id}) }}">{{ task.task.project.title }}</a> {% if task.task.time|date('H:i') != '00:00' %}
+                                                    ({{ task.task.time|date('H:i') }})h
+                                                {% endif %}
                                                             </div>
                                                         </td>
                                                         <td style="width: 50%;">
                                                             <div class="text-body">
                                                                 {% for user in task.task.assignedUsers %}
-                                                                    {{ user.getNameWithFirstLetter }} <br>
+                                                                        {% for userId, userStatus in task.logStatus %}
+                                                                            {% if userId == user.id and userStatus.otvoren == 1 %}
+                                                                                <span class="fw-semibold text-danger">{{ user.getNameWithFirstLetter }}</span>
+                                                                            {% endif %}
+                                                                            {% if userId == user.id and userStatus.zatvoren == 1 %}
+                                                                                <span class="fw-semibold text-success">{{ user.getNameWithFirstLetter }}</span>
+                                                                            {% endif %}
+                                                                            {% if userId == user.id and userStatus.nije_zapocet == 1 %}
+                                                                                <span class="fw-semibold text-dark">{{ user.getNameWithFirstLetter }}</span>
+                                                                            {% endif %}
+                                                                        {% endfor %}<br>
                                                                 {% endfor %}
                                                             </div>
                                                         </td>
@@ -319,6 +345,10 @@
                                                                 <div class="d-inline-flex align-items-center">
                                                                     {{ task.vreme}}h
                                                                 </div>
+                                                            {% else %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    Vreme nije zadato
+                                                                </div>
                                                             {% endif %}
                                                         </td>
                                                         <td>
@@ -376,7 +406,7 @@
                                                     <tr>
                                                         <td style="width: 40%;">
                                                             <div class="fw-semibold">
-                                                                {{ task['projekat'].title }} {% if task.vreme is not null %} ({{ task.vreme}}) {% endif %}
+                                                                {{ task['projekat'].title }} {% if task.vreme is not null %} ({{ task.vreme}})h {% endif %}
                                                             </div>
                                                         </td>
                                                         <td style="width: 50%;">
@@ -492,6 +522,8 @@
                                             <div class="col-8">
                                                 {% if task.vreme is not null %}
                                                     {{ task.vreme}}
+                                                {% else %}
+                                                    Vreme nije zadato
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -565,7 +597,11 @@
                                             <div class="col-4">Vreme:</div>
                                             <div class="col-8">
                                                 {% if task.task.time is not null %}
-                                                    {{ task.task.time | date('H:i')}}h
+                                                    {% if task.task.time|date('H:i') != '00:00' %}
+                                                        {{ task.task.time|date('H:i') }}h
+                                                    {% else %}
+                                                        Vreme nije zadato
+                                                    {% endif %}
                                                 {% endif %}
                                             </div>
                                         </div>

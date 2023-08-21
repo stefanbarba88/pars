@@ -27,63 +27,63 @@
                                 </div>
                                 <div class="table-responsive">
                                     <table class="table table-hover table-bordered table-sm table-condensed">
-                                            <thead>
-                                            <tr class="table-light">
-                                                <th colspan="4">Lista zadataka za danas</th>
-                                                <th class="text-end">
-                                                    <span class="badge bg-primary rounded-pill">{{ countLogs }}</span>
-                                                </th>
-                                            </tr>
-                                            <tr>
-                                                <th>Vreme</th>
-                                                <th>Projekat</th>
-                                                <th>Kolege</th>
-                                                <th>Vozilo</th>
-                                                <th class="text-center" style="width: 20px;">
-                                                    <i class="ph-dots-three"></i>
-                                                </th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
+                                        <thead>
+                                        <tr class="table-light">
+                                            <th colspan="4">Lista zadataka za danas</th>
+                                            <th class="text-end">
+                                                <span class="badge bg-primary rounded-pill">{{ countLogs }}</span>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th>Vreme</th>
+                                            <th>Projekat</th>
+                                            <th>Kolege</th>
+                                            <th>Vozilo</th>
+                                            <th class="text-center" style="width: 20px;">
+                                                <i class="ph-dots-three"></i>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
 
-                                            {% if logs is not empty %}
-                                                {% for log in logs  %}
-                                                    <tr>
-                                                        <td>
-                                                            {% if log[0].task.time is not null %}
-                                                                <div class="fw-semibold">
-                                                                    {% if log[0].task.time|date('H:i') != '00:00' %}
-                                                                        {{ log[0].task.time|date('H:i') }}h
-                                                                    {% else %}
-                                                                        Vreme nije zadato
-                                                                    {% endif %}
-                                                                </div>
-                                                            {% endif %}
-                                                        </td>
-                                                        <td>
-                                                            <div class="fw-semibold">{{ log[0].task.project.title }}</div>
-                                                        </td>
-                                                        <td>
-                                                            {% for user in log[0].task.assignedUsers %}
-                                                                <div class="fw-semibold">{{ user.fullName }}</div>
-                                                            {% endfor %}
-                                                        </td>
-                                                        <td>
-                                                            {% if log[1] is not empty %}
-                                                                <div class="fw-semibold">
-                                                                    {{ log[1].plate }}
-                                                                </div>
-                                                            {% endif %}
-                                                        </td>
-                                                        <td>
-                                                            <a href="{{ path('app_task_view_user', { id: log[0].task.id}) }}" class="btn btn-primary"><i class="ph-clipboard me-2"></i> Dnevnik</a>
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
-                                            {% endif %}
+                                        {% if logs is not empty %}
+                                            {% for log in logs  %}
+                                                <tr>
+                                                    <td>
+                                                        {% if log[0].task.time is not null %}
+                                                            <div class="fw-semibold">
+                                                                {% if log[0].task.time|date('H:i') != '00:00' %}
+                                                                    {{ log[0].task.time|date('H:i') }}h
+                                                                {% else %}
+                                                                    Vreme nije zadato
+                                                                {% endif %}
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <div class="fw-semibold">{{ log[0].task.project.title }}</div>
+                                                    </td>
+                                                    <td>
+                                                        {% for user in log[0].task.assignedUsers %}
+                                                            <div class="fw-semibold">{{ user.fullName }}</div>
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td>
+                                                        {% if log[1] is not empty %}
+                                                            <div class="fw-semibold">
+                                                                {{ log[1].plate }}
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ path('app_task_view_user', { id: log[0].task.id}) }}" class="btn btn-primary"><i class="ph-clipboard me-2"></i> Dnevnik</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
 
-                                            </tbody>
-                                        </table>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                             <!-- /marketing campaigns -->
@@ -121,7 +121,7 @@
                                                     <td style="width: 40%;">
                                                         <div class="fw-semibold">{{ log[0].task.project.title }}
                                                             {% if log[0].task.time|date('H:i') != '00:00' %}
-                                                                ({{ task.task.time|date('H:i') }})h
+                                                                ({{ log[0].task.time|date('H:i') }})h
                                                             {% endif %}
                                                         </div>
                                                     </td>
@@ -172,13 +172,13 @@
                                         {% if timetable is not empty %}
                                             {% for task in timetable %}
                                                 {% if task.task.project is not null %}
-                                                {% for user in task.task.assignedUsers %}
-                                                    {% if app.user.id == user.id %}
-                                                        <tr class="table-active">
-                                                    {% else %}
-                                                        <tr>
-                                                    {% endif %}
-                                                {% endfor %}
+                                                    {% for user in task.task.assignedUsers %}
+                                                        {% if app.user.id == user.id %}
+                                                            <tr class="table-active">
+                                                        {% else %}
+                                                            <tr>
+                                                        {% endif %}
+                                                    {% endfor %}
                                                     <td>
                                                         <div class="fw-semibold">
                                                             {{ task.task.project.title }}
@@ -619,14 +619,14 @@
 {% block includeJavascript %}
     {{ parent() }}
     <script src="{{ asset('assets/demo/pages/dashboard.js') }}"></script>
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/streamgraph.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/sparklines.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/lines.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/areas.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/donuts.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/bars.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/progress.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/heatmaps.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/pies.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/charts/pages/dashboard/bullets.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/charts/pages/dashboard/streamgraph.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/charts/pages/dashboard/sparklines.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/charts/pages/dashboard/lines.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/charts/pages/dashboard/areas.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/charts/pages/dashboard/donuts.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/charts/pages/dashboard/bars.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/charts/pages/dashboard/progress.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/charts/pages/dashboard/heatmaps.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/charts/pages/dashboard/pies.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/charts/pages/dashboard/bullets.js') }}"></script>#}
 {% endblock includeJavascript %}

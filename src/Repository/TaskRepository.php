@@ -492,6 +492,9 @@ class TaskRepository extends ServiceEntityRepository {
       $task1->setCreatedBy($user);
 
 
+      $task1->setIsFree($fastTask->getFree1());
+
+
       if(!is_null($fastTask->getDescription1())) {
         $task1->setDescription($fastTask->getDescription1());
       }
@@ -546,7 +549,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task2->setCreatedBy($user);
       $task2->setIsTimeRoundUp(true);
       $task2->setRoundingInterval(15);
-
+     $task2->setIsFree($fastTask->getFree2());
       if(!is_null($fastTask->getDescription2())) {
         $task2->setDescription($fastTask->getDescription2());
       }
@@ -597,7 +600,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task3->setCreatedBy($user);
       $task3->setIsTimeRoundUp(true);
       $task3->setRoundingInterval(15);
-
+      $task3->setIsFree($fastTask->getFree3());
       if(!is_null($fastTask->getDescription3())) {
         $task3->setDescription($fastTask->getDescription3());
       }
@@ -648,7 +651,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task4->setCreatedBy($user);
       $task4->setIsTimeRoundUp(true);
       $task4->setRoundingInterval(15);
-
+     $task4->setIsFree($fastTask->getFree4());
       if(!is_null($fastTask->getDescription4())) {
         $task4->setDescription($fastTask->getDescription4());
       }
@@ -699,7 +702,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task5->setCreatedBy($user);
       $task5->setIsTimeRoundUp(true);
       $task5->setRoundingInterval(15);
-
+     $task5->setIsFree($fastTask->getFree5());
       if(!is_null($fastTask->getDescription5())) {
         $task5->setDescription($fastTask->getDescription5());
       }
@@ -750,7 +753,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task6->setCreatedBy($user);
       $task6->setIsTimeRoundUp(true);
       $task6->setRoundingInterval(15);
-
+     $task6->setIsFree($fastTask->getFree6());
       if(!is_null($fastTask->getDescription6())) {
         $task6->setDescription($fastTask->getDescription6());
       }
@@ -801,7 +804,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task7->setCreatedBy($user);
       $task7->setIsTimeRoundUp(true);
       $task7->setRoundingInterval(15);
-
+     $task7->setIsFree($fastTask->getFree7());
       if(!is_null($fastTask->getDescription7())) {
         $task7->setDescription($fastTask->getDescription7());
       }
@@ -852,7 +855,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task8->setCreatedBy($user);
       $task8->setIsTimeRoundUp(true);
       $task8->setRoundingInterval(15);
-
+     $task8->setIsFree($fastTask->getFree8());
       if(!is_null($fastTask->getDescription8())) {
         $task8->setDescription($fastTask->getDescription8());
       }
@@ -903,7 +906,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task9->setCreatedBy($user);
       $task9->setIsTimeRoundUp(true);
       $task9->setRoundingInterval(15);
-
+      $task9->setIsFree($fastTask->getFree9());
       if(!is_null($fastTask->getDescription9())) {
         $task9->setDescription($fastTask->getDescription9());
       }
@@ -954,7 +957,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task10->setCreatedBy($user);
       $task10->setIsTimeRoundUp(true);
       $task10->setRoundingInterval(15);
-
+      $task10->setIsFree($fastTask->getFree10());
       if(!is_null($fastTask->getDescription10())) {
         $task10->setDescription($fastTask->getDescription10());
       }
@@ -1013,6 +1016,7 @@ class TaskRepository extends ServiceEntityRepository {
         $task1->setIsTimeRoundUp(true);
         $task1->setRoundingInterval(15);
         $task1->setCreatedBy($user);
+        $task1->setIsFree($fastTask->getFree1());
 
 
         if (!is_null($fastTask->getDescription1())) {
@@ -1070,7 +1074,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task2->setCreatedBy($user);
       $task2->setIsTimeRoundUp(true);
       $task2->setRoundingInterval(15);
-
+        $task2->setIsFree($fastTask->getFree2());
       if(!is_null($fastTask->getDescription2())) {
         $task2->setDescription($fastTask->getDescription2());
       }
@@ -1122,7 +1126,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task3->setCreatedBy($user);
       $task3->setIsTimeRoundUp(true);
       $task3->setRoundingInterval(15);
-
+        $task3->setIsFree($fastTask->getFree3());
       if(!is_null($fastTask->getDescription3())) {
         $task3->setDescription($fastTask->getDescription3());
       }
@@ -1174,7 +1178,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task4->setCreatedBy($user);
       $task4->setIsTimeRoundUp(true);
       $task4->setRoundingInterval(15);
-
+        $task4->setIsFree($fastTask->getFree4());
       if(!is_null($fastTask->getDescription4())) {
         $task4->setDescription($fastTask->getDescription4());
       }
@@ -1226,7 +1230,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task5->setCreatedBy($user);
       $task5->setIsTimeRoundUp(true);
       $task5->setRoundingInterval(15);
-
+        $task5->setIsFree($fastTask->getFree5());
       if(!is_null($fastTask->getDescription5())) {
         $task5->setDescription($fastTask->getDescription5());
       }
@@ -1278,7 +1282,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task6->setCreatedBy($user);
       $task6->setIsTimeRoundUp(true);
       $task6->setRoundingInterval(15);
-
+        $task6->setIsFree($fastTask->getFree6());
       if(!is_null($fastTask->getDescription6())) {
         $task6->setDescription($fastTask->getDescription6());
       }
@@ -1330,7 +1334,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task7->setCreatedBy($user);
       $task7->setIsTimeRoundUp(true);
       $task7->setRoundingInterval(15);
-
+        $task7->setIsFree($fastTask->getFree7());
       if(!is_null($fastTask->getDescription7())) {
         $task7->setDescription($fastTask->getDescription7());
       }
@@ -1382,7 +1386,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task8->setCreatedBy($user);
       $task8->setIsTimeRoundUp(true);
       $task8->setRoundingInterval(15);
-
+        $task8->setIsFree($fastTask->getFree8());
       if(!is_null($fastTask->getDescription8())) {
         $task8->setDescription($fastTask->getDescription8());
       }
@@ -1434,7 +1438,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task9->setCreatedBy($user);
       $task9->setIsTimeRoundUp(true);
       $task9->setRoundingInterval(15);
-
+        $task9->setIsFree($fastTask->getFree9());
       if(!is_null($fastTask->getDescription9())) {
         $task9->setDescription($fastTask->getDescription9());
       }
@@ -1486,7 +1490,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task10->setCreatedBy($user);
       $task10->setIsTimeRoundUp(true);
       $task10->setRoundingInterval(15);
-
+        $task10->setIsFree($fastTask->getFree10());
       if(!is_null($fastTask->getDescription10())) {
         $task10->setDescription($fastTask->getDescription10());
       }

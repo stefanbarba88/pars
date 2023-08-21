@@ -117,7 +117,7 @@ class TaskLogRepository extends ServiceEntityRepository {
         ];
       } else {
         $otvoren = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $log, 'stop' => null]);
-        if (!is_null($otvoren)) {
+        if (!empty($otvoren)) {
           $status[$user->getId()] = [
             'nije_zapocet' => 0,
             'otvoren' => 1,
@@ -132,7 +132,7 @@ class TaskLogRepository extends ServiceEntityRepository {
         }
       }
     }
-
+//dd($status);
     return $status;
 
   }

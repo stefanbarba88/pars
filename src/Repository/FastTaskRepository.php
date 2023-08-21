@@ -1930,6 +1930,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         if ($proj1 == '---') {
           $proj1 = null;
         }
+
         if (isset($task1['geo'][0])) {
           $geo11 = $task1['geo'][0];
           if ($geo11 == '---') {
@@ -2001,7 +2002,17 @@ class FastTaskRepository extends ServiceEntityRepository {
           $fastTask->setDriver1(null);
           $fastTask->setTask1(null);
           $fastTask->setStatus1(null);
+          $fastTask->setFree1(null);
         } else {
+          if ($fastTask->getFree1() != $task1['naplativ'] && $status == FastTaskData::EDIT) {
+            if (!is_null($fastTask->getTask1())) {
+              if ($fastTask->getTask1() != 0) {
+                $this->getEntityManager()->getRepository(Task::class)->remove($fastTask->getTask1());
+                $fastTask->setTask1(0);
+              }
+            }
+            $fastTask->setStatus1(FastTaskData::EDIT);
+          }
           if ($fastTask->getProject1() != $proj1 && $status == FastTaskData::EDIT) {
             if (!is_null($fastTask->getTask1())) {
               if ($fastTask->getTask1() != 0) {
@@ -2152,8 +2163,9 @@ class FastTaskRepository extends ServiceEntityRepository {
             }
           }
         }
-
+        $fastTask->setFree1($task1['naplativ']);
       } else {
+        $fastTask->setFree1(null);
         $fastTask->setGeo11(null);
         $fastTask->setGeo21(null);
         $fastTask->setGeo31(null);
@@ -2163,6 +2175,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         $fastTask->setTime1(null);
         $fastTask->setCar1(null);
         $fastTask->setDriver1(null);
+
         if (!is_null($fastTask->getTask1())) {
           $this->getEntityManager()->getRepository(Task::class)->remove($fastTask->getTask1());
           $fastTask->setTask1(null);
@@ -2247,7 +2260,17 @@ class FastTaskRepository extends ServiceEntityRepository {
           $fastTask->setDriver2(null);
           $fastTask->setTask2(null);
           $fastTask->setStatus2(null);
+          $fastTask->setFree2(null);
         } else {
+          if ($fastTask->getFree2() != $task2['naplativ'] && $status == FastTaskData::EDIT) {
+            if (!is_null($fastTask->getTask2())) {
+              if ($fastTask->getTask2() != 0) {
+                $this->getEntityManager()->getRepository(Task::class)->remove($fastTask->getTask2());
+                $fastTask->setTask2(0);
+              }
+            }
+            $fastTask->setStatus2(FastTaskData::EDIT);
+          }
           if ($fastTask->getProject2() != $proj2 && $status == FastTaskData::EDIT) {
             if (!is_null($fastTask->getTask2())) {
               if ($fastTask->getTask2() != 0) {
@@ -2397,7 +2420,9 @@ class FastTaskRepository extends ServiceEntityRepository {
           }
         }
 
+        $fastTask->setFree2($task2['naplativ']);
       } else {
+        $fastTask->setFree2(null);
         $fastTask->setGeo12(null);
         $fastTask->setGeo22(null);
         $fastTask->setGeo32(null);
@@ -2489,7 +2514,17 @@ class FastTaskRepository extends ServiceEntityRepository {
           $fastTask->setDriver3(null);
           $fastTask->setTask3(null);
           $fastTask->setStatus3(null);
+          $fastTask->setFree3(null);
         } else {
+          if ($fastTask->getFree3() != $task3['naplativ'] && $status == FastTaskData::EDIT) {
+            if (!is_null($fastTask->getTask3())) {
+              if ($fastTask->getTask3() != 0) {
+                $this->getEntityManager()->getRepository(Task::class)->remove($fastTask->getTask3());
+                $fastTask->setTask3(0);
+              }
+            }
+            $fastTask->setStatus3(FastTaskData::EDIT);
+          }
           if ($fastTask->getProject3() != $proj3 && $status == FastTaskData::EDIT) {
             if (!is_null($fastTask->getTask3())) {
               if ($fastTask->getTask3() != 0) {
@@ -2641,7 +2676,9 @@ class FastTaskRepository extends ServiceEntityRepository {
           }
         }
 
+        $fastTask->setFree3($task3['naplativ']);
       } else {
+        $fastTask->setFree3(null);
         $fastTask->setGeo13(null);
         $fastTask->setGeo23(null);
         $fastTask->setGeo33(null);
@@ -2733,7 +2770,17 @@ class FastTaskRepository extends ServiceEntityRepository {
           $fastTask->setDriver4(null);
           $fastTask->setTask4(null);
           $fastTask->setStatus4(null);
+          $fastTask->setFree4(null);
         } else {
+          if ($fastTask->getFree4() != $task4['naplativ'] && $status == FastTaskData::EDIT) {
+            if (!is_null($fastTask->getTask4())) {
+              if ($fastTask->getTask4() != 0) {
+                $this->getEntityManager()->getRepository(Task::class)->remove($fastTask->getTask4());
+                $fastTask->setTask4(0);
+              }
+            }
+            $fastTask->setStatus4(FastTaskData::EDIT);
+          }
           if ($fastTask->getProject4() != $proj4 && $status == FastTaskData::EDIT) {
             if (!is_null($fastTask->getTask4())) {
               if ($fastTask->getTask4() != 0) {
@@ -2885,7 +2932,9 @@ class FastTaskRepository extends ServiceEntityRepository {
           }
         }
 
+        $fastTask->setFree4($task4['naplativ']);
       } else {
+        $fastTask->setFree4(null);
         $fastTask->setGeo14(null);
         $fastTask->setGeo24(null);
         $fastTask->setGeo34(null);
@@ -2977,7 +3026,17 @@ class FastTaskRepository extends ServiceEntityRepository {
           $fastTask->setDriver5(null);
           $fastTask->setTask5(null);
           $fastTask->setStatus5(null);
+          $fastTask->setFree5(null);
         } else {
+          if ($fastTask->getFree5() != $task5['naplativ'] && $status == FastTaskData::EDIT) {
+            if (!is_null($fastTask->getTask5())) {
+              if ($fastTask->getTask5() != 0) {
+                $this->getEntityManager()->getRepository(Task::class)->remove($fastTask->getTask5());
+                $fastTask->setTask5(0);
+              }
+            }
+            $fastTask->setStatus5(FastTaskData::EDIT);
+          }
           if ($fastTask->getProject5() != $proj5 && $status == FastTaskData::EDIT) {
             if (!is_null($fastTask->getTask5())) {
               if ($fastTask->getTask5() != 0) {
@@ -3129,7 +3188,9 @@ class FastTaskRepository extends ServiceEntityRepository {
           }
         }
 
+        $fastTask->setFree5($task5['naplativ']);
       } else {
+        $fastTask->setFree5(null);
         $fastTask->setGeo15(null);
         $fastTask->setGeo25(null);
         $fastTask->setGeo35(null);
@@ -3221,7 +3282,17 @@ class FastTaskRepository extends ServiceEntityRepository {
           $fastTask->setDriver6(null);
           $fastTask->setTask6(null);
           $fastTask->setStatus6(null);
+          $fastTask->setFree6(null);
         } else {
+          if ($fastTask->getFree6() != $task6['naplativ'] && $status == FastTaskData::EDIT) {
+            if (!is_null($fastTask->getTask6())) {
+              if ($fastTask->getTask6() != 0) {
+                $this->getEntityManager()->getRepository(Task::class)->remove($fastTask->getTask6());
+                $fastTask->setTask6(0);
+              }
+            }
+            $fastTask->setStatus6(FastTaskData::EDIT);
+          }
           if ($fastTask->getProject6() != $proj6 && $status == FastTaskData::EDIT) {
             if (!is_null($fastTask->getTask6())) {
               if ($fastTask->getTask6() != 0) {
@@ -3373,7 +3444,9 @@ class FastTaskRepository extends ServiceEntityRepository {
           }
         }
 
+        $fastTask->setFree6($task6['naplativ']);
       } else {
+        $fastTask->setFree6(null);
         $fastTask->setGeo16(null);
         $fastTask->setGeo26(null);
         $fastTask->setGeo36(null);
@@ -3465,7 +3538,17 @@ class FastTaskRepository extends ServiceEntityRepository {
           $fastTask->setDriver7(null);
           $fastTask->setTask7(null);
           $fastTask->setStatus7(null);
+          $fastTask->setFree7(null);
         } else {
+          if ($fastTask->getFree7() != $task7['naplativ'] && $status == FastTaskData::EDIT) {
+            if (!is_null($fastTask->getTask7())) {
+              if ($fastTask->getTask7() != 0) {
+                $this->getEntityManager()->getRepository(Task::class)->remove($fastTask->getTask7());
+                $fastTask->setTask7(0);
+              }
+            }
+            $fastTask->setStatus7(FastTaskData::EDIT);
+          }
           if ($fastTask->getProject7() != $proj7 && $status == FastTaskData::EDIT) {
             if (!is_null($fastTask->getTask7())) {
               if ($fastTask->getTask7() != 0) {
@@ -3617,7 +3700,9 @@ class FastTaskRepository extends ServiceEntityRepository {
           }
         }
 
+        $fastTask->setFree8($task8['naplativ']);
       } else {
+        $fastTask->setFree8(null);
         $fastTask->setGeo17(null);
         $fastTask->setGeo27(null);
         $fastTask->setGeo37(null);
@@ -3709,7 +3794,17 @@ class FastTaskRepository extends ServiceEntityRepository {
           $fastTask->setDriver8(null);
           $fastTask->setTask8(null);
           $fastTask->setStatus8(null);
+          $fastTask->setFree8(null);
         } else {
+          if ($fastTask->getFree8() != $task8['naplativ'] && $status == FastTaskData::EDIT) {
+            if (!is_null($fastTask->getTask8())) {
+              if ($fastTask->getTask8() != 0) {
+                $this->getEntityManager()->getRepository(Task::class)->remove($fastTask->getTask8());
+                $fastTask->setTask8(0);
+              }
+            }
+            $fastTask->setStatus8(FastTaskData::EDIT);
+          }
           if ($fastTask->getProject8() != $proj8 && $status == FastTaskData::EDIT) {
             if (!is_null($fastTask->getTask8())) {
               if ($fastTask->getTask8() != 0) {
@@ -3861,7 +3956,9 @@ class FastTaskRepository extends ServiceEntityRepository {
           }
         }
 
+        $fastTask->setFree8($task8['naplativ']);
       } else {
+        $fastTask->setFree8(null);
         $fastTask->setGeo18(null);
         $fastTask->setGeo28(null);
         $fastTask->setGeo38(null);
@@ -3953,7 +4050,17 @@ class FastTaskRepository extends ServiceEntityRepository {
           $fastTask->setDriver9(null);
           $fastTask->setTask9(null);
           $fastTask->setStatus9(null);
+          $fastTask->setFree9(null);
         } else {
+          if ($fastTask->getFree9() != $task9['naplativ'] && $status == FastTaskData::EDIT) {
+            if (!is_null($fastTask->getTask9())) {
+              if ($fastTask->getTask9() != 0) {
+                $this->getEntityManager()->getRepository(Task::class)->remove($fastTask->getTask9());
+                $fastTask->setTask9(0);
+              }
+            }
+            $fastTask->setStatus9(FastTaskData::EDIT);
+          }
           if ($fastTask->getProject9() != $proj9 && $status == FastTaskData::EDIT) {
             if (!is_null($fastTask->getTask9())) {
               if ($fastTask->getTask9() != 0) {
@@ -4104,7 +4211,9 @@ class FastTaskRepository extends ServiceEntityRepository {
             }
           }
         }
+        $fastTask->setFree9($task9['naplativ']);
       } else {
+        $fastTask->setFree9(null);
         $fastTask->setGeo19(null);
         $fastTask->setGeo29(null);
         $fastTask->setGeo39(null);
@@ -4196,7 +4305,17 @@ class FastTaskRepository extends ServiceEntityRepository {
           $fastTask->setDriver10(null);
           $fastTask->setTask10(null);
           $fastTask->setStatus10(null);
+          $fastTask->setFree10(null);
         } else {
+          if ($fastTask->getFree10() != $task10['naplativ'] && $status == FastTaskData::EDIT) {
+            if (!is_null($fastTask->getTask10())) {
+              if ($fastTask->getTask10() != 0) {
+                $this->getEntityManager()->getRepository(Task::class)->remove($fastTask->getTask10());
+                $fastTask->setTask10(0);
+              }
+            }
+            $fastTask->setStatus10(FastTaskData::EDIT);
+          }
           if ($fastTask->getProject10() != $proj10 && $status == FastTaskData::EDIT) {
             if (!is_null($fastTask->getTask10())) {
               if ($fastTask->getTask10() != 0) {
@@ -4348,7 +4467,9 @@ class FastTaskRepository extends ServiceEntityRepository {
           }
         }
 
+        $fastTask->setFree10($task10['naplativ']);
       } else {
+        $fastTask->setFree10(null);
         $fastTask->setGeo110(null);
         $fastTask->setGeo210(null);
         $fastTask->setGeo310(null);

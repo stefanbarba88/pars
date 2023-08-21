@@ -78,6 +78,9 @@ class Task implements JsonSerializable {
   private ?bool $isEstimate = null;
 
   #[ORM\Column(nullable: true)]
+  private ?bool $isFree = false;
+
+  #[ORM\Column(nullable: true)]
   private ?bool $isClientView = null;
 
   #[ORM\Column(nullable: true)]
@@ -171,6 +174,7 @@ class Task implements JsonSerializable {
       'description' => $this->getDescription(),
       'isTimeRoundUp' => $this->isIsTimeRoundUp(),
       'isEstimate' => $this->isIsEstimate(),
+      'isFree' => $this->getIsFree(),
       'isClientView' => $this->isIsClientView(),
       'labels' => $this->getLabelJson(),
       'category' => $this->getCategoryJson(),
@@ -756,6 +760,20 @@ class Task implements JsonSerializable {
    */
   public function setDriver(?int $driver): void {
     $this->driver = $driver;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getIsFree(): ?bool {
+    return $this->isFree;
+  }
+
+  /**
+   * @param bool|null $isFree
+   */
+  public function setIsFree(?bool $isFree): void {
+    $this->isFree = $isFree;
   }
 
 

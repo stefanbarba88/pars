@@ -66,6 +66,14 @@ class PhoneTaskFormType extends AbstractType {
       ->add('description', TextareaType::class, [
         'required' => false
       ])
+      ->add('isFree', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
       ->add('oprema', EntityType::class, [
         'required' => false,
         'class' => Tool::class,

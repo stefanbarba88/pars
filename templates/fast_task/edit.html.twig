@@ -172,6 +172,18 @@
                                             <textarea id="task_form_napomena1" name="task_quick_form1[napomena]" class="form-control"  rows="1">{% if fastTask.description1 is not null %}{{ fastTask.description1 | trim }}{% endif %}
                                             </textarea>
                                         </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_naplativ1">Naplativ:</label>
+                                            <select id="task_form_naplativ1" name="task_quick_form1[naplativ]" class="form-control select" disabled>
+                                                {% if fastTask.free1 == 1 %}
+                                                    <option value="0">Da</option>
+                                                    <option value="1" selected>Ne</option>
+                                                {% else %}
+                                                    <option value="0" selected>Da</option>
+                                                    <option value="1">Ne</option>
+                                                {% endif %}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="col-lg-2 quick-form-media">
 
@@ -307,6 +319,18 @@
                                             <label class="form-category" for="task_form_napomena2">Napomena:</label>
                                             <textarea id="task_form_napomena2" name="task_quick_form2[napomena]" class="form-control"  rows="1">{% if fastTask.description2 is not null %}{{ fastTask.description2 | trim }}{% endif %}
                                             </textarea>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_naplativ2">Naplativ:</label>
+                                            <select id="task_form_naplativ2" name="task_quick_form2[naplativ]" class="form-control select" disabled>
+                                                {% if fastTask.free2 == 1 %}
+                                                    <option value="0">Da</option>
+                                                    <option value="1" selected>Ne</option>
+                                                {% else %}
+                                                    <option value="0" selected>Da</option>
+                                                    <option value="1">Ne</option>
+                                                {% endif %}
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-lg-2 quick-form-media">
@@ -444,6 +468,18 @@
                                             <textarea id="task_form_napomena3" name="task_quick_form3[napomena]" class="form-control"  rows="1">{% if fastTask.description3 is not null %}{{ fastTask.description3 | trim }}{% endif %}
                                             </textarea>
                                         </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_naplativ3">Naplativ:</label>
+                                            <select id="task_form_naplativ3" name="task_quick_form3[naplativ]" class="form-control select" disabled>
+                                                {% if fastTask.free3 == 1 %}
+                                                    <option value="0">Da</option>
+                                                    <option value="1" selected>Ne</option>
+                                                {% else %}
+                                                    <option value="0" selected>Da</option>
+                                                    <option value="1">Ne</option>
+                                                {% endif %}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
@@ -578,6 +614,18 @@
                                             <label class="form-category" for="task_form_napomena4">Napomena:</label>
                                             <textarea id="task_form_napomena4" name="task_quick_form4[napomena]" class="form-control"  rows="1">{% if fastTask.description4 is not null %}{{ fastTask.description4 | trim }}{% endif %}
                                             </textarea>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_naplativ4">Naplativ:</label>
+                                            <select id="task_form_naplativ4" name="task_quick_form4[naplativ]" class="form-control select" disabled>
+                                                {% if fastTask.free4 == 1 %}
+                                                    <option value="0">Da</option>
+                                                    <option value="1" selected>Ne</option>
+                                                {% else %}
+                                                    <option value="0" selected>Da</option>
+                                                    <option value="1">Ne</option>
+                                                {% endif %}
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-lg-2 quick-form-media">
@@ -714,6 +762,18 @@
                                             <textarea id="task_form_napomena5" name="task_quick_form5[napomena]" class="form-control"  rows="1">{% if fastTask.description5 is not null %}{{ fastTask.description5 | trim }}{% endif %}
                                             </textarea>
                                         </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_naplativ5">Naplativ:</label>
+                                            <select id="task_form_naplativ5" name="task_quick_form5[naplativ]" class="form-control select" disabled>
+                                                {% if fastTask.free5 == 1 %}
+                                                    <option value="0">Da</option>
+                                                    <option value="1" selected>Ne</option>
+                                                {% else %}
+                                                    <option value="0" selected>Da</option>
+                                                    <option value="1">Ne</option>
+                                                {% endif %}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
@@ -849,6 +909,18 @@
                                             <textarea id="task_form_napomena6" name="task_quick_form6[napomena]" class="form-control"  rows="1">{% if fastTask.description6 is not null %}{{ fastTask.description6 | trim }}{% endif %}
                                             </textarea>
                                         </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_naplativ6">Naplativ:</label>
+                                            <select id="task_form_naplativ6" name="task_quick_form6[naplativ]" class="form-control select" disabled>
+                                                {% if fastTask.free6 == 1 %}
+                                                    <option value="0">Da</option>
+                                                    <option value="1" selected>Ne</option>
+                                                {% else %}
+                                                    <option value="0" selected>Da</option>
+                                                    <option value="1">Ne</option>
+                                                {% endif %}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="col-lg-2 quick-form-media">
                                         <div class="mb-1">
@@ -983,6 +1055,18 @@
                                             <label class="form-category" for="task_form_napomena7">Napomena:</label>
                                             <textarea id="task_form_napomena7" name="task_quick_form7[napomena]" class="form-control"  rows="1">{% if fastTask.description7 is not null %}{{ fastTask.description7 | trim }}{% endif %}
                                             </textarea>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_naplativ7">Naplativ:</label>
+                                            <select id="task_form_naplativ7" name="task_quick_form7[naplativ]" class="form-control select" disabled>
+                                                {% if fastTask.free7 == 1 %}
+                                                    <option value="0">Da</option>
+                                                    <option value="1" selected>Ne</option>
+                                                {% else %}
+                                                    <option value="0" selected>Da</option>
+                                                    <option value="1">Ne</option>
+                                                {% endif %}
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-lg-2 quick-form-media">
@@ -1120,6 +1204,18 @@
                                             <textarea id="task_form_napomena8" name="task_quick_form8[napomena]" class="form-control"  rows="1">{% if fastTask.description8 is not null %}{{ fastTask.description8 | trim }}{% endif %}
                                             </textarea>
                                         </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_naplativ8">Naplativ:</label>
+                                            <select id="task_form_naplativ8" name="task_quick_form8[naplativ]" class="form-control select" disabled>
+                                                {% if fastTask.free8 == 1 %}
+                                                    <option value="0">Da</option>
+                                                    <option value="1" selected>Ne</option>
+                                                {% else %}
+                                                    <option value="0" selected>Da</option>
+                                                    <option value="1">Ne</option>
+                                                {% endif %}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="col-lg-2 quick-form-media">
 
@@ -1256,6 +1352,18 @@
                                             <textarea id="task_form_napomena9" name="task_quick_form9[napomena]" class="form-control"  rows="1">{% if fastTask.description9 is not null %}{{ fastTask.description9 | trim }}{% endif %}
                                             </textarea>
                                         </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_naplativ9">Naplativ:</label>
+                                            <select id="task_form_naplativ9" name="task_quick_form9[naplativ]" class="form-control select" disabled>
+                                                {% if fastTask.free9 == 1 %}
+                                                    <option value="0">Da</option>
+                                                    <option value="1" selected>Ne</option>
+                                                {% else %}
+                                                    <option value="0" selected>Da</option>
+                                                    <option value="1">Ne</option>
+                                                {% endif %}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="col-lg-2 quick-form-media">
 
@@ -1391,6 +1499,18 @@
                                             <label class="form-category" for="task_form_napomena10">Napomena:</label>
                                             <textarea id="task_form_napomena10" name="task_quick_form10[napomena]" class="form-control"  rows="1">{% if fastTask.description10 is not null %}{{ fastTask.description10 | trim }}{% endif %}
                                             </textarea>
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_naplativ10">Naplativ:</label>
+                                            <select id="task_form_naplativ10" name="task_quick_form10[naplativ]" class="form-control select" disabled>
+                                                {% if fastTask.free10 == 1 %}
+                                                    <option value="0">Da</option>
+                                                    <option value="1" selected>Ne</option>
+                                                {% else %}
+                                                    <option value="0" selected>Da</option>
+                                                    <option value="1">Ne</option>
+                                                {% endif %}
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-lg-2 quick-form-media">
@@ -2143,7 +2263,7 @@
                 var selectedProject = $('#task_form_projekat1').val();
                 var disabledState = selectedProject === '---';
 
-                $('#task_form_vreme1, #task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1, #task_form_aktivnosti1, #task_form_oprema1, #task_form_napomena1, #task_form_vozilo1, #task_form_vozac1').prop('disabled', disabledState);
+                $('#task_form_vreme1, #task_form_naplativ1, #task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1, #task_form_aktivnosti1, #task_form_oprema1, #task_form_napomena1, #task_form_vozilo1, #task_form_vozac1').prop('disabled', disabledState);
             }
             function updateInputFieldsRequired1() {
                 var selectedProject = $('#task_form_projekat1').val();
@@ -2162,7 +2282,7 @@
                 var selectedProject = $('#task_form_projekat2').val();
                 var disabledState = selectedProject === '---';
 
-                $('#task_form_vreme2, #task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2, #task_form_aktivnosti2, #task_form_oprema2, #task_form_napomena2, #task_form_vozilo2, #task_form_vozac2').prop('disabled', disabledState);
+                $('#task_form_vreme2, #task_form_geodeta1_2,#task_form_naplativ2, #task_form_geodeta2_2, #task_form_geodeta3_2, #task_form_aktivnosti2, #task_form_oprema2, #task_form_napomena2, #task_form_vozilo2, #task_form_vozac2').prop('disabled', disabledState);
             }
             function updateInputFieldsRequired2() {
                 var selectedProject = $('#task_form_projekat2').val();
@@ -2181,7 +2301,7 @@
                 var selectedProject = $('#task_form_projekat3').val();
                 var disabledState = selectedProject === '---';
 
-                $('#task_form_vreme3, #task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3, #task_form_aktivnosti3, #task_form_oprema3, #task_form_napomena3, #task_form_vozilo3, #task_form_vozac3').prop('disabled', disabledState);
+                $('#task_form_vreme3, #task_form_geodeta1_3, #task_form_naplativ3, #task_form_geodeta2_3, #task_form_geodeta3_3, #task_form_aktivnosti3, #task_form_oprema3, #task_form_napomena3, #task_form_vozilo3, #task_form_vozac3').prop('disabled', disabledState);
             }
             function updateInputFieldsRequired3() {
                 var selectedProject = $('#task_form_projekat3').val();
@@ -2200,7 +2320,7 @@
                 var selectedProject = $('#task_form_projekat4').val();
                 var disabledState = selectedProject === '---';
 
-                $('#task_form_vreme4, #task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4, #task_form_aktivnosti4, #task_form_oprema4, #task_form_napomena4, #task_form_vozilo4, #task_form_vozac4').prop('disabled', disabledState);
+                $('#task_form_vreme4, #task_form_geodeta1_4, #task_form_naplativ4, #task_form_geodeta2_4, #task_form_geodeta3_4, #task_form_aktivnosti4, #task_form_oprema4, #task_form_napomena4, #task_form_vozilo4, #task_form_vozac4').prop('disabled', disabledState);
             }
             function updateInputFieldsRequired4() {
                 var selectedProject = $('#task_form_projekat4').val();
@@ -2219,7 +2339,7 @@
                 var selectedProject = $('#task_form_projekat5').val();
                 var disabledState = selectedProject === '---';
 
-                $('#task_form_vreme5, #task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5, #task_form_aktivnosti5, #task_form_oprema5, #task_form_napomena5, #task_form_vozilo5, #task_form_vozac5').prop('disabled', disabledState);
+                $('#task_form_vreme5, #task_form_geodeta1_5, #task_form_naplativ5, #task_form_geodeta2_5, #task_form_geodeta3_5, #task_form_aktivnosti5, #task_form_oprema5, #task_form_napomena5, #task_form_vozilo5, #task_form_vozac5').prop('disabled', disabledState);
             }
             function updateInputFieldsRequired5() {
                 var selectedProject = $('#task_form_projekat5').val();
@@ -2238,7 +2358,7 @@
                 var selectedProject = $('#task_form_projekat6').val();
                 var disabledState = selectedProject === '---';
 
-                $('#task_form_vreme6, #task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6, #task_form_aktivnosti6, #task_form_oprema6, #task_form_napomena6, #task_form_vozilo6, #task_form_vozac6').prop('disabled', disabledState);
+                $('#task_form_vreme6, #task_form_geodeta1_6, #task_form_naplativ6, #task_form_geodeta2_6, #task_form_geodeta3_6, #task_form_aktivnosti6, #task_form_oprema6, #task_form_napomena6, #task_form_vozilo6, #task_form_vozac6').prop('disabled', disabledState);
             }
             function updateInputFieldsRequired6() {
                 var selectedProject = $('#task_form_projekat6').val();
@@ -2257,7 +2377,7 @@
                 var selectedProject = $('#task_form_projekat7').val();
                 var disabledState = selectedProject === '---';
 
-                $('#task_form_vreme7, #task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7, #task_form_aktivnosti7, #task_form_oprema7, #task_form_napomena7, #task_form_vozilo7, #task_form_vozac7').prop('disabled', disabledState);
+                $('#task_form_vreme7, #task_form_geodeta1_7, #task_form_naplativ7, #task_form_geodeta2_7, #task_form_geodeta3_7, #task_form_aktivnosti7, #task_form_oprema7, #task_form_napomena7, #task_form_vozilo7, #task_form_vozac7').prop('disabled', disabledState);
             }
             function updateInputFieldsRequired7() {
                 var selectedProject = $('#task_form_projekat7').val();
@@ -2276,7 +2396,7 @@
                 var selectedProject = $('#task_form_projekat8').val();
                 var disabledState = selectedProject === '---';
 
-                $('#task_form_vreme8, #task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8, #task_form_aktivnosti8, #task_form_oprema8, #task_form_napomena8, #task_form_vozilo8, #task_form_vozac8').prop('disabled', disabledState);
+                $('#task_form_vreme8, #task_form_geodeta1_8, #task_form_naplativ8, #task_form_geodeta2_8, #task_form_geodeta3_8, #task_form_aktivnosti8, #task_form_oprema8, #task_form_napomena8, #task_form_vozilo8, #task_form_vozac8').prop('disabled', disabledState);
             }
             function updateInputFieldsRequired8() {
                 var selectedProject = $('#task_form_projekat8').val();
@@ -2295,7 +2415,7 @@
                 var selectedProject = $('#task_form_projekat9').val();
                 var disabledState = selectedProject === '---';
 
-                $('#task_form_vreme9, #task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9, #task_form_aktivnosti9, #task_form_oprema9, #task_form_napomena9, #task_form_vozilo9, #task_form_vozac9').prop('disabled', disabledState);
+                $('#task_form_vreme9, #task_form_geodeta1_9, #task_form_naplativ9, #task_form_geodeta2_9, #task_form_geodeta3_9, #task_form_aktivnosti9, #task_form_oprema9, #task_form_napomena9, #task_form_vozilo9, #task_form_vozac9').prop('disabled', disabledState);
             }
             function updateInputFieldsRequired9() {
                 var selectedProject = $('#task_form_projekat9').val();
@@ -2314,7 +2434,7 @@
                 var selectedProject = $('#task_form_projekat10').val();
                 var disabledState = selectedProject === '---';
 
-                $('#task_form_vreme10, #task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10, #task_form_aktivnosti10, #task_form_oprema10, #task_form_napomena10, #task_form_vozilo10, #task_form_vozac10').prop('disabled', disabledState);
+                $('#task_form_vreme10, #task_form_geodeta1_10, #task_form_naplativ10, #task_form_geodeta2_10, #task_form_geodeta3_10, #task_form_aktivnosti10, #task_form_oprema10, #task_form_napomena10, #task_form_vozilo10, #task_form_vozac10').prop('disabled', disabledState);
             }
             function updateInputFieldsRequired10() {
                 var selectedProject = $('#task_form_projekat10').val();

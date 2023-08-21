@@ -49,8 +49,8 @@ class TaskController extends AbstractController {
 
   #[Route('/list/', name: 'app_tasks')]
   public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    return $this->redirect($this->generateUrl('app_login'));
+  }
     $args = [];
     $user = $this->getUser();
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
@@ -66,14 +66,14 @@ class TaskController extends AbstractController {
   #[Entity('task', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Task $task, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    return $this->redirect($this->generateUrl('app_login'));
+  }
 
     $mobileDetect = new MobileDetect();
 
     $user = $this->getUser();
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-        $task->addAssignedUser($user);
+      $task->addAssignedUser($user);
     }
 
     $history = null;
@@ -221,8 +221,8 @@ class TaskController extends AbstractController {
   #[Entity('task', expr: 'repository.findForFormProject(project)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function formByProject(Task $task, Project $project, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    return $this->redirect($this->generateUrl('app_login'));
+  }
 
     $mobileDetect = new MobileDetect();
 
@@ -368,8 +368,8 @@ class TaskController extends AbstractController {
   #[Route('/edit-info/{id}', name: 'app_task_edit_info')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editInfo(Task $task, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    return $this->redirect($this->generateUrl('app_login'));
+  }
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
@@ -412,8 +412,8 @@ class TaskController extends AbstractController {
   #[Route('/add-docs/{id}', name: 'app_task_add_docs')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function addDocs(Task $task,UploadService $uploadService, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    return $this->redirect($this->generateUrl('app_login'));
+  }
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
@@ -470,8 +470,8 @@ class TaskController extends AbstractController {
   #[Route('/reassign/{id}', name: 'app_task_reassign')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function reassign(Task $task, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    return $this->redirect($this->generateUrl('app_login'));
+  }
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
@@ -499,6 +499,10 @@ class TaskController extends AbstractController {
         $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
       }
 
+      foreach ($task->getAssignedUsers() as $member) {
+        $task->removeAssignedUser($member);
+      }
+
       foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
         if (!empty($assignedUser)){
           $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
@@ -511,16 +515,16 @@ class TaskController extends AbstractController {
           }
         }
       }
-        $this->em->getRepository(Task::class)->save($task, $user, $history);
+      $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-        return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+      return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
     }
 
@@ -602,14 +606,14 @@ class TaskController extends AbstractController {
     }
 
 
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-      return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+    return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
   }
 
@@ -617,8 +621,8 @@ class TaskController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function assignAdd(Task $task, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
@@ -668,8 +672,8 @@ class TaskController extends AbstractController {
   #[Route('/edit-task/{id}', name: 'app_task_edit')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function edit(Task $task, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    return $this->redirect($this->generateUrl('app_login'));
+  }
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
@@ -711,8 +715,8 @@ class TaskController extends AbstractController {
   #[Route('/view/{id}', name: 'app_task_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function view(Task $task)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    return $this->redirect($this->generateUrl('app_login'));
+  }
 
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();
@@ -746,8 +750,8 @@ class TaskController extends AbstractController {
   #[Route('/view-user/{id}', name: 'app_task_view_user')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewUser(Task $task)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    return $this->redirect($this->generateUrl('app_login'));
+  }
 
     $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
 
@@ -778,8 +782,8 @@ class TaskController extends AbstractController {
 
   #[Route('/close/{id}', name: 'app_task_close')]
   public function close(Task $task)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    return $this->redirect($this->generateUrl('app_login'));
+  }
 
     $this->em->getRepository(Task::class)->close($task);
 
@@ -795,8 +799,8 @@ class TaskController extends AbstractController {
 
   #[Route('/delete/{id}', name: 'app_task_delete')]
   public function delete(Task $task)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    return $this->redirect($this->generateUrl('app_login'));
+  }
     $user = $this->getUser();
     $this->em->getRepository(Task::class)->deleteTask($task, $user);
 

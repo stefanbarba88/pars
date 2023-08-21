@@ -239,6 +239,46 @@ class ToolController extends AbstractController {
     return $this->render('tool/form_reservation.html.twig', $args);
   }
 
+  #[Route('/form-reservation-user/', name: 'app_tool_reservation_user_form')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+
+  public function formReservationUser(Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $type = $request->query->getInt('type');
+    $user = $this->getUser();
+    $reservation = new ToolReservation();
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $reservation->setUser($user);
+    }
+
+    $form = $this->createForm(ToolReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_tool_reservation_user_form')]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(ToolReservation::class)->save($reservation);
+
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::CAR_ADD);
+
+
+        return $this->redirectToRoute('app_employee_tools_view', ['id' => $user->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['reservation'] = $reservation;
+
+    return $this->render('tool/form_reservation_employee_details_form_user.html.twig', $args);
+  }
+
   #[Route('/stop-reservation/{id}', name: 'app_tool_reservation_stop')]
   public function stopReservation(ToolReservation $reservation, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {

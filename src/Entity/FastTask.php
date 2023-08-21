@@ -392,6 +392,35 @@ class FastTask {
   #[ORM\Column(nullable: true)]
   private ?string $time10 = null;
 
+  #[ORM\Column(nullable: true)]
+  private ?bool $free1 = false;
+
+  #[ORM\Column(nullable: true)]
+  private ?bool $free2 = false;
+
+  #[ORM\Column(nullable: true)]
+  private ?bool $free3 = false;
+
+  #[ORM\Column(nullable: true)]
+  private ?bool $free4 = false;
+
+  #[ORM\Column(nullable: true)]
+  private ?bool $free5 = false;
+
+  #[ORM\Column(nullable: true)]
+  private ?bool $free6 = false;
+
+  #[ORM\Column(nullable: true)]
+  private ?bool $free7 = false;
+
+  #[ORM\Column(nullable: true)]
+  private ?bool $free8 = false;
+
+  #[ORM\Column(nullable: true)]
+  private ?bool $free9 = false;
+
+  #[ORM\Column(nullable: true)]
+  private ?bool $free10 = false;
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -490,7 +519,7 @@ class FastTask {
     return $this->status1;
   }
 
-  public function setStatus1(int $status1): self {
+  public function setStatus1(?int $status1): self {
     $this->status1 = $status1;
 
     return $this;
@@ -2139,6 +2168,146 @@ class FastTask {
    */
   public function setTask10(?int $task10): void {
     $this->task10 = $task10;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getFree1(): ?bool {
+    return $this->free1;
+  }
+
+  /**
+   * @param bool|null $free1
+   */
+  public function setFree1(?bool $free1): void {
+    $this->free1 = $free1;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getFree2(): ?bool {
+    return $this->free2;
+  }
+
+  /**
+   * @param bool|null $free2
+   */
+  public function setFree2(?bool $free2): void {
+    $this->free2 = $free2;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getFree3(): ?bool {
+    return $this->free3;
+  }
+
+  /**
+   * @param bool|null $free3
+   */
+  public function setFree3(?bool $free3): void {
+    $this->free3 = $free3;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getFree4(): ?bool {
+    return $this->free4;
+  }
+
+  /**
+   * @param bool|null $free4
+   */
+  public function setFree4(?bool $free4): void {
+    $this->free4 = $free4;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getFree5(): ?bool {
+    return $this->free5;
+  }
+
+  /**
+   * @param bool|null $free5
+   */
+  public function setFree5(?bool $free5): void {
+    $this->free5 = $free5;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getFree6(): ?bool {
+    return $this->free6;
+  }
+
+  /**
+   * @param bool|null $free6
+   */
+  public function setFree6(?bool $free6): void {
+    $this->free6 = $free6;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getFree7(): ?bool {
+    return $this->free7;
+  }
+
+  /**
+   * @param bool|null $free7
+   */
+  public function setFree7(?bool $free7): void {
+    $this->free7 = $free7;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getFree8(): ?bool {
+    return $this->free8;
+  }
+
+  /**
+   * @param bool|null $free8
+   */
+  public function setFree8(?bool $free8): void {
+    $this->free8 = $free8;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getFree9(): ?bool {
+    return $this->free9;
+  }
+
+  /**
+   * @param bool|null $free9
+   */
+  public function setFree9(?bool $free9): void {
+    $this->free9 = $free9;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getFree10(): ?bool {
+    return $this->free10;
+  }
+
+  /**
+   * @param bool|null $free10
+   */
+  public function setFree10(?bool $free10): void {
+    $this->free10 = $free10;
   }
 
 

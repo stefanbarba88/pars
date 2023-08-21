@@ -46,8 +46,8 @@ class ToolReservationFormDetailsType extends AbstractType {
 
     };
 
-    $tool = $dataObject->getReservation()->getTool();
-    $type = $tool->getType();
+
+
 
     $builder
       ->add('isMiniprizma', ChoiceType::class, [
@@ -164,6 +164,7 @@ class ToolReservationFormDetailsType extends AbstractType {
         ])
       ->add('tool', EntityType::class, [
         'required' => false,
+        'placeholder' => '---Izaberite opremu---',
         'class' => Tool::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')

@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Classes\Data\FastTaskData;
 use App\Entity\Activity;
 use App\Entity\FastTask;
+use App\Entity\Task;
 use App\Entity\User;
 use App\Service\ImportService;
 use App\Service\MailService;
@@ -40,10 +41,17 @@ class EditTimetableCommand extends Command {
 
     $plan = $this->em->getRepository(FastTask::class)->findOneBy(['status' => FastTaskData::EDIT],['datum' => 'ASC']);
     if (!is_null($plan)) {
-      $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
+
       $datum = $plan->getDatum();
-      $users= $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::EDIT);
+      $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
+      $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($plan);
+
+      $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::SAVED);
+      $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($plan, FastTaskData::SAVED);
+
       $this->mail->plan($timetable, $users, $datum);
+      $this->mail->subs($subs, $usersSub, $datum);
+
     }
 
 

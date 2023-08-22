@@ -7,6 +7,8 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Calendar;
 use App\Entity\TaskLog;
 use App\Form\CalendarFormType;
+use App\Form\PhoneCalendarFormType;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,7 +40,10 @@ class CalendarController extends AbstractController {
 
     }
 
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('calendar/phone/list.html.twig', $args);
+    }
     return $this->render('calendar/list.html.twig', $args);
   }
 
@@ -52,7 +57,11 @@ class CalendarController extends AbstractController {
     }
 
     $calendar->addUser($this->getUser());
+    $mobileDetect = new MobileDetect();
 
+    if($mobileDetect->isMobile()) {
+      $form = $this->createForm(PhoneCalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
+    }
     $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -74,7 +83,9 @@ class CalendarController extends AbstractController {
     $args['form'] = $form->createView();
     $args['calendar'] = $calendar;
 
-
+    if($mobileDetect->isMobile()) {
+      return $this->render('calendar/phone/form.html.twig', $args);
+    }
     return $this->render('calendar/form.html.twig', $args);
   }
 
@@ -85,6 +96,10 @@ class CalendarController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['calendar'] = $calendar;
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('calendar/phone/view.html.twig', $args);
+    }
     return $this->render('calendar/view.html.twig', $args);
   }
 

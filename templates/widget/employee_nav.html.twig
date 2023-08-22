@@ -9,22 +9,22 @@
                     </div>
                 </a>
             </li>
-            <li class="nav-item me-1">
-                <a href="{{ path('app_employee_activity_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
-                    <div class="d-flex align-items-center mx-lg-1">
-                        <i class="ph-activity"></i>
-                        <span class="d-none d-lg-inline-block ms-2">Aktivnosti</span>
-                    </div>
-                </a>
-            </li>
-            <li class="nav-item me-1">
-                <a href="{{ path('app_employee_calendar_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
-                    <div class="d-flex align-items-center mx-lg-1">
-                        <i class="ph-calendar"></i>
-                        <span class="d-none d-lg-inline-block ms-2">Raspored<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>
-                    </div>
-                </a>
-            </li>
+{#            <li class="nav-item me-1">#}
+{#                <a href="{{ path('app_employee_activity_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
+{#                    <div class="d-flex align-items-center mx-lg-1">#}
+{#                        <i class="ph-activity"></i>#}
+{#                        <span class="d-none d-lg-inline-block ms-2">Aktivnosti</span>#}
+{#                    </div>#}
+{#                </a>#}
+{#            </li>#}
+{#            <li class="nav-item me-1">#}
+{#                <a href="{{ path('app_employee_calendar_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
+{#                    <div class="d-flex align-items-center mx-lg-1">#}
+{#                        <i class="ph-calendar"></i>#}
+{#                        <span class="d-none d-lg-inline-block ms-2">Raspored<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>#}
+{#                    </div>#}
+{#                </a>#}
+{#            </li>#}
             <li class="nav-item me-1">
                 <a href="{{ path('app_employee_car_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
                     <div class="d-flex align-items-center mx-lg-1">
@@ -43,9 +43,9 @@
                     <div class="d-flex align-items-center mx-lg-1">
                         <i class="ph-wrench"></i>
                         <span class="d-none d-lg-inline-block ms-2">
-												Oprema
-												<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span>
-											</span>
+                            Oprema
+                            <span class="badge bg-success rounded-pill ms-auto ms-lg-2">{{ noTools }}</span>
+                        </span>
                     </div>
                 </a>
             </li>

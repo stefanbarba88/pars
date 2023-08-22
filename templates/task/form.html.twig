@@ -93,14 +93,15 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-category'}}) }}
-                                            {{ form_widget(form.title, {attr: { class: 'form-control' }}) }}
+                                            {{ form_label(form.category, 'Kategorija:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.category, {attr: { class: 'form-control select' }}) }}
+                                            <span class="form-text">Kategorizacija pomaže u organizaciji.</span>
                                         </div>
                                     </div>
                                     {% if task.project is null %}
                                         <div class="col-lg-6">
                                             <div class="mb-3">
-                                                {{ form_label(form.project, 'Projekat:*', {'label_attr': {'class': 'form-category'}}) }}
+                                                {{ form_label(form.project, 'Projekat:*', {'label_attr': {'class': 'form-label'}}) }}
                                                 {{ form_widget(form.project, {attr: { class: 'form-control select required' }}) }}
                                             </div>
                                         </div>
@@ -109,7 +110,7 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="mb-3">
-                                            {{ form_label(form.description, 'Opis:', {'label_attr': {'class': 'form-category'}}) }}
+                                            {{ form_label(form.description, 'Opis:', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.description, {attr: { class: 'form-control' }}) }}
                                         </div>
                                     </div>
@@ -117,19 +118,12 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="mb-3">
-                                            {{ form_label(form.oprema, 'Oprema:', {'label_attr': {'class': 'form-category'}}) }}
+                                            {{ form_label(form.oprema, 'Oprema:', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.oprema, {attr: { class: 'form-control select' }}) }}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.category, 'Kategorija:', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.category, {attr: { class: 'form-control select' }}) }}
-                                            <span class="form-text">Kategorizacija pomaže u organizaciji.</span>
-                                        </div>
-                                    </div>
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             {{ form_label(form.label, 'Oznaka:', {'label_attr': {'class': 'form-label'}}) }}
@@ -143,14 +137,14 @@
                                         <div class="mb-3">
                                             {% if task.assignedUsers[0] is defined %}
                                                 <div class="mb-1">
-                                                    <label class="form-category" for="task_form_geo1">Geodeta#1:*</label>
+                                                    <label class="form-label" for="task_form_geo1">Geodeta#1:*</label>
                                                     <select id="task_form_geo1" name="task_form[assignedUsers][]" class="form-control required" required>
                                                         <option value="{{ task.assignedUsers[0].id }}">{{ task.assignedUsers[0].getNameForForm() }}</option>
                                                     </select>
                                                 </div>
                                             {% else %}
                                                 <div class="mb-1">
-                                                    <label class="form-category" for="task_form_geo1">Geodeta#1:*</label>
+                                                    <label class="form-label" for="task_form_geo1">Geodeta#1:*</label>
                                                     <select id="task_form_geo1" name="task_form[assignedUsers][]" class="form-control select required" required>
                                                         <option value="">--Izaberite geodetu--</option>
                                                         {% for user in users %}
@@ -165,7 +159,7 @@
                                     <div class="col-lg-4">
                                         <div class="mb-3">
                                             <div class="mb-1">
-                                                <label class="form-category" for="task_form_geo2">Geodeta#2:</label>
+                                                <label class="form-label" for="task_form_geo2">Geodeta#2:</label>
                                                 <select id="task_form_geo2" name="task_form[assignedUsers][]" class="form-control select">
                                                     <option>--Izaberite geodetu--</option>
                                                     {% for user in users %}
@@ -178,7 +172,7 @@
                                     <div class="col-lg-4">
                                         <div class="mb-3">
                                             <div class="mb-1">
-                                                <label class="form-category" for="task_form_geo3">Geodeta#3:</label>
+                                                <label class="form-label" for="task_form_geo3">Geodeta#3:</label>
                                                 <select id="task_form_geo3" name="task_form[assignedUsers][]" class="form-control select">
                                                     <option>--Izaberite geodetu--</option>
                                                     {% for user in users %}
@@ -192,7 +186,7 @@
 {#                                <div class="row">#}
 {#                                    <div class="col-lg-6">#}
 {#                                        <div class="mb-3">#}
-{#                                            {{ form_label(form.assignedUsers, 'Zaduženi:*', {'label_attr': {'class': 'form-category'}}) }}#}
+{#                                            {{ form_label(form.assignedUsers, 'Zaduženi:*', {'label_attr': {'class': 'form-label'}}) }}#}
 {#                                            {{ form_widget(form.assignedUsers, {attr: { class: 'form-control select required' }}) }}#}
 {#                                            <span class="form-text">Morate dodati najmanje jednog zaposlenog sa liste kome dodeljujete zadatak.</span>#}
 {#                                        </div>#}
@@ -200,7 +194,7 @@
 {#                                    <div class="col-lg-6">#}
 {#                                        <div class="mb-3">#}
 {#                                            <div class="mb-1">#}
-{#                                                <label class="form-category" for="task_form_primary">Primarni dnevnik:*</label>#}
+{#                                                <label class="form-label" for="task_form_primary">Primarni dnevnik:*</label>#}
 {#                                                <select id="task_form_primary" name="task_form[priorityUserLog]" class="form-control select required" required>#}
 {#                                                    <option value="">--Izaberite primarni dnevnik--</option>#}
 {#                                                    {% for user in users %}#}
@@ -216,7 +210,7 @@
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <div class="mb-1">
-                                                <label class="form-category" for="task_form_car">Vozilo:</label>
+                                                <label class="form-label" for="task_form_car">Vozilo:</label>
                                                 <select id="task_form_car" name="task_form[car]" class="form-control select">
                                                     <option value="">--Izaberite vozilo--</option>
                                                     {% for car in cars %}
@@ -229,7 +223,7 @@
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <div class="mb-1">
-                                                <label class="form-category" for="task_form_driver">Vozač:</label>
+                                                <label class="form-label" for="task_form_driver">Vozač:</label>
                                                 <select id="task_form_driver" name="task_form[driver]" class="form-control select" >
                                                     <option value="">--Izaberite vozača--</option>
                                                     {% for user in users %}
@@ -243,7 +237,7 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            {{ form_label(form.datumKreiranja, 'Datum zadatka:*', {'label_attr': {'class': 'form-category'}}) }}
+                                            {{ form_label(form.datumKreiranja, 'Datum zadatka:*', {'label_attr': {'class': 'form-label'}}) }}
                                             <div class="input-group">
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
@@ -255,7 +249,7 @@
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-category" for="task_form_vreme">Vreme zadatka:</label>
+                                            <label class="form-label" for="task_form_vreme">Vreme zadatka:</label>
                                             <div class="input-group">
 											<span class="input-group-text">
 												<i class="ph-clock"></i>
@@ -271,7 +265,7 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="mb-3">
-                                            {{ form_label(form.activity, 'Aktivnosti:', {'label_attr': {'class': 'form-category'}}) }}
+                                            {{ form_label(form.activity, 'Aktivnosti:', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.activity, {attr: { class: 'form-control listbox-basic' }}) }}
                                         </div>
                                     </div>
@@ -339,7 +333,7 @@
                                 <div class="row collapse" id="collapse-other">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            {{ form_label(form.deadline, 'Rok:', {'label_attr': {'class': 'form-category'}}) }}
+                                            {{ form_label(form.deadline, 'Rok:', {'label_attr': {'class': 'form-label'}}) }}
                                             <div class="input-group">
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>

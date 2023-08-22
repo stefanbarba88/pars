@@ -15,6 +15,7 @@ use App\Entity\User;
 use App\Form\ProjectFormType;
 use App\Form\ProjectTeamListFormType;
 use DateTimeImmutable;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -56,7 +57,10 @@ class ProjectController extends AbstractController {
       }
     }
 
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/list.html.twig', $args);
+    }
 
     return $this->render('project/list.html.twig', $args);
   }
@@ -115,6 +119,11 @@ class ProjectController extends AbstractController {
     }
     $args['project'] = $project;
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/view_profile.html.twig', $args);
+    }
+
     return $this->render('project/view_profile.html.twig', $args);
   }
 
@@ -148,7 +157,13 @@ class ProjectController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['project'] = $project;
+
     $args['tasks'] = $this->em->getRepository(Task::class)->getTasksByProject($project);
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/view_tasks.html.twig', $args);
+    }
 
     return $this->render('project/view_tasks.html.twig', $args);
   }

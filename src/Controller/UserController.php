@@ -15,6 +15,7 @@ use App\Form\UserEditSelfAccountFormType;
 use App\Form\UserRegistrationFormType;
 use App\Form\UserSuspendedFormType;
 use App\Service\UploadService;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -146,7 +147,10 @@ class UserController extends AbstractController {
     if ($type != 1) {
       return $this->render('user/edit_info.html.twig', $args);
     }
-
+      $mobileDetect = new MobileDetect();
+      if($mobileDetect->isMobile()) {
+        return $this->render('employee/phone/edit_info.html.twig', $args);
+      }
     return $this->render('employee/edit_info.html.twig', $args);
   }
 
@@ -203,8 +207,13 @@ class UserController extends AbstractController {
       return $this->render('user/edit_account.html.twig', $args);
     } else {
       if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+          return $this->render('employee/phone/edit_account.html.twig', $args);
+        }
         return $this->render('employee/edit_account.html.twig', $args);
       } else {
+
         return $this->render('employee/manager_edit_account.html.twig', $args);
       }
 
@@ -258,6 +267,7 @@ class UserController extends AbstractController {
         if ($type != 1) {
           return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
         }
+
         return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
       }
     }
@@ -268,7 +278,10 @@ class UserController extends AbstractController {
     if ($type != 1) {
       return $this->render('user/edit_image.html.twig', $args);
     }
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('employee/phone/edit_image.html.twig', $args);
+    }
     return $this->render('employee/edit_image.html.twig', $args);
   }
 

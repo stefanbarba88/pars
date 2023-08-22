@@ -1,0 +1,176 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Oprema
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <span class="breadcrumb-item active">Oprema</span>
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-lg-flex py-lg-0">
+                            <h5 class="py-lg-3 mb-0">
+                                Lista opreme
+                            </h5>
+                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                <a href="{{ path('app_tool_form', {type: 1}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                            </div>
+                        </div>
+                        <table class="table datatable-colvis-state-pars">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Naziv</th>
+                                <th>Tip</th>
+                                <th>Dostupnost</th>
+                                <th>Zaduženi</th>
+                                <th>Status</th>
+                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for tool in tools %}
+                                <tr>
+                                    <td>{{ tool.id }}</td>
+                                    <td><div class="fw-semibold"><a href="{{ path('app_tool_view', { id: tool.id}) }}">{{ tool.title }}</a></div></td>
+                                    <td>
+                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::LAPTOP') %}
+                                            Laptop
+                                        {% endif %}
+                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::TELEFON') %}
+                                            Mobilni telefon
+                                        {% endif %}
+                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::TS') %}
+                                            TS
+                                        {% endif %}
+                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::LS') %}
+                                            LS
+                                        {% endif %}
+                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::GPS') %}
+                                            GPS
+                                        {% endif %}
+                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::DRON') %}
+                                            Dron
+                                        {% endif %}
+                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::SKENER') %}
+                                            Skener
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if tool.isSuspended == false %}
+                                            {% if tool.isReserved %}
+                                                <span class="badge bg-warning">Zadužen</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Slobodan</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% for res in tool.toolReservations %}
+                                            {% if res.finished is null %}
+                                                {{ res.user.fullName }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% if tool.isSuspended %}
+                                            <span class="badge bg-danger">Obrisan</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Aktivan</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                <i class="ph-gear"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a href="{{ path('app_tool_view', { id: tool.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                {% if tool.isSuspended %}
+                                                    <a href="{{ path('app_tool_activate', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>
+                                                {% else %}
+                                                    {% if tool.isReserved %}
+                                                        {% for res in tool.toolReservations %}
+                                                            {% if res.finished is null%}
+                                                                <a href="{{ path('app_tool_reservation_stop', { id: res.id, type:1}) }}" class="dropdown-item"><i class="ph-wrench me-2"></i> Razdužite</a>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <a href="{{ path('app_tool_reservation_form', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-wrench me-2"></i> Zadužite</a>
+                                                    {% endif %}
+                                                    <a href="{{ path('app_tool_form', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                    <a href="{{ path('app_tool_activate', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

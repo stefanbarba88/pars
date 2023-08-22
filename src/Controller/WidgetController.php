@@ -93,7 +93,16 @@ class WidgetController extends AbstractController {
   public function employeeProfilNavigation(User $user): Response {
 
     $args['user'] = $user;
-
+    $args['noTools'] = 0;
+    if ($user->getToolReservations()->isEmpty()) {
+      $args['noTools'] = 0;
+    } else {
+      foreach ($user->getToolReservations() as $res) {
+        if (is_null($res->getFinished())) {
+          $args['noTools']++;
+        }
+      }
+    }
     return $this->render('widget/employee_nav.html.twig', $args);
   }
 

@@ -134,7 +134,9 @@ class CarReservationFormType extends AbstractType {
             return $em->createQueryBuilder('d')
               ->andWhere('d.car IS NULL')
               ->andWhere('d.isSuspended = :isSuspended')
+              ->andWhere('d.userType = :userType')
               ->setParameter(':isSuspended', 0)
+              ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
               ->orderBy('d.id', 'ASC');
           },
           'choice_label' => function ($user) {

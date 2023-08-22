@@ -1,0 +1,296 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                #{{ task.id }}: {{task.title }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- Wizard with validation -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                Izmena zadatka
+                            </h6>
+                        </div>
+                        <form name="task_quick_form" method="post" action="{{ path('app_task_reassign', {id:task.id}) }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="task_form">
+                            <div class="card-body">
+                            <div class="fw-bold border-bottom pb-2 mb-3">Osnovne informacije</div>
+
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo1">Geodeta#1:*</label>
+                                            <select id="task_form_geo1" name="task_form[assignedUsers][]" class="form-control required" required>
+                                                <option value="">--Izaberite geodetu--</option>
+                                                {% for user in users %}
+                                                    {% if user.id == assignedUsers[0].id %}
+                                                        <option value="{{ user.id }}" selected>{{ user.getNameForForm() }}</option>
+                                                    {% else %}
+                                                        <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                            </div>
+                                        <span class="form-text">Obavezno je uneti zaposlenog.</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo2">Geodeta#2:</label>
+                                            <select id="task_form_geo2" name="task_form[assignedUsers][]" class="form-control">
+                                                <option>--Izaberite geodetu--</option>
+                                                {% for user in users %}
+                                                    {% if assignedUsers[1] is not null and user.id == assignedUsers[1].id %}
+                                                        <option value="{{ user.id }}" selected>{{ user.getNameForForm() }}</option>
+                                                    {% else %}
+                                                        <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_geo3">Geodeta#3:</label>
+                                            <select id="task_form_geo3" name="task_form[assignedUsers][]" class="form-control">
+                                                <option>--Izaberite geodetu--</option>
+                                                {% for user in users %}
+                                                    {% if assignedUsers[2] is not null and user.id == assignedUsers[2].id %}
+                                                        <option value="{{ user.id }}" selected>{{ user.getNameForForm() }}</option>
+                                                    {% else %}
+                                                        <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_car">Vozilo:</label>
+                                            <select id="task_form_car" name="task_form[car]" class="form-control">
+                                                <option value="">--Izaberite vozilo--</option>
+                                                {% for car in cars %}
+                                                    {% if task.car == car.id %}
+                                                        <option value="{{ car.id }}" selected>{{ car.carName() }}</option>
+                                                    {% else %}
+                                                        <option value="{{ car.id }}">{{ car.carName() }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <div class="mb-1">
+                                            <label class="form-category" for="task_form_driver">Vozač:</label>
+                                            <select id="task_form_driver" name="task_form[driver]" class="form-control" >
+                                                <option value="">--Izaberite vozača--</option>
+                                                {% for user in users %}
+                                                    {% if task.driver == user.id %}
+                                                        <option value="{{ user.id }}" selected>{{ user.getNameForForm() }}</option>
+                                                    {% else %}
+                                                        <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                            </div>
+                        </div>
+                        </form>
+
+                    </div>
+                    <!-- /wizard with validation -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+
+{% block footerJavascript %}
+
+    <script>
+        $(document).ready(function() {
+            // Funkcija za proveru da li je geodeta selektovan u bilo kom polju "Geodeta"
+            function isGeodetaSelected(userId) {
+                var geo1 = $('#task_form_geo1').val();
+                var geo2 = $('#task_form_geo2').val();
+                var geo3 = $('#task_form_geo3').val();
+                return geo1 == userId || geo2 == userId || geo3 == userId;
+            }
+
+            function updateDriversOptions() {
+                var selectedGeodete1Ids = $('#task_form_geo1').val() || [];
+                var selectedGeodete2Ids = $('#task_form_geo2').val() || [];
+                var selectedGeodete3Ids = $('#task_form_geo3').val() || [];
+
+                // Spajamo vrednosti iz svih polja "Geodeta" kako bismo dobili izbor za polje "Vozač"
+                var selectedGeodeteIds = selectedGeodete1Ids.concat(selectedGeodete2Ids, selectedGeodete3Ids);
+
+                // Omogućavamo sve opcije u polju "Vozač"
+                $('#task_form_driver option').prop('disabled', false);
+
+                // Onemogućavamo opcije koje nisu izabrane u poljima "Geodeta"
+                $('#task_form_driver option').each(function() {
+                    var driverId = $(this).val();
+                    if (selectedGeodeteIds.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Resetujemo izbor u polju "Vozač" ako izabrani vozač više nije dostupan
+                var selectedDriverId = $('#task_form_driver').val();
+                if (selectedDriverId && selectedGeodeteIds.indexOf(selectedDriverId) === -1) {
+                    $('#task_form_driver').val('');
+                }
+
+            }
+
+            $('#task_form_geo1').change(function() {
+                // Resetujemo selekt u polju "Vozač" kada se promeni izbor u polju "#task_form_geo1"
+                var selectedValue = $(this).val();
+                $('#task_form_driver').val(selectedValue);
+
+                var selectedDriverText = $('#task_form_driver option:selected').text();
+                $('#task_form_driver').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+                // Omogućimo sve opcije u poljima "Geodeta" pre nego što izvršimo promene
+                $('#task_form_geo1, #task_form_geo2, #task_form_geo3').find('option').prop('disabled', false);
+
+                // Azuriramo opcije za sva polja osim trenutno izabranog
+                updateGeodeteOptions();
+
+                // Ažuriramo opcije u polju "Vozač" na osnovu novih izbora u poljima "Geodeta"
+                updateDriversOptions();
+            });
+            $('#task_form_driver').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions();
+
+                // Ažuriramo vidljivi tekst u polju "Vozač" na osnovu izbora
+                var selectedDriverText = $('#task_form_driver option:selected').text();
+                $('#task_form_driver').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+            });
+
+            function updateGeodeteOptions() {
+                    $('#task_form_geo1, #task_form_geo2, #task_form_geo3').each(function() {
+                        var currentId = $(this).attr('id');
+                        var selectedValue = $(this).val();
+
+                        // Omogućimo sve opcije u trenutnom polju "Geodeta"
+                        $(this).find('option').prop('disabled', false);
+
+                        // Onemogućimo izabrane vrednosti u drugim poljima "Geodeta"
+                        $('#task_form_geo1, #task_form_geo2, #task_form_geo3').not(this).each(function() {
+                            var otherSelectedValue = $(this).val();
+                            if (otherSelectedValue) {
+                                $('#' + currentId + ' option[value="' + otherSelectedValue + '"]').prop('disabled', true);
+                            }
+                        });
+                    });
+                }
+
+            // Postavljanje event listenera na sva polja "Geodeta" kako bismo pratili promene u izboru
+            $('#task_form_geo1, #task_form_geo2, #task_form_geo3').change(function() {
+                updateGeodeteOptions();
+            });
+
+            // Postavljanje event listenera na polje "Vozač" kako bismo pratili promene u izboru
+            $('#task_form_geo1, #task_form_geo2, #task_form_geo3').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions();
+            });
+
+            // Pozivamo funkciju za inicijalno postavljanje opcija u poljima "Geodeta" prilikom učitavanja stranice
+            updateGeodeteOptions();
+
+            // Pozivamo funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
+            updateDriversOptions();
+        });
+    </script>
+{% endblock footerJavascript %}

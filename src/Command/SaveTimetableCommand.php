@@ -42,11 +42,18 @@ class SaveTimetableCommand extends Command {
     $plan = $this->em->getRepository(FastTask::class)->findOneBy(['status' => FastTaskData::OPEN],['datum' => 'ASC']);
 
     if(!is_null($plan)) {
-      $this->em->getRepository(Task::class)->createTasksFromList($plan, $this->em->getRepository(User::class)->find(1));
-      $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
+
       $datum = $plan->getDatum();
+      $this->em->getRepository(Task::class)->createTasksFromList($plan, $this->em->getRepository(User::class)->find(1));
+
+      $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
+      $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($plan);
+
       $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::SAVED);
+      $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($plan, FastTaskData::SAVED);
+
       $this->mail->plan($timetable, $users, $datum);
+      $this->mail->subs($subs, $usersSub, $datum);
     }
 
 

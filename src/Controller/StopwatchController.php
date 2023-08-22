@@ -288,8 +288,16 @@ class StopwatchController extends AbstractController {
     }
 
     $stopwatch->setMin($args['min']);
+
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/stopwatch_form_modal.html.twig', $args);
+    }
     return $this->render('task/stopwatch_form_modal.html.twig', $args);
   }
+
+
 
   #[Route('/delete/{id}', name: 'app_stopwatch_delete')]
   public function delete(StopwatchTime $stopwatch)    : Response { if (!$this->isGranted('ROLE_USER')) {

@@ -37,7 +37,8 @@ class FastTaskController extends AbstractController {
   #[Route('/form-quick/{id}', name: 'app_quick_tasks_form', defaults: ['id' => 0])]
   #[Entity('fastTask', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(FastTask $fastTask, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function form(FastTask $fastTask, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -45,6 +46,7 @@ class FastTaskController extends AbstractController {
     if ($request->isMethod('POST')) {
 
       $data = $request->request->all();
+
       $fastTask = $this->em->getRepository(FastTask::class)->saveFastTask($fastTask, $data);
 
 //      dd($fastTask);

@@ -6,6 +6,7 @@ use App\Entity\StopwatchTime;
 use App\Entity\TaskLog;
 use App\Form\StopwatchTimeFormType;
 use App\Service\UploadService;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -89,7 +90,10 @@ dd($request);
 //    $args['activity'] = $this->em->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $args['taskLog'], 'diff' => null]);
 //    $args['images'] = $args['taskLog']->getImages
 //    $args['docs'] = $this->em->getRepository(Pdf::class)->findBy(['taskLog' => $args['taskLog']]);
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task_log/phone/view.html.twig', $args);
+    }
     return $this->render('task_log/view.html.twig', $args);
   }
 }

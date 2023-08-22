@@ -58,7 +58,10 @@ class TaskController extends AbstractController {
     } else {
       $args['tasks'] = $this->em->getRepository(Task::class)->getTasks();
     }
-
+    $mobileDetect = new MobileDetect();
+    if ($mobileDetect->isMobile()) {
+      return $this->render('task/phone/list.html.twig', $args);
+    }
     return $this->render('task/list.html.twig', $args);
   }
 
@@ -193,7 +196,9 @@ class TaskController extends AbstractController {
           ->duration(5000)
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
-
+        if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+          return $this->redirectToRoute('app_home');
+        }
         return $this->redirectToRoute('app_tasks');
       }
     }
@@ -205,15 +210,11 @@ class TaskController extends AbstractController {
     $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
 
-//    if ($mobileDetect->isMobile()) {
-//      return $this->render('task/mobile_form.html.twig', $args);
-//    }
-//    return $this->render('task/form.html.twig', $args);
+    if ($mobileDetect->isMobile()) {
+      return $this->render('task/phone/mobile_form.html.twig', $args);
 
-    if (!$mobileDetect->isMobile()) {
-      return $this->render('task/form.html.twig', $args);
     }
-    return $this->render('task/mobile_form.html.twig', $args);
+    return $this->render('task/form.html.twig', $args);
   }
 
   #[Route('/form-project/{project}', name: 'app_task_project_form')]
@@ -350,19 +351,23 @@ class TaskController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-        return $this->redirectToRoute('app_project_tasks_view', ['id' => $project->getId()]);
+        if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+          return $this->redirectToRoute('app_home');
+        }
+        return $this->redirectToRoute('app_tasks');
       }
     }
+
     $args['form'] = $form->createView();
     $args['task'] = $task;
     $args['korisnik'] = $user;
     $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
 
-    if (!$mobileDetect->isMobile()) {
-      return $this->render('task/form.html.twig', $args);
+    if ($mobileDetect->isMobile()) {
+      return $this->render('task/phone/mobile_form.html.twig', $args);
     }
-    return $this->render('task/mobile_form.html.twig', $args);
+    return $this->render('task/form.html.twig', $args);
   }
 
   #[Route('/edit-info/{id}', name: 'app_task_edit_info')]
@@ -383,6 +388,7 @@ class TaskController extends AbstractController {
       );
       $history = $history->getContent();
     }
+    $mobileDetect = new MobileDetect();
 
     $form = $this->createForm(TaskEditInfoType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_edit_info', ['id' => $task->getId()])]]);
 
@@ -390,12 +396,6 @@ class TaskController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
-
-        if ($task->getProject()->getId() != $request->request->all('task_edit')['plain_project']) {
-          if ($task->getTitle() == $request->request->all('task_edit')['plain_title']) {
-            $task->setTitle($task->getProject()->getTitle() . ' - ' . $task->getDatumKreiranja()->format('d.m.Y'));
-          }
-        }
 
         $this->em->getRepository(Task::class)->saveTaskInfo($task, $user, $history);
 
@@ -406,12 +406,18 @@ class TaskController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
+        if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+          return $this->redirectToRoute('app_home');
+        }
         return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
       }
     }
     $args['form'] = $form->createView();
     $args['task'] = $task;
 
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/edit_info.html.twig', $args);
+    }
     return $this->render('task/edit_info.html.twig', $args);
   }
 
@@ -464,11 +470,20 @@ class TaskController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
+        if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+          return $this->redirectToRoute('app_home');
+        }
         return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+
       }
     }
     $args['form'] = $form->createView();
     $args['task'] = $task;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/add_pdf.html.twig', $args);
+    }
 
     return $this->render('task/add_pdf.html.twig', $args);
   }
@@ -530,6 +545,9 @@ class TaskController extends AbstractController {
         ->dismissible(true)
         ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
+      if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+        return $this->redirectToRoute('app_home');
+      }
       return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
     }
@@ -539,6 +557,10 @@ class TaskController extends AbstractController {
     $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/reassign.html.twig', $args);
+    }
     return $this->render('task/reassign.html.twig', $args);
   }
 
@@ -572,6 +594,9 @@ class TaskController extends AbstractController {
         ->dismissible(true)
         ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
+      if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+        return $this->redirectToRoute('app_home');
+      }
       return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
     }
@@ -579,6 +604,10 @@ class TaskController extends AbstractController {
     $args['task'] = $task;
     $args['users'] = $this->em->getRepository(Task::class)->getAssignedUsersByTask($task);
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/reassign_primary_log.html.twig', $args);
+    }
     return $this->render('task/reassign_primary_log.html.twig', $args);
   }
 
@@ -672,6 +701,10 @@ class TaskController extends AbstractController {
     $args['task'] = $task;
     $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/reassign_task.html.twig', $args);
+    }
     return $this->render('task/reassign_task.html.twig', $args);
   }
 
@@ -782,7 +815,10 @@ class TaskController extends AbstractController {
 
     $args['lastEdit'] = $this->em->getRepository(StopwatchTime::class)->lastEdit($args['taskLog']);
 
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/view_user.html.twig', $args);
+    }
     return $this->render('task/view_user.html.twig', $args);
   }
 

@@ -47,10 +47,15 @@ class FinishTimetableCommand extends Command {
       $fastTask->setStatus(FastTaskData::FINAL);
       $fastTask = $this->em->getRepository(FastTask::class)->save($fastTask);
 
-      $args['timetable'] = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
-      $args['datum']= $fastTask->getDatum();
-      $args['users']= $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask, FastTaskData::FINAL);
-      $this->mail->plan($args['timetable'], $args['users'], $args['datum']);
+      $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
+      $datum = $fastTask->getDatum();
+      $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask, FastTaskData::FINAL);
+
+      $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($fastTask);
+      $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($fastTask, FastTaskData::SAVED);
+
+      $this->mail->plan($timetable, $users, $datum);
+      $this->mail->subs($subs, $usersSub, $datum);
     }
 
 

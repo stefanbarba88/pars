@@ -1,4 +1,4 @@
-{% extends '../layout.html.twig' %}
+{% extends 'layout.html.twig' %}
 
 {% block content %}
     {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
@@ -94,7 +94,7 @@
                 <!-- /content area -->
 
                 <!-- Footer -->
-                {% include '../includes/footer.html.twig' %}
+                {% include 'includes/footer.html.twig' %}
                 <!-- /footer -->
 
             </div>
@@ -105,7 +105,7 @@
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
 
     </div>
-    {% include '../includes/notification.html.twig' %}
+    {% include 'includes/notification.html.twig' %}
 {% endblock content %}
 
 {% block includeJavascript %}

@@ -225,10 +225,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     $usersList = [];
     foreach ($users as $user) {
       $ime = $user->getFullName();
-//      $car = $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' =>$user->getCar()]);
-//      if (!is_null($car)) {
-//        $ime = $ime . ' (' . $car->getCarName() . ')';
-//      }
+      $car = $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' =>$user->getCar()]);
+      if (!is_null($car)) {
+        $ime = $ime . ' (' . $car->getPlate() . ')';
+      }
 
       $usersList [] = [
         'id' => $user->getId(),

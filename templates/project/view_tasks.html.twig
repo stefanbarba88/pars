@@ -80,10 +80,14 @@
                                             <td>{{ task.task.id }}</td>
                                             <td>
                                                 <div class="fw-semibold">
-                                                    {% if app.user in task.users %}
-                                                        <a href="{{ path('app_task_view_user', { id: task.task.id}) }}">{{ task.task.title }}</a>
-                                                    {% else %}
+                                                    {% if app.user.userType != 4 %}
                                                         <a href="{{ path('app_task_view', { id: task.task.id}) }}">{{ task.task.title }}</a>
+                                                    {% else %}
+                                                        {% if app.user in task.users %}
+                                                            <a href="{{ path('app_task_view_user', { id: task.task.id}) }}">{{ task.task.title }}</a>
+                                                        {% else %}
+                                                            {{ task.task.title }}
+                                                        {% endif %}
                                                     {% endif %}
                                                 </div>
                                                 {% if label is defined %}
@@ -157,8 +161,6 @@
                                                         {% if is_granted('ROLE_EMPLOYEE') %}
                                                             {% if app.user in task.users %}
                                                                 <a href="{{ path('app_task_view_user', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                            {% else %}
-                                                                <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                             {% endif %}
                                                             {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.task.isDeleted and task.task.createdBy == app.user %}
                                                                 <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>

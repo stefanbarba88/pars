@@ -18,6 +18,7 @@ use App\Form\ToolReservationFormType;
 use App\Form\ToolStopReservationFormDetailsType;
 use App\Form\ToolStopReservationFormType;
 use DateTimeImmutable;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -275,7 +276,11 @@ class ToolController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['reservation'] = $reservation;
+    $mobileDetect = new MobileDetect();
 
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/form_reservation_employee_details_form_user.html.twig', $args);
+    }
     return $this->render('tool/form_reservation_employee_details_form_user.html.twig', $args);
   }
 
@@ -360,7 +365,10 @@ class ToolController extends AbstractController {
     $args['tool'] = $reservation->getTool();
     $args['user'] = $user;
 
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/form_reservation_stop_details.html.twig', $args);
+    }
     return $this->render('tool/form_reservation_stop_details.html.twig', $args);
   }
 
@@ -405,7 +413,10 @@ class ToolController extends AbstractController {
     $args['form'] = $form->createView();
     $args['tool'] = $tool;
     $args['reservation'] = $reservation;
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/form_reservation_employee_details_form.html.twig', $args);
+    }
     return $this->render('tool/form_reservation_employee_details_form.html.twig', $args);
   }
 
@@ -442,7 +453,10 @@ class ToolController extends AbstractController {
     $args['tool'] = $reservation->getTool();
     $args['user'] = $user;
 
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/form_reservation_stop_employee.html.twig', $args);
+    }
     return $this->render('tool/form_reservation_stop_employee.html.twig', $args);
   }
 
@@ -454,7 +468,10 @@ class ToolController extends AbstractController {
     }
     $args['reservation'] = $reservation;
     $args['user'] = $this->getUser();
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/view_reservation_employee.html.twig', $args);
+    }
     return $this->render('tool/view_reservation_employee.html.twig', $args);
   }
 

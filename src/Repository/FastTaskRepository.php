@@ -1366,6 +1366,86 @@ class FastTaskRepository extends ServiceEntityRepository {
 
     return $tasks;
   }
+  public function getSubsByFastTasks(FastTask $task): array {
+
+    $subs = [];
+
+    $subs = [
+      [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject1()]),
+        'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo1()]),
+        'napomena' => $task->getZdescription1(),
+        'vreme' => $task->getZtime1(),
+        'status' => $task->getZstatus1(),
+      ],
+      [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject2()]),
+        'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo2()]),
+        'napomena' => $task->getZdescription2(),
+        'vreme' => $task->getZtime2(),
+        'status' => $task->getZstatus2(),
+      ],
+      [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject3()]),
+        'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo3()]),
+        'napomena' => $task->getZdescription3(),
+        'vreme' => $task->getZtime3(),
+        'status' => $task->getZstatus3(),
+      ],
+      [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject4()]),
+        'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo4()]),
+        'napomena' => $task->getZdescription4(),
+        'vreme' => $task->getZtime4(),
+        'status' => $task->getZstatus4(),
+      ],
+      [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject5()]),
+        'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo5()]),
+        'napomena' => $task->getZdescription5(),
+        'vreme' => $task->getZtime5(),
+        'status' => $task->getZstatus5(),
+      ],
+      [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject6()]),
+        'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo6()]),
+        'napomena' => $task->getZdescription6(),
+        'vreme' => $task->getZtime6(),
+        'status' => $task->getZstatus6(),
+      ],
+      [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject7()]),
+        'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo7()]),
+        'napomena' => $task->getZdescription7(),
+        'vreme' => $task->getZtime7(),
+        'status' => $task->getZstatus7(),
+      ],
+      [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject8()]),
+        'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo8()]),
+        'napomena' => $task->getZdescription8(),
+        'vreme' => $task->getZtime8(),
+        'status' => $task->getZstatus8(),
+      ],
+      [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject9()]),
+        'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo9()]),
+        'napomena' => $task->getZdescription9(),
+        'vreme' => $task->getZtime9(),
+        'status' => $task->getZstatus9(),
+      ],
+      [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject10()]),
+        'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo10()]),
+        'napomena' => $task->getZdescription10(),
+        'vreme' => $task->getZtime10(),
+        'status' => $task->getZstatus10(),
+      ],
+
+    ];
+
+    return $subs;
+  }
 
   public function getUsersForEmail(FastTask $task, int $status): array {
 
@@ -1463,6 +1543,75 @@ class FastTaskRepository extends ServiceEntityRepository {
       $users[] = $task->getGeo110();
       $users[] = $task->getGeo210();
       $users[] = $task->getGeo310();
+    }
+    $users = array_filter(array_unique($users));
+
+    $usersList = [];
+    if (!empty($users)) {
+      foreach ($users as $usr) {
+        $usersList[] = $this->getEntityManager()->getRepository(User::class)->find($usr);
+      }
+    }
+
+    return $usersList;
+  }
+  public function getUsersSubsForEmail(FastTask $task, int $status): array {
+
+    $users = [];
+    if ($status == FastTaskData::EDIT) {
+      if ($task->getZstatus1() == FastTaskData::EDIT) {
+        $users[] = $task->getZgeo1();
+      }
+
+      if ($task->getZstatus2() == FastTaskData::EDIT) {
+        $users[] = $task->getZgeo2();
+      }
+
+      if ($task->getZstatus3() == FastTaskData::EDIT) {
+        $users[] = $task->getZgeo3();
+      }
+
+      if ($task->getZstatus4() == FastTaskData::EDIT) {
+        $users[] = $task->getZgeo4();
+      }
+
+      if ($task->getZstatus5() == FastTaskData::EDIT) {
+        $users[] = $task->getZgeo5();
+      }
+
+      if ($task->getZstatus6() == FastTaskData::EDIT) {
+        $users[] = $task->getZgeo6();
+      }
+
+      if ($task->getZstatus7() == FastTaskData::EDIT) {
+        $users[] = $task->getZgeo7();
+      }
+
+      if ($task->getZstatus8() == FastTaskData::EDIT) {
+        $users[] = $task->getZgeo8();
+      }
+
+      if ($task->getZstatus9() == FastTaskData::EDIT) {
+        $users[] = $task->getZgeo9();
+      }
+
+      if ($task->getZstatus10() == FastTaskData::EDIT) {
+        $users[] = $task->getZgeo10();
+      }
+
+
+    } else {
+      $users[] = $task->getZgeo1();
+      $users[] = $task->getZgeo2();
+      $users[] = $task->getZgeo3();
+      $users[] = $task->getZgeo4();
+      $users[] = $task->getZgeo5();
+      $users[] = $task->getZgeo6();
+      $users[] = $task->getZgeo7();
+      $users[] = $task->getZgeo8();
+      $users[] = $task->getZgeo9();
+      $users[] = $task->getZgeo10();
+
     }
     $users = array_filter(array_unique($users));
 
@@ -1921,7 +2070,7 @@ class FastTaskRepository extends ServiceEntityRepository {
 
     $fastTask->setDatum($dateTime);
     $noTasks = 0;
-//dd($data);
+
     if (isset($data['task_quick_form1'])) {
       $task1 = $data['task_quick_form1'];
       if (!is_null($fastTask->getId())) {
@@ -4486,6 +4635,797 @@ class FastTaskRepository extends ServiceEntityRepository {
       }
     }
 
+    if (isset($data['task_quick_zamena_form1'])) {
+      $zamena1 = $data['task_quick_zamena_form1'];
+
+      if (!is_null($fastTask->getId())) {
+        $zproj1 = $zamena1['projekat'];
+        if ($zproj1 == '---') {
+          $zproj1 = null;
+        }
+
+        if (isset($zamena1['geo'][0])) {
+          $zgeo1 = $zamena1['geo'][0];
+          if (empty($zgeo1)) {
+            $zgeo1 = null;
+          }
+        } else {
+          $zgeo1 = null;
+        }
+
+
+        if (isset($zamena1['napomena'])) {
+          $znapomena1 = trim($zamena1['napomena']);
+          if (empty($znapomena1)) {
+            $znapomena1 = null;
+          }
+        } else {
+          $znapomena1 = null;
+        }
+
+        if (is_null($zproj1)) {
+          $fastTask->setZproject1(null);
+          $fastTask->setZgeo1(null);
+          $fastTask->setZdescription1(null);
+          $fastTask->setZtime1(null);
+          $fastTask->setZstatus1(null);
+
+        } else {
+
+          if ($fastTask->getZProject1() != $zproj1 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus1(FastTaskData::EDIT);
+          }
+          if ($fastTask->getZgeo1() != $zgeo1 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus1(FastTaskData::EDIT);
+          }
+
+          if ($fastTask->getZdescription1() != $znapomena1 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus1(FastTaskData::EDIT);
+          }
+          if (isset($zamena1['vreme']) && $fastTask->getZtime1() != $zamena1['vreme'] && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus1(FastTaskData::EDIT);
+          }
+        }
+      }
+      if (($zamena1['projekat']) !== '---') {
+
+        $fastTask->setZproject1($zamena1['projekat']);
+
+        if (!empty($zamena1['geo'][0])) {
+          $fastTask->setZgeo1($zamena1['geo'][0]);
+        } else {
+          $fastTask->setZgeo1(null);
+        }
+
+        if (!empty(trim($zamena1['napomena']))) {
+          $fastTask->setZdescription1($zamena1['napomena']);
+        } else {
+          $fastTask->setZdescription1(null);
+        }
+
+        if (!empty($zamena1['vreme'])) {
+          $fastTask->setzTime1($zamena1['vreme']);
+        }
+
+      } else {
+        $fastTask->setZproject1(null);
+        $fastTask->setZgeo1(null);
+        $fastTask->setZdescription1(null);
+        $fastTask->setZtime1(null);
+      }
+    }
+    if (isset($data['task_quick_zamena_form2'])) {
+      $zamena2 = $data['task_quick_zamena_form2'];
+
+      if (!is_null($fastTask->getId())) {
+        $zproj2 = $zamena2['projekat'];
+        if ($zproj2 == '---') {
+          $zproj2 = null;
+        }
+
+        if (isset($zamena2['geo'][0])) {
+          $zgeo2 = $zamena2['geo'][0];
+          if (empty($zgeo2)) {
+            $zgeo2 = null;
+          }
+        } else {
+          $zgeo2 = null;
+        }
+
+
+        if (isset($zamena2['napomena'])) {
+          $znapomena2 = trim($zamena2['napomena']);
+          if (empty($znapomena2)) {
+            $znapomena2 = null;
+          }
+        } else {
+          $znapomena2 = null;
+        }
+
+        if (is_null($zproj2)) {
+          $fastTask->setZproject2(null);
+          $fastTask->setZgeo2(null);
+          $fastTask->setZdescription2(null);
+          $fastTask->setZtime2(null);
+          $fastTask->setZstatus2(null);
+
+        } else {
+
+          if ($fastTask->getZProject2() != $zproj2 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus2(FastTaskData::EDIT);
+          }
+          if ($fastTask->getZgeo2() != $zgeo2 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus2(FastTaskData::EDIT);
+          }
+
+          if ($fastTask->getZdescription2() != $znapomena2 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus2(FastTaskData::EDIT);
+          }
+          if (isset($zamena2['vreme']) && $fastTask->getZtime2() != $zamena2['vreme'] && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus2(FastTaskData::EDIT);
+          }
+        }
+      }
+      if (($zamena2['projekat']) !== '---') {
+
+        $fastTask->setZproject2($zamena2['projekat']);
+
+        if (!empty($zamena2['geo'][0])) {
+          $fastTask->setZgeo2($zamena2['geo'][0]);
+        } else {
+          $fastTask->setZgeo2(null);
+        }
+
+        if (!empty(trim($zamena2['napomena']))) {
+          $fastTask->setZdescription2($zamena2['napomena']);
+        } else {
+          $fastTask->setZdescription2(null);
+        }
+
+        if (!empty($zamena2['vreme'])) {
+          $fastTask->setzTime2($zamena2['vreme']);
+        }
+
+      } else {
+        $fastTask->setZproject2(null);
+        $fastTask->setZgeo2(null);
+        $fastTask->setZdescription2(null);
+        $fastTask->setZtime2(null);
+      }
+    }
+    if (isset($data['task_quick_zamena_form3'])) {
+      $zamena3 = $data['task_quick_zamena_form3'];
+
+      if (!is_null($fastTask->getId())) {
+        $zproj3 = $zamena3['projekat'];
+        if ($zproj3 == '---') {
+          $zproj3 = null;
+        }
+
+        if (isset($zamena3['geo'][0])) {
+          $zgeo3 = $zamena3['geo'][0];
+          if (empty($zgeo3)) {
+            $zgeo3 = null;
+          }
+        } else {
+          $zgeo3 = null;
+        }
+
+
+        if (isset($zamena3['napomena'])) {
+          $znapomena3 = trim($zamena3['napomena']);
+          if (empty($znapomena3)) {
+            $znapomena3 = null;
+          }
+        } else {
+          $znapomena3 = null;
+        }
+
+        if (is_null($zproj3)) {
+          $fastTask->setZproject3(null);
+          $fastTask->setZgeo3(null);
+          $fastTask->setZdescription3(null);
+          $fastTask->setZtime3(null);
+          $fastTask->setZstatus3(null);
+
+        } else {
+
+          if ($fastTask->getZProject3() != $zproj3 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus3(FastTaskData::EDIT);
+          }
+          if ($fastTask->getZgeo3() != $zgeo3 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus3(FastTaskData::EDIT);
+          }
+
+          if ($fastTask->getZdescription3() != $znapomena3 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus3(FastTaskData::EDIT);
+          }
+          if (isset($zamena3['vreme']) && $fastTask->getZtime3() != $zamena3['vreme'] && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus3(FastTaskData::EDIT);
+          }
+        }
+      }
+      if (($zamena3['projekat']) !== '---') {
+
+        $fastTask->setZproject3($zamena3['projekat']);
+
+        if (!empty($zamena3['geo'][0])) {
+          $fastTask->setZgeo3($zamena3['geo'][0]);
+        } else {
+          $fastTask->setZgeo3(null);
+        }
+
+        if (!empty(trim($zamena3['napomena']))) {
+          $fastTask->setZdescription3($zamena3['napomena']);
+        } else {
+          $fastTask->setZdescription3(null);
+        }
+
+        if (!empty($zamena3['vreme'])) {
+          $fastTask->setzTime3($zamena3['vreme']);
+        }
+
+      } else {
+        $fastTask->setZproject3(null);
+        $fastTask->setZgeo3(null);
+        $fastTask->setZdescription3(null);
+        $fastTask->setZtime3(null);
+      }
+    }
+    if (isset($data['task_quick_zamena_form4'])) {
+      $zamena4 = $data['task_quick_zamena_form4'];
+
+      if (!is_null($fastTask->getId())) {
+        $zproj4 = $zamena4['projekat'];
+        if ($zproj4 == '---') {
+          $zproj4 = null;
+        }
+
+        if (isset($zamena4['geo'][0])) {
+          $zgeo4 = $zamena4['geo'][0];
+          if (empty($zgeo4)) {
+            $zgeo4 = null;
+          }
+        } else {
+          $zgeo4 = null;
+        }
+
+
+        if (isset($zamena4['napomena'])) {
+          $znapomena4 = trim($zamena4['napomena']);
+          if (empty($znapomena4)) {
+            $znapomena4 = null;
+          }
+        } else {
+          $znapomena4 = null;
+        }
+
+        if (is_null($zproj4)) {
+          $fastTask->setZproject4(null);
+          $fastTask->setZgeo4(null);
+          $fastTask->setZdescription4(null);
+          $fastTask->setZtime4(null);
+          $fastTask->setZstatus4(null);
+
+        } else {
+
+          if ($fastTask->getZProject4() != $zproj4 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus4(FastTaskData::EDIT);
+          }
+          if ($fastTask->getZgeo4() != $zgeo4 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus4(FastTaskData::EDIT);
+          }
+
+          if ($fastTask->getZdescription4() != $znapomena4 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus4(FastTaskData::EDIT);
+          }
+          if (isset($zamena4['vreme']) && $fastTask->getZtime4() != $zamena4['vreme'] && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus4(FastTaskData::EDIT);
+          }
+        }
+      }
+      if (($zamena4['projekat']) !== '---') {
+
+        $fastTask->setZproject4($zamena4['projekat']);
+
+        if (!empty($zamena4['geo'][0])) {
+          $fastTask->setZgeo4($zamena4['geo'][0]);
+        } else {
+          $fastTask->setZgeo4(null);
+        }
+
+        if (!empty(trim($zamena4['napomena']))) {
+          $fastTask->setZdescription4($zamena4['napomena']);
+        } else {
+          $fastTask->setZdescription4(null);
+        }
+
+        if (!empty($zamena4['vreme'])) {
+          $fastTask->setzTime4($zamena4['vreme']);
+        }
+
+      } else {
+        $fastTask->setZproject4(null);
+        $fastTask->setZgeo4(null);
+        $fastTask->setZdescription4(null);
+        $fastTask->setZtime4(null);
+      }
+    }
+    if (isset($data['task_quick_zamena_form5'])) {
+      $zamena5 = $data['task_quick_zamena_form5'];
+
+      if (!is_null($fastTask->getId())) {
+        $zproj5 = $zamena5['projekat'];
+        if ($zproj5 == '---') {
+          $zproj5 = null;
+        }
+
+        if (isset($zamena5['geo'][0])) {
+          $zgeo5 = $zamena5['geo'][0];
+          if (empty($zgeo5)) {
+            $zgeo5 = null;
+          }
+        } else {
+          $zgeo5 = null;
+        }
+
+
+        if (isset($zamena5['napomena'])) {
+          $znapomena5 = trim($zamena5['napomena']);
+          if (empty($znapomena5)) {
+            $znapomena5 = null;
+          }
+        } else {
+          $znapomena5 = null;
+        }
+
+        if (is_null($zproj5)) {
+          $fastTask->setZproject5(null);
+          $fastTask->setZgeo5(null);
+          $fastTask->setZdescription5(null);
+          $fastTask->setZtime5(null);
+          $fastTask->setZstatus5(null);
+
+        } else {
+
+          if ($fastTask->getZProject5() != $zproj5 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus5(FastTaskData::EDIT);
+          }
+          if ($fastTask->getZgeo5() != $zgeo5 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus5(FastTaskData::EDIT);
+          }
+
+          if ($fastTask->getZdescription5() != $znapomena5 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus5(FastTaskData::EDIT);
+          }
+          if (isset($zamena5['vreme']) && $fastTask->getZtime5() != $zamena5['vreme'] && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus5(FastTaskData::EDIT);
+          }
+        }
+      }
+      if (($zamena5['projekat']) !== '---') {
+
+        $fastTask->setZproject5($zamena5['projekat']);
+
+        if (!empty($zamena5['geo'][0])) {
+          $fastTask->setZgeo5($zamena5['geo'][0]);
+        } else {
+          $fastTask->setZgeo5(null);
+        }
+
+        if (!empty(trim($zamena5['napomena']))) {
+          $fastTask->setZdescription5($zamena5['napomena']);
+        } else {
+          $fastTask->setZdescription5(null);
+        }
+
+        if (!empty($zamena5['vreme'])) {
+          $fastTask->setzTime5($zamena5['vreme']);
+        }
+
+      } else {
+        $fastTask->setZproject5(null);
+        $fastTask->setZgeo5(null);
+        $fastTask->setZdescription5(null);
+        $fastTask->setZtime5(null);
+      }
+    }
+    if (isset($data['task_quick_zamena_form6'])) {
+      $zamena6 = $data['task_quick_zamena_form6'];
+
+      if (!is_null($fastTask->getId())) {
+        $zproj6 = $zamena6['projekat'];
+        if ($zproj6 == '---') {
+          $zproj6 = null;
+        }
+
+        if (isset($zamena6['geo'][0])) {
+          $zgeo6 = $zamena6['geo'][0];
+          if (empty($zgeo6)) {
+            $zgeo6 = null;
+          }
+        } else {
+          $zgeo6 = null;
+        }
+
+
+        if (isset($zamena6['napomena'])) {
+          $znapomena6 = trim($zamena6['napomena']);
+          if (empty($znapomena6)) {
+            $znapomena6 = null;
+          }
+        } else {
+          $znapomena6 = null;
+        }
+
+        if (is_null($zproj6)) {
+          $fastTask->setZproject6(null);
+          $fastTask->setZgeo6(null);
+          $fastTask->setZdescription6(null);
+          $fastTask->setZtime6(null);
+          $fastTask->setZstatus6(null);
+
+        } else {
+
+          if ($fastTask->getZProject6() != $zproj6 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus6(FastTaskData::EDIT);
+          }
+          if ($fastTask->getZgeo6() != $zgeo6 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus6(FastTaskData::EDIT);
+          }
+
+          if ($fastTask->getZdescription6() != $znapomena6 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus6(FastTaskData::EDIT);
+          }
+          if (isset($zamena6['vreme']) && $fastTask->getZtime6() != $zamena6['vreme'] && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus6(FastTaskData::EDIT);
+          }
+        }
+      }
+      if (($zamena6['projekat']) !== '---') {
+
+        $fastTask->setZproject6($zamena6['projekat']);
+
+        if (!empty($zamena6['geo'][0])) {
+          $fastTask->setZgeo6($zamena6['geo'][0]);
+        } else {
+          $fastTask->setZgeo6(null);
+        }
+
+        if (!empty(trim($zamena6['napomena']))) {
+          $fastTask->setZdescription6($zamena6['napomena']);
+        } else {
+          $fastTask->setZdescription6(null);
+        }
+
+        if (!empty($zamena6['vreme'])) {
+          $fastTask->setzTime6($zamena6['vreme']);
+        }
+
+      } else {
+        $fastTask->setZproject6(null);
+        $fastTask->setZgeo6(null);
+        $fastTask->setZdescription6(null);
+        $fastTask->setZtime6(null);
+      }
+    }
+    if (isset($data['task_quick_zamena_form7'])) {
+      $zamena7 = $data['task_quick_zamena_form7'];
+
+      if (!is_null($fastTask->getId())) {
+        $zproj7 = $zamena7['projekat'];
+        if ($zproj7 == '---') {
+          $zproj7 = null;
+        }
+
+        if (isset($zamena7['geo'][0])) {
+          $zgeo7 = $zamena7['geo'][0];
+          if (empty($zgeo7)) {
+            $zgeo7 = null;
+          }
+        } else {
+          $zgeo7 = null;
+        }
+
+
+        if (isset($zamena7['napomena'])) {
+          $znapomena7 = trim($zamena7['napomena']);
+          if (empty($znapomena7)) {
+            $znapomena7 = null;
+          }
+        } else {
+          $znapomena7 = null;
+        }
+
+        if (is_null($zproj7)) {
+          $fastTask->setZproject7(null);
+          $fastTask->setZgeo7(null);
+          $fastTask->setZdescription7(null);
+          $fastTask->setZtime7(null);
+          $fastTask->setZstatus7(null);
+
+        } else {
+
+          if ($fastTask->getZProject7() != $zproj7 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus7(FastTaskData::EDIT);
+          }
+          if ($fastTask->getZgeo7() != $zgeo7 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus7(FastTaskData::EDIT);
+          }
+
+          if ($fastTask->getZdescription7() != $znapomena7 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus7(FastTaskData::EDIT);
+          }
+          if (isset($zamena7['vreme']) && $fastTask->getZtime7() != $zamena7['vreme'] && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus7(FastTaskData::EDIT);
+          }
+        }
+      }
+      if (($zamena7['projekat']) !== '---') {
+
+        $fastTask->setZproject7($zamena7['projekat']);
+
+        if (!empty($zamena7['geo'][0])) {
+          $fastTask->setZgeo7($zamena7['geo'][0]);
+        } else {
+          $fastTask->setZgeo7(null);
+        }
+
+        if (!empty(trim($zamena7['napomena']))) {
+          $fastTask->setZdescription7($zamena7['napomena']);
+        } else {
+          $fastTask->setZdescription7(null);
+        }
+
+        if (!empty($zamena7['vreme'])) {
+          $fastTask->setzTime7($zamena7['vreme']);
+        }
+
+      } else {
+        $fastTask->setZproject7(null);
+        $fastTask->setZgeo7(null);
+        $fastTask->setZdescription7(null);
+        $fastTask->setZtime7(null);
+      }
+    }
+    if (isset($data['task_quick_zamena_form8'])) {
+      $zamena8 = $data['task_quick_zamena_form8'];
+
+      if (!is_null($fastTask->getId())) {
+        $zproj8 = $zamena8['projekat'];
+        if ($zproj8 == '---') {
+          $zproj8 = null;
+        }
+
+        if (isset($zamena8['geo'][0])) {
+          $zgeo8 = $zamena8['geo'][0];
+          if (empty($zgeo8)) {
+            $zgeo8 = null;
+          }
+        } else {
+          $zgeo8 = null;
+        }
+
+
+        if (isset($zamena8['napomena'])) {
+          $znapomena8 = trim($zamena8['napomena']);
+          if (empty($znapomena8)) {
+            $znapomena8 = null;
+          }
+        } else {
+          $znapomena8 = null;
+        }
+
+        if (is_null($zproj8)) {
+          $fastTask->setZproject8(null);
+          $fastTask->setZgeo8(null);
+          $fastTask->setZdescription8(null);
+          $fastTask->setZtime8(null);
+          $fastTask->setZstatus8(null);
+
+        } else {
+
+          if ($fastTask->getZProject8() != $zproj8 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus8(FastTaskData::EDIT);
+          }
+          if ($fastTask->getZgeo8() != $zgeo8 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus8(FastTaskData::EDIT);
+          }
+
+          if ($fastTask->getZdescription8() != $znapomena8 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus8(FastTaskData::EDIT);
+          }
+          if (isset($zamena8['vreme']) && $fastTask->getZtime8() != $zamena8['vreme'] && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus8(FastTaskData::EDIT);
+          }
+        }
+      }
+      if (($zamena8['projekat']) !== '---') {
+
+        $fastTask->setZproject8($zamena8['projekat']);
+
+        if (!empty($zamena8['geo'][0])) {
+          $fastTask->setZgeo8($zamena8['geo'][0]);
+        } else {
+          $fastTask->setZgeo8(null);
+        }
+
+        if (!empty(trim($zamena8['napomena']))) {
+          $fastTask->setZdescription8($zamena8['napomena']);
+        } else {
+          $fastTask->setZdescription8(null);
+        }
+
+        if (!empty($zamena8['vreme'])) {
+          $fastTask->setzTime8($zamena8['vreme']);
+        }
+
+      } else {
+        $fastTask->setZproject8(null);
+        $fastTask->setZgeo8(null);
+        $fastTask->setZdescription8(null);
+        $fastTask->setZtime8(null);
+      }
+    }
+    if (isset($data['task_quick_zamena_form9'])) {
+      $zamena9 = $data['task_quick_zamena_form9'];
+
+      if (!is_null($fastTask->getId())) {
+        $zproj9 = $zamena9['projekat'];
+        if ($zproj9 == '---') {
+          $zproj9 = null;
+        }
+
+        if (isset($zamena9['geo'][0])) {
+          $zgeo9 = $zamena9['geo'][0];
+          if (empty($zgeo9)) {
+            $zgeo9 = null;
+          }
+        } else {
+          $zgeo9 = null;
+        }
+
+
+        if (isset($zamena9['napomena'])) {
+          $znapomena9 = trim($zamena9['napomena']);
+          if (empty($znapomena9)) {
+            $znapomena9 = null;
+          }
+        } else {
+          $znapomena9 = null;
+        }
+
+        if (is_null($zproj9)) {
+          $fastTask->setZproject9(null);
+          $fastTask->setZgeo9(null);
+          $fastTask->setZdescription9(null);
+          $fastTask->setZtime9(null);
+          $fastTask->setZstatus9(null);
+
+        } else {
+
+          if ($fastTask->getZProject9() != $zproj9 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus9(FastTaskData::EDIT);
+          }
+          if ($fastTask->getZgeo9() != $zgeo9 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus9(FastTaskData::EDIT);
+          }
+
+          if ($fastTask->getZdescription9() != $znapomena9 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus9(FastTaskData::EDIT);
+          }
+          if (isset($zamena9['vreme']) && $fastTask->getZtime9() != $zamena9['vreme'] && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus9(FastTaskData::EDIT);
+          }
+        }
+      }
+      if (($zamena9['projekat']) !== '---') {
+
+        $fastTask->setZproject9($zamena9['projekat']);
+
+        if (!empty($zamena9['geo'][0])) {
+          $fastTask->setZgeo9($zamena9['geo'][0]);
+        } else {
+          $fastTask->setZgeo9(null);
+        }
+
+        if (!empty(trim($zamena9['napomena']))) {
+          $fastTask->setZdescription9($zamena9['napomena']);
+        } else {
+          $fastTask->setZdescription9(null);
+        }
+
+        if (!empty($zamena9['vreme'])) {
+          $fastTask->setzTime9($zamena9['vreme']);
+        }
+
+      } else {
+        $fastTask->setZproject9(null);
+        $fastTask->setZgeo9(null);
+        $fastTask->setZdescription9(null);
+        $fastTask->setZtime9(null);
+      }
+    }
+    if (isset($data['task_quick_zamena_form10'])) {
+      $zamena10 = $data['task_quick_zamena_form10'];
+
+      if (!is_null($fastTask->getId())) {
+        $zproj10 = $zamena10['projekat'];
+        if ($zproj10 == '---') {
+          $zproj10 = null;
+        }
+
+        if (isset($zamena10['geo'][0])) {
+          $zgeo10 = $zamena10['geo'][0];
+          if (empty($zgeo10)) {
+            $zgeo10 = null;
+          }
+        } else {
+          $zgeo10 = null;
+        }
+
+
+        if (isset($zamena10['napomena'])) {
+          $znapomena10 = trim($zamena10['napomena']);
+          if (empty($znapomena10)) {
+            $znapomena10 = null;
+          }
+        } else {
+          $znapomena10 = null;
+        }
+
+        if (is_null($zproj10)) {
+          $fastTask->setZproject10(null);
+          $fastTask->setZgeo10(null);
+          $fastTask->setZdescription10(null);
+          $fastTask->setZtime10(null);
+          $fastTask->setZstatus10(null);
+
+        } else {
+
+          if ($fastTask->getZProject10() != $zproj10 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus10(FastTaskData::EDIT);
+          }
+          if ($fastTask->getZgeo10() != $zgeo10 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus10(FastTaskData::EDIT);
+          }
+
+          if ($fastTask->getZdescription10() != $znapomena10 && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus10(FastTaskData::EDIT);
+          }
+          if (isset($zamena10['vreme']) && $fastTask->getZtime10() != $zamena10['vreme'] && $status == FastTaskData::EDIT) {
+            $fastTask->setZstatus10(FastTaskData::EDIT);
+          }
+        }
+      }
+      if (($zamena10['projekat']) !== '---') {
+
+        $fastTask->setZproject10($zamena10['projekat']);
+
+        if (!empty($zamena10['geo'][0])) {
+          $fastTask->setZgeo10($zamena10['geo'][0]);
+        } else {
+          $fastTask->setZgeo10(null);
+        }
+
+        if (!empty(trim($zamena10['napomena']))) {
+          $fastTask->setZdescription10($zamena10['napomena']);
+        } else {
+          $fastTask->setZdescription10(null);
+        }
+
+        if (!empty($zamena10['vreme'])) {
+          $fastTask->setzTime10($zamena10['vreme']);
+        }
+
+      } else {
+        $fastTask->setZproject10(null);
+        $fastTask->setZgeo10(null);
+        $fastTask->setZdescription10(null);
+        $fastTask->setZtime10(null);
+      }
+    }
+
     $fastTask->setNoTasks($noTasks);
 
     $stanja[] = $fastTask->getStatus1();
@@ -4499,6 +5439,17 @@ class FastTaskRepository extends ServiceEntityRepository {
     $stanja[] = $fastTask->getStatus9();
     $stanja[] = $fastTask->getStatus10();
 
+    $stanja[] = $fastTask->getZstatus1();
+    $stanja[] = $fastTask->getZstatus2();
+    $stanja[] = $fastTask->getZstatus3();
+    $stanja[] = $fastTask->getZstatus4();
+    $stanja[] = $fastTask->getZstatus5();
+    $stanja[] = $fastTask->getZstatus6();
+    $stanja[] = $fastTask->getZstatus7();
+    $stanja[] = $fastTask->getZstatus8();
+    $stanja[] = $fastTask->getZstatus9();
+    $stanja[] = $fastTask->getZstatus10();
+
     if (in_array(FastTaskData::EDIT, $stanja, true)) {
       $fastTask->setStatus(FastTaskData::EDIT);
     } else {
@@ -4508,10 +5459,16 @@ class FastTaskRepository extends ServiceEntityRepository {
     if ($currentTime > $editTime) {
       if (is_null($fastTask->getId())) {
         $plan = $this->getEntityManager()->getRepository(Task::class)->createTasksFromList($fastTask, $this->getEntityManager()->getRepository(User::class)->find(1));
-        $timetable = $this->getEntityManager()->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
         $datum = $plan->getDatum();
-        $users= $this->getEntityManager()->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::SAVED);
+
+        $timetable = $this->getEntityManager()->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
+        $subs = $this->getEntityManager()->getRepository(FastTask::class)->getSubsByFastTasks($plan);
+
+        $users = $this->getEntityManager()->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::SAVED);
+        $usersSub = $this->getEntityManager()->getRepository(FastTask::class)->getUsersSubsForEmail($plan, FastTaskData::SAVED);
+
         $this->mail->plan($timetable, $users, $datum);
+        $this->mail->subs($subs, $usersSub, $datum);
       }
     }
 

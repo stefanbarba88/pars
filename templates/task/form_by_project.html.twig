@@ -80,8 +80,9 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-category'}}) }}
-                                        {{ form_widget(form.title, {attr: { class: 'form-control' }}) }}
+                                        {{ form_label(form.category, 'Kategorija:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.category, {attr: { class: 'form-control select' }}) }}
+                                        <span class="form-text">Kategorizacija pomaže u organizaciji.</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -108,13 +109,6 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.category, 'Kategorija:', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.category, {attr: { class: 'form-control select' }}) }}
-                                        <span class="form-text">Kategorizacija pomaže u organizaciji.</span>
-                                    </div>
-                                </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.label, 'Oznaka:', {'label_attr': {'class': 'form-label'}}) }}

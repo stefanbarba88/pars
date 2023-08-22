@@ -275,7 +275,9 @@ class ToolReservationFormType extends AbstractType {
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('d')
             ->andWhere('d.isSuspended = :isSuspended')
+            ->andWhere('d.userType = :userType')
             ->setParameter(':isSuspended', 0)
+            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
             ->orderBy('d.id', 'ASC');
         },
         'choice_label' => function ($user) {

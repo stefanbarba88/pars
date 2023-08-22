@@ -69,17 +69,23 @@
                                     <td>{{ task.task.id }}</td>
                                     <td>
                                         <div class="fw-semibold">
-                                            {% if is_granted('ROLE_EMPLOYEE') %}
-                                                <a href="{{ path('app_task_view_user', { id: task.task.id}) }}">{{ task.task.title }}</a>
-                                            {% else %}
+                                            {% if app.user.userType != 4 %}
                                                 <a href="{{ path('app_task_view', { id: task.task.id}) }}">{{ task.task.title }}</a>
+                                            {% else %}
+                                                {% if app.user in task.users %}
+                                                    <a href="{{ path('app_task_view_user', { id: task.task.id}) }}">{{ task.task.title }}</a>
+                                                {% else %}
+                                                    {{ task.task.title }}
+                                                {% endif %}
                                             {% endif %}
                                         </div>
-                                        <div class="d-inline-flex">
-                                            {% for label in task.task.label %}
-                                                {{label.label | raw}}
-                                            {% endfor %}
-                                        </div>
+                                        {% if task.task.label is not empty %}
+                                            <div class="d-inline-flex">
+                                                {% for label in task.task.label %}
+                                                    {{label.label | raw}}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         {% if task.task.isDeleted %}

@@ -77,6 +77,22 @@ class MailService {
       $this->sendMail($to, $subject, $from, $sender, $template, $args);
     }
   }
+  public function subs($subs, $users, $datum): void {
+
+    $args = [];
+    $subject = 'Izmene na stalnim gradilištima za ' .  $datum->format('d.m.Y');
+    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/subs.html.twig';
+    $args['subs'] = $subs;
+    $args['danas'] = $datum;
+
+    foreach ($users as $user) {
+      $to = $user->getEmail();
+      $args['user'] = $user;
+      $this->sendMail($to, $subject, $from, $sender, $template, $args);
+    }
+  }
 
   public function edit(User $user): void {
     $args = [];

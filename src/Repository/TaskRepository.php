@@ -430,6 +430,7 @@ class TaskRepository extends ServiceEntityRepository {
     $qb = $this->createQueryBuilder('t');
     $qb
       ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('t.isDeleted <> 1')
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
       ->orderBy('t.time', 'ASC');

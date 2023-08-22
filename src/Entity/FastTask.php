@@ -422,6 +422,158 @@ class FastTask {
   #[ORM\Column(nullable: true)]
   private ?bool $free10 = false;
 
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zproject1 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zgeo1 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $ztime1 = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $zdescription1 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zstatus1 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zproject2 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zgeo2 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $ztime2 = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $zdescription2 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zstatus2 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zproject3 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zgeo3 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $ztime3 = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $zdescription3 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zstatus3 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zproject4 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zgeo4 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $ztime4 = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $zdescription4 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zstatus4 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zproject5 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zgeo5 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $ztime5 = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $zdescription5 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zstatus5 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zproject6 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zgeo6 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $ztime6 = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $zdescription6 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zstatus6 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zproject7 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zgeo7 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $ztime7 = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $zdescription7 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zstatus7 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zproject8 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zgeo8 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $ztime8 = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $zdescription8 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zstatus8 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zproject9 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zgeo9 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $ztime9 = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $zdescription9 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zstatus9 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zproject10 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zgeo10 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $ztime10 = null;
+
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $zdescription10 = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $zstatus10 = null;
+
+
   #[ORM\PrePersist]
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();
@@ -2308,6 +2460,706 @@ class FastTask {
    */
   public function setFree10(?bool $free10): void {
     $this->free10 = $free10;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZproject1(): ?int {
+    return $this->zproject1;
+  }
+
+  /**
+   * @param int|null $zproject1
+   */
+  public function setZproject1(?int $zproject1): void {
+    $this->zproject1 = $zproject1;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZgeo1(): ?int {
+    return $this->zgeo1;
+  }
+
+  /**
+   * @param int|null $zgeo1
+   */
+  public function setZgeo1(?int $zgeo1): void {
+    $this->zgeo1 = $zgeo1;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZtime1(): ?string {
+    return $this->ztime1;
+  }
+
+  /**
+   * @param string|null $ztime1
+   */
+  public function setZtime1(?string $ztime1): void {
+    $this->ztime1 = $ztime1;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZdescription1(): ?string {
+    return $this->zdescription1;
+  }
+
+  /**
+   * @param string|null $zdescription1
+   */
+  public function setZdescription1(?string $zdescription1): void {
+    $this->zdescription1 = $zdescription1;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZstatus1(): ?int {
+    return $this->zstatus1;
+  }
+
+  /**
+   * @param int|null $zstatus1
+   */
+  public function setZstatus1(?int $zstatus1): void {
+    $this->zstatus1 = $zstatus1;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZproject2(): ?int {
+    return $this->zproject2;
+  }
+
+  /**
+   * @param int|null $zproject2
+   */
+  public function setZproject2(?int $zproject2): void {
+    $this->zproject2 = $zproject2;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZgeo2(): ?int {
+    return $this->zgeo2;
+  }
+
+  /**
+   * @param int|null $zgeo2
+   */
+  public function setZgeo2(?int $zgeo2): void {
+    $this->zgeo2 = $zgeo2;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZtime2(): ?string {
+    return $this->ztime2;
+  }
+
+  /**
+   * @param string|null $ztime2
+   */
+  public function setZtime2(?string $ztime2): void {
+    $this->ztime2 = $ztime2;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZdescription2(): ?string {
+    return $this->zdescription2;
+  }
+
+  /**
+   * @param string|null $zdescription2
+   */
+  public function setZdescription2(?string $zdescription2): void {
+    $this->zdescription2 = $zdescription2;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZstatus2(): ?int {
+    return $this->zstatus2;
+  }
+
+  /**
+   * @param int|null $zstatus2
+   */
+  public function setZstatus2(?int $zstatus2): void {
+    $this->zstatus2 = $zstatus2;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZproject3(): ?int {
+    return $this->zproject3;
+  }
+
+  /**
+   * @param int|null $zproject3
+   */
+  public function setZproject3(?int $zproject3): void {
+    $this->zproject3 = $zproject3;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZgeo3(): ?int {
+    return $this->zgeo3;
+  }
+
+  /**
+   * @param int|null $zgeo3
+   */
+  public function setZgeo3(?int $zgeo3): void {
+    $this->zgeo3 = $zgeo3;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZtime3(): ?string {
+    return $this->ztime3;
+  }
+
+  /**
+   * @param string|null $ztime3
+   */
+  public function setZtime3(?string $ztime3): void {
+    $this->ztime3 = $ztime3;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZdescription3(): ?string {
+    return $this->zdescription3;
+  }
+
+  /**
+   * @param string|null $zdescription3
+   */
+  public function setZdescription3(?string $zdescription3): void {
+    $this->zdescription3 = $zdescription3;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZstatus3(): ?int {
+    return $this->zstatus3;
+  }
+
+  /**
+   * @param int|null $zstatus3
+   */
+  public function setZstatus3(?int $zstatus3): void {
+    $this->zstatus3 = $zstatus3;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZproject4(): ?int {
+    return $this->zproject4;
+  }
+
+  /**
+   * @param int|null $zproject4
+   */
+  public function setZproject4(?int $zproject4): void {
+    $this->zproject4 = $zproject4;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZgeo4(): ?int {
+    return $this->zgeo4;
+  }
+
+  /**
+   * @param int|null $zgeo4
+   */
+  public function setZgeo4(?int $zgeo4): void {
+    $this->zgeo4 = $zgeo4;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZtime4(): ?string {
+    return $this->ztime4;
+  }
+
+  /**
+   * @param string|null $ztime4
+   */
+  public function setZtime4(?string $ztime4): void {
+    $this->ztime4 = $ztime4;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZdescription4(): ?string {
+    return $this->zdescription4;
+  }
+
+  /**
+   * @param string|null $zdescription4
+   */
+  public function setZdescription4(?string $zdescription4): void {
+    $this->zdescription4 = $zdescription4;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZstatus4(): ?int {
+    return $this->zstatus4;
+  }
+
+  /**
+   * @param int|null $zstatus4
+   */
+  public function setZstatus4(?int $zstatus4): void {
+    $this->zstatus4 = $zstatus4;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZproject5(): ?int {
+    return $this->zproject5;
+  }
+
+  /**
+   * @param int|null $zproject5
+   */
+  public function setZproject5(?int $zproject5): void {
+    $this->zproject5 = $zproject5;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZgeo5(): ?int {
+    return $this->zgeo5;
+  }
+
+  /**
+   * @param int|null $zgeo5
+   */
+  public function setZgeo5(?int $zgeo5): void {
+    $this->zgeo5 = $zgeo5;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZtime5(): ?string {
+    return $this->ztime5;
+  }
+
+  /**
+   * @param string|null $ztime5
+   */
+  public function setZtime5(?string $ztime5): void {
+    $this->ztime5 = $ztime5;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZdescription5(): ?string {
+    return $this->zdescription5;
+  }
+
+  /**
+   * @param string|null $zdescription5
+   */
+  public function setZdescription5(?string $zdescription5): void {
+    $this->zdescription5 = $zdescription5;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZstatus5(): ?int {
+    return $this->zstatus5;
+  }
+
+  /**
+   * @param int|null $zstatus5
+   */
+  public function setZstatus5(?int $zstatus5): void {
+    $this->zstatus5 = $zstatus5;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZproject6(): ?int {
+    return $this->zproject6;
+  }
+
+  /**
+   * @param int|null $zproject6
+   */
+  public function setZproject6(?int $zproject6): void {
+    $this->zproject6 = $zproject6;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZgeo6(): ?int {
+    return $this->zgeo6;
+  }
+
+  /**
+   * @param int|null $zgeo6
+   */
+  public function setZgeo6(?int $zgeo6): void {
+    $this->zgeo6 = $zgeo6;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZtime6(): ?string {
+    return $this->ztime6;
+  }
+
+  /**
+   * @param string|null $ztime6
+   */
+  public function setZtime6(?string $ztime6): void {
+    $this->ztime6 = $ztime6;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZdescription6(): ?string {
+    return $this->zdescription6;
+  }
+
+  /**
+   * @param string|null $zdescription6
+   */
+  public function setZdescription6(?string $zdescription6): void {
+    $this->zdescription6 = $zdescription6;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZstatus6(): ?int {
+    return $this->zstatus6;
+  }
+
+  /**
+   * @param int|null $zstatus6
+   */
+  public function setZstatus6(?int $zstatus6): void {
+    $this->zstatus6 = $zstatus6;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZproject7(): ?int {
+    return $this->zproject7;
+  }
+
+  /**
+   * @param int|null $zproject7
+   */
+  public function setZproject7(?int $zproject7): void {
+    $this->zproject7 = $zproject7;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZgeo7(): ?int {
+    return $this->zgeo7;
+  }
+
+  /**
+   * @param int|null $zgeo7
+   */
+  public function setZgeo7(?int $zgeo7): void {
+    $this->zgeo7 = $zgeo7;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZtime7(): ?string {
+    return $this->ztime7;
+  }
+
+  /**
+   * @param string|null $ztime7
+   */
+  public function setZtime7(?string $ztime7): void {
+    $this->ztime7 = $ztime7;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZdescription7(): ?string {
+    return $this->zdescription7;
+  }
+
+  /**
+   * @param string|null $zdescription7
+   */
+  public function setZdescription7(?string $zdescription7): void {
+    $this->zdescription7 = $zdescription7;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZstatus7(): ?int {
+    return $this->zstatus7;
+  }
+
+  /**
+   * @param int|null $zstatus7
+   */
+  public function setZstatus7(?int $zstatus7): void {
+    $this->zstatus7 = $zstatus7;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZproject8(): ?int {
+    return $this->zproject8;
+  }
+
+  /**
+   * @param int|null $zproject8
+   */
+  public function setZproject8(?int $zproject8): void {
+    $this->zproject8 = $zproject8;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZgeo8(): ?int {
+    return $this->zgeo8;
+  }
+
+  /**
+   * @param int|null $zgeo8
+   */
+  public function setZgeo8(?int $zgeo8): void {
+    $this->zgeo8 = $zgeo8;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZtime8(): ?string {
+    return $this->ztime8;
+  }
+
+  /**
+   * @param string|null $ztime8
+   */
+  public function setZtime8(?string $ztime8): void {
+    $this->ztime8 = $ztime8;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZdescription8(): ?string {
+    return $this->zdescription8;
+  }
+
+  /**
+   * @param string|null $zdescription8
+   */
+  public function setZdescription8(?string $zdescription8): void {
+    $this->zdescription8 = $zdescription8;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZstatus8(): ?int {
+    return $this->zstatus8;
+  }
+
+  /**
+   * @param int|null $zstatus8
+   */
+  public function setZstatus8(?int $zstatus8): void {
+    $this->zstatus8 = $zstatus8;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZproject9(): ?int {
+    return $this->zproject9;
+  }
+
+  /**
+   * @param int|null $zproject9
+   */
+  public function setZproject9(?int $zproject9): void {
+    $this->zproject9 = $zproject9;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZgeo9(): ?int {
+    return $this->zgeo9;
+  }
+
+  /**
+   * @param int|null $zgeo9
+   */
+  public function setZgeo9(?int $zgeo9): void {
+    $this->zgeo9 = $zgeo9;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZtime9(): ?string {
+    return $this->ztime9;
+  }
+
+  /**
+   * @param string|null $ztime9
+   */
+  public function setZtime9(?string $ztime9): void {
+    $this->ztime9 = $ztime9;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZdescription9(): ?string {
+    return $this->zdescription9;
+  }
+
+  /**
+   * @param string|null $zdescription9
+   */
+  public function setZdescription9(?string $zdescription9): void {
+    $this->zdescription9 = $zdescription9;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZstatus9(): ?int {
+    return $this->zstatus9;
+  }
+
+  /**
+   * @param int|null $zstatus9
+   */
+  public function setZstatus9(?int $zstatus9): void {
+    $this->zstatus9 = $zstatus9;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZproject10(): ?int {
+    return $this->zproject10;
+  }
+
+  /**
+   * @param int|null $zproject10
+   */
+  public function setZproject10(?int $zproject10): void {
+    $this->zproject10 = $zproject10;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZgeo10(): ?int {
+    return $this->zgeo10;
+  }
+
+  /**
+   * @param int|null $zgeo10
+   */
+  public function setZgeo10(?int $zgeo10): void {
+    $this->zgeo10 = $zgeo10;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZtime10(): ?string {
+    return $this->ztime10;
+  }
+
+  /**
+   * @param string|null $ztime10
+   */
+  public function setZtime10(?string $ztime10): void {
+    $this->ztime10 = $ztime10;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getZdescription10(): ?string {
+    return $this->zdescription10;
+  }
+
+  /**
+   * @param string|null $zdescription10
+   */
+  public function setZdescription10(?string $zdescription10): void {
+    $this->zdescription10 = $zdescription10;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getZstatus10(): ?int {
+    return $this->zstatus10;
+  }
+
+  /**
+   * @param int|null $zstatus10
+   */
+  public function setZstatus10(?int $zstatus10): void {
+    $this->zstatus10 = $zstatus10;
   }
 
 

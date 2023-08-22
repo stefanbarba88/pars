@@ -1,5 +1,5 @@
 <!-- Left sidebar component -->
-<div class="sidebar sidebar-component sidebar-expand-lg sidebar-expand-sm sidebar-expand-md sidebar-expand-xl sidebar-expand-xxl sidebar-mobile-expanded bg-transparent shadow-none me-lg-3">
+<div class="sidebar sidebar-component sidebar-expand-lg sidebar-expand-sm sidebar-expand-md sidebar-expand-xl sidebar-expand-xxl bg-transparent shadow-none me-lg-3">
 
     <!-- Sidebar content -->
     <div class="sidebar-content">
@@ -25,19 +25,19 @@
                         Profil
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ path('app_employee_activity_view', { id: user.id}) }}" class="nav-link">
-                        <i class="ph-activity me-2"></i>
-                        Aktivnosti
-                        <span class="badge bg-secondary rounded-pill ms-auto">29</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ path('app_employee_calendar_view', { id: user.id}) }}" class="nav-link">
-                        <i class="ph-calendar me-2"></i>Raspored
-                        <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>
-                    </a>
-                </li>
+{#                <li class="nav-item">#}
+{#                    <a href="{{ path('app_employee_activity_view', { id: user.id}) }}" class="nav-link">#}
+{#                        <i class="ph-activity me-2"></i>#}
+{#                        Aktivnosti#}
+{#                        <span class="badge bg-secondary rounded-pill ms-auto">29</span>#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="nav-item">#}
+{#                    <a href="{{ path('app_employee_calendar_view', { id: user.id}) }}" class="nav-link">#}
+{#                        <i class="ph-calendar me-2"></i>Raspored#}
+{#                        <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>#}
+{#                    </a>#}
+{#                </li>#}
                 <li class="nav-item-divider"></li>
                 <li class="nav-item">
                     {% if user == app.user %}

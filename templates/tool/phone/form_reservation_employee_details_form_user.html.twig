@@ -1,0 +1,705 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+        <!-- Main content -->
+
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                {% if not form.vars.valid %}
+                                    {% for child in form.children %}
+                                        {%for error in child.vars.errors%}
+                                            <div class="alert alert-danger alert-dismissible fade show">
+                                                <span class="fw-semibold">{{error.message}}</span>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                        {%endfor%}
+                                    {%endfor%}
+                                {%endif%}
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            {% if reservation.id is not null %}
+                                                Izmena rezervacije
+                                            {% else %}
+                                                Dodavanje rezervacije
+                                            {% endif %}
+                                        </h6>
+                                    </div>
+                                    {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
+
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.tool, 'Oprema:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.tool, {attr: { class: 'form-control required tip' }}) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+{#                                            {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::TS') %}#}
+                                                <div class="row">
+                                                    <div class="col-lg-6 stativ hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isStativ, 'Stativ:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isStativ, {attr: { class: 'form-control required ' }}) }}
+                                                    </div>
+                                                </div>
+                                                    <div class="col-lg-6 miniprizma hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isMiniprizma, 'Miniprizma:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isMiniprizma, {attr: { class: 'form-control required' }}) }}
+                                                    </div>
+                                                </div>
+
+                                                    <div class="col-lg-6 baterije hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isBaterija, 'Baterije:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isBaterija, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+                                                </div>
+                                                    <div class="col-lg-6 punjac hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isPunjac, 'Punjač:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isPunjac, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+                                                </div>
+
+                                                    <div class="col-lg-6 velikiStap hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isVelikiStap, 'Veliki štap sa prizmom:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isVelikiStap, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+                                                </div>
+                                                    <div class="col-lg-6 distomat hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isDistomat, 'Distomat:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isDistomat, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+                                                </div>
+
+                                                    <div class="col-lg-6 letva hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isLetva, 'Letva:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isLetva, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+                                                </div>
+                                                    <div class="col-lg-6 papuce hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isPapuce, 'Papuče:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isPapuce, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+                                                </div>
+
+                                                    <div class="col-lg-6 stapDodatak hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isStapDodatak, 'Dodatak štapu:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isStapDodatak, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+
+                                                </div>
+                                                    <div class="col-lg-6 stativKomplet hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isStativiKomplet, 'Stativ i komplet za prisilno centrisanje:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isStativiKomplet, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+                                                </div>
+
+                                                    <div class="col-lg-6 gpsStativ hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isGPSiStativ, 'GPS i dodatni stativ*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isGPSiStativ, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+
+                                                </div>
+                                                    <div class="col-lg-6 ipad hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isIpad, 'iPad:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isIpad, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+                                                </div>
+
+                                                    <div class="col-lg-6 hdd hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isExterniHDD, 'Eksterni HDD:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isExterniHDD, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+                                                </div>
+                                                    <div class="col-lg-6 markice hide">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isMarkiceRoto, 'Markice rotirajuće:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isMarkiceRoto, {attr: { class: 'form-control  required' }}) }}
+                                                    </div>
+                                                </div>
+{#                                            </div>#}
+{#                                            {% endif %}#}
+{#                                            {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::LS') %}#}
+{#                                                <div class="row">#}
+{#                                                    <div class="col-lg-6 stativ">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStativ, 'Stativ:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStativ, {attr: { class: 'form-control required ' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 miniprizma hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isMiniprizma, 'Miniprizma:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isMiniprizma, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 baterije">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isBaterija, 'Baterije:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isBaterija, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 punjac">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isPunjac, 'Punjač:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isPunjac, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 velikiStap hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isVelikiStap, 'Veliki štap sa prizmom:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isVelikiStap, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 distomat hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isDistomat, 'Distomat:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isDistomat, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 letva">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isLetva, 'Letva:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isLetva, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 papuce">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isPapuce, 'Papuče:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isPapuce, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 stapDodatak hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStapDodatak, 'Dodatak štapu:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStapDodatak, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 stativKomplet hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStativiKomplet, 'Stativ i komplet za prisilno centrisanje:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStativiKomplet, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 gpsStativ hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isGPSiStativ, 'GPS i dodatni stativ*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isGPSiStativ, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 ipad hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isIpad, 'iPad:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isIpad, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 hdd hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isExterniHDD, 'Eksterni HDD:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isExterniHDD, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 markice hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isMarkiceRoto, 'Markice rotirajuće:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isMarkiceRoto, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            {% endif %}#}
+{#                                            {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::GPS') %}#}
+{#                                                <div class="row">#}
+{#                                                    <div class="col-lg-6 stativ hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStativ, 'Stativ:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStativ, {attr: { class: 'form-control required ' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 miniprizma hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isMiniprizma, 'Miniprizma:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isMiniprizma, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 baterije">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isBaterija, 'Baterije:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isBaterija, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 punjac">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isPunjac, 'Punjač:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isPunjac, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 velikiStap">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isVelikiStap, 'Veliki štap sa prizmom:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isVelikiStap, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 distomat">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isDistomat, 'Distomat:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isDistomat, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 letva hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isLetva, 'Letva:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isLetva, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 papuce hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isPapuce, 'Papuče:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isPapuce, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 stapDodatak">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStapDodatak, 'Dodatak štapu:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStapDodatak, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 stativKomplet">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStativiKomplet, 'Stativ i komplet za prisilno centrisanje:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStativiKomplet, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 gpsStativ hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isGPSiStativ, 'GPS i dodatni stativ*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isGPSiStativ, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 ipad hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isIpad, 'iPad:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isIpad, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 hdd hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isExterniHDD, 'Eksterni HDD:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isExterniHDD, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 markice hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isMarkiceRoto, 'Markice rotirajuće:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isMarkiceRoto, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            {% endif %}#}
+{#                                            {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::DRON') %}#}
+{#                                                <div class="row">#}
+{#                                                    <div class="col-lg-6 stativ hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStativ, 'Stativ:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStativ, {attr: { class: 'form-control required ' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 miniprizma hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isMiniprizma, 'Miniprizma:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isMiniprizma, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 baterije">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isBaterija, 'Baterije:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isBaterija, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 punjac">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isPunjac, 'Punjač:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isPunjac, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 velikiStap hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isVelikiStap, 'Veliki štap sa prizmom:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isVelikiStap, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 distomat hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isDistomat, 'Distomat:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isDistomat, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 letva hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isLetva, 'Letva:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isLetva, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 papuce hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isPapuce, 'Papuče:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isPapuce, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 stapDodatak hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStapDodatak, 'Dodatak štapu:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStapDodatak, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 stativKomplet hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStativiKomplet, 'Stativ i komplet za prisilno centrisanje:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStativiKomplet, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 gpsStativ">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isGPSiStativ, 'GPS i dodatni stativ*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isGPSiStativ, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 ipad hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isIpad, 'iPad:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isIpad, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 hdd hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isExterniHDD, 'Eksterni HDD:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isExterniHDD, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 markice hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isMarkiceRoto, 'Markice rotirajuće:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isMarkiceRoto, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            {% endif %}#}
+{#                                            {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::SKENER') %}#}
+{#                                                <div class="row">#}
+{#                                                    <div class="col-lg-6 stativ">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStativ, 'Stativ:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStativ, {attr: { class: 'form-control required ' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 miniprizma hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isMiniprizma, 'Miniprizma:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isMiniprizma, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 baterije">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isBaterija, 'Baterije:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isBaterija, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 punjac">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isPunjac, 'Punjač:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isPunjac, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 velikiStap hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isVelikiStap, 'Veliki štap sa prizmom:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isVelikiStap, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 distomat hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isDistomat, 'Distomat:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isDistomat, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 letva hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isLetva, 'Letva:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isLetva, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 papuce hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isPapuce, 'Papuče:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isPapuce, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 stapDodatak hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStapDodatak, 'Dodatak štapu:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStapDodatak, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 stativKomplet hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isStativiKomplet, 'Stativ i komplet za prisilno centrisanje:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isStativiKomplet, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 gpsStativ hide">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isGPSiStativ, 'GPS i dodatni stativ*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isGPSiStativ, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 ipad">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isIpad, 'iPad:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isIpad, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+{#                                                    <div class="col-lg-6 hdd">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isExterniHDD, 'Eksterni HDD:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isExterniHDD, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                    <div class="col-lg-6 markice">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            {{ form_label(form.isMarkiceRoto, 'Markice rotirajuće:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                            {{ form_widget(form.isMarkiceRoto, {attr: { class: 'form-control  required' }}) }}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            {% endif %}#}
+
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.descStart, 'Napomena:', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.descStart, {attr: { class: 'form-control' }}) }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="text-end">
+                                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{ form_end(form) }}
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- /right content -->
+
+                        </div>
+                        <!-- /inner container -->
+
+                    </div>
+                    <!-- /content area -->
+
+                    <!-- Footer -->
+                    {% include 'includes/footer.html.twig' %}
+                    <!-- /footer -->
+                </div>
+            </div>
+            {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        </div>
+        {% include 'includes/notification.html.twig' %}
+        {% endblock content %}
+
+        {% block includeJavascript %}
+            {{ parent() }}
+
+            <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+            <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+            <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+            <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+            <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+            <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+            <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+            <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+            <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+            <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+            <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+            <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+            <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+            <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+            <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+            <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+            <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+            <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+            <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+            <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+
+            <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+            <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+            {% if app.request.locale == 'sr-RS' %}
+            <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+            {% endif %}
+
+
+        {% endblock includeJavascript %}
+        {% block footerJavascript %}
+
+            <script>
+                $(function () {
+
+                    $(".tip").change(function(e) {
+                        e.preventDefault();
+
+                        var selectedOptionText = $(this).find('option:selected').text();
+
+                        // Uzmite prva dva slova naziva izabranog entiteta
+                        var firstLetter = selectedOptionText.substring(0, 1);
+
+
+                        if (firstLetter == "T") {
+                            $('.stativ').removeClass('hide');
+                            $('.baterije').removeClass('hide');
+                            $('.miniprizma').removeClass('hide');
+                            $('.punjac').removeClass('hide');
+                            $('.velikiStap').removeClass('hide');
+                            $('.distomat').removeClass('hide');
+                            $('.dodatakStapu').addClass('hide');
+                            $('.stativKomplet').addClass('hide');
+                            $('.letva').addClass('hide');
+                            $('.papuce').addClass('hide');
+                            $('.gpsStativ').addClass('hide');
+                            $('.ipad').addClass('hide');
+                            $('.hdd').addClass('hide');
+                            $('.markice').addClass('hide');
+                        } else if (firstLetter == "L") {
+                            $('.stativ').removeClass('hide');
+                            $('.baterije').removeClass('hide');
+                            $('.miniprizma').addClass('hide');
+                            $('.punjac').removeClass('hide');
+                            $('.velikiStap').addClass('hide');
+                            $('.distomat').addClass('hide');
+                            $('.dodatakStapu').addClass('hide');
+                            $('.stativKomplet').addClass('hide');
+                            $('.letva').removeClass('hide');
+                            $('.papuce').removeClass('hide');
+                            $('.gpsStativ').addClass('hide');
+                            $('.ipad').addClass('hide');
+                            $('.hdd').addClass('hide');
+                            $('.markice').addClass('hide');
+                        } else if (firstLetter == "G") {
+                            $('.stativ').addClass('hide');
+                            $('.baterije').removeClass('hide');
+                            $('.miniprizma').addClass('hide');
+                            $('.punjac').removeClass('hide');
+                            $('.velikiStap').removeClass('hide');
+                            $('.distomat').removeClass('hide');
+                            $('.dodatakStapu').removeClass('hide');
+                            $('.stativKomplet').removeClass('hide');
+                            $('.letva').addClass('hide');
+                            $('.papuce').addClass('hide');
+                            $('.gpsStativ').addClass('hide');
+                            $('.ipad').addClass('hide');
+                            $('.hdd').addClass('hide');
+                            $('.markice').addClass('hide');
+                        } else if (firstLetter == "D") {
+                            $('.stativ').addClass('hide');
+                            $('.baterije').removeClass('hide');
+                            $('.miniprizma').addClass('hide');
+                            $('.punjac').removeClass('hide');
+                            $('.velikiStap').addClass('hide');
+                            $('.distomat').addClass('hide');
+                            $('.dodatakStapu').addClass('hide');
+                            $('.stativKomplet').addClass('hide');
+                            $('.letva').addClass('hide');
+                            $('.papuce').addClass('hide');
+                            $('.gpsStativ').removeClass('hide');
+                            $('.ipad').addClass('hide');
+                            $('.hdd').addClass('hide');
+                            $('.markice').addClass('hide');
+                        } else if (firstLetter == "R") {
+                            $('.stativ').removeClass('hide');
+                            $('.baterije').removeClass('hide');
+                            $('.miniprizma').addClass('hide');
+                            $('.punjac').removeClass('hide');
+                            $('.velikiStap').addClass('hide');
+                            $('.distomat').addClass('hide');
+                            $('.dodatakStapu').addClass('hide');
+                            $('.stativKomplet').addClass('hide');
+                            $('.letva').addClass('hide');
+                            $('.papuce').addClass('hide');
+                            $('.gpsStativ').addClass('hide');
+                            $('.ipad').removeClass('hide');
+                            $('.hdd').removeClass('hide');
+                            $('.markice').removeClass('hide');
+                        }
+                    });
+
+                });
+            </script>
+
+        {% endblock footerJavascript %}

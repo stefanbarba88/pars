@@ -48,13 +48,13 @@
 
                                         {% if logs is not empty %}
                                             {% for log in logs  %}
-                                                {% if log[3] == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                {% if log[3] == 1 %}
                                                     <tr>
                                                 {% endif %}
-                                                {% if log[3] == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                {% if log[3] == 0 %}
                                                     <tr class="bg-danger bg-opacity-25">
                                                 {% endif %}
-                                                {% if log[3] == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                {% if log[3] == 2 %}
                                                     <tr class="bg-success bg-opacity-25">
                                                 {% endif %}
                                                     <td>

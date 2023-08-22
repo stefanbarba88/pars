@@ -38,7 +38,7 @@
                             <i class="ph-house"></i>
                             <span>
                                 Kontrolna tabla
-                            <span class="d-block fw-normal opacity-50">broj aktivnih taskova</span>
+{#                            <span class="d-block fw-normal opacity-50">1</span>#}
                         </span>
                         </a>
                     </li>
@@ -64,26 +64,6 @@
                     {#                    </a>#}
                     {#                </li>#}
 
-{#                    <!-- Projekti -->#}
-{#                    <li class="nav-item-header">#}
-{#                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Projekti</div>#}
-{#                        <i class="ph-dots-three sidebar-resize-show"></i>#}
-{#                    </li>#}
-{#                    <li class="nav-item">#}
-{#                        <a href="{{ path('app_projects') }}" class="nav-link">#}
-{#                            <i class="ph-folders"></i>#}
-{#                            <span>Lista</span>#}
-{#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjects }}</span>#}
-{#                        </a>#}
-{#                    </li>#}
-{#                    <li class="nav-item">#}
-{#                        <a href="" class="nav-link">#}
-{#                            <i class="ph-file-text"></i>#}
-{#                            <span>Izveštaji</span>#}
-{#                        </a>#}
-{#                    </li>#}
-{#                    <!-- /Projekti -->#}
-
                     <!-- taskovi -->
                     <li class="nav-item-header">
                         <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Zadaci</div>
@@ -102,10 +82,16 @@
                             <span>Dodajte</span>
                         </a>
                     </li>
+
+                    <li class="nav-item-header">
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Projekti</div>
+                        <i class="ph-dots-three sidebar-resize-show"></i>
+                    </li>
                     <li class="nav-item">
-                        <a href="" class="nav-link">
-                            <i class="ph-file-text"></i>
-                            <span>Izveštaji</span>
+                        <a href="{{ path('app_projects') }}" class="nav-link">
+                            <i class="ph-folders"></i>
+                            <span>Lista</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
                         </a>
                     </li>
 
@@ -159,6 +145,39 @@
                         <a href="{{ path('app_calendar_list') }}" class="nav-link">
                             <i class="ph-calendar"></i>
                             <span>Lista</span>
+                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+
+                    <li class="nav-item-header">
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Ostalo</div>
+                        <i class="ph-calendar sidebar-resize-show"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_employee_notes_view', {id:user.id}) }}" class="nav-link">
+                            <i class="ph-clipboard-text"></i>
+                            <span>Beleške</span>
+                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_employee_docs_view', {id:user.id}) }}" class="nav-link">
+                            <i class="ph-file"></i>
+                            <span>Dokumenta</span>
+                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_employee_images_view', {id:user.id}) }}" class="nav-link">
+                            <i class="ph-image"></i>
+                            <span>Slike</span>
+                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_employee_comments_view', {id:user.id}) }}" class="nav-link">
+                            <i class="ph-chats-circle"></i>
+                            <span>Komentari</span>
                             {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>

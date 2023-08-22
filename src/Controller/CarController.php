@@ -15,10 +15,12 @@ use App\Form\CarReservationFormDetailsType;
 use App\Form\CarStopReservationFormDetailsType;
 use App\Form\CarStopReservationFormType;
 use App\Form\ExpenseFormType;
+use App\Form\PhoneExpenseFormType;
 use App\Repository\FastTaskRepository;
 use DateTimeImmutable;
 use App\Form\CarFormType;
 use App\Form\CarReservationFormType;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -434,7 +436,10 @@ class CarController extends AbstractController {
     $args['user'] = $user;
     $args['reservation'] = $reservation;
     $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/form_reservation_employee.html.twig', $args);
+    }
     return $this->render('car/form_reservation_employee.html.twig', $args);
   }
 
@@ -471,7 +476,10 @@ class CarController extends AbstractController {
     $args['car'] = $reservation->getCar();
     $args['user'] = $user;
 
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/form_reservation_stop_employee.html.twig', $args);
+    }
     return $this->render('car/form_reservation_stop_employee.html.twig', $args);
   }
 
@@ -483,7 +491,10 @@ class CarController extends AbstractController {
     }
     $args['reservation'] = $reservation;
     $args['user'] = $this->getUser();
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/view_reservation.html.twig', $args);
+    }
     return $this->render('car/view_reservation_employee.html.twig', $args);
   }
 
@@ -497,7 +508,14 @@ class CarController extends AbstractController {
     }
     $user = $this->getUser();
 
-    $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_form', ['id' => $car->getId()])]]);
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      $form = $this->createForm(PhoneExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_form', ['id' => $car->getId()])]]);
+    } else {
+      $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_form', ['id' => $car->getId()])]]);
+    }
+
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 
@@ -520,6 +538,9 @@ class CarController extends AbstractController {
     $args['expense'] = $expense;
     $args['user'] = $user;
 
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/form_expense_employee.html.twig', $args);
+    }
     return $this->render('car/form_expense_employee.html.twig', $args);
   }
 
@@ -531,7 +552,13 @@ class CarController extends AbstractController {
     }
     $user = $this->getUser();
 
-    $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_edit', ['id' => $expense->getId()])]]);
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      $form = $this->createForm(PhoneExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_edit', ['id' => $expense->getId()])]]);
+    } else {
+      $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_edit', ['id' => $expense->getId()])]]);
+    }
+
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 
@@ -554,6 +581,9 @@ class CarController extends AbstractController {
     $args['expense'] = $expense;
     $args['user'] = $user;
 
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/form_expense_employee.html.twig', $args);
+    }
     return $this->render('car/form_expense_employee.html.twig', $args);
   }
 
@@ -566,6 +596,10 @@ class CarController extends AbstractController {
     $args['expense'] = $expense;
     $args['user'] = $this->getUser();
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/view_expense_employee.html.twig', $args);
+    }
     return $this->render('car/view_expense_employee.html.twig', $args);
   }
 
@@ -648,7 +682,10 @@ class CarController extends AbstractController {
     $args['car'] = $reservation->getCar();
     $args['user'] = $user;
 
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/form_reservation_stop_details.html.twig', $args);
+    }
     return $this->render('car/form_reservation_stop_details.html.twig', $args);
   }
 
@@ -693,6 +730,10 @@ class CarController extends AbstractController {
     $args['reservation'] = $reservation;
     $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/form_reservation_employee_details_form.html.twig', $args);
+    }
     return $this->render('car/form_reservation_employee_details_form.html.twig', $args);
   }
 

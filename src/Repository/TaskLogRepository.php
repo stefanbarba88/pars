@@ -67,7 +67,7 @@ class TaskLogRepository extends ServiceEntityRepository {
 //          }
 //          $taskLogs[] = [$log, $car];
 //        }
-        if ($datumZadatka->format($format) === $currentTime->format($format)) {
+        if ($datumZadatka->format($format) === $currentTime->format($format) && !$task->isIsDeleted()) {
           $car = null;
           if (!is_null($task->getCar())) {
             $car = $this->getEntityManager()->getRepository(Car::class)->find($task->getCar());
@@ -100,13 +100,13 @@ class TaskLogRepository extends ServiceEntityRepository {
   public function getLogStatusByLog(TaskLog $log): int {
     $stopwatches = $log->getStopwatch();
     if ($stopwatches->isEmpty()) {
-      $status = TaskStatusData::NIJE_ZAPOCETO;
+      $status = 1;
     } else {
       $otvoren = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $log, 'stop' => null]);
       if (!empty($otvoren)) {
-        $status = TaskStatusData::ZAPOCETO;
+        $status = 0;
       } else {
-        $status = TaskStatusData::ZAVRSENO;
+        $status = 2;
       }
     }
 //   dd($status);

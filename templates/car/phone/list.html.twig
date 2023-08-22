@@ -1,0 +1,185 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Vozila
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                {% if type == 1 %}
+                                    <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
+                                    <span class="breadcrumb-item active">Aktivna vozila</span>
+                                {% elseif type == 2 %}
+                                    <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
+                                    <span class="breadcrumb-item active">Neaktivna vozila</span>
+                                {% else %}
+                                    <span class="breadcrumb-item active">Vozila</span>
+                                {% endif %}
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-lg-flex py-lg-0">
+                            <h5 class="py-lg-3 mb-0">
+                                {% if type == 1 %}
+                                    Lista aktivnih vozila
+                                {% elseif type == 2 %}
+                                    Lista neaktivnih vozila
+                                {% else %}
+                                    Lista vozila
+                                {% endif %}
+                            </h5>
+                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                <a href="{{ path('app_car_form', {type: 1}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                            </div>
+                        </div>
+                        <table class="table datatable-colvis-state-pars">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Registracioni broj</th>
+                                <th>Brend</th>
+                                <th>Model</th>
+                                <th>Dostupnost</th>
+                                <th>Zaduženi</th>
+                                <th>Datum registracije</th>
+                                <th>Naredna registracija</th>
+                                <th>Status</th>
+                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for car in cars %}
+                                <tr>
+                                    <td>{{ car.id }}</td>
+                                    <td><div class="fw-semibold"><a href="{{ path('app_car_view', { id: car.id}) }}">{{ car.plate }}</a></div></td>
+                                    <td>{{ car.brand }}</td>
+                                    <td>{{ car.model }}</td>
+                                    <td>
+                                        {% if car.isSuspended == false %}
+                                            {% if car.isReserved %}
+                                                <span class="badge bg-warning">Zadužen</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Slobodan</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% for res in car.carReservations %}
+                                            {% if res.finished is null %}
+                                                {{ res.driver.fullName }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        <div class="d-inline-flex align-items-center">
+                                            <i class="ph-calendar me-2"></i>
+                                            {{ car.datumRegistracije | date("d.m.Y")}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-inline-flex align-items-center">
+                                            <i class="ph-calendar me-2"></i>
+                                            {{ car.datumNaredneRegistracije | date("d.m.Y")}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if car.isSuspended %}
+                                            <span class="badge bg-danger">Obrisan</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Aktivan</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                <i class="ph-gear"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a href="{{ path('app_car_view', { id: car.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                {% if car.isSuspended %}
+                                                    <a href="{{ path('app_car_activate', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>
+                                                {% else %}
+                                                    {% if car.isReserved %}
+                                                        {% for res in car.carReservations %}
+                                                            {% if res.finished is null%}
+                                                                <a href="{{ path('app_car_reservation_stop', { id: res.id, type:1}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Razdužite</a>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <a href="{{ path('app_car_reservation_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Zadužite</a>
+                                                    {% endif %}
+                                                    <a href="{{ path('app_car_expense_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-money me-2"></i> Trošak</a>
+                                                    <a href="{{ path('app_car_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                    <a href="{{ path('app_car_activate', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

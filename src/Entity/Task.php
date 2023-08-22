@@ -159,11 +159,13 @@ class Task implements JsonSerializable {
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();
     $this->updated = new DateTimeImmutable();
+    $this->title = $this->getProject()->getTitle() . ' - ' . $this->datumKreiranja->format('d.m.Y');
   }
 
   #[ORM\PreUpdate]
   public function preUpdate(): void {
     $this->updated = new DateTimeImmutable();
+    $this->title = $this->getProject()->getTitle() . ' - ' . $this->datumKreiranja->format('d.m.Y');
   }
 
   public function jsonSerialize(): array {

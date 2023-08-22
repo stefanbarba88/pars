@@ -90,6 +90,17 @@ class CheckListController extends AbstractController {
     return $this->redirectToRoute('app_home');
   }
 
+  #[Route('/start/{id}', name: 'app_checklist_start')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function start(ManagerChecklist $checklist)    : Response { if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+
+    $this->em->getRepository(ManagerChecklist::class)->start($checklist);
+
+    return $this->redirectToRoute('app_home');
+  }
+
   #[Route('/delete/{id}', name: 'app_checklist_delete')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function delete(ManagerChecklist $checklist)    : Response { if (!$this->isGranted('ROLE_USER')) {

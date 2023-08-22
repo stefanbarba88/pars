@@ -90,6 +90,9 @@
                                                 <i class="ph-gear"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end">
+                                                {% if check.status == 2 %}
+                                                    <a href="{{ path('app_checklist_start', { id: check.id}) }}" class="dropdown-item"><i class="ph-repeat me-2"></i> Ponovite</a>
+                                                {% endif %}
                                                 <a href="{{ path('app_checklist_view', { id: check.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                 <a href="{{ path('app_checklist_delete', { id: check.id}) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
                                             </div>

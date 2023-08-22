@@ -67,9 +67,7 @@
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Zaduženi:</div>
                                             <div class="col-8">
-                                                {% for user in checklist.user %}
-                                                    {{ user.fullName }}{% if not loop.last %}<br>{% endif %}
-                                                {% endfor %}
+                                               {{ checklist.user.fullName }}
                                             </div>
                                         </div>
                                     </div>

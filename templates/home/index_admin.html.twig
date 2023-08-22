@@ -30,7 +30,7 @@
                                                     </li>
                                                 {% elseif task.status == 2 %}
                                                     <li>
-                                                        <i class="ph-check-circle text-success me-2"></i>
+                                                        <a href="{{ path('app_checklist_start', {id: task.id}) }}"><i class="ph-check-circle text-success me-2"></i></a>
                                                         {{ task.task }}
                                                     </li>
                                                 {% else %}

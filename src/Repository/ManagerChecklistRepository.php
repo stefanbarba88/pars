@@ -40,6 +40,15 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
     return $checklist;
   }
 
+  public function start(ManagerChecklist $checklist): ManagerChecklist {
+
+    $checklist->setStatus(1);
+    $checklist->setFinish(null);
+
+    $this->save($checklist);
+    return $checklist;
+  }
+
   public function delete(ManagerChecklist $checklist): ManagerChecklist {
 
     if ($checklist->getStatus() != 0) {

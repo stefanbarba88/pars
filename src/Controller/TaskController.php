@@ -391,6 +391,12 @@ class TaskController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
+        if ($task->getProject()->getId() != $request->request->all('task_edit')['plain_project']) {
+          if ($task->getTitle() == $request->request->all('task_edit')['plain_title']) {
+            $task->setTitle($task->getProject()->getTitle() . ' - ' . $task->getDatumKreiranja()->format('d.m.Y'));
+          }
+        }
+
         $this->em->getRepository(Task::class)->saveTaskInfo($task, $user, $history);
 
         notyf()

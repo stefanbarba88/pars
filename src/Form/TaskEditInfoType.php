@@ -26,25 +26,38 @@ use Symfony\Component\Validator\Constraints\File;
 
 class TaskEditInfoType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getTask(): ?Task {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $task = $dataObject->getTask();
+
+
     $builder
       ->add('title')
       ->add('description', TextareaType::class, [
         'required' => false
       ])
-//      ->add('project', EntityType::class, [
-//        'placeholder' => '--Izaberite projekat--',
-//        'required' => false,
-//        'class' => Project::class,
-//        'query_builder' => function (EntityRepository $em) {
-//          return $em->createQueryBuilder('g')
-//            ->andWhere('g.isSuspended = :isSuspended')
-//            ->setParameter(':isSuspended', 0)
-//            ->orderBy('g.id', 'ASC');
-//        },
-//        'choice_label' => 'title',
-//        'expanded' => false,
-//        'multiple' => false,
-//      ])
+      ->add('project', EntityType::class, [
+        'placeholder' => '--Izaberite projekat--',
+        'class' => Project::class,
+        'query_builder' => function (EntityRepository $em) {
+          return $em->createQueryBuilder('g')
+            ->andWhere('g.isSuspended = :isSuspended')
+            ->setParameter(':isSuspended', 0)
+            ->orderBy('g.id', 'ASC');
+        },
+        'choice_label' => 'title',
+        'expanded' => false,
+        'multiple' => false,
+      ])
       ->add('label', EntityType::class, [
         'required' => false,
         'class' => Label::class,

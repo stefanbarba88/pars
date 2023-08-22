@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\TaskStatusData;
 use App\Entity\Car;
 use App\Entity\Image;
 use App\Entity\StopwatchTime;
@@ -71,15 +72,46 @@ class TaskLogRepository extends ServiceEntityRepository {
           if (!is_null($task->getCar())) {
             $car = $this->getEntityManager()->getRepository(Car::class)->find($task->getCar());
           }
-          $taskLogs[] = [$log, $car, $task->getTime()];
+          $logStatus = $this->getLogStatusByLog($log);
+
+          $taskLogs[] = [$log, $car, $task->getTime(), $logStatus];
+//          usort($taskLogs, function($a, $b) {
+//            return $a[2] <=> $b[2];
+//          });
           usort($taskLogs, function($a, $b) {
-            return $a[2] <=> $b[2];
+            // Prvo sortiranje po $logStatus (0, 1, 2)
+            if ($a[3] != $b[3]) {
+              return $a[3] - $b[3];
+            } else {
+              // Ako su $logStatus isti, sortiranje po $task->getTime()
+              $timeA = $a[2]->format('Y-m-d H:i:s');
+              $timeB = $b[2]->format('Y-m-d H:i:s');
+
+              return strcmp($timeA, $timeB);
+            }
           });
         }
       }
     }
 
     return $taskLogs;
+  }
+
+  public function getLogStatusByLog(TaskLog $log): int {
+    $stopwatches = $log->getStopwatch();
+    if ($stopwatches->isEmpty()) {
+      $status = TaskStatusData::NIJE_ZAPOCETO;
+    } else {
+      $otvoren = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $log, 'stop' => null]);
+      if (!empty($otvoren)) {
+        $status = TaskStatusData::ZAPOCETO;
+      } else {
+        $status = TaskStatusData::ZAVRSENO;
+      }
+    }
+//   dd($status);
+    return $status;
+
   }
 
   public function countLogsByUser(User $user): int {

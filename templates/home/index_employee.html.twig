@@ -48,7 +48,15 @@
 
                                         {% if logs is not empty %}
                                             {% for log in logs  %}
-                                                <tr>
+                                                {% if log[3] == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                    <tr>
+                                                {% endif %}
+                                                {% if log[3] == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                    <tr class="bg-danger bg-opacity-25">
+                                                {% endif %}
+                                                {% if log[3] == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                    <tr class="bg-success bg-opacity-25">
+                                                {% endif %}
                                                     <td>
                                                         {% if log[0].task.time is not null %}
                                                             <div class="fw-semibold">

@@ -97,6 +97,8 @@ class TaskLogRepository extends ServiceEntityRepository {
     return $taskLogs;
   }
 
+
+
   public function getLogStatusByLog(TaskLog $log): int {
     $stopwatches = $log->getStopwatch();
     if ($stopwatches->isEmpty()) {

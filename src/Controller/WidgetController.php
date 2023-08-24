@@ -35,6 +35,9 @@ class WidgetController extends AbstractController {
     $args['countEmployees'] = $this->em->getRepository(User::class)->countEmployees();
     $args['countEmployeesActive'] = $this->em->getRepository(User::class)->countEmployeesActive();
 
+    $args['countEmployeesOnTask'] = $this->em->getRepository(User::class)->countEmployeesOnTask();
+    $args['countEmployeesOffTask'] = $this->em->getRepository(User::class)->countEmployeesOffTask();
+
     $args['countProjectsPermanent'] = $this->em->getRepository(Project::class)->countProjectsPermanent();
     $args['countProjectsChange'] = $this->em->getRepository(Project::class)->countProjectsChange();
     $args['countProjects'] = $this->em->getRepository(Project::class)->count([]);
@@ -44,13 +47,13 @@ class WidgetController extends AbstractController {
     $args['countCommentsActive'] = $this->em->getRepository(Comment::class)->countCommentsActive();
 
 
-    $args['countAllTeams'] = $this->em->getRepository(Team::class)->count([]);
-    $args['countTeams'] = $this->em->getRepository(Team::class)->countTeams();
-    $args['countTeamsActive'] = $this->em->getRepository(Team::class)->countTeamsActive();
-    $args['countTeamsInactive'] = $this->em->getRepository(Team::class)->countTeamsInactive();
+    $args['countAllTools'] = $this->em->getRepository(Tool::class)->count([]);
+    $args['countTools'] = $this->em->getRepository(Tool::class)->countTools();
+    $args['countToolsActive'] = $this->em->getRepository(Tool::class)->countToolsActive();
+    $args['countToolsInactive'] = $this->em->getRepository(Tool::class)->countToolsInactive();
 
     $args['countCars'] = $this->em->getRepository(Car::class)->count([]);
-    $args['countActiveCars'] = $this->em->getRepository(Car::class)->count(['isSuspended' => true]);
+    $args['countActiveCars'] = $this->em->getRepository(Car::class)->count(['isSuspended' => false]);
     $args['countCarsActive'] = $this->em->getRepository(Car::class)->count(['isReserved' => true, 'isSuspended' => false]);
     $args['countCarsInactive'] = $this->em->getRepository(Car::class)->count(['isReserved' => false, 'isSuspended' => false]);
 

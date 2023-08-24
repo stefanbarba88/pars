@@ -53,6 +53,70 @@ class ToolRepository extends ServiceEntityRepository {
     return $tool;
   }
 
+  public function countTools(): int {
+    $qb = $this->createQueryBuilder('c');
+
+    $qb->select($qb->expr()->count('c'))
+      ->andWhere('c.isSuspended = :isSuspended')
+      ->setParameter(':isSuspended', 0);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+
+  public function getInactiveTools(): array {
+
+    $qb = $this->createQueryBuilder('c');
+
+    $qb
+      ->andWhere('c.isSuspended = :isSuspended')
+      ->andWhere('c.isReserved <> :isReserved')
+      ->orWhere('c.isReserved IS NULL')
+      ->setParameter(':isSuspended', 0)
+      ->setParameter(':isReserved', 1);
+
+    $query = $qb->getQuery();
+
+    return $query->getResult();
+
+  }
+
+  public function countToolsActive(): int {
+
+
+    $qb = $this->createQueryBuilder('c');
+
+    $qb->select($qb->expr()->count('c'))
+      ->andWhere('c.isSuspended = :isSuspended')
+      ->andWhere('c.isReserved <> :isReserved')
+      ->setParameter(':isSuspended', 0)
+      ->setParameter(':isReserved', 0);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+
+  public function countToolsInactive(): int {
+
+
+    $qb = $this->createQueryBuilder('c');
+
+    $qb->select($qb->expr()->count('c'))
+      ->andWhere('c.isSuspended = :isSuspended')
+      ->andWhere('c.isReserved <> :isReserved')
+      ->orWhere('c.isReserved IS NULL')
+      ->setParameter(':isSuspended', 0)
+      ->setParameter(':isReserved', 1);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
   public function remove(Tool $entity, bool $flush = false): void {
     $this->getEntityManager()->remove($entity);
 

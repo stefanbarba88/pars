@@ -72,53 +72,41 @@ class ProjectRepository extends ServiceEntityRepository {
 
     $projects = $this->createQueryBuilder('p')
       ->andWhere('p.isSuspended = 0')
+      ->andWhere('p.type <> 2')
       ->addOrderBy('p.isSuspended', 'ASC')
       ->getQuery()
       ->getResult();
 
-    $projectsPermanent = [];
-
-    foreach ($projects as $project) {
-      if(!empty($project->getTeamJson())) {
-        $projectsPermanent[] = $project;
-      }
-    }
-    return $projectsPermanent;
+    return $projects;
   }
   public function getAllProjectsChange(): array {
+
     $projects = $this->createQueryBuilder('p')
       ->andWhere('p.isSuspended = 0')
+      ->andWhere('p.type <> 1')
       ->addOrderBy('p.isSuspended', 'ASC')
       ->getQuery()
       ->getResult();
 
-    $projectsChange = [];
-
-    foreach ($projects as $project) {
-      if(empty($project->getTeamJson())) {
-        $projectsChange[] = $project;
-      }
-    }
-    return $projectsChange;
+    return $projects;
   }
   public function countProjectsChange(): int {
-    $db = $this->getEntityManager()->getConnection();
-    $sql = "SELECT projects.id  
-            FROM projects LEFT JOIN project_team ON projects.id = project_team.project_id 
-            WHERE project_team.project_id IS NULL AND projects.is_suspended = 0";
-
-    $query = $db->prepare($sql);
-    return $query->executeStatement();
+    return $this->createQueryBuilder('p')
+      ->select('count(p.id)')
+      ->andWhere('p.isSuspended = 0 ')
+      ->andWhere('p.type <> 1')
+      ->getQuery()
+      ->getSingleScalarResult();
 
   }
-  public function countProjectsPermanent(): int {
-    $db = $this->getEntityManager()->getConnection();
-    $sql = "SELECT projects.id  
-            FROM projects LEFT JOIN project_team ON projects.id = project_team.project_id 
-            WHERE project_team.project_id IS NOT NULL AND projects.is_suspended = 0";
 
-    $query = $db->prepare($sql);
-    return $query->executeStatement();
+  public function countProjectsPermanent(): int {
+    return $this->createQueryBuilder('p')
+      ->select('count(p.id)')
+      ->andWhere('p.isSuspended = 0 ')
+      ->andWhere('p.type <> 2')
+      ->getQuery()
+      ->getSingleScalarResult();
 
   }
   public function countProjectsActive(): int {
@@ -130,6 +118,7 @@ class ProjectRepository extends ServiceEntityRepository {
       ->getSingleScalarResult();
 
   }
+
   public function getImagesByProject(Project $project): array {
 
     return $this->createQueryBuilder('p')

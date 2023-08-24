@@ -317,15 +317,15 @@
                     <li class="nav-item">
                         <a href="{{ path('app_employees', { type : 1 }) }}" class="nav-link">
                             <i class="ph-user-circle-gear"></i>
-                            <span>Aktivni</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
+                            <span>Na zadatku</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countEmployeesOnTask }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_employees', { type : 2 }) }}" class="nav-link">
                             <i class="ph-user-circle-gear"></i>
-                            <span>Neaktivni</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
+                            <span>Van zadatka</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countEmployeesOffTask }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -514,7 +514,21 @@
                         <a href="{{ path('app_tools') }}" class="nav-link">
                             <i class="ph-wrench"></i>
                             <span>Sva oprema</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTools }}/{{ countAllTools }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_tools', {type:1}) }}" class="nav-link">
+                            <i class="ph-wrench"></i>
+                            <span>Zadužena</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countToolsActive }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_tools', {type:2}) }}" class="nav-link">
+                            <i class="ph-wrench"></i>
+                            <span>Nezadužena</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countToolsInactive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">

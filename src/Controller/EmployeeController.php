@@ -28,7 +28,6 @@ class EmployeeController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $type = $request->query->getInt('type');
-
     $args['users'] = $this->em->getRepository(User::class)->getEmployees($type);
 
     return $this->render('employee/list.html.twig', $args);

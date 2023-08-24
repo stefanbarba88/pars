@@ -27,10 +27,10 @@
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 {% if type == 1 %}
                                     <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
-                                    <span class="breadcrumb-item active">Aktivna vozila</span>
+                                    <span class="breadcrumb-item active">Zadužena vozila</span>
                                 {% elseif type == 2 %}
                                     <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
-                                    <span class="breadcrumb-item active">Neaktivna vozila</span>
+                                    <span class="breadcrumb-item active">Nezadužena vozila</span>
                                 {% else %}
                                     <span class="breadcrumb-item active">Vozila</span>
                                 {% endif %}
@@ -53,9 +53,9 @@
                         <div class="card-header d-lg-flex py-lg-0">
                             <h5 class="py-lg-3 mb-0">
                                 {% if type == 1 %}
-                                    Lista aktivnih vozila
+                                    Lista zaduženih vozila
                                 {% elseif type == 2 %}
-                                    Lista neaktivnih vozila
+                                    Lista nezaduženih vozila
                                 {% else %}
                                     Lista vozila
                                 {% endif %}

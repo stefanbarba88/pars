@@ -185,6 +185,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     $usersList = [];
     foreach ($users as $user) {
+
       $usersList [] = [
         'id' => $user->getId(),
         'ime' => $user->getIme(),
@@ -267,6 +268,37 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       ->andWhere('u.isSuspended = :isSuspended')
       ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
       ->setParameter(':isSuspended', 0);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+  public function countEmployeesOnTask(): int{
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->select($qb->expr()->count('u'))
+      ->andWhere('u.userType = :userType')
+      ->andWhere('u.isInTask = :isInTask')
+      ->andWhere('u.isSuspended = 0')
+      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+      ->setParameter(':isInTask', 1);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+
+  public function countEmployeesOffTask(): int{
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->select($qb->expr()->count('u'))
+      ->andWhere('u.userType = :userType')
+      ->andWhere('u.isInTask = :isInTask')
+      ->andWhere('u.isSuspended = 0')
+      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+      ->setParameter(':isInTask', 0);
 
     $query = $qb->getQuery();
 
@@ -373,10 +405,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
 
   public function getEmployees(int $type): array {
-//    $qb = $this->createQueryBuilder('u');
-//    $qb->select('u.id','u.ime', 'u.prezime', 'u.slika', 'u.isSuspended', 'u.datumRodjenja', 'u.userType');
-//    $qb->orderBy('u.id')->getQuery()->getResult();
-    $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE], ['isSuspended' => 'ASC']);
+
+    if ($type == 1) {
+      $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isInTask' => true]);
+    } elseif ( $type == 2) {
+      $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isInTask' => false]);
+    } else {
+      $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE], ['isSuspended' => 'ASC']);
+    }
+
+
 
     $usersList = [];
     foreach ($users as $user) {

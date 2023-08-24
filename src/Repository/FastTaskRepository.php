@@ -3849,9 +3849,9 @@ class FastTaskRepository extends ServiceEntityRepository {
           }
         }
 
-        $fastTask->setFree8($task8['naplativ']);
+        $fastTask->setFree7($task7['naplativ']);
       } else {
-        $fastTask->setFree8(null);
+        $fastTask->setFree7(null);
         $fastTask->setGeo17(null);
         $fastTask->setGeo27(null);
         $fastTask->setGeo37(null);

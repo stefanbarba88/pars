@@ -25,7 +25,15 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Oprema</span>
+                                {% if type == 1 %}
+                                    <a href="{{ path('app_tools') }}" class="breadcrumb-item">Oprema</a>
+                                    <span class="breadcrumb-item active">Zadužena oprema</span>
+                                {% elseif type == 2 %}
+                                    <a href="{{ path('app_tools') }}" class="breadcrumb-item">Oprema</a>
+                                    <span class="breadcrumb-item active">Neyadužena oprema</span>
+                                {% else %}
+                                    <span class="breadcrumb-item active">Oprema</span>
+                                {% endif %}
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -44,7 +52,13 @@
                     <div class="card">
                         <div class="card-header d-lg-flex py-lg-0">
                             <h5 class="py-lg-3 mb-0">
-                                Lista opreme
+                                {% if type == 1 %}
+                                    Lista zadužene opreme
+                                {% elseif type == 2 %}
+                                    Lista nezadužene opreme
+                                {% else %}
+                                    Lista opreme
+                                {% endif %}
                             </h5>
                             <div class="mt-1 my-lg-auto ms-lg-auto">
                                 <a href="{{ path('app_tool_form', {type: 1}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>

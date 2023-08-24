@@ -41,7 +41,16 @@ class ToolController extends AbstractController {
     $type = $request->query->getInt('type');
     $args = [];
 
-    $args['tools'] = $this->em->getRepository(Tool::class)->findAll();
+    switch ($type) {
+      case 1:
+        $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isReserved' => true, 'isSuspended' => false]);
+        break;
+      case 2:
+        $args['tools'] = $this->em->getRepository(Tool::class)->getInactiveTools();
+        break;
+      default:
+        $args['tools'] = $this->em->getRepository(Tool::class)->findAll();
+    }
 
     $args['type'] = $type;
 

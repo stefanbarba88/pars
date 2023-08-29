@@ -72,7 +72,7 @@
                                             {% if app.user.userType != 4 %}
                                                 <a href="{{ path('app_task_view', { id: task.task.id}) }}">{{ task.task.title }}</a>
                                             {% else %}
-                                                {% if app.user in task.users %}
+                                                {% if app.user in task.task.assignedUsers %}
                                                     <a href="{{ path('app_task_view_user', { id: task.task.id}) }}">{{ task.task.title }}</a>
                                                 {% else %}
                                                     {{ task.task.title }}

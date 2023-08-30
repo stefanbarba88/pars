@@ -48,7 +48,7 @@ class StopwatchController extends AbstractController {
     $this->em->getRepository(User::class)->save($user);
 //    $this->em->getRepository(Task::class)->changeStatus($taskLog->getTask(), TaskStatusData::ZAPOCETO);
 
-    return $this->redirectToRoute('app_task_view_user', ['id' => $taskLog->getTask()->getId()]);
+    return $this->redirectToRoute('app_home');
   }
 
   #[Route('/form/{id}', name: 'app_stopwatch_form')]
@@ -60,18 +60,19 @@ class StopwatchController extends AbstractController {
 
 
   if (is_null($stopwatch->getStop())) {
+
     $stopwatch->setStop(new DateTimeImmutable());
+
     if ($session->has('LonStop')) {
       $stopwatch->setLonStop($session->get('LonStop'));
-      $session->remove('LonStop');
+
     } else {
       $stopwatch->setLonStop($request->query->get('lon'));
       $session->set('LonStop', $request->query->get('lon'));
     }
-
     if ($session->has('LatStop')) {
       $stopwatch->setLatStop($session->get('LatStop'));
-      $session->remove('LatStop');
+
     } else {
       $stopwatch->setLatStop($request->query->get('lat'));
       $session->set('LatStop', $request->query->get('lat'));
@@ -80,7 +81,8 @@ class StopwatchController extends AbstractController {
     $hours = $stopwatch->getStart()->diff($stopwatch->getStop())->h;
     $minutes = $stopwatch->getStart()->diff($stopwatch->getStop())->i;
     $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTime($stopwatch, $hours, $minutes);
-
+//    $session->remove('LonStop');
+//    $session->remove('LatStop');
   }
     $history = null;
     //ovde izvlacimo ulogovanog usera
@@ -160,7 +162,8 @@ class StopwatchController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
+//        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
+        return $this->redirectToRoute('app_home');
       }
     }
     $args['form'] = $form->createView();

@@ -6,6 +6,9 @@ use App\Classes\Data\NotifyMessagesData;
 use App\Entity\Comment;
 use App\Entity\Task;
 use App\Form\CommentFormType;
+use App\Form\PhoneTaskFormType;
+use App\Form\TaskFormType;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -52,7 +55,14 @@ class CommentController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::COMMENT_ADD);
 //u zavisnosti odakle se dodaje komentar redirekcija
-        return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+
+        if ($comment->getTask()->getAssignedUsers()->contains($this->getUser())) {
+          return $this->redirectToRoute('app_task_view_user', ['id' => $task->getId()]);
+        } else {
+          return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+        }
+
+
       }
     }
     $args['form'] = $form->createView();
@@ -82,14 +92,23 @@ class CommentController extends AbstractController {
           ->duration(5000)
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::COMMENT_EDIT);
-//u zavisnosti odakle se ulazi proslediti
-        return $this->redirectToRoute('app_employee_comments_view', ['id' => $this->getUser()->getId()]);
+
+        if ($comment->getTask()->getAssignedUsers()->contains($this->getUser())) {
+          return $this->redirectToRoute('app_task_view_user', ['id' => $comment->getTask()->getId()]);
+        } else {
+          return $this->redirectToRoute('app_task_view', ['id' => $comment->getTask()->getId()]);
+        }
+
       }
     }
     $args['form'] = $form->createView();
     $args['comment'] = $comment;
     $args['user'] = $this->getUser();
 
+    $mobileDetect = new MobileDetect();
+    if ($mobileDetect->isMobile()) {
+      return $this->render('comment/phone/form.html.twig', $args);
+    }
     return $this->render('comment/form.html.twig', $args);
   }
 
@@ -107,6 +126,10 @@ class CommentController extends AbstractController {
       ->dismissible(true)
       ->addSuccess(NotifyMessagesData::COMMENT_DELETE);
 
-    return $this->redirectToRoute('app_task_view', ['id' => $comment->getTask()->getId()]);
+    if ($comment->getTask()->getAssignedUsers()->contains($this->getUser())) {
+      return $this->redirectToRoute('app_task_view_user', ['id' => $comment->getTask()->getId()]);
+    } else {
+      return $this->redirectToRoute('app_task_view', ['id' => $comment->getTask()->getId()]);
+    }
   }
 }

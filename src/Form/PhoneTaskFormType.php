@@ -62,7 +62,7 @@ class PhoneTaskFormType extends AbstractType {
    }
 
     $builder
-      ->add('title')
+
       ->add('description', TextareaType::class, [
         'required' => false
       ])

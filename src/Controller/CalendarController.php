@@ -61,8 +61,10 @@ class CalendarController extends AbstractController {
 
     if($mobileDetect->isMobile()) {
       $form = $this->createForm(PhoneCalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
+    } else {
+      $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
     }
-    $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
+
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 

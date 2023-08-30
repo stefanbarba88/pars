@@ -125,7 +125,15 @@
                                         <tbody>
                                         {% if logs is not empty %}
                                             {% for log in logs %}
-                                                <tr>
+                                                {% if log[3] == 1 %}
+                                                    <tr>
+                                                {% endif %}
+                                                {% if log[3] == 0 %}
+                                                    <tr class="bg-danger bg-opacity-25">
+                                                {% endif %}
+                                                {% if log[3] == 2 %}
+                                                    <tr class="bg-success bg-opacity-25">
+                                                {% endif %}
                                                     <td style="width: 40%;">
                                                         <div class="fw-semibold">{{ log[0].task.project.title }}
                                                             {% if log[0].task.time|date('H:i') != '00:00' %}
@@ -180,13 +188,18 @@
                                         {% if timetable is not empty %}
                                             {% for task in timetable %}
                                                 {% if task.task.project is not null %}
-                                                    {% for user in task.task.assignedUsers %}
-                                                        {% if app.user.id == user.id %}
-                                                            <tr class="table-active">
-                                                        {% else %}
-                                                            <tr>
-                                                        {% endif %}
-                                                    {% endfor %}
+{#                                                    {% for user in task.task.assignedUsers %}#}
+{#                                                        {% if app.user.id == user.id %}#}
+{#                                                            <tr class="table-active">#}
+{#                                                        {% else %}#}
+{#                                                            <tr>#}
+{#                                                        {% endif %}#}
+{#                                                    {% endfor %}#}
+                                                {% if app.user in task.task.assignedUsers %}
+                                                    <tr class="table-active">
+                                                {% else %}
+                                                    <tr>
+                                                {% endif %}
                                                     <td>
                                                         <div class="fw-semibold">
                                                             {{ task.task.project.title }}
@@ -263,13 +276,11 @@
                                         {% if timetable is not empty %}
                                             {% for task in timetable %}
                                                 {% if task.task.project is not null %}
-                                                    {% for user in task.task.assignedUsers %}
-                                                        {% if app.user.id == user.id %}
-                                                            <tr class="table-active">
-                                                        {% else %}
-                                                            <tr>
-                                                        {% endif %}
-                                                    {% endfor %}
+                                                    {% if app.user in task.task.assignedUsers %}
+                                                        <tr class="table-active">
+                                                    {% else %}
+                                                        <tr>
+                                                    {% endif %}
                                                     <td style="width: 40%;">
                                                         <div class="fw-semibold">
                                                             {{ task.task.project.title }} {% if task.task.time|date('H:i') != '00:00' %}

@@ -643,7 +643,7 @@ class CarController extends AbstractController {
 
 
     $args['carToReserve'] = $this->em->getRepository(FastTask::class)->findCarToReserve($this->getUser());
-    $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $this->getUser(), 'finished' => null], ['id' => 'desc']);
+    $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $args['carToReserve'], 'finished' => null], ['id' => 'desc']);
     $args['toolsToReserve'] = $this->em->getRepository(FastTask::class)->findToolsToReserve($this->getUser());
 
     return $this->render('car/view_details_car_tools.html.twig', $args);

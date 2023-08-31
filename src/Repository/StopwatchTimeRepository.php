@@ -554,8 +554,11 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     $stopwatch->setStart($start);
     $stopwatch->setStop($stop);
 
+    $days = $stopwatch->getStart()->diff($stopwatch->getStop())->d;
     $hours = $stopwatch->getStart()->diff($stopwatch->getStop())->h;
+    $hours = $days*24 + $hours;
     $minutes = $stopwatch->getStart()->diff($stopwatch->getStop())->i;
+
     $stopwatch = $this->getEntityManager()->getRepository(StopwatchTime::class)->setTime($stopwatch, $hours, $minutes);
 
     return $stopwatch;

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\FastTaskData;
+use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
 use App\Entity\Car;
@@ -12,6 +13,7 @@ use App\Entity\Task;
 use App\Entity\Tool;
 use App\Entity\User;
 use App\Service\MailService;
+use DateInterval;
 use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -29,7 +31,7 @@ class FastTaskController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
-    $args['fastTasks'] = $this->em->getRepository(FastTask::class)->findAll();
+    $args['fastTasks'] = $this->em->getRepository(FastTask::class)->getAllPlans();
 
     return $this->render('fast_task/list.html.twig', $args);
   }
@@ -153,6 +155,30 @@ class FastTaskController extends AbstractController {
 
     return $this->redirectToRoute('app_tasks');
 
+  }
+
+  #[Route('/delete/{id}', name: 'app_quick_tasks_delete')]
+  public function delete(FastTask $fastTask)    : Response {
+
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+
+    $datum = $fastTask->getDatum();
+    $currentTime = new DateTimeImmutable();
+    $editTime = $datum->sub(new DateInterval('PT25H'));
+
+    if ($currentTime < $editTime) {
+      $this->em->getRepository(FastTask::class)->delete($fastTask);
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+    }
+
+    return $this->redirectToRoute('app_quick_tasks');
   }
 
 //  #[Route('/email-timetable/{id}', name: 'app_email_timetable')]

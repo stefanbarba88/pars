@@ -226,17 +226,56 @@ class TaskRepository extends ServiceEntityRepository {
     $tasks =  $this->createQueryBuilder('t')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
       ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
       ->setParameter(':userId', $user->getId())
-      ->addOrderBy('t.isDeleted', 'ASC')
-      ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
       ->getResult();
 
+
     foreach ($tasks as $task) {
-      $list[] = ['task' => $task, 'status' => $this->taskStatus($task)];
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        $list[] = [
+          'task' => $task,
+          'status' => $status,
+          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($task)
+        ];
+      }
     }
+
+    usort($list, function ($a, $b) {
+      return $a['status'] <=> $b['status'];
+    });
+    return $list;
+  }
+
+  public function getTasksArchiveByUser(User $user): array {
+
+    $list = [];
+    $tasks =  $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':userId', $user->getId())
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status == TaskStatusData::ZAVRSENO ) {
+        $list[] = [
+          'task' => $task,
+          'status' => $status,
+          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($task)
+        ];
+      }
+    }
+
     usort($list, function ($a, $b) {
       return $a['status'] <=> $b['status'];
     });
@@ -246,7 +285,7 @@ class TaskRepository extends ServiceEntityRepository {
 
     $list = [];
     $tasks =  $this->createQueryBuilder('t')
-      ->addOrderBy('t.isDeleted', 'ASC')
+      ->andWhere('t.isDeleted <> 1')
       ->addOrderBy('t.isClosed', 'ASC')
       ->addOrderBy('t.isPriority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
@@ -254,7 +293,42 @@ class TaskRepository extends ServiceEntityRepository {
       ->getResult();
 
     foreach ($tasks as $task) {
-      $list[] = ['task' => $task, 'status' => $this->taskStatus($task)];
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        $list[] = [
+          'task' => $task,
+          'status' => $status,
+          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($task)
+        ];
+      }
+    }
+    usort($list, function ($a, $b) {
+      return $a['status'] <=> $b['status'];
+    });
+    return $list;
+  }
+
+  public function getTasksArchive(): array {
+
+    $list = [];
+    $tasks =  $this->createQueryBuilder('t')
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status == TaskStatusData::ZAVRSENO ) {
+        $list[] = [
+          'task' => $task,
+          'status' => $status,
+          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($task)
+        ];
+      }
     }
     usort($list, function ($a, $b) {
       return $a['status'] <=> $b['status'];

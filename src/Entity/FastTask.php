@@ -273,6 +273,9 @@ class FastTask {
   private ?int $noTasks = null;
 
   #[ORM\Column(nullable: true)]
+  private ?int $noSubs = null;
+
+  #[ORM\Column(nullable: true)]
   private ?int $task1 = null;
 
   #[ORM\Column(nullable: true)]
@@ -1570,6 +1573,20 @@ class FastTask {
       $this->noTasks = $noTasks;
 
       return $this;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getNoSubs(): ?int {
+    return $this->noSubs;
+  }
+
+  /**
+   * @param int|null $noSubs
+   */
+  public function setNoSubs(?int $noSubs): void {
+    $this->noSubs = $noSubs;
   }
 
 

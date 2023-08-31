@@ -78,12 +78,26 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
+                                        {{ form_label(form.userType, 'Tip korisnika:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.userType, {attr: { class: 'form-control select required role' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 hide ROLE_EMPLOYEE">
+                                    <div class="mb-3">
+                                        {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.pozicija, {attr: { class: 'form-control select pozicija' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 KLIJENT">
+                                    <div class="mb-3">
                                         {{ form_label(form.datumRodjenja, 'Datum rođenja:*', {'label_attr': {'class': 'form-label'}}) }}
                                         <div class="input-group">
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                            {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom' }}) }}
+                                            {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom klijentRemove' }}) }}
                                         </div>
                                         <span class="form-text">Format: 31.12.1900</span>
                                     </div>
@@ -111,29 +125,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row KLIJENT">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.vrstaZaposlenja, 'Vrsta zaposlenja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required' }}) }}
+                                        {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required klijentRemove' }}) }}
                                         <span class="form-text">Ako se radi o klijentu izaberite opciju "Nije u radnom odnosu".</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.userType, 'Tip korisnika:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.userType, {attr: { class: 'form-control select required role' }}) }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 hide ROLE_EMPLOYEE">
-                                    <div class="mb-3">
-                                        {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.pozicija, {attr: { class: 'form-control select pozicija' }}) }}
-                                    </div>
-                                </div>
-                            </div>
+
                             <div class="fw-bold border-bottom pb-2 mb-3">Profilna slika</div>
                             <div class="row">
                                 <div class="col-lg-12">
@@ -145,17 +146,17 @@
                                 </div>
                             </div>
                             <div class="fw-bold border-bottom pb-2 mb-3">Kontakt podaci</div>
-                            <div class="row">
+                            <div class="row KLIJENT">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.grad, 'Grad:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.grad, {attr: { class: 'form-control select required' }}) }}
+                                        {{ form_widget(form.grad, {attr: { class: 'form-control select required klijentRemove' }}) }}
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.adresa, 'Ulica i broj:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.adresa, {attr: { class: 'form-control required' }}) }}
+                                        {{ form_widget(form.adresa, {attr: { class: 'form-control required klijentRemove' }}) }}
                                         <span class="form-text">Format: Bulevar Milutina Milankovića 1</span>
                                     </div>
                                 </div>
@@ -176,28 +177,28 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="fw-bold border-bottom pb-2 mb-3">Ostale informacije</div>
-                            <div class="row">
+                            <div class="fw-bold border-bottom pb-2 mb-3 KLIJENT">Ostale informacije</div>
+                            <div class="row KLIJENT">
                                 <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.vozacki, 'Vozačka dozvola:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.vozacki, {attr: { class: 'form-control select required' }}) }}
+                                        {{ form_widget(form.vozacki, {attr: { class: 'form-control select required klijentRemove' }}) }}
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.isLekarski, 'Lekarski pregled:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isLekarski, {attr: { class: 'form-control select required' }}) }}
+                                        {{ form_widget(form.isLekarski, {attr: { class: 'form-control select required klijentRemove' }}) }}
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.isPrvaPomoc, 'Prva pomoć:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isPrvaPomoc, {attr: { class: 'form-control select required' }}) }}
+                                        {{ form_widget(form.isPrvaPomoc, {attr: { class: 'form-control select required klijentRemove' }}) }}
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row KLIJENT">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}
@@ -205,24 +206,24 @@
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                            {{ form_widget(form.slava, {attr: { class: 'form-control required datepicker-date-format-custom1' }}) }}
+                                            {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1 ' }}) }}
                                         </div>
                                         <span class="form-text">Format: 31.12.1900</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="fw-bold border-bottom pb-2 mb-3">Zaduženi uređaji</div>
-                            <div class="row">
+                            <div class="fw-bold border-bottom pb-2 mb-3 KLIJENT">Zaduženi uređaji</div>
+                            <div class="row KLIJENT">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.isMobile, 'Mobilni telefon:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isMobile, {attr: { class: 'form-control select required' }}) }}
+                                        {{ form_widget(form.isMobile, {attr: { class: 'form-control select required klijentRemove' }}) }}
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.isLaptop, 'Laptop:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isLaptop, {attr: { class: 'form-control select required' }}) }}
+                                        {{ form_widget(form.isLaptop, {attr: { class: 'form-control select required klijentRemove' }}) }}
                                     </div>
                                 </div>
                             </div>
@@ -292,14 +293,23 @@
 {% block footerJavascript %}
 
     <script>
-        $(function () {
+        $(document).ready(function() {
             $(".role").change(function() {
                 if ($(this).val() == "4") {
                     $('.ROLE_EMPLOYEE').removeClass('hide');
                     $('.pozicija').addClass('required');
-                } else {
+                    $('.KLIJENT').removeClass('hide');
+                    $('.klijentRemove').addClass('required');
+                } else if  ($(this).val() == "5") {
+                    $('.KLIJENT').addClass('hide');
+                    $('.klijentRemove').removeClass('required');
                     $('.ROLE_EMPLOYEE').addClass('hide');
                     $('.pozicija').removeClass('required');
+                } else  {
+                    $('.ROLE_EMPLOYEE').addClass('hide');
+                    $('.pozicija').removeClass('required');
+                    $('.KLIJENT').removeClass('hide');
+                    $('.klijentRemove').addClass('required');
                 }
             });
         });

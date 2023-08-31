@@ -77,9 +77,11 @@ class StopwatchController extends AbstractController {
       $stopwatch->setLatStop($request->query->get('lat'));
       $session->set('LatStop', $request->query->get('lat'));
     }
-
+    $days = $stopwatch->getStart()->diff($stopwatch->getStop())->d;
     $hours = $stopwatch->getStart()->diff($stopwatch->getStop())->h;
+    $hours = $days*24 + $hours;
     $minutes = $stopwatch->getStart()->diff($stopwatch->getStop())->i;
+
     $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTime($stopwatch, $hours, $minutes);
 //    $session->remove('LonStop');
 //    $session->remove('LatStop');

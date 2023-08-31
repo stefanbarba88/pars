@@ -36,6 +36,7 @@ class HomeController extends AbstractController {
     $args['timetable'] = $this->em->getRepository(Task::class)->getTasksByDate($args['danas']);
 
     $args['tomorrowTimetable'] = $this->em->getRepository(FastTask::class)->getTimetable($args['sutra']);
+    $args['tomorrowSubs'] = $this->em->getRepository(FastTask::class)->getSubs($args['sutra']);
     $args['tomorrowTimetableId'] = $this->em->getRepository(FastTask::class)->getTimeTableTomorrowId($args['sutra']);
 
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {

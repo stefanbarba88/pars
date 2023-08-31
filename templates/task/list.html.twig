@@ -65,7 +65,19 @@
                             </thead>
                             <tbody>
                             {% for task in tasks %}
-                                <tr>
+                                {% if app.user.userType != 4 %}
+                                    <tr>
+                                {% else %}
+                                    {% if task.logStatus[app.user.id]['nije_zapocet'] == 1 %}
+                                        <tr>
+                                    {% endif %}
+                                    {% if task.logStatus[app.user.id]['otvoren'] == 1 %}
+                                        <tr class="bg-danger bg-opacity-25">
+                                    {% endif %}
+                                    {% if task.logStatus[app.user.id]['zatvoren'] == 1 %}
+                                        <tr class="bg-success bg-opacity-25">
+                                    {% endif %}
+                                {% endif %}
                                     <td>{{ task.task.id }}</td>
                                     <td>
                                         <div class="fw-semibold">

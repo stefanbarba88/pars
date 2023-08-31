@@ -65,7 +65,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     $this->getEntityManager()->flush();
-    $this->mail->registration($user);
+    if ($user->getUserType() != UserRolesData::ROLE_CLIENT) {
+      $this->mail->registration($user);
+    }
+
 
     return $user;
   }
@@ -95,7 +98,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     if (!empty($user->getPlainPassword())) {
       $this->hashPlainPassword($user);
-      $this->mail->edit($user);
+      if ($user->getUserType() != UserRolesData::ROLE_CLIENT) {
+        $this->mail->edit($user);
+      }
     }
 
     if (is_null($user->getId())) {

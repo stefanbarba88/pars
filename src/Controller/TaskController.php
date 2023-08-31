@@ -65,6 +65,24 @@ class TaskController extends AbstractController {
     return $this->render('task/list.html.twig', $args);
   }
 
+  #[Route('/archive/', name: 'app_tasks_arhiva')]
+  public function arhiva()    : Response { if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $args = [];
+    $user = $this->getUser();
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksArchiveByUser($user);
+    } else {
+      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksArchive();
+    }
+    $mobileDetect = new MobileDetect();
+    if ($mobileDetect->isMobile()) {
+      return $this->render('task/phone/archive.html.twig', $args);
+    }
+    return $this->render('task/archive.html.twig', $args);
+  }
+
   #[Route('/form/{id}', name: 'app_task_form', defaults: ['id' => 0])]
   #[Entity('task', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]

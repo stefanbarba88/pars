@@ -103,7 +103,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-xl-4 d-none d-sm-block">
+                                <div class="col-sm-6 col-xl-4 ">
                                     <div class="card">
                                         <div class="card-header d-flex">
                                             <h5 class="mb-0">
@@ -633,8 +633,8 @@
                     newStamp = newDate.getTime();
                     let diff = Math.round((newStamp-startStamp)/1000);
 
-                    let d = Math.floor(diff/(24*60*60));
-                    diff = diff-(d*24*60*60);
+                    // let d = Math.floor(diff/(24*60*60));
+                    // diff = diff-(d*24*60*60);
                     let h = Math.floor(diff/(60*60));
                     diff = diff-(h*60*60);
                     let m = Math.floor(diff/(60));

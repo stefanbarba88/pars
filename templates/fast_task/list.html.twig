@@ -55,6 +55,7 @@
                                 <th>Datum</th>
                                 <th>Status</th>
                                 <th>Broj zadataka</th>
+                                <th>Broj zamena</th>
                                 <th>Kreiran</th>
                                 <th>Poslednja promena</th>
                                 <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
@@ -63,38 +64,38 @@
                             <tbody>
                             {% for fast in fastTasks %}
                                 <tr>
-                                    <td>{{ fast.id }}</td>
+                                    <td>{{ fast[0].id }}</td>
                                     <td>
                                         <div class="d-inline-flex align-items-center">
-                                            <i class="ph-calendar me-2"></i>
-                                            {{ fast.datum | date("d.m.Y")}}
+                                            {{ fast[0].datum | date("d.m.Y")}}
                                         </div>
                                     </td>
                                     <td>
-                                        {% if fast.status == constant('App\\Classes\\Data\\FastTaskData::OPEN') %}
+                                        {% if fast[0].status == constant('App\\Classes\\Data\\FastTaskData::OPEN') %}
                                             <span class="badge bg-info">Kreiran</span>
-                                        {% elseif fast.status == constant('App\\Classes\\Data\\FastTaskData::SAVED') %}
+                                        {% elseif fast[0].status == constant('App\\Classes\\Data\\FastTaskData::SAVED') %}
                                             <span class="badge bg-success">Sačuvan</span>
-                                        {% elseif  fast.status == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
+                                        {% elseif  fast[0].status == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
                                             <span class="badge bg-danger">Izmenjen</span>
-                                        {% elseif  fast.status == constant('App\\Classes\\Data\\FastTaskData::FINAL') %}
+                                        {% elseif  fast[0].status == constant('App\\Classes\\Data\\FastTaskData::FINAL') %}
                                             <span class="badge bg-dark">Finaliziran</span>
                                         {% endif %}
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ fast.noTasks }}</span>
+                                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ fast[0].noTasks }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ fast[0].noSubs }}</span>
                                     </td>
                                     <td>
                                         <div class="d-inline-flex align-items-center">
-                                            <i class="ph-calendar me-2"></i>
-                                            {{ fast.created | date("d.m.Y H:i:s")}}
+                                            {{ fast[0].created | date("d.m.Y H:i:s")}}
                                         </div>
                                     </td>
                                     <td>
 
                                             <div class="d-inline-flex align-items-center">
-                                                <i class="ph-calendar me-2"></i>
-                                                {{ fast.updated | date("d.m.Y H:i:s")}}
+                                                {{ fast[0].updated | date("d.m.Y H:i:s")}}
                                             </div>
 
                                     </td>
@@ -104,36 +105,36 @@
                                                 <i class="ph-gear"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-end">
-                                                <a href="{{ path('app_quick_task_edit', { id: fast.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-{#                                                {% if fast.status == constant('App\\Classes\\Data\\FastTaskData::OPEN') %}#}
-{#                                                    <a href="" class="dropdown-item"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>#}
-{#                                                {% endif %}#}
+                                                <a href="{{ path('app_quick_task_edit', { id: fast[0].id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                {% if fast[1] == 1 %}
+                                                    <a href="" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ fast[0].id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                {% endif %}
 {#                                                {% if fast.status != constant('App\\Classes\\Data\\FastTaskData::FINAL') %}#}
 {#                                                    <a href="{{ path('app_email_timetable', { id: fast.id}) }}" class="dropdown-item"><i class="ph-envelope me-2"></i> Pošaljite plan</a>#}
 {#                                                    <a href="{{ path('app_create_tasks', {id: fast.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Kreirajte zadatke</a>#}
 {#                                                {% endif %}#}
                                             </div>
 {#                                            <!-- delete task modal -->#}
-{#                                            <div id="modal_delete_task{{ task.task.id }}" class="modal fade" tabindex="-1">#}
-{#                                                <div class="modal-dialog">#}
-{#                                                    <div class="modal-content">#}
-{#                                                        <div class="modal-header bg-danger text-white border-0">#}
-{#                                                            <h6 class="modal-title">Potvrda</h6>#}
-{#                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                                                        </div>#}
+                                            <div id="modal_delete_task{{ fast[0].id }}" class="modal fade" tabindex="-1">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header bg-danger text-white border-0">
+                                                            <h6 class="modal-title">Potvrda</h6>
+                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                        </div>
 
-{#                                                        <div class="modal-body">#}
-{#                                                            <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>#}
-{#                                                        </div>#}
+                                                        <div class="modal-body">
+                                                            <p>Da li ste sigurni da želite da obrišete ovaj plan?</p>
+                                                        </div>
 
-{#                                                        <div class="modal-footer">#}
-{#                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>#}
-{#                                                            <a href="{{ path('app_task_delete', {id: task.task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>#}
-{#                                                        </div>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                            <!-- /delete task modal -->#}
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                            <a href="{{ path('app_quick_tasks_delete', {id: fast[0].id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- /delete task modal -->
 {#                                            <!-- close task modal -->#}
 {#                                            <div id="modal_close_task{{ task.task.id }}" class="modal fade" tabindex="-1">#}
 {#                                                <div class="modal-dialog">#}

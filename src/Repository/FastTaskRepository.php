@@ -33,6 +33,30 @@ class FastTaskRepository extends ServiceEntityRepository {
     $this->mail = $mail;
   }
 
+  public function getAllPlans(): array {
+
+    $fastTasks = $this->getEntityManager()->getRepository(FastTask::class)->findAll();
+    $plans = [];
+    foreach ($fastTasks as $plan) {
+      $plans[] = [ $plan, $this->getPlanStatus($plan)];
+    }
+    return $plans;
+  }
+
+  public function getPlanStatus(FastTask $plan): int {
+
+    $status = 0;
+    $datum = $plan->getDatum();
+    $currentTime = new DateTimeImmutable();
+    $editTime = $datum->sub(new DateInterval('PT25H'));
+
+    if ($currentTime < $editTime) {
+      $status = 1;
+    }
+    return $status;
+  }
+
+
   public function findCarToReserve(User $user): ?Car {
 
     $sutra = new DateTimeImmutable('tomorrow');
@@ -2004,6 +2028,148 @@ class FastTaskRepository extends ServiceEntityRepository {
     return $tasks;
   }
 
+  public function getSubs(DateTimeImmutable $date): array {
+
+//    $today = new DateTimeImmutable(); // Trenutni datum i vrijeme
+    $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('f');
+    $qb
+      ->where($qb->expr()->between('f.datum', ':start', ':end'))
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate);
+
+    $query = $qb->getQuery();
+    $fastTasks = $query->getResult();
+    $tasks = [];
+    if (!empty ($fastTasks)) {
+      foreach ($fastTasks as $task) {
+
+        if (!is_null($task->getZtime1())) {
+          $time1 = $task->getZtime1();
+        } else {
+          $time1 = null;
+        }
+        if (!is_null($task->getZtime2())) {
+          $time2 = $task->getZtime2();
+        } else {
+          $time2 = null;
+        }
+        if (!is_null($task->getZtime3())) {
+          $time3 = $task->getZtime3();
+        } else {
+          $time3 = null;
+        }
+        if (!is_null($task->getZtime4())) {
+          $time4 = $task->getZtime4();
+        } else {
+          $time4 = null;
+        }
+        if (!is_null($task->getZtime5())) {
+          $time5 = $task->getZtime5();
+        } else {
+          $time5 = null;
+        }
+        if (!is_null($task->getZtime6())) {
+          $time6 = $task->getZtime6();
+        } else {
+          $time6 = null;
+        }
+        if (!is_null($task->getZtime7())) {
+          $time7 = $task->getZtime7();
+        } else {
+          $time7 = null;
+        }
+        if (!is_null($task->getZtime8())) {
+          $time8 = $task->getZtime8();
+        } else {
+          $time8 = null;
+        }
+        if (!is_null($task->getZtime9())) {
+          $time9 = $task->getZtime9();
+        } else {
+          $time9 = null;
+        }
+        if (!is_null($task->getZtime10())) {
+          $time10 = $task->getZtime10();
+        } else {
+          $time10 = null;
+        }
+
+        $tasks = [
+          [
+            'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject1()]),
+            'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo1()]),
+            'napomena' => $task->getZdescription1(),
+            'vreme' => $time1,
+          ],
+          [
+            'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject2()]),
+            'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo2()]),
+            'napomena' => $task->getZdescription2(),
+            'vreme' => $time2,
+          ],
+          [
+            'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject3()]),
+            'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo3()]),
+            'napomena' => $task->getZdescription3(),
+            'vreme' => $time3,
+          ],
+          [
+            'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject4()]),
+            'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo4()]),
+            'napomena' => $task->getZdescription4(),
+            'vreme' => $time4,
+          ],
+          [
+            'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject5()]),
+            'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo5()]),
+            'napomena' => $task->getZdescription5(),
+            'vreme' => $time5,
+          ],
+          [
+            'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject6()]),
+            'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo6()]),
+            'napomena' => $task->getZdescription6(),
+            'vreme' => $time6,
+          ],
+          [
+            'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject7()]),
+            'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo7()]),
+            'napomena' => $task->getZdescription7(),
+            'vreme' => $time7,
+          ],
+          [
+            'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject8()]),
+            'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo8()]),
+            'napomena' => $task->getZdescription8(),
+            'vreme' => $time8,
+          ],
+          [
+            'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject9()]),
+            'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo9()]),
+            'napomena' => $task->getZdescription9(),
+            'vreme' => $time9,
+          ],
+          [
+            'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject10()]),
+            'geo' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $task->getZgeo10()]),
+            'napomena' => $task->getZdescription10(),
+            'vreme' => $time10,
+          ]
+
+        ];
+      }
+    }
+
+    usort($tasks, function($a, $b) {
+      return $a['vreme'] <=> $b['vreme'];
+    });
+
+    return $tasks;
+  }
+
   public function getTimeTableId(DateTimeImmutable $date): int {
 
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
@@ -2070,6 +2236,7 @@ class FastTaskRepository extends ServiceEntityRepository {
 
     $fastTask->setDatum($dateTime);
     $noTasks = 0;
+    $noSubs = 0;
 
     if (isset($data['task_quick_form1'])) {
       $task1 = $data['task_quick_form1'];
@@ -4688,6 +4855,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         }
       }
       if (($zamena1['projekat']) !== '---') {
+        $noSubs++;
 
         $fastTask->setZproject1($zamena1['projekat']);
 
@@ -4767,7 +4935,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         }
       }
       if (($zamena2['projekat']) !== '---') {
-
+        $noSubs++;
         $fastTask->setZproject2($zamena2['projekat']);
 
         if (!empty($zamena2['geo'][0])) {
@@ -4846,7 +5014,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         }
       }
       if (($zamena3['projekat']) !== '---') {
-
+        $noSubs++;
         $fastTask->setZproject3($zamena3['projekat']);
 
         if (!empty($zamena3['geo'][0])) {
@@ -4925,7 +5093,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         }
       }
       if (($zamena4['projekat']) !== '---') {
-
+        $noSubs++;
         $fastTask->setZproject4($zamena4['projekat']);
 
         if (!empty($zamena4['geo'][0])) {
@@ -5004,7 +5172,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         }
       }
       if (($zamena5['projekat']) !== '---') {
-
+        $noSubs++;
         $fastTask->setZproject5($zamena5['projekat']);
 
         if (!empty($zamena5['geo'][0])) {
@@ -5083,7 +5251,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         }
       }
       if (($zamena6['projekat']) !== '---') {
-
+        $noSubs++;
         $fastTask->setZproject6($zamena6['projekat']);
 
         if (!empty($zamena6['geo'][0])) {
@@ -5162,7 +5330,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         }
       }
       if (($zamena7['projekat']) !== '---') {
-
+        $noSubs++;
         $fastTask->setZproject7($zamena7['projekat']);
 
         if (!empty($zamena7['geo'][0])) {
@@ -5241,7 +5409,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         }
       }
       if (($zamena8['projekat']) !== '---') {
-
+        $noSubs++;
         $fastTask->setZproject8($zamena8['projekat']);
 
         if (!empty($zamena8['geo'][0])) {
@@ -5320,7 +5488,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         }
       }
       if (($zamena9['projekat']) !== '---') {
-
+        $noSubs++;
         $fastTask->setZproject9($zamena9['projekat']);
 
         if (!empty($zamena9['geo'][0])) {
@@ -5399,7 +5567,7 @@ class FastTaskRepository extends ServiceEntityRepository {
         }
       }
       if (($zamena10['projekat']) !== '---') {
-
+        $noSubs++;
         $fastTask->setZproject10($zamena10['projekat']);
 
         if (!empty($zamena10['geo'][0])) {
@@ -5427,6 +5595,7 @@ class FastTaskRepository extends ServiceEntityRepository {
     }
 
     $fastTask->setNoTasks($noTasks);
+    $fastTask->setNoSubs($noSubs);
 
     $stanja[] = $fastTask->getStatus1();
     $stanja[] = $fastTask->getStatus2();
@@ -5495,6 +5664,11 @@ class FastTaskRepository extends ServiceEntityRepository {
     if ($flush) {
       $this->getEntityManager()->flush();
     }
+  }
+
+  public function delete(FastTask $fastTask): void {
+    $this->getEntityManager()->remove($fastTask);
+    $this->getEntityManager()->flush();
   }
 
   public function findForForm(int $id = 0): FastTask {

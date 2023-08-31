@@ -57,117 +57,155 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header">
-
                                         <h5 class="mb-0">Lični i kontakt podaci <a href="{{ path('app_user_edit_info_form', {id: user.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                        {% if user.userType == 5 %}
+                                            <div class="card-body">
+                                                <div class="row p-2">
+                                                    <div class="col-4">Ime i prezime:</div>
+                                                    <div class="col-8">{{ user.fullName() }}</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Pol:</div>
+                                                    <div class="col-8">{{ user.getPolData()}}</div>
+                                                </div>
+                                                <div class="row p-2 ">
+                                                    <div class="col-4">Službeni telefon:</div>
+                                                    <div class="col-8">{{ user.telefon1 }}</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Privatni telefon:</div>
+                                                    <div class="col-8">{{ user.telefon2 | default('/') }}</div>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="card-body">
+                                                <div class="row p-2">
+                                                    <div class="col-4">Ime i prezime:</div>
+                                                    <div class="col-8">{{ user.fullName() }}</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Datum rođenja:</div>
+                                                    <div class="col-8">{{ user.datumRodjenja | date("d.m.Y")}}</div>
+                                                </div>
+                                                <div class="row p-2">
+                                                    <div class="col-4">Pol:</div>
+                                                    <div class="col-8">{{ user.getPolData()}}</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4" >Grad:</div>
+                                                    <div class="col-8">{{ user.grad.getFormTitle() }}</div>
+                                                </div>
+                                                <div class="row p-2">
+                                                    <div class="col-4">Adresa:</div>
+                                                    <div class="col-8">{{ user.adresa }}</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Službeni telefon:</div>
+                                                    <div class="col-8">{{ user.telefon1 }}</div>
+                                                </div>
+                                                <div class="row p-2">
+                                                    <div class="col-4">Privatni telefon:</div>
+                                                    <div class="col-8">{{ user.telefon2 | default('/') }}</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Vozačka dozvola:</div>
+                                                    <div class="col-8">
+                                                        {% if user.vozacki == constant('App\\Classes\\Data\\VozackiData::NOT')%}
+                                                            Nema vozačku dozvolu
+                                                        {% endif %}
+                                                        {% if user.vozacki == constant('App\\Classes\\Data\\VozackiData::INACTIVE')%}
+                                                            Neaktivan vozač
+                                                        {% endif %}
+                                                        {% if user.vozacki == constant('App\\Classes\\Data\\VozackiData::ACTIVE')%}
+                                                            Aktivan vozač
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 ">
+                                                    <div class="col-4">Lekarski pregled:</div>
+                                                    <div class="col-8">
+                                                        {% if user.lekarski %}
+                                                            Ima lekarski pregled
+                                                        {% else %}
+                                                            Nema lekarski pregled
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Prva pomoć:</div>
+                                                    <div class="col-8">
+                                                        {% if user.prvaPomoc %}
+                                                            Ima prvu pomoć
+                                                        {% else %}
+                                                            Nema prvu pomoć
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 ">
+                                                    <div class="col-4">Slava:</div>
+                                                    <div class="col-8">
+                                                        {% if user.slava is not null %}
+                                                            {{ user.slava | date("d.m")}}
+                                                        {% else %}
+                                                            /
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Zaduženi uređaji:</div>
+                                                    <div class="col-8">
+                                                        {% if user.mobile %}
+                                                            <i class="ph-device-mobile"></i>
+                                                        {% endif %}
+                                                        {% if user.laptop %}
+                                                            <i class="ph-laptop"></i>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
                                     </div>
-                                    <div class="card-body">
-                                        <div class="row p-2">
-                                            <div class="col-4">Ime i prezime:</div>
-                                            <div class="col-8">{{ user.fullName() }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Datum rođenja:</div>
-                                            <div class="col-8">{{ user.datumRodjenja | date("d.m.Y")}}</div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Pol:</div>
-                                            <div class="col-8">{{ user.getPolData()}}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4" >Grad:</div>
-                                            <div class="col-8">{{ user.grad.getFormTitle() }}</div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Adresa:</div>
-                                            <div class="col-8">{{ user.adresa }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Službeni telefon:</div>
-                                            <div class="col-8">{{ user.telefon1 }}</div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Privatni telefon:</div>
-                                            <div class="col-8">{{ user.telefon2 | default('/') }}</div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Vozačka dozvola:</div>
-                                            <div class="col-8">
-                                                {% if user.vozacki == constant('App\\Classes\\Data\\VozackiData::NOT')%}
-                                                    Nema vozačku dozvolu
-                                                {% endif %}
-                                                {% if user.vozacki == constant('App\\Classes\\Data\\VozackiData::INACTIVE')%}
-                                                    Neaktivan vozač
-                                                {% endif %}
-                                                {% if user.vozacki == constant('App\\Classes\\Data\\VozackiData::ACTIVE')%}
-                                                    Aktivan vozač
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Lekarski pregled:</div>
-                                            <div class="col-8">
-                                                {% if user.lekarski %}
-                                                    Ima lekarski pregled
-                                                {% else %}
-                                                    Nema lekarski pregled
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Prva pomoć:</div>
-                                            <div class="col-8">
-                                                {% if user.prvaPomoc %}
-                                                    Ima prvu pomoć
-                                                {% else %}
-                                                    Nema prvu pomoć
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Slava:</div>
-                                            <div class="col-8">
-                                                {% if user.slava is not null %}
-                                                    {{ user.slava | date("d.m")}}
-                                                {% else %}
-                                                    /
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Zaduženi uređaji:</div>
-                                            <div class="col-8">
-                                                {% if user.mobile %}
-                                                    <i class="ph-device-mobile"></i>
-                                                {% endif %}
-                                                {% if user.laptop %}
-                                                    <i class="ph-laptop"></i>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
+
                                 </div>
                                 <div class="card">
                                     <div class="card-header">
                                         <h5 class="mb-0">Login podaci <a href="{{ path('app_user_edit_account_form', {id: user.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                        {% if user.userType == 5 %}
+                                            <div class="card-body">
+                                                <div class="row p-2">
+                                                    <div class="col-4">Email:</div>
+                                                    <div class="col-8">{{ user.email }}</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Tip korisnika:</div>
+                                                    <div class="col-8">{{ user.badgeByUserType | raw }}</div>
+                                                </div>
+
+                                            </div>
+                                        {% else %}
+                                            <div class="card-body">
+                                                <div class="row p-2">
+                                                    <div class="col-4">Email:</div>
+                                                    <div class="col-8">{{ user.email }}</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Vrsta zaposlenja:</div>
+                                                    <div class="col-8">{{ user.vrstaZaposlenjaData }}</div>
+                                                </div>
+                                                <div class="row p-2">
+                                                    <div class="col-4">Tip korisnika:</div>
+                                                    <div class="col-8">{{ user.badgeByUserType | raw }}</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Pozicija:</div>
+                                                    <div class="col-8">{{ user.pozicija.title | default('/')  }}</div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
                                     </div>
-                                    <div class="card-body">
-                                        <div class="row p-2">
-                                            <div class="col-4">Email:</div>
-                                            <div class="col-8">{{ user.email }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Vrsta zaposlenja:</div>
-                                            <div class="col-8">{{ user.vrstaZaposlenjaData }}</div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Tip korisnika:</div>
-                                            <div class="col-8">{{ user.badgeByUserType | raw }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Pozicija:</div>
-                                            <div class="col-8">{{ user.pozicija.title | default('/')  }}</div>
-                                        </div>
-                                    </div>
+
                                 </div>
                                 {% if user.editBy is not null %}
                                     <div class="card">

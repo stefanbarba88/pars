@@ -36,10 +36,13 @@ class UserController extends AbstractController {
   public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $loggedUser = $this->getUser();
 
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args=[];
-    $args['users'] = $this->em->getRepository(User::class)->getAllByLoggedUser($loggedUser);
+    $args['users'] = $this->em->getRepository(User::class)->getAllByLoggedUser($korisnik);
 
     return $this->render('user/list.html.twig', $args);
   }
@@ -48,7 +51,10 @@ class UserController extends AbstractController {
   public function listContacts()    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args=[];
     $args['users'] = $this->em->getRepository(User::class)->getAllContacts();
 
@@ -61,7 +67,10 @@ class UserController extends AbstractController {
   public function form(Request $request, User $usr, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $usr->setPlainUserType($this->getUser()->getUserType());
     $type = $request->query->getInt('type');
     $form = $this->createForm(UserRegistrationFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_form', ['id' => $usr->getId(), 'type' => $type])]]);
@@ -105,7 +114,12 @@ class UserController extends AbstractController {
   public function editInfo(User $usr, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $type = $request->query->getInt('type');
 
     $history = null;
@@ -159,6 +173,13 @@ class UserController extends AbstractController {
   public function editAccount(User $usr, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
     $type = $request->query->getInt('type');
     $usr->setPlainUserType($this->getUser()->getUserType());
     $history = null;
@@ -228,6 +249,12 @@ class UserController extends AbstractController {
   public function editImage(User $usr, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $type = $request->query->getInt('type');
 
     $usr->setEditBy($this->getUser());
@@ -287,8 +314,15 @@ class UserController extends AbstractController {
 
   #[Route('/view-profile/{id}', name: 'app_user_profile_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewProfile(User $usr)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function viewProfile(User $usr)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $args['user'] = $usr;
 
@@ -299,6 +333,12 @@ class UserController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function settings(User $usr, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
 
     $history = null;
@@ -352,6 +392,12 @@ class UserController extends AbstractController {
   public function listUserHistory(User $user)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $user->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $args['user'] = $user;
     $args['historyUsers'] = $this->em->getRepository(UserHistory::class)->findBy(['user' => $user], ['id' => 'ASC']);
 
@@ -363,7 +409,10 @@ class UserController extends AbstractController {
   public function viewUserHistory(UserHistory $userHistory, SerializerInterface $serializer)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['userH'] = $serializer->deserialize($userHistory->getHistory(), user::class, 'json');
     $args['userHistory'] = $userHistory;
 

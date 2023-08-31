@@ -16,11 +16,10 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                               Zadaci
+                               Arhiva zadataka
                             </h4>
                         </div>
                     </div>
-
                 </div>
                 <!-- /page header -->
 
@@ -29,20 +28,16 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista zadataka</h5>
-                            <div class="mt-1 my-lg-auto ms-lg-auto">
-                                <a href="{{ path('app_task_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
-                            </div>
+                            <h5 class="py-lg-3 mb-0">Arhiva zadataka</h5>
                         </div>
                         <table class="table datatable-colvis-state-pars-mobile">
                             <thead>
                             <tr>
-                                <th style="width: 45px;">Zadatak</th>
+                                <th>Zadatak</th>
                                 <th>Status</th>
                                 <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
                             </tr>
                             </thead>
-
                             <tbody>
                             {% for task in tasks %}
                                 {% if app.user.userType != 4 %}
@@ -58,12 +53,17 @@
                                         <tr class="bg-success bg-opacity-25">
                                     {% endif %}
                                 {% endif %}
+
                                     <td>
                                         <div class="fw-semibold">
-                                            {% if is_granted('ROLE_EMPLOYEE') %}
-                                                <a href="{{ path('app_task_view_user', { id: task.task.id}) }}">{{ task.task.title }}</a>
-                                            {% else %}
+                                            {% if app.user.userType != 4 %}
                                                 <a href="{{ path('app_task_view', { id: task.task.id}) }}">{{ task.task.title }}</a>
+                                            {% else %}
+                                                {% if app.user in task.task.assignedUsers %}
+                                                    <a href="{{ path('app_task_view_user', { id: task.task.id}) }}">{{ task.task.title }}</a>
+                                                {% else %}
+                                                    {{ task.task.title }}
+                                                {% endif %}
                                             {% endif %}
                                         </div>
                                         {% if task.task.label is not empty %}
@@ -87,6 +87,7 @@
                                             {% endif %}
                                         {% endif %}
                                     </td>
+
                                     <td class="text-center">
                                         <div class="dropdown">
                                             <a href="#" class="text-body" data-bs-toggle="dropdown">
@@ -166,7 +167,66 @@
                                     </td>
                                 </tr>
                             {% endfor %}
-
+{#                            {% for task in tasks %}#}
+{#                                <tr>#}
+{#                                    <td>#{{ task.id }}</td>#}
+{#                                    <td><a href="{{ path('app_task_tasks_view', { id: task.id}) }}">{{ task.title }}</a></td>#}
+{#                                    <td>#}
+{#                                        <div class="fw-semibold"><a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a></div>#}
+{#                                        <div class="d-inline-flex">#}
+{#                                            {% for label in task.label %}#}
+{#                                                {{label.label | raw}}#}
+{#                                            {% endfor %}#}
+{#                                        </div>#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        {% if task.project is null %}#}
+{#                                            /#}
+{#                                        {% else %}#}
+{#                                            <a href="{{ path('app_project_profile_view', { id: task.project.id}) }}">{{ task.project.title }}</a>#}
+{#                                        {% endif %}#}
+{#                                    </td>#}
+{#                                    <td class="text-center">#}
+{#                                        {% if task.isPriority %}#}
+{#                                            <span class="badge bg-danger rounded-pill p-1">#}
+{#												<i class="ph-warning-circle"></i>#}
+{#											</span>#}
+{#                                        {% endif %}#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        <div class="d-inline-flex align-items-center">#}
+{#                                            <i class="ph-calendar me-2"></i>#}
+{#                                            {{ task.updated | date("d.m.Y H:i:s")}}#}
+{#                                        </div>#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        <div class="d-inline-flex align-items-center">#}
+{#                                            <i class="ph-calendar me-2"></i>#}
+{#                                            {{ task.created | date("d.m.Y")}}#}
+{#                                        </div>#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        {% for user in task.assignedUsers %}#}
+{#                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}"></a>#}
+{#                                        {% endfor %}#}
+{#                                    </td>#}
+{#                                    <td class="text-center">#}
+{#                                        <div class="dropdown">#}
+{#                                            <a href="#" class="text-body" data-bs-toggle="dropdown">#}
+{#                                                <i class="ph-gear"></i>#}
+{#                                            </a>#}
+{#                                            <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Check in</a>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-paperclip me-2"></i> Attach screenshot</a>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-user-switch me-2"></i> Reassign</a>#}
+{#                                                <div class="dropdown-divider"></div>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>#}
+{#                                                <a href="#" class="dropdown-item"><i class="ph-x me-2"></i> Remove</a>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </td>#}
+{#                                </tr>#}
+{#                            {% endfor %}#}
                             </tbody>
                         </table>
                     </div>

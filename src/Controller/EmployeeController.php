@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classes\Data\UserRolesData;
 use App\Entity\CarReservation;
 use App\Entity\Comment;
 use App\Entity\Expense;
@@ -27,6 +28,10 @@ class EmployeeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $type = $request->query->getInt('type');
     $args['users'] = $this->em->getRepository(User::class)->getEmployees($type);
 
@@ -38,6 +43,12 @@ class EmployeeController extends AbstractController {
   public function viewProfile(User $usr): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $args['user'] = $usr;
     $mobileDetect = new MobileDetect();
@@ -53,6 +64,12 @@ class EmployeeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $args['user'] = $usr;
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -67,6 +84,12 @@ class EmployeeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $args['user'] = $usr;
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -80,6 +103,12 @@ class EmployeeController extends AbstractController {
   public function viewCar(User $usr): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $args['user'] = $usr;
     $args['reservations'] = $usr->getCarReservations();
@@ -99,6 +128,12 @@ class EmployeeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $args['user'] = $usr;
     $args['reservations'] = $usr->getToolReservations();
 
@@ -115,6 +150,12 @@ class EmployeeController extends AbstractController {
   public function viewDocs(User $usr): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $args['user'] = $usr;
     $args['pdfs'] = $this->em->getRepository(User::class)->getPdfsByUser($usr);
@@ -133,6 +174,12 @@ class EmployeeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $args['user'] = $usr;
     $args['images'] = $this->em->getRepository(User::class)->getImagesByUser($usr);
 
@@ -149,6 +196,12 @@ class EmployeeController extends AbstractController {
   public function viewComments(User $usr): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $args['user'] = $usr;
     $args['comments'] = $this->em->getRepository(Comment::class)->getCommentsByUser($usr);
@@ -167,7 +220,12 @@ class EmployeeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
       $args['user'] = $usr;
       $args['notes'] = $this->em->getRepository(Notes::class)->findBy(['user' => $usr], ['isSuspended' => 'ASC', 'id' => 'DESC']);
     $mobileDetect = new MobileDetect();

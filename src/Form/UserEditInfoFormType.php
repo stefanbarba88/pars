@@ -28,12 +28,12 @@ class UserEditInfoFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
     $builder
       ->add('slava', DateType::class, [
-      'required' => false,
-      'widget' => 'single_text',
-      'format' => 'dd.MM.yyyy',
-      'html5' => false,
-      'input' => 'datetime_immutable'
-    ])
+        'required' => false,
+        'widget' => 'single_text',
+        'format' => 'dd.MM.yyyy',
+        'html5' => false,
+        'input' => 'datetime_immutable'
+      ])
       ->add('isPrvaPomoc', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',

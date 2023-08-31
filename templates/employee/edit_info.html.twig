@@ -194,8 +194,13 @@
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.slava, {attr: { class: 'form-control' }}) }}
-                                                    <span class="form-text">Format: Sveti Nikola, 19.12.</span>
+                                                    <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                                        {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1' }}) }}
+                                                    </div>
+                                                    <span class="form-text">Format: 31.12.1900</span>
                                                 </div>
                                             </div>
                                         </div>

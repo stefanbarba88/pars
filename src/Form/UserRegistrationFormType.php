@@ -117,6 +117,7 @@ class UserRegistrationFormType extends AbstractType {
 //        ],
 //      ])
       ->add('vrstaZaposlenja', ChoiceType::class, [
+        'required' => false,
         'placeholder' => 'Izaberite vrstu zaposlenja',
         'choices' => VrstaZaposlenjaData::form(),
         'expanded' => false,
@@ -163,6 +164,7 @@ class UserRegistrationFormType extends AbstractType {
       ])
 
       ->add('grad', EntityType::class, [
+        'required' => false,
         'placeholder' => 'Izaberite grad',
         'class' => City::class,
         'query_builder' => function (EntityRepository $em) {
@@ -188,7 +190,9 @@ class UserRegistrationFormType extends AbstractType {
         'multiple' => false,
       ])
 
-      ->add('adresa')
+      ->add('adresa', TextType::class, [
+      'required' => false
+    ])
       ->add('telefon1',TextType::class, [
         'required' => false,
         'constraints' => [

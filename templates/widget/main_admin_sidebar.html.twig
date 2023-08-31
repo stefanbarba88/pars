@@ -77,6 +77,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ path('app_tasks_arhiva') }}" class="nav-link">
+                            <i class="ph-archive"></i>
+                            <span>Arhiva</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ path('app_task_form') }}" class="nav-link">
                             <i class="ph-folder-plus"></i>
                             <span>Dodajte</span>
@@ -178,6 +185,13 @@
                         <a href="{{ path('app_employee_comments_view', {id:user.id}) }}" class="nav-link">
                             <i class="ph-chats-circle"></i>
                             <span>Komentari</span>
+                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ asset('/assets/manual/manual.pdf') }}" class="nav-link" download>
+                            <i class="ph-lifebuoy"></i>
+                            <span>Uputstvo</span>
                             {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
@@ -458,9 +472,10 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_task_form') }}" class="nav-link">
-                            <i class="ph-folder-plus"></i>
+                        <a href="{{ path('app_tasks_arhiva') }}" class="nav-link">
+                            <i class="ph-archive"></i>
                             <span>Arhiva</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
                         </a>
                     </li>
                     <li class="nav-item">

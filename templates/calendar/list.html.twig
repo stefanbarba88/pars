@@ -66,12 +66,13 @@
                                 <tr>
                                     <td>{{ calendar.id }}</td>
                                     <td>
-                                        {% if calendar.user is not empty %}
-                                            {% for user in calendar.user %}
-                                                <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}" title="{{ user.getFullName() }}"></a>
-                                            {% endfor %}
-                                        {% endif %}
-
+                                        <div class="fw-semibold">
+                                            {% if calendar.user is not empty %}
+                                                {% for user in calendar.user %}
+                                                    <a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.getFullName() }}</a>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
                                     </td>
                                     <td>{% if calendar.type == 1 %}
                                             <span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-secondary">Slobodan dan</span>

@@ -71,7 +71,7 @@
                                                             <div class="col-4">Privatni telefon:</div>
                                                             <div class="col-8">{{ user.telefon2 | default('/') }}</div>
                                                         </div>
-                                                        <div class="row p-2">
+                                                        <div class="row p-2 bg-light">
                                                             <div class="col-4">Vozačka dozvola:</div>
                                                             <div class="col-8">
                                                                 {% if user.vozacki == constant('App\\Classes\\Data\\VozackiData::NOT')%}
@@ -85,7 +85,7 @@
                                                                 {% endif %}
                                                             </div>
                                                         </div>
-                                                        <div class="row p-2 bg-light">
+                                                        <div class="row p-2">
                                                             <div class="col-4">Lekarski pregled:</div>
                                                             <div class="col-8">
                                                                 {% if user.lekarski %}
@@ -107,7 +107,7 @@
                                                         </div>
                                                         <div class="row p-2 bg-light">
                                                             <div class="col-4">Slava:</div>
-                                                            <div class="col-8">{{ user.slava | default('/') }}</div>
+                                                            <div class="col-8">{{ user.slava | date('d.m.') }}</div>
                                                         </div>
                                                         <div class="row p-2">
                                                             <div class="col-4">Zaduženi uređaji:</div>

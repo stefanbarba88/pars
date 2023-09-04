@@ -435,6 +435,19 @@
                                                             </div>
                                                         </div>
 
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Početak i kraj merenja</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+                                                                    <ul class="list mb-0">
+                                                                        {% for stopwatch in stopwatchesActive %}
+                                                                            <li>{{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }}</li>
+                                                                        {% endfor %}
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                         <div class="fw-bold border-bottom pb-2 mb-3">Odrađene aktivnosti</div>
                                                         <div class="row">
                                                             <div class="col-lg-12">

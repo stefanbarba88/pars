@@ -83,6 +83,42 @@ class TaskController extends AbstractController {
     return $this->render('task/archive.html.twig', $args);
   }
 
+  #[Route('/unclosed/', name: 'app_tasks_unclosed')]
+  public function unclosed()    : Response { if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $args = [];
+    $user = $this->getUser();
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksUnclosedByUser($user);
+    } else {
+      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksUnclosed();
+    }
+    $mobileDetect = new MobileDetect();
+    if ($mobileDetect->isMobile()) {
+      return $this->render('task/phone/unclosed.html.twig', $args);
+    }
+    return $this->render('task/unclosed.html.twig', $args);
+  }
+
+  #[Route('/unclosed-logs/', name: 'app_tasks_unclosed_logs')]
+  public function unclosedLogs()    : Response { if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $args = [];
+    $user = $this->getUser();
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksUnclosedLogsByUser($user);
+    } else {
+      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksUnclosedLogs();
+    }
+    $mobileDetect = new MobileDetect();
+    if ($mobileDetect->isMobile()) {
+      return $this->render('task/phone/unclosed_logs.html.twig', $args);
+    }
+    return $this->render('task/unclosed_logs.html.twig', $args);
+  }
+
   #[Route('/form/{id}', name: 'app_task_form', defaults: ['id' => 0])]
   #[Entity('task', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -775,6 +811,11 @@ class TaskController extends AbstractController {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
+    $user = $this->getUser();
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();
     $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
@@ -810,14 +851,21 @@ class TaskController extends AbstractController {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
+
+    $user = $this->getUser();
+    if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE ) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+
     $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
 
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();
 
-    $user = $this->getUser();
-
     $args['taskLog'] = $this->em->getRepository(TaskLog::class)->findOneBy(['user' => $user, 'task' => $task]);
+    $args['stopwatchesActive'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchesActive($args['taskLog']);
+    $args['time'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchTime($args['taskLog']);
     $args['stopwatch'] = $this->em->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $args['taskLog'], 'diff' => null]);
     $args['countStopwatches'] = $this->em->getRepository(StopwatchTime::class)->countStopwatches($args['taskLog']);
     $args['images'] = $this->em->getRepository(Task::class)->getImagesByTask($task);

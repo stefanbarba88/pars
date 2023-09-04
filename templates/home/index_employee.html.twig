@@ -13,7 +13,11 @@
 
                 <!-- Content area -->
                 <div class="content">
-
+                    {% if  countTasksUnclosed > 0%}
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <span class="fw-semibold">Važno!</span> Imate <a href="{{ path('app_tasks_unclosed_logs') }}" class="alert-link">nezatvoren dnevnik</a> od predhodnog dana. Morate prvo njega zatvoriti da bi pokrenuli današnje.
+                        </div>
+                    {% endif %}
                     <div class="row d-none d-sm-block">
                         <div class="col-xl-12">
 

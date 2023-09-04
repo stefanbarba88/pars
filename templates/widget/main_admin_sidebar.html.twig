@@ -73,14 +73,28 @@
                         <a href="{{ path('app_tasks') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksActiveByUser }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_tasks_unclosed') }}" class="nav-link">
+                            <i class="ph-folders"></i>
+                            <span>Nezatvoreni</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksUnclosedByUser }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_tasks_unclosed_logs') }}" class="nav-link">
+                            <i class="ph-spinner spinner"></i>
+                            <span>Nezatvoreni dnevnici</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksUnclosedLogsByUser }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tasks_arhiva') }}" class="nav-link">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksArchiveByUser }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -267,7 +281,8 @@
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_home') }}" class="nav-link active">
-                            <i class="ph-house"></i>
+{#                            <i class="ph-house"></i>#}
+                            <i class="ph-spinner-gap spinner"></i>
                             <span>
                             Kontrolna tabla
                             <span class="d-block fw-normal opacity-50">broj aktivnih taskova</span>
@@ -465,17 +480,31 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ path('app_tasks_unclosed_logs') }}" class="nav-link">
+                            <i class="ph-spinner spinner"></i>
+                            <span>Nezatvoreni dnevnici</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksUnclosedLogs }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ path('app_tasks') }}" class="nav-link">
                             <i class="ph-folders"></i>
-                            <span>Lista</span>
-{#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjects }}</span>#}
+                            <span>Aktivni</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksActive }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_tasks_unclosed') }}" class="nav-link">
+                            <i class="ph-folders"></i>
+                            <span>Nezatvoreni</span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksUnclosed }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tasks_arhiva') }}" class="nav-link">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
+                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksArchive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">

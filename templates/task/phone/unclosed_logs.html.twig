@@ -1,0 +1,127 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Nezatvoreni dnevnici
+                            </h4>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-lg-flex py-lg-0">
+                            <h5 class="py-lg-3 mb-0">Nezatvoreni dnevnici</h5>
+                        </div>
+                        <table class="table datatable-colvis-state-pars-mobile">
+                            <thead>
+                            <tr>
+                                <th>Zadatak</th>
+                                <th>Zaduženi</th>
+                                <th>Projekat</th>
+                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for task in tasks %}
+
+                                <tr class="bg-danger bg-opacity-25">
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {% if app.user.userType != 4 %}
+                                                <a href="{{ path('app_task_view', { id: task.log.task.id}) }}">{{ task.log.task.title }}</a>
+                                            {% else %}
+
+                                                <a href="{{ path('app_task_view_user', { id: task.log.task.id}) }}">{{ task.log.task.title }}</a>
+
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if is_granted('ROLE_EMPLOYEE') %}
+                                            {% if app.user in task.log.task.getAssignedUsers %}
+                                                <a href="{{ path('app_task_view_user', { id: task.log.task.id}) }}"> {{ task.log.user.fullName }}</a>
+                                            {% endif %}
+                                        {% else %}
+                                            <a href="{{ path('app_task_view', { id: task.log.task.id}) }}" > {{ task.log.user.fullName }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if task.log.task.project %}
+                                            <a href="{{ path('app_project_tasks_view', { id: task.log.task.project.id}) }}">{{ task.log.task.project.title }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                <i class="ph-gear"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                {% if is_granted('ROLE_EMPLOYEE') %}
+                                                    {% if app.user in task.log.task.getAssignedUsers %}
+                                                        <a href="{{ path('app_task_view_user', { id: task.log.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <a href="{{ path('app_task_view', { id: task.log.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fab.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/prism.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
+{% endblock includeJavascript %}

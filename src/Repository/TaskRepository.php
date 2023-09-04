@@ -221,12 +221,79 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function getTasksByUser(User $user): array {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
 
     $list = [];
     $tasks =  $this->createQueryBuilder('t')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.datumKreiranja >= :startDate')
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':userId', $user->getId())
+      ->setParameter(':startDate', $startDate)
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        $list[] = [
+          'task' => $task,
+          'status' => $status,
+          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($task)
+        ];
+      }
+    }
+
+    usort($list, function ($a, $b) {
+      return $a['status'] <=> $b['status'];
+    });
+    return $list;
+  }
+
+  public function countGetTasksByUser(User $user): int {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    $count = 0;
+    $tasks =  $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.datumKreiranja >= :startDate')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':userId', $user->getId())
+      ->setParameter(':startDate', $startDate)
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        $count++;
+      }
+    }
+
+    return $count;
+  }
+
+  public function getTasksUnclosedByUser(User $user): array {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    $list = [];
+    $tasks =  $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.datumKreiranja < :startDate')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
       ->setParameter(':userId', $user->getId())
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
@@ -249,6 +316,178 @@ class TaskRepository extends ServiceEntityRepository {
       return $a['status'] <=> $b['status'];
     });
     return $list;
+  }
+
+  public function getTasksUnclosedLogsByUser(User $user): array {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    $list = [];
+    $tasks =  $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.datumKreiranja < :startDate')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->setParameter(':userId', $user->getId())
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+
+        $log = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['user' => $user, 'task' => $task]);
+        $logStatus = $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatusByLog($log);
+
+        if ($logStatus == 0) {
+          $list[] = [
+            'log' => $log,
+            'logStatus' => $logStatus
+          ];
+        }
+      }
+    }
+
+    usort($list, function ($a, $b) {
+      return $a['logStatus'] <=> $b['logStatus'];
+    });
+
+    return $list;
+  }
+
+  public function getTasksUnclosedLogs(): array {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    $list = [];
+    $tasks =  $this->createQueryBuilder('t')
+      ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        foreach ($task->getTaskLogs() as $log) {
+          $logStatus = $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatusByLog($log);
+          if ($logStatus == 0) {
+            $list[] = [
+              'log' => $log,
+              'logStatus' => $logStatus
+            ];
+          }
+        }
+
+      }
+    }
+    usort($list, function ($a, $b) {
+      return $a['logStatus'] <=> $b['logStatus'];
+    });
+    return $list;
+
+  }
+
+  public function countGetTasksUnclosedLogsByUser(User $user): int {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    $count = 0;
+    $tasks =  $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.datumKreiranja < :startDate')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->setParameter(':userId', $user->getId())
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+
+        $log = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['user' => $user, 'task' => $task]);
+        $logStatus = $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatusByLog($log);
+
+        if ($logStatus == 0) {
+          $count++;
+        }
+      }
+    }
+
+    return $count;
+  }
+
+  public function countGetTasksUnclosedLogs(): int {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    $count = 0;
+    $tasks =  $this->createQueryBuilder('t')
+      ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        foreach ($task->getTaskLogs() as $log) {
+          $logStatus = $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatusByLog($log);
+          if ($logStatus == 0) {
+            $count++;
+          }
+        }
+
+      }
+    }
+
+    return $count;
+
+  }
+
+  public function countGetTasksUnclosedByUser(User $user): int {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    $count = 0;
+    $tasks =  $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.datumKreiranja < :startDate')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->setParameter(':userId', $user->getId())
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        $count++;
+      }
+    }
+
+    return $count;
   }
 
   public function getTasksArchiveByUser(User $user): array {
@@ -281,11 +520,40 @@ class TaskRepository extends ServiceEntityRepository {
     });
     return $list;
   }
+
+  public function countGetTasksArchiveByUser(User $user): int {
+
+    $count = 0;
+    $tasks =  $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':userId', $user->getId())
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status == TaskStatusData::ZAVRSENO ) {
+        $count++;
+      }
+    }
+
+    return $count;
+  }
+
   public function getTasks(): array {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
 
     $list = [];
     $tasks =  $this->createQueryBuilder('t')
+      ->where('t.datumKreiranja >= :startDate')
       ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
       ->addOrderBy('t.isClosed', 'ASC')
       ->addOrderBy('t.isPriority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
@@ -307,6 +575,32 @@ class TaskRepository extends ServiceEntityRepository {
       return $a['status'] <=> $b['status'];
     });
     return $list;
+  }
+
+  public function countGetTasks(): int {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    $count = 0;
+    $tasks =  $this->createQueryBuilder('t')
+      ->where('t.datumKreiranja >= :startDate')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        $count++;
+      }
+    }
+
+    return $count;
   }
 
   public function getTasksArchive(): array {
@@ -334,6 +628,85 @@ class TaskRepository extends ServiceEntityRepository {
       return $a['status'] <=> $b['status'];
     });
     return $list;
+  }
+
+  public function countGetTasksArchive(): int {
+
+    $count = 0;
+    $tasks =  $this->createQueryBuilder('t')
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status == TaskStatusData::ZAVRSENO ) {
+        $count++;
+      }
+    }
+
+    return $count;
+  }
+
+  public function getTasksUnclosed(): array {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    $list = [];
+    $tasks =  $this->createQueryBuilder('t')
+      ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        $list[] = [
+          'task' => $task,
+          'status' => $status,
+          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($task)
+        ];
+      }
+    }
+    usort($list, function ($a, $b) {
+      return $a['status'] <=> $b['status'];
+    });
+    return $list;
+  }
+
+  public function countGetTasksUnclosed(): int {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    $count = 0;
+    $tasks =  $this->createQueryBuilder('t')
+      ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        $count++;
+      }
+    }
+
+    return $count;
   }
 
   public function saveTask(Task $task, User $user, ?string $history): Task  {

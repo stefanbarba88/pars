@@ -9,6 +9,7 @@ use App\Entity\Comment;
 use App\Entity\Expense;
 use App\Entity\Image;
 use App\Entity\Project;
+use App\Entity\Task;
 use App\Entity\Team;
 use App\Entity\Tool;
 use App\Entity\User;
@@ -46,6 +47,17 @@ class WidgetController extends AbstractController {
     $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
     $args['countCommentsActive'] = $this->em->getRepository(Comment::class)->countCommentsActive();
 
+
+    $args['countTasksActive'] = $this->em->getRepository(Task::class)->countGetTasks();
+    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosed();
+    $args['countTasksArchive'] = $this->em->getRepository(Task::class)->countGetTasksArchive();
+
+    $args['countTasksActiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksByUser($loggedUser);
+    $args['countTasksUnclosedByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedByUser($loggedUser);
+    $args['countTasksArchiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksArchiveByUser($loggedUser);
+
+    $args['countTasksUnclosedLogsByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($loggedUser);
+    $args['countTasksUnclosedLogs'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
 
     $args['countAllTools'] = $this->em->getRepository(Tool::class)->count([]);
     $args['countTools'] = $this->em->getRepository(Tool::class)->countTools();

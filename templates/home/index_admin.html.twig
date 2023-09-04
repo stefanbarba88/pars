@@ -13,7 +13,7 @@
                 <div class="content">
                     {% if app.user.userType != constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') and app.user.userType != constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') %}
                     <div class="row">
-                        <div class="col-xl-4">
+                        <div class="col-xl-6">
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="mb-0">Lista zadataka</h5>
@@ -48,6 +48,7 @@
                         </div>
                     </div>
                     {% endif %}
+
                     <div class="row d-none d-sm-block">
                         <div class="col-xl-12">
                             <!-- Marketing campaigns -->

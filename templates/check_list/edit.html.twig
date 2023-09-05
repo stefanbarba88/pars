@@ -26,7 +26,13 @@
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
                                 <a href="{{ path('app_checklist_list') }}" class="breadcrumb-item">Zadaci</a>
-                                <span class="breadcrumb-item active">Dodavanje</span>
+                                <span class="breadcrumb-item active">
+                                    {% if checklist.id is not null %}
+                                        Izmena
+                                    {% else %}
+                                        Dodavanje
+                                    {% endif %}
+                                </span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -41,40 +47,50 @@
 
                 <!-- Content area -->
                 <div class="content">
+                    {% if not form.vars.valid %}
+                        {% for child in form.children %}
+                            {%for error in child.vars.errors%}
+                                <div class="alert alert-danger alert-dismissible fade show">
+                                    <span class="fw-semibold">{{error.message}}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {%endfor%}
+                        {%endfor%}
+                    {%endif%}
                     <div class="card">
                         <div class="card-header">
-                            <h6 class="mb-0">Dodavanje zadatka</h6>
+                            <h6 class="mb-0">
+                                 {% if checklist.id is not null %}
+                                        Izmena zadatka
+                                    {% else %}
+                                        Dodavanje zadatka
+                                    {% endif %}
+                                    </h6>
                         </div>
-                        <form name="task_quick_form" method="post" action="{{ path('app_checklist_form') }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="task_quick_form">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="checklist_zadatak">Zadatak:*</label>
-                                            <textarea id="checklist_zadatak" name="checklist[zadatak]" class="form-control required"  rows="2" required></textarea>
-                                        </div>
+                        {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        {{ form_label(form.task, 'Zadatak:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.task, {attr: { class: 'form-control required' }}) }}
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="checklist_zaduzeni">Zaduženi:*</label>
-                                            <select id="checklist_zaduzeni" name="checklist[zaduzeni][]" class="form-control required select" required multiple>
-                                                <option value="">---</option>
-                                                {% for user in users %}
-                                                    <option value="{{ user.id }}">{{ user.fullName }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="text-end">
-                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                                 </div>
                             </div>
-                        </form>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        {{ form_label(form.user, 'Zaduženi:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.user, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                            </div>
 
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                            </div>
+                        </div>
+                        {{ form_end(form) }}
                     </div>
                                                 <!-- /wizard with validation -->
 

@@ -811,11 +811,6 @@ class TaskController extends AbstractController {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
-    $user = $this->getUser();
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();
     $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
@@ -851,17 +846,12 @@ class TaskController extends AbstractController {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
-
-    $user = $this->getUser();
-    if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE ) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-
     $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
 
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();
+
+    $user = $this->getUser();
 
     $args['taskLog'] = $this->em->getRepository(TaskLog::class)->findOneBy(['user' => $user, 'task' => $task]);
     $args['stopwatchesActive'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchesActive($args['taskLog']);

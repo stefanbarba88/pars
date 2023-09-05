@@ -44,20 +44,34 @@ class WidgetController extends AbstractController {
     $args['countProjects'] = $this->em->getRepository(Project::class)->count([]);
     $args['countProjectsActive'] = $this->em->getRepository(Project::class)->countProjectsActive();
 
-    $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
-    $args['countCommentsActive'] = $this->em->getRepository(Comment::class)->countCommentsActive();
+//    $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
+//    $args['countCommentsActive'] = $this->em->getRepository(Comment::class)->countCommentsActive();
+
+    $args['countComments'] = '';
+    $args['countCommentsActive'] = '';
 
 
-    $args['countTasksActive'] = $this->em->getRepository(Task::class)->countGetTasks();
-    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosed();
-    $args['countTasksArchive'] = $this->em->getRepository(Task::class)->countGetTasksArchive();
+//    $args['countTasksActive'] = $this->em->getRepository(Task::class)->countGetTasks();
+//    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosed();
+//    $args['countTasksArchive'] = $this->em->getRepository(Task::class)->countGetTasksArchive();
+//
+//    $args['countTasksActiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksByUser($loggedUser);
+//    $args['countTasksUnclosedByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedByUser($loggedUser);
+//    $args['countTasksArchiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksArchiveByUser($loggedUser);
+//
+//    $args['countTasksUnclosedLogsByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($loggedUser);
+//    $args['countTasksUnclosedLogs'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
 
-    $args['countTasksActiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksByUser($loggedUser);
-    $args['countTasksUnclosedByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedByUser($loggedUser);
-    $args['countTasksArchiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksArchiveByUser($loggedUser);
+    $args['countTasksActive'] = '';
+    $args['countTasksUnclosed'] = '';
+    $args['countTasksArchive'] = '';
 
-    $args['countTasksUnclosedLogsByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($loggedUser);
-    $args['countTasksUnclosedLogs'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
+    $args['countTasksActiveByUser'] = '';
+    $args['countTasksUnclosedByUser'] = '';
+    $args['countTasksArchiveByUser'] = '';
+
+    $args['countTasksUnclosedLogsByUser'] = '';
+    $args['countTasksUnclosedLogs'] = '';
 
     $args['countAllTools'] = $this->em->getRepository(Tool::class)->count([]);
     $args['countTools'] = $this->em->getRepository(Tool::class)->countTools();

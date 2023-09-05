@@ -44,9 +44,11 @@
                     <div class="card">
                         <div class="card-header d-lg-flex py-lg-0">
                             <h5 class="py-lg-3 mb-0">Lista zadataka</h5>
-                            <div class="mt-1 my-lg-auto ms-lg-auto">
-                                <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
-                            </div>
+                            {% if app.user.userType == 1 %}
+                                <div class="mt-1 my-lg-auto ms-lg-auto">
+                                    <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                </div>
+                            {% endif %}
                         </div>
                         <table class="table datatable-colvis-state-pars">
                             <thead>
@@ -93,6 +95,7 @@
                                                 {% if check.status == 2 %}
                                                     <a href="{{ path('app_checklist_start', { id: check.id}) }}" class="dropdown-item"><i class="ph-repeat me-2"></i> Ponovite</a>
                                                 {% endif %}
+                                                <a href="{{ path('app_checklist_edit', { id: check.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
                                                 <a href="{{ path('app_checklist_view', { id: check.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                 <a href="{{ path('app_checklist_delete', { id: check.id}) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
                                             </div>

@@ -22,5 +22,7 @@ class NotifyMessagesData {
   public const CAR_DEACTIVATE = 'Uspešno ste dekativirali vozilo.';
   public const CAR_ACTIVATE = 'Uspešno ste aktivirali vozilo.';
 
+  public const PLAN_ERROR = 'Nije moguće dodati plan za ovaj datum. Verovatno je već kreiran.';
+
 
 }

@@ -235,6 +235,11 @@ class ProjectRepository extends ServiceEntityRepository {
 
     $project = $this->getEntityManager()->getRepository(Project::class)->find($data['project']);
 
+    if (isset($data['naplativ'])) {
+      $naplativ = $data['naplativ'];
+      return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $naplativ);
+    }
+
     return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project);
   }
 

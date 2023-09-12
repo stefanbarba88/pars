@@ -112,81 +112,36 @@ a[x-apple-data-detectors] {
 {#                     <tr style="border-collapse:collapse"><td align="center" style="padding:0;Margin:0;padding-top:5px;padding-bottom:5px;font-size:0"><img src="{{ absolute_url(asset("assets/images/email/activate.svg")) }}" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="175"></td>#}
 {#                     </tr>#}
                      <tr style="border-collapse:collapse">
-                      <td align="center" style="padding:0;Margin:0;padding-top:15px;padding-bottom:15px;text-align:left;"><h1 style="Margin:0;line-height:24px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:20px;font-style:normal;font-weight:normal;color:#333333">{{ user.fullName }}</h1></td>
+                      <td align="center" style="padding:0;Margin:0;padding-top:15px;padding-bottom:15px;text-align:left;"><h1 style="Margin:0;line-height:24px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:20px;font-style:normal;font-weight:normal;color:#333333">Zatvoren je zadatak</h1></td>
                      </tr>
                      <tr style="border-collapse:collapse">
-                      <td align="left" style="padding:0;Margin:0;text-align:left;"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px;text-align:center">Plan za {{ danas | date ('d.m.Y') }}.</p></td>
+                      <td align="left" style="padding:0;Margin:0;text-align:left;"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px;text-align:center">{{ task.getTitle() }} na kojem su bili zaduženi zaposleni iz tabele ispod.</p></td>
                      </tr>
                      <tr style="border-collapse:collapse">
                          <table class="table table-striped thead-default table-bordered" border="0" cellpadding="0" cellspacing="0" style="width: 100%; max-width: 100%; border: 1px solid #e2e8f0;">
                                  <thead>
                                  <tr>
-                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Projekat</th>
-                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Geodete</th>
-                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Oprema</th>
-                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Vozilo</th>
-                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Vreme</th>
+                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Geodeta</th>
+                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Pozicija</th>
+                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Vreme odjave</th>
                                  </tr>
                                  </thead>
                                  <tbody>
-                                 {% if timetable is not empty %}
-                                     {% for task in timetable %}
-                                         {% if task['projekat'] is not null %}
+                                 {% if logs is not empty %}
+                                     {% for log in logs %}
                                              <tr>
                                                  <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">
-                                                     {{ task['projekat'].title }}
+                                                     {{ log.user.fullName }}
                                                  </td>
                                                  <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">
-                                                     {% if task['geo1'] is not null %}
-                                                         {% if user.id != task['geo1'].id %}
-                                                             {{ task['geo1'].getNameWithFirstLetter }}<br>
-                                                         {% else %}
-                                                             <b style="color: red;">{{ task['geo1'].getNameWithFirstLetter }}</b><br>
-                                                         {% endif %}
-                                                     {% endif %}
-                                                     {% if task['geo2'] is not null %}
-                                                         {% if user.id != task['geo2'].id %}
-                                                             {{ task['geo2'].getNameWithFirstLetter }}<br>
-                                                         {% else %}
-                                                             <b style="color: red;">{{ task['geo2'].getNameWithFirstLetter }}</b><br>
-                                                         {% endif %}
-                                                     {% endif %}
-                                                     {% if task['geo3'] is not null %}
-                                                         {% if user.id != task['geo3'].id %}
-                                                             {{ task['geo3'].getNameWithFirstLetter }}<br>
-                                                         {% else %}
-                                                             <b style="color: red;">{{ task['geo3'].getNameWithFirstLetter }}</b><br>
-                                                         {% endif %}
-                                                     {% endif %}
-                                                 </td>
-{#                                                 <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">#}
-{#                                                     {% for akt in task['aktivnosti'] %}#}
-{#                                                         {{ akt.title }} <br>#}
-{#                                                     {% endfor %}#}
-{#                                                 </td>#}
-                                                 <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">
-                                                     {% for opr in task['oprema'] %}
-                                                         {{ opr.title }} <br>
-                                                     {% endfor %}
+                                                     {{ log.user.pozicija.title }}
                                                  </td>
                                                  <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">
-                                                     {% if task.vozilo is not null %}
-                                                         {{ task.vozilo.getPlate }}
-                                                     {% endif %}
+                                                     {{ log.vreme | date ('H:i:s') }}
                                                  </td>
-                                                 <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">
-                                                     {% if task.vreme is not null %}
-                                                         {{ task.vreme}}
-                                                     {% endif %}</td>
-{#                                                 <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">#}
-{#                                                     {{ task['napomena'] }}#}
-{#                                                 </td>#}
                                              </tr>
-                                         {% endif %}
                                      {% endfor %}
                                  {% endif %}
-
-
                                  </tbody>
                              </table>
                  </tr>

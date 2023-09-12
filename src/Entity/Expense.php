@@ -106,8 +106,8 @@ class Expense {
    * @return DateTimeImmutable
    */
   public function getCreated(): DateTimeImmutable {
-    return $this->created;
-  }
+  return $this->created;
+}
 
   /**
    * @param DateTimeImmutable $created

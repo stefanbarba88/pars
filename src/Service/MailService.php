@@ -94,6 +94,22 @@ class MailService {
     }
   }
 
+  public function endTask($task, $datum, $logs): void {
+
+    $args = [];
+    $subject = 'Zatvoren zadatak ' .  $task->getTitle();
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/task.html.twig';
+    $args['task'] = $task;
+    $args['danas'] = $datum;
+    $args['logs'] = $logs;
+    $to = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
   public function edit(User $user): void {
     $args = [];
     $to = $user->getEmail();

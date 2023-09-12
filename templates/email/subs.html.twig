@@ -140,7 +140,7 @@ a[x-apple-data-detectors] {
                                                          {% if user.id != task['geo'].id %}
                                                              {{ task['geo'].getNameWithFirstLetter }}<br>
                                                          {% else %}
-                                                             <b>{{ task['geo'].getNameWithFirstLetter }}</b><br>
+                                                             <b style="color: red;">{{ task['geo'].getNameWithFirstLetter }}</b><br>
                                                          {% endif %}
                                                      {% endif %}
                                                  </td>

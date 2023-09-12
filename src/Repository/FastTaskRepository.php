@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Classes\Data\FastTaskData;
+use App\Classes\Data\NotifyMessagesData;
 use App\Entity\Activity;
 use App\Entity\Car;
 use App\Entity\FastTask;
@@ -2217,11 +2218,32 @@ class FastTaskRepository extends ServiceEntityRepository {
 
   }
 
-  public function saveFastTask(FastTask $fastTask, array $data): FastTask {
-
+  public function saveFastTask(FastTask $fastTask, array $data): ?FastTask {
     $datum = $data['task_quick_form_datum'];
     $format = "d.m.Y H:i:s";
     $dateTime = DateTimeImmutable::createFromFormat($format, $datum . '14:30:00');
+
+    if (is_null($fastTask->getId())) {
+      $startPlan = $dateTime->format('Y-m-d 00:00:00'); // Početak dana
+      $endPlan = $dateTime->format('Y-m-d 23:59:59'); // Kraj dana
+
+      $qb = $this->createQueryBuilder('f');
+      $qb
+        ->where($qb->expr()->between('f.datum', ':start', ':end'))
+        ->setParameter('start', $startPlan)
+        ->setParameter('end', $endPlan)
+        ->setMaxResults(1);
+
+      $query = $qb->getQuery();
+      $fast = $query->getResult();
+
+      if (!empty($fast)) {
+        return null;
+      }
+
+    }
+
+
     $currentTime = new DateTimeImmutable();
     $editTime = $dateTime->sub(new DateInterval('P1D'));
 

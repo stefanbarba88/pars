@@ -38,12 +38,13 @@ class HomeController extends AbstractController {
     $args['tomorrowTimetable'] = $this->em->getRepository(FastTask::class)->getTimetable($args['sutra']);
     $args['tomorrowSubs'] = $this->em->getRepository(FastTask::class)->getSubs($args['sutra']);
     $args['tomorrowTimetableId'] = $this->em->getRepository(FastTask::class)->getTimeTableTomorrowId($args['sutra']);
-
-    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
+//srediti ovaj upit, uzima puno resursa
+//    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
+    $args['countTasksUnclosed'] = 0;
 
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
 
-      $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($user);
+//      $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($user);
       $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUser($user);
       $args['countLogs'] = $this->em->getRepository(TaskLog::class)->countLogsByUser($user);
 

@@ -13,6 +13,7 @@ use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
+use App\Entity\TaskEmail;
 use App\Entity\TaskHistory;
 use App\Entity\TaskLog;
 use App\Entity\Tool;
@@ -838,7 +839,37 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
+  public function getTasksByDateAndProjectFree(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project): array  {
 
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('t.project = :project')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.isFree = 1')
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->setParameter('project', $project->getId())
+      ->orderBy('t.time', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+    $lista = [];
+    foreach ($taskovi as $tsk) {
+      $primaryUser = $this->getEntityManager()->getRepository(User::class)->find($tsk->getPriorityUserLog());
+      $lista[] = [
+        'task' => $tsk,
+        'datum' => $tsk->getDatumKreiranja(),
+        'status' => $this->taskStatus($tsk),
+        'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $primaryUser]),
+      ];
+    }
+    return $lista;
+  }
   public function getTasksByDateAndProject(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project): array  {
 
     $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
@@ -898,6 +929,45 @@ class TaskRepository extends ServiceEntityRepository {
     return $lista;
   }
 
+  public function getTasksByDateForEmail(DateTimeImmutable $date): array  {
+
+    $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->orderBy('t.time', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+    $lista = [];
+    foreach ($taskovi as $tsk) {
+      if ($this->taskStatus($tsk) == TaskStatusData::ZAVRSENO)
+      $lista[] = $tsk->getId();
+//        'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($tsk)
+    }
+
+    if(!empty($lista)) {
+      $statusi = $this->getEntityManager()->getRepository(TaskEmail::class)->findOneBy([]);
+      if (is_null($statusi)) {
+        $status = new TaskEmail();
+        $status->setTasks($lista);
+        $this->getEntityManager()->getRepository(TaskEmail::class)->save($status);
+        return $lista;
+      } else {
+        $razlike = array_diff($lista, $statusi->getTasks());
+        $statusi->setTasks($lista);
+        $this->getEntityManager()->getRepository(TaskEmail::class)->save($statusi);
+        return $razlike;
+      }
+    }
+    return $lista;
+  }
+
   public function getTasksByFastTask(FastTask $fastTask): array  {
 
     $lista = [];
@@ -914,12 +984,12 @@ class TaskRepository extends ServiceEntityRepository {
     $lista[] = $fastTask->getTask9();
     $lista[] = $fastTask->getTask10();
 
-
     foreach ($lista as $tsk) {
-      if (!is_null($tsk)) {
+      $task = $this->getEntityManager()->getRepository(Task::class)->findOneBy(['id' => $tsk]);
+      if (!is_null($task)) {
         $taskovi[] = [
           'id' => $tsk,
-          'status' => $this->taskStatus($this->getEntityManager()->getRepository(Task::class)->find($tsk))
+          'status' => $this->taskStatus($task)
         ];
       }
     }

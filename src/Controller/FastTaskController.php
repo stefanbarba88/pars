@@ -51,6 +51,16 @@ class FastTaskController extends AbstractController {
 
       $fastTask = $this->em->getRepository(FastTask::class)->saveFastTask($fastTask, $data);
 
+      if (is_null($fastTask)) {
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addError(NotifyMessagesData::PLAN_ERROR);
+      }
+
+
 //      dd($fastTask);
 
 //        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);

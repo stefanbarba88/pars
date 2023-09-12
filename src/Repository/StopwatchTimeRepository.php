@@ -58,21 +58,28 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     }
   }
 
-  public function getStopwatchesByProject($start, $stop, Project $project): array {
-    $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProject($start, $stop, $project);
+  public function getStopwatchesByProject($start, $stop, Project $project, int $free = 0): array {
+
+    if ($free == 0) {
+      $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectFree($start, $stop, $project);
+    } else {
+      $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProject($start, $stop, $project);
+    }
     $projectStopwatches = [];
 
     foreach ($tasks as $task) {
       if (!is_null($task['log'])) {
-        $projectStopwatches[] = [
-          'datum' => $task['datum'],
-          'zaduzeni' => $task['task']->getAssignedUsers(),
-          'klijent' => $task['task']->getProject()->getClient(),
-          'stopwatches' => $this->getStopwatchesActive($task['log']),
-          'time' => $this->getStopwatchTimeByTask($task['task']),
-          'activity' => $this->getStopwatchesActivity($task['log']),
-          'description' => $this->getStopwatchesDescription($task['log']),
-        ];
+        if (!empty ($this->getStopwatchesActive($task['log']))) {
+          $projectStopwatches[] = [
+            'datum' => $task['datum'],
+            'zaduzeni' => $task['task']->getAssignedUsers(),
+            'klijent' => $task['task']->getProject()->getClient(),
+            'stopwatches' => $this->getStopwatchesActive($task['log']),
+            'time' => $this->getStopwatchTimeByTask($task['task']),
+            'activity' => $this->getStopwatchesActivity($task['log']),
+            'description' => $this->getStopwatchesDescription($task['log'])
+          ];
+        }
       }
     }
 
@@ -142,6 +149,38 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     return $stopwatches;
   }
 
+  public function getEndTime(Task $task): array {
+
+    $logs = $task->getTaskLogs();
+    $stopwatches = [];
+
+    foreach ($logs as $log) {
+
+      $time = $this->createQueryBuilder('u')
+        ->andWhere('u.taskLog = :taskLog')
+        ->setParameter(':taskLog', $log)
+        ->andWhere('u.diff is NOT NULL')
+        ->andWhere('u.isDeleted = :isDeleted')
+        ->setParameter('isDeleted', 0)
+        ->orderBy('u.stop', 'DESC')
+        ->setMaxResults(1)
+        ->getQuery()
+        ->getResult();
+
+
+        $user = $time[0]->getTaskLog()->getUser();
+
+        $time = $time[0]->getStop();
+
+        $stopwatches[] = [
+          'user' => $user,
+          'vreme' => $time
+        ];
+    }
+    return $stopwatches;
+
+  }
+
   public function getStopwatchesActive(TaskLog $taskLog): array {
     $stopwatches = [];
 
@@ -154,12 +193,29 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       ->getResult();
 
     foreach ($times as $time) {
+
+        $h = intdiv($time->getDiffRounded(), 60);
+        $m = $time->getDiffRounded() % 60;
+        $hR = intdiv($time->getDiff(), 60);
+        $mR = $time->getDiff() % 60;
+        if ($h < 10) {
+          $h = '0' . $h;
+        }
+        if ($m < 10) {
+          $m = '0' . $m;
+        }
+        if ($hR < 10) {
+          $hR = '0' . $hR;
+        }
+        if ($mR < 10) {
+          $mR = '0' . $mR;
+        }
       $stopwatches [] = [
         'id' => $time->getId(),
-        'hours' => intdiv($time->getDiffRounded(), 60),
-        'minutes' => $time->getDiffRounded() % 60,
-        'hoursReal' => intdiv($time->getDiff(), 60),
-        'minutesReal' => $time->getDiff() % 60,
+        'hours' => $h,
+        'minutes' => $m,
+        'hoursReal' => $hR,
+        'minutesReal' => $mR,
         'start' => $time->getStart(),
         'stop' => $time->getStop(),
         'startLon' => $time->getLon(),
@@ -195,6 +251,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       ->getQuery()
       ->getResult();
     $aktivnosti = [];
+    $dodatneAktivnosti = [];
     foreach ($times as $time) {
       if(!($time->getActivity()->isEmpty())) {
         foreach ($time->getActivity() as $akt) {
@@ -203,9 +260,15 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
           ];
         }
       }
+      if (!is_null($time->getAdditionalActivity())) {
+        $dodatneAktivnosti[] = [
+          $time->getAdditionalActivity()
+        ];
+      }
     }
       $stopwatches [] = [
         'activity' => $aktivnosti,
+        'additionalActivity' => $dodatneAktivnosti,
       ];
 
     return $aktivnosti;

@@ -16,42 +16,65 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-{#                                {{ task.project.title | default ('Zadatak bez projekta') }}: {{ task.title }}#}
+                                {{ task.project.title | default ('Zadatak bez projekta') }}: {{ task.title }}
                             </h4>
+
+                            <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
+                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
+                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
+                                <div class="d-inline-flex mt-3 mt-sm-0">
+                                    <a href="{{ path('app_task_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
+                                        <i class="ph-plus"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="page-header-content d-lg-flex border-top">
                         <div class="d-flex">
-{#                            {% if task.project is null %}#}
-{#                                <div class="breadcrumb py-2">#}
-{#                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>#}
-{#                                    <span class="breadcrumb-item active">Zadaci</span>#}
-{#                                </div>#}
-{#                            {% else %}#}
-{#                                <div class="breadcrumb py-2">#}
-{#                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>#}
-{#                                    <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>#}
-{#                                    <a href="{{ path('app_project_profile_view', {id: task.project.id} ) }}" class="breadcrumb-item">Informacije</a>#}
-{#                                    <a href="{{ path('app_project_tasks_view', {id: task.project.id} ) }}" class="breadcrumb-item">Zadaci</a>#}
-{#                                    <span class="breadcrumb-item active">{{task.title }}</span>#}
-{#                                </div>#}
-{#                            {% endif %}#}
-{#                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">#}
-{#                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>#}
-{#                            </a>#}
+                            {% if task.project is null %}
+                                <div class="breadcrumb py-2">
+                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                    <a href="{{ path('app_tasks') }}" class="breadcrumb-item">Zadaci</a>
+                                    <a href="{{ path('app_task_view', {id: task.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
+                                    <span class="breadcrumb-item active">Dnevnik: {{ taskLog.user.getFullName() }}</span>
+                                </div>
+                            {% else %}
+                                <div class="breadcrumb py-2">
+                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                    <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
+                                    <a href="{{ path('app_project_profile_view', {id: task.project.id} ) }}" class="breadcrumb-item">Informacije</a>
+                                    <a href="{{ path('app_project_tasks_view', {id: task.project.id} ) }}" class="breadcrumb-item">Zadaci</a>
+                                    {% if app.user in task.getAssignedUsers %}
+                                        <a href="{{ path('app_task_view_user', {id: task.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
+                                    {% else %}
+                                        <a href="{{ path('app_task_view', {id: task.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
+                                    {% endif %}
+
+
+                                    <span class="breadcrumb-item active">Dnevnik: {{ taskLog.user.getFullName() }}</span>
+                                </div>
+                            {% endif %}
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
                         </div>
 
                         {{ render(controller('App\\Controller\\WidgetController::support' )) }}
                     </div>
-{#                    {% if task.project is not null %}#}
-{#                        {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}#}
-{#                    {% endif %}#}
+                    {% if task.project is not null %}
+                        {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}
+                    {% endif %}
 
                 </div>
                 <!-- /page header -->
 
-                <!-- Content area -->
                 <div class="content">
                     {% if not form.vars.valid %}
                         {% for child in form.children %}
@@ -63,33 +86,28 @@
                             {%endfor%}
                         {%endfor%}
                     {%endif%}
-
                     <!-- Wizard with validation -->
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
-                                Dodavanje dnevnika
+                               Izmena vremenskog zapisa
                             </h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
                         <div class="card-body">
-                            <div class="row">
-                                <div class="fw-bold border-bottom pb-2 mb-3">Zadate aktivnosti</div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {% for activity in task.activity %}
-                                            <li>{{ activity.title }}</li>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <span class="badge bg-warning bg-opacity-20 text-warning">{{ hours }} : {{ minutes }}h</span>
-                                    </div>
-                                </div>
-                            </div>
+                            {#                <div class="fw-bold border-bottom pb-2 mb-3">Utrošeno vreme</div>#}
+                            {#                <div class="row">#}
+                            {#                    <div class="col-lg-12">#}
+                            {#                        <div class="mb-3">#}
+                            {#                            <label class="form-category" for="stopwatch_time_add_form_period">Vreme:*</label>#}
+                            {#                            <div class="input-group">#}
+                            {#                                <span class="input-group-text"><i class="ph-calendar"></i></span>#}
+                            {#                                <input type="text" class="form-control daterange-locale-sr-stopwatch required" id="stopwatch_time_add_form_period" name="stopwatch_time_add_form_period">#}
+                            {#                            </div>#}
+                            {#                        </div>#}
+                            {#                    </div>#}
+                            {#                </div>#}
+                            <div class="fw-bold border-bottom pb-2 mb-3">Aktivnosti</div>
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
@@ -110,11 +128,11 @@
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         {{ form_label(form.description, 'Napomena:', {'label_attr': {'class': 'form-category'}}) }}
-{#                                        {{ form_widget(form.description, {attr: { class: 'form-control ckeditor_simple1' }}) }}#}
                                         {{ form_widget(form.description, {attr: { class: 'form-control' }}) }}
                                     </div>
                                 </div>
                             </div>
+
                             <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-client" aria-expanded="false">Klijent</div>
                             <div class="row collapse" id="collapse-client">
                                 <div class="col-lg-12">
@@ -157,7 +175,6 @@
                     <!-- /wizard with validation -->
 
                 </div>
-                <!-- /content area -->
 
                 <!-- Footer -->
                 {% include 'includes/footer.html.twig' %}
@@ -171,19 +188,22 @@
 
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
+
+
     {% include 'includes/notification.html.twig' %}
+
 {% endblock content %}
 
 {% block includeJavascript %}
     {{ parent() }}
 
     <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
 
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
@@ -216,11 +236,11 @@
 
     <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
 
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
     <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
     <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
-    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
-
     <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
 
 
@@ -230,88 +250,3 @@
     <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
 
 {% endblock includeJavascript %}
-
-{% block footerJavascript %}
-    <script type="text/javascript">
-        // $(document).ready(function() {
-        //     var options = {
-        //         // target:        '#output1',   // target element(s) to be updated with server response
-        //         success:       editInfoResponse,  // post-submit callback
-        //         //         // target:        '#error',
-        //         //         // other available options:
-        //         //         //url:       url         // override for form's 'action' attribute
-        //         //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute
-        //                 dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
-        //         //         //clearForm: true        // clear all form fields after successful submit
-        //                 resetForm: true,        // reset the form after successful submit
-        //         //         success:   editInfoResponse
-        //         //         // $.ajax options can be used here too, for example:
-        //         //         //timeout:   3000
-        //     };
-        //
-        //     // bind form using 'ajaxForm'
-        //     $('#infoForma').ajaxForm(options);
-        // });
-        // function showResponse(responseText, statusText, xhr, $form)  {
-        //     // for normal html responses, the first argument to the success callback
-        //     // is the XMLHttpRequest object's responseText property
-        //
-        //     // if the ajaxForm method was passed an Options Object with the dataType
-        //     // property set to 'xml' then the first argument to the success callback
-        //     // is the XMLHttpRequest object's responseXML property
-        //
-        //     // if the ajaxForm method was passed an Options Object with the dataType
-        //     // property set to 'json' then the first argument to the success callback
-        //     // is the json data object returned by the server
-        //
-        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +
-        //         '\n\nThe output div should have already been updated with the responseText.');
-        // }
-        // $(function () {
-        //     var options = {
-        //         // target:        '#error',
-        //         // other available options:
-        //         //url:       url         // override for form's 'action' attribute
-        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute
-        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
-        //         //clearForm: true        // clear all form fields after successful submit
-        //         resetForm: true,        // reset the form after successful submit
-        //         success:   editInfoResponse
-        //         // $.ajax options can be used here too, for example:
-        //         //timeout:   3000
-        //     };
-        //     // bind form using ajaxForm
-        //     $('#infoForma').submit(function() {
-        //         // inside event callbacks 'this' is the DOM element so we first
-        //         // wrap it in a jQuery object and then invoke ajaxSubmit
-        //         $(this).ajaxSubmit(options);
-        //
-        //         // !!! Important !!!
-        //         // always return false to prevent standard browser submit and page navigation
-        //         return false;
-        //     });
-        // });
-        //
-        // function editInfoResponse(data) {
-        //     // 'data' is the json object returned from the server
-        //
-        //     if (data.success === 1) {
-        //         swal({
-        //             type: 'success',
-        //             title: 'Correct!',
-        //             html: 'All safe! Here is the answer from the tool:'
-        //         })
-        //     }
-        //     else {
-        //         var error = data.error_msg.toString();
-        //         swal({
-        //             type: 'error',
-        //             title: 'Correct!',
-        //             html: 'All safe! Here is the answer from the tool:'
-        //         })
-        //     }
-        //
-        // }
-
-    </script>
-{% endblock footerJavascript %}

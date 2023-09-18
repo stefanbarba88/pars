@@ -7,6 +7,7 @@ use App\Classes\Data\UserRolesData;
 use App\Classes\ProjectHelper;
 use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
+use App\Entity\Category;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
 use App\Entity\Task;
@@ -17,6 +18,7 @@ use App\Form\ProjectTeamListFormType;
 use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Snappy\Pdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -344,6 +346,14 @@ class ProjectController extends AbstractController {
         $args['napomena'] = 1;
       }
 
+//      if (isset($data['report_form']['category'])){
+//        foreach ($data['report_form']['category'] as $cat) {
+//          $args['kategorija'][] = $this->em->getRepository(Category::class)->findOneBy(['id' => $cat]);
+//        }
+//      } else {
+//        $args['kategorija'][] = 0;
+//      }
+//dd($args);
 //// Konvertovanje u željeni format datuma (opciono)
 //      $startFormatted = $start->format('Y-m-d');
 //      $stopFormatted = $stop->format('Y-m-d');
@@ -372,6 +382,89 @@ class ProjectController extends AbstractController {
     $args = [];
 
     $args['projects'] = $this->em->getRepository(Project::class)->findAll();
+    $args['categories'] = $this->em->getRepository(Category::class)->findBy(['isTaskCategory' => true, 'isSuspended' => false]);
+
+    return $this->render('report_project/control.html.twig', $args);
+  }
+
+  #[Route('/report-xls', name: 'app_project_report_xls')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function xlsReport(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
+      $args['period'] = $data['report_form']['period'];
+      $args['project'] = $this->em->getRepository(Project::class)->find($data['report_form']['project']);
+
+      if (isset($data['report_form']['datum'])){
+        $args['datum'] = 1;
+      }
+      if (isset($data['report_form']['opis'])){
+        $args['opis'] = 1;
+      }
+      if (isset($data['report_form']['klijent'])){
+        $args['klijent'] = 1;
+      }
+      if (isset($data['report_form']['start'])){
+        $args['start'] = 1;
+      }
+      if (isset($data['report_form']['stop'])){
+        $args['stop'] = 1;
+      }
+      if (isset($data['report_form']['razlika'])){
+        $args['razlika'] = 1;
+      }
+      if (isset($data['report_form']['razlikaz'])){
+        $args['razlikaz'] = 1;
+      }
+      if (isset($data['report_form']['ukupno'])){
+        $args['ukupno'] = 1;
+      }
+      if (isset($data['report_form']['ukupnoz'])){
+        $args['ukupnoz'] = 1;
+      }
+      if (isset($data['report_form']['zaduzeni'])){
+        $args['zaduzeni'] = 1;
+      }
+      if (isset($data['report_form']['napomena'])){
+        $args['napomena'] = 1;
+      }
+
+//// Konvertovanje u željeni format datuma (opciono)
+//      $startFormatted = $start->format('Y-m-d');
+//      $stopFormatted = $stop->format('Y-m-d');
+//
+//// Ispis rezultata
+//      echo "Početni datum: " . $startFormatted . "<br>";
+//      echo "Završni datum: " . $stopFormatted . "<br>";
+
+
+
+//      dd($fastTask);
+
+//        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
+//
+//        notyf()
+//          ->position('x', 'right')
+//          ->position('y', 'top')
+//          ->duration(5000)
+//          ->dismissible(true)
+//          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+      return $this->render('report_project/view.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
+
 
     return $this->render('report_project/control.html.twig', $args);
   }

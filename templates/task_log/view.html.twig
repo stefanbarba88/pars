@@ -301,13 +301,13 @@
                                                     <h2 class="accordion-header">
                                                         <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ loop.index }}">
                                                             {% if stopwatch.deleted %}
-                                                                #{{ loop.index }}: {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} - {{ stopwatch.deletedBy.getFullName() }} <span class="badge bg-warning bg-opacity-20 text-warning mx-2">Obrisan</span>
+                                                                #{{ loop.index }}: {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} - {{ stopwatch.deletedBy.getFullName() }} <span class="badge bg-warning bg-opacity-20 text-warning mx-2"><i class="ph-trash"></i></span>
                                                             {% elseif not stopwatch.deleted and stopwatch.edited %}
-                                                                #{{ loop.index }}: {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} - {{ stopwatch.editedBy.getFullName() }} <span class="badge bg-info bg-opacity-20 text-info mx-2">Manuelno</span>
+                                                                #{{ loop.index }}: {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} - {{ stopwatch.editedBy.getFullName() }} <span class="badge bg-info bg-opacity-20 text-info mx-2"><i class="ph-hand"></i></span>
                                                             {% elseif stopwatch.manually and not stopwatch.deleted %}
                                                                 #{{ loop.index }}: {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} <span class="badge bg-danger bg-opacity-20 text-danger mx-2">Naknadno zatvoren</span> *Predlažemo da ovaj vremenski zapis obrišete kako ne bi uticao na izveštaj i kreirate novi ručno.
                                                             {% else %}
-                                                                #{{ loop.index }}: {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} <span class="badge bg-success bg-opacity-20 text-success mx-2">Automatsko</span>
+                                                                #{{ loop.index }}: {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} <span class="badge bg-success bg-opacity-20 text-success mx-2"><i class="ph-monitor"></i></span>
                                                             {% endif %}
                                                         </button>
                                                     </h2>
@@ -497,6 +497,7 @@
                                                                             </div>
                                                                             {% if not stopwatch.deleted %}
                                                                                 <div class="d-inline-flex mb-0">
+                                                                                    <a href="{{ path('app_stopwatch_edit_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-note-pencil"></i></a>
                                                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#modal_{{ loop.index }}" class="text-body ms-2"><i class="ph-trash"></i></a>
                                                                                 </div>
                                                                             {% endif %}
@@ -560,6 +561,7 @@
         </div>
     </div>
     {% endfor %}
+
     <!-- /vertical form modal -->
 {% endblock content %}
 

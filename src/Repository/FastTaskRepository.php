@@ -34,6 +34,58 @@ class FastTaskRepository extends ServiceEntityRepository {
     $this->mail = $mail;
   }
 
+  public function findTaskInPlan(Task $task): bool {
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where('t.status = :status1')
+      ->orWhere('t.status = :status2')
+      ->setParameter('status1', 2)
+      ->setParameter('status2', 3);
+
+    $query = $qb->getQuery();
+    $fastTask = $query->getResult();
+
+    if (!empty($fastTask)) {
+      $plan = $fastTask[0];
+
+      if ($plan->getTask1() == $task->getId()) {
+        return true;
+      }
+      if ($plan->getTask2() == $task->getId()) {
+        return true;
+      }
+      if ($plan->getTask3() == $task->getId()) {
+        return true;
+      }
+      if ($plan->getTask4() == $task->getId()) {
+        return true;
+      }
+      if ($plan->getTask5() == $task->getId()) {
+        return true;
+      }
+      if ($plan->getTask6() == $task->getId()) {
+        return true;
+      }
+      if ($plan->getTask7() == $task->getId()) {
+        return true;
+      }
+      if ($plan->getTask8() == $task->getId()) {
+        return true;
+      }
+      if ($plan->getTask9() == $task->getId()) {
+        return true;
+      }
+      if ($plan->getTask10() == $task->getId()) {
+        return true;
+      }
+
+
+    }
+    return false;
+
+  }
+
   public function getAllPlans(): array {
 
     $fastTasks = $this->getEntityManager()->getRepository(FastTask::class)->findAll();
@@ -2447,6 +2499,7 @@ class FastTaskRepository extends ServiceEntityRepository {
           }
         }
       }
+
       if (($task1['projekat']) !== '---') {
         $noTasks++;
         $fastTask->setProject1($task1['projekat']);

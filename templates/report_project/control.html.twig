@@ -53,7 +53,7 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-category required" for="report_form_project">Projekat:*</label>
+                                            <label class="form-label required" for="report_form_project">Projekat:*</label>
                                             <select id="report_form_project" name="report_form[project]" class="form-control select required">
                                                 <option value="">--Izaberite projekat--</option>
                                                 {% for project in projects %}
@@ -66,10 +66,24 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-category" for="report_form_period">Period:*</label>
+                                            <label class="form-label required" for="report_form_cat">Kategorija:</label>
+                                            <select id="report_form_cat" name="report_form[category][]" class="form-control select" multiple>
+                                                <option value="">Nekategorizovan</option>
+                                                {% for category in categories %}
+                                                    <option value="{{ category.id }}">{{ category.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <span class="form-text">Ako ne izaberete kategoriju u izveštaju će biti prikazani svi zadaci.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="report_form_period">Period:*</label>
                                             <div class="input-group">
-                                                <input type="text" class="form-control daterange-locale-sr required" id="report_form_period" name="report_form[period]">
                                                 <span class="input-group-text"><i class="ph-calendar"></i></span>
+                                                <input type="text" class="form-control daterange-locale-sr required" id="report_form_period" name="report_form[period]">
                                             </div>
                                         </div>
                                     </div>
@@ -77,7 +91,7 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="mb-3">
-                                            <label class="form-category" for="report_form_details">Detalji prikaza:</label>
+                                            <label class="form-label" for="report_form_details">Detalji prikaza:</label>
                                             <div class="border px-3 pt-3 pb-2 rounded">
                                                 <div class="row">
                                                                 <div class="col-md-6">

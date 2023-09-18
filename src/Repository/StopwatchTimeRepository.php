@@ -58,7 +58,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     }
   }
 
-  public function getStopwatchesByProject($start, $stop, Project $project, int $free = 0): array {
+  public function getStopwatchesByProject($start, $stop, Project $project, array $kategorija, int $free = 0 ): array {
 
     if ($free == 0) {
       $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectFree($start, $stop, $project);
@@ -67,23 +67,59 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     }
     $projectStopwatches = [];
 
-    foreach ($tasks as $task) {
-      if (!is_null($task['log'])) {
-        if (!empty ($this->getStopwatchesActive($task['log']))) {
-          $projectStopwatches[] = [
-            'datum' => $task['datum'],
-            'zaduzeni' => $task['task']->getAssignedUsers(),
-            'klijent' => $task['task']->getProject()->getClient(),
-            'stopwatches' => $this->getStopwatchesActive($task['log']),
-            'time' => $this->getStopwatchTimeByTask($task['task']),
-            'activity' => $this->getStopwatchesActivity($task['log']),
-            'description' => $this->getStopwatchesDescription($task['log'])
-          ];
+    if ($kategorija[0] === 0) {
+      foreach ($tasks as $task) {
+        if (!is_null($task['log'])) {
+          if (!empty ($this->getStopwatchesActive($task['log']))) {
+            $projectStopwatches[] = [
+              'datum' => $task['datum']->format('d.m.Y.'),
+              'zaduzeni' => $task['task']->getAssignedUsers(),
+              'klijent' => $task['task']->getProject()->getClient(),
+              'stopwatches' => $this->getStopwatchesActive($task['log']),
+              'time' => $this->getStopwatchTimeByTask($task['task']),
+              'activity' => $this->getStopwatchesActivity($task['log']),
+              'description' => $this->getStopwatchesDescription($task['log']),
+              'task' => $task,
+              'category' => $task['task']->getCategory()
+            ];
+          }
+        }
+      }
+    } else {
+      foreach ($tasks as $task) {
+        if (in_array($task['task']->getCategory(), $kategorija)) {
+          if (!is_null($task['log'])) {
+            if (!empty ($this->getStopwatchesActive($task['log']))) {
+              $projectStopwatches[] = [
+                'datum' => $task['datum']->format('d.m.Y.'),
+                'zaduzeni' => $task['task']->getAssignedUsers(),
+                'klijent' => $task['task']->getProject()->getClient(),
+                'stopwatches' => $this->getStopwatchesActive($task['log']),
+                'time' => $this->getStopwatchTimeByTask($task['task']),
+                'activity' => $this->getStopwatchesActivity($task['log']),
+                'description' => $this->getStopwatchesDescription($task['log']),
+                'task' => $task,
+                'category' => $task['task']->getCategory()
+              ];
+            }
+          }
         }
       }
     }
 
-    return $projectStopwatches;
+    $groupedTasks = [];
+
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+
+      if (!isset($groupedTasks[$datum])) {
+        $groupedTasks[$datum] = [];
+      }
+
+      $groupedTasks[$datum][] = $item;
+    }
+
+    return $groupedTasks;
   }
 
   public function getStopwatches(TaskLog $taskLog): array {

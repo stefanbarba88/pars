@@ -451,14 +451,23 @@ class TaskController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $this->em->getRepository(Task::class)->saveTaskInfo($task, $user, $history);
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+        $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
+        if (!$taskIn) {
+          $this->em->getRepository(Task::class)->saveTaskInfo($task, $user, $history);
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+        } else {
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addError(NotifyMessagesData::EDIT_ERROR);
+        }
 
         if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
           return $this->redirectToRoute('app_home');
@@ -565,39 +574,50 @@ class TaskController extends AbstractController {
 
     if ($request->isMethod('POST')) {
 
+      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
+      if (!$taskIn) {
 
-      if (!empty($request->request->all('task_form')['car'])) {
-        $task->setCar($request->request->all('task_form')['car']);
-        if (!empty($request->request->all('task_form')['driver'])) {
-          $task->setDriver($request->request->all('task_form')['driver']);
+        if (!empty($request->request->all('task_form')['car'])) {
+          $task->setCar($request->request->all('task_form')['car']);
+          if (!empty($request->request->all('task_form')['driver'])) {
+            $task->setDriver($request->request->all('task_form')['driver']);
+          }
+          $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
         }
-        $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
-      }
 
-      foreach ($task->getAssignedUsers() as $member) {
-        $task->removeAssignedUser($member);
-      }
+        foreach ($task->getAssignedUsers() as $member) {
+          $task->removeAssignedUser($member);
+        }
 
-      foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
-        if (!empty($assignedUser)){
-          $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
-          if(!is_null($member)) {
-            $task->addAssignedUser($member);
+        foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
+          if (!empty($assignedUser)){
+            $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+            if(!is_null($member)) {
+              $task->addAssignedUser($member);
 
-            if ($key === 0) {
-              $task->setPriorityUserLog($assignedUser);
+              if ($key === 0) {
+                $task->setPriorityUserLog($assignedUser);
+              }
             }
           }
         }
-      }
-      $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
+        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+      } else {
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addError(NotifyMessagesData::EDIT_ERROR);
+      }
+
 
       if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
         return $this->redirectToRoute('app_home');
@@ -638,15 +658,27 @@ class TaskController extends AbstractController {
     }
 
     if ($request->isMethod('POST')) {
-      $task->setPriorityUserLog($request->request->all('task_form')['primaryLog']);
-      $this->em->getRepository(Task::class)->save($task);
 
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
+      if (!$taskIn) {
+
+        $task->setPriorityUserLog($request->request->all('task_form')['primaryLog']);
+        $this->em->getRepository(Task::class)->save($task);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+      } else {
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addError(NotifyMessagesData::DELETE_ERROR);
+      }
 
       if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
         return $this->redirectToRoute('app_home');
@@ -673,34 +705,46 @@ class TaskController extends AbstractController {
     }
     $history = null;
 
-    $user = $this->getUser();
-    $task = $taskLog->getTask();
-    $zaduzeni = $taskLog->getUser();
-    $countStopwatches = $this->em->getRepository(StopwatchTime::class)->countStopwatches($taskLog);
 
-    if ($task->getId()) {
-      $history = $this->json($task, Response::HTTP_OK, [], [
-          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-            return $object->getId();
-          }
-        ]
-      );
-      $history = $history->getContent();
+    $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($taskLog->getTask());
+    if (!$taskIn) {
+
+      $user = $this->getUser();
+      $task = $taskLog->getTask();
+      $zaduzeni = $taskLog->getUser();
+      $countStopwatches = $this->em->getRepository(StopwatchTime::class)->countStopwatches($taskLog);
+
+      if ($task->getId()) {
+        $history = $this->json($task, Response::HTTP_OK, [], [
+            ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+              return $object->getId();
+            }
+          ]
+        );
+        $history = $history->getContent();
+      }
+
+      if ($countStopwatches == 0) {
+        $task->removeAssignedUser($zaduzeni);
+        $task->removeTaskLog($taskLog);
+        $this->em->getRepository(Task::class)->save($task);
+      }
+
+
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+    } else {
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addError(NotifyMessagesData::EDIT_ERROR);
     }
-
-    if ($countStopwatches == 0) {
-      $task->removeAssignedUser($zaduzeni);
-      $task->removeTaskLog($taskLog);
-      $this->em->getRepository(Task::class)->save($task);
-    }
-
-
-    notyf()
-      ->position('x', 'right')
-      ->position('y', 'top')
-      ->duration(5000)
-      ->dismissible(true)
-      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
     return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
@@ -728,25 +772,35 @@ class TaskController extends AbstractController {
 
     if ($request->isMethod('POST')) {
 
-      foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
-        if (!empty($assignedUser)){
-          $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
-          if(!is_null($member)) {
-            $task->addAssignedUser($member);
-            $taskLog = new TaskLog();
-            $taskLog->setUser($member);
-            $task->addTaskLog($taskLog);
+      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
+      if (!$taskIn) {
+        foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
+          if (!empty($assignedUser)){
+            $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+            if(!is_null($member)) {
+              $task->addAssignedUser($member);
+              $taskLog = new TaskLog();
+              $taskLog->setUser($member);
+              $task->addTaskLog($taskLog);
+            }
           }
         }
-      }
-      $this->em->getRepository(Task::class)->save($task);
+        $this->em->getRepository(Task::class)->save($task);
 
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+      } else {
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addError(NotifyMessagesData::EDIT_ERROR);
+      }
 
       return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
@@ -788,14 +842,26 @@ class TaskController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
+        $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
+        if (!$taskIn) {
+          $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+        } else {
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addError(NotifyMessagesData::EDIT_ERROR);
+        }
+
+
 
         return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
       }
@@ -900,15 +966,23 @@ class TaskController extends AbstractController {
     return $this->redirect($this->generateUrl('app_login'));
   }
     $user = $this->getUser();
-    $this->em->getRepository(Task::class)->deleteTask($task, $user);
-
-    notyf()
-      ->position('x', 'right')
-      ->position('y', 'top')
-      ->duration(5000)
-      ->dismissible(true)
-      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
-
+    $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
+    if (!$taskIn) {
+      $this->em->getRepository(Task::class)->deleteTask($task, $user);
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+    } else {
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addError(NotifyMessagesData::DELETE_ERROR);
+    }
     return $this->redirectToRoute('app_tasks');
   }
 

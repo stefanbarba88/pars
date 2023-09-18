@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Classes\Data\VrstaPlacanjaData;
+use App\Entity\Category;
 use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\Project;
@@ -235,12 +236,20 @@ class ProjectRepository extends ServiceEntityRepository {
 
     $project = $this->getEntityManager()->getRepository(Project::class)->find($data['project']);
 
-    if (isset($data['naplativ'])) {
-      $naplativ = $data['naplativ'];
-      return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $naplativ);
+    if (isset($data['category'])){
+      foreach ($data['category'] as $cat) {
+        $kategorija [] = $this->getEntityManager()->getRepository(Category::class)->findOneBy(['id' => $cat]);
+      }
+    } else {
+      $kategorija [] = 0;
     }
 
-    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project);
+    if (isset($data['naplativ'])) {
+      $naplativ = $data['naplativ'];
+      return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $kategorija, $naplativ);
+    }
+
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $kategorija);
   }
 
 

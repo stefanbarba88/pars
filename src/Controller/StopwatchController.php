@@ -302,7 +302,88 @@ class StopwatchController extends AbstractController {
     return $this->render('task/stopwatch_form_modal.html.twig', $args);
   }
 
+  #[Route('/form-edit/{id}', name: 'app_stopwatch_edit_forma')]
+  public function edit(StopwatchTime $stopwatch, Request $request, UploadService $uploadService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $args = [];
 
+    $history = null;
+
+    $user = $this->getUser();
+
+    $form = $this->createForm(StopwatchTimeAddFormType::class, $stopwatch, ['attr' => ['action' => $this->generateUrl('app_stopwatch_edit_forma', ['id' => $stopwatch->getId()])]]);
+
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $uploadFiles = $request->files->all()['stopwatch_time_add_form']['pdf'];
+        if (!empty ($uploadFiles)) {
+          foreach ($uploadFiles as $uploadFile) {
+            $pdf = new Pdf();
+            $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+
+            $pdf->setTitle($file->getFileName());
+            $pdf->setPath($file->getAssetPath());
+            if (!is_null($stopwatch->getTaskLog()->getTask()->getProject())) {
+              $pdf->setProject($stopwatch->getTaskLog()->getTask()->getProject());
+            }
+            if (!is_null($stopwatch->getTaskLog()->getTask()->getProject())) {
+              $pdf->setProject($stopwatch->getTaskLog()->getTask()->getProject());
+            }
+            $pdf->setTask($stopwatch->getTaskLog()->getTask());
+
+            $stopwatch->addPdf($pdf);
+          }
+        }
+
+        $uploadImages = $request->files->all()['stopwatch_time_add_form']['image'];
+        if (!empty ($uploadImages)) {
+          foreach ($uploadImages as $uploadFile) {
+
+            if (!is_null($stopwatch->getTaskLog()->getTask()->getProject())) {
+              $path = $stopwatch->getTaskLog()->getUploadPath();
+              $pathThumb = $stopwatch->getTaskLog()->getThumbUploadPath();
+            } else {
+              $path = $stopwatch->getTaskLog()->getNoProjectUploadPath();
+              $pathThumb = $stopwatch->getTaskLog()->getNoProjectThumbUploadPath();
+            }
+            $file = $uploadService->upload($uploadFile, $path);
+            $image = $this->em->getRepository(Image::class)->add($file, $pathThumb, $this->getParameter('kernel.project_dir'));
+            $stopwatch->addImage($image);
+          }
+        }
+
+        $stopwatch->setIsEdited(true);
+        $stopwatch->setEditedBy($user);
+
+        $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
+      }
+    }
+
+    $args['form'] = $form->createView();
+    $args['stopwatch'] = $stopwatch;
+    $args['task'] = $stopwatch->getTaskLog()->getTask();
+    $args['taskLog'] = $stopwatch->getTaskLog();
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/stopwatch_form_edit.html.twig', $args);
+    }
+    return $this->render('task/stopwatch_form_edit.html.twig', $args);
+  }
 
   #[Route('/delete/{id}', name: 'app_stopwatch_delete')]
   public function delete(StopwatchTime $stopwatch)    : Response { if (!$this->isGranted('ROLE_USER')) {

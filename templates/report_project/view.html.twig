@@ -63,9 +63,6 @@
                                                     {% if datum is defined %}
                                                         <th>Datum</th>
                                                     {% endif %}
-                                                    {% if klijent is defined %}
-                                                        <th>Klijent</th>
-                                                    {% endif %}
                                                     {% if opis is defined %}
                                                         <th>Opis izvedenog posla</th>
                                                     {% endif %}
@@ -83,30 +80,40 @@
                                                 <tbody>
 
                                                 {% if reports is not empty %}
-                                                    {% for report in reports %}
+                                                    {% for key, value in reports %}
                                                         <tr>
                                                         {% if datum is defined %}
                                                             <td>
                                                                 <div class="fw-semibold">
-                                                                    {{ report.datum | date("d.m.Y")}}
+                                                                    {{ key}}
                                                                 </div>
                                                             </td>
                                                         {% endif %}
-                                                        {% if klijent is defined %}
-                                                            <td>
-                                                                {% if report.klijent |length != 0 %}
-                                                                    {% for klijent in report.klijent %}
-                                                                        {{ klijent.title }}<br>
-                                                                    {% endfor %}
-                                                                {% else %}
-                                                                    /
-                                                                {% endif %}
-                                                            </td>
-                                                        {% endif %}
+
+{#                                                        {% if klijent is defined %}#}
+{#                                                            {% set newClient = [] %}#}
+{#                                                            <td>#}
+{#                                                                {% for report in value %}#}
+{#                                                                    {% if report.klijent |length != 0 %}#}
+{#                                                                        {% for klijent in report.klijent %}#}
+{#                                                                            {% if klijent not in newClient %}#}
+{#                                                                                {{ klijent.title }}<br>#}
+{#                                                                                {% set newClient = newClient|merge([klijent]) %}#}
+{#                                                                            {% endif %}#}
+{#                                                                        {% endfor %}#}
+{#                                                                    {% else %}#}
+{#                                                                        /#}
+{#                                                                    {% endif %}#}
+{#                                                                {% endfor %}#}
+{#                                                            </td>#}
+{#                                                        {% endif %}#}
                                                             <td>
                                                                 <table class="table table-condensed2 table-striped table-bordered">
                                                                     <thead class="bg-light">
                                                                     <tr>
+                                                                        {% if opis is defined %}
+                                                                            <th>Kategorija</th>
+                                                                        {% endif %}
                                                                         {% if opis is defined %}
                                                                             <th>Aktivnosti</th>
                                                                         {% endif %}
@@ -126,7 +133,7 @@
                                                                             <th>Razlika*</th>
                                                                         {% endif %}
 
-                                                                        {% if opis is defined %}
+                                                                        {% if klijent is defined %}
                                                                             <th>Klijent*</th>
                                                                         {% endif %}
 
@@ -137,10 +144,16 @@
                                                                     </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                    {% if report.stopwatches is not empty %}
+                                                                    {% for report in value %}
+                                                                        {% if report.stopwatches is not empty %}
                                                                         {% for stopwatch in report.stopwatches %}
                                                                             <tr>
                                                                                 {% if opis is defined %}
+                                                                                    <td>
+                                                                                        {% if report.category is not null %}
+                                                                                            {{ report.category.title }}
+                                                                                        {% endif %}
+                                                                                    </td>
                                                                                     <td>
                                                                                         {% for akt in stopwatch.activity %}
                                                                                             {{ akt.title }}{% if not loop.last %},{% endif %}
@@ -171,7 +184,7 @@
                                                                                     </td>
                                                                                 {% endif %}
 
-                                                                                {% if opis is defined %}
+                                                                                {% if klijent is defined %}
                                                                                     <td>
                                                                                         {% if stopwatch.client is not null %}{{ stopwatch.client.title }}{% endif %}
                                                                                     </td>
@@ -187,6 +200,7 @@
                                                                             </tr>
                                                                         {% endfor %}
                                                                     {% endif %}
+                                                                    {% endfor %}
                                                                     </tbody>
 
                                                                 </table>
@@ -195,23 +209,37 @@
 
                                                             {% if ukupno is defined %}
                                                                 <td>
-                                                                    {{ report.time.hoursRealTimePriority }}:{{ report.time.minutesRealTimePriority}}<br>
+                                                                    {% set hoursRealTimePriority = 0 %}
+                                                                    {% set minutesRealTimePriority = 0 %}
+                                                                    {% for report in value %}
+                                                                        {% set hoursRealTimePriority = hoursRealTimePriority + report.time.hoursRealTimePriority %}
+                                                                        {% set minutesRealTimePriority = minutesRealTimePriority + report.time.minutesRealTimePriority %}
+                                                                    {% endfor %}
+                                                                {% if hoursRealTimePriority < 10 %}0{% endif %}{{ hoursRealTimePriority }}:{% if minutesRealTimePriority < 10 %}0{% endif %}{{minutesRealTimePriority}}
                                                                 </td>
                                                             {% endif %}
                                                             {% if ukupnoz is defined %}
                                                                 <td>
-                                                                    {{ report.time.hoursTimePriority }}:{{ report.time.minutesTimePriority}}<br>
+                                                                    {% set hoursTimePriority = 0 %}
+                                                                    {% set minutesTimePriority = 0 %}
+                                                                    {% for report in value %}
+                                                                        {% set hoursTimePriority = hoursTimePriority + report.time.hoursTimePriority %}
+                                                                        {% set minutesTimePriority = minutesTimePriority + report.time.minutesTimePriority %}
+                                                                    {% endfor %}
+                                                                    {% if hoursTimePriority < 10 %}0{% endif %}{{ hoursTimePriority }}:{% if minutesTimePriority < 10 %}0{% endif %}{{minutesTimePriority}}
                                                                 </td>
                                                             {% endif %}
                                                         {% if zaduzeni is defined %}
                                                             <td>
-                                                                {% if report.zaduzeni |length != 0 %}
-                                                                    {% for zaposleni in report.zaduzeni %}
-                                                                        {{ zaposleni.fullName }}<br>
-                                                                    {% endfor %}
-                                                                {% else %}
-                                                                    /
-                                                                {% endif %}
+                                                                {% for report in value %}
+                                                                    {% if report.zaduzeni |length != 0 %}
+                                                                        {% for zaposleni in report.zaduzeni %}
+                                                                            {{ zaposleni.fullName }}<br>
+                                                                        {% endfor %}
+                                                                    {% else %}
+                                                                        /
+                                                                    {% endif %}
+                                                                {% endfor %}
                                                             </td>
                                                         {% endif %}
                                                         </tr>

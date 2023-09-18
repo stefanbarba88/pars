@@ -23,6 +23,8 @@ class NotifyMessagesData {
   public const CAR_ACTIVATE = 'Uspešno ste aktivirali vozilo.';
 
   public const PLAN_ERROR = 'Nije moguće dodati plan za ovaj datum. Verovatno je već kreiran.';
+  public const DELETE_ERROR = 'Nije moguće obrisati zadatak jer je kreiran kroz plan. Izmenite plan.';
+  public const EDIT_ERROR = 'Nije moguće izmeniti zadatak jer je kreiran kroz plan. Izmenite plan.';
 
 
 }

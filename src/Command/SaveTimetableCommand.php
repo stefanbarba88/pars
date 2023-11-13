@@ -38,7 +38,7 @@ class SaveTimetableCommand extends Command {
     $io = new SymfonyStyle($input, $output);
 
     $start = microtime(true);
-
+//izmeniti da gleda uvek za jedan naredni dan
     $plan = $this->em->getRepository(FastTask::class)->findOneBy(['status' => FastTaskData::OPEN],['datum' => 'ASC']);
 
     if(!is_null($plan)) {

@@ -53,7 +53,7 @@ class PhoneTaskFormType extends AbstractType {
            return $em->createQueryBuilder('g')
              ->andWhere('g.isSuspended = :isSuspended')
              ->setParameter(':isSuspended', 0)
-             ->orderBy('g.id', 'ASC');
+             ->orderBy('g.title', 'ASC');
          },
          'choice_label' => 'title',
          'expanded' => false,
@@ -66,14 +66,14 @@ class PhoneTaskFormType extends AbstractType {
       ->add('description', TextareaType::class, [
         'required' => false
       ])
-      ->add('isFree', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('isFree', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'choices' => PotvrdaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
       ->add('oprema', EntityType::class, [
         'required' => false,
         'class' => Tool::class,
@@ -116,18 +116,18 @@ class PhoneTaskFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('deadline', DateType::class, [
-        'required' => false,
-        'widget' => 'single_text',
-        'input' => 'datetime_immutable',
-        'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
-      ])
-      ->add('datumKreiranja', DateType::class, [
-        'required' => true,
-        'widget' => 'single_text',
-        'input' => 'datetime_immutable',
-        'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
-      ])
+//      ->add('deadline', DateType::class, [
+//        'required' => false,
+//        'widget' => 'single_text',
+//        'input' => 'datetime_immutable',
+//        'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
+//      ])
+//      ->add('datumKreiranja', DateType::class, [
+//        'required' => true,
+//        'widget' => 'single_text',
+//        'input' => 'datetime_immutable',
+//        'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
+//      ])
 //      ->add('assignedUsers', EntityType::class, [
 //        'class' => User::class,
 //        'query_builder' => function (EntityRepository $em) {
@@ -159,32 +159,32 @@ class PhoneTaskFormType extends AbstractType {
 //        'choice_value' => 'id',
 //      ])
 
-      ->add('isTimeRoundUp', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('minEntry', IntegerType::class, [
-        'required' => false,
-        'attr' => [
-          'min' => '1',
-          'max' => '60'
-        ],
-      ])
-      ->add('roundingInterval', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'required' => false,
-        'placeholder' => '--Izaberite model zaokruživanja--',
-        'choices' => RoundingIntervalData::form(),
-        'expanded' => false,
-        'multiple' => false,
-        'data' => RoundingIntervalData::MIN_15,
-      ])
+//      ->add('isTimeRoundUp', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'choices' => PotvrdaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
+//      ->add('minEntry', IntegerType::class, [
+//        'required' => false,
+//        'attr' => [
+//          'min' => '1',
+//          'max' => '60'
+//        ],
+//      ])
+//      ->add('roundingInterval', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'required' => false,
+//        'placeholder' => '--Izaberite model zaokruživanja--',
+//        'choices' => RoundingIntervalData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//        'data' => RoundingIntervalData::MIN_15,
+//      ])
 
 //      ->add('isEstimate', ChoiceType::class, [
 //        'attr' => [
@@ -194,14 +194,14 @@ class PhoneTaskFormType extends AbstractType {
 //        'expanded' => false,
 //        'multiple' => false,
 //      ])
-      ->add('isExpenses', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('isExpenses', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'choices' => PotvrdaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
       ->add('activity', EntityType::class, [
         'required' => false,
         'class' => Activity::class,
@@ -215,14 +215,14 @@ class PhoneTaskFormType extends AbstractType {
         'expanded' => false,
         'multiple' => true,
       ])
-      ->add('isPriority', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('isPriority', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'choices' => PotvrdaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
 
       ->add('pdf', FileType::class, [
         'attr' => ['accept' => '.pdf', 'data-show-upload' => 'false'],

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Classes\Data\VrstaPlacanjaData;
 use App\Entity\Category;
+use App\Entity\Client;
 use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\Project;
@@ -51,6 +52,28 @@ class ProjectRepository extends ServiceEntityRepository {
     return $this->save($project);
 
   }
+
+  public function suspendProject(Project $project, User $user, ?string $history): Project  {
+
+    if ($project->isSuspended()) {
+      $project->setIsSuspended(false);
+    } else {
+      $project->setIsSuspended(true);
+    }
+    if (!is_null($project->getId())) {
+
+      $historyProject = new ProjectHistory();
+      $historyProject->setHistory($history);
+
+      $project->addProjectHistory($historyProject);
+      $project->setEditBy($user);
+
+      return $this->save($project);
+    }
+
+    return $this->save($project);
+
+  }
   public function getProjectsByUser(User $user) {
 
     return $this->createQueryBuilder('p')
@@ -65,6 +88,15 @@ class ProjectRepository extends ServiceEntityRepository {
   }
   public function getAllProjects(): array {
     return $this->createQueryBuilder('p')
+      ->andWhere('p.isSuspended = 0')
+      ->addOrderBy('p.isSuspended', 'ASC')
+      ->getQuery()
+      ->getResult();
+  }
+
+  public function getAllProjectsSuspended(): array {
+    return $this->createQueryBuilder('p')
+      ->andWhere('p.isSuspended = 1')
       ->addOrderBy('p.isSuspended', 'ASC')
       ->getQuery()
       ->getResult();
@@ -225,9 +257,6 @@ class ProjectRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(Project::class)->find($id);
   }
 
-
-
-
   public function getReport(array $data): array {
     $dates = explode(' - ', $data['period']);
 
@@ -250,6 +279,74 @@ class ProjectRepository extends ServiceEntityRepository {
     }
 
     return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $kategorija);
+  }
+
+  public function getReportAll(array $data): array {
+    $projectsData = [];
+
+    $dates = explode(' - ', $data['period']);
+
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+    if (isset($data['category'])){
+      foreach ($data['category'] as $cat) {
+        $kategorija [] = $this->getEntityManager()->getRepository(Category::class)->findOneBy(['id' => $cat]);
+      }
+    } else {
+      $kategorija [] = 0;
+    }
+
+    $projects = $this->getEntityManager()->getRepository(Project::class)->findBy(['isSuspended' => false], ['title' => 'ASC']);
+
+    foreach ($projects as $project) {
+
+      if (isset($data['naplativ'])) {
+        $naplativ = $data['naplativ'];
+        $rep = $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $kategorija, $naplativ);
+        if (!empty ($rep[0])) {
+          $projectsData[] = $rep;
+        }
+      } else {
+        $rep =  $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $kategorija);
+        if (!empty ($rep[0])) {
+          $projectsData[] = $rep;
+        }
+      }
+
+    }
+
+    return $projectsData;
+
+  }
+
+
+  public function countClientTasks(Client $client, Category $category, DateTimeImmutable $prethodniMesecDatum, DateTimeImmutable $danas) : array {
+    $projectsByClient = [];
+
+    $projects = $this->getEntityManager()->getRepository(Project::class)->findBy(['isSuspended' => false]);
+    $totalTasks = 0;
+
+    foreach ($projects as $project) {
+      if ($project->getClient()->first()->getId() == $client->getId()) {
+        $noTasks = $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProjectCommand($prethodniMesecDatum, $danas, $project, $category);
+        $projectsByClient[] = [
+          'project' => $project,
+          'tasks' => $noTasks
+        ];
+        $totalTasks = $totalTasks + $noTasks;
+      }
+    }
+
+    return [$projectsByClient, $totalTasks];
+  }
+  public function getReportXls(string $datum, Project $projekat): array {
+    $dates = explode(' - ', $datum);
+
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProjectXls($start, $stop, $projekat);
   }
 
 

@@ -1,0 +1,278 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Arhiva zadataka
+                            </h4>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /page header -->
+
+
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-lg-flex py-lg-0">
+                            <h5 class="py-lg-3 mb-0">Arhiva zadataka</h5>
+                        </div>
+                        <form method="get" action="{{ path('app_tasks_arhiva') }}" class="form-validate-jquery" novalidation="novalidation">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="form-label required" for="projekat">Projekat:</label>
+                                            <select id="projekat" name="projekat" class="form-control">
+                                                <option value="">--Izaberite projekat--</option>
+                                                {% for project in projekti %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <span class="form-text">Ako ne izaberete projekat, biće prikazani svi zadaci.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="form-label required" for="kategorija">Kategorija:</label>
+                                            <select id="kategorija" name="kategorija" class="form-control">
+                                                <option value="">--Izaberite kategoriju--</option>
+                                                {% for kat in kategorije %}
+                                                    <option value="{{ kat.id }}">{{ kat.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {% if app.user.userType != 4 %}
+                                        <div class="col-lg-4">
+                                            <div class="mb-3">
+                                                <label class="form-label required" for="zaposleni">Zaposleni:</label>
+                                                <select id="zaposleni" name="zaposleni" class="form-control">
+                                                    <option value="">--Izaberite zaposlenog--</option>
+                                                    {% for user in users %}
+                                                        <option value="{{ user.id }}">{{ user.fullName }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="period">Period:</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ph-calendar"></i></span>
+                                                <input type="text" class="form-control daterange-locale-sr required" id="period" name="period">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikaži</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="card-body">
+                            <div class="table-responsive ">
+                                            <table class="table table-bordered table-hover table-responsive">
+                                                <thead>
+                                                <tr>
+                                                    <th style="width: 45px;">Zadatak</th>
+                                                    <th {% if pagination.isSorted('[t.datumKreiranja]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Datum kreiranja ', ['t.datumKreiranja']) }}
+                                                        {% if pagination.getDirection() == 'asc' and pagination.getSort() == 't.datumKreiranja' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 't.datumKreiranja' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for task in pagination %}
+                                                    <tr>
+                                                    <td>
+                                                        <div class="fw-semibold">
+                                                            {% if app.user.userType != 4 %}
+                                                                <a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a>
+                                                            {% else %}
+                                                                {% if app.user in task.assignedUsers %}
+                                                                    <a href="{{ path('app_task_view_user', { id: task.id}) }}">{{ task.title }}</a>
+                                                                {% else %}
+                                                                    {{ task.title }}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        </div>
+                                                        {% if task.label is not empty %}
+                                                            <div class="d-inline-flex">
+                                                                {% for label in task.label %}
+                                                                    {{label.label | raw}}
+                                                                {% endfor %}
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-inline-flex align-items-center">
+                                                            {{ task.datumKreiranja | date("d.m.Y")}}
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="dropdown">
+                                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                <i class="ph-gear"></i>
+                                                            </a>
+                                                            <div class="dropdown-menu dropdown-menu-end">
+                                                                {% if is_granted('ROLE_EMPLOYEE') %}
+                                                                    {% if app.user in task.getAssignedUsers %}
+                                                                        <a href="{{ path('app_task_view_user', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                                    {% else %}
+                                                                        <a href="{{ path('app_task_view', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                                    {% endif %}
+                                                                    {% if not task.isDeleted and task.createdBy == app.user %}
+                                                                        <a href="{{ path('app_task_edit_info', {id: task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
+                                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
+                                                                    {% endif %}
+                                                                {% else %}
+                                                                    <a href="{{ path('app_task_view', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+
+                                                                    {% if not task.isDeleted %}
+                                                                        <a href="{{ path('app_task_edit_info', {id: task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
+                                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            </div>
+                                                            <!-- delete task modal -->
+                                                            <div id="modal_delete_task{{ task.id }}" class="modal fade" tabindex="-1">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header bg-danger text-white border-0">
+                                                                            <h6 class="modal-title">Potvrda</h6>
+                                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                        </div>
+
+                                                                        <div class="modal-body">
+                                                                            <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>
+                                                                        </div>
+
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                            <a href="{{ path('app_task_delete', {id: task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- /delete task modal -->
+                                                            <!-- close task modal -->
+                                                            <div id="modal_close_task{{ task.id }}" class="modal fade" tabindex="-1">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header bg-primary text-white border-0">
+                                                                            <h6 class="modal-title">Potvrda</h6>
+                                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                        </div>
+
+                                                                        <div class="modal-body">
+                                                                            <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>
+                                                                        </div>
+
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                            <a href="{{ path('app_task_close',{id: task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- /close task modal -->
+                                                        </div>
+                                                    </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                        </div>
+
+                         <div class="card-footer">
+                             <div class="navigation float-end">
+                                 {{ knp_pagination_render(pagination) }}
+                             </div>
+                         </div>
+
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+    {#    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/pages/editor_ckeditor_classic.js') }}"></script>#}
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}

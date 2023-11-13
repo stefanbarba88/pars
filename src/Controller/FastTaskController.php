@@ -16,6 +16,7 @@ use App\Service\MailService;
 use DateInterval;
 use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,17 +24,56 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/quick-tasks')]
-class FastTaskController extends AbstractController {
+class
+FastTaskController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
   #[Route('/list', name: 'app_quick_tasks')]
-  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+
     $args = [];
-    $args['fastTasks'] = $this->em->getRepository(FastTask::class)->getAllPlans();
+
+    $fastTasks = $this->em->getRepository(FastTask::class)->getAllPlansPaginator();
+
+    $pagination = $paginator->paginate(
+      $fastTasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+
+    $args['pagination'] = $pagination;
 
     return $this->render('fast_task/list.html.twig', $args);
+  }
+
+  #[Route('/form-quick-date/', name: 'app_quick_tasks_form_date')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formDate(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+      $args['datum'] = $data['task_quick_form_datum'];
+
+      return $this->redirectToRoute('app_quick_tasks_form', $args);
+
+    }
+
+    $args = [];
+
+    $args['disabledDates'] = $this->em->getRepository(FastTask::class)->getDisabledDates();
+
+
+    return $this->render('fast_task/form_date.html.twig', $args);
+
   }
 
   #[Route('/form-quick/{id}', name: 'app_quick_tasks_form', defaults: ['id' => 0])]
@@ -42,6 +82,10 @@ class FastTaskController extends AbstractController {
   public function form(FastTask $fastTask, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->get('datum') !== null) {
+      $datum = $request->get('datum');
     }
 
 
@@ -61,30 +105,20 @@ class FastTaskController extends AbstractController {
       }
 
 
-//      dd($fastTask);
-
-//        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
-//
-//        notyf()
-//          ->position('x', 'right')
-//          ->position('y', 'top')
-//          ->duration(5000)
-//          ->dismissible(true)
-//          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
-
       return $this->redirectToRoute('app_quick_tasks');
 
     }
 
     $args = [];
 
-    $args['users'] = $this->em->getRepository(User::class)->getUsersCars();
+    $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
     $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false]);
     $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false]);
     $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false]);
-    $args['drivers'] = $this->em->getRepository(User::class)->getUsersCars();
+    $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
     $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isSuspended' => false]);
     $args['disabledDates'] = $this->em->getRepository(FastTask::class)->getDisabledDates();
+    $args['datum'] = $datum;
 
 
     return $this->render('fast_task/form.html.twig', $args);
@@ -116,8 +150,8 @@ class FastTaskController extends AbstractController {
 
     $args = [];
 
-    $args['users'] = $this->em->getRepository(User::class)->getUsersCars();
-    $args['drivers'] = $this->em->getRepository(User::class)->getUsersCars();
+    $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($fastTask->getDatum()->format('d.m.Y'));
+    $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($fastTask->getDatum()->format('d.m.Y'));
     $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false]);
     $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false]);
     $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false]);

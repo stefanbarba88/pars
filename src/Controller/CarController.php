@@ -9,14 +9,17 @@ use App\Entity\CarHistory;
 use App\Entity\CarReservation;
 use App\Entity\Expense;
 use App\Entity\FastTask;
+use App\Entity\Image;
 use App\Entity\Tool;
 use App\Entity\ToolReservation;
+use App\Form\CarImageFormType;
 use App\Form\CarReservationFormDetailsType;
 use App\Form\CarStopReservationFormDetailsType;
 use App\Form\CarStopReservationFormType;
 use App\Form\ExpenseFormType;
 use App\Form\PhoneExpenseFormType;
 use App\Repository\FastTaskRepository;
+use App\Service\UploadService;
 use DateTimeImmutable;
 use App\Form\CarFormType;
 use App\Form\CarReservationFormType;
@@ -258,6 +261,68 @@ class CarController extends AbstractController {
     return $this->render('car/form_reservation.html.twig', $args);
   }
 
+  #[Route('/add-image-car/{id}', name: 'app_car_image_form')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+
+  public function addImage(CarReservation $reservation, UploadService $uploadService, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $user = $this->getUser();
+    if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      if ($user != $reservation->getDriver()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
+    $form = $this->createForm(CarImageFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_image_form', ['id' => $reservation->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $uploadImages = $request->files->all()['car_image_form']['image'];
+        if (!empty ($uploadImages)) {
+          foreach ($uploadImages as $uploadFile) {
+            $path = $reservation->getCar()->getUploadPath();
+            $pathThumb = $reservation->getCar()->getThumbUploadPath();
+
+            $file = $uploadService->upload($uploadFile, $path);
+            $image = $this->em->getRepository(Image::class)->add($file, $pathThumb, $this->getParameter('kernel.project_dir'));
+            $reservation->addImage($image);
+          }
+        }
+
+
+        $this->em->getRepository(CarReservation::class)->save($reservation);
+
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::CAR_ADD);
+        if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+          return $this->redirectToRoute('app_car_employee_reservation_view', ['id' => $reservation->getId()]);
+        }
+        return $this->redirectToRoute('app_car_reservation_view', ['id' => $reservation->getId()]);
+
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['reservation'] = $reservation;
+    $args['car'] = $reservation->getCar();
+    $args['user'] = $user;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/add_image_reservation.html.twig', $args);
+    }
+
+    return $this->render('car/add_image_reservation.html.twig', $args);
+  }
+
   #[Route('/stop-reservation/{id}', name: 'app_car_reservation_stop')]
   public function stopReservation(CarReservation $reservation, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
@@ -304,6 +369,19 @@ class CarController extends AbstractController {
     $args['reservation'] = $reservation;
 
     return $this->render('car/view_reservation.html.twig', $args);
+  }
+
+  #[Route('/view-images/{id}', name: 'app_car_images_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewImages(Car $car): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $args['reservations'] = $car->getCarReservations();
+    $args['car'] = $car;
+
+    return $this->render('car/view_images.html.twig', $args);
   }
 
   #[Route('/list-expenses/{id}', name: 'app_cars_expenses')]

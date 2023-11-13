@@ -2,10 +2,10 @@
 
 namespace App\Repository;
 
-use App\Classes\Data\PrioritetData;
-use App\Classes\Data\TimerPriorityData;
-use App\Classes\Data\UserRolesData;
-use App\Entity\Image;
+use App\Classes\Data\AvailabilityData;
+use App\Entity\Availability;
+use App\Entity\Category;
+use App\Entity\Client;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -15,7 +15,6 @@ use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -29,6 +28,66 @@ use Doctrine\Persistence\ManagerRegistry;
 class StopwatchTimeRepository extends ServiceEntityRepository {
   public function __construct(ManagerRegistry $registry) {
     parent::__construct($registry, StopwatchTime::class);
+  }
+
+  public function addDostupnost(User $user): ?Availability {
+
+    $datum = new DateTimeImmutable();
+
+    $startDate = $datum->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $datum->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $merenja = $this->createQueryBuilder('t')
+      ->where('t.start BETWEEN :startDate AND :endDate')
+      ->andWhere('t.isDeleted = 0')
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->getQuery()
+      ->getResult();
+
+    $merenjeUser = [];
+    foreach ($merenja as $merenje) {
+      if ($merenje->getTaskLog()->getUser() == $user) {
+        $merenjeUser[] = $merenje;
+      }
+    }
+    $dostupnost = new Availability();
+    if (!empty($merenjeUser)) {
+      $dostupnost->setType(AvailabilityData::PRISUTAN);
+    } else {
+      $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
+    }
+    $dostupnost->setDatum($datum->setTime(0, 0));
+    $dostupnost->setUser($user);
+    $this->getEntityManager()->getRepository(Availability::class)->save($dostupnost);
+    return $dostupnost;
+  }
+
+  public function removeDostupnost(StopwatchTime $stopwatchTime): ?Availability {
+
+    $datum = new DateTimeImmutable();
+
+    $startDate = $datum->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $datum->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $merenja = $this->createQueryBuilder('t')
+      ->where('t.start BETWEEN :startDate AND :endDate')
+      ->andWhere('t.isDeleted = 0')
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->getQuery()
+      ->getResult();
+
+    if (empty($merenja)) {
+      $dostupnost = $this->getEntityManager()->getRepository(Availability::class)->findOneBy(['datum' => $datum->setTime(0, 0)]);
+      $dostupnost->setType(AvailabilityData::PRISUTAN);
+      $dostupnost->setDatum($datum);
+      $dostupnost->setUser($stopwatchTime->getTaskLog()->getUser());
+      $dostupnost->setTask($stopwatchTime->getTaskLog()->getTask()->getId());
+      $this->getEntityManager()->getRepository(Availability::class)->save($dostupnost);
+      return $dostupnost;
+    }
+    return null;
   }
 
   public function save(StopwatchTime $stopwatch): StopwatchTime {
@@ -58,6 +117,27 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     }
   }
 
+
+//  public function countClientTasks(Client $client) : array {
+//    $rez = [];
+//    $projects = $this->createQueryBuilder('u')
+//      ->andWhere('u.client = :client')
+//      ->setParameter(':client', $client)
+//
+//      ->getQuery()
+//      ->getResult();
+//
+////    $projects = $this->getEntityManager()->getRepository(Project::class)->findOneBy(['client' => $client]);
+//    dd($projects);
+//
+//    return $projects;
+//  }
+  public function getStopwatchesByProjectCommand($start, $stop, Project $project, Category $category): int {
+
+    $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectTeren($start, $stop, $project, $category);
+    return count($tasks);
+
+  }
   public function getStopwatchesByProject($start, $stop, Project $project, array $kategorija, int $free = 0 ): array {
 
     if ($free == 0) {
@@ -106,6 +186,244 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         }
       }
     }
+    $groupedTasks = [];
+    $stopwatchesNiz = [];
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+
+      if (!isset($groupedTasks[$datum])) {
+        $groupedTasks[$datum] = [];
+      }
+
+      $groupedTasks[$datum][] = $item;
+    }
+
+
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+      if (!isset($stopwatchesNiz[$datum])) {
+        $stopwatchesNiz[$datum] = [];
+      }
+
+      foreach ($item['stopwatches'] as $vreme) {
+        $stopwatchesNiz[$datum][] = $vreme;
+      }
+
+      usort($stopwatchesNiz[$datum], function ($a, $b) {
+        return $a['start'] <=> $b['start'];
+      });
+
+    }
+    $noviStopwatchesNiz = [];
+    $brojac = 0;
+
+// Iterirajte kroz postojeći niz i kopirajte podatke sa numeričkim ključem
+    foreach ($stopwatchesNiz as $kljuc => $podaci) {
+      $noviStopwatchesNiz[$brojac++] = $podaci;
+    }
+
+    $countActivities = [];
+
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+
+      if (!isset($countActivities[$datum])) {
+        $countActivities[$datum] = [];
+      }
+
+      $countActivities[$datum][] = $item['time'];
+    }
+
+    $ukupnoVreme = [];
+
+    foreach ($countActivities as $kljuc => $vreme) {
+      $ukupnoSati = 0;
+      $ukupnoMinuta = 0;
+      $ukupnoSatiR = 0;
+      $ukupnoMinutaR = 0;
+
+      foreach ($vreme as $time) {
+        $ukupnoSati += (int)$time['hoursTimePriority'];
+        $ukupnoMinuta += (int)$time['minutesTimePriority'];
+        $ukupnoSatiR += (int)$time['hoursRealTimePriority'];
+        $ukupnoMinutaR += (int)$time['minutesRealTimePriority'];
+      }
+
+      $ukupnoSati += floor($ukupnoMinuta / 60);
+      $ukupnoMinuta = $ukupnoMinuta % 60;
+
+      $ukupnoSatiR += floor($ukupnoMinutaR / 60);
+      $ukupnoMinutaR = $ukupnoMinutaR % 60;
+
+      $ukupnoVreme[] = [
+        'vreme' => sprintf("%02d:%02d", $ukupnoSati, $ukupnoMinuta),
+        'vremeR' => sprintf("%02d:%02d", $ukupnoSatiR, $ukupnoMinutaR)
+      ];
+    }
+
+
+    return [$groupedTasks, $ukupnoVreme, $noviStopwatchesNiz, $project->getTitle()];
+  }
+
+  public function getStopwatchesByUser($start, $stop, User $user, array $kategorija, int $free = 0 ): array {
+
+    if ($free == 0) {
+      $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUserFree($start, $stop, $user);
+    } else {
+      $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+    }
+
+    $projectStopwatches = [];
+
+    if ($kategorija[0] === 0) {
+      foreach ($tasks as $task) {
+        if (!is_null($task['log'])) {
+          if (!empty ($this->getStopwatchesActive($task['log']))) {
+            $projectStopwatches[] = [
+              'datum' => $task['datum']->format('d.m.Y.'),
+              'zaduzeni' => $task['task']->getAssignedUsers(),
+              'klijent' => $task['task']->getProject()->getClient(),
+              'stopwatches' => $this->getStopwatchesActive($task['log']),
+              'time' => $this->getStopwatchTimeByTaskLog($task['log']),
+              'activity' => $this->getStopwatchesActivity($task['log']),
+              'description' => $this->getStopwatchesDescription($task['log']),
+              'task' => $task,
+              'project' => $task['task']->getProject(),
+              'category' => $task['task']->getCategory()
+            ];
+          }
+        }
+      }
+    } else {
+      foreach ($tasks as $task) {
+        if (in_array($task['task']->getCategory(), $kategorija)) {
+          if (!is_null($task['log'])) {
+            if (!empty ($this->getStopwatchesActive($task['log']))) {
+              $projectStopwatches[] = [
+                'datum' => $task['datum']->format('d.m.Y.'),
+                'zaduzeni' => $task['task']->getAssignedUsers(),
+                'klijent' => $task['task']->getProject()->getClient(),
+                'stopwatches' => $this->getStopwatchesActive($task['log']),
+                'time' => $this->getStopwatchTimeByTaskLog($task['log']),
+                'activity' => $this->getStopwatchesActivity($task['log']),
+                'description' => $this->getStopwatchesDescription($task['log']),
+                'task' => $task,
+                'project' => $task['task']->getProject(),
+                'category' => $task['task']->getCategory()
+              ];
+            }
+          }
+        }
+      }
+    }
+    $groupedTasks = [];
+    $stopwatchesNiz = [];
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+
+      if (!isset($groupedTasks[$datum])) {
+        $groupedTasks[$datum] = [];
+      }
+
+      $groupedTasks[$datum][] = $item;
+    }
+
+
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+      if (!isset($stopwatchesNiz[$datum])) {
+        $stopwatchesNiz[$datum] = [];
+      }
+
+      foreach ($item['stopwatches'] as $vreme) {
+        $stopwatchesNiz[$datum][] = $vreme;
+      }
+
+      usort($stopwatchesNiz[$datum], function ($a, $b) {
+        return $a['start'] <=> $b['start'];
+      });
+
+    }
+    $noviStopwatchesNiz = [];
+    $brojac = 0;
+
+// Iterirajte kroz postojeći niz i kopirajte podatke sa numeričkim ključem
+    foreach ($stopwatchesNiz as $kljuc => $podaci) {
+      $noviStopwatchesNiz[$brojac++] = $podaci;
+    }
+
+    $countActivities = [];
+
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+
+      if (!isset($countActivities[$datum])) {
+        $countActivities[$datum] = [];
+      }
+
+      $countActivities[$datum][] = $item['time'];
+    }
+
+    $ukupnoVreme = [];
+
+    foreach ($countActivities as $kljuc => $vreme) {
+      $ukupnoSati = 0;
+      $ukupnoMinuta = 0;
+      $ukupnoSatiR = 0;
+      $ukupnoMinutaR = 0;
+
+      foreach ($vreme as $time) {
+        $ukupnoSati += (int)$time['hoursTimePriority'];
+        $ukupnoMinuta += (int)$time['minutesTimePriority'];
+        $ukupnoSatiR += (int)$time['hoursRealTimePriority'];
+        $ukupnoMinutaR += (int)$time['minutesRealTimePriority'];
+      }
+
+      $ukupnoSati += floor($ukupnoMinuta / 60);
+      $ukupnoMinuta = $ukupnoMinuta % 60;
+
+      $ukupnoSatiR += floor($ukupnoMinutaR / 60);
+      $ukupnoMinutaR = $ukupnoMinutaR % 60;
+
+      $ukupnoVreme[] = [
+        'vreme' => sprintf("%02d:%02d", $ukupnoSati, $ukupnoMinuta),
+        'vremeR' => sprintf("%02d:%02d", $ukupnoSatiR, $ukupnoMinutaR)
+      ];
+    }
+
+
+    return [$groupedTasks, $ukupnoVreme, $noviStopwatchesNiz];
+  }
+
+  public function getStopwatchesByUserXls($start, $stop, User $user): array {
+
+    $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+
+    if (empty($tasks)) {
+      return [];
+    }
+
+    $projectStopwatches = [];
+
+
+    foreach ($tasks as $task) {
+      if (!is_null($task['log'])) {
+        if (!empty ($this->getStopwatchesActive($task['log']))) {
+          $projectStopwatches[] = [
+            'datum' => $task['datum']->format('d.m.Y.'),
+            'zaduzeni' => $task['task']->getAssignedUsers(),
+            'klijent' => $task['task']->getProject()->getClient(),
+            'stopwatches' => $this->getStopwatchesActive($task['log']),
+            'countActivities' => $this->getCountStopwatchesActive($task['log']),
+            'time' => $this->getStopwatchTimeByTaskLog($task['log']),
+            'activity' => $this->getStopwatchesActivity($task['log']),
+            'description' => $this->getStopwatchesDescription($task['log']),
+            'task' => $task,
+            'category' => $task['task']->getCategory()
+          ];
+        }
+      }
+    }
 
     $groupedTasks = [];
 
@@ -119,9 +437,215 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       $groupedTasks[$datum][] = $item;
     }
 
-    return $groupedTasks;
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+      if (!isset($stopwatchesNiz[$datum])) {
+        $stopwatchesNiz[$datum] = [];
+      }
+
+      foreach ($item['stopwatches'] as $vreme) {
+        $stopwatchesNiz[$datum][] = $vreme;
+      }
+
+      usort($stopwatchesNiz[$datum], function ($a, $b) {
+        return $a['start'] <=> $b['start'];
+      });
+
+    }
+    $noviStopwatchesNiz = [];
+    $brojac = 0;
+
+// Iterirajte kroz postojeći niz i kopirajte podatke sa numeričkim ključem
+    foreach ($stopwatchesNiz as $kljuc => $podaci) {
+      $noviStopwatchesNiz[$brojac++] = $podaci;
+    }
+
+    $countActivities = [];
+
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+
+      if (!isset($countActivities[$datum])) {
+        $countActivities[$datum] = [];
+      }
+
+      $countActivities[$datum][] = $item['countActivities'];
+    }
+
+    $ukupnoVreme = [];
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+
+      if (!isset($ukupnoVremeZadatka[$datum])) {
+        $ukupnoVremeZadatka[$datum] = [];
+      }
+
+      $ukupnoVremeZadatka[$datum][] = $item['time'];
+    }
+
+    $rezultati = [];
+
+    foreach ($countActivities as $kljuc => $vrednosti) {
+      $ukupnaSuma = array_sum($vrednosti);
+      $rezultati[$kljuc] = $ukupnaSuma;
+    }
+
+    $ukupnoVreme = [];
+
+    foreach ($ukupnoVremeZadatka as $kljuc => $vreme) {
+      $ukupnoSati = 0;
+      $ukupnoMinuta = 0;
+      $ukupnoSatiR = 0;
+      $ukupnoMinutaR = 0;
+
+      foreach ($vreme as $time) {
+        $ukupnoSati += (int)$time['hoursTimePriority'];
+        $ukupnoMinuta += (int)$time['minutesTimePriority'];
+        $ukupnoSatiR += (int)$time['hoursRealTimePriority'];
+        $ukupnoMinutaR += (int)$time['minutesRealTimePriority'];
+      }
+
+      $ukupnoSati += floor($ukupnoMinuta / 60);
+      $ukupnoMinuta = $ukupnoMinuta % 60;
+
+      $ukupnoSatiR += floor($ukupnoMinutaR / 60);
+      $ukupnoMinutaR = $ukupnoMinutaR % 60;
+
+      $ukupnoVreme[] = [
+        'vreme' => sprintf("%02d:%02d", $ukupnoSati, $ukupnoMinuta),
+        'vremeR' => sprintf("%02d:%02d", $ukupnoSatiR, $ukupnoMinutaR)
+      ];
+    }
+
+    return [$groupedTasks, $rezultati, $ukupnoVreme, $noviStopwatchesNiz];
   }
 
+  public function getStopwatchesByProjectXls($start, $stop, Project $project): array {
+
+    $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProject($start, $stop, $project);
+
+    if (empty($tasks)) {
+      return [];
+    }
+
+
+    $projectStopwatches = [];
+
+
+
+    foreach ($tasks as $task) {
+      if (!is_null($task['log'])) {
+        if (!empty ($this->getStopwatchesActive($task['log']))) {
+          $projectStopwatches[] = [
+            'datum' => $task['datum']->format('d.m.Y.'),
+            'zaduzeni' => $task['task']->getAssignedUsers(),
+            'klijent' => $task['task']->getProject()->getClient(),
+            'stopwatches' => $this->getStopwatchesActive($task['log']),
+            'countActivities' => $this->getCountStopwatchesActive($task['log']),
+            'time' => $this->getStopwatchTimeByTask($task['task']),
+            'activity' => $this->getStopwatchesActivity($task['log']),
+            'description' => $this->getStopwatchesDescription($task['log']),
+            'task' => $task,
+            'category' => $task['task']->getCategory()
+          ];
+        }
+      }
+    }
+
+    $groupedTasks = [];
+
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+
+      if (!isset($groupedTasks[$datum])) {
+        $groupedTasks[$datum] = [];
+      }
+
+      $groupedTasks[$datum][] = $item;
+    }
+
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+      if (!isset($stopwatchesNiz[$datum])) {
+        $stopwatchesNiz[$datum] = [];
+      }
+
+      foreach ($item['stopwatches'] as $vreme) {
+        $stopwatchesNiz[$datum][] = $vreme;
+      }
+
+      usort($stopwatchesNiz[$datum], function ($a, $b) {
+        return $a['start'] <=> $b['start'];
+      });
+
+    }
+    $noviStopwatchesNiz = [];
+    $brojac = 0;
+
+// Iterirajte kroz postojeći niz i kopirajte podatke sa numeričkim ključem
+    foreach ($stopwatchesNiz as $kljuc => $podaci) {
+      $noviStopwatchesNiz[$brojac++] = $podaci;
+    }
+
+    $countActivities = [];
+
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+
+      if (!isset($countActivities[$datum])) {
+        $countActivities[$datum] = [];
+      }
+
+      $countActivities[$datum][] = $item['countActivities'];
+    }
+
+    $ukupnoVreme = [];
+    foreach ($projectStopwatches as $item) {
+      $datum = $item['datum'];
+
+      if (!isset($ukupnoVremeZadatka[$datum])) {
+        $ukupnoVremeZadatka[$datum] = [];
+      }
+
+      $ukupnoVremeZadatka[$datum][] = $item['time'];
+    }
+
+    $rezultati = [];
+
+    foreach ($countActivities as $kljuc => $vrednosti) {
+      $ukupnaSuma = array_sum($vrednosti);
+      $rezultati[$kljuc] = $ukupnaSuma;
+    }
+
+    $ukupnoVreme = [];
+
+    foreach ($ukupnoVremeZadatka as $kljuc => $vreme) {
+      $ukupnoSati = 0;
+      $ukupnoMinuta = 0;
+      $ukupnoSatiR = 0;
+      $ukupnoMinutaR = 0;
+
+      foreach ($vreme as $time) {
+        $ukupnoSati += (int)$time['hoursTimePriority'];
+        $ukupnoMinuta += (int)$time['minutesTimePriority'];
+        $ukupnoSatiR += (int)$time['hoursRealTimePriority'];
+        $ukupnoMinutaR += (int)$time['minutesRealTimePriority'];
+      }
+
+      $ukupnoSati += floor($ukupnoMinuta / 60);
+      $ukupnoMinuta = $ukupnoMinuta % 60;
+
+      $ukupnoSatiR += floor($ukupnoMinutaR / 60);
+      $ukupnoMinutaR = $ukupnoMinutaR % 60;
+
+      $ukupnoVreme[] = [
+        'vreme' => sprintf("%02d:%02d", $ukupnoSati, $ukupnoMinuta),
+        'vremeR' => sprintf("%02d:%02d", $ukupnoSatiR, $ukupnoMinutaR)
+      ];
+    }
+
+    return [$groupedTasks, $rezultati, $ukupnoVreme, $noviStopwatchesNiz];
+  }
   public function getStopwatches(TaskLog $taskLog): array {
     $stopwatches = [];
 
@@ -225,6 +749,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       ->setParameter(':taskLog', $taskLog)
       ->andWhere('u.diff is NOT NULL')
       ->andWhere('u.isDeleted = 0')
+      ->orderBy('u.start', 'ASC')
       ->getQuery()
       ->getResult();
 
@@ -271,9 +796,25 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'manually' => $time->isIsManuallyClosed(),
         'additionalActivity' => $time->getAdditionalActivity(),
         'client' => $time->getClient(),
+        'category' => $time->getTaskLog()->getTask()->getCategory(),
+        'users' => $time->getTaskLog()->getTask()->getAssignedUsers(),
+        'project' => $time->getTaskLog()->getTask()->getProject(),
       ];
     }
     return $stopwatches;
+  }
+
+  public function getCountStopwatchesActive(TaskLog $taskLog): int {
+
+    $times = $this->createQueryBuilder('u')
+      ->andWhere('u.taskLog = :taskLog')
+      ->setParameter(':taskLog', $taskLog)
+      ->andWhere('u.diff is NOT NULL')
+      ->andWhere('u.isDeleted = 0')
+      ->getQuery()
+      ->getResult();
+
+    return count($times);
   }
 
   public function getStopwatchesActivity(TaskLog $taskLog): array {
@@ -519,6 +1060,115 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     return [];
   }
 
+  public function getStopwatchTimeByTaskLog(TaskLog $taskLog ): array {
+
+//    $priority = $task->getProject()->getTimerPriority();
+//    $priorityTitle = $task->getProject()->getTimerPriorityJson();
+
+    $priorityUserLog = $taskLog;
+    $priorityLogUser = $taskLog->getUser();
+
+
+
+    $hoursTotalRounded = 0;
+    $minutesTotalRounded = 0;
+    $hoursTotalReal = 0;
+    $minutesTotalReal = 0;
+
+    $hoursRounded = 0;
+    $minutesRounded = 0;
+    $hoursReal = 0;
+    $minutesReal = 0;
+
+    $logs = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $taskLog->getTask()]);
+
+    foreach ($logs as $log) {
+      $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $log, 'isDeleted' => false]);
+      foreach ($times as $time) {
+        $hoursTotalRounded = $hoursTotalRounded + intdiv($time->getDiffRounded(), 60);
+        $minutesTotalRounded = $minutesTotalRounded + $time->getDiffRounded() % 60;
+        $hoursTotalReal = $hoursTotalReal + intdiv($time->getDiff(), 60);
+        $minutesTotalReal = $minutesTotalReal + $time->getDiff() % 60;
+      }
+
+    }
+
+    $minutesRoundedU = $hoursTotalRounded * 60 + $minutesTotalRounded;
+    $minutesRealU = $hoursTotalReal * 60 + $minutesTotalReal;
+
+    $h = intdiv($minutesRoundedU, 60);
+    $m = $minutesRoundedU % 60;
+    $hR = intdiv($minutesRealU, 60);
+    $mR = $minutesRealU % 60;
+
+
+//    if ($priority == TimerPriorityData::FIRST_ASSIGN) {
+//      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $task], ['id' => 'ASC']);
+//    } elseif ($priority == TimerPriorityData::ROLE_GEO) {
+//      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneByUserPosition($task, 1);
+//    } elseif ($priority == TimerPriorityData::ROLE_FIG) {
+//      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneByUserPosition($task, 2);
+//    }
+
+    $logPriority = $taskLog;
+
+    if(!empty($logPriority)) {
+      $timesPriority = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $logPriority, 'isDeleted' => false]);
+      foreach ($timesPriority as $time) {
+        $hoursRounded = $hoursRounded + intdiv($time->getDiffRounded(), 60);
+        $minutesRounded = $minutesRounded + $time->getDiffRounded() % 60;
+        $hoursReal = $hoursReal + intdiv($time->getDiff(), 60);
+        $minutesReal = $minutesReal + $time->getDiff() % 60;
+      }
+      $minutes = $hoursRounded * 60 + $minutesRounded;
+      $minutesR = $hoursReal * 60 + $minutesReal;
+
+      $htP = intdiv($minutes, 60);
+      $mtP = $minutes % 60;
+      $hRtP = intdiv($minutesR, 60);
+      $mRtP = $minutesR % 60;
+
+      if ($h < 10) {
+        $h = '0' . $h;
+      }
+      if ($m < 10) {
+        $m = '0' . $m;
+      }
+      if ($hR < 10) {
+        $hR = '0' . $hR;
+      }
+      if ($mR < 10) {
+        $mR = '0' . $mR;
+      }
+      if ($htP < 10) {
+        $htP = '0' . $htP;
+      }
+      if ($mtP < 10) {
+        $mtP = '0' . $mtP;
+      }
+      if ($hRtP < 10) {
+        $hRtP = '0' . $hRtP;
+      }
+      if ($mRtP < 10) {
+        $mRtP = '0' . $mRtP;
+      }
+
+
+      return [
+        'hours' => $h,
+        'minutes' => $m,
+        'hoursReal' => $hR,
+        'minutesReal' => $mR,
+        'hoursTimePriority' => $htP,
+        'minutesTimePriority' => $mtP,
+        'hoursRealTimePriority' => $hRtP,
+        'minutesRealTimePriority' => $mRtP,
+        'priority' => $priorityLogUser->getFullName()
+      ];
+    }
+    return [];
+  }
+
   public function lastEdit(TaskLog $taskLog): ?StopwatchTime {
     return $this->getEntityManager()->getRepository(StopwatchTime::class)->findOneBy(['taskLog' => $taskLog],['updated' => 'DESC']);
   }
@@ -681,6 +1331,43 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       return $stopwatch;
     }
     return $this->getEntityManager()->getRepository(StopwatchTime::class)->find($id);
+
+  }
+
+  public function findAllToCheck(): array {
+    $now = new DateTimeImmutable();
+    $oneMonthAgo = new DateTimeImmutable('-1 month');
+    $stopwatches = [];
+
+    $times = $this->createQueryBuilder('u')
+      ->andWhere('u.diff < :dif')
+      ->setParameter(':dif', 10)
+      ->andWhere('u.diff is NOT NULL')
+      ->andWhere('u.isDeleted = 0')
+      ->andWhere('u.stop BETWEEN :start AND :end')
+      ->setParameter('start', $oneMonthAgo)
+      ->setParameter('end', $now)
+      ->getQuery()
+      ->getResult();
+
+    foreach ($times as $time) {
+      $hours = floor($time->getDiff() / 60);
+      $remainingMinutes = $time->getDiff() % 60;
+
+      $diff = sprintf('%02d:%02d', $hours, $remainingMinutes);
+
+      $stopwatches [] = [
+        'id' => $time->getId(),
+        'user' => $time->getTaskLog()->getUser(),
+        'task' => $time->getTaskLog()->getTask(),
+        'taskLog' => $time->getTaskLog(),
+        'start' => $time->getStart(),
+        'stop' => $time->getStop(),
+        'diff' => $diff
+      ];
+    }
+
+    return $stopwatches;
 
   }
 

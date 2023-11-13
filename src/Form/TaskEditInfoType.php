@@ -51,7 +51,7 @@ class TaskEditInfoType extends AbstractType {
           return $em->createQueryBuilder('g')
             ->andWhere('g.isSuspended = :isSuspended')
             ->setParameter(':isSuspended', 0)
-            ->orderBy('g.id', 'ASC');
+            ->orderBy('g.title', 'ASC');
         },
         'choice_label' => 'title',
         'expanded' => false,

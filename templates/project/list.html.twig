@@ -60,6 +60,8 @@
                                     <h5 class="py-lg-3 mb-0">Lista projekata sa stalnim ekipama</h5>
                                 {% elseif type == 2 %}
                                     <h5 class="py-lg-3 mb-0">Lista projekata sa letećim ekipama</h5>
+                                {% elseif type == 3 %}
+                                    <h5 class="py-lg-3 mb-0">Arhivirani projekti</h5>
                                 {% else %}
                                     <h5 class="py-lg-3 mb-0">Lista projekata</h5>
                                 {% endif %}
@@ -148,7 +150,11 @@
                                                 {% else %}
                                                     <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                     <a href="{{ path('app_project_form', { id: project.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
-
+                                                    {% if project.suspended == 0 %}
+                                                        <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-x me-2"></i> Deaktivirajte</a>
+                                                    {% else %}
+                                                        <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-check me-2"></i> Aktivirajte</a>
+                                                    {% endif %}
                                                 {% endif %}
                                             </div>
                                         </div>

@@ -164,6 +164,10 @@
                                                             <div class="col-4">Pozicija:</div>
                                                             <div class="col-8">{{ user.pozicija.title | default('/')  }}</div>
                                                         </div>
+                                                        <div class="row p-2">
+                                                            <div class="col-4">Tip projekta:</div>
+                                                            <div class="col-8">{{ user.projectByType | default('/')  }}</div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 {% if user.editBy is not null %}

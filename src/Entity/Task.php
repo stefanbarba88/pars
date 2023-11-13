@@ -105,7 +105,7 @@ class Task implements JsonSerializable {
   private ?int $driver = null;
 
   #[ORM\Column(nullable: true)]
-  private ?int $roundingInterval = null;
+  private ?int $roundingInterval = 15;
 
   #[ORM\Column]
   private ?int $status = TaskStatusData::NIJE_ZAPOCETO;

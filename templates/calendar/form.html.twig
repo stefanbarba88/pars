@@ -70,6 +70,19 @@
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
                         <div class="card-body">
                             <div class="row">
+                                {% if calendar.user is empty %}
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label required" for="form_zaposleni">Zaposleni:*</label>
+                                            <select id="form_zaposleni" name="form[zaposleni]" class="form-control select required">
+                                                <option value="">--Izaberite zaposlenog--</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.fullName }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                {% endif %}
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.type, 'Tip:*', {'label_attr': {'class': 'form-label'}}) }}
@@ -87,7 +100,7 @@
 											</span>
                                             {{ form_widget(form.start, {attr: { class: 'form-control datepicker-date-format-custom' }}) }}
                                         </div>
-                                        <span class="form-text">Format: 31.12.1900. Možete definisati predviđeni kraj radova na zadatku.</span>
+                                        <span class="form-text">Format: 31.12.1900. Prvi dan perioda.</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -99,7 +112,7 @@
 											</span>
                                             {{ form_widget(form.finish, {attr: { class: 'form-control datepicker-date-format-custom1' }}) }}
                                         </div>
-                                        <span class="form-text">Format: 31.12.1900. Možete definisati predviđeni kraj radova na zadatku.</span>
+                                        <span class="form-text">Format: 31.12.1900. Zaključni dan perioda.</span>
                                     </div>
                                 </div>
                             </div>

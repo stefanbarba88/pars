@@ -119,10 +119,12 @@
                                                         Odbijte
                                                     </a>
                                                 {% endif %}
-                                                <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
-                                                    <i class="ph-trash me-2"></i>
-                                                    Obrišite
-                                                </a>
+                                                {% if calendar.status != 0 %}
+                                                    <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
+                                                        <i class="ph-trash me-2"></i>
+                                                        Obrišite
+                                                    </a>
+                                                {% endif  %}
                                             </div>
                                         </div>
                                     </td>

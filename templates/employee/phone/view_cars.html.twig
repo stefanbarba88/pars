@@ -44,8 +44,9 @@
                                             {% if user.car is null %}
                                                 <a href="{{ path('app_car_employee_reservation_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Zadužite</a>
                                             {% else %}
-                                                <a href="{{ path('app_car_employee_expense_form', {id:lastReservation.car.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodaj trošak</a>
-                                                <a href="{{ path('app_car_employee_reservation_stop', {id:lastReservation.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Razdužite</a>
+                                                <a href="{{ path('app_car_employee_expense_form', {id:lastReservation.car.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Trošak</a>
+                                                <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Slike</a>
+                                                <a href="{{ path('app_car_employee_reservation_stop', {id:lastReservation.id}) }}" class="btn btn-primary"> Razdužite</a>
                                             {% endif %}
                                         </div>
                                     </div>

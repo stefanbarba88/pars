@@ -170,7 +170,8 @@ class UserController extends AbstractController {
 
   #[Route('/edit-account/{id}', name: 'app_user_edit_account_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editAccount(User $usr, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function editAccount(User $usr, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();

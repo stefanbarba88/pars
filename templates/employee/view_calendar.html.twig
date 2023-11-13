@@ -25,8 +25,8 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_users') }}" class="breadcrumb-item">Korisnici</a>
-                                <a href="{{ path('app_user_profile_view', { id: user.id}) }}" class="breadcrumb-item">Profil</a>
+                                <a href="{{ path('app_employees') }}" class="breadcrumb-item">Korisnici</a>
+                                <a href="{{ path('app_employee_profile_view', { id: user.id}) }}" class="breadcrumb-item">Profil</a>
                                 <span class="breadcrumb-item active">Raspored</span>
                             </div>
 
@@ -38,7 +38,7 @@
                         {{ render(controller('App\\Controller\\WidgetController::support' )) }}
                     </div>
 
-                    {{ render(controller('App\\Controller\\WidgetController::userProfilNavigation', { user: user } )) }}
+                    {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigation', { user: user } )) }}
 
                 </div>
                 <!-- /page header -->
@@ -50,39 +50,179 @@
                     <div class="d-lg-flex align-items-lg-start">
 
                         <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::userProfilSidebar', { user: user } )) }}
+                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
                         <!-- /left sidebar component -->
 
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
-                                <!-- Available hours -->
+
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">Available hours</h5>
+                                        <h5 class="mb-0">Prisutnost</h5>
                                     </div>
 
                                     <div class="card-body">
-                                        <div class="chart-container">
-                                            <div class="chart has-fixed-height" id="available_hours"></div>
+                                        <div class="row">
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-primary text-white">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['dostupan'] }}</h4>
+                                                            Broj dana
+                                                        </div>
+
+                                                        <i class="ph-briefcase ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- /available hours -->
 
-
-                                <!-- Schedule -->
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">My schedule</h5>
+                                        <h5 class="mb-0">Odsutnost</h5>
                                     </div>
 
                                     <div class="card-body">
-                                        <div class="my-schedule"></div>
+                                        <div class="row">
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body bg-yellow text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['ukupno'] }}</h4>
+                                                            Broj dana
+                                                        </div>
+
+                                                        <i class="ph-briefcase ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noRequests['ukupno'] }}</h4>
+                                                            Broj zahteva
+                                                        </div>
+
+                                                        <i class="ph-question ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body bg-danger text-white">
+                                                    <div class="d-flex align-items-center">
+
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['izasao'] }}</h4>
+                                                            Izlasci
+                                                        </div>
+                                                        <i class="ph-person-simple-run ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['dan'] }}</h4>
+                                                            Slobodni dani
+                                                        </div>
+
+                                                        <i class="ph-coffee ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-yellow text-primary">
+                                                    <div class="d-flex align-items-center">
+
+
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['odmor'] }}</h4>
+                                                            Odmor
+                                                        </div>
+                                                        <i class="ph-globe-hemisphere-west ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['bolovanje'] }}</h4>
+                                                            Bolovanje
+                                                        </div>
+
+                                                        <i class="ph-heartbeat ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-yellow text-primary">
+                                                    <div class="d-flex align-items-center">
+
+
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['slava'] }}</h4>
+                                                            Slava
+                                                        </div>
+                                                        <i class="ph-plus-circle ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+{#                                            <div class="col-sm-6 col-xl-3">#}
+{#                                                <div class="card card-body bg-primary text-white">#}
+{#                                                    <div class="d-flex align-items-center">#}
+{#                                                        <div class="flex-fill">#}
+{#                                                            <h4 class="mb-0">{{ noDays['ostalo'] }}</h4>#}
+{#                                                            Nema zabeležen zadatak#}
+{#                                                        </div>#}
+
+{#                                                        <i class="ph-calendar-x ph-2x opacity-75 ms-3"></i>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </div>#}
+                                        </div>
                                     </div>
                                 </div>
-                                <!-- /schedule -->
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Kalendar</h5>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="fullcalendar-event-colors"></div>
+                                    </div>
+                                </div>
+
+
+
+{#                                <!-- Schedule -->#}
+{#                                <div class="card">#}
+{#                                    <div class="card-header">#}
+{#                                        <h5 class="mb-0">My schedule</h5>#}
+{#                                    </div>#}
+
+{#                                    <div class="card-body">#}
+{#                                        <div class="my-schedule"></div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <!-- /schedule -->#}
                             </div>
                         </div>
                         <!-- /right content -->
@@ -138,6 +278,7 @@
     <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
 
     <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/locales/sr.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
     <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
@@ -156,87 +297,57 @@
 
 {% endblock includeJavascript %}
 
-{#{% block footerJavascript %}#}
-{#    <script type="text/javascript">#}
-{#        $(document).ready(function() {#}
-{#            var options = {#}
-{#                // target:        '#output1',   // target element(s) to be updated with server response#}
-{#                success:       editInfoResponse,  // post-submit callback#}
-{#                //         // target:        '#error',#}
-{#                //         // other available options:#}
-{#                //         //url:       url         // override for form's 'action' attribute#}
-{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#                //         //clearForm: true        // clear all form fields after successful submit#}
-{#                        resetForm: true,        // reset the form after successful submit#}
-{#                //         success:   editInfoResponse#}
-{#                //         // $.ajax options can be used here too, for example:#}
-{#                //         //timeout:   3000#}
-{#            };#}
+{% block footerJavascript %}
+    <script type="text/javascript">
+        const eventColors =
+            [
+                {% for event in dostupnosti %}
+                {
+                    title: '{{ event.title }}',
+                    start: '{{ event.start }}',
+                    color: '{{ event.color }}',
+                    textColor: '{{ event.text }}'
+                },
+                {% endfor %}
+            ]
+        const initialLocaleCode = 'sr';
+        // Define element
+        const calendarEventColorsElement = document.querySelector('.fullcalendar-event-colors');
 
-{#            // bind form using 'ajaxForm'#}
-{#            $('#infoForma').ajaxForm(options);#}
-{#        });#}
-{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
-{#        //     // for normal html responses, the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseText property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'xml' then the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseXML property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'json' then the first argument to the success callback#}
-{#        //     // is the json data object returned by the server#}
-{#        //#}
-{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
-{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
-{#        // }#}
-{#        // $(function () {#}
-{#        //     var options = {#}
-{#        //         // target:        '#error',#}
-{#        //         // other available options:#}
-{#        //         //url:       url         // override for form's 'action' attribute#}
-{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#        //         //clearForm: true        // clear all form fields after successful submit#}
-{#        //         resetForm: true,        // reset the form after successful submit#}
-{#        //         success:   editInfoResponse#}
-{#        //         // $.ajax options can be used here too, for example:#}
-{#        //         //timeout:   3000#}
-{#        //     };#}
-{#        //     // bind form using ajaxForm#}
-{#        //     $('#infoForma').submit(function() {#}
-{#        //         // inside event callbacks 'this' is the DOM element so we first#}
-{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
-{#        //         $(this).ajaxSubmit(options);#}
-{#        //#}
-{#        //         // !!! Important !!!#}
-{#        //         // always return false to prevent standard browser submit and page navigation#}
-{#        //         return false;#}
-{#        //     });#}
-{#        // });#}
-{#        //#}
-{#        function editInfoResponse(data) {#}
-{#            // 'data' is the json object returned from the server#}
+        // Initialize
+        if(calendarEventColorsElement) {
+            const calendarEventColorsInit = new FullCalendar.Calendar(calendarEventColorsElement, {
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,timeGridDay'
+                },
+                {#validRange: {#}
+                {#    start: '{{ "now"|date("Y") }}-{{ "now"|date("m") }}-01'#}
+                {#},#}
+                initialView: 'dayGridWeek',
+                locale: initialLocaleCode,
+                initialDate: new Date(),
+                navLinks: true, // can click day/week names to navigate views
+                businessHours: true, // display business hours
+                // editable: true,
+                // selectable: true,
+                // editable: true,
+                direction: document.dir == 'rtl' ? 'rtl' : 'ltr',
+                events: eventColors,
+                // height: 500
+            });
 
-{#            if (data.success === 1) {#}
-{#                swal({#}
-{#                    type: 'success',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-{#            else {#}
-{#                var error = data.error_msg.toString();#}
-{#                swal({#}
-{#                    type: 'error',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
+            // Init
+            calendarEventColorsInit.render();
 
-{#        }#}
+            // Resize calendar when sidebar toggler is clicked
+            document.querySelectorAll('.sidebar-control').forEach(function(sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    calendarEventColorsInit.updateSize();
+                })
+            });
+        }
 
-{#    </script>#}
-{#{% endblock footerJavascript %}#}
+    </script>
+{% endblock footerJavascript %}

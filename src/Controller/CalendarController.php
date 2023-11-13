@@ -2,12 +2,18 @@
 
 namespace App\Controller;
 
+use App\Classes\CompanyInfo;
+use App\Classes\Data\AvailabilityData;
 use App\Classes\Data\CalendarData;
 use App\Classes\Data\UserRolesData;
+use App\Entity\Availability;
 use App\Entity\Calendar;
 use App\Entity\TaskLog;
+use App\Entity\User;
 use App\Form\CalendarFormType;
 use App\Form\PhoneCalendarFormType;
+use App\Service\MailService;
+use DateInterval;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -51,12 +57,18 @@ class CalendarController extends AbstractController {
   #[Route('/form/{id}', name: 'app_calendar_form', defaults: ['id' => 0])]
   #[Entity('calendar', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Calendar $calendar): Response {
+  public function form(Request $request, Calendar $calendar, MailService $mailService): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
-    $calendar->addUser($this->getUser());
+    $user = $this->getUser();
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $calendar->addUser($user);
+    }
+
+
     $mobileDetect = new MobileDetect();
 
     if($mobileDetect->isMobile()) {
@@ -70,7 +82,14 @@ class CalendarController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
+        if ($calendar->getUser()->isEmpty()) {
+          $data = $request->request->all();
+          $user = $this->em->getRepository(User::class)->find($data['form']['zaposleni']);
+          $calendar->addUser($user);
+        }
         $this->em->getRepository(Calendar::class)->save($calendar);
+        $mailService->calendar($calendar, CompanyInfo::ORGANIZATION_MAIL_ADDRESS);
+        $mailService->calendar($calendar, 'marceta.pars@gmail.com');
 
         notyf()
           ->position('x', 'right')
@@ -84,6 +103,7 @@ class CalendarController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['calendar'] = $calendar;
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
 
     if($mobileDetect->isMobile()) {
       return $this->render('calendar/phone/form.html.twig', $args);
@@ -107,11 +127,34 @@ class CalendarController extends AbstractController {
 
   #[Route('/allow/{id}', name: 'app_calendar_allow')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function allow(Calendar $calendar): Response {
+  public function allow(Calendar $calendar, MailService $mailService): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $calendar->setStatus(2);
+
+    $start = $calendar->getStart();
+    $finish = $calendar->getFinish();
+      $datumi = [];
+      $current = clone $start;
+
+      while ($current <= $finish) {
+        $datumi[] = clone $current;
+        $current = $current->add(new DateInterval('P1D'));
+      }
+
+    foreach ($datumi as $datum) {
+      $dostupnost = new Availability();
+      $dostupnost->setDatum($datum);
+      $dostupnost->setUser($calendar->getUser()->first());
+      $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
+      $dostupnost->setZahtev($calendar->getType());
+      $dostupnost->setCalendar($calendar->getId());
+
+      $this->em->getRepository(Availability::class)->save($dostupnost);
+    }
+
+    $mailService->responseCalendar($calendar);
     $this->em->getRepository(Calendar::class)->save($calendar);
 
     return $this->redirectToRoute('app_calendar_list');
@@ -119,22 +162,36 @@ class CalendarController extends AbstractController {
 
   #[Route('/decline/{id}', name: 'app_calendar_decline')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function decline(Calendar $calendar): Response {
+  public function decline(Calendar $calendar, MailService $mailService): Response {
     $calendar->setStatus(3);
+    $mailService->responseCalendar($calendar);
     $this->em->getRepository(Calendar::class)->save($calendar);
 
+    $dostupnosti = $this->em->getRepository(Availability::class)->findBy(['calendar' => $calendar->getId()]);
+    if (!empty($dostupnosti) ) {
+      foreach ($dostupnosti as $dostupnost) {
+        $this->em->getRepository(Availability::class)->remove($dostupnost);
+      }
+    }
     return $this->redirectToRoute('app_calendar_list');
   }
 
 
   #[Route('/delete/{id}', name: 'app_calendar_delete')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function delete(Calendar $calendar): Response {
+  public function delete(Calendar $calendar, MailService $mailService): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $calendar->setStatus(0);
+    $mailService->responseCalendar($calendar);
     $this->em->getRepository(Calendar::class)->save($calendar);
+    $dostupnosti = $this->em->getRepository(Availability::class)->findBy(['calendar' => $calendar->getId()]);
+    if (!empty($dostupnosti) ) {
+      foreach ($dostupnosti as $dostupnost) {
+        $this->em->getRepository(Availability::class)->remove($dostupnost);
+      }
+    }
 
     return $this->redirectToRoute('app_calendar_list');
   }

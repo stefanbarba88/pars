@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VrstaZaposlenjaData;
 use App\Entity\User;
@@ -51,6 +52,13 @@ class UserEditAccountFormType extends AbstractType {
       ->add('userType', ChoiceType::class, [
         'placeholder' => '--Izaberite tip korisnika--',
         'choices' => UserRolesData::formForFormByUserRole($plainUserType),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('projectType', ChoiceType::class, [
+        'required' => false,
+        'placeholder' => '--Izaberite tip projekta--',
+        'choices' => TipProjektaData::form(),
         'expanded' => false,
         'multiple' => false,
       ])

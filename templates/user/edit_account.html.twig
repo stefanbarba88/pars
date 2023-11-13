@@ -43,6 +43,7 @@
                 </div>
                 <!-- /page header -->
 
+
                 <!-- Content area -->
                 <div class="content">
                     {% if not form.vars.valid %}
@@ -104,17 +105,29 @@
                                                     </div>
                                                 </div>
                                                 {% if user.pozicija is null %}
-                                                    <div class="col-lg-6 hide ROLE_EMPLOYEE">
+                                                    <div class="col-lg-3 hide ROLE_EMPLOYEE">
                                                         <div class="mb-3">
                                                             {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                            {{ form_widget(form.pozicija, {attr: { class: 'form-control select' }}) }}
+                                                            {{ form_widget(form.pozicija, {attr: { class: 'form-control select zaposleni' }}) }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3 hide ROLE_EMPLOYEE">
+                                                        <div class="mb-3">
+                                                            {{ form_label(form.projectType, 'Tip projekta:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                            {{ form_widget(form.projectType, {attr: { class: 'form-control select zaposleni' }}) }}
                                                         </div>
                                                     </div>
                                                 {% else %}
-                                                    <div class="col-lg-6 ROLE_EMPLOYEE">
+                                                    <div class="col-lg-3 ROLE_EMPLOYEE">
                                                         <div class="mb-3">
                                                             {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                            {{ form_widget(form.pozicija, {attr: { class: 'form-control select required' }}) }}
+                                                            {{ form_widget(form.pozicija, {attr: { class: 'form-control select required zaposleni' }}) }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3 ROLE_EMPLOYEE">
+                                                        <div class="mb-3">
+                                                            {{ form_label(form.projectType, 'Tip projekta:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                            {{ form_widget(form.projectType, {attr: { class: 'form-control select required zaposleni' }}) }}
                                                         </div>
                                                     </div>
                                                 {% endif %}
@@ -199,90 +212,6 @@
 
 {% endblock includeJavascript %}
 
-{#{% block footerJavascript %}#}
-{#    <script type="text/javascript">#}
-{#        $(document).ready(function() {#}
-{#            var options = {#}
-{#                // target:        '#output1',   // target element(s) to be updated with server response#}
-{#                success:       editInfoResponse,  // post-submit callback#}
-{#                //         // target:        '#error',#}
-{#                //         // other available options:#}
-{#                //         //url:       url         // override for form's 'action' attribute#}
-{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#                //         //clearForm: true        // clear all form fields after successful submit#}
-{#                        resetForm: true,        // reset the form after successful submit#}
-{#                //         success:   editInfoResponse#}
-{#                //         // $.ajax options can be used here too, for example:#}
-{#                //         //timeout:   3000#}
-{#            };#}
-
-{#            // bind form using 'ajaxForm'#}
-{#            $('#infoForma').ajaxForm(options);#}
-{#        });#}
-{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
-{#        //     // for normal html responses, the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseText property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'xml' then the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseXML property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'json' then the first argument to the success callback#}
-{#        //     // is the json data object returned by the server#}
-{#        //#}
-{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
-{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
-{#        // }#}
-{#        // $(function () {#}
-{#        //     var options = {#}
-{#        //         // target:        '#error',#}
-{#        //         // other available options:#}
-{#        //         //url:       url         // override for form's 'action' attribute#}
-{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#        //         //clearForm: true        // clear all form fields after successful submit#}
-{#        //         resetForm: true,        // reset the form after successful submit#}
-{#        //         success:   editInfoResponse#}
-{#        //         // $.ajax options can be used here too, for example:#}
-{#        //         //timeout:   3000#}
-{#        //     };#}
-{#        //     // bind form using ajaxForm#}
-{#        //     $('#infoForma').submit(function() {#}
-{#        //         // inside event callbacks 'this' is the DOM element so we first#}
-{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
-{#        //         $(this).ajaxSubmit(options);#}
-{#        //#}
-{#        //         // !!! Important !!!#}
-{#        //         // always return false to prevent standard browser submit and page navigation#}
-{#        //         return false;#}
-{#        //     });#}
-{#        // });#}
-{#        //#}
-{#        function editInfoResponse(data) {#}
-{#            // 'data' is the json object returned from the server#}
-
-{#            if (data.success === 1) {#}
-{#                swal({#}
-{#                    type: 'success',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-{#            else {#}
-{#                var error = data.error_msg.toString();#}
-{#                swal({#}
-{#                    type: 'error',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-
-{#        }#}
-
-{#    </script>#}
-{#{% endblock footerJavascript %}#}
 {% block footerJavascript %}
 
     <script>
@@ -291,9 +220,13 @@
                 if ($(this).val() == "4") {
                     $('.ROLE_EMPLOYEE').removeClass('hide');
                     $('.ROLE_EMPLOYEE [input]').addClass('required');
+                    $('.zaposleni').removeClass('hide');
+                    $('.zaposleni').addClass('required');
                 } else {
                     $('.ROLE_EMPLOYEE').addClass('hide');
                     $('.ROLE_EMPLOYEE [input]').removeClass('required');
+                    $('.zaposleni').addClass('hide');
+                    $('.zaposleni').removeClass('required');
                 }
             });
         });

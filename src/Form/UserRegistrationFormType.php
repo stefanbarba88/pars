@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Classes\Data\PolData;
 use App\Classes\Data\PotvrdaData;
+use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VozackiData;
 use App\Classes\Data\VrstaZaposlenjaData;
@@ -70,6 +71,13 @@ class UserRegistrationFormType extends AbstractType {
           'data-minimum-results-for-search' => 'Infinity',
         ],
         'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('projectType', ChoiceType::class, [
+        'required' => false,
+        'placeholder' => '--Izaberite tip projekta--',
+        'choices' => TipProjektaData::form(),
         'expanded' => false,
         'multiple' => false,
       ])

@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Classes\Data\UserRolesData;
 use App\Classes\DTO\UploadedFileDTO;
+use App\Entity\Availability;
 use App\Entity\Car;
+use App\Entity\Category;
 use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\Project;
@@ -14,6 +16,7 @@ use App\Entity\TaskLog;
 use App\Entity\User;
 use App\Entity\UserHistory;
 use App\Service\MailService;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -224,6 +227,42 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $usersList;
   }
 
+  public function getReport(array $data): array {
+    $dates = explode(' - ', $data['period']);
+
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+    $user = $this->getEntityManager()->getRepository(User::class)->find($data['zaposleni']);
+
+    if (isset($data['category'])){
+      foreach ($data['category'] as $cat) {
+        $kategorija [] = $this->getEntityManager()->getRepository(Category::class)->findOneBy(['id' => $cat]);
+      }
+    } else {
+      $kategorija [] = 0;
+    }
+
+    if (isset($data['naplativ'])) {
+      $naplativ = $data['naplativ'];
+      return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUser($start, $stop, $user, $kategorija, $naplativ);
+    }
+
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUser($start, $stop, $user, $kategorija);
+  }
+
+  public function getReportXls(string $datum, User $user): array {
+
+    $dates = explode(' - ', $datum);
+
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUserXls($start, $stop, $user);
+
+  }
+
+
   public function getUsersCars(): array {
 
     $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['prezime' => 'ASC']);
@@ -241,6 +280,54 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         'ime' => $ime
       ];
     }
+    return $usersList;
+  }
+
+  public function getUsersCarsAvailable(string $dan): array {
+
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['prezime' => 'ASC']);
+
+    $usersList = [];
+    foreach ($users as $user) {
+      $dostupan = $this->getEntityManager()->getRepository(Availability::class)->checkDostupnost($user, $dan);
+
+      if ($dostupan) {
+        $ime = $user->getFullName();
+        $car = $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' =>$user->getCar()]);
+        if (!is_null($car)) {
+          $ime = $ime . ' (' . $car->getPlate() . ')';
+        }
+
+        $usersList [] = [
+          'id' => $user->getId(),
+          'ime' => $ime,
+          'slika' => $user->getImage()->getThumbnail100(),
+          'pozicija' => $user->getPozicija()->getTitle()
+        ];
+      }
+    }
+
+    return $usersList;
+  }
+
+  public function getUsersAvailable(DateTimeImmutable $dan): array {
+
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['prezime' => 'ASC']);
+    $dan = $dan->format('d.m.Y');
+    $usersList = [];
+    foreach ($users as $user) {
+      $dostupan = $this->getEntityManager()->getRepository(Availability::class)->checkDostupnost($user, $dan);
+
+      if ($dostupan) {
+        $ime = $user->getFullName();
+
+        $usersList [] = [
+          'id' => $user->getId(),
+          'ime' => $ime
+        ];
+      }
+    }
+
     return $usersList;
   }
 
@@ -408,13 +495,77 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   }
 
+  public function getDostupni(): array {
+    $dostupni = [];
+    $danas = new DateTimeImmutable();
+    $users = $this->createQueryBuilder('u')
+      ->andWhere('u.userType = :userType')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+      ->setParameter('isSuspended', 0)
+      ->getQuery()
+      ->getResult();
 
+    if (!empty($users)) {
+      foreach ($users as $user) {
+        $nedostupnost = $this->getEntityManager()->getRepository(Availability::class)->findOneBy(['User' => $user, 'datum'=> $danas->setTime(0,0) ]);
+        if (is_null($nedostupnost)) {
+          $dostupni[] = [
+            "name" => $user->getFullName(),
+            "id" => $user->getId(),
+            "task" => $user->isInTask()
+          ];
+        }
+      }
+    }
+
+    return $dostupni;
+  }
+
+  public function getZaposleni(): array {
+
+    return $this->createQueryBuilder('u')
+      ->andWhere('u.userType = :userType')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+      ->setParameter(':isSuspended', 0)
+      ->getQuery()
+      ->getResult();
+  }
+
+  public function getNedostupni(): array {
+    $nedostupni = [];
+    $danas = new DateTimeImmutable();
+    $users = $this->createQueryBuilder('u')
+      ->andWhere('u.userType = :userType')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+      ->setParameter(':isSuspended', 0)
+      ->getQuery()
+      ->getResult();
+
+    if (!empty($users)) {
+      foreach ($users as $user) {
+        $nedostupnost = $this->getEntityManager()->getRepository(Availability::class)->findOneBy(['User' => $user, 'datum'=> $danas->setTime(0,0) ]);
+        if (!is_null($nedostupnost)) {
+          $nedostupni[] = [
+            "name" => $user->getFullName(),
+            "id" => $user->getId(),
+            "task" => $user->isInTask(),
+            "zahtev" => $nedostupnost
+          ];
+        }
+      }
+    }
+
+    return $nedostupni;
+  }
   public function getEmployees(int $type): array {
 
     if ($type == 1) {
-      $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isInTask' => true]);
+      $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isInTask' => true, 'isSuspended' => false]);
     } elseif ( $type == 2) {
-      $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isInTask' => false]);
+      $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isInTask' => false, 'isSuspended' => false]);
     } else {
       $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE], ['isSuspended' => 'ASC']);
     }

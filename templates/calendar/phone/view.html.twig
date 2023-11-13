@@ -35,30 +35,32 @@
                                 <div class="card">
                                     <div class="card-header d-lg-flex py-lg-0">
                                         <h5 class="py-lg-3 mb-0">Zahtev</h5>
-                                        <div class="mt-1 my-lg-auto ms-lg-auto">
-                                            <div class="dropdown">
-                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                    <i class="ph-gear"></i>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
-                                                        <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
-                                                            <i class="ph-check me-2"></i>
-                                                            Dozvolite
-                                                        </a>
-                                                        <a href="{{ path('app_calendar_decline', {id: calendar.id}) }}" class="dropdown-item">
-                                                            <i class="ph-minus me-2"></i>
-                                                            Odbijte
-                                                        </a>
-                                                    {% endif %}
-                                                    <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
-                                                        <i class="ph-trash me-2"></i>
-                                                        Obrišite
+                                        {% if calendar.status != 0 %}
+                                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
                                                     </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
+                                                            <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
+                                                                <i class="ph-check me-2"></i>
+                                                                Dozvolite
+                                                            </a>
+                                                            <a href="{{ path('app_calendar_decline', {id: calendar.id}) }}" class="dropdown-item">
+                                                                <i class="ph-minus me-2"></i>
+                                                                Odbijte
+                                                            </a>
+                                                        {% endif %}
+                                                        <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
+                                                            <i class="ph-trash me-2"></i>
+                                                            Obrišite
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                        </div>
+                                            </div>
+                                        {% endif  %}
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">

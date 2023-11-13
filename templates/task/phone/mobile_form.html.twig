@@ -56,12 +56,26 @@
 
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
                             <div class="card-body">
+                                <div class="fw-bold border-bottom pb-2 mb-3">Datum zadatka</div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                                <input id="task" name="date" class="form-control" type="text" disabled value="{{ task.datumKreiranja | date('d.m.Y') }}">
+                                                <button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#modal_date_task"><i class="ph-note-pencil"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="fw-bold border-bottom pb-2 mb-3">Osnovne informacije</div>
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            {{ form_label(form.category, 'Kategorija:', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.category, {attr: { class: 'form-control' }}) }}
+                                            {{ form_label(form.category, 'Kategorija:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.category, {attr: { class: 'form-control required' }}) }}
                                             <span class="form-text">Kategorizacija pomaže u organizaciji.</span>
                                         </div>
                                     </div>
@@ -115,7 +129,7 @@
                                                     <select id="task_form_geo1" name="phone_task_form[assignedUsers][]" class="form-control required" required>
                                                         <option value="">--Izaberite geodetu--</option>
                                                         {% for user in users %}
-                                                            <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                            <option value="{{ user.id }}">{{ user.ime }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>
@@ -130,7 +144,7 @@
                                                 <select id="task_form_geo2" name="phone_task_form[assignedUsers][]" class="form-control">
                                                     <option>--Izaberite geodetu--</option>
                                                     {% for user in users %}
-                                                        <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -143,7 +157,7 @@
                                                 <select id="task_form_geo3" name="phone_task_form[assignedUsers][]" class="form-control">
                                                     <option>--Izaberite geodetu--</option>
                                                     {% for user in users %}
-                                                        <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -171,7 +185,7 @@
                                                 <select id="task_form_driver" name="phone_task_form[driver]" class="form-control" >
                                                     <option value="">--Izaberite vozača--</option>
                                                     {% for user in users %}
-                                                        <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -179,18 +193,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.datumKreiranja, 'Datum zadatka:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            <div class="input-group">
-											<span class="input-group-text">
-												<i class="ph-calendar"></i>
-											</span>
-                                                {{ form_widget(form.datumKreiranja, {attr: { class: 'form-control required' }}) }}
-                                            </div>
-                                            <span class="form-text">Format: 31.12.1900. Definišete kada zadatak treba da se izvrši.</span>
-                                        </div>
-                                    </div>
+
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <label class="form-label" for="task_form_vreme">Vreme zadatka:</label>
@@ -215,51 +218,51 @@
                                     </div>
                                 </div>
 
-                                <div class="fw-bold border-bottom pb-2 mb-3" data-bs-toggle="collapse" data-bs-target="#collapse-time" aria-expanded="false">Podešavanje praćenja vremena</div>
-                                <div class="row collapse" id="collapse-time">
-                                    <div class="col-lg-6 ">
-                                        <div class="mb-3">
-                                            {{ form_label(form.isTimeRoundUp, 'Zaokruživanje vremena:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.isTimeRoundUp, {attr: { class: 'form-control required round' }}) }}
-                                            <span class="form-text">Mereno vreme se zaokružuje.</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% if task.isTimeRoundUp %}
-                                    <div class="row timeRound collapse" id="collapse-time">
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval' }}) }}
-                                                <span class="form-text">Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.minEntry, {attr: { class: 'form-control minent required' }}) }}
-                                                <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% else %}
-                                    <div class="row hide timeRound collapse" id="collapse-time">
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval' }}) }}
-                                                <span class="form-text">Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.minEntry, {attr: { class: 'form-control minent' }}) }}
-                                                <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
+{#                                <div class="fw-bold border-bottom pb-2 mb-3" data-bs-toggle="collapse" data-bs-target="#collapse-time" aria-expanded="false">Podešavanje praćenja vremena</div>#}
+{#                                <div class="row collapse" id="collapse-time">#}
+{#                                    <div class="col-lg-6 ">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.isTimeRoundUp, 'Zaokruživanje vremena:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.isTimeRoundUp, {attr: { class: 'form-control required round' }}) }}#}
+{#                                            <span class="form-text">Mereno vreme se zaokružuje.</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                {% if task.isTimeRoundUp %}#}
+{#                                    <div class="row timeRound collapse" id="collapse-time">#}
+{#                                        <div class="col-lg-6">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval' }}) }}#}
+{#                                                <span class="form-text">Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-lg-6">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.minEntry, {attr: { class: 'form-control minent required' }}) }}#}
+{#                                                <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                {% else %}#}
+{#                                    <div class="row hide timeRound collapse" id="collapse-time">#}
+{#                                        <div class="col-lg-6">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval' }}) }}#}
+{#                                                <span class="form-text">Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-lg-6">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.minEntry, {attr: { class: 'form-control minent' }}) }}#}
+{#                                                <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                {% endif %}#}
 
                                 <div class="fw-bold border-bottom pb-2 mb-3" data-bs-toggle="collapse" data-bs-target="#collapse-pdf" aria-expanded="false">Dokumentacija</div>
                                 <div class="row collapse" id="collapse-pdf">
@@ -273,44 +276,45 @@
                                 </div>
 
 
-                                <div class="fw-bold border-bottom pb-2 mb-3" data-bs-toggle="collapse" data-bs-target="#collapse-other" aria-expanded="false">Ostala podešavanja</div>
-                                <div class="row collapse" id="collapse-other">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.deadline, 'Rok:', {'label_attr': {'class': 'form-label'}}) }}
-                                            <div class="input-group">
-											<span class="input-group-text">
-												<i class="ph-calendar"></i>
-											</span>
-                                                {{ form_widget(form.deadline, {attr: { class: 'form-control' }}) }}
-                                            </div>
-                                            <span class="form-text">Format: 31.12.1900. Možete definisati predviđeni kraj radova na zadatku.</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row collapse" id="collapse-other">
-                                    <div class="col-lg-4">
-                                        <div class="mb-3">
-                                            {{ form_label(form.isExpenses, 'Praćenje troškova:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.isExpenses, {attr: { class: 'form-control required' }}) }}
-                                            <span class="form-text">Zaposleni u svom dnevniku može uneti troškove vezane za ovaj zadatak.</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <div class="mb-3">
-                                            {{ form_label(form.isFree, 'Besplatan zadatak:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.isFree, {attr: { class: 'form-control required' }}) }}
-                                            <span class="form-text">Ovaj zadatak ne ulazi u obračun pri naplati.</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <div class="mb-3">
-                                            {{ form_label(form.isPriority, 'Visok prioritet:', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.isPriority, {attr: { class: 'form-control' }}) }}
-                                            <span class="form-text">Zadatak može biti visoko prioritetan. Takav zadatak se nalazi na vrhu liste.</span>
-                                        </div>
-                                    </div>
-                                </div>
+{#                                <div class="fw-bold border-bottom pb-2 mb-3" data-bs-toggle="collapse" data-bs-target="#collapse-other" aria-expanded="false">Ostala podešavanja</div>#}
+{#                                <div class="row collapse" id="collapse-other">#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.deadline, 'Rok:', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            <div class="input-group">#}
+{#											<span class="input-group-text">#}
+{#												<i class="ph-calendar"></i>#}
+{#											</span>#}
+{#                                                {{ form_widget(form.deadline, {attr: { class: 'form-control' }}) }}#}
+{#                                            </div>#}
+{#                                            <span class="form-text">Format: 31.12.1900. Možete definisati predviđeni kraj radova na zadatku.</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="row collapse" id="collapse-other">#}
+{#                                    <div class="col-lg-4">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.isExpenses, 'Praćenje troškova:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.isExpenses, {attr: { class: 'form-control required' }}) }}#}
+{#                                            <span class="form-text">Zaposleni u svom dnevniku može uneti troškove vezane za ovaj zadatak.</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="col-lg-4">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.isFree, 'Besplatan zadatak:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.isFree, {attr: { class: 'form-control required' }}) }}#}
+{#                                            <span class="form-text">Ovaj zadatak ne ulazi u obračun pri naplati.</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="col-lg-4">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.isPriority, 'Visok prioritet:', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.isPriority, {attr: { class: 'form-control' }}) }}#}
+{#                                            <span class="form-text">Zadatak može biti visoko prioritetan. Takav zadatak se nalazi na vrhu liste.</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+                                <input hidden="hidden" type="text" name="datumK" value="{{ task.datumKreiranja | date ('d.m.Y') }}">
 
                                 <div class="text-end">
                                     <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
@@ -336,6 +340,11 @@
 
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
+    {% if project is defined %}
+        {{ render(controller('App\\Controller\\TaskController::editDate', { task: task, project: project } )) }}
+    {% else %}
+        {{ render(controller('App\\Controller\\TaskController::editDate', { task: task } )) }}
+    {% endif %}
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
 
@@ -469,7 +478,21 @@
                 }
             });
         });
+        function submitForm(formId) {
+            const drugeForme = document.querySelectorAll('form:not(#' + formId + ')');
 
+            drugeForme.forEach(function(forma) {
+                forma.addEventListener('submit', function(e) {
+                    e.preventDefault(); // Preventirajte podrazumevano ponašanje (slanje forme)
+                });
+            })
+
+            const formaZaSubmit = document.getElementById(formId);
+
+            if (formaZaSubmit) {
+                formaZaSubmit.submit(); // Ručno izvršite submit za izabranu formu
+            }
+        }
 
     </script>
 

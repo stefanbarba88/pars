@@ -76,16 +76,22 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.userType, 'Tip korisnika:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.userType, {attr: { class: 'form-control select required role' }}) }}
                                     </div>
                                 </div>
-                                <div class="col-lg-6 hide ROLE_EMPLOYEE">
+                                <div class="col-lg-4 hide ROLE_EMPLOYEE">
                                     <div class="mb-3">
                                         {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.pozicija, {attr: { class: 'form-control select pozicija' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 hide ROLE_EMPLOYEE">
+                                    <div class="mb-3">
+                                        {{ form_label(form.projectType, 'Tip projekta:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.projectType, {attr: { class: 'form-control select pozicija' }}) }}
                                     </div>
                                 </div>
                             </div>

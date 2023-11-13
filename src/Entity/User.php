@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Classes\Data\PolData;
+use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VrstaZaposlenjaData;
 use App\Repository\UserRepository;
@@ -173,6 +174,9 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
   #[ORM\OneToMany(mappedBy: 'user', targetEntity: ToolReservation::class)]
   private Collection $toolReservations;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $ProjectType = null;
 
 
 
@@ -483,6 +487,16 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     return UserRolesData::getBadgeByType($this->userType);
   }
 
+  public function projectByType(): string {
+    if (!is_null($this->getProjectType())) {
+      $projekat = TipProjektaData::TIP[$this->getProjectType()];
+    }
+    else {
+      $projekat = '';
+    }
+    return $projekat;
+  }
+
   public function getBadgeByStatus(): string {
     if ($this->isSuspended) {
       return '<span class="badge bg-danger">Deaktiviran</span>';
@@ -644,7 +658,8 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
       'slava' => $this->getSlava(),
       'isSuspended' => $this->isSuspended(),
       'email' => $this->getEmail(),
-      'image' => $this->getImage()
+      'image' => $this->getImage(),
+      'projectType' => $this->getProjectType()
     ];
   }
 
@@ -964,6 +979,18 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
               $toolReservation->setUser(null);
           }
       }
+
+      return $this;
+  }
+
+  public function getProjectType(): ?int
+  {
+      return $this->ProjectType;
+  }
+
+  public function setProjectType(?int $ProjectType): self
+  {
+      $this->ProjectType = $ProjectType;
 
       return $this;
   }

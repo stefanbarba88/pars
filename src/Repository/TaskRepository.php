@@ -7,6 +7,7 @@ use App\Classes\Data\TaskStatusData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
 use App\Entity\Car;
+use App\Entity\Category;
 use App\Entity\FastTask;
 use App\Entity\Image;
 use App\Entity\Pdf;
@@ -18,6 +19,7 @@ use App\Entity\TaskHistory;
 use App\Entity\TaskLog;
 use App\Entity\Tool;
 use App\Entity\User;
+use DateInterval;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
@@ -439,6 +441,7 @@ class TaskRepository extends ServiceEntityRepository {
     $tasks =  $this->createQueryBuilder('t')
       ->where('t.datumKreiranja < :startDate')
       ->andWhere('t.isDeleted <> 1')
+
       ->setParameter(':startDate', $startDate)
       ->addOrderBy('t.isClosed', 'ASC')
       ->addOrderBy('t.isPriority', 'DESC')
@@ -604,15 +607,144 @@ class TaskRepository extends ServiceEntityRepository {
     return $count;
   }
 
-  public function getTasksArchive(): array {
+  public function getTasksPaginator($filterBy, User $user){
+
+    $today = new DateTimeImmutable(); // Dohvati trenutni datum i vrijeme
+    $endDate = $today->sub(new DateInterval('P1D')); // Trenutni datum
 
     $list = [];
-    $tasks =  $this->createQueryBuilder('t')
+
+    $qb = $this->createQueryBuilder('t');
+    if (!empty($filterBy['period'])) {
+
+      $dates = explode(' - ', $filterBy['period']);
+
+      $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+      $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+      $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+      $stopDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+      $qb->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'));
+      $qb->setParameter('start', $startDate);
+      $qb->setParameter('end', $stopDate);
+
+    } else {
+      $qb->where('t.datumKreiranja < :endDate');
+      $qb->setParameter('endDate', $endDate);
+    }
+
+
+    if (!empty($filterBy['projekat'])) {
+      $qb->andWhere('t.project = :projekat');
+      $qb->setParameter('projekat', $filterBy['projekat']);
+    }
+    if (!empty($filterBy['kategorija'])) {
+      $qb->andWhere('t.category = :kategorija');
+      $qb->setParameter('kategorija', $filterBy['kategorija']);
+    }
+    if (!empty($filterBy['zaposleni'])) {
+      $qb->join('t.assignedUsers', 'u'); // Zamijenite 'u' imenom koje odgovara vašoj entitetu za korisnike (user entity).
+      $qb->andWhere($qb->expr()->in('u.id', ':zaposleni'));
+      $qb->setParameter('zaposleni', $filterBy['zaposleni']);
+    }
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $qb->join('t.assignedUsers', 'u'); // Zamijenite 'u' imenom koje odgovara vašoj entitetu za korisnike (user entity).
+      $qb->andWhere($qb->expr()->in('u.id', ':zaposleni'));
+      $qb->setParameter('zaposleni', $user->getId());
+    }
+
+
+      $qb->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery();
+
+//    foreach ($tasks as $task) {
+//      $status = $this->taskStatus($task);
+//
+//      if ($status == TaskStatusData::ZAVRSENO ) {
+//        $list[] = [
+//          'task' => $task,
+//          'status' => $status,
+//          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($task)
+//        ];
+//      }
+//    }
+//    usort($list, function ($a, $b) {
+//      return $a['status'] <=> $b['status'];
+//    });
+
+    return $qb;
+  }
+
+  public function getTasksArchive(): array {
+
+
+    $startDate = new DateTimeImmutable('-15 days'); // Datum pre mesec dana
+    $endDate = new DateTimeImmutable(); // Trenutni datum
+
+
+
+
+    $list = [];
+    $tasks = $this->createQueryBuilder('t')
+      ->where('t.created BETWEEN :startDate AND :endDate')
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
       ->addOrderBy('t.isClosed', 'ASC')
       ->addOrderBy('t.isPriority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
       ->getResult();
+
+//    $tasks =  $this->createQueryBuilder('t')
+//      ->addOrderBy('t.isClosed', 'ASC')
+//      ->addOrderBy('t.isPriority', 'DESC')
+//      ->addOrderBy('t.id', 'DESC')
+//      ->getQuery()
+//      ->getResult();
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status == TaskStatusData::ZAVRSENO ) {
+        $list[] = [
+          'task' => $task,
+          'status' => $status,
+          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($task)
+        ];
+      }
+    }
+    usort($list, function ($a, $b) {
+      return $a['status'] <=> $b['status'];
+    });
+    return $list;
+  }
+
+  public function getTasksSeptembar(): array {
+
+    $dateString = "1.10.2023";
+    $startDate = DateTimeImmutable::createFromFormat('d.m.Y', $dateString);
+
+
+    $list = [];
+    $tasks = $this->createQueryBuilder('t')
+      ->where('t.created < :startDate')
+      ->setParameter('startDate', $startDate)
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+
+//    $tasks =  $this->createQueryBuilder('t')
+//      ->addOrderBy('t.isClosed', 'ASC')
+//      ->addOrderBy('t.isPriority', 'DESC')
+//      ->addOrderBy('t.id', 'DESC')
+//      ->getQuery()
+//      ->getResult();
 
     foreach ($tasks as $task) {
       $status = $this->taskStatus($task);
@@ -853,7 +985,7 @@ class TaskRepository extends ServiceEntityRepository {
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
       ->setParameter('project', $project->getId())
-      ->orderBy('t.time', 'ASC');
+      ->orderBy('t.created', 'ASC');
 
     $query = $qb->getQuery();
     $taskovi = $query->getResult();
@@ -880,10 +1012,11 @@ class TaskRepository extends ServiceEntityRepository {
       ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
       ->andWhere('t.project = :project')
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.isFree <> 1')
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
       ->setParameter('project', $project->getId())
-      ->orderBy('t.time', 'ASC');
+      ->orderBy('t.created', 'ASC');
 
     $query = $qb->getQuery();
     $taskovi = $query->getResult();
@@ -900,6 +1033,108 @@ class TaskRepository extends ServiceEntityRepository {
     }
     return $lista;
   }
+
+  public function getTasksByDateAndProjectTeren(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project, Category $category): array  {
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('t.project = :project')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.isFree <> 1')
+      ->andWhere('t.category = :category')
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->setParameter('project', $project->getId())
+      ->setParameter('category', $category->getId())
+      ->orderBy('t.created', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+    $lista = [];
+    foreach ($taskovi as $tsk) {
+      $primaryUser = $this->getEntityManager()->getRepository(User::class)->find($tsk->getPriorityUserLog());
+      $lista[] = [
+        'task' => $tsk,
+        'datum' => $tsk->getDatumKreiranja(),
+        'status' => $this->taskStatus($tsk),
+        'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $primaryUser]),
+      ];
+    }
+    return $lista;
+  }
+
+  public function getTasksByDateAndUserFree(DateTimeImmutable $start, DateTimeImmutable $stop, User $user): array {
+
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.isFree = 1')
+      ->setParameter(':userId', $user->getId())
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->addOrderBy('t.created', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+
+    $lista = [];
+    foreach ($taskovi as $tsk) {
+      $lista[] = [
+        'task' => $tsk,
+        'datum' => $tsk->getDatumKreiranja(),
+        'status' => $this->taskStatus($tsk),
+        'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $user]),
+      ];
+    }
+    return $lista;
+
+  }
+  public function getTasksByDateAndUser(DateTimeImmutable $start, DateTimeImmutable $stop, User $user): array  {
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.isFree <> 1')
+      ->setParameter(':userId', $user->getId())
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->addOrderBy('t.created', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+
+    $lista = [];
+    foreach ($taskovi as $tsk) {
+       $lista[] = [
+         'task' => $tsk,
+         'datum' => $tsk->getDatumKreiranja(),
+         'status' => $this->taskStatus($tsk),
+         'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $user])
+       ];
+    }
+    return $lista;
+  }
+
   public function getTasksByDate(DateTimeImmutable $date): array  {
 
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
@@ -917,8 +1152,10 @@ class TaskRepository extends ServiceEntityRepository {
     $taskovi = $query->getResult();
     $lista = [];
     foreach ($taskovi as $tsk) {
+
        $lista[] = [
          'task' => $tsk,
+         'sort' => $this->sortTask($tsk),
          'status' => $this->taskStatus($tsk),
          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($tsk),
          'car' => $this->getEntityManager()->getRepository(Car::class)->findBy(['id' => $tsk->getCar()]),
@@ -926,7 +1163,35 @@ class TaskRepository extends ServiceEntityRepository {
        ];
     }
 //    dd($lista);
+
+    usort($lista, function ($a, $b) {
+      return $a['sort'] <=> $b['sort'];
+    });
+
     return $lista;
+  }
+
+  public function sortTask(Task $task): int {
+
+    if ($task->getProject()->getType() == 1) {
+
+      if ($task->getCategory()->getId() == 5 ) {
+        return 4;
+      } elseif ( $task->getCategory()->getId() == 6) {
+        return 2;
+      } else {
+        return 3;
+      }
+    } else {
+      if ($task->getCategory()->getId() == 5 ) {
+        return 1;
+      } elseif ( $task->getCategory()->getId() == 6) {
+        return 2;
+      } else {
+        return 3;
+      }
+    }
+
   }
 
   public function getTasksByDateForEmail(DateTimeImmutable $date): array  {
@@ -999,6 +1264,7 @@ class TaskRepository extends ServiceEntityRepository {
 
   public function createTasksFromList(FastTask $fastTask, User $user): FastTask  {
     $format = "H:i";
+    $category = $this->getEntityManager()->getRepository(Category::class)->find(5);
    if(!is_null($fastTask->getProject1())) {
       $task1 = new Task();
       $project1 = $this->getEntityManager()->getRepository(Project::class)->find($fastTask->getProject1());
@@ -1008,6 +1274,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task1->setIsTimeRoundUp(true);
       $task1->setRoundingInterval(15);
       $task1->setCreatedBy($user);
+      $task1->setCategory($category);
 
 
       $task1->setIsFree($fastTask->getFree1());
@@ -1067,6 +1334,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task2->setCreatedBy($user);
       $task2->setIsTimeRoundUp(true);
       $task2->setRoundingInterval(15);
+     $task2->setCategory($category);
      $task2->setIsFree($fastTask->getFree2());
       if(!is_null($fastTask->getDescription2())) {
         $task2->setDescription($fastTask->getDescription2());
@@ -1119,6 +1387,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task3->setIsTimeRoundUp(true);
       $task3->setRoundingInterval(15);
       $task3->setIsFree($fastTask->getFree3());
+     $task3->setCategory($category);
       if(!is_null($fastTask->getDescription3())) {
         $task3->setDescription($fastTask->getDescription3());
       }
@@ -1169,6 +1438,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task4->setCreatedBy($user);
       $task4->setIsTimeRoundUp(true);
       $task4->setRoundingInterval(15);
+     $task4->setCategory($category);
      $task4->setIsFree($fastTask->getFree4());
       if(!is_null($fastTask->getDescription4())) {
         $task4->setDescription($fastTask->getDescription4());
@@ -1221,6 +1491,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task5->setIsTimeRoundUp(true);
       $task5->setRoundingInterval(15);
      $task5->setIsFree($fastTask->getFree5());
+     $task5->setCategory($category);
       if(!is_null($fastTask->getDescription5())) {
         $task5->setDescription($fastTask->getDescription5());
       }
@@ -1272,6 +1543,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task6->setIsTimeRoundUp(true);
       $task6->setRoundingInterval(15);
      $task6->setIsFree($fastTask->getFree6());
+     $task6->setCategory($category);
       if(!is_null($fastTask->getDescription6())) {
         $task6->setDescription($fastTask->getDescription6());
       }
@@ -1323,6 +1595,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task7->setIsTimeRoundUp(true);
       $task7->setRoundingInterval(15);
      $task7->setIsFree($fastTask->getFree7());
+     $task7->setCategory($category);
       if(!is_null($fastTask->getDescription7())) {
         $task7->setDescription($fastTask->getDescription7());
       }
@@ -1374,6 +1647,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task8->setIsTimeRoundUp(true);
       $task8->setRoundingInterval(15);
      $task8->setIsFree($fastTask->getFree8());
+     $task8->setCategory($category);
       if(!is_null($fastTask->getDescription8())) {
         $task8->setDescription($fastTask->getDescription8());
       }
@@ -1425,6 +1699,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task9->setIsTimeRoundUp(true);
       $task9->setRoundingInterval(15);
       $task9->setIsFree($fastTask->getFree9());
+     $task9->setCategory($category);
       if(!is_null($fastTask->getDescription9())) {
         $task9->setDescription($fastTask->getDescription9());
       }
@@ -1476,6 +1751,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task10->setIsTimeRoundUp(true);
       $task10->setRoundingInterval(15);
       $task10->setIsFree($fastTask->getFree10());
+     $task10->setCategory($category);
       if(!is_null($fastTask->getDescription10())) {
         $task10->setDescription($fastTask->getDescription10());
       }
@@ -1524,6 +1800,7 @@ class TaskRepository extends ServiceEntityRepository {
 
   public function createTasksFromListEdited(FastTask $fastTask, User $user): FastTask  {
     $format = "H:i";
+    $category = $this->getEntityManager()->getRepository(Category::class)->find(5);
     if ($fastTask->getTask1() == 0) {
       if (!is_null($fastTask->getProject1())) {
         $task1 = new Task();
@@ -1535,7 +1812,7 @@ class TaskRepository extends ServiceEntityRepository {
         $task1->setRoundingInterval(15);
         $task1->setCreatedBy($user);
         $task1->setIsFree($fastTask->getFree1());
-
+        $task1->setCategory($category);
 
         if (!is_null($fastTask->getDescription1())) {
           $task1->setDescription($fastTask->getDescription1());
@@ -1593,6 +1870,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task2->setIsTimeRoundUp(true);
       $task2->setRoundingInterval(15);
         $task2->setIsFree($fastTask->getFree2());
+        $task2->setCategory($category);
       if(!is_null($fastTask->getDescription2())) {
         $task2->setDescription($fastTask->getDescription2());
       }
@@ -1645,6 +1923,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task3->setIsTimeRoundUp(true);
       $task3->setRoundingInterval(15);
         $task3->setIsFree($fastTask->getFree3());
+        $task3->setCategory($category);
       if(!is_null($fastTask->getDescription3())) {
         $task3->setDescription($fastTask->getDescription3());
       }
@@ -1696,6 +1975,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task4->setCreatedBy($user);
       $task4->setIsTimeRoundUp(true);
       $task4->setRoundingInterval(15);
+        $task4->setCategory($category);
         $task4->setIsFree($fastTask->getFree4());
       if(!is_null($fastTask->getDescription4())) {
         $task4->setDescription($fastTask->getDescription4());
@@ -1748,6 +2028,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task5->setCreatedBy($user);
       $task5->setIsTimeRoundUp(true);
       $task5->setRoundingInterval(15);
+        $task5->setCategory($category);
         $task5->setIsFree($fastTask->getFree5());
       if(!is_null($fastTask->getDescription5())) {
         $task5->setDescription($fastTask->getDescription5());
@@ -1801,6 +2082,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task6->setIsTimeRoundUp(true);
       $task6->setRoundingInterval(15);
         $task6->setIsFree($fastTask->getFree6());
+        $task6->setCategory($category);
       if(!is_null($fastTask->getDescription6())) {
         $task6->setDescription($fastTask->getDescription6());
       }
@@ -1853,6 +2135,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task7->setIsTimeRoundUp(true);
       $task7->setRoundingInterval(15);
         $task7->setIsFree($fastTask->getFree7());
+        $task7->setCategory($category);
       if(!is_null($fastTask->getDescription7())) {
         $task7->setDescription($fastTask->getDescription7());
       }
@@ -1905,6 +2188,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task8->setIsTimeRoundUp(true);
       $task8->setRoundingInterval(15);
         $task8->setIsFree($fastTask->getFree8());
+        $task8->setCategory($category);
       if(!is_null($fastTask->getDescription8())) {
         $task8->setDescription($fastTask->getDescription8());
       }
@@ -1957,6 +2241,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task9->setIsTimeRoundUp(true);
       $task9->setRoundingInterval(15);
         $task9->setIsFree($fastTask->getFree9());
+        $task9->setCategory($category);
       if(!is_null($fastTask->getDescription9())) {
         $task9->setDescription($fastTask->getDescription9());
       }
@@ -2009,6 +2294,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task10->setIsTimeRoundUp(true);
       $task10->setRoundingInterval(15);
         $task10->setIsFree($fastTask->getFree10());
+        $task10->setCategory($category);
       if(!is_null($fastTask->getDescription10())) {
         $task10->setDescription($fastTask->getDescription10());
       }

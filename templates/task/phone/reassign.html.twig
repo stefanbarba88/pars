@@ -46,9 +46,9 @@
                                                 <option value="">--Izaberite geodetu--</option>
                                                 {% for user in users %}
                                                     {% if user.id == assignedUsers[0].id %}
-                                                        <option value="{{ user.id }}" selected>{{ user.getNameForForm() }}</option>
+                                                        <option value="{{ user.id }}" selected>{{ user.ime }}</option>
                                                     {% else %}
-                                                        <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
                                                     {% endif %}
                                                 {% endfor %}
                                             </select>
@@ -64,9 +64,9 @@
                                                 <option>--Izaberite geodetu--</option>
                                                 {% for user in users %}
                                                     {% if assignedUsers[1] is not null and user.id == assignedUsers[1].id %}
-                                                        <option value="{{ user.id }}" selected>{{ user.getNameForForm() }}</option>
+                                                        <option value="{{ user.id }}" selected>{{ user.ime }}</option>
                                                     {% else %}
-                                                        <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
                                                     {% endif %}
                                                 {% endfor %}
                                             </select>
@@ -81,9 +81,9 @@
                                                 <option>--Izaberite geodetu--</option>
                                                 {% for user in users %}
                                                     {% if assignedUsers[2] is not null and user.id == assignedUsers[2].id %}
-                                                        <option value="{{ user.id }}" selected>{{ user.getNameForForm() }}</option>
+                                                        <option value="{{ user.id }}" selected>{{ user.ime }}</option>
                                                     {% else %}
-                                                        <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
                                                     {% endif %}
                                                 {% endfor %}
                                             </select>
@@ -118,9 +118,9 @@
                                                 <option value="">--Izaberite vozača--</option>
                                                 {% for user in users %}
                                                     {% if task.driver == user.id %}
-                                                        <option value="{{ user.id }}" selected>{{ user.getNameForForm() }}</option>
+                                                        <option value="{{ user.id }}" selected>{{ user.ime }}</option>
                                                     {% else %}
-                                                        <option value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
                                                     {% endif %}
                                                 {% endfor %}
                                             </select>

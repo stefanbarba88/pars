@@ -1,0 +1,38 @@
+<div id="modal_date_task" class="modal fade" tabindex="-1" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white border-0">
+                <h6 class="modal-title">Izaberite novi datum</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                {% if project is defined %}
+                    <form name="datumCheckForm" method="post" action="{{ path('app_task_project_form', {project:project})}}"  id="check_datum_form">
+                {% else %}
+                    <form name="datumCheckForm" method="post" action="{{ path('app_task_form')}}"  id="check_datum_form">
+                {% endif %}
+                        <div class="row">
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="datumCheck">Datum zadatka:*</label>
+                                    <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="ph-calendar"></i>
+                                                </span>
+                                        <input type="text" id="datumCheck" name="datumCheck" class="form-control datepicker-date-format-custom required datepicker-input" autocomplete="off" aria-invalid="false" value="{{ task.datumKreiranja |date ('d.m.Y') }}">
+
+                                    </div>
+                                    <span class="form-text">Format: 31.12.1900. Definišete kada zadatak treba da se izvrši.</span>
+                                </div>
+                        </div>
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                <button type="submit" onclick="submitForm('check_datum_form')" class="btn btn-primary"><i class="ph-arrows-clockwise me-2"></i> Primenite</button>
+            </div>
+        </div>
+    </div>
+</div>

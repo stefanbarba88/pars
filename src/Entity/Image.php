@@ -53,6 +53,8 @@ class Image {
   #[ORM\ManyToOne(inversedBy: 'image')]
   private ?StopwatchTime $stopwatchTime = null;
 
+  #[ORM\ManyToOne(inversedBy: 'image')]
+  private ?CarReservation $carReservation = null;
 
   public function __construct() {
     $this->users = new ArrayCollection();
@@ -246,5 +248,18 @@ class Image {
 
       return $this;
   }
+
+  public function getCarReservation(): ?CarReservation
+  {
+      return $this->carReservation;
+  }
+
+  public function setCarReservation(?CarReservation $carReservation): self
+  {
+      $this->carReservation = $carReservation;
+
+      return $this;
+  }
+
 
 }

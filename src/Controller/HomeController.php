@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Classes\Data\UserRolesData;
 use App\Classes\JMBGcheck\JMBGcheck;
+use App\Entity\Availability;
 use App\Entity\Car;
 use App\Entity\FastTask;
 use App\Entity\ManagerChecklist;
@@ -35,9 +36,15 @@ class HomeController extends AbstractController {
 
     $args['timetable'] = $this->em->getRepository(Task::class)->getTasksByDate($args['danas']);
 
+    $args['plan'] = $this->em->getRepository(FastTask::class)->getTimeTableActive();
+    $args['subs'] = $this->em->getRepository(FastTask::class)->getTimeTableSubsActive();
+
     $args['tomorrowTimetable'] = $this->em->getRepository(FastTask::class)->getTimetable($args['sutra']);
     $args['tomorrowSubs'] = $this->em->getRepository(FastTask::class)->getSubs($args['sutra']);
     $args['tomorrowTimetableId'] = $this->em->getRepository(FastTask::class)->getTimeTableTomorrowId($args['sutra']);
+//    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostDanas();
+    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getAllDostupnostiDanas();
+
 //srediti ovaj upit, uzima puno resursa
 //    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
     $args['countTasksUnclosed'] = 0;

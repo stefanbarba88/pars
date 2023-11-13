@@ -50,8 +50,18 @@
                                     <div class="card-header d-lg-flex py-lg-0">
                                         <h5 class="py-lg-3 mb-0">{{ project.title }}: {{ period }}</h5>
                                         <div class="mt-1 my-lg-auto ms-lg-auto">
-                                            <a href="" class="btn btn-light"><i class="ph-file-pdf"></i></a>
-                                            <a href="" class="btn btn-light"><i class="ph-file-xls"></i></a>
+                                            {% if reports[0] is not empty %}
+                                                <div class="dropdown">
+                                                    <a href="#" class="btn btn-light" data-bs-toggle="dropdown">
+                                                        <i class="ph-file-xls"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:1}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Pun prikaz</a>
+                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:2}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Složen prikaz</a>
+                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:3}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Prost prikaz</a>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     </div>
 
@@ -72,15 +82,11 @@
                                                     {% if ukupnoz is defined %}
                                                         <th>Ukupno*</th>
                                                     {% endif %}
-                                                    {% if zaduzeni is defined %}
-                                                        <th>Izvršioci</th>
-                                                    {% endif %}
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-
                                                 {% if reports is not empty %}
-                                                    {% for key, value in reports %}
+                                                    {% for key, value in reports[0] %}
                                                         <tr>
                                                         {% if datum is defined %}
                                                             <td>
@@ -141,107 +147,105 @@
                                                                             <th>Napomena</th>
                                                                         {% endif %}
 
+                                                                        {% if zaduzeni is defined %}
+                                                                            <th>Izvršioci</th>
+                                                                        {% endif %}
+
                                                                     </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                    {% for report in value %}
-                                                                        {% if report.stopwatches is not empty %}
-                                                                        {% for stopwatch in report.stopwatches %}
-                                                                            <tr>
-                                                                                {% if opis is defined %}
-                                                                                    <td>
-                                                                                        {% if report.category is not null %}
-                                                                                            {{ report.category.title }}
-                                                                                        {% endif %}
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        {% for akt in stopwatch.activity %}
-                                                                                            {{ akt.title }}{% if not loop.last %},{% endif %}
-                                                                                        {% endfor %}
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        {{ stopwatch.additionalActivity }}
-                                                                                    </td>
-                                                                                {% endif %}
-                                                                                {% if start is defined %}
-                                                                                    <td>
-                                                                                        {{ stopwatch.start | date("H:i")}}
-                                                                                    </td>
-                                                                                {% endif %}
-                                                                                {% if stop is defined %}
-                                                                                    <td>
-                                                                                        {{ stopwatch.stop | date("H:i")}}
-                                                                                    </td>
-                                                                                {% endif %}
-                                                                                {% if razlika is defined %}
-                                                                                    <td>
-                                                                                        {{ stopwatch.hoursReal }}:{{ stopwatch.minutesReal}}<br>
-                                                                                    </td>
-                                                                                {% endif %}
-                                                                                {% if razlikaz is defined %}
-                                                                                    <td>
-                                                                                        {{ stopwatch.hours }}:{{ stopwatch.minutes}}<br>
-                                                                                    </td>
-                                                                                {% endif %}
+                                                                        {% if reports[2] is not empty %}
+                                                                            {% for stopwatch in reports[2][loop.index0] %}
+                                                                                <tr>
+                                                                                    {% if opis is defined %}
+                                                                                        <td>
+                                                                                            {% if stopwatch.category is not null %}
+                                                                                                {{ stopwatch.category.title }}
+                                                                                            {% endif %}
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            {% for akt in stopwatch.activity %}
+                                                                                                {{ akt.title }}{% if not loop.last %},{% endif %}
+                                                                                            {% endfor %}
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            {{ stopwatch.additionalActivity }}
+                                                                                        </td>
+                                                                                    {% endif %}
+                                                                                    {% if start is defined %}
+                                                                                        <td>
+                                                                                            {{ stopwatch.start | date("H:i")}}
+                                                                                        </td>
+                                                                                    {% endif %}
+                                                                                    {% if stop is defined %}
+                                                                                        <td>
+                                                                                            {{ stopwatch.stop | date("H:i")}}
+                                                                                        </td>
+                                                                                    {% endif %}
+                                                                                    {% if razlika is defined %}
+                                                                                        <td>
+                                                                                            {{ stopwatch.hoursReal }}:{{ stopwatch.minutesReal}}<br>
+                                                                                        </td>
+                                                                                    {% endif %}
+                                                                                    {% if razlikaz is defined %}
+                                                                                        <td>
+                                                                                            {{ stopwatch.hours }}:{{ stopwatch.minutes}}<br>
+                                                                                        </td>
+                                                                                    {% endif %}
 
-                                                                                {% if klijent is defined %}
-                                                                                    <td>
-                                                                                        {% if stopwatch.client is not null %}{{ stopwatch.client.title }}{% endif %}
-                                                                                    </td>
-                                                                                {% endif %}
+                                                                                    {% if klijent is defined %}
+                                                                                        <td>
+                                                                                            {% if stopwatch.client is not null %}{{ stopwatch.client.title }}{% endif %}
+                                                                                        </td>
+                                                                                    {% endif %}
 
-                                                                                {% if napomena is defined %}
-                                                                                    <td>
-                                                                                        {% if stopwatch.description is not empty %}
-                                                                                            {{ stopwatch.description }}
-                                                                                        {% endif %}
-                                                                                    </td>
-                                                                                {% endif %}
-                                                                            </tr>
-                                                                        {% endfor %}
-                                                                    {% endif %}
-                                                                    {% endfor %}
+                                                                                    {% if napomena is defined %}
+                                                                                        <td>
+                                                                                            {% if stopwatch.description is not empty %}
+                                                                                                {{ stopwatch.description }}
+                                                                                            {% endif %}
+                                                                                        </td>
+                                                                                    {% endif %}
+                                                                                    {% if zaduzeni is defined %}
+                                                                                        <td>
+                                                                                            {% for user in stopwatch.users %}
+                                                                                                {{ user.fullName }}<br>
+                                                                                            {% endfor %}
+                                                                                        </td>
+                                                                                    {% endif %}
+                                                                                </tr>
+                                                                            {% endfor %}
+                                                                        {% endif %}
                                                                     </tbody>
 
                                                                 </table>
                                                             </td>
 
-
                                                             {% if ukupno is defined %}
                                                                 <td>
-                                                                    {% set hoursRealTimePriority = 0 %}
-                                                                    {% set minutesRealTimePriority = 0 %}
-                                                                    {% for report in value %}
-                                                                        {% set hoursRealTimePriority = hoursRealTimePriority + report.time.hoursRealTimePriority %}
-                                                                        {% set minutesRealTimePriority = minutesRealTimePriority + report.time.minutesRealTimePriority %}
-                                                                    {% endfor %}
-                                                                {% if hoursRealTimePriority < 10 %}0{% endif %}{{ hoursRealTimePriority }}:{% if minutesRealTimePriority < 10 %}0{% endif %}{{minutesRealTimePriority}}
+                                                                    {{ reports[1][loop.index0]['vremeR'] }}
+{#                                                                    {% set hoursRealTimePriority = 0 %}#}
+{#                                                                    {% set minutesRealTimePriority = 0 %}#}
+{#                                                                    {% for report in value %}#}
+{#                                                                        {% set hoursRealTimePriority = hoursRealTimePriority + report.time.hoursRealTimePriority %}#}
+{#                                                                        {% set minutesRealTimePriority = minutesRealTimePriority + report.time.minutesRealTimePriority %}#}
+{#                                                                    {% endfor %}#}
+{#                                                                {% if hoursRealTimePriority < 10 %}0{% endif %}{{ hoursRealTimePriority }}:{% if minutesRealTimePriority < 10 %}0{% endif %}{{minutesRealTimePriority}}#}
                                                                 </td>
                                                             {% endif %}
                                                             {% if ukupnoz is defined %}
                                                                 <td>
-                                                                    {% set hoursTimePriority = 0 %}
-                                                                    {% set minutesTimePriority = 0 %}
-                                                                    {% for report in value %}
-                                                                        {% set hoursTimePriority = hoursTimePriority + report.time.hoursTimePriority %}
-                                                                        {% set minutesTimePriority = minutesTimePriority + report.time.minutesTimePriority %}
-                                                                    {% endfor %}
-                                                                    {% if hoursTimePriority < 10 %}0{% endif %}{{ hoursTimePriority }}:{% if minutesTimePriority < 10 %}0{% endif %}{{minutesTimePriority}}
+                                                                    {{ reports[1][loop.index0]['vreme'] }}
+{#                                                                    {% set hoursTimePriority = 0 %}#}
+{#                                                                    {% set minutesTimePriority = 0 %}#}
+{#                                                                    {% for report in value %}#}
+{#                                                                        {% set hoursTimePriority = hoursTimePriority + report.time.hoursTimePriority %}#}
+{#                                                                        {% set minutesTimePriority = minutesTimePriority + report.time.minutesTimePriority %}#}
+{#                                                                    {% endfor %}#}
+{#                                                                    {% if hoursTimePriority < 10 %}0{% endif %}{{ hoursTimePriority }}:{% if minutesTimePriority < 10 %}0{% endif %}{{minutesTimePriority}}#}
                                                                 </td>
                                                             {% endif %}
-                                                        {% if zaduzeni is defined %}
-                                                            <td>
-                                                                {% for report in value %}
-                                                                    {% if report.zaduzeni |length != 0 %}
-                                                                        {% for zaposleni in report.zaduzeni %}
-                                                                            {{ zaposleni.fullName }}<br>
-                                                                        {% endfor %}
-                                                                    {% else %}
-                                                                        /
-                                                                    {% endif %}
-                                                                {% endfor %}
-                                                            </td>
-                                                        {% endif %}
+
                                                         </tr>
                                                     {% endfor %}
                                                 {% else %}

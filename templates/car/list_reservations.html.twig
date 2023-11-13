@@ -54,7 +54,8 @@
                                         {% if lastReservation.finished is not null %}
                                             <a href="{{ path('app_car_reservation_form', { id : car.id }) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                         {% else %}
-                                            <a href="{{ path('app_car_reservation_stop', { id: lastReservation.id}) }}" class="btn btn-primary"><i class="ph-car me-2"></i> Razdužite</a>
+                                            <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Slike</a>
+                                            <a href="{{ path('app_car_reservation_stop', { id: lastReservation.id}) }}" class="btn btn-primary"> Razdužite</a>
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}

@@ -19,6 +19,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -53,7 +54,7 @@ class TaskFormType extends AbstractType {
            return $em->createQueryBuilder('g')
              ->andWhere('g.isSuspended = :isSuspended')
              ->setParameter(':isSuspended', 0)
-             ->orderBy('g.id', 'ASC');
+             ->orderBy('g.title', 'ASC');
          },
          'choice_label' => 'title',
          'expanded' => false,
@@ -114,13 +115,14 @@ class TaskFormType extends AbstractType {
         'html5' => false,
         'input' => 'datetime_immutable'
       ])
-      ->add('datumKreiranja', DateType::class, [
-        'required' => false,
-        'widget' => 'single_text',
-        'format' => 'dd.MM.yyyy',
-        'html5' => false,
-        'input' => 'datetime_immutable'
-      ])
+//      ->add('datumKreiranja', HiddenType::class, [
+//        'hidden' => true,
+//        'required' => false,
+//        'widget' => 'single_text',
+//        'format' => 'dd.MM.yyyy',
+//        'html5' => false,
+//        'input' => 'datetime_immutable'
+//      ])
 //      ->add('assignedUsers', EntityType::class, [
 //        'class' => User::class,
 //        'query_builder' => function (EntityRepository $em) {

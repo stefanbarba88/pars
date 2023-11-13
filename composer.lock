@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0c5476c894d823469b4977db1363bdf4",
+    "content-hash": "f4517523c0ae3ef1d31da105545a5963",
     "packages": [
         {
             "name": "aimeos/map",

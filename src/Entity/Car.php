@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Classes\Slugify;
 use App\Repository\CarRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,6 +17,15 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[UniqueEntity(fields: ['plate'], message: 'U bazi već postoji vozilo sa ovim registracionim brojem!')]
 #[ORM\Table(name: 'cars')]
 class Car implements JsonSerializable {
+
+  public function getUploadPath(): ?string {
+    return $_ENV['CAR_IMAGE_PATH'] . Slugify::slugify($this->getCarName()) . '/';
+  }
+
+  public function getThumbUploadPath(): ?string {
+    return $_ENV['CAR_THUMB_PATH'] . Slugify::slugify($this->getCarName()) . '/';
+  }
+
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]
@@ -75,6 +85,7 @@ class Car implements JsonSerializable {
 
   #[ORM\OneToMany(mappedBy: 'car', targetEntity: Expense::class)]
   private Collection $expenses;
+
 
   public function __construct() {
     $this->carHistories = new ArrayCollection();
@@ -393,8 +404,6 @@ class Car implements JsonSerializable {
   public function setKm(?string $km): void {
     $this->km = $km;
   }
-
-
 
 
 }

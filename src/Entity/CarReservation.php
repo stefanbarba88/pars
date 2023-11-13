@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\CarReservationRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -55,6 +57,15 @@ class CarReservation {
 
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $finished = null;
+
+  #[ORM\OneToMany(mappedBy: 'carReservation', targetEntity: Image::class, cascade: ["persist", "remove"])]
+  private Collection $image;
+
+  public function __construct()
+  {
+      $this->image = new ArrayCollection();
+  }
+
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -241,7 +252,35 @@ class CarReservation {
     $this->cleanStop = $cleanStop;
   }
 
+  /**
+   * @return Collection<int, Image>
+   */
+  public function getImage(): Collection
+  {
+      return $this->image;
+  }
 
+  public function addImage(Image $image): self
+  {
+      if (!$this->image->contains($image)) {
+          $this->image->add($image);
+          $image->setCarReservation($this);
+      }
+
+      return $this;
+  }
+
+  public function removeImage(Image $image): self
+  {
+      if ($this->image->removeElement($image)) {
+          // set the owning side to null (unless already changed)
+          if ($image->getCarReservation() === $this) {
+              $image->setCarReservation(null);
+          }
+      }
+
+      return $this;
+  }
 
 
 }

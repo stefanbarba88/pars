@@ -19,7 +19,7 @@
                         </div>
                     {% endif %}
 
-                    <div class="alert alert-info alert-dismissible fade show">
+                    <div class="alert alert-secondary alert-dismissible fade show">
                         <span class="fw-semibold">Uputstvo je ažurirano 13.09.2023.</span> Preuzmite i pogledajte šta je <a href="{{ asset('/assets/manual/manual.pdf') }}" class="alert-link" download>novo</a> dodato.
                     </div>
 
@@ -40,7 +40,7 @@
                                         <tr class="table-light">
                                             <th colspan="4">Lista zadataka za danas</th>
                                             <th class="text-end">
-                                                <span class="badge bg-primary rounded-pill">{{ countLogs }}</span>
+                                                <span class="badge bg-yellow rounded-pill">{{ countLogs }}</span>
                                             </th>
                                         </tr>
                                         <tr>
@@ -61,10 +61,10 @@
                                                     <tr>
                                                 {% endif %}
                                                 {% if log[3] == 0 %}
-                                                    <tr class="bg-danger bg-opacity-25">
+                                                    <tr>
                                                 {% endif %}
                                                 {% if log[3] == 2 %}
-                                                    <tr class="bg-success bg-opacity-25">
+                                                    <tr class="bg-secondary">
                                                 {% endif %}
                                                     <td>
                                                         {% if log[0].task.time is not null %}
@@ -78,7 +78,14 @@
                                                         {% endif %}
                                                     </td>
                                                     <td>
-                                                        <div class="fw-semibold">{{ log[0].task.project.title }}</div>
+                                                        <div class="fw-semibold">
+                                                            <div class="btn-group">
+                                                                <a href="#" class="fw-semibold link-dark d-inline-flex align-items-center ">
+                                                                    {{ log[0].task.project.title }}
+                                                                    {% if log[3] == 0 %}<div class="live p-1 mx-2"></div>{% endif %}
+                                                                </a>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                     <td>
                                                         {% for user in log[0].task.assignedUsers %}
@@ -138,16 +145,22 @@
                                                     <tr>
                                                 {% endif %}
                                                 {% if log[3] == 0 %}
-                                                    <tr class="bg-danger bg-opacity-25">
+                                                    <tr>
                                                 {% endif %}
                                                 {% if log[3] == 2 %}
-                                                    <tr class="bg-success bg-opacity-25">
+                                                    <tr class="bg-secondary">
                                                 {% endif %}
                                                     <td style="width: 40%;">
-                                                        <div class="fw-semibold">{{ log[0].task.project.title }}
-                                                            {% if log[0].task.time|date('H:i') != '00:00' %}
-                                                                ({{ log[0].task.time|date('H:i') }})h
-                                                            {% endif %}
+                                                        <div class="fw-semibold">
+                                                            <div class="btn-group">
+                                                                <a href="#" class="fw-semibold link-dark d-inline-flex align-items-center ">
+                                                                    {{ log[0].task.project.title }}
+                                                                    {% if log[0].task.time|date('H:i') != '00:00' %}
+                                                                        ({{ log[0].task.time|date('H:i') }})h
+                                                                    {% endif %}
+                                                                    {% if log[3] == 0 %}<div class="live p-1 mx-2"></div>{% endif %}
+                                                                </a>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                     <td style="width: 50%;">
@@ -305,7 +318,7 @@
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <button data-bs-toggle="modal" data-bs-target="#modal_details_task{{ loop.index }}" class="btn btn-info"><i class="ph-info"></i></button>
+                                                        <button data-bs-toggle="modal" data-bs-target="#modal_details_task{{ loop.index }}" class="btn btn-secondary"><i class="ph-info"></i></button>
                                                     </td>
                                                     </tr>
                                                 {% endif %}
@@ -449,7 +462,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <button data-bs-toggle="modal" data-bs-target="#modal_details1_task{{ loop.index }}" class="btn btn-info"><i class="ph-info"></i></button>
+                                                            <button data-bs-toggle="modal" data-bs-target="#modal_details1_task{{ loop.index }}" class="btn btn-secondary"><i class="ph-info"></i></button>
                                                         </td>
                                                     </tr>
                                                 {% endif %}
@@ -486,7 +499,7 @@
                 <div id="modal_details1_task{{ loop.index }}" class="modal fade" tabindex="-1">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header bg-info text-white border-0">
+                            <div class="modal-header bg-primary text-white border-0">
                                 <h6 class="modal-title">Detalji zadatka</h6>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
@@ -557,7 +570,7 @@
                             </div>
 
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-outline-info" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
                             </div>
                         </div>
                     </div>
@@ -570,7 +583,7 @@
             <div id="modal_details_task{{ loop.index }}" class="modal fade" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <div class="modal-header bg-info text-white border-0">
+                        <div class="modal-header bg-primary text-white border-0">
                             <h6 class="modal-title">Detalji zadatka</h6>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                         </div>
@@ -635,7 +648,7 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-info" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
                         </div>
                     </div>
                 </div>

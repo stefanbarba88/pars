@@ -53,13 +53,14 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-label required" for="report_form_project">Projekat:*</label>
-                                            <select id="report_form_project" name="report_form[project]" class="form-control select required">
+                                            <label class="form-label required" for="report_form_project">Projekat:</label>
+                                            <select id="report_form_project" name="report_form[project]" class="form-control select">
                                                 <option value="">--Izaberite projekat--</option>
                                                 {% for project in projects %}
                                                     <option value="{{ project.id }}">{{ project.title }}</option>
                                                 {% endfor %}
                                             </select>
+                                            <span class="form-text">Ako ne izaberete projekat u izveštaju će biti prikazani svi projekti.</span>
                                         </div>
                                     </div>
                                 </div>
@@ -87,6 +88,17 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="report_form_period">Naplativost:*</label>
+                                            <div class="input-group">
+                                                <label class="form-check mb-2">
+                                                    <input type="checkbox" class="form-check-input" name="report_form[naplativ]" checked value="1">
+                                                    <span class="form-check-label">Naplativ</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12">
@@ -95,11 +107,6 @@
                                             <div class="border px-3 pt-3 pb-2 rounded">
                                                 <div class="row">
                                                                 <div class="col-md-6">
-                                                                    <label class="form-check mb-2">
-                                                                        <input type="checkbox" class="form-check-input" name="report_form[naplativ]" checked value="1">
-                                                                        <span class="form-check-label">Naplativ</span>
-                                                                    </label>
-
                                                                     <label class="form-check mb-2">
                                                                         <input type="checkbox" class="form-check-input" name="report_form[datum]" checked value="1">
                                                                         <span class="form-check-label">Datum posla</span>

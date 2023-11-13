@@ -45,183 +45,172 @@
                         <div class="card-header d-lg-flex py-lg-0">
                             <h5 class="py-lg-3 mb-0">Planovi</h5>
                             <div class="mt-1 my-lg-auto ms-lg-auto">
-                                <a href="{{ path('app_quick_tasks_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                <a href="{{ path('app_quick_tasks_form_date') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
-                        <table class="table datatable-colvis-state-pars">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Datum</th>
-                                <th>Status</th>
-                                <th>Broj zadataka</th>
-                                <th>Broj zamena</th>
-                                <th>Kreiran</th>
-                                <th>Poslednja promena</th>
-                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for fast in fastTasks %}
-                                <tr>
-                                    <td>{{ fast[0].id }}</td>
-                                    <td>
-                                        <div class="d-inline-flex align-items-center">
-                                            {{ fast[0].datum | date("d.m.Y")}}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if fast[0].status == constant('App\\Classes\\Data\\FastTaskData::OPEN') %}
-                                            <span class="badge bg-info">Kreiran</span>
-                                        {% elseif fast[0].status == constant('App\\Classes\\Data\\FastTaskData::SAVED') %}
-                                            <span class="badge bg-success">Sačuvan</span>
-                                        {% elseif  fast[0].status == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
-                                            <span class="badge bg-danger">Izmenjen</span>
-                                        {% elseif  fast[0].status == constant('App\\Classes\\Data\\FastTaskData::FINAL') %}
-                                            <span class="badge bg-dark">Finaliziran</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ fast[0].noTasks }}</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ fast[0].noSubs }}</span>
-                                    </td>
-                                    <td>
-                                        <div class="d-inline-flex align-items-center">
-                                            {{ fast[0].created | date("d.m.Y H:i:s")}}
-                                        </div>
-                                    </td>
-                                    <td>
-
-                                            <div class="d-inline-flex align-items-center">
-                                                {{ fast[0].updated | date("d.m.Y H:i:s")}}
-                                            </div>
-
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="dropdown">
-                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                <i class="ph-gear"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a href="{{ path('app_quick_task_edit', { id: fast[0].id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                {% if fast[1] == 1 %}
-                                                    <a href="" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ fast[0].id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                        <div class="card-body">
+                            <div class="table-responsive ">
+                                <table class="table table-bordered table-hover table-responsive">
+                                    <thead>
+                                    <tr>
+                                        <th {% if pagination.isSorted('[f.id]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, '# ID ', ['f.id']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'f.id' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'f.id' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th {% if pagination.isSorted('[f.datum]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Datum ', ['f.datum']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'f.datum' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'f.datum' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th>Status</th>
+                                        <th>Broj zadataka</th>
+                                        <th>Broj zamena</th>
+                                        <th  {% if pagination.isSorted('[f.created]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Kreiran ', ['f.created']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'f.created' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'f.created' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th {% if pagination.isSorted('[f.updated]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Poslednja izmena ', ['f.updated']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'f.updated' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'f.updated' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for task in pagination %}
+                                        <tr>
+                                            <td>{{ task.id }}</td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ task.datum | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if task.status == constant('App\\Classes\\Data\\FastTaskData::OPEN') %}
+                                                    <span class="badge bg-secondary text-primary">Kreiran</span>
+                                                {% elseif task.status == constant('App\\Classes\\Data\\FastTaskData::SAVED') %}
+                                                    <span class="badge bg-success">Sačuvan</span>
+                                                {% elseif  task.status == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
+                                                    <span class="badge bg-danger">Izmenjen</span>
+                                                {% elseif  task.status == constant('App\\Classes\\Data\\FastTaskData::FINAL') %}
+                                                    <span class="badge bg-primary text-secondary">Finaliziran</span>
                                                 {% endif %}
-{#                                                {% if fast.status != constant('App\\Classes\\Data\\FastTaskData::FINAL') %}#}
-{#                                                    <a href="{{ path('app_email_timetable', { id: fast.id}) }}" class="dropdown-item"><i class="ph-envelope me-2"></i> Pošaljite plan</a>#}
-{#                                                    <a href="{{ path('app_create_tasks', {id: fast.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Kreirajte zadatke</a>#}
-{#                                                {% endif %}#}
-                                            </div>
-{#                                            <!-- delete task modal -->#}
-                                            <div id="modal_delete_task{{ fast[0].id }}" class="modal fade" tabindex="-1">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header bg-danger text-white border-0">
-                                                            <h6 class="modal-title">Potvrda</h6>
-                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                        </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-yellow text-primary align-self-center rounded-pill ms-auto">{{ task.noTasks }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-yellow text-primary align-self-center rounded-pill ms-auto">{{ task.noSubs }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ task.created | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ task.updated | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_quick_task_edit', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        {% if task.status == 1 %}
+                                                            <a href="" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                        {% endif %}
+                                                        {#                                                {% if fast.status != constant('App\\Classes\\Data\\FastTaskData::FINAL') %}#}
+                                                        {#                                                    <a href="{{ path('app_email_timetable', { id: fast.id}) }}" class="dropdown-item"><i class="ph-envelope me-2"></i> Pošaljite plan</a>#}
+                                                        {#                                                    <a href="{{ path('app_create_tasks', {id: fast.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Kreirajte zadatke</a>#}
+                                                        {#                                                {% endif %}#}
+                                                    </div>
+                                                    {#                                            <!-- delete task modal -->#}
+                                                    <div id="modal_delete_task{{ task.id }}" class="modal fade" tabindex="-1">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header bg-danger text-white border-0">
+                                                                    <h6 class="modal-title">Potvrda</h6>
+                                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                </div>
 
-                                                        <div class="modal-body">
-                                                            <p>Da li ste sigurni da želite da obrišete ovaj plan?</p>
-                                                        </div>
+                                                                <div class="modal-body">
+                                                                    <p>Da li ste sigurni da želite da obrišete ovaj plan?</p>
+                                                                </div>
 
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                            <a href="{{ path('app_quick_tasks_delete', {id: fast[0].id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                    <a href="{{ path('app_quick_tasks_delete', {id: task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                    <!-- /delete task modal -->
+                                                    {#                                            <!-- close task modal -->#}
+                                                    {#                                            <div id="modal_close_task{{ task.task.id }}" class="modal fade" tabindex="-1">#}
+                                                    {#                                                <div class="modal-dialog">#}
+                                                    {#                                                    <div class="modal-content">#}
+                                                    {#                                                        <div class="modal-header bg-primary text-white border-0">#}
+                                                    {#                                                            <h6 class="modal-title">Potvrda</h6>#}
+                                                    {#                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+                                                    {#                                                        </div>#}
+
+                                                    {#                                                        <div class="modal-body">#}
+                                                    {#                                                            <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>#}
+                                                    {#                                                        </div>#}
+
+                                                    {#                                                        <div class="modal-footer">#}
+                                                    {#                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>#}
+                                                    {#                                                            <a href="{{ path('app_task_close',{id: task.task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>#}
+                                                    {#                                                        </div>#}
+                                                    {#                                                    </div>#}
+                                                    {#                                                </div>#}
+                                                    {#                                            </div>#}
+                                                    {#                                            <!-- /close task modal -->#}
                                                 </div>
-                                            </div>
-                                            <!-- /delete task modal -->
-{#                                            <!-- close task modal -->#}
-{#                                            <div id="modal_close_task{{ task.task.id }}" class="modal fade" tabindex="-1">#}
-{#                                                <div class="modal-dialog">#}
-{#                                                    <div class="modal-content">#}
-{#                                                        <div class="modal-header bg-primary text-white border-0">#}
-{#                                                            <h6 class="modal-title">Potvrda</h6>#}
-{#                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                                                        </div>#}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
 
-{#                                                        <div class="modal-body">#}
-{#                                                            <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>#}
-{#                                                        </div>#}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
-{#                                                        <div class="modal-footer">#}
-{#                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>#}
-{#                                                            <a href="{{ path('app_task_close',{id: task.task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>#}
-{#                                                        </div>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                            <!-- /close task modal -->#}
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-{#                            {% for task in tasks %}#}
-{#                                <tr>#}
-{#                                    <td>#{{ task.id }}</td>#}
-{#                                    <td><a href="{{ path('app_task_tasks_view', { id: task.id}) }}">{{ task.title }}</a></td>#}
-{#                                    <td>#}
-{#                                        <div class="fw-semibold"><a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a></div>#}
-{#                                        <div class="d-inline-flex">#}
-{#                                            {% for label in task.label %}#}
-{#                                                {{label.label | raw}}#}
-{#                                            {% endfor %}#}
-{#                                        </div>#}
-{#                                    </td>#}
-{#                                    <td>#}
-{#                                        {% if task.project is null %}#}
-{#                                            /#}
-{#                                        {% else %}#}
-{#                                            <a href="{{ path('app_project_profile_view', { id: task.project.id}) }}">{{ task.project.title }}</a>#}
-{#                                        {% endif %}#}
-{#                                    </td>#}
-{#                                    <td class="text-center">#}
-{#                                        {% if task.isPriority %}#}
-{#                                            <span class="badge bg-danger rounded-pill p-1">#}
-{#												<i class="ph-warning-circle"></i>#}
-{#											</span>#}
-{#                                        {% endif %}#}
-{#                                    </td>#}
-{#                                    <td>#}
-{#                                        <div class="d-inline-flex align-items-center">#}
-{#                                            <i class="ph-calendar me-2"></i>#}
-{#                                            {{ task.updated | date("d.m.Y H:i:s")}}#}
-{#                                        </div>#}
-{#                                    </td>#}
-{#                                    <td>#}
-{#                                        <div class="d-inline-flex align-items-center">#}
-{#                                            <i class="ph-calendar me-2"></i>#}
-{#                                            {{ task.created | date("d.m.Y")}}#}
-{#                                        </div>#}
-{#                                    </td>#}
-{#                                    <td>#}
-{#                                        {% for user in task.assignedUsers %}#}
-{#                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}"></a>#}
-{#                                        {% endfor %}#}
-{#                                    </td>#}
-{#                                    <td class="text-center">#}
-{#                                        <div class="dropdown">#}
-{#                                            <a href="#" class="text-body" data-bs-toggle="dropdown">#}
-{#                                                <i class="ph-gear"></i>#}
-{#                                            </a>#}
-{#                                            <div class="dropdown-menu dropdown-menu-end">#}
-{#                                                <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Check in</a>#}
-{#                                                <a href="#" class="dropdown-item"><i class="ph-paperclip me-2"></i> Attach screenshot</a>#}
-{#                                                <a href="#" class="dropdown-item"><i class="ph-user-switch me-2"></i> Reassign</a>#}
-{#                                                <div class="dropdown-divider"></div>#}
-{#                                                <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>#}
-{#                                                <a href="#" class="dropdown-item"><i class="ph-x me-2"></i> Remove</a>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </td>#}
-{#                                </tr>#}
-{#                            {% endfor %}#}
-                            </tbody>
-                        </table>
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+
                     </div>
                     <!-- /state saving -->
                 </div>

@@ -4,8 +4,11 @@ namespace App\Service;
 
 use App\Classes\CompanyInfo;
 use App\Classes\Data\UserRolesData;
+use App\Entity\Calendar;
+use App\Entity\Client;
 use App\Entity\Email;
 use App\Entity\User;
+use DateTimeImmutable;
 use Twig\Environment;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -105,6 +108,60 @@ class MailService {
     $args['danas'] = $datum;
     $args['logs'] = $logs;
     $to = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function calendar(Calendar $calendar, string $to): void {
+
+    $args = [];
+
+    $subject = 'Zahtev od ' . $calendar->getUser()->first()->getFullName();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/zahtev.html.twig';
+    $args['user'] = $calendar->getUser()->first()->getFullName();
+    $args['calendar'] = $calendar;
+
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function responseCalendar(Calendar $calendar): void {
+
+    $args = [];
+
+    $subject = 'Odgovor na zahtev ' . $calendar->getUser()->first()->getFullName();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/odgovor.html.twig';
+    $args['user'] = $calendar->getUser()->first()->getFullName();
+    $args['calendar'] = $calendar;
+
+    $to = $calendar->getUser()->first()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function tasksByClient(array $projects, Client $client, DateTimeImmutable $predhodniMesecDatum, DateTimeImmutable $date, string $to): void {
+
+    $args = [];
+
+    $subject = 'Broj izlazaka za  ' . $client->getTitle() . ' do ' . $date->format('d.m.Y');
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/izlasci.html.twig';
+    $args['client'] = $client;
+    $args['projects'] = $projects;
+    $args['date'] = $date;
+    $args['predhodniMesecDatum'] = $predhodniMesecDatum;
+
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 

@@ -46,21 +46,21 @@
                     {#                    <a href="../../../../docs/other_changelog.html" class="nav-link">#}
                     {#                        <i class="ph-list-numbers"></i>#}
                     {#                        <span>Aktivni korisnici</span>#}
-                    {#                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>#}
+                    {#                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">4.0</span>#}
                     {#                    </a>#}
                     {#                </li>#}
                     {#                <li class="nav-item">#}
                     {#                    <a href="../../../../docs/other_changelog.html" class="nav-link">#}
                     {#                        <i class="ph-list-numbers"></i>#}
                     {#                        <span>Aktivni zadaci</span>#}
-                    {#                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>#}
+                    {#                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">4.0</span>#}
                     {#                    </a>#}
                     {#                </li>#}
                     {#                <li class="nav-item">#}
                     {#                    <a href="../../../../docs/other_changelog.html" class="nav-link">#}
                     {#                        <i class="ph-list-numbers"></i>#}
                     {#                        <span>Aktivna vozila</span>#}
-                    {#                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>#}
+                    {#                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">4.0</span>#}
                     {#                    </a>#}
                     {#                </li>#}
 
@@ -73,32 +73,32 @@
                         <a href="{{ path('app_tasks') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksActiveByUser }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksActiveByUser }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tasks_unclosed') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Nezatvoreni</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksUnclosedByUser }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksUnclosedByUser }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tasks_unclosed_logs') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Nezatvoreni dnevnici</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksUnclosedLogsByUser }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksUnclosedLogsByUser }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tasks_arhiva') }}" class="nav-link">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksArchiveByUser }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksArchiveByUser }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_task_form') }}" class="nav-link">
+                        <a href="{{ path('app_task_form_date') }}" class="nav-link">
                             <i class="ph-folder-plus"></i>
                             <span>Dodajte</span>
                         </a>
@@ -112,7 +112,7 @@
                         <a href="{{ path('app_projects') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto"></span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto"></span>
                         </a>
                     </li>
 
@@ -141,6 +141,12 @@
                                 <span>Trošak</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="nav-link">
+                                <i class="ph-image"></i>
+                                <span>Slike</span>
+                            </a>
+                        </li>
                     {% endif %}
 
                     <!-- /Vozila -->
@@ -166,7 +172,7 @@
                         <a href="{{ path('app_calendar_list') }}" class="nav-link">
                             <i class="ph-calendar"></i>
                             <span>Lista</span>
-                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
 
@@ -178,35 +184,35 @@
                         <a href="{{ path('app_employee_notes_view', {id:user.id}) }}" class="nav-link">
                             <i class="ph-clipboard-text"></i>
                             <span>Beleške</span>
-                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_employee_docs_view', {id:user.id}) }}" class="nav-link">
                             <i class="ph-file"></i>
                             <span>Dokumenta</span>
-                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_employee_images_view', {id:user.id}) }}" class="nav-link">
                             <i class="ph-image"></i>
                             <span>Slike</span>
-                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_employee_comments_view', {id:user.id}) }}" class="nav-link">
                             <i class="ph-chats-circle"></i>
                             <span>Komentari</span>
-                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ asset('/assets/manual/manual.pdf') }}" class="nav-link" download>
                             <i class="ph-lifebuoy"></i>
                             <span>Uputstvo</span>
-                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
 {#                    <!-- Page kits -->#}
@@ -293,21 +299,21 @@
                     {#                    <a href="../../../../docs/other_changelog.html" class="nav-link">#}
                     {#                        <i class="ph-list-numbers"></i>#}
                     {#                        <span>Aktivni korisnici</span>#}
-                    {#                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>#}
+                    {#                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">4.0</span>#}
                     {#                    </a>#}
                     {#                </li>#}
                     {#                <li class="nav-item">#}
                     {#                    <a href="../../../../docs/other_changelog.html" class="nav-link">#}
                     {#                        <i class="ph-list-numbers"></i>#}
                     {#                        <span>Aktivni zadaci</span>#}
-                    {#                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>#}
+                    {#                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">4.0</span>#}
                     {#                    </a>#}
                     {#                </li>#}
                     {#                <li class="nav-item">#}
                     {#                    <a href="../../../../docs/other_changelog.html" class="nav-link">#}
                     {#                        <i class="ph-list-numbers"></i>#}
                     {#                        <span>Aktivna vozila</span>#}
-                    {#                        <span class="badge bg-primary align-self-center rounded-pill ms-auto">4.0</span>#}
+                    {#                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">4.0</span>#}
                     {#                    </a>#}
                     {#                </li>#}
 
@@ -320,7 +326,7 @@
                         <a href="{{ path('app_users') }}" class="nav-link">
                             <i class="ph-users"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countUsersActive }}/{{ countUsers }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countUsersActive }}/{{ countUsers }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -340,25 +346,25 @@
                         <a href="{{ path('app_employees') }}" class="nav-link">
                             <i class="ph-user-circle"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countEmployeesActive }}/{{ countEmployees }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countEmployeesActive }}/{{ countEmployees }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_employees', { type : 1 }) }}" class="nav-link">
                             <i class="ph-user-circle-gear"></i>
                             <span>Na zadatku</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countEmployeesOnTask }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countEmployeesOnTask }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_employees', { type : 2 }) }}" class="nav-link">
                             <i class="ph-user-circle-gear"></i>
                             <span>Van zadatka</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countEmployeesOffTask }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countEmployeesOffTask }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="" class="nav-link">
+                        <a href="{{ path('app_employee_reports') }}" class="nav-link">
                             <i class="ph-file-text"></i>
                             <span>Izveštaji</span>
                         </a>
@@ -374,21 +380,21 @@
 {#                        <a href="{{ path('app_teams') }}" class="nav-link">#}
 {#                            <i class="ph-user-circle"></i>#}
 {#                            <span>Lista</span>#}
-{#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeams }}/{{ countAllTeams }}</span>#}
+{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTeams }}/{{ countAllTeams }}</span>#}
 {#                        </a>#}
 {#                    </li>#}
 {#                    <li class="nav-item">#}
 {#                        <a href="{{ path('app_teams', { type : 1 }) }}" class="nav-link">#}
 {#                            <i class="ph-user-circle"></i>#}
 {#                            <span>Aktivni</span>#}
-{#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeamsActive }}</span>#}
+{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTeamsActive }}</span>#}
 {#                        </a>#}
 {#                    </li>#}
 {#                    <li class="nav-item">#}
 {#                        <a href="{{ path('app_teams', { type : 2 }) }}" class="nav-link">#}
 {#                            <i class="ph-user-circle-gear"></i>#}
 {#                            <span>Neaktivni</span>#}
-{#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTeamsInactive }}</span>#}
+{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTeamsInactive }}</span>#}
 {#                        </a>#}
 {#                    </li>#}
 {#                    <li class="nav-item">#}
@@ -408,14 +414,14 @@
                         <a href="{{ path('app_clients') }}" class="nav-link">
                             <i class="ph-factory"></i>
                             <span>Lista klijenata</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countClientsActive }}/{{ countClients }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countClientsActive }}/{{ countClients }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_users_contact') }}" class="nav-link">
                             <i class="ph-factory"></i>
                             <span>Lista kontakt lica</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countContactsActive }}/{{ countContacts }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countContactsActive }}/{{ countContacts }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -435,21 +441,28 @@
                         <a href="{{ path('app_projects') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjectsActive }}/{{ countProjects }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectsActive }}/{{ countProjects }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_projects', {'permanent': 1}) }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Sa stalnom ekipom</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjectsPermanent }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectsPermanent }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_projects', {'permanent': 2}) }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Sa letećom ekipom</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjectsChange }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectsChange }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_projects', {'permanent': 3}) }}" class="nav-link">
+                            <i class="ph-archive"></i>
+                            <span>Arhiva</span>
+{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectsChange }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
@@ -469,42 +482,49 @@
                         <a href="{{ path('app_quick_tasks') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Plan</span>
-                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjects }}</span>#}
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjects }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_checklist_list') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Operativa</span>
-                            {#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countProjects }}</span>#}
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjects }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tasks_unclosed_logs') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Nezatvoreni dnevnici</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksUnclosedLogs }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksUnclosedLogs }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tasks') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Aktivni</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksActive }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksActive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tasks_unclosed') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Nezatvoreni</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksUnclosed }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksUnclosed }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tasks_arhiva') }}" class="nav-link">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTasksArchive }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksArchive }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_stopwatch_list') }}" class="nav-link">
+                            <i class="ph-archive"></i>
+                            <span>Zapisi za proveru</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksArchive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -524,21 +544,21 @@
                         <a href="{{ path('app_cars') }}" class="nav-link">
                             <i class="ph-car"></i>
                             <span>Sva vozila</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countActiveCars }}/{{ countCars }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countActiveCars }}/{{ countCars }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_cars', {type:1}) }}" class="nav-link">
                             <i class="ph-car"></i>
                             <span>Zadužena</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCarsActive }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCarsActive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_cars', {type:2}) }}" class="nav-link">
                             <i class="ph-car"></i>
                             <span>Nezadužena</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCarsInactive }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCarsInactive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -558,21 +578,21 @@
                         <a href="{{ path('app_tools') }}" class="nav-link">
                             <i class="ph-wrench"></i>
                             <span>Sva oprema</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countTools }}/{{ countAllTools }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTools }}/{{ countAllTools }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tools', {type:1}) }}" class="nav-link">
                             <i class="ph-wrench"></i>
                             <span>Zadužena</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countToolsActive }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countToolsActive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_tools', {type:2}) }}" class="nav-link">
                             <i class="ph-wrench"></i>
                             <span>Nezadužena</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countToolsInactive }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countToolsInactive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -590,7 +610,7 @@
                         <a href="{{ path('app_comments') }}" class="nav-link">
                             <i class="ph-chats-circle"></i>
                             <span>Lista</span>
-                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>
                         </a>
                     </li>
                     <!-- /Komentari -->
@@ -603,10 +623,38 @@
                     <li class="nav-item">
                         <a href="{{ path('app_calendar_list') }}" class="nav-link">
                             <i class="ph-calendar"></i>
-                            <span>Lista</span>
-{#                            <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                            <span>Zahtevi</span>
+{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_availability_list') }}" class="nav-link">
+                            <i class="ph-calendar"></i>
+                            <span>Kalendar</span>
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_availability_available') }}" class="nav-link">
+                            <i class="ph-calendar"></i>
+                            <span>Dostupni</span>
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_availability_unavailable') }}" class="nav-link">
+                            <i class="ph-calendar"></i>
+                            <span>Nedostupni</span>
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_calendar_list') }}" class="nav-link">
+                            <i class="ph-calendar"></i>
+                            <span>Izveštaji</span>
+                        </a>
+                    </li>
+
                     <!-- /Kalendar -->
 
                     <!-- Page kits -->

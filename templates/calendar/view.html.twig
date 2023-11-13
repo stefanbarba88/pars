@@ -25,8 +25,8 @@
                         <div class="d-flex">
                             <div class="breadcrumb py-2">
                                 <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_checklist_list') }}" class="breadcrumb-item">Zadaci</a>
-                                <span class="breadcrumb-item active">Zadatak</span>
+                                <a href="{{ path('app_calendar_list') }}" class="breadcrumb-item">Kalendar</a>
+                                <span class="breadcrumb-item active">Zahtev</span>
                             </div>
 
                             <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
@@ -51,6 +51,7 @@
                                 <div class="card">
                                     <div class="card-header d-lg-flex py-lg-0">
                                         <h5 class="py-lg-3 mb-0">Zahtev</h5>
+                                        {% if calendar.status != 0 %}
                                         <div class="mt-1 my-lg-auto ms-lg-auto">
                                             <div class="dropdown">
                                                 <a href="#" class="text-body" data-bs-toggle="dropdown">
@@ -67,14 +68,15 @@
                                                             Odbijte
                                                         </a>
                                                     {% endif %}
-                                                    <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
-                                                        <i class="ph-trash me-2"></i>
-                                                        Obrišite
-                                                    </a>
+                                                        <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
+                                                            <i class="ph-trash me-2"></i>
+                                                            Obrišite
+                                                        </a>
                                                 </div>
                                             </div>
 
                                         </div>
+                                        {% endif  %}
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">

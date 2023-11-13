@@ -9,6 +9,7 @@ use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
 use App\Entity\Activity;
 use App\Entity\Car;
+use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\FastTask;
 use App\Entity\Image;
@@ -30,11 +31,13 @@ use App\Service\UploadService;
 use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -65,22 +68,80 @@ class TaskController extends AbstractController {
     return $this->render('task/list.html.twig', $args);
   }
 
+//  #[Route('/archive/', name: 'app_tasks_arhiva')]
+//  public function arhiva(PaginatorInterface $paginator, Request $request)    : Response {
+//    if (!$this->isGranted('ROLE_USER')) {
+//    return $this->redirect($this->generateUrl('app_login'));
+//  }
+////    $args = [];
+////    $user = $this->getUser();
+////    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+////      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksArchiveByUser($user);
+////    } else {
+////      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksArchive();
+////    }
+////    $mobileDetect = new MobileDetect();
+////    if ($mobileDetect->isMobile()) {
+////      return $this->render('task/phone/archive.html.twig', $args);
+////    }
+//
+//    $args = [];
+//
+//    $tasks = $this->em->getRepository(Task::class)->getTasksArchive();
+//
+//    $pagination = $paginator->paginate(
+//      $tasks,
+//      $request->query->getInt('page', 1),
+//    );
+//
+////    $mobileDetect = new MobileDetect();
+////    if ($mobileDetect->isMobile()) {
+////      return $this->render('task/phone/archive.html.twig', $args);
+////    }
+//    $args['pagination'] = $pagination;
+//    return $this->render('task/archive_paginator.html.twig', $args);
+//  }
+
   #[Route('/archive/', name: 'app_tasks_arhiva')]
-  public function arhiva()    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function arhiva(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
     $args = [];
+    $search = [];
+    $search['projekat'] = $request->query->get('projekat');
+    $search['kategorija'] = $request->query->get('kategorija');
+    $search['period'] = $request->query->get('period');
+
     $user = $this->getUser();
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksArchiveByUser($user);
+      $tasks = $this->em->getRepository(Task::class)->getTasksPaginator($search, $user);
     } else {
-      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksArchive();
+      $search['zaposleni'] = $request->query->get('zaposleni');
+      $tasks = $this->em->getRepository(Task::class)->getTasksPaginator($search, $user);
     }
+
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+    $args['search'] = $search;
+    $args['projekti'] = $this->em->getRepository(Project::class)->findBy([],['title' => 'ASC']);
+    $args['kategorije'] = $this->em->getRepository(Category::class)->findBy(['isTaskCategory' => true],['title' => 'ASC']);
+    $args['users'] = $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE],['prezime' => 'ASC']);
+
     $mobileDetect = new MobileDetect();
     if ($mobileDetect->isMobile()) {
-      return $this->render('task/phone/archive.html.twig', $args);
+      return $this->render('task/phone/archive_paginator.html.twig', $args);
     }
-    return $this->render('task/archive.html.twig', $args);
+
+    return $this->render('task/archive_paginator.html.twig', $args);
   }
 
   #[Route('/unclosed/', name: 'app_tasks_unclosed')]
@@ -119,12 +180,52 @@ class TaskController extends AbstractController {
     return $this->render('task/unclosed_logs.html.twig', $args);
   }
 
+
+  #[Route('/form-task-date/', name: 'app_task_form_date', defaults: ['id' => 0])]
+  #[Entity('task', expr: 'repository.findForForm(id)')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formDate(Task $task, Request $request,)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $mobileDetect = new MobileDetect();
+    $args = [];
+
+    $data = $request->get('project');
+    if (!is_null($data)) {
+      $args['project'] = $data;
+    }
+
+    $args['disabledDates'] = $this->em->getRepository(FastTask::class)->getDisabledDates();
+    $args['task'] = $task;
+
+    if ($mobileDetect->isMobile()) {
+      return $this->render('task/phone/form_date.html.twig', $args);
+
+    }
+    return $this->render('task/form_date.html.twig', $args);
+
+  }
+
   #[Route('/form/{id}', name: 'app_task_form', defaults: ['id' => 0])]
   #[Entity('task', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Task $task, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
+
+    $data = $request->request->all();
+
+    if (isset($data['datumCheck'])) {
+      $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumCheck'])->setTime(0, 0);
+      $task->setDatumKreiranja($datumKreiranja);
+    }
+
+    if (isset($data['datumCheckPhone'])) {
+      $datumKreiranja = DateTimeImmutable::createFromFormat('Y-m-d', $data['datumCheckPhone'])->setTime(0, 0);
+      $task->setDatumKreiranja($datumKreiranja);
+    }
+
 
     $mobileDetect = new MobileDetect();
 
@@ -150,11 +251,15 @@ class TaskController extends AbstractController {
       $form = $this->createForm(PhoneTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
     }
 
+
+
     if ($request->isMethod('POST')) {
 
       $form->handleRequest($request);
       if ($form->isSubmitted() && $form->isValid()) {
 
+        $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumK'])->setTime(0, 0);
+        $task->setDatumKreiranja($datumKreiranja);
         if (!$mobileDetect->isMobile()) {
           $uploadFiles = $request->files->all()['task_form']['pdf'];
           if(!empty ($uploadFiles)) {
@@ -257,11 +362,12 @@ class TaskController extends AbstractController {
       }
     }
 
-
     $args['form'] = $form->createView();
+    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
     $args['korisnik'] = $user;
     $args['task'] = $task;
-    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+
+//    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
 
     if ($mobileDetect->isMobile()) {
@@ -269,6 +375,20 @@ class TaskController extends AbstractController {
 
     }
     return $this->render('task/form.html.twig', $args);
+  }
+  public function editDate(Task $task, int $project = 0): Response {
+
+    $args['task'] = $task;
+
+    if ($project != 0) {
+      $args['project'] = $project;
+    }
+    $mobileDetect = new MobileDetect();
+    if ($mobileDetect->isMobile()) {
+      return $this->render('task/phone/edit_date.html.twig', $args);
+
+    }
+    return $this->render('task/edit_date.html.twig', $args);
   }
 
   #[Route('/form-project/{project}', name: 'app_task_project_form')]
@@ -278,6 +398,18 @@ class TaskController extends AbstractController {
   public function formByProject(Task $task, Project $project, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
+
+    $data = $request->request->all();
+
+    if (isset($data['datumCheck'])) {
+      $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumCheck'])->setTime(0, 0);
+      $task->setDatumKreiranja($datumKreiranja);
+    }
+
+    if (isset($data['datumCheckPhone'])) {
+      $datumKreiranja = DateTimeImmutable::createFromFormat('Y-m-d', $data['datumCheckPhone'])->setTime(0, 0);
+      $task->setDatumKreiranja($datumKreiranja);
+    }
 
     $mobileDetect = new MobileDetect();
 
@@ -310,6 +442,9 @@ class TaskController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
+        $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumK'])->setTime(0, 0);
+        $task->setDatumKreiranja($datumKreiranja);
+
         if (!$mobileDetect->isMobile()) {
           $uploadFiles = $request->files->all()['task_form']['pdf'];
           if(!empty ($uploadFiles)) {
@@ -414,8 +549,9 @@ class TaskController extends AbstractController {
 
     $args['form'] = $form->createView();
     $args['task'] = $task;
+    $args['project'] = $project->getId();
     $args['korisnik'] = $user;
-    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
     $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
 
     if ($mobileDetect->isMobile()) {
@@ -628,7 +764,8 @@ class TaskController extends AbstractController {
 
     $args['task'] = $task;
     $args['assignedUsers'] = $this->em->getRepository(Task::class)->getAssignedUsersByTask($task);
-    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+//    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
 
     $mobileDetect = new MobileDetect();
@@ -728,8 +865,14 @@ class TaskController extends AbstractController {
         $task->removeAssignedUser($zaduzeni);
         $task->removeTaskLog($taskLog);
         $this->em->getRepository(Task::class)->save($task);
-      }
 
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+      }
 
       notyf()
         ->position('x', 'right')
@@ -807,8 +950,8 @@ class TaskController extends AbstractController {
     }
 
     $args['task'] = $task;
-    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
-
+//    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       return $this->render('task/phone/reassign_task.html.twig', $args);

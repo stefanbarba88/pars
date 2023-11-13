@@ -35,9 +35,9 @@
 
                         {{ render(controller('App\\Controller\\WidgetController::support' )) }}
                     </div>
-{#                    {% if task.project is not null %}#}
-{#                        {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}#}
-{#                    {% endif %}#}
+                    {#                    {% if task.project is not null %}#}
+                    {#                        {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}#}
+                    {#                    {% endif %}#}
 
                 </div>
 
@@ -45,28 +45,100 @@
 
                 <!-- Content area -->
                 <div class="content">
+
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
-                                Dodavanje plana
+                                Dostupnost
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6 col-lg-7">
+                                    <h6>Zaposleni</h6>
+                                    <div class="table-responsive ">
+                                                <table class="table table-bordered table-condensed2 table-sm">
+                                                    <tbody>
+                                                    {% for chunk in users|batch(4) %}
+                                                        <tr>
+                                                            {% for member in chunk %}
+                                                                <td>
+                                                                    <div class="list-group-item hstack gap-3 ">
+                                                                        <div class="flex-fill">
+                                                                            <div class="fw-semibold">{{ member.ime }}</div>
+                                                                            <span class="sakriveno d-none">{{ member.id }}</span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </td>
+                                                            {% endfor %}
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                </div>
+                                <div class="col-sm-6 col-lg-3">
+                                    <h6>Oprema</h6>
+                                    <div class="table-responsive">
+                                            <table class="table table-bordered table-condensed2 table-sm">
+                                                <tbody>
+                                                {% for chunk in tools|batch(4) %}
+                                                    <tr>
+                                                        {% for tool in chunk %}
+                                                            <td>
+                                                                <div class="list-group-item hstack gap-3 tool">
+                                                                    <div class="flex-fill">
+                                                                        <div class="fw-semibold">{{ tool.title }}</div>
+                                                                        <span class="sakrivenoTool d-none">{{ tool.id }}</span>
+                                                                    </div>
+                                                                </div>
+
+                                                            </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                </div>
+                                <div class="col-sm-6 col-lg-2">
+                                    <h6>Vozila</h6>
+                                    <div class="table-responsive ">
+                                            <table class="table table-bordered table-condensed2 table-sm">
+                                                <tbody>
+                                                {% for chunk in cars|batch(1) %}
+                                                    <tr>
+                                                        {% for car in chunk %}
+                                                            <td>
+                                                                <div class="list-group-item hstack gap-3 car">
+                                                                    <div class="flex-fill">
+                                                                        <div class="fw-semibold">{{ car.plate }}</div>
+                                                                        <span class="sakrivenoCar d-none">{{ car.id }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                Dodavanje plana - {{ datum }}
                             </h6>
                         </div>
                         <form name="task_quick_form" method="post" action="{{ path('app_quick_tasks_form') }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="task_quick_form">
                             <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-3">
-                                        <div class="mb-1">
-                                            <label class="form-label" for="task_form_datum">Datum:</label>
-                                            <div class="input-group">
-											<span class="input-group-text">
-												<i class="ph-calendar"></i>
-											</span>
-                                                <input type="text" id="task_form_datum" autocomplete="off" name="task_quick_form_datum" class="form-control datepicker-date-format-custom required"  />
-                                            </div>
-                                            <span class="form-text">Format: 31.12.1900.</span>
-                                        </div>
-                                    </div>
-                                </div>
+
+                                <input type="text" hidden="hidden" id="task_form_datum" name="task_quick_form_datum" value="{{ datum }}"/>
+
                                 <div class="card">
                                     <ul class="nav nav-tabs nav-tabs-underline nav-justified mb-0" role="tablist">
                                         <li class="nav-item" role="presentation"><a href="#tab-desc" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">Plan</a></li>
@@ -1499,7 +1571,7 @@
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
-{#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
     <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
 
     <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
@@ -1530,6 +1602,108 @@
     <script>
 
         $(document).ready(function() {
+            // $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1, #task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2, #task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3').change(function() {
+            //     // Dobijemo vrednost ID-ja iz odabranog elementa
+            //     var selectedUserId = $(this).val();
+            //
+            //     // Uklonimo klasu "live" sa svih korisnika u listi
+            //     $('.list-group-item').removeClass('live');
+            //
+            //     // Dodamo klasu "live" korisniku sa odabranim ID-jem
+            //     $('.text-muted').each(function() {
+            //         if ($(this).text() === selectedUserId) {
+            //             $(this).closest('.list-group-item').addClass('live');
+            //         }
+            //     });
+            // });
+            var selectedUserIds = {}; // Objekat za praćenje trenutnih izbora korisnika
+
+            // Funkcija za dodavanje klase "live" korisnicima na osnovu trenutnih izbora
+            function updateSelectedUsers() {
+                // Uklanjamo klasu "live" sa svih korisnika
+                $('.list-group-item').removeClass('disabled-div');
+
+                // Iteriramo kroz sve select elemente za "geo" i dodajemo klasu "live" korisnicima sa odabranim ID-jem
+                $('[id^=task_form_geodeta], [id^=task_form_zamena_geodeta]').each(function() {
+                    var selectedUserId = $(this).val();
+                    if (selectedUserId) {
+                        $('.sakriveno').each(function() {
+                            if ($(this).text() === selectedUserId) {
+                                $(this).closest('.list-group-item').addClass('disabled-div');
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Pratimo promene u select elementima za "geo" u svim formama
+            $('[id^=task_form_geodeta], [id^=task_form_zamena_geodeta]').change(function() {
+                updateSelectedUsers();
+            });
+
+            var selectedToolsIds = {}; // Objekat za praćenje trenutnih izbora korisnika
+
+// Funkcija za dodavanje klase "live" korisnicima na osnovu trenutnih izbora
+            function updateSelectedTools() {
+                // Uklanjamo klasu "live" sa svih korisnika
+                $('.tool').removeClass('disabled-div');
+
+                // Iteriramo kroz sve select2 elemente za "oprema" i dodajemo klasu "live" korisnicima sa odabranim ID-jem
+                $('[id^=task_form_oprema], [id^=task_form_zamena_oprema]').each(function() {
+                    var selectId = $(this).attr('id');
+                    var selectedToolIds = selectedToolsIds[selectId] || [];
+
+                    // Iteriramo kroz svaku izabranu opciju
+                    selectedToolIds.forEach(function(selectedToolId) {
+                        $('.sakrivenoTool').each(function() {
+                            if ($(this).text() === selectedToolId) {
+                                $(this).closest('.tool').addClass('disabled-div');
+                            }
+                        });
+                    });
+                });
+            }
+
+// Pratimo događaj select2:select za promene u izboru
+            $('[id^=task_form_oprema], [id^=task_form_zamena_oprema]').on('select2:select select2:unselect', function() {
+                var selectId = $(this).attr('id');
+                var selectedToolIds = $(this).val() || [];
+
+                // Ažuriraj objekat sa izabranim alatima
+                selectedToolsIds[selectId] = selectedToolIds;
+
+                // Ažuriraj ograničenja
+                updateSelectedTools();
+            });
+
+            var selectedCarsIds = {}; // Objekat za praćenje trenutnih izbora korisnika
+
+            // Funkcija za dodavanje klase "live" korisnicima na osnovu trenutnih izbora
+            function updateSelectedCars() {
+                // Uklanjamo klasu "live" sa svih korisnika
+                $('.car').removeClass('disabled-div');
+
+                // Iteriramo kroz sve select elemente za "geo" i dodajemo klasu "live" korisnicima sa odabranim ID-jem
+                $('[id^=task_form_vozilo], [id^=task_form_zamena_vozilo]').each(function() {
+                    var selectedCarId = $(this).val();
+                    if (selectedCarId) {
+                        $('.sakrivenoCar').each(function() {
+                            if ($(this).text() === selectedCarId) {
+                                $(this).closest('.car').addClass('disabled-div');
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Pratimo promene u select elementima za "geo" u svim formama
+            $('[id^=task_form_vozilo], [id^=task_form_zamena_vozilo]').change(function() {
+                updateSelectedCars();
+            });
+
+
+
+
             var selectedValues1 = {
                 task_form_geodeta1_1: "",
                 task_form_geodeta2_1: "",
@@ -2397,33 +2571,6 @@
             updateDriversOptions10();
         });
 
-
-
-                // Date format
-                // izmenjen format da bi bio po srpskim standardima
-                const dpDateCustomFormatElement = document.querySelector('.datepicker-date-format-custom');
-                if(dpDateCustomFormatElement) {
-                    const tomorrow = new Date();
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    const dpDateCustomFormat = new Datepicker(dpDateCustomFormatElement, {
-                        container: '.content-inner',
-                        buttonClass: 'btn',
-                        prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
-                        nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
-                        format: 'dd.mm.yyyy',
-                        todayBtn: true,
-                        weekStart: 1,
-                        minDate: tomorrow,
-                        daysOfWeekHighlighted: [0,6],
-                        language: 'sr-latn',
-                        datesDisabled: [
-                            {% for date in disabledDates %}
-                                '{{ date }}',
-                            {% endfor %}
-                        ],
-
-                    });
-                }
 
     </script>
 

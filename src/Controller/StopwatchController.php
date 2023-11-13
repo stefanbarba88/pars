@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TaskStatusData;
+use App\Entity\Availability;
 use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\Project;
@@ -46,6 +47,7 @@ class StopwatchController extends AbstractController {
     $user = $this->getUser();
     $user->setIsInTask(true);
     $this->em->getRepository(User::class)->save($user);
+
 //    $this->em->getRepository(Task::class)->changeStatus($taskLog->getTask(), TaskStatusData::ZAPOCETO);
 
     return $this->redirectToRoute('app_home');
@@ -260,7 +262,7 @@ class StopwatchController extends AbstractController {
 
         $stopwatch->setIsEdited(true);
         $stopwatch->setEditedBy($user);
-
+        $this->em->getRepository(Availability::class)->addDostupnost($stopwatch);
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 
         notyf()
@@ -277,6 +279,7 @@ class StopwatchController extends AbstractController {
     $args['form'] = $form->createView();
     $args['min'] = 0;
     $args['step'] = 1;
+    $args['task'] = $taskLog->getTask();
 
     if (!is_null($taskLog->getTask()->isIsTimeRoundUp())) {
       if ($taskLog->getTask()->isIsTimeRoundUp()) {
@@ -298,6 +301,7 @@ class StopwatchController extends AbstractController {
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       return $this->render('task/phone/stopwatch_form_modal.html.twig', $args);
+
     }
     return $this->render('task/stopwatch_form_modal.html.twig', $args);
   }
@@ -391,7 +395,7 @@ class StopwatchController extends AbstractController {
     }
     $taskLogId = $stopwatch->getTaskLog()->getId();
     $user = $this->getUser();
-
+    $this->em->getRepository(Availability::class)->addDostupnostDelete($stopwatch);
     $this->em->getRepository(StopwatchTime::class)->deleteStopwatch($stopwatch, $user);
 
     notyf()
@@ -404,11 +408,22 @@ class StopwatchController extends AbstractController {
     return $this->redirectToRoute('app_task_log_view', ['id' => $taskLogId]);
   }
 
+  #[Route('/list/', name: 'app_stopwatch_list')]
+  public function list()    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $args = [];
+    $args['stopwatches'] = $this->em->getRepository(StopwatchTime::class)->findAllToCheck();
+
+    return $this->render('task/stopwatches_to_check.html.twig', $args);
+  }
+
   #[Route('/close/{id}', name: 'app_stopwatch_close')]
   public function close(StopwatchTime $stopwatch)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $task = $stopwatch->getTaskLog()->getTask();
     $this->em->getRepository(StopwatchTime::class)->close($stopwatch);
 
     notyf()

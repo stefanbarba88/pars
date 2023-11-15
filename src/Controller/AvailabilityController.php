@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Availability;
+use App\Entity\Calendar;
 use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -16,14 +19,21 @@ class AvailabilityController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_availability_list')]
-  public function list(): Response {
+  public function list(PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
     $args = [];
-    $user = $this->getUser();
+    $dostupnosti = $this->em->getRepository(Availability::class)->getDostupnostPaginator();
 
+    $pagination = $paginator->paginate(
+      $dostupnosti, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
     $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnost();
 
     return $this->render('availability/list.html.twig', $args);
@@ -96,7 +106,6 @@ class AvailabilityController extends AbstractController {
 
     return $this->redirectToRoute('app_availability_unavailable');
   }
-
 
   #[Route('/make-unavailable/{id}', name: 'app_availability_remove')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]

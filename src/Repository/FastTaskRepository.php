@@ -1455,8 +1455,6 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
   public function getSubsByFastTasks(FastTask $task): array {
 
-    $subs = [];
-
     $subs = [
       [
         'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $task->getZproject1()]),

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Classes\Data\CalendarColorsData;
 use App\Classes\Data\CalendarData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\Calendar;
 use App\Entity\User;
 use DateTimeImmutable;
@@ -89,6 +90,25 @@ class CalendarRepository extends ServiceEntityRepository {
       return new Calendar();
     }
     return $this->getEntityManager()->getRepository(Calendar::class)->find($id);
+  }
+
+  public function getCalendarPaginator(User $loggedUser) {
+
+    $calendars = match ($loggedUser->getUserType()) {
+      UserRolesData::ROLE_EMPLOYEE => $this->createQueryBuilder('c')
+        ->andWhere('c.user <> :user')
+        ->setParameter(':user', $loggedUser)
+        ->addOrderBy('c.start', 'DESC')
+        ->getQuery(),
+
+      default => $this->createQueryBuilder('c')
+        ->addOrderBy('c.start', 'DESC')
+        ->getQuery(),
+
+    };
+
+    return $calendars;
+
   }
 
 //    /**

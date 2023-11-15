@@ -16,6 +16,7 @@ use App\Service\MailService;
 use DateInterval;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,22 +30,22 @@ class CalendarController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_calendar_list')]
-  public function list(): Response {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
     $user = $this->getUser();
 
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+    $calendars = $this->em->getRepository(Calendar::class)->getCalendarPaginator($user);
 
-      $args['calendars'] = $user->getCalendars();
+    $pagination = $paginator->paginate(
+      $calendars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
 
-    } else {
-
-      $args['calendars'] = $this->em->getRepository(Calendar::class)->findAll();
-
-    }
+    $args['pagination'] = $pagination;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {

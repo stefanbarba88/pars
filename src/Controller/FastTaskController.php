@@ -161,26 +161,6 @@ FastTaskController extends AbstractController {
 
     return $this->render('fast_task/edit.html.twig', $args);
 
-
-//    dd($request);
-//    $user = $this->getUser();
-//    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-//      $task->addAssignedUser($user);
-//    }
-//    $history = null;
-//
-//    if ($task->getId()) {
-//      $history = $this->json($task, Response::HTTP_OK, [], [
-//          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-//            return $object->getId();
-//          }
-//        ]
-//      );
-//      $history = $history->getContent();
-//    }
-
-
-
   }
 
   #[Route('/create-tasks/{id}', name: 'app_create_tasks')]
@@ -225,23 +205,26 @@ FastTaskController extends AbstractController {
     return $this->redirectToRoute('app_quick_tasks');
   }
 
-//  #[Route('/email-timetable/{id}', name: 'app_email_timetable')]
-////  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function emailTimetable(FastTask $fastTask, MailService $mail, Request $request)    : Response {
-//    if (!$this->isGranted('ROLE_USER')) {
-//    return $this->redirect($this->generateUrl('app_login'));
-//  }
-//
-//    $user = $this->getUser();
-//
-//    $args['timetable'] = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
-//    $args['datum']= $fastTask->getDatum();
-//    $args['users']= $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask);
-//    $mail->plan($args['timetable'], $args['users'], $args['datum']);
-//
-//    return $this->redirectToRoute('app_quick_tasks');
-//
-//  }
+  #[Route('/email-timetable/{id}', name: 'app_email_timetable')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function emailTimetable(FastTask $fastTask, MailService $mail, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+
+      $datum = $fastTask->getDatum();
+      $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
+      $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($fastTask);
+
+      $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask, FastTaskData::SAVED);
+      $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($fastTask, FastTaskData::SAVED);
+
+      $mail->plan($timetable, $users, $datum);
+      $mail->subs($subs, $usersSub, $datum);
+
+    return $this->redirectToRoute('app_quick_tasks');
+
+  }
 //  #[Route('/save-plan/', name: 'app_save_plan')]
 ////  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
 //  public function saveTimetable(Request $request, MailService $mail) {

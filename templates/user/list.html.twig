@@ -18,22 +18,7 @@
                             <h4 class="page-title mb-0">
                                Korisnici
                             </h4>
-
-{#                            <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">#}
-{#                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>#}
-{#                            </a>#}
                         </div>
-
-{#                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">#}
-{#                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">#}
-{#                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>#}
-{#                                <div class="d-inline-flex mt-3 mt-sm-0">#}
-{#                                    <a href="{{ path('app_user_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">#}
-{#                                        <i class="ph-plus"></i>#}
-{#                                    </a>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
                     </div>
 
                     <div class="page-header-content d-lg-flex border-top">
@@ -63,61 +48,101 @@
                                 <a href="{{ path('app_user_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
-                        <table class="table datatable-colvis-state-pars">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Slika</th>
-                                <th>Ime</th>
-                                <th>Prezime</th>
-                                <th>Vrsta korisnika</th>
-                                <th>Datum rođenja</th>
-                                <th>Status</th>
-                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for user in users %}
-                                <tr>
-                                    <td>{{ user.id }}</td>
-                                    <td>
-                                        <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.slika.getThumbnail100())}}" class="rounded-circle" width="50" height="50" alt="{{ user.ime }}"></a>
-                                    </td>
-                                    <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
-                                    <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.prezime }}</a></div></td>
-                                    <td>{{ user.role | raw }}</td>
-                                    <td>{{ user.datumRodjenja | date("d.m.Y")}}</td>
-                                    <td>{{ user.isSuspended | raw }}</td>
-                                    <td class="text-center">
-                                        <div class="dropdown">
-                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                <i class="ph-gear"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a href="{{ path('app_user_profile_view', { id: user.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                <a href="{{ path('app_user_edit_info_form', { id: user.id}) }}" class="dropdown-item">
-                                                    <i class="ph-note-pencil me-2"></i>
-                                                    Lični i kontakt podaci
-                                                </a>
-                                                <a href="{{ path('app_user_edit_account_form', { id: user.id}) }}" class="dropdown-item">
-                                                    <i class="ph-note-pencil me-2"></i>
-                                                    Login podaci
-                                                </a>
-                                                <a href="{{ path('app_user_edit_image_form', { id: user.id}) }}" class="dropdown-item">
-                                                    <i class="ph-image me-2"></i>
-                                                    Profilna slika/avatar
-                                                </a>
-                                                <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="dropdown-item">
-                                                    <i class="ph-gear me-2"></i>
-                                                    Podešavanja
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                        <div class="card-body">
+                            <div class="table-responsive ">
+                                <table class="table table-bordered table-hover table-responsive">
+                                    <thead>
+                                    <tr>
+                                        <th {% if pagination.isSorted('[u.id]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, '# ID ', ['u.id']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.id' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.id' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th>Slika</th>
+                                        <th>Ime</th>
+                                        <th>Prezime</th>
+                                        <th  {% if pagination.isSorted('[u.userType]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Vrsta korisnika ', ['u.userType']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.userType' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.userType' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th {% if pagination.isSorted('[u.isSuspended]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Status ', ['u.isSuspended']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.isSuspended' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.isSuspended' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for user in pagination %}
+                                        <tr>
+                                            <td>{{ user.id }}</td>
+                                            <td>
+                                                <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="50" height="50" alt="{{ user.ime }}"></a>
+                                            </td>
+                                            <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
+                                            <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.prezime }}</a></div></td>
+                                            <td>
+                                                {{ user.getBadgeByUserType | raw }}
+                                            </td>
+                                            <td>
+                                                {{ user.getBadgeByStatus | raw }}
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_user_profile_view', { id: user.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        <a href="{{ path('app_user_edit_info_form', { id: user.id}) }}" class="dropdown-item">
+                                                            <i class="ph-note-pencil me-2"></i>
+                                                            Lični i kontakt podaci
+                                                        </a>
+                                                        <a href="{{ path('app_user_edit_account_form', { id: user.id}) }}" class="dropdown-item">
+                                                            <i class="ph-note-pencil me-2"></i>
+                                                            Login podaci
+                                                        </a>
+                                                        <a href="{{ path('app_user_edit_image_form', { id: user.id}) }}" class="dropdown-item">
+                                                            <i class="ph-image me-2"></i>
+                                                            Profilna slika/avatar
+                                                        </a>
+                                                        <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="dropdown-item">
+                                                            <i class="ph-gear me-2"></i>
+                                                            Podešavanja
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
                     </div>
                     <!-- /state saving -->
                 </div>

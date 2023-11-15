@@ -17,6 +17,7 @@ use App\Form\UserSuspendedFormType;
 use App\Service\UploadService;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,22 +34,33 @@ class UserController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_users')]
-  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
     $korisnik = $this->getUser();
     if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
       return $this->redirect($this->generateUrl('app_home'));
     }
-    $args=[];
-    $args['users'] = $this->em->getRepository(User::class)->getAllByLoggedUser($korisnik);
+
+    $args = [];
+
+    $users = $this->em->getRepository(User::class)->getAllByLoggedUserPaginator($korisnik);
+
+    $pagination = $paginator->paginate(
+      $users, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('user/list.html.twig', $args);
   }
 
   #[Route('/list-contact/', name: 'app_users_contact')]
-  public function listContacts()    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function listContacts(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
@@ -56,7 +68,15 @@ class UserController extends AbstractController {
       return $this->redirect($this->generateUrl('app_home'));
     }
     $args=[];
-    $args['users'] = $this->em->getRepository(User::class)->getAllContacts();
+    $users = $this->em->getRepository(User::class)->getAllContactsPaginator();
+
+    $pagination = $paginator->paginate(
+      $users, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('user/contact_list.html.twig', $args);
   }
@@ -390,7 +410,8 @@ class UserController extends AbstractController {
 
   #[Route('/history-user-list/{id}', name: 'app_user_history_list')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function listUserHistory(User $user)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function listUserHistory(User $user, PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
@@ -399,8 +420,19 @@ class UserController extends AbstractController {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
+
+    $args=[];
+    $histories = $this->em->getRepository(UserHistory::class)->getAllPaginator($user);
+
+    $pagination = $paginator->paginate(
+      $histories, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
     $args['user'] = $user;
-    $args['historyUsers'] = $this->em->getRepository(UserHistory::class)->findBy(['user' => $user], ['id' => 'ASC']);
+
 
     return $this->render('user/user_history_list.html.twig', $args);
   }

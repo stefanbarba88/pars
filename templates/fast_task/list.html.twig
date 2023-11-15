@@ -113,9 +113,9 @@
                                                 {% if task.status == constant('App\\Classes\\Data\\FastTaskData::OPEN') %}
                                                     <span class="badge bg-secondary text-primary">Kreiran</span>
                                                 {% elseif task.status == constant('App\\Classes\\Data\\FastTaskData::SAVED') %}
-                                                    <span class="badge bg-success">Sačuvan</span>
+                                                    <span class="badge bg-success text-white">Sačuvan</span>
                                                 {% elseif  task.status == constant('App\\Classes\\Data\\FastTaskData::EDIT') %}
-                                                    <span class="badge bg-danger">Izmenjen</span>
+                                                    <span class="badge bg-yellow text-primary">Izmenjen</span>
                                                 {% elseif  task.status == constant('App\\Classes\\Data\\FastTaskData::FINAL') %}
                                                     <span class="badge bg-primary text-secondary">Finaliziran</span>
                                                 {% endif %}
@@ -145,13 +145,12 @@
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a href="{{ path('app_quick_task_edit', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                        {% if task.status == 1 %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\FastTaskData::OPEN') %}
                                                             <a href="" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
                                                         {% endif %}
-                                                        {#                                                {% if fast.status != constant('App\\Classes\\Data\\FastTaskData::FINAL') %}#}
-                                                        {#                                                    <a href="{{ path('app_email_timetable', { id: fast.id}) }}" class="dropdown-item"><i class="ph-envelope me-2"></i> Pošaljite plan</a>#}
-                                                        {#                                                    <a href="{{ path('app_create_tasks', {id: fast.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Kreirajte zadatke</a>#}
-                                                        {#                                                {% endif %}#}
+                                                        {% if task.status != constant('App\\Classes\\Data\\FastTaskData::OPEN') and task.status != constant('App\\Classes\\Data\\FastTaskData::FINAL' ) %}
+                                                            <a href="{{ path('app_email_timetable', { id: task.id}) }}" class="dropdown-item"><i class="ph-envelope me-2"></i> Pošaljite plan</a>
+                                                        {% endif %}
                                                     </div>
                                                     {#                                            <!-- delete task modal -->#}
                                                     <div id="modal_delete_task{{ task.id }}" class="modal fade" tabindex="-1">

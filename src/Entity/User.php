@@ -499,9 +499,9 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
   public function getBadgeByStatus(): string {
     if ($this->isSuspended) {
-      return '<span class="badge bg-danger">Deaktiviran</span>';
+      return '<span class="badge bg-yellow text-primary">Deaktiviran</span>';
     }
-    return '<span class="badge bg-info">Aktiviran</span>';
+    return '<span class="badge bg-primary text-secondary">Aktiviran</span>';
 
   }
 

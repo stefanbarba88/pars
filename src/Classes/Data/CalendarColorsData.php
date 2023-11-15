@@ -29,13 +29,13 @@ class CalendarColorsData implements DataClassInterface {
     ],
     'BOLOVANJE' => [
       'id' => self::BOLOVANJE,
-      'color' => '#d662a2',
+      'color' => '#b2a8d0',
       'text' => '#FFF',
       'title' => 'Bolovanje',
     ],
     'SLAVA' => [
       'id' => self::SLAVA,
-      'color' => '#546E7A',
+      'color' => '#00233F',
       'text' => '#FFF',
       'title' => 'Slava',
     ],

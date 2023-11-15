@@ -208,6 +208,64 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $usersList;
   }
 
+  public function getAllByLoggedUserPaginator(User $loggedUser) {
+
+    $users = match ($loggedUser->getUserType()) {
+      UserRolesData::ROLE_SUPER_ADMIN => $this->createQueryBuilder('u')
+        ->addOrderBy('u.isSuspended', 'ASC')
+        ->addOrderBy('u.userType', 'ASC')
+        ->getQuery(),
+
+      UserRolesData::ROLE_ADMIN => $this->createQueryBuilder('u')
+        ->andWhere('u.userType <> :userType')
+        ->andWhere('u.userType <> :userType1')
+        ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
+        ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
+        ->addOrderBy('u.isSuspended', 'ASC')
+        ->addOrderBy('u.userType', 'ASC')
+        ->getQuery(),
+
+      default => $this->createQueryBuilder('u')
+        ->andWhere('u.userType <> :userType')
+        ->andWhere('u.userType <> :userType1')
+        ->andWhere('u.userType <> :userType2')
+        ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
+        ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
+        ->setParameter(':userType2', UserRolesData::ROLE_MANAGER)
+        ->addOrderBy('u.isSuspended', 'ASC')
+        ->addOrderBy('u.userType', 'ASC')
+        ->getQuery(),
+
+    };
+
+    return $users;
+
+//    $usersList = [];
+//    foreach ($users as $user) {
+//
+//      $usersList [] = [
+//        'id' => $user->getId(),
+//        'ime' => $user->getIme(),
+//        'prezime' => $user->getPrezime(),
+//        'slika' => $user->getImage(),
+//        'isSuspended' => $user->getBadgeByStatus(),
+//        'datumRodjenja' => $user->getDatumRodjenja(),
+//        'role' => $user->getBadgeByUserType(),
+//      ];
+//    }
+//
+//    return $usersList;
+  }
+
+  public function getAllContactsPaginator() {
+
+    return $this->createQueryBuilder('u')
+      ->andWhere('u.userType = :userType')
+      ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
+      ->addOrderBy('u.isSuspended', 'ASC')
+      ->getQuery();
+  }
+
   public function getAllContacts(): array {
 
     $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_CLIENT], ['isSuspended' => 'ASC']);

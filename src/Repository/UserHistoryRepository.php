@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\UserHistory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -26,6 +27,15 @@ class UserHistoryRepository extends ServiceEntityRepository {
 
     $this->getEntityManager()->flush();
     return $user;
+  }
+
+  public function getAllPaginator(User $user) {
+
+    return $this->createQueryBuilder('u')
+      ->andWhere('u.user = :user')
+      ->setParameter(':user', $user)
+      ->addOrderBy('u.id', 'ASC')
+      ->getQuery();
   }
 
   public function remove(UserHistory $entity, bool $flush = false): void {

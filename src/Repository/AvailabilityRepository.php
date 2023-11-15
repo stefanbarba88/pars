@@ -177,7 +177,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     if (!empty($dostupnosti)) {
       foreach ($dostupnosti as $dost) {
         $dostupnost[] = [
-          "title" => $dost->getUser()->getFullName() . ' - ' . CalendarColorsData::getTitleByType($dost->getZahtev()),
+          "title" => $dost->getUser()->getFullName(),
           "start" => $dost->getDatum()->format('Y-m-d'),
           "datum" => $dost->getDatum()->format('d.m.Y'),
           "color" => CalendarColorsData::getColorByType($dost->getZahtev()),
@@ -191,6 +191,20 @@ class AvailabilityRepository extends ServiceEntityRepository {
     }
 
     return $dostupnost;
+  }
+
+  public function getDostupnostPaginator() {
+
+    $datum = new DateTimeImmutable();
+    $danas = $datum->format('Y-m-d 00:00:00');
+    $dostupnosti = $this->createQueryBuilder('t')
+      ->where('t.type <> 3')
+      ->andWhere('t.datum >= :danas')
+      ->setParameter(':danas', $danas)
+      ->getQuery();
+
+    return $dostupnosti;
+
   }
 
   public function getDostupnostByUser(User $user): array {

@@ -42,66 +42,102 @@
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista nedostupnih zaposlenih - {{ "now"|date("d.m.Y") }}</h5>
-                        </div>
-                        <table class="table datatable-colvis-state-pars">
-                            <thead>
-                            <tr>
-                                <th>Zaposleni</th>
-                                <th>Tip</th>
-{#                                <th>Datum</th>#}
-                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for user in nedostupni %}
-                                <tr>
-                                    <td>
-                                        <div class="fw-semibold">
-                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.name }}</a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if user.zahtev is not null %}
-                                            {% if user.zahtev.zahtev == 1 %}
-                                                Slobodan dan
-                                            {% elseif user.zahtev.zahtev == 2 %}
-                                                Odmor
-                                            {% elseif user.zahtev.zahtev == 3 %}
-                                                Bolovanje
-                                            {% elseif user.zahtev.zahtev == 4 %}
-                                                Slava
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-{#                                    <td>#}
-{#      #}
-{#                                    </td>#}
-{#                                    <td>{% if user.type == 1 %}#}
-{#                                            <span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-danger">Nedostupan</span>#}
-{#                                        {% elseif user.type == 2 %}#}
-{#                                            <span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Izašao ranije</span>#}
-{#                                        {% endif %}</td>#}
-                                    <td class="text-center">
-                                            <div class="dropdown">
-                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                    <i class="ph-gear"></i>
-                                                </a>
+                            <div class="card-header d-lg-flex py-lg-0">
+                                <h5 class="py-lg-3 mb-0">Lista nedostupnih zaposlenih - {{ "now"|date("d.m.Y") }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive ">
+                                    <table class="table table-bordered table-hover table-responsive">
+                                        <thead>
+                                        <tr>
+                                            <th {% if pagination.isSorted('[u.id]') %} class="sorted"{% endif %}>
+                                                {{ knp_pagination_sortable(pagination, '# ID ', ['u.id']) }}
+                                                {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.id' %}
+                                                    &#8595;
+                                                {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.id' %}
+                                                    &#8593;
+                                                {% else %}
+                                                    &#8597;
+                                                {% endif %}
+                                            </th>
+                                            <th>Zaposleni</th>
+                                            <th  {% if pagination.isSorted('[a.type]') %} class="sorted"{% endif %}>
+                                                {{ knp_pagination_sortable(pagination, 'Tip ', ['a.type']) }}
+                                                {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'a.type' %}
+                                                    &#8595;
+                                                {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'a.type' %}
+                                                    &#8593;
+                                                {% else %}
+                                                    &#8597;
+                                                {% endif %}
+                                            </th>
+                                            <th  {% if pagination.isSorted('[a.zahtev]') %} class="sorted"{% endif %}>
+                                                {{ knp_pagination_sortable(pagination, 'Razlog ', ['a.zahtev']) }}
+                                                {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'a.zahtev' %}
+                                                    &#8595;
+                                                {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'a.zahtev' %}
+                                                    &#8593;
+                                                {% else %}
+                                                    &#8597;
+                                                {% endif %}
+                                            </th>
+                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for calendar in pagination %}
+                                            <tr>
+                                                <td>{{ calendar.id }}</td>
+                                                <td>
+                                                    <div class="fw-semibold">
+                                                        <a href="{{ path('app_employee_profile_view', { id: calendar.id}) }}">{{ calendar.ime }} {{ calendar.prezime }}</a>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    {% if calendar.type == 1 %}
+                                                        <span class="badge bg-secondary text-primary">Nedostupan</span>
+                                                    {% elseif calendar.type == 2 %}
+                                                        <span class="badge bg-yellow text-primary">Izašao</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if calendar.zahtev == 1 %}
+                                                        <span class="badge bg-secondary text-primary">Slobodan dan</span>
+                                                    {% elseif calendar.zahtev == 2 %}
+                                                        <span class="badge bg-yellow text-primary">Odmor</span>
+                                                    {% elseif calendar.zahtev == 3 %}
+                                                        <span class="badge bg-purple text-white">Bolovanje</span>
+                                                    {% elseif calendar.zahtev == 4 %}
+                                                        <span class="badge bg-primary text-secondary">Slava</span>
+                                                    {% endif %}
+                                                </td>
 
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <a href="{{ path('app_availability_add', {id: user.id}) }}" class="dropdown-item">
-                                                        <i class="ph-plus me-2"></i>
-                                                        Dostupan
-                                                    </a>
-                                                </div>
-                                            </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                                                <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-gear"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <a href="{{ path('app_availability_add', {id: calendar.id}) }}" class="dropdown-item">
+                                                                <i class="ph-plus me-2"></i>
+                                                                Dostupan
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card-footer">
+                                <div class="navigation float-end">
+                                    {{ knp_pagination_render(pagination) }}
+                                </div>
+                            </div>
+                        </div>
                     <!-- /state saving -->
                 </div>
                 <!-- /content area -->

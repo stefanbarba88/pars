@@ -41,149 +41,193 @@
                                     <div class="card-header d-lg-flex py-lg-0">
                                         <h5 class="py-lg-3 mb-0">Lista završenih zadataka</h5>
                                     </div>
-                                    <table class="table datatable-colvis-state-pars-mobile table-bordered">
-                                        <thead>
-                                        <tr>
-                                            <th>Zadatak</th>
-                                            <th>Status</th>
-                                            <th>Projekat</th>
-                                            <th>Datum zadatka</th>
-                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for task in tasks %}
-                                            {% if app.user.userType != 4 %}
+                                    <div class="card-body">
+                                        <div class="table-responsive ">
+                                            <table class="table table-bordered table-hover table-responsive">
+                                                <thead>
                                                 <tr>
-                                            {% else %}
-                                                {% if task.logStatus[app.user.id]['nije_zapocet'] == 1 %}
+                                                    <th># ID</th>
+                                                    <th>Zadatak</th>
+                                                    <th>Kategorija</th>
+                                                    <th>Projekat</th>
+                                                    <th>Datum zadatka</th>
+                                                    <th>Zaduženi</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for task in pagination %}
                                                     <tr>
-                                                {% endif %}
-                                                {% if task.logStatus[app.user.id]['otvoren'] == 1 %}
-                                                    <tr>
-                                                {% endif %}
-                                                {% if task.logStatus[app.user.id]['zatvoren'] == 1 %}
-                                                    <tr class="bg-secondary">
-                                                {% endif %}
-                                            {% endif %}
-                                            <td>
-                                                <div class="fw-semibold">
-                                                    {% if app.user.userType != 4 %}
-                                                        <a href="{{ path('app_task_view', { id: task.task.id}) }}">{{ task.task.title }}</a>
-                                                    {% else %}
-                                                        {% if app.user in task.task.assignedUsers %}
-                                                            <a href="{{ path('app_task_view_user', { id: task.task.id}) }}">{{ task.task.title }}</a>
-                                                        {% else %}
-                                                            {{ task.task.title }}
-                                                        {% endif %}
-                                                    {% endif %}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                {% if task.task.isDeleted %}
-                                                    <span class="badge bg-danger">Obrisan</span>
-                                                {% else %}
-                                                    {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
-                                                        <span class="badge bg-info">Nije startovan</span>
-                                                    {% elseif task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
-                                                        <span class="badge bg-success">Otvoren</span>
-                                                    {% else %}
-                                                        <span class="badge bg-danger">Zatvoren</span>
-                                                    {% endif %}
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                {% if task.task.project %}
-                                                    <a href="{{ path('app_project_tasks_view', { id: task.task.project.id}) }}">{{ task.task.project.title }}</a>
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                <div class="d-inline-flex align-items-center">
-                                                    <i class="ph-calendar me-2"></i>
-                                                    {{ task.task.datumKreiranja | date("d.m.Y")}}
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="dropdown">
-                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                        <i class="ph-gear"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        {% if is_granted('ROLE_EMPLOYEE') %}
-                                                            {% if app.user in task.task.getAssignedUsers %}
-                                                                <a href="{{ path('app_task_view_user', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                            {% else %}
-                                                                <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        <td>{{ task.task.id }}</td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                {% if app.user.userType != 4 %}
+                                                                    <a href="{{ path('app_task_view', { id: task.task.id}) }}">{{ task.task.title }}</a>
+                                                                {% else %}
+                                                                    {% if app.user in task.task.assignedUsers %}
+                                                                        <a href="{{ path('app_task_view_user', { id: task.task.id}) }}">{{ task.task.title }}</a>
+                                                                    {% else %}
+                                                                        {{ task.title }}
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            </div>
+                                                            {% if task.task.label is not empty %}
+                                                                <div class="d-inline-flex">
+                                                                    {% for label in task.task.label %}
+                                                                        {{label.label | raw}}
+                                                                    {% endfor %}
+                                                                </div>
                                                             {% endif %}
-                                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.task.isDeleted and task.task.createdBy == app.user %}
-                                                                <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
+                                                        </td>
+                                                        <td>
+                                                            {% if task.task.category %}
+                                                                <a href="{{ path('app_category_view', { id: task.task.category.id}) }}">{{ task.task.category.title }}</a>
                                                             {% endif %}
-                                                            {% if not task.task.isDeleted and task.task.createdBy == app.user %}
-                                                                <a href="{{ path('app_task_edit_info', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
-                                                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
+                                                        </td>
+                                                        <td>
+                                                            {% if task.task.project %}
+                                                                <a href="{{ path('app_project_tasks_view', { id: task.task.project.id}) }}">{{ task.task.project.title }}</a>
                                                             {% endif %}
-                                                        {% else %}
-                                                            <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.task.isDeleted %}
-                                                                <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-inline-flex align-items-center">
+                                                                <i class="ph-calendar me-2"></i>
+                                                                {{ task.task.datumKreiranja | date("d.m.Y")}}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% for user in task.task.assignedUsers %}
+                                                                    {% for userId, userStatus in task.logStatus %}
+                                                                        {% if userId == user.id and userStatus.otvoren == 1 %}
+                                                                            <div class="btn-group">
+                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
+                                                                                    {{ user.fullName }}
+                                                                                    <div class="live p-1 mx-2"></div>
+                                                                                </a>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.zatvoren == 1 %}
+                                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
+                                                                                {{ user.fullName }}
+                                                                            </a>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.nije_zapocet == 1 %}
+                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
+                                                                                {{ user.fullName }}
+                                                                            </a>
+                                                                        {% endif %}
+                                                                    {% endfor %}<br>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
+                                                        {#                                                        <td>#}
+                                                        {#                                                            {% for user in task.task.assignedUsers %}#}
+                                                        {#                                                                <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}" title="{{ user.getFullName() }}"></a>#}
+                                                        {#                                                            {% endfor %}#}
+                                                        {#                                                        </td>#}
+                                                        <td>
+                                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                                <span class="badge bg-secondary text-primary">Nije startovan</span>
                                                             {% endif %}
                                                             {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
-                                                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal_close_task{{ task.task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Zatvorite</a>
+                                                                <span class="badge bg-yellow text-primary">Otvoren</span>
                                                             {% endif %}
-                                                            {% if not task.task.isDeleted %}
-                                                                <a href="{{ path('app_task_edit_info', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
-                                                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.task.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                                <span class="badge bg-primary text-white">Zatvoren</span>
                                                             {% endif %}
-                                                        {% endif %}
-                                                    </div>
-                                                    <!-- delete task modal -->
-                                                    <div id="modal_delete_task{{ task.task.id }}" class="modal fade" tabindex="-1">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header bg-danger text-white border-0">
-                                                                    <h6 class="modal-title">Potvrda</h6>
-                                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                </div>
+                                                        </td>
 
-                                                                <div class="modal-body">
-                                                                    <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>
+                                                        <td class="text-center">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                    <i class="ph-gear"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-end">
+                                                                    {% if is_granted('ROLE_EMPLOYEE') %}
+                                                                        {% if app.user in task.task.getAssignedUsers %}
+                                                                            <a href="{{ path('app_task_view_user', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                                        {% else %}
+                                                                            <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                                        {% endif %}
+                                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.task.isDeleted and task.task.createdBy == app.user %}
+                                                                            <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
+                                                                        {% endif %}
+                                                                        {% if not task.task.isDeleted and task.task.createdBy == app.user %}
+                                                                            <a href="{{ path('app_task_edit_info', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
+                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
+                                                                        {% endif %}
+                                                                    {% else %}
+                                                                        <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.task.isDeleted %}
+                                                                            <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
+                                                                        {% endif %}
+                                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_close_task{{ task.task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Zatvorite</a>
+                                                                        {% endif %}
+                                                                        {% if not task.task.isDeleted %}
+                                                                            <a href="{{ path('app_task_edit_info', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
+                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.task.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                        {% endif %}
+                                                                    {% endif %}
                                                                 </div>
+                                                                <!-- delete task modal -->
+                                                                <div id="modal_delete_task{{ task.task.id }}" class="modal fade" tabindex="-1">
+                                                                    <div class="modal-dialog">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header bg-danger text-white border-0">
+                                                                                <h6 class="modal-title">Potvrda</h6>
+                                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                            </div>
 
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                    <a href="{{ path('app_task_delete', {id: task.task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                            <div class="modal-body">
+                                                                                <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>
+                                                                            </div>
+
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                                <a href="{{ path('app_task_delete', {id: task.task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
+                                                                <!-- /delete task modal -->
+                                                                <!-- close task modal -->
+                                                                <div id="modal_close_task{{ task.task.id }}" class="modal fade" tabindex="-1">
+                                                                    <div class="modal-dialog">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header bg-primary text-white border-0">
+                                                                                <h6 class="modal-title">Potvrda</h6>
+                                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                            </div>
+
+                                                                            <div class="modal-body">
+                                                                                <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>
+                                                                            </div>
+
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                                <a href="{{ path('app_task_close',{id: task.task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- /close task modal -->
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- /delete task modal -->
-                                                    <!-- close task modal -->
-                                                    <div id="modal_close_task{{ task.task.id }}" class="modal fade" tabindex="-1">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header bg-primary text-white border-0">
-                                                                    <h6 class="modal-title">Potvrda</h6>
-                                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
 
-                                                                <div class="modal-body">
-                                                                    <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>
-                                                                </div>
-
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                    <a href="{{ path('app_task_close',{id: task.task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- /close task modal -->
-                                                </div>
-                                            </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
                                 </div>
 
 

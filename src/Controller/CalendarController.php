@@ -104,7 +104,7 @@ class CalendarController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['calendar'] = $calendar;
-    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
 
     if($mobileDetect->isMobile()) {
       return $this->render('calendar/phone/form.html.twig', $args);

@@ -617,22 +617,29 @@
                         </div>
                     {% endif %}
 
-                    <div class="card card-body bg-secondary bg-opacity-10">
+                    <div class="card card-body">
                         <div class="row text-center">
                             <div class="col-4">
-                                <p><i class="ph-house bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
+                                <a data-bs-toggle="modal" data-bs-target="#modal_nedostupni">
+                                    <p><i class="ph-house bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
+                                </a>
                                 <h5 class="mb-0">{{ dostupnosti.noNedostupni }}</h5>
                                 <a data-bs-toggle="modal" data-bs-target="#modal_nedostupni" class="text-primary">Odsutni</a>
                             </div>
 
                             <div class="col-4">
-                                <p><i class="ph-coffee bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
+                                <a data-bs-toggle="modal" data-bs-target="#modal_vanzadatka" class="text-primary">
+                                    <p><i class="ph-coffee bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
+                                </a>
                                 <h5 class="mb-0">{{ dostupnosti.noVanZadatka }}</h5>
                                 <a data-bs-toggle="modal" data-bs-target="#modal_vanzadatka" class="text-primary">Bez zadatka</a>
                             </div>
 
                             <div class="col-4">
-                                <p><i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
+                                <a data-bs-toggle="modal" data-bs-target="#modal_kancelarija" class="text-primary">
+                                    <p><i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
+                                </a>
+
                                 <h5 class="mb-0">{{ dostupnosti.noKancelarija }}</h5>
                                 <a data-bs-toggle="modal" data-bs-target="#modal_kancelarija" class="text-primary">Kancelarija</a>
                             </div>
@@ -690,33 +697,33 @@
                                                             <div class="fw-semibold">
                                                                 {{ task.task.project.title }}
                                                             </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="text-body">
-                                                                {% for user in task.task.assignedUsers %}
-                                                                    {% for userId, userStatus in task.logStatus %}
-                                                                        {% if userId == user.id and userStatus.otvoren == 1 %}
-                                                                            <div class="btn-group">
-                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
-                                                                                    {{ user.fullName }}
-                                                                                    <div class="live p-1 mx-2"></div>
-                                                                                </a>
-                                                                            </div>
-                                                                        {% endif %}
-                                                                        {% if userId == user.id and userStatus.zatvoren == 1 %}
-                                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
-                                                                                {{ user.fullName }}
-                                                                            </a>
-                                                                        {% endif %}
-                                                                        {% if userId == user.id and userStatus.nije_zapocet == 1 %}
+                                                        </td> <td>
+                                                        <div class="text-body">
+                                                            {% for user in task.task.assignedUsers %}
+                                                                {% for userId, userStatus in task.logStatus %}
+                                                                    {% if userId == user.id and userStatus.otvoren == 1 %}
+                                                                        <div class="btn-group">
                                                                             <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
                                                                                 {{ user.fullName }}
+                                                                                <div class="live p-1 mx-2"></div>
                                                                             </a>
-                                                                        {% endif %}
-                                                                    {% endfor %}<br>
-                                                                {% endfor %}
-                                                            </div>
-                                                        </td>
+                                                                        </div>
+                                                                    {% endif %}
+                                                                    {% if userId == user.id and userStatus.zatvoren == 1 %}
+                                                                        <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
+                                                                            {{ user.fullName }}
+                                                                        </a>
+                                                                    {% endif %}
+                                                                    {% if userId == user.id and userStatus.nije_zapocet == 1 %}
+                                                                        <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
+                                                                            {{ user.fullName }}
+                                                                        </a>
+                                                                    {% endif %}
+                                                                {% endfor %}<br>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </td>
+
                                                         <td>
                                                             <div class="text-body">
                                                                 {% for akt in task.task.activity %}

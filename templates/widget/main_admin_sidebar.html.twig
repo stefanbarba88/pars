@@ -169,7 +169,7 @@
                         <i class="ph-calendar sidebar-resize-show"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_calendar_list') }}" class="nav-link">
+                        <a href="{{ path('app_employee_calendar_view', {id:user.id}) }}" class="nav-link">
                             <i class="ph-calendar"></i>
                             <span>Lista</span>
                             {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
@@ -622,9 +622,9 @@
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_calendar_list') }}" class="nav-link">
-                            <i class="ph-calendar"></i>
+                            <i class="ph-question"></i>
                             <span>Zahtevi</span>
-{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCalendarRequests }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -636,24 +636,24 @@
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_availability_available') }}" class="nav-link">
-                            <i class="ph-calendar"></i>
+                            <i class="ph-user-plus"></i>
                             <span>Dostupni</span>
                             {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_availability_unavailable') }}" class="nav-link">
-                            <i class="ph-calendar"></i>
+                            <i class="ph-user-minus"></i>
                             <span>Nedostupni</span>
                             {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_calendar_list') }}" class="nav-link">
-                            <i class="ph-calendar"></i>
-                            <span>Izveštaji</span>
-                        </a>
-                    </li>
+{#                    <li class="nav-item">#}
+{#                        <a href="{{ path('app_calendar_list') }}" class="nav-link">#}
+{#                            <i class="ph-calendar"></i>#}
+{#                            <span>Izveštaji</span>#}
+{#                        </a>#}
+{#                    </li>#}
 
                     <!-- /Kalendar -->
 

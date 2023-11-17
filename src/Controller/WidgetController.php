@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Calendar;
 use App\Entity\Car;
 use App\Entity\CarReservation;
 use App\Entity\Client;
@@ -43,6 +44,8 @@ class WidgetController extends AbstractController {
     $args['countProjectsChange'] = $this->em->getRepository(Project::class)->countProjectsChange();
     $args['countProjects'] = $this->em->getRepository(Project::class)->count([]);
     $args['countProjectsActive'] = $this->em->getRepository(Project::class)->countProjectsActive();
+
+    $args['countCalendarRequests'] = $this->em->getRepository(Calendar::class)->countCalendarRequests();
 
 //    $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
 //    $args['countCommentsActive'] = $this->em->getRepository(Comment::class)->countCommentsActive();

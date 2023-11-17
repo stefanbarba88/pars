@@ -18,6 +18,7 @@ use App\Entity\UserHistory;
 use App\Service\MailService;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
@@ -578,6 +579,35 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     return $dostupni;
+  }
+
+  public function getNedostupniPaginator() {
+
+    return $this->createQueryBuilder('u')
+      ->select('u.id', 'u.ime', 'u.prezime', 'a.type', 'a.zahtev')
+      ->innerJoin(Availability::class, 'a', Join::WITH, 'u = a.User')
+      ->andWhere('a.datum = :today')
+      ->andWhere('u.userType = :userType')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+      ->setParameter('isSuspended', 0)
+      ->setParameter('today', new DateTimeImmutable('today'), Types::DATETIME_IMMUTABLE)
+      ->orderBy('u.prezime', 'ASC')
+      ->getQuery();
+  }
+  public function getDostupniPaginator() {
+
+    return $this->createQueryBuilder('u')
+      ->leftJoin(Availability::class, 'a', Join::WITH, 'u = a.User AND a.datum = :today')
+      ->andWhere('a.id IS NULL')
+      ->andWhere('u.userType = :userType')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+      ->setParameter('isSuspended', 0)
+      ->setParameter('today', new DateTimeImmutable('today'), Types::DATETIME_IMMUTABLE)
+      ->orderBy('u.prezime', 'ASC')
+      ->getQuery();
+
   }
 
   public function getZaposleni(): array {

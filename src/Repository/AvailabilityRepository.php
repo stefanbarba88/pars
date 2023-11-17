@@ -201,6 +201,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
       ->where('t.type <> 3')
       ->andWhere('t.datum >= :danas')
       ->setParameter(':danas', $danas)
+      ->orderBy('t.datum', 'ASC')
       ->getQuery();
 
     return $dostupnosti;

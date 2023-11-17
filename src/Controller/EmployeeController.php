@@ -19,6 +19,7 @@ use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 
 use Exception;
+use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -73,7 +74,7 @@ class EmployeeController extends AbstractController {
 
   #[Route('/view-activity/{id}', name: 'app_employee_activity_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewActivity(User $usr): Response {
+  public function viewActivity(User $usr, PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
@@ -85,9 +86,15 @@ class EmployeeController extends AbstractController {
     }
     $args = [];
     $args['user'] = $usr;
+    $tasks = $this->em->getRepository(Task::class)->getTasksArchiveByUser($usr);
 
-    $args['tasks'] = $this->em->getRepository(Task::class)->getTasksArchiveByUser($usr);
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      10
+    );
 
+    $args['pagination'] = $pagination;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -98,7 +105,7 @@ class EmployeeController extends AbstractController {
 
   #[Route('/view-calendar/{id}', name: 'app_employee_calendar_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCalendar(User $usr): Response {
+  public function viewCalendar(User $usr, PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
@@ -108,6 +115,24 @@ class EmployeeController extends AbstractController {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
+
+
+    $calendars = $usr->getCalendars()->toArray();
+    $compareFunction = function ($a, $b) {
+      return $b->getId() - $a->getId();
+    };
+    usort($calendars, $compareFunction);
+
+
+
+    $pagination = $paginator->paginate(
+      $calendars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      10
+    );
+
+    $args['pagination'] = $pagination;
+
     $args['user'] = $usr;
 
     $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUser($usr);

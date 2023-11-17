@@ -525,6 +525,36 @@ class TaskRepository extends ServiceEntityRepository {
     return $list;
   }
 
+//  public function getTasksArchiveByUserPaginator(User $user):array {
+//
+//    $tasks =  $this->createQueryBuilder('t')
+//      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+//      ->andWhere('tl.user = :userId')
+//      ->andWhere('t.isDeleted <> 1')
+//      ->setParameter(':userId', $user->getId())
+//      ->addOrderBy('t.id', 'DESC')
+//      ->getQuery()
+//      ->getResult();
+//
+//
+//    foreach ($tasks as $task) {
+//      $status = $this->taskStatus($task);
+//
+//      if ($status == TaskStatusData::ZAVRSENO ) {
+//        $list[] = [
+//          'task' => $task,
+//          'status' => $status,
+//          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($task)
+//        ];
+//      }
+//    }
+//
+//    usort($list, function ($a, $b) {
+//      return $a['status'] <=> $b['status'];
+//    });
+//    return $list;
+//  }
+
   public function countGetTasksArchiveByUser(User $user): int {
 
     $count = 0;

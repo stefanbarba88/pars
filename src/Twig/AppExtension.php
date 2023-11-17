@@ -9,11 +9,22 @@
 namespace App\Twig;
 
 use App\Classes\Data\UserRolesData;
+use App\Entity\Task;
+use App\Entity\TaskLog;
 use App\Entity\User;
 use Twig\TwigFilter;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
+use Doctrine\ORM\EntityManagerInterface;
 
 class AppExtension extends AbstractExtension {
+
+  private EntityManagerInterface $entityManager;
+
+  public function __construct(EntityManagerInterface $entityManager)
+  {
+    $this->entityManager = $entityManager;
+  }
 
   public function getName(): string {
     return 'app_extension';
@@ -29,6 +40,8 @@ class AppExtension extends AbstractExtension {
 
   public function getFunctions(): array {
     return [
+      new TwigFunction('getLogStatus', [$this, 'getLogStatus']),
+      new TwigFunction('getTaskStatus', [$this, 'getTaskStatus']),
     ];
   }
 
@@ -42,6 +55,13 @@ class AppExtension extends AbstractExtension {
     $error = str_replace("</li></ul>"," ",$error);
 
     return $error;
+  }
+
+  public function getLogStatus(Task $task): array{
+    return $this->entityManager->getRepository(TaskLog::class)->getLogStatus($task);
+  }
+  public function getTaskStatus(Task $task): int{
+    return $this->entityManager->getRepository(Task::class)->taskStatus($task);
   }
 
 }

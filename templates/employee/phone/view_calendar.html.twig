@@ -186,7 +186,34 @@
                                     </div>
 
                                     <div class="card-body">
-                                        <div class="fullcalendar-event-colors"></div>
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <div class="mb-3">
+                                                    <h6>Legenda</h6>
+                                                    <div class="bg-light border rounded p-2 mb-3">
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-secondary text-primary d-block">Slobodan dan</span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-yellow text-primary d-block">Odmor</span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-purple text-white d-block">Bolovanje</span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-primary text-white d-block">Slava</span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-teal text-white d-block">Ostalo</span>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9">
+                                                <div class="fullcalendar-event-colors "></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -311,7 +338,7 @@
                 {#validRange: {#}
                 {#    start: '{{ "now"|date("Y") }}-{{ "now"|date("m") }}-01'#}
                 {#},#}
-                initialView: 'dayGridWeek',
+                initialView: 'dayGridMonth',
                 locale: initialLocaleCode,
                 initialDate: new Date(),
                 navLinks: true, // can click day/week names to navigate views

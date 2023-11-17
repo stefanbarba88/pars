@@ -55,29 +55,42 @@ class AvailabilityController extends AbstractController {
   }
 
   #[Route('/available/', name: 'app_availability_available')]
-  public function dostupni(): Response {
+  public function dostupni(PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
     $args = [];
-    $user = $this->getUser();
+    $dostupnosti = $this->em->getRepository(User::class)->getDostupniPaginator();
 
-    $args['dostupni'] = $this->em->getRepository(User::class)->getDostupni();
+
+    $pagination = $paginator->paginate(
+      $dostupnosti, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
+
 
     return $this->render('availability/dostupni.html.twig', $args);
   }
 
   #[Route('/unavailable/', name: 'app_availability_unavailable')]
-  public function nedostupni(): Response {
+  public function nedostupni(PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
     $args = [];
-    $user = $this->getUser();
+    $dostupnosti = $this->em->getRepository(User::class)->getNedostupniPaginator();
 
-    $args['nedostupni'] = $this->em->getRepository(User::class)->getNedostupni();
+    $pagination = $paginator->paginate(
+      $dostupnosti, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('availability/nedostupni.html.twig', $args);
   }

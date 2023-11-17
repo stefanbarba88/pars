@@ -34,6 +34,19 @@ class CalendarRepository extends ServiceEntityRepository {
     return $calendar;
   }
 
+  public function countCalendarRequests(): int{
+    $qb = $this->createQueryBuilder('c');
+
+    $qb->select($qb->expr()->count('c'))
+      ->andWhere('c.status = :status')
+      ->setParameter(':status', 1);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+
   public function getRequestByUser(User $user): array {
 
     $dan = 0;
@@ -94,20 +107,22 @@ class CalendarRepository extends ServiceEntityRepository {
 
   public function getCalendarPaginator(User $loggedUser) {
 
-    $calendars = match ($loggedUser->getUserType()) {
-      UserRolesData::ROLE_EMPLOYEE => $this->createQueryBuilder('c')
-        ->andWhere('c.user <> :user')
-        ->setParameter(':user', $loggedUser)
-        ->addOrderBy('c.start', 'DESC')
-        ->getQuery(),
+//    $calendars = match ($loggedUser->getUserType()) {
+//      UserRolesData::ROLE_EMPLOYEE => $this->createQueryBuilder('c')
+//        ->andWhere('c.user <> :user')
+//        ->setParameter(':user', $loggedUser)
+//        ->addOrderBy('c.start', 'DESC')
+//        ->getQuery(),
+//
+//      default => $this->createQueryBuilder('c')
+//        ->addOrderBy('c.start', 'DESC')
+//        ->getQuery(),
+//
+//    };
 
-      default => $this->createQueryBuilder('c')
-        ->addOrderBy('c.start', 'DESC')
-        ->getQuery(),
-
-    };
-
-    return $calendars;
+    return $this->createQueryBuilder('c')
+      ->addOrderBy('c.start', 'DESC')
+      ->getQuery();
 
   }
 

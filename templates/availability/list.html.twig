@@ -52,20 +52,20 @@
                                     <div class="mb-3">
                                         <h6>Legenda</h6>
                                         <div class="bg-light border rounded p-2 mb-3">
-                                            <div class="fc fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event mb-2 bg-secondary">
-                                                <div class="fc-event-main bg-secondary text-primary">Slobodan dan</div>
+                                            <div class="mb-2">
+                                                <span class="badge bg-secondary text-primary d-block">Slobodan dan</span>
                                             </div>
-                                            <div class="fc fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event mb-2 bg-yellow">
-                                                <div class="fc-event-main text-primary">Odmor</div>
+                                            <div class="mb-2">
+                                                <span class="badge bg-yellow text-primary d-block">Odmor</span>
                                             </div>
-                                            <div class="fc fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event mb-2 bg-purple">
-                                                <div class="fc-event-main text-white">Bolovanje</div>
+                                            <div class="mb-2">
+                                                <span class="badge bg-purple text-white d-block">Bolovanje</span>
                                             </div>
-                                            <div class="fc fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event mb-2 bg-primary">
-                                                <div class="fc-event-main text-secondary">Slava</div>
+                                            <div class="mb-2">
+                                                <span class="badge bg-primary text-white d-block">Slava</span>
                                             </div>
-                                            <div class="fc fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event mb-2 bg-teal">
-                                                <div class="fc-event-main text-white">Ostalo</div>
+                                            <div class="mb-2">
+                                                <span class="badge bg-teal text-white d-block">Ostalo</span>
                                             </div>
                                         </div>
 
@@ -118,7 +118,7 @@
                                             <td>{{ dost.id }}</td>
                                             <td>
                                                 <div class="fw-semibold">
-                                                    <a href="{{ path('app_user_profile_view', { id: dost.user.id}) }}">{{ dost.user.getFullName() }}</a>
+                                                    <a href="{{ path('app_employee_profile_view', { id: dost.user.id}) }}">{{ dost.user.getFullName() }}</a>
                                                 </div>
                                             </td>
                                             <td>

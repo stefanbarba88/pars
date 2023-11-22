@@ -1998,10 +1998,25 @@
                         <div class="card">
                             <div class="card-body">
                                 {% for user in dostupnosti.nedostupni %}
-                                <div class="row p-2">
-                                    <div class="col-4">Zaposleni:</div>
-                                    <div class="col-8"><a href="{{ path('app_employee_calendar_view', {id: user.id}) }}">{{ user.fullName }}</a></div>
-                                </div>
+                                    {% set dost = getDostupnostByUser(user) %}
+                                    <div class="row p-2">
+                                        <div class="col-6"><a href="{{ path('app_employee_calendar_view', {id: user.id}) }}">{{ user.fullName }}</a></div>
+                                        <div class="col-6">
+                                            {% if dost == 0 %}
+                                               Izašao
+                                            {% elseif dost == 1 %}
+                                                Slobodan dan
+                                            {% elseif dost == 2 %}
+                                               Odmor
+                                            {% elseif dost == 3 %}
+                                               Bolovanje
+                                            {% elseif dost == 4 %}
+                                                Slava
+                                            {% else %}
+                                                Ostalo
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -2027,8 +2042,7 @@
                             <div class="card-body">
                                 {% for user in dostupnosti.vanZadatka %}
                                 <div class="row p-2">
-                                    <div class="col-4">Zaposleni:</div>
-                                    <div class="col-8">{{ user.fullName }}</div>
+                                    <div class="col-12">{{ user.fullName }}</div>
                                 </div>
                                 {% endfor %}
                             </div>
@@ -2055,8 +2069,7 @@
                             <div class="card-body">
                                 {% for user in dostupnosti.kancelarija %}
                                 <div class="row p-2">
-                                    <div class="col-4">Zaposleni:</div>
-                                    <div class="col-8">{{ user.fullName }}</div>
+                                    <div class="col-12">{{ user.fullName }}</div>
                                 </div>
                                 {% endfor %}
                             </div>

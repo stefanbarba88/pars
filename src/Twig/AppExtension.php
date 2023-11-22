@@ -9,6 +9,7 @@
 namespace App\Twig;
 
 use App\Classes\Data\UserRolesData;
+use App\Entity\Availability;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
@@ -42,6 +43,8 @@ class AppExtension extends AbstractExtension {
     return [
       new TwigFunction('getLogStatus', [$this, 'getLogStatus']),
       new TwigFunction('getTaskStatus', [$this, 'getTaskStatus']),
+      new TwigFunction('getLogStatusByUser', [$this, 'getLogStatusByUser']),
+      new TwigFunction('getDostupnostByUser', [$this, 'getDostupnostByUser']),
     ];
   }
 
@@ -60,8 +63,17 @@ class AppExtension extends AbstractExtension {
   public function getLogStatus(Task $task): array{
     return $this->entityManager->getRepository(TaskLog::class)->getLogStatus($task);
   }
+
+  public function getLogStatusByUser(Task $task, User $user): int{
+    return $this->entityManager->getRepository(TaskLog::class)->getLogStatusByUser($task, $user);
+  }
+
   public function getTaskStatus(Task $task): int{
     return $this->entityManager->getRepository(Task::class)->taskStatus($task);
+  }
+
+  public function getDostupnostByUser(User $user): ?int {
+    return $this->entityManager->getRepository(Availability::class)->getDostupnostByUserTwig($user);
   }
 
 }

@@ -211,10 +211,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getAllByLoggedUserPaginator(User $loggedUser) {
 
-    $users = match ($loggedUser->getUserType()) {
+    return match ($loggedUser->getUserType()) {
       UserRolesData::ROLE_SUPER_ADMIN => $this->createQueryBuilder('u')
         ->addOrderBy('u.isSuspended', 'ASC')
         ->addOrderBy('u.userType', 'ASC')
+        ->addOrderBy('u.id', 'ASC')
         ->getQuery(),
 
       UserRolesData::ROLE_ADMIN => $this->createQueryBuilder('u')
@@ -224,6 +225,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
         ->addOrderBy('u.isSuspended', 'ASC')
         ->addOrderBy('u.userType', 'ASC')
+        ->addOrderBy('u.id', 'ASC')
         ->getQuery(),
 
       default => $this->createQueryBuilder('u')
@@ -235,11 +237,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ->setParameter(':userType2', UserRolesData::ROLE_MANAGER)
         ->addOrderBy('u.isSuspended', 'ASC')
         ->addOrderBy('u.userType', 'ASC')
+        ->addOrderBy('u.id', 'ASC')
         ->getQuery(),
 
     };
-
-    return $users;
 
 //    $usersList = [];
 //    foreach ($users as $user) {

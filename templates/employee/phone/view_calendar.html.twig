@@ -39,6 +39,106 @@
                             <div class="tab-pane fade active show">
 
                                 <div class="card">
+                                    <div class="card-header d-lg-flex py-lg-0">
+                                        <h5 class="py-lg-3 mb-0">Lista zahteva</h5>
+                                        <div class="mt-1 my-lg-auto ms-lg-auto">
+                                            <a href="{{ path('app_calendar_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive ">
+                                            <table class="table table-bordered table-hover table-responsive">
+                                                <thead>
+                                                <tr>
+                                                    <th># ID</th>
+                                                    <th>Tip</th>
+                                                    <th>Početak</th>
+                                                    <th>Kraj</th>
+                                                    <th>Napomena</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for calendar in pagination %}
+                                                    <tr>
+                                                        <td>{{ calendar.id }}</td>
+                                                        <td>
+                                                            {% if calendar.type == 1 %}
+                                                                <span class="badge bg-secondary text-primary">Slobodan dan</span>
+                                                            {% elseif calendar.type == 2 %}
+                                                                <span class="badge bg-yellow text-primary">Odmor</span>
+                                                            {% elseif calendar.type == 3 %}
+                                                                <span class="badge bg-purple text-white">Bolovanje</span>
+                                                            {% elseif calendar.type == 4 %}
+                                                                <span class="badge bg-primary text-secondary">Slava</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if calendar.start is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ calendar.start | date("d.m.Y")}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if calendar.finish is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ calendar.finish | date("d.m.Y")}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {{ calendar.note }}
+                                                        </td>
+                                                        <td>
+                                                            {% if calendar.status == 0 %}
+                                                                <span class="badge bg-danger text-white">Obrisan</span>
+                                                            {% elseif calendar.status == 1 %}
+                                                                <span class="badge bg-secondary text-primary">Na čekanju</span>
+                                                            {% elseif calendar.status == 2 %}
+                                                                <span class="badge bg-primary text-secondary">Odobren</span>
+                                                            {% elseif calendar.status == 3 %}
+                                                                <span class="badge bg-yellow text-primary">Odbijen</span>
+                                                            {% endif %}
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                    <i class="ph-gear"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-end">
+                                                                    <a href="{{ path('app_calendar_view', {id: calendar.id}) }}" class="dropdown-item">
+                                                                        <i class="ph-eye me-2"></i>
+                                                                        Vidite
+                                                                    </a>
+                                                                    {% if calendar.status != 0 %}
+                                                                        <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-trash me-2"></i>
+                                                                            Obrišite
+                                                                        </a>
+                                                                    {% endif  %}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
                                     <div class="card-header">
                                         <h5 class="mb-0">Prisutnost</h5>
                                     </div>

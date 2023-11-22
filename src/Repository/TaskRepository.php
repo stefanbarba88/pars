@@ -258,6 +258,21 @@ class TaskRepository extends ServiceEntityRepository {
     return $list;
   }
 
+  public function getTasksByUserPaginator(User $user) {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    return $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.datumKreiranja >= :startDate')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':userId', $user->getId())
+      ->setParameter(':startDate', $startDate)
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery();
+  }
+
   public function countGetTasksByUser(User $user): int {
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
@@ -525,18 +540,17 @@ class TaskRepository extends ServiceEntityRepository {
     return $list;
   }
 
-//  public function getTasksArchiveByUserPaginator(User $user):array {
-//
-//    $tasks =  $this->createQueryBuilder('t')
-//      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
-//      ->andWhere('tl.user = :userId')
-//      ->andWhere('t.isDeleted <> 1')
-//      ->setParameter(':userId', $user->getId())
-//      ->addOrderBy('t.id', 'DESC')
-//      ->getQuery()
-//      ->getResult();
-//
-//
+  public function getTasksArchiveByUserPaginator(User $user) {
+
+    return $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':userId', $user->getId())
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery();
+
+
 //    foreach ($tasks as $task) {
 //      $status = $this->taskStatus($task);
 //
@@ -552,8 +566,8 @@ class TaskRepository extends ServiceEntityRepository {
 //    usort($list, function ($a, $b) {
 //      return $a['status'] <=> $b['status'];
 //    });
-//    return $list;
-//  }
+
+  }
 
   public function countGetTasksArchiveByUser(User $user): int {
 
@@ -609,6 +623,20 @@ class TaskRepository extends ServiceEntityRepository {
       return $a['status'] <=> $b['status'];
     });
     return $list;
+  }
+
+  public function getAllTasksPaginator() {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    return  $this->createQueryBuilder('t')
+      ->where('t.datumKreiranja >= :startDate')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery();
   }
 
   public function countGetTasks(): int {

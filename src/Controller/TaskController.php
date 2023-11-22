@@ -51,16 +51,26 @@ class TaskController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_tasks')]
-  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
     $args = [];
     $user = $this->getUser();
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksByUser($user);
+      $tasks = $this->em->getRepository(Task::class)->getTasksByUserPaginator($user);
     } else {
-      $args['tasks'] = $this->em->getRepository(Task::class)->getTasks();
+      $tasks = $this->em->getRepository(Task::class)->getAllTasksPaginator();
     }
+
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
+
+
     $mobileDetect = new MobileDetect();
     if ($mobileDetect->isMobile()) {
       return $this->render('task/phone/list.html.twig', $args);

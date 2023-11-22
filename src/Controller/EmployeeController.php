@@ -86,7 +86,8 @@ class EmployeeController extends AbstractController {
     }
     $args = [];
     $args['user'] = $usr;
-    $tasks = $this->em->getRepository(Task::class)->getTasksArchiveByUser($usr);
+//    $tasks = $this->em->getRepository(Task::class)->getTasksArchiveByUser($usr);
+    $tasks = $this->em->getRepository(Task::class)->getTasksArchiveByUserPaginator($usr);
 
     $pagination = $paginator->paginate(
       $tasks, /* query NOT result */

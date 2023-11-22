@@ -198,11 +198,24 @@
                                                             {{ task.created | date("d.m.Y")}}
                                                         </div>
                                                     </td>
-                                                    <td>
-                                                        {% for user in task.assignedUsers %}
-                                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}" title="{{ user.getFullName() }}"></a>
-                                                        {% endfor %}
-                                                    </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% for user in task.assignedUsers %}
+                                                                    {% if getLogStatusByUser(task, user) == 1 %}
+                                                                        <div class="btn-group">
+                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
+                                                                                {{ user.fullName }}
+                                                                                <div class="live p-1 mx-2"></div>
+                                                                            </a>
+                                                                        </div>
+                                                                    {% else %}
+                                                                        <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
+                                                                            {{ user.fullName }}
+                                                                        </a>
+                                                                    {% endif %}<br>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
                                                     <td class="text-center">
                                                         <div class="dropdown">
                                                             <a href="#" class="text-body" data-bs-toggle="dropdown">

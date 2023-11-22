@@ -243,6 +243,35 @@ class AvailabilityRepository extends ServiceEntityRepository {
     return $dostupnost;
   }
 
+  public function getDostupnostByUserTwig(User $user): ?int {
+
+    $datum = new DateTimeImmutable();
+    $dostupnosti = $this->createQueryBuilder('t')
+      ->where('t.type <> 3')
+      ->andWhere('t.User = :user')
+      ->andWhere('t.datum = :datum')
+      ->setParameter(':user', $user->getId())
+      ->setParameter(':datum', $datum->format('Y-m-d 00:00:00'))
+      ->getQuery()
+      ->getResult();
+
+    if (!empty($dostupnosti)) {
+      foreach ($dostupnosti as $dost) {
+        if ($dost->getType() == 2) {
+          return 0;
+        } else {
+          if (is_null($dost->getZahtev())) {
+            return 5;
+          } else {
+            return $dost->getZahtev();
+          }
+        }
+      }
+    }
+  return null;
+
+  }
+
   public function getDostupnostDanas(): array {
     $dostupnost = [];
     $datum = new DateTimeImmutable();
@@ -322,6 +351,8 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
 
   }
+
+
 
   public function checkDostupnost(User $user, string $datum): bool {
 

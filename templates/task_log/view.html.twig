@@ -24,16 +24,7 @@
                             </a>
                         </div>
 
-                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
-                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
-                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
-                                <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_task_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
-                                        <i class="ph-plus"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
 
                     <div class="page-header-content d-lg-flex border-top">
@@ -86,10 +77,18 @@
                             <div class="card">
                                 <div class="card-header d-lg-flex py-lg-0">
                                     <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }} - {{ taskLog.user.getFullName() }}</h5>
+                                    {% set difference = date()|date_modify('-72 hours') %}
                                     {% if not task.isDeleted %}
-                                        <div class="mt-1 my-lg-auto ms-lg-auto">
-                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
-                                        </div>
+                                        {% if is_granted('ROLE_EMPLOYEE') and task.datumKreiranja > difference %}
+                                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
+                                            </div>
+                                        {% endif %}
+                                        {% if not is_granted('ROLE_EMPLOYEE') %}
+                                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
+                                            </div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
 
@@ -486,20 +485,28 @@
                                                                                                     </div>
                                                                                                 </div>
                                                                                             {% endfor %}
-
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-
                                                                         </div>
                                                                         <div class="card-footer d-flex justify-content-between align-items-center">
                                                                             <div class="d-flex align-items-center">
                                                                             </div>
                                                                             {% if not stopwatch.deleted %}
-                                                                                <div class="d-inline-flex mb-0">
-                                                                                    <a href="{{ path('app_stopwatch_edit_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-note-pencil"></i></a>
-                                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal_{{ loop.index }}" class="text-body ms-2"><i class="ph-trash"></i></a>
-                                                                                </div>
+                                                                                {% if is_granted('ROLE_EMPLOYEE') and task.datumKreiranja > difference %}
+                                                                                    <div class="d-inline-flex mb-0">
+                                                                                        <a href="{{ path('app_stopwatch_edit_time_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-clock"></i></a>
+                                                                                        <a href="{{ path('app_stopwatch_edit_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-note-pencil"></i></a>
+                                                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal_{{ loop.index }}" class="text-body ms-2"><i class="ph-trash"></i></a>
+                                                                                    </div>
+                                                                                {% endif %}
+                                                                                {% if not is_granted('ROLE_EMPLOYEE') %}
+                                                                                    <div class="d-inline-flex mb-0">
+                                                                                        <a href="{{ path('app_stopwatch_edit_time_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-clock"></i></a>
+                                                                                        <a href="{{ path('app_stopwatch_edit_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-note-pencil"></i></a>
+                                                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal_{{ loop.index }}" class="text-body ms-2"><i class="ph-trash"></i></a>
+                                                                                    </div>
+                                                                                {% endif %}
                                                                             {% endif %}
                                                                         </div>
                                                                     </div>

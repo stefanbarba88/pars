@@ -34,10 +34,18 @@
                             <div class="card">
                                 <div class="card-header d-lg-flex py-lg-0">
                                     <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }} - {{ taskLog.user.getFullName() }}</h5>
+                                    {% set difference = date()|date_modify('-72 hours') %}
                                     {% if not task.isDeleted %}
-                                        <div class="mt-1 my-lg-auto ms-lg-auto">
-                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
-                                        </div>
+                                        {% if is_granted('ROLE_EMPLOYEE') and task.datumKreiranja > difference %}
+                                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
+                                            </div>
+                                        {% endif %}
+                                        {% if not is_granted('ROLE_EMPLOYEE') %}
+                                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
+                                            </div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
 
@@ -442,17 +450,35 @@
 
                                                                     </div>
                                                                     <div class="card-footer d-flex justify-content-between align-items-center">
-                                                                        <div class="d-flex align-items-center">
+                                                                        {% if is_granted('ROLE_EMPLOYEE') and task.datumKreiranja > difference %}
+                                                                            <div class="d-flex align-items-center">
+                                                                                {% if not stopwatch.deleted %}
+                                                                                    <div class="d-inline-flex mb-0">
+                                                                                        <a href="{{ path('app_stopwatch_edit_time_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-clock"></i></a>
+                                                                                        <a href="{{ path('app_stopwatch_edit_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-note-pencil"></i></a>
+                                                                                    </div>
+                                                                                {% endif %}
+                                                                            </div>
                                                                             {% if not stopwatch.deleted %}
                                                                                 <div class="d-inline-flex mb-0">
-                                                                                    <a href="{{ path('app_stopwatch_edit_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-note-pencil"></i></a>
+                                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal_{{ loop.index }}" class="text-body ms-2"><i class="ph-trash"></i></a>
                                                                                 </div>
                                                                             {% endif %}
-                                                                        </div>
-                                                                        {% if not stopwatch.deleted %}
-                                                                            <div class="d-inline-flex mb-0">
-                                                                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal_{{ loop.index }}" class="text-body ms-2"><i class="ph-trash"></i></a>
+                                                                        {% endif %}
+                                                                        {% if not is_granted('ROLE_EMPLOYEE') %}
+                                                                            <div class="d-flex align-items-center">
+                                                                                {% if not stopwatch.deleted %}
+                                                                                    <div class="d-inline-flex mb-0">
+                                                                                        <a href="{{ path('app_stopwatch_edit_time_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-clock"></i></a>
+                                                                                        <a href="{{ path('app_stopwatch_edit_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-note-pencil"></i></a>
+                                                                                    </div>
+                                                                                {% endif %}
                                                                             </div>
+                                                                            {% if not stopwatch.deleted %}
+                                                                                <div class="d-inline-flex mb-0">
+                                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal_{{ loop.index }}" class="text-body ms-2"><i class="ph-trash"></i></a>
+                                                                                </div>
+                                                                            {% endif %}
                                                                         {% endif %}
                                                                     </div>
                                                                 </div>

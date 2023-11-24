@@ -389,6 +389,47 @@ class StopwatchController extends AbstractController {
     return $this->render('task/stopwatch_form_edit.html.twig', $args);
   }
 
+  #[Route('/form-edit-time/{id}', name: 'app_stopwatch_edit_time_forma')]
+  public function editTime(StopwatchTime $stopwatch, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $history = null;
+
+    $user = $this->getUser();
+
+    if ($request->isMethod('POST')) {
+
+        $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTimeManual($stopwatch, $request->request->get('stopwatch_time_add_form_period'));
+        $stopwatch->setIsEdited(true);
+        $stopwatch->setEditedBy($user);
+
+        $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
+
+    }
+
+    $args['stopwatch'] = $stopwatch;
+    $args['task'] = $stopwatch->getTaskLog()->getTask();
+    $args['taskLog'] = $stopwatch->getTaskLog();
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/stopwatch_form_edit_time.html.twig', $args);
+    }
+    return $this->render('task/stopwatch_form_edit_time.html.twig', $args);
+  }
+
   #[Route('/delete/{id}', name: 'app_stopwatch_delete')]
   public function delete(StopwatchTime $stopwatch)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));

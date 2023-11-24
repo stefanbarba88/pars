@@ -142,9 +142,9 @@
 
                                                         <div class="ms-3">
                                                             {% if log.count > 0  %}
-                                                                <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                                <span class="badge bg-secondary align-self-center rounded-pill ms-auto">{{ log.count }}</span>
                                                             {% else %}
-                                                                <span class="badge bg-warning align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ log.count }}</span>
                                                             {% endif %}
                                                         </div>
                                                     </div>
@@ -175,9 +175,9 @@
 
                                                             <div class="ms-3">
                                                                 {% if log.count > 0  %}
-                                                                    <span class="badge bg-primary align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                                    <span class="badge bg-secondary align-self-center rounded-pill ms-auto">{{ log.count }}</span>
                                                                 {% else %}
-                                                                    <span class="badge bg-warning align-self-center rounded-pill ms-auto">{{ log.count }}</span>
+                                                                    <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ log.count }}</span>
                                                                 {% endif %}
                                                             </div>
                                                         </div>
@@ -241,7 +241,7 @@
                                     </h5>
                                     {% if status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
                                         <div class="mt-1 my-lg-auto ms-lg-auto">
-                                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modal_close_task"><i class="ph-x me-2"></i>Zatvorite</button>
+                                            <button type="button" class="btn btn-yellow" data-bs-toggle="modal" data-bs-target="#modal_close_task"><i class="ph-x me-2"></i>Zatvorite</button>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -272,9 +272,9 @@
                                                             <div class="mb-3">
                                                                 <div class="d-inline-flex align-items-center">
                                                                     {% if task.isFree %}
-                                                                        <span class="badge bg-danger">Nenaplativ</span>
+                                                                        <span class="badge bg-yellow text-primary">Nenaplativ</span>
                                                                     {% else %}
-                                                                        <span class="badge bg-success">Naplativ</span>
+                                                                        <span class="badge bg-primary text-white">Naplativ</span>
                                                                     {% endif %}
                                                                 </div>
                                                             </div>
@@ -575,11 +575,11 @@
                                         <div class="d-flex align-items-center">
                                             <i class="ph-lightbulb me-2"></i>
                                             {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
-                                                <span class="badge bg-info">Nije startovan</span>
+                                                <span class="badge bg-secondary text-primary">Nije startovan</span>
                                             {% elseif status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
-                                                <span class="badge bg-success">Otvoren</span>
+                                                <span class="badge bg-yellow text-primary">Otvoren</span>
                                             {% else %}
-                                                <span class="badge bg-danger">Zatvoren</span>
+                                                <span class="badge bg-primary text-white">Zatvoren</span>
                                             {% endif %}
                                         </div>
 
@@ -594,7 +594,7 @@
                                         <div class="d-flex align-items-center">
                                         </div>
                                         <div class="d-inline-flex mb-0">
-                                            <span class="badge bg-warning bg-opacity-20 text-warning mx-2">Obrisan</span>
+                                            <span class="badge bg-danger text-white">Obrisan</span>
                                         </div>
                                     {% endif %}
                                 </div>

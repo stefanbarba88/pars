@@ -94,6 +94,13 @@ class ProjectRepository extends ServiceEntityRepository {
       ->getResult();
   }
 
+  public function getAllProjectsPaginator() {
+    return $this->createQueryBuilder('p')
+      ->andWhere('p.isSuspended = 0')
+      ->orderBy('p.title', 'ASC')
+      ->getQuery();
+  }
+
   public function getAllProjectsSuspended(): array {
     return $this->createQueryBuilder('p')
       ->andWhere('p.isSuspended = 1')
@@ -101,6 +108,8 @@ class ProjectRepository extends ServiceEntityRepository {
       ->getQuery()
       ->getResult();
   }
+
+
   public function getAllProjectsPermanent(): array {
 
     $projects = $this->createQueryBuilder('p')
@@ -123,6 +132,40 @@ class ProjectRepository extends ServiceEntityRepository {
 
     return $projects;
   }
+
+  public function getAllProjectsChangePaginator() {
+
+    return $this->createQueryBuilder('p')
+      ->andWhere('p.isSuspended = 0')
+      ->andWhere('p.type = 2')
+      ->orderBy('p.title', 'ASC')
+      ->getQuery();
+
+  }
+  public function getAllProjectsMixPaginator() {
+
+    return $this->createQueryBuilder('p')
+      ->andWhere('p.isSuspended = 0')
+      ->andWhere('p.type = 3')
+      ->orderBy('p.title', 'ASC')
+      ->getQuery();
+
+  }
+  public function getAllProjectsPermanentPaginator() {
+
+    return $this->createQueryBuilder('p')
+      ->andWhere('p.isSuspended = 0')
+      ->andWhere('p.type = 1')
+      ->addOrderBy('p.title', 'ASC')
+      ->getQuery();
+
+  }
+  public function getAllProjectsSuspendedPaginator() {
+    return $this->createQueryBuilder('p')
+      ->andWhere('p.isSuspended = 1')
+      ->orderBy('p.title', 'ASC')
+      ->getQuery();
+  }
   public function countProjectsChange(): int {
     return $this->createQueryBuilder('p')
       ->select('count(p.id)')
@@ -132,7 +175,6 @@ class ProjectRepository extends ServiceEntityRepository {
       ->getSingleScalarResult();
 
   }
-
   public function countProjectsPermanent(): int {
     return $this->createQueryBuilder('p')
       ->select('count(p.id)')
@@ -340,6 +382,48 @@ class ProjectRepository extends ServiceEntityRepository {
 
     return [$projectsByClient, $totalTasks];
   }
+
+  public function getCountTasksByProject(Project $project):array {
+
+    $category = $this->getEntityManager()->getRepository(Category::class)->find(5);
+    $prethodniMesecDatum = new DateTimeImmutable('last day of last month');
+
+    if ($project->getId() == 5) {
+      $prethodniMesecDatum = $prethodniMesecDatum->setDate($prethodniMesecDatum->format('Y'), $prethodniMesecDatum->format('m'), 26);
+    }
+
+    $datum = new DateTimeImmutable();
+
+    return $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectAllCategory($prethodniMesecDatum, $datum, $project, $category);
+
+  }
+
+  public function processMonthlyTasks(Project $project): array {
+    $zadaci = [];
+    $category = $this->getEntityManager()->getRepository(Category::class)->find(5);
+    $currentYear = date('Y');
+    $currentMonth = date('m');
+
+    for ($month = 1; $month <= $currentMonth; $month++) {
+      $startOfMonth = new DateTimeImmutable("$currentYear-$month-01");
+      $endOfMonth = new DateTimeImmutable("$currentYear-$month-" . date('t', strtotime("$currentYear-$month-01")));
+      $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectAllCategory($startOfMonth, $endOfMonth, $project, $category);
+      $zadaci[] = $tasks;
+    }
+
+    $sviZadaci = [];
+    $teren = [];
+
+    foreach ($zadaci as $zadatak) {
+      $sviZadaci[] = $zadatak['total'];
+      $teren[] = $zadatak['teren'];
+    }
+
+    return [$sviZadaci, $teren];
+
+  }
+
+
   public function getReportXls(string $datum, Project $projekat): array {
     $dates = explode(' - ', $datum);
 
@@ -374,4 +458,15 @@ class ProjectRepository extends ServiceEntityRepository {
 //            ->getOneOrNullResult()
 //        ;
 //    }
+  public function getProjectsByUserPaginator(User $user) {
+    return $this->createQueryBuilder('p')
+      ->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('p.isSuspended = 0')
+      ->setParameter(':userId', $user->getId())
+      ->addOrderBy('p.title', 'ASC')
+      ->getQuery();
+  }
+
 }

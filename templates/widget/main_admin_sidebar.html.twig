@@ -441,28 +441,35 @@
                         <a href="{{ path('app_projects') }}" class="nav-link">
                             <i class="ph-folders"></i>
                             <span>Lista</span>
-                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectsActive }}/{{ countProjects }}</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectsActive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_projects', {'permanent': 1}) }}" class="nav-link">
+                        <a href="{{ path('app_projects_permanent') }}" class="nav-link">
                             <i class="ph-folders"></i>
-                            <span>Sa stalnom ekipom</span>
+                            <span>Stalne ekipe</span>
                             <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectsPermanent }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_projects', {'permanent': 2}) }}" class="nav-link">
+                        <a href="{{ path('app_projects_change') }}" class="nav-link">
                             <i class="ph-folders"></i>
-                            <span>Sa letećom ekipom</span>
+                            <span>Leteće ekipe</span>
                             <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectsChange }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_projects', {'permanent': 3}) }}" class="nav-link">
+                        <a href="{{ path('app_projects_mix') }}" class="nav-link">
+                            <i class="ph-folders"></i>
+                            <span>Kombinovane ekipe</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectsMix }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_projects_archive') }}" class="nav-link">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
-{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectsChange }}</span>#}
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectsArchive }}</span>
                         </a>
                     </li>
                     <li class="nav-item">

@@ -1,0 +1,153 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Projekti
+                            </h4>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <div class="card">
+                        <div class="card-header d-lg-flex py-lg-0">
+                            <h5 class="py-lg-3 mb-0">Lista projekata sa letećim ekipama</h5>
+                            {% if not is_granted('ROLE_EMPLOYEE') %}
+                                <div class="mt-1 my-lg-auto ms-lg-auto">
+                                    <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive ">
+                                <table class="table table-bordered table-hover table-responsive">
+                                    <thead>
+                                    <tr>
+                                        <th {% if pagination.isSorted('[p.id]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, '# ', ['p.id']) }}
+                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.id' %}
+                                                &#8593;
+                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.id' %}
+                                                &#8595;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th {% if pagination.isSorted('[p.title]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Naziv ', ['p.title']) }}
+                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.title' %}
+                                                &#8593;
+                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.title' %}
+                                                &#8595;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th>Broj zadataka</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for project in pagination %}
+                                        <tr>
+                                            <td>{{ project.id }}</td>
+                                            <td>
+                                                <div class="fw-semibold"><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></div>
+                                                {% if project.label is not empty %}
+                                                    <div class="d-inline-flex">
+                                                        {% for label in project.label %}
+                                                            {{label.label | raw}}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {% set noTasks = getCountTasksByProject(project)  %}
+                                                    {{ noTasks.teren }}/{{ noTasks.total }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        {% if is_granted('ROLE_EMPLOYEE') %}
+                                                            <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        {% else %}
+                                                            <a href="{{ path('app_project_profile_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-info me-2"></i> Info</a>
+                                                            <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Zadaci</a>
+                                                            <a href="{{ path('app_project_activity_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-activity me-2"></i> Aktivnosti</a>
+                                                            <a href="{{ path('app_project_form', { id: project.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                            {% if project.suspended == 0 %}
+                                                                <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-x me-2"></i> Deaktivirajte</a>
+                                                            {% else %}
+                                                                <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-check me-2"></i> Aktivirajte</a>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

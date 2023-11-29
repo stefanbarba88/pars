@@ -310,10 +310,12 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $noNedostupni = 0;
     $noVanZadatka = 0;
     $noKancelarija = 0;
+    $noUnknown = 0;
 
     $nedostupni = [];
     $vanZadatka = [];
     $kancelarija = [];
+    $unknown = [];
 
     $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
 
@@ -322,11 +324,15 @@ class AvailabilityRepository extends ServiceEntityRepository {
         $noNedostupni++;
         $nedostupni[] = $user;
       } else {
-
-
         if (!$user->isInTask()) {
-          $noVanZadatka++;
-          $vanZadatka[] = $user;
+          $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+          if (empty($tasks)) {
+            $noUnknown++;
+            $unknown[] = $user;
+          } else {
+            $noVanZadatka++;
+            $vanZadatka[] = $user;
+          }
         } else {
           $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
           foreach ($tasks as $tsk) {
@@ -344,9 +350,11 @@ class AvailabilityRepository extends ServiceEntityRepository {
       'noNedostupni' => $noNedostupni,
       'noKancelarija' => $noKancelarija,
       'noVanZadatka' => $noVanZadatka,
+      'noUnknown' => $noUnknown,
       'nedostupni' => $nedostupni,
       'kancelarija' => $kancelarija,
       'vanZadatka' => $vanZadatka,
+      'unknown' => $unknown,
     ];
 
 

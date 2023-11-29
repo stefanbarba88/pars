@@ -48,43 +48,21 @@
                     <div class="d-lg-flex align-items-lg-start">
 
                         <!-- Right content -->
-{#                        <div class="tab-content flex-fill">#}
-{#                            <div class="tab-pane fade active show">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-header">#}
-{#                                        <h5 class="mb-0">{{ category.title }} <a href="{{ path('app_category_form', {id: category.id}) }}"><i class="ph-note-pencil"></i></a></h5>#}
-{#                                    </div>#}
-{#                                    <div class="card-body">#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Naziv:</div>#}
-{#                                            <div class="col-8">{{ category.title() }}</div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Status:</div>#}
-{#                                            <div class="col-8">{{ category.badgeByStatus() | raw}}</div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                {% if category.editBy is not null %}#}
-{#                                    <div class="card">#}
-{#                                        <div class="card-header">#}
-{#                                            <h5 class="mb-0">Izmena:</h5>#}
-{#                                        </div>#}
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Aktivnosti u {{ date()| date('Y') }}. godini</h5>
+                                    </div>
 
-{#                                        <div class="card-body">#}
-{#                                            <div class="row p-2">#}
-{#                                                <div class="col-4">Izmenio:</div>#}
-{#                                                <div class="col-8">{{ category.editBy.getFullName() | default('/') }}</div>#}
-{#                                            </div>#}
-{#                                            <div class="row p-2 bg-light">#}
-{#                                                <div class="col-4">Vreme:</div>#}
-{#                                                <div class="col-8">{{ category.updated | date("d.m.Y") }} u {{ category.updated | date("H:i:s") }}</div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                {% endif %}#}
-{#                            </div>#}
-{#                        </div>#}
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <div class="chart has-fixed-height" id="columns_basic"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <!-- /right content -->
 
                     </div>
@@ -141,6 +119,7 @@
     <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
     <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+{#    <script src="{{ asset('assets/demo/charts/echarts/bars/columns_basic.js') }}"></script>#}
     <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
     <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
 
@@ -156,87 +135,225 @@
 
 {% endblock includeJavascript %}
 
-{#{% block footerJavascript %}#}
-{#    <script type="text/javascript">#}
-{#        $(document).ready(function() {#}
-{#            var options = {#}
-{#                // target:        '#output1',   // target element(s) to be updated with server response#}
-{#                success:       editInfoResponse,  // post-submit callback#}
-{#                //         // target:        '#error',#}
-{#                //         // other available options:#}
-{#                //         //url:       url         // override for form's 'action' attribute#}
-{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#                //         //clearForm: true        // clear all form fields after successful submit#}
-{#                        resetForm: true,        // reset the form after successful submit#}
-{#                //         success:   editInfoResponse#}
-{#                //         // $.ajax options can be used here too, for example:#}
-{#                //         //timeout:   3000#}
-{#            };#}
+{% block footerJavascript %}
+    <script type="text/javascript">
 
-{#            // bind form using 'ajaxForm'#}
-{#            $('#infoForma').ajaxForm(options);#}
-{#        });#}
-{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
-{#        //     // for normal html responses, the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseText property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'xml' then the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseXML property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'json' then the first argument to the success callback#}
-{#        //     // is the json data object returned by the server#}
-{#        //#}
-{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
-{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
-{#        // }#}
-{#        // $(function () {#}
-{#        //     var options = {#}
-{#        //         // target:        '#error',#}
-{#        //         // other available options:#}
-{#        //         //url:       url         // override for form's 'action' attribute#}
-{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#        //         //clearForm: true        // clear all form fields after successful submit#}
-{#        //         resetForm: true,        // reset the form after successful submit#}
-{#        //         success:   editInfoResponse#}
-{#        //         // $.ajax options can be used here too, for example:#}
-{#        //         //timeout:   3000#}
-{#        //     };#}
-{#        //     // bind form using ajaxForm#}
-{#        //     $('#infoForma').submit(function() {#}
-{#        //         // inside event callbacks 'this' is the DOM element so we first#}
-{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
-{#        //         $(this).ajaxSubmit(options);#}
-{#        //#}
-{#        //         // !!! Important !!!#}
-{#        //         // always return false to prevent standard browser submit and page navigation#}
-{#        //         return false;#}
-{#        //     });#}
-{#        // });#}
-{#        //#}
-{#        function editInfoResponse(data) {#}
-{#            // 'data' is the json object returned from the server#}
 
-{#            if (data.success === 1) {#}
-{#                swal({#}
-{#                    type: 'success',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-{#            else {#}
-{#                var error = data.error_msg.toString();#}
-{#                swal({#}
-{#                    type: 'error',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
+            // Define element
+            var columns_basic_element = document.getElementById('columns_basic');
 
-{#        }#}
 
-{#    </script>#}
-{#{% endblock footerJavascript %}#}
+            //
+            // Charts configuration
+            //
+
+            if (columns_basic_element) {
+
+                // Initialize chart
+                var columns_basic = echarts.init(columns_basic_element, null, { renderer: 'svg' });
+
+
+                //
+                // Chart config
+                //
+
+                // Options
+                columns_basic.setOption({
+
+                    // Define colors
+                    color: ['#00233F','#C4DFEA','#5ab1ef','#ffb980','#d87a80'],
+
+                    // Global text styles
+                    textStyle: {
+                        fontFamily: 'var(--body-font-family)',
+                        color: 'var(--body-color)',
+                        fontSize: 14,
+                        lineHeight: 22,
+                        textBorderColor: 'transparent'
+                    },
+
+                    // Chart animation duration
+                    animationDuration: 750,
+
+                    // Setup grid
+                    grid: {
+                        left: 0,
+                        right: 45,
+                        top: 35,
+                        bottom: 0,
+                        containLabel: true
+                    },
+
+                    // Add legend
+                    legend: {
+                        data: ['Teren', 'Zadaci'],
+                        itemHeight: 8,
+                        itemGap: 30,
+                        textStyle: {
+                            color: 'var(--body-color)',
+                            padding: [0, 5]
+                        }
+                    },
+
+                    // Add tooltip
+                    tooltip: {
+                        trigger: 'axis',
+                        className: 'shadow-sm rounded',
+                        backgroundColor: 'var(--white)',
+                        borderColor: 'var(--gray-400)',
+                        padding: 15,
+                        textStyle: {
+                            color: '#000'
+                        },
+                        axisPointer: {
+                            type: 'shadow',
+                            shadowStyle: {
+                                color: 'rgba(var(--body-color-rgb), 0.025)'
+                            }
+                        }
+                    },
+
+                    // Horizontal axis
+                    xAxis: [{
+                        type: 'category',
+                        data: ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Avg', 'Sep', 'Okt', 'Nov', 'Dec'],
+                        axisLabel: {
+                            color: 'rgba(var(--body-color-rgb), .65)'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: 'var(--gray-500)'
+                            }
+                        },
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                color: 'var(--gray-300)',
+                                type: 'dashed'
+                            }
+                        }
+                    }],
+
+                    // Vertical axis
+                    yAxis: [{
+                        type: 'value',
+                        axisLabel: {
+                            color: 'rgba(var(--body-color-rgb), .65)'
+                        },
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: 'var(--gray-500)'
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'var(--gray-300)'
+                            }
+                        },
+                        splitArea: {
+                            show: true,
+                            areaStyle: {
+                                color: ['rgba(var(--white-rgb), .01)', 'rgba(var(--black-rgb), .01)']
+                            }
+                        }
+                    }],
+
+                    // Add series
+                    series: [
+                        {
+                            name: 'Teren',
+                            type: 'bar',
+                            data: [
+                                {% for zadatak in tereni %}
+                                {{ zadatak }},
+                                {% endfor %}
+                            ],
+                            itemStyle: {
+                                normal: {
+                                    barBorderRadius: [4, 4, 0, 0],
+                                    label: {
+                                        show: true,
+                                        position: 'top',
+                                        fontWeight: 500,
+                                        fontSize: 12,
+                                        color: 'var(--body-color)'
+                                    }
+                                }
+                            },
+                            markLine: {
+                                data: [{
+                                    type: 'average',
+                                    name: 'Average'
+                                }],
+                                label: {
+                                    color: 'var(--body-color)'
+                                }
+                            }
+                        },
+                        {
+                            name: 'Zadaci',
+                            type: 'bar',
+                            data: [
+                                {% for zadatak in zadaci %}
+                                {{ zadatak }},
+                                {% endfor %}
+                            ],
+                            itemStyle: {
+                                normal: {
+                                    barBorderRadius: [4, 4, 0, 0],
+                                    label: {
+                                        show: true,
+                                        position: 'top',
+                                        fontWeight: 500,
+                                        fontSize: 12,
+                                        color: 'var(--body-color)'
+                                    }
+                                }
+                            },
+                            markLine: {
+                                data: [{
+                                    type: 'average',
+                                    name: 'Average'
+                                }],
+                                label: {
+                                    color: 'var(--body-color)'
+                                }
+                            }
+                        }
+                    ]
+                });
+            }
+
+
+            //
+            // Resize charts
+            //
+
+            // Resize function
+            var triggerChartResize = function() {
+                columns_basic_element && columns_basic.resize();
+            };
+
+            // On sidebar width change
+            var sidebarToggle = document.querySelectorAll('.sidebar-control');
+            if (sidebarToggle) {
+                sidebarToggle.forEach(function(togglers) {
+                    togglers.addEventListener('click', triggerChartResize);
+                });
+            }
+
+            // On window resize
+            var resizeCharts;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeCharts);
+                resizeCharts = setTimeout(function () {
+                    triggerChartResize();
+                }, 200);
+            });
+
+
+
+
+    </script>
+{% endblock footerJavascript %}

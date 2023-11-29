@@ -1126,6 +1126,50 @@ class TaskRepository extends ServiceEntityRepository {
     return $lista;
   }
 
+  public function getTasksByDateAndProjectAllCategory(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project, Category $category): array {
+
+    $total = 0;
+    $free = 0;
+    $teren = 0;
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('t.project = :project')
+      ->andWhere('t.isDeleted <> 1')
+//      ->andWhere('t.category = :category')
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->setParameter('project', $project->getId())
+//      ->setParameter('category', $category->getId())
+      ->orderBy('t.created', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+    foreach ($taskovi as $tsk) {
+      $total++;
+      if ($tsk->getIsFree()) {
+        $free++;
+      }
+      if (!is_null($tsk->getCategory())) {
+        if ($tsk->getCategory() == $category) {
+          $teren++;
+        }
+      }
+    }
+
+    return [
+      'total' => $total,
+      'free' => $free,
+      'teren' => $teren,
+    ];
+
+  }
+
   public function getTasksByDateAndUserFree(DateTimeImmutable $start, DateTimeImmutable $stop, User $user): array {
 
 

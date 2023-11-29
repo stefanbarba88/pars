@@ -1,0 +1,339 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{project.title }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Aktivnosti u {{ date()| date('Y') }}. godini</h5>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <div class="chart has-fixed-height" id="columns_basic"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+{% block footerJavascript %}
+    <script type="text/javascript">
+
+
+        // Define element
+        var columns_basic_element = document.getElementById('columns_basic');
+
+
+        //
+        // Charts configuration
+        //
+
+        if (columns_basic_element) {
+
+            // Initialize chart
+            var columns_basic = echarts.init(columns_basic_element, null, { renderer: 'svg' });
+
+
+            //
+            // Chart config
+            //
+
+            // Options
+            columns_basic.setOption({
+
+                // Define colors
+                color: ['#00233F','#C4DFEA','#5ab1ef','#ffb980','#d87a80'],
+
+                // Global text styles
+                textStyle: {
+                    fontFamily: 'var(--body-font-family)',
+                    color: 'var(--body-color)',
+                    fontSize: 14,
+                    lineHeight: 22,
+                    textBorderColor: 'transparent'
+                },
+
+                // Chart animation duration
+                animationDuration: 750,
+
+                // Setup grid
+                grid: {
+                    left: 0,
+                    right: 45,
+                    top: 35,
+                    bottom: 0,
+                    containLabel: true
+                },
+
+                // Add legend
+                legend: {
+                    data: ['Teren', 'Zadaci'],
+                    itemHeight: 8,
+                    itemGap: 30,
+                    textStyle: {
+                        color: 'var(--body-color)',
+                        padding: [0, 5]
+                    }
+                },
+
+                // Add tooltip
+                tooltip: {
+                    trigger: 'axis',
+                    className: 'shadow-sm rounded',
+                    backgroundColor: 'var(--white)',
+                    borderColor: 'var(--gray-400)',
+                    padding: 15,
+                    textStyle: {
+                        color: '#000'
+                    },
+                    axisPointer: {
+                        type: 'shadow',
+                        shadowStyle: {
+                            color: 'rgba(var(--body-color-rgb), 0.025)'
+                        }
+                    }
+                },
+
+                // Horizontal axis
+                xAxis: [{
+                    type: 'category',
+                    data: ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Avg', 'Sep', 'Okt', 'Nov', 'Dec'],
+                    axisLabel: {
+                        color: 'rgba(var(--body-color-rgb), .65)'
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: 'var(--gray-500)'
+                        }
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: 'var(--gray-300)',
+                            type: 'dashed'
+                        }
+                    }
+                }],
+
+                // Vertical axis
+                yAxis: [{
+                    type: 'value',
+                    axisLabel: {
+                        color: 'rgba(var(--body-color-rgb), .65)'
+                    },
+                    axisLine: {
+                        show: true,
+                        lineStyle: {
+                            color: 'var(--gray-500)'
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: 'var(--gray-300)'
+                        }
+                    },
+                    splitArea: {
+                        show: true,
+                        areaStyle: {
+                            color: ['rgba(var(--white-rgb), .01)', 'rgba(var(--black-rgb), .01)']
+                        }
+                    }
+                }],
+
+                // Add series
+                series: [
+                    {
+                        name: 'Teren',
+                        type: 'bar',
+                        data: [
+                            {% for zadatak in tereni %}
+                            {{ zadatak }},
+                            {% endfor %}
+                        ],
+                        itemStyle: {
+                            normal: {
+                                barBorderRadius: [4, 4, 0, 0],
+                                label: {
+                                    show: true,
+                                    position: 'top',
+                                    fontWeight: 500,
+                                    fontSize: 12,
+                                    color: 'var(--body-color)'
+                                }
+                            }
+                        },
+                        markLine: {
+                            data: [{
+                                type: 'average',
+                                name: 'Average'
+                            }],
+                            label: {
+                                color: 'var(--body-color)'
+                            }
+                        }
+                    },
+                    {
+                        name: 'Zadaci',
+                        type: 'bar',
+                        data: [
+                            {% for zadatak in zadaci %}
+                            {{ zadatak }},
+                            {% endfor %}
+                        ],
+                        itemStyle: {
+                            normal: {
+                                barBorderRadius: [4, 4, 0, 0],
+                                label: {
+                                    show: true,
+                                    position: 'top',
+                                    fontWeight: 500,
+                                    fontSize: 12,
+                                    color: 'var(--body-color)'
+                                }
+                            }
+                        },
+                        markLine: {
+                            data: [{
+                                type: 'average',
+                                name: 'Average'
+                            }],
+                            label: {
+                                color: 'var(--body-color)'
+                            }
+                        }
+                    }
+                ]
+            });
+        }
+
+
+        //
+        // Resize charts
+        //
+
+        // Resize function
+        var triggerChartResize = function() {
+            columns_basic_element && columns_basic.resize();
+        };
+
+        // On sidebar width change
+        var sidebarToggle = document.querySelectorAll('.sidebar-control');
+        if (sidebarToggle) {
+            sidebarToggle.forEach(function(togglers) {
+                togglers.addEventListener('click', triggerChartResize);
+            });
+        }
+
+        // On window resize
+        var resizeCharts;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeCharts);
+            resizeCharts = setTimeout(function () {
+                triggerChartResize();
+            }, 200);
+        });
+
+
+
+
+    </script>
+{% endblock footerJavascript %}

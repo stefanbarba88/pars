@@ -1,0 +1,216 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Projekti
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
+                                <span class="breadcrumb-item active">Projekti</span>
+                            </div>
+
+                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+                            </a>
+                        </div>
+
+                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-lg-flex py-lg-0">
+                            <h5 class="py-lg-3 mb-0">Lista projekata sa letećim ekipama</h5>
+                            {% if not is_granted('ROLE_EMPLOYEE') %}
+                                <div class="mt-1 my-lg-auto ms-lg-auto">
+                                    <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive ">
+                                <table class="table table-bordered table-hover table-responsive">
+                                    <thead>
+                                    <tr>
+                                        <th {% if pagination.isSorted('[p.id]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, '# ', ['p.id']) }}
+                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.id' %}
+                                                &#8593;
+                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.id' %}
+                                                &#8595;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th {% if pagination.isSorted('[p.title]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Naziv ', ['p.title']) }}
+                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.title' %}
+                                                &#8593;
+                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.title' %}
+                                                &#8595;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th>Broj zadataka</th>
+                                        <th>Klijent</th>
+                                        <th {% if pagination.isSorted('[p.type]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Tip ', ['p.type']) }}
+                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.type' %}
+                                                &#8593;
+                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.type' %}
+                                                &#8595;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th {% if pagination.isSorted('[p.created]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Datum kreiranja ', ['p.created']) }}
+                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.created' %}
+                                                &#8593;
+                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.created' %}
+                                                &#8595;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for project in pagination %}
+                                        <tr>
+                                            <td>{{ project.id }}</td>
+                                            <td>
+                                                <div class="fw-semibold"><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></div>
+                                                {% if project.label is not empty %}
+                                                    <div class="d-inline-flex">
+                                                        {% for label in project.label %}
+                                                            {{label.label | raw}}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {% set noTasks = getCountTasksByProject(project)  %}
+                                                    {{ noTasks.teren }}/{{ noTasks.total }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if is_granted('ROLE_EMPLOYEE') %}
+                                                    {% for client in project.client %}
+                                                        {{ client.title }}{% if  not loop.last %},{% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% for client in project.client %}
+                                                        <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title }}</a>{% if  not loop.last %},{% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::FIKSNO') %}
+                                                    <span class="badge bg-secondary text-primary">Stalno</span>
+                                                {% endif %}
+                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::LETECE') %}
+                                                    <span class="badge bg-primary text-white">Leteće</span>
+                                                {% endif %}
+                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::KOMBINOVANO') %}
+                                                    <span class="badge bg-yellow text-primary">Kombinovano</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ project.created | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        {% if is_granted('ROLE_EMPLOYEE') %}
+                                                            <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        {% else %}
+                                                            <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                            <a href="{{ path('app_project_form', { id: project.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                            {% if project.suspended == 0 %}
+                                                                <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-x me-2"></i> Deaktivirajte</a>
+                                                            {% else %}
+                                                                <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-check me-2"></i> Aktivirajte</a>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

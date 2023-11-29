@@ -120,6 +120,7 @@ class CarReservationFormType extends AbstractType {
         ->add('kmStart', NumberType::class, [
           'attr' => [
             'min' => $minKm,
+            'max' => $minKm + 500,
           ],
           'required' => true,
           'html5' => true,

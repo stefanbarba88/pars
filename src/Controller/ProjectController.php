@@ -19,6 +19,7 @@ use App\Form\ProjectTeamListFormType;
 use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Knp\Snappy\Pdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -48,44 +49,187 @@ class ProjectController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_projects')]
-  public function list(Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
     $user = $this->getUser();
 
-    $permanent = $request->query->getInt('permanent');
+
 
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $args['projects'] = $this->em->getRepository(Project::class)->getProjectsByUser($user);
+      $projects = $this->em->getRepository(Project::class)->getProjectsByUserPaginator($user);
     } else {
-      if($permanent == 1) {
-        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsPermanent();
-        $args['type'] = 1;
-      } elseif ($permanent == 2) {
-        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsChange();
-        $args['type'] = 2;
-      } elseif ($permanent == 3) {
-        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsSuspended();
-        $args['type'] = 3;
-      }else {
-        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjects();
-        $args['type'] = 0;
-      }
+      $projects = $this->em->getRepository(Project::class)->getAllProjectsPaginator();
     }
+
+    $pagination = $paginator->paginate(
+      $projects, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      return $this->render('project/phone/list.html.twig', $args);
+      return $this->render('project/phone/list_paginator.html.twig', $args);
     }
 
-    return $this->render('project/list.html.twig', $args);
+    return $this->render('project/list_paginator.html.twig', $args);
   }
+
+  #[Route('/list-change/', name: 'app_projects_change')]
+  public function listChange(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $projects = $this->em->getRepository(Project::class)->getAllProjectsChangePaginator();
+
+    $pagination = $paginator->paginate(
+      $projects, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/list_paginator_change.html.twig', $args);
+    }
+
+    return $this->render('project/list_paginator_change.html.twig', $args);
+  }
+
+  #[Route('/list-permanent/', name: 'app_projects_permanent')]
+  public function listPermanent(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $projects = $this->em->getRepository(Project::class)->getAllProjectsPermanentPaginator();
+
+    $pagination = $paginator->paginate(
+      $projects, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/list_paginator_permanent.html.twig', $args);
+    }
+
+    return $this->render('project/list_paginator_permanent.html.twig', $args);
+  }
+
+  #[Route('/list-mix/', name: 'app_projects_mix')]
+  public function listMix(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $projects = $this->em->getRepository(Project::class)->getAllProjectsMixPaginator();
+
+    $pagination = $paginator->paginate(
+      $projects, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/list_paginator_mix.html.twig', $args);
+    }
+
+    return $this->render('project/list_paginator_mix.html.twig', $args);
+  }
+
+  #[Route('/list-archive/', name: 'app_projects_archive')]
+  public function listArchive(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $projects = $this->em->getRepository(Project::class)->getAllProjectsSuspendedPaginator();
+
+    $pagination = $paginator->paginate(
+      $projects, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/list_paginator_archive.html.twig', $args);
+    }
+
+    return $this->render('project/list_paginator_archive.html.twig', $args);
+  }
+
+//  #[Route('/list/', name: 'app_projects')]
+//  public function list(PaginatorInterface $paginator, Request $request)    : Response {
+//    if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $args = [];
+//    $user = $this->getUser();
+//
+////    $permanent = $request->query->getInt('permanent');
+////    $pagination = $paginator->paginate(
+////      $tasks, /* query NOT result */
+////      $request->query->getInt('page', 1), /*page number*/
+////      10
+////    );
+////
+////    $args['pagination'] = $pagination;
+//
+//
+//    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+//
+//      $args['projects'] = $this->em->getRepository(Project::class)->getProjectsByUser($user);
+//    } else {
+//      if($permanent == 1) {
+//        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsPermanent();
+//        $args['type'] = 1;
+//      } elseif ($permanent == 2) {
+//        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsChange();
+//        $args['type'] = 2;
+//      } elseif ($permanent == 3) {
+//        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsSuspended();
+//        $args['type'] = 3;
+//      }else {
+//        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjects();
+//        $args['type'] = 0;
+//      }
+//    }
+//
+//    $mobileDetect = new MobileDetect();
+//    if($mobileDetect->isMobile()) {
+//      return $this->render('project/phone/list.html.twig', $args);
+//    }
+//
+//    return $this->render('project/list.html.twig', $args);
+//  }
 
   #[Route('/form/{id}', name: 'app_project_form', defaults: ['id' => 0])]
   #[Entity('project', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Project $project, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function form(Project $project, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $history = null;
@@ -157,7 +301,7 @@ class ProjectController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-    return $this->redirectToRoute('app_projects', ['id' => $project->getId()]);
+    return $this->redirectToRoute('app_projects_archive');
   }
 
   #[Route('/view-profile/{id}', name: 'app_project_profile_view')]
@@ -222,6 +366,17 @@ class ProjectController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['project'] = $project;
+
+
+//    $args['teren'] = [];
+    $tasks = $this->em->getRepository(Project::class)->processMonthlyTasks($project);
+    $args['zadaci'] = $tasks[0];
+    $args['tereni'] = $tasks[1];
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/view_activity.html.twig', $args);
+    }
 
     return $this->render('project/view_activity.html.twig', $args);
   }

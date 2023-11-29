@@ -60,6 +60,7 @@ class CarStopReservationFormType extends AbstractType {
         ->add('kmStop', NumberType::class, [
           'attr' => [
             'min' => $minKm,
+            'max' => $minKm + 500,
           ],
           'required' => true,
           'html5' => true,

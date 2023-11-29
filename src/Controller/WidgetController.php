@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classes\Data\TipProjektaData;
 use App\Entity\Calendar;
 use App\Entity\Car;
 use App\Entity\CarReservation;
@@ -40,10 +41,11 @@ class WidgetController extends AbstractController {
     $args['countEmployeesOnTask'] = $this->em->getRepository(User::class)->countEmployeesOnTask();
     $args['countEmployeesOffTask'] = $this->em->getRepository(User::class)->countEmployeesOffTask();
 
-    $args['countProjectsPermanent'] = $this->em->getRepository(Project::class)->countProjectsPermanent();
-    $args['countProjectsChange'] = $this->em->getRepository(Project::class)->countProjectsChange();
-    $args['countProjects'] = $this->em->getRepository(Project::class)->count([]);
-    $args['countProjectsActive'] = $this->em->getRepository(Project::class)->countProjectsActive();
+    $args['countProjectsPermanent'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::FIKSNO]);
+    $args['countProjectsChange'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::LETECE]);
+    $args['countProjectsMix'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::KOMBINOVANO]);
+    $args['countProjectsArchive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => true]);
+    $args['countProjectsActive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false]);
 
     $args['countCalendarRequests'] = $this->em->getRepository(Calendar::class)->countCalendarRequests();
 

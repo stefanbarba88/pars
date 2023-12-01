@@ -2081,6 +2081,7 @@
     {% endif %}
 
 
+
     {% if dostupnosti.nedostupni is not empty %}
         <div id="modal_nedostupni" class="modal fade" tabindex="-1">
             <div class="modal-dialog">
@@ -2116,7 +2117,7 @@
                                     {% endfor %}
                                 {% else %}
                                     {% for user in dostupnostiSutra.nedostupni %}
-                                        {% set dost = getDostupnostByUser(user) %}
+                                        {% set dost = getDostupnostByUserSutra(user) %}
                                         <div class="row p-2">
                                             <div class="col-6"><a href="{{ path('app_employee_calendar_view', {id: user.id}) }}">{{ user.fullName }}</a></div>
                                             <div class="col-6">

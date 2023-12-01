@@ -273,6 +273,36 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
   }
 
+  public function getDostupnostByUserTwigSutra(User $user): ?int {
+
+    $datum = new DateTimeImmutable();
+    $sutra = $datum->add(new DateInterval('P1D'));
+    $dostupnosti = $this->createQueryBuilder('t')
+      ->where('t.type <> 3')
+      ->andWhere('t.User = :user')
+      ->andWhere('t.datum = :datum')
+      ->setParameter(':user', $user->getId())
+      ->setParameter(':datum', $sutra->format('Y-m-d 00:00:00'))
+      ->getQuery()
+      ->getResult();
+
+    if (!empty($dostupnosti)) {
+      foreach ($dostupnosti as $dost) {
+        if ($dost->getType() == 2) {
+          return 0;
+        } else {
+          if (is_null($dost->getZahtev())) {
+            return 5;
+          } else {
+            return $dost->getZahtev();
+          }
+        }
+      }
+    }
+    return null;
+
+  }
+
   public function getDostupnostDanas(): array {
     $dostupnost = [];
     $datum = new DateTimeImmutable();
@@ -368,7 +398,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
     $sutra = $danas->add(new DateInterval('P1D'));
 
-    $sutra->format('d.m.Y');
+    $datumSutra = $sutra->format('d.m.Y');
 
     $start = $sutra->setTime(0,0);
     $stop = $sutra->setTime(23,59);
@@ -385,7 +415,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
 
     foreach ($users as $user) {
-      if (!$this->checkDostupnost($user, $datum)) {
+      if (!$this->checkDostupnost($user, $datumSutra)) {
         $noNedostupni++;
         $nedostupni[] = $user;
       } else {

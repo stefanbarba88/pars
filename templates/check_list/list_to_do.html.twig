@@ -20,6 +20,7 @@
                             </h4>
                         </div>
                     </div>
+
                 </div>
                 <!-- /page header -->
 
@@ -28,10 +29,7 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista zadataka</h5>
-                            <div class="mt-1 my-lg-auto ms-lg-auto">
-                                <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
-                            </div>
+                            <h5 class="py-lg-3 mb-0">Lista mojih zadataka</h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive ">
@@ -49,7 +47,6 @@
                                             {% endif %}
                                         </th>
                                         <th>Zadatak</th>
-                                        <th>Zaposleni</th>
                                         <th  {% if pagination.isSorted('[c.priority]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Prioritet ', ['c.priority']) }}
                                             {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.priority' %}
@@ -83,10 +80,6 @@
                                                 <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
                                                     <span class="text-muted">{{ task.task }}</span>
                                                 </a>
-                                            <td>
-                                                <div class="fw-semibold">
-                                                    <a href="{{ path('app_employee_profile_view', { id: task.user.id}) }}">{{ task.user.getFullName() }}</a>
-                                                </div>
                                             </td>
                                             <td>
                                                 {% if task.priority == 1 %}
@@ -126,29 +119,11 @@
                                             </td>
 
                                             <td class="text-center">
-                                                <div class="dropdown">
-                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                        <i class="ph-gear"></i>
+                                                {% if task.status == 0 %}
+                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="btn btn-primary">
+                                                        Završite
                                                     </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="dropdown-item">
-                                                            <i class="ph-eye me-2"></i>
-                                                            Vidite
-                                                        </a>
-                                                        {% if task.status == 1 %}
-                                                            <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-arrows-counter-clockwise me-2"></i>
-                                                                Ponovite
-                                                            </a>
-                                                        {% endif %}
-                                                        {% if task.status != 2 %}
-                                                            <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-minus me-2"></i>
-                                                                Obrišite
-                                                            </a>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                     {% endfor %}

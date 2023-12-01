@@ -33,6 +33,16 @@ class ManagerChecklistFormType extends AbstractType {
 
     $builder
       ->add('task', TextareaType::class)
+      ->add('priority', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'placeholder' => '---Izaberite nivo prioriteta---',
+        'choices' => PrioritetData::form(),
+        'expanded' => false,
+        'multiple' => false,
+        'data' => PrioritetData::MEDIUM,
+      ])
       ->add('user', EntityType::class, [
         'class' => User::class,
         'placeholder' => "---Izaberite zaposlenog---",

@@ -10,6 +10,7 @@ use App\Entity\Availability;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\User;
+use DateInterval;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -307,6 +308,70 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $danas = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
     $start = $danas->setTime(0,0);
     $stop = $danas->setTime(23,59);
+    $noNedostupni = 0;
+    $noVanZadatka = 0;
+    $noKancelarija = 0;
+    $noUnknown = 0;
+
+    $nedostupni = [];
+    $vanZadatka = [];
+    $kancelarija = [];
+    $unknown = [];
+
+    $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
+
+    foreach ($users as $user) {
+      if (!$this->checkDostupnost($user, $datum)) {
+        $noNedostupni++;
+        $nedostupni[] = $user;
+      } else {
+        if (!$user->isInTask()) {
+          $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+          if (empty($tasks)) {
+            $noUnknown++;
+            $unknown[] = $user;
+          } else {
+            $noVanZadatka++;
+            $vanZadatka[] = $user;
+          }
+        } else {
+          $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+          foreach ($tasks as $tsk) {
+            if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == 6) || $tsk['task']->getProject()->getId() == 39) {
+              $noKancelarija++;
+              $kancelarija[] = $user;
+            }
+          }
+        }
+
+      }
+    }
+
+    return [
+      'noNedostupni' => $noNedostupni,
+      'noKancelarija' => $noKancelarija,
+      'noVanZadatka' => $noVanZadatka,
+      'noUnknown' => $noUnknown,
+      'nedostupni' => $nedostupni,
+      'kancelarija' => $kancelarija,
+      'vanZadatka' => $vanZadatka,
+      'unknown' => $unknown,
+    ];
+
+
+  }
+
+  public function getAllDostupnostiSutra(): array {
+
+    $datum = date("d.m.Y");
+    $danas = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
+
+    $sutra = $danas->add(new DateInterval('P1D'));
+
+    $sutra->format('d.m.Y');
+
+    $start = $sutra->setTime(0,0);
+    $stop = $sutra->setTime(23,59);
     $noNedostupni = 0;
     $noVanZadatka = 0;
     $noKancelarija = 0;

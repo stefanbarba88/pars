@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Client;
 use App\Entity\Notes;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -44,6 +45,18 @@ class NotesRepository extends ServiceEntityRepository {
       return new Notes();
     }
     return $this->getEntityManager()->getRepository(Notes::class)->find($id);
+
+  }
+
+  public function getNotesByUserPaginator(User $loggedUser) {
+
+    return $this->createQueryBuilder('c')
+        ->where('c.isSuspended = 0')
+        ->andWhere('c.user = :user')
+        ->setParameter(':user', $loggedUser)
+        ->orderBy('c.created', 'DESC')
+        ->getQuery();
+
 
   }
 

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\UserRolesData;
 use App\Entity\ManagerChecklist;
 use App\Entity\User;
 use DateTimeImmutable;
@@ -31,9 +32,44 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
     return $checklist;
   }
 
+
+  public function getChecklistPaginator(User $loggedUser) {
+
+    return match ($loggedUser->getUserType()) {
+      UserRolesData::ROLE_SUPER_ADMIN => $this->createQueryBuilder('c')
+        ->orderBy('c.status', 'ASC')
+        ->addOrderBy('c.priority', 'ASC')
+        ->addOrderBy('c.created', 'DESC')
+        ->getQuery(),
+
+      default => $this->createQueryBuilder('c')
+        ->andWhere('c.createdBy = :user')
+        ->setParameter(':user', $loggedUser)
+        ->orderBy('c.status', 'ASC')
+        ->addOrderBy('c.priority', 'ASC')
+        ->addOrderBy('c.created', 'DESC')
+        ->getQuery(),
+
+    };
+
+  }
+
+  public function getChecklistToDoPaginator(User $loggedUser) {
+
+    return  $this->createQueryBuilder('c')
+        ->andWhere('c.user = :user')
+        ->setParameter(':user', $loggedUser)
+        ->orderBy('c.status', 'ASC')
+        ->addOrderBy('c.priority', 'ASC')
+        ->addOrderBy('c.created', 'DESC')
+        ->getQuery();
+
+  }
+
+
   public function finish(ManagerChecklist $checklist): ManagerChecklist {
 
-    $checklist->setStatus(2);
+    $checklist->setStatus(1);
     $checklist->setFinish(new DateTimeImmutable());
 
     $this->save($checklist);
@@ -42,7 +78,7 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
   public function start(ManagerChecklist $checklist): ManagerChecklist {
 
-    $checklist->setStatus(1);
+    $checklist->setStatus(0);
     $checklist->setFinish(null);
 
     $this->save($checklist);
@@ -51,11 +87,8 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
   public function delete(ManagerChecklist $checklist): ManagerChecklist {
 
-    if ($checklist->getStatus() != 0) {
-      $checklist->setStatus(0);
-    } else {
-      $checklist->setStatus(1);
-    }
+    $checklist->setStatus(2);
+
 
     $this->save($checklist);
     return $checklist;
@@ -75,6 +108,17 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
     }
     return $this->getEntityManager()->getRepository(ManagerChecklist::class)->find($id);
   }
+
+
+  public function findForFormUser(User $user = null): ManagerChecklist {
+
+    $task = new ManagerChecklist();
+    $task->setUser($user);
+    return $task;
+
+  }
+
+
 //    /**
 //     * @return ManagerChecklist[] Returns an array of ManagerChecklist objects
 //     */

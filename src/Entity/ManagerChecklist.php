@@ -33,10 +33,17 @@ class ManagerChecklist {
   private DateTimeImmutable $updated;
 
   #[ORM\Column]
-  private ?int $status = 1;
+  private ?int $status = 0;
 
   #[ORM\ManyToOne]
   private ?User $user = null;
+
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?User $createdBy = null;
+
+  #[ORM\Column]
+  private ?int $priority = null;
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -124,6 +131,32 @@ class ManagerChecklist {
   public function setUser(?User $user): self
   {
       $this->user = $user;
+
+      return $this;
+  }
+
+  /**
+   * @return User|null
+   */
+  public function getCreatedBy(): ?User {
+    return $this->createdBy;
+  }
+
+  /**
+   * @param User|null $createdBy
+   */
+  public function setCreatedBy(?User $createdBy): void {
+    $this->createdBy = $createdBy;
+  }
+
+  public function getPriority(): ?int
+  {
+      return $this->priority;
+  }
+
+  public function setPriority(int $priority): self
+  {
+      $this->priority = $priority;
 
       return $this;
   }

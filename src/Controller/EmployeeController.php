@@ -265,7 +265,7 @@ class EmployeeController extends AbstractController {
 
   #[Route('/view-notes/{id}', name: 'app_employee_notes_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewNotes(User $usr): Response {
+  public function viewNotes(User $usr, PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
@@ -275,8 +275,22 @@ class EmployeeController extends AbstractController {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
+
+
+    $notes = $this->em->getRepository(Notes::class)->getNotesByUserPaginator($usr);
+
+
+    $pagination = $paginator->paginate(
+      $notes, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
+
+
     $args['user'] = $usr;
-    $args['notes'] = $this->em->getRepository(Notes::class)->findBy(['user' => $usr], ['isSuspended' => 'ASC', 'id' => 'DESC']);
+
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       return $this->render('employee/phone/view_notes.html.twig', $args);

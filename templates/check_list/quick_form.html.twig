@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                 Interni zadaci
+                                Interni zadaci
                             </h4>
                         </div>
                     </div>
@@ -40,25 +40,6 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="checklist_zaduzeni">Zaduženi:*</label>
-                                            <select id="checklist_zaduzeni" name="checklist[zaduzeni][]" class="form-control required select" required multiple>s
-                                                {% for user in users %}
-                                                    {% if korisnik is defined %}
-                                                        {% if user.id == korisnik.id %}
-                                                            <option value="{{ user.id }}" selected>{% if user.pozicija is not null  %}{{ user.getNameForForm }}{% else %}{{ user.getFullName }}{% endif %}</option>
-                                                        {% else %}
-                                                            <option value="{{ user.id }}">{% if user.pozicija is not null  %}{{ user.getNameForForm }}{% else %}{{ user.getFullName }}{% endif %}</option>
-                                                        {% endif %}
-                                                    {% else %}
-                                                        <option value="{{ user.id }}">{% if user.pozicija is not null  %}{{ user.getNameForForm }}{% else %}{{ user.getFullName }}{% endif %}</option>
-                                                    {% endif %}
-
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <label class="form-label" for="checklist_priority">Prioritet:*</label>

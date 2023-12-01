@@ -16,25 +16,9 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Zadatak
+                                Interni zadaci
                             </h4>
                         </div>
-                    </div>
-
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_checklist_list') }}" class="breadcrumb-item">Zadaci</a>
-                                <span class="breadcrumb-item active">Zadatak</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
                     </div>
                 </div>
                 <!-- /page header -->
@@ -52,11 +36,18 @@
                                     <div class="card-header d-lg-flex py-lg-0">
                                         <h5 class="py-lg-3 mb-0">Zadatak</h5>
                                         <div class="mt-1 my-lg-auto ms-lg-auto">
+
                                             {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') %}
-                                                <a href="{{ path('app_checklist_delete', {id: checklist.id}) }}" class="btn btn-primary"><i class="ph-trash me-2"></i> Obrišite</a>
-                                            {% else %}
-                                                <a href="{{ path('app_checklist_form', {id: checklist.id}) }}" class="btn btn-primary"><i class="ph-check me-2"></i> Završeno</a>
+                                                {% if checklist.status == 1 %}
+                                                    <a href="{{ path('app_checklist_start', {id: checklist.id}) }}" class="btn btn-primary"><i class="ph-arrows-counter-clockwise me-2"></i> Ponovite</a>
+                                               {% endif%}
+                                                {% if checklist.status != 2 %}
+                                                    <a href="{{ path('app_checklist_delete', {id: checklist.id}) }}" class="btn btn-primary"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                {% endif%}
                                             {% endif %}
+                                            {% if checklist.status == 0 %}
+                                                <a href="{{ path('app_checklist_finish', {id: checklist.id}) }}" class="btn btn-primary"><i class="ph-check me-2"></i> Završite</a>
+                                            {% endif%}
                                         </div>
                                     </div>
                                     <div class="card-body">
@@ -68,6 +59,46 @@
                                             <div class="col-4">Zaduženi:</div>
                                             <div class="col-8">
                                                {{ checklist.user.fullName }}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Prioritet:</div>
+                                            <div class="col-8">
+                                                {% if checklist.priority == 1 %}
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                {% elseif checklist.priority == 2 %}
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                {% elseif checklist.priority == 4 %}
+                                                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                {% elseif checklist.priority == 5 %}
+                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Kreiran:</div>
+                                            <div class="col-8">
+                                                {{ checklist.created | date('d.m.Y') }}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Završen:</div>
+                                            <div class="col-8">
+                                                {% if checklist.finish is not null %}
+                                                {{ checklist.finish | date('d.m.Y') }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Status:</div>
+                                            <div class="col-8">
+                                                {% if checklist.status == 0 %}
+                                                    <span class="badge bg-secondary text-primary">Kreiran</span>
+                                                {% elseif checklist.status == 1 %}
+                                                    <span class="badge bg-primary text-white">Završen</span>
+                                                {% elseif checklist.status == 2 %}
+                                                    <span class="badge bg-yellow text-primary">Obrisan</span>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>

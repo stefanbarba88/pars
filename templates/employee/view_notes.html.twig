@@ -21,25 +21,6 @@
                         </div>
                     </div>
 
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                {% if not is_granted('ROLE_EMPLOYEE') %}
-                                    <a href="{{ path('app_employees') }}" class="breadcrumb-item">Zaposleni</a>
-                                {% endif %}
-                                <a href="{{ path('app_employee_profile_view', { id: user.id}) }}" class="breadcrumb-item">Profil</a>
-                                <span class="breadcrumb-item active">Beleške</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
-
                     {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigation', { user: user } )) }}
 
                 </div>
@@ -62,116 +43,81 @@
 
                                 <div class="card">
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Beleške: {{ user.getFullName }}</h5>
+                                        <h5 class="py-lg-3 mb-0">Beleške: </h5>
                                         <div class="mt-1 my-lg-auto ms-lg-auto">
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
+                                            <a href="{{ path('app_note_form') }}" type="button" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive ">
+                                            <table class="table table-bordered table-hover table-responsive">
+                                                <thead>
+                                                <tr>
+                                                    <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th>Beleška</th>
+                                                    <th  {% if pagination.isSorted('[c.created]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Kreirana ', ['c.created']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.created' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.created' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for note in pagination %}
+                                                    <tr>
+                                                        <td>{{ note.id }}</td>
+
+                                                        <td>
+                                                            <a href="" class="text-body">
+                                                                <span class="text-muted">{{ note.notes }}</span>
+                                                            </a>
+                                                        </td>
+
+                                                        <td>
+                                                            {% if note.created is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ note.created | date("d.m.Y")}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+
+
+                                                        <td class="text-center">
+                                                            <a href="{{ path('app_note_delete', {id: note.id}) }}" class="btn btn-primary">
+                                                                <i class="ph-trash me-2"></i>
+                                                                Obrišite
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
 
-                                    <!-- Vertical form modal -->
-                                    {{ render(controller('App\\Controller\\NoteController::form', {id:0})) }}
-                                    <!-- /vertical form modal -->
-
-                                    <table class="table datatable-colvis-state-pars">
-                                        <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Beleška</th>
-                                            <th>Status</th>
-                                            <th>Kreirana</th>
-                                            <th>Izmenjen</th>
-                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for note in notes %}
-                                            <tr>
-                                                <td>{{ note.id }}</td>
-                                                <td>
-                                                    {% if note.isSuspended %}
-                                                        <a class="d-inline-block text-truncate" style="max-width: 200px;" href="#" data-bs-toggle="modal" data-bs-target="#modal_view_note{{ note.id }}"><del>{{ note.notes }}</del></a>
-                                                    {% else %}
-                                                        <a class="d-inline-block text-truncate" style="max-width: 200px;" href="#" data-bs-toggle="modal" data-bs-target="#modal_view_note{{ note.id }}">{{ note.notes }}</a>
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    {% if note.isSuspended %}
-                                                        <span class="badge bg-danger">Obrisana</span>
-                                                    {% else %}
-                                                        <span class="badge bg-success">Aktivna</span>
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ note.created | date("d.m.Y H:i:s")}}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ note.updated | date("d.m.Y H:i:s")}}
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="dropdown">
-                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                            <i class="ph-gear"></i>
-                                                        </a>
-                                                        <div class="dropdown-menu dropdown-menu-end">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_view_note{{ note.id }}" class="dropdown-item"><i class="ph-eye me-2"></i>Vidite</a>
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_note{{ note.id }}" class="dropdown-item"><i class="ph-trash me-2"></i>Obrišite</a>
-                                                        </div>
-                                                        <!-- delete note modal -->
-                                                        <div id="modal_delete_note{{ note.id }}" class="modal fade" tabindex="-1">
-                                                            <div class="modal-dialog">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header bg-danger text-white border-0">
-                                                                        <h6 class="modal-title">Potvrda</h6>
-                                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                    </div>
-
-                                                                    <div class="modal-body">
-                                                                        <p>Da li ste sigurni da želite da obrišete ovu belešku?</p>
-                                                                    </div>
-
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                        <a href="{{ path('app_note_delete', {id: note.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i>Obrišite</a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!-- /delete note modal -->
-
-                                                        <!-- view note modal -->
-                                                        <div id="modal_view_note{{ note.id }}" class="modal fade" tabindex="-1">
-                                                                <div class="modal-dialog">
-                                                                    <div class="modal-content">
-                                                                        <div class="modal-header">
-                                                                            <h5 class="modal-title">Beleška: {{ note.created | date("d.m.Y H:i:s")}}</h5>
-                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                                        </div>
-
-                                                                        <div class="modal-body">
-                                                                            {{ note.notes }}
-                                                                        </div>
-
-                                                                        <div class="modal-footer">
-                                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Zatvorite</button>
-                                                                            <a href="{{ path('app_note_edit', {id: note.id} ) }}" id="link-stop" class="btn btn-primary"><i class="ph-note-pencil me-2"></i>Izmenite</a>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                        </div>
-                                                        <!-- /view note modal -->
-
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

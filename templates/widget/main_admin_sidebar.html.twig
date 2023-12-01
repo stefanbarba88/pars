@@ -105,6 +105,19 @@
                     </li>
 
                     <li class="nav-item-header">
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Interni zadaci</div>
+                        <i class="ph-dots-three sidebar-resize-show"></i>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ path('app_checklist_to_do') }}" class="nav-link">
+                            <i class="ph-folders"></i>
+                            <span>Moji zadaci</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistActive }}</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item-header">
                         <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Projekti</div>
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
@@ -540,6 +553,26 @@
                             <span>Izveštaji</span>
                         </a>
                     </li>
+
+                    <li class="nav-item-header">
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Interni zadaci</div>
+                        <i class="ph-dots-three sidebar-resize-show"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_checklist_list') }}" class="nav-link">
+                            <i class="ph-folders"></i>
+                            <span>Zadaci</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistCreatedActive }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_checklist_to_do') }}" class="nav-link">
+                            <i class="ph-folders"></i>
+                            <span>Moji zadaci</span>
+                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistActive }}</span>
+                        </a>
+                    </li>
+
                     <!-- /Zadaci -->
 
                     <!-- Vozila -->

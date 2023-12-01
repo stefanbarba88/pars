@@ -19,9 +19,73 @@
                         </div>
                     {% endif %}
 
-                    <div class="alert alert-secondary alert-dismissible fade show">
-                        <span class="fw-semibold">Uputstvo je ažurirano 13.09.2023.</span> Preuzmite i pogledajte šta je <a href="{{ asset('/assets/manual/manual.pdf') }}" class="alert-link" download>novo</a> dodato.
-                    </div>
+{#                    <div class="alert alert-secondary alert-dismissible fade show">#}
+{#                        <span class="fw-semibold">Uputstvo je ažurirano 13.09.2023.</span> Preuzmite i pogledajte šta je <a href="{{ asset('/assets/manual/manual.pdf') }}" class="alert-link" download>novo</a> dodato.#}
+{#                    </div>#}
+
+                    {% if checklistActive is not empty %}
+                        <div class="card">
+                            <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
+                                <h5 class="py-sm-2 my-sm-1">Interni zadaci</h5>
+                                <div class="d-inline-flex ms-auto">
+                                    <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item1" aria-expanded="false">{{ countChecklistActive }}</span>
+                                </div>
+                            </div>
+
+                            <div id="collapsed_item1" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered table-sm table-condensed">
+                                        <tbody>
+                                        <tr class="table-light fw-semibold">
+                                            <td colspan="4">Aktivni</td>
+                                        </tr>
+                                        {% for task in checklistActive %}
+
+                                            <td>
+                                                {{ task.created | date("d.m.Y")}}
+                                            </td>
+                                            <td>
+                                                <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
+                                                    <span class="text-muted">{{ task.task | slice(0, 20) ~ (task.task | length > 20 ? '...' : '') }}</span>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {% if task.priority == 1 %}
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                {% elseif task.priority == 2 %}
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                {% elseif task.priority == 4 %}
+                                                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                {% elseif task.priority == 5 %}
+                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                {% if task.status == 0 %}
+                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="btn btn-primary btn-sm">
+                                                        Završite
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                        <tr>
+                                        </tr>
+
+                                        <tr class="table-light fw-semibold">
+{#                                            <td colspan="3"></td>#}
+                                            <td colspan="4" class="text-center">
+                                                <div class="d-inline-flex mb-0">
+                                                    <a href="{{ path('app_checklist_to_do') }}" class="btn-sm btn-primary"> Vidi sve</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
 
                     <div class="row d-none d-sm-block">
                         <div class="col-xl-12">

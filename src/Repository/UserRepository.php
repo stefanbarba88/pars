@@ -622,6 +622,30 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       ->getResult();
   }
 
+  public function getUsersForChecklist(): array {
+
+    return $this->createQueryBuilder('u')
+      ->andWhere('u.userType <> :userType')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
+      ->setParameter(':isSuspended', 0)
+      ->orderBy('u.userType', 'ASC')
+      ->addOrderBy('u.prezime', 'ASC')
+      ->getQuery()
+      ->getResult();
+  }
+
+  public function getUsersForQuickChecklist(): array {
+
+    $user1 = $this->find(1);
+    $user2 = $this->find(26);
+    $user3 = $this->find(27);
+    $user4 = $this->find(40);
+    $user5 = $this->find(47);
+
+    return [$user2, $user3, $user4, $user5, $user1];
+  }
+
   public function getNedostupni(): array {
     $nedostupni = [];
     $danas = new DateTimeImmutable();
@@ -718,6 +742,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       ->getResult();
 
   }
+
 
 //    /**
 //     * @return User[] Returns an array of User objects

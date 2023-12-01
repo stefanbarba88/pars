@@ -179,8 +179,6 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   private ?int $ProjectType = null;
 
 
-
-
   public function __construct() {
     $this->userHistories = new ArrayCollection();
     $this->tasks = new ArrayCollection();
@@ -292,6 +290,10 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
   public function getNameForForm(): string {
     return $this->ime . ' ' . $this->prezime . ' - ' . $this->pozicija->getTitle();
+  }
+
+  public function getRoleTitleByType(): string {
+    return UserRolesData::getTitleByType($this->userType);
   }
 
   /**
@@ -994,11 +996,6 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
       return $this;
   }
-
-
-
-
-
 
 
 }

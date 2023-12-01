@@ -98,7 +98,7 @@
                                                 <div class="fw-semibold">
                                                     {% if calendar.user is not empty %}
                                                         {% for user in calendar.user %}
-                                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.getFullName() }}</a>
+                                                            <a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.getFullName() }}</a>
                                                         {% endfor %}
                                                     {% endif %}
                                                 </div>

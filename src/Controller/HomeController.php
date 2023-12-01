@@ -44,10 +44,14 @@ class HomeController extends AbstractController {
     $args['tomorrowTimetableId'] = $this->em->getRepository(FastTask::class)->getTimeTableTomorrowId($args['sutra']);
 //    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostDanas();
     $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getAllDostupnostiDanas();
+    $args['dostupnostiSutra'] = $this->em->getRepository(Availability::class)->getAllDostupnostiSutra();
 
 //srediti ovaj upit, uzima puno resursa
 //    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
     $args['countTasksUnclosed'] = 0;
+
+    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $user, 'status' => 0], ['priority' => 'DESC', 'id' => 'ASC']);
+    $args['countChecklistActive'] = count($args['checklistActive']);
 
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
 
@@ -56,12 +60,11 @@ class HomeController extends AbstractController {
       $args['countLogs'] = $this->em->getRepository(TaskLog::class)->countLogsByUser($user);
 
       return $this->render('home/index_employee.html.twig', $args);
-    } else {
-      if ($user->getUserType() == UserRolesData::ROLE_MANAGER) {
-        $args['checklist'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $user], ['id' => 'DESC'], 5);
-      }
-      return $this->render('home/index_admin.html.twig', $args);
     }
+
+
+
+    return $this->render('home/index_admin.html.twig', $args);
   }
 
   public function nav(): Response {

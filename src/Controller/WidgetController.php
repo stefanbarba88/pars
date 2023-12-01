@@ -10,6 +10,8 @@ use App\Entity\Client;
 use App\Entity\Comment;
 use App\Entity\Expense;
 use App\Entity\Image;
+use App\Entity\ManagerChecklist;
+use App\Entity\Notes;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\Team;
@@ -48,6 +50,11 @@ class WidgetController extends AbstractController {
     $args['countProjectsActive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false]);
 
     $args['countCalendarRequests'] = $this->em->getRepository(Calendar::class)->countCalendarRequests();
+
+    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $this->getUser(), 'status' => 0]);
+    $args['checklistCreatedActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['createdBy' => $this->getUser(), 'status' => 0]);
+    $args['countChecklistActive'] = count($args['checklistActive']);
+    $args['countChecklistCreatedActive'] = count($args['checklistCreatedActive']);
 
 //    $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
 //    $args['countCommentsActive'] = $this->em->getRepository(Comment::class)->countCommentsActive();
@@ -174,7 +181,11 @@ class WidgetController extends AbstractController {
 
   public function rightSidebar(): Response {
 
-    return $this->render('widget/right_sidebar.html.twig');
+    $args['checklistUsers'] = $this->em->getRepository(User::class)->getUsersForQuickChecklist();
+    $args['countNotes'] = count($this->em->getRepository(Notes::class)->findBy(['isSuspended' => false, 'user' => $this->getUser()]));
+
+
+    return $this->render('widget/right_sidebar.html.twig', $args);
   }
 
   public function confirmationModal(string $message): Response {

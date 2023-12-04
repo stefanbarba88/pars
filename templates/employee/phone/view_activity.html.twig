@@ -82,12 +82,12 @@
                                                         </td>
                                                         <td>
                                                             {% if task.task.category %}
-                                                                <a href="{{ path('app_category_view', { id: task.task.category.id}) }}">{{ task.task.category.title }}</a>
+                                                                {{ task.task.category.title }}
                                                             {% endif %}
                                                         </td>
                                                         <td>
                                                             {% if task.task.project %}
-                                                                <a href="{{ path('app_project_tasks_view', { id: task.task.project.id}) }}">{{ task.task.project.title }}</a>
+                                                                {{ task.task.project.title }}
                                                             {% endif %}
                                                         </td>
                                                         <td>

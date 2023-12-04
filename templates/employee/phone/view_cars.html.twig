@@ -116,125 +116,210 @@
                                     <div class="card-header d-lg-flex py-lg-0">
                                         <h5 class="py-lg-3 mb-0">Lista rezervacija</h5>
                                     </div>
-                                    <table class="table datatable-colvis-state-pars-mobile table-bordered">
-                                        <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Vozilo</th>
-                                            <th>Zadužen</th>
-                                            <th>Razdužen</th>
-                                            <th>Status</th>
-                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for reservation in reservations %}
-                                            <tr>
-                                                <td>{{ reservation.id }}</td>
-                                                <td><div class="fw-semibold">{{ reservation.car.carName }}</div></td>
-                                                <td>
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ reservation.created | date("d.m.Y H:i:s")}}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    {% if reservation.finished is null %}
-                                                        /
-                                                    {% else %}
-                                                        <div class="d-inline-flex align-items-center">
-                                                            <i class="ph-calendar me-2"></i>
-                                                            {{ reservation.finished | date("d.m.Y H:i:s")}}
-                                                        </div>
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    {% if reservation.finished is null %}
-                                                        <span class="badge bg-warning">Zadužen</span>
-                                                    {% endif %}
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="dropdown">
-                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                            <i class="ph-gear"></i>
-                                                        </a>
-                                                        <div class="dropdown-menu dropdown-menu-end">
-                                                            <a href="{{ path('app_car_employee_reservation_view', { id: reservation.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                            {% if reservation.finished is null %}
-                                                                <a href="{{ path('app_car_employee_reservation_stop', { id: reservation.id}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Razdužite</a>
+                                    <div class="card-body">
+                                        <div class="table-responsive ">
+                                            <table class="table table-bordered table-hover table-responsive">
+                                                <thead>
+                                                <tr>
+                                                    <th {% if pagination.isSorted('[u.id]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, '# ID ', 'u.id', {'alias': 'u'}) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.id' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.id' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th>Vozilo</th>
+                                                    <th  {% if pagination.isSorted('[u.created]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Zadužen ', 'u.created', {'alias': 'u'}) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.created' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.created' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th  {% if pagination.isSorted('[u.finished]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Razdužen ', 'u.finished', {'alias': 'u'}) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.finished' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.finished' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for reservation in pagination %}
+                                                    <tr>
+                                                        <td>{{ reservation.id }}</td>
+                                                        <td>
+                                                            {{ reservation.car.getCarName() }}
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-inline-flex align-items-center">
+                                                                <i class="ph-calendar me-2"></i>
+                                                                {{ reservation.created | date("d.m.Y")}}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {% if reservation.finished is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ reservation.finished | date("d.m.Y")}}
+                                                                </div>
                                                             {% endif %}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                    <i class="ph-gear"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-end">
+                                                                    <a href="{{ path('app_car_employee_reservation_view', { id: reservation.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                                    {% if reservation.finished is null %}
+                                                                        <a href="{{ path('app_car_employee_reservation_stop', { id: reservation.id}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Razdužite</a>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- State saving -->
                                 <div class="card">
                                     <div class="card-header d-lg-flex py-lg-0">
                                         <h5 class="py-lg-3 mb-0">Lista troškova</h5>
                                     </div>
-                                    <table class="table datatable-colvis-state-pars-mobile table-bordered">
-                                        <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Tip troška</th>
-                                            <th>Iznos</th>
-                                            <th>Datum</th>
-                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for expense in expenses %}
-                                            <tr>
-                                                <td>{{ expense.id }}</td>
-                                                <td><div class="fw-semibold">{{ expense.getTypeData }}</div></td>
-                                                <td>{{ expense.price | number_format(2, '.', ',') }}</td>
-                                                <td>
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ expense.date | date("d.m.Y")}}
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="dropdown">
-                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                            <i class="ph-gear"></i>
-                                                        </a>
-                                                        <div class="dropdown-menu dropdown-menu-end">
-                                                            <a href="{{ path('app_car_employee_expense_view', { id: expense.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                            <a href="{{ path('app_car_employee_expense_edit', { id: expense.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_expense{{ expense.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
-                                                        </div>
-                                                        <!-- delete task modal -->
-                                                        <div id="modal_delete_expense{{ expense.id }}" class="modal fade" tabindex="-1">
-                                                            <div class="modal-dialog">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header bg-danger text-white border-0">
-                                                                        <h6 class="modal-title">Potvrda</h6>
-                                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive ">
+                                            <table class="table table-bordered table-hover table-responsive">
+                                                <thead>
+                                                <tr>
+                                                    <th {% if pagination1.isSorted('[e.id]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination1, '# ID ', 'e.id', {'alias': 'e'}) }}
+                                                        {% if pagination1.getDirection() == 'desc' and pagination1.getSort() == 'e.id' %}
+                                                            &#8595;
+                                                        {% elseif pagination1.getDirection() == 'asc' and pagination1.getSort() == 'e.id' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th>Vozilo</th>
+                                                    <th  {% if pagination1.isSorted('[e.type]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination1, 'Tip troška ', 'e.type', {'alias': 'e'}) }}
+                                                        {% if pagination1.getDirection() == 'desc' and pagination1.getSort() == 'e.type' %}
+                                                            &#8595;
+                                                        {% elseif pagination1.getDirection() == 'asc' and pagination1.getSort() == 'e.type' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th  {% if pagination1.isSorted('[e.price]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination1, 'Iznos ', 'e.price', {'alias': 'e'}) }}
+                                                        {% if pagination1.getDirection() == 'desc' and pagination1.getSort() == 'e.price' %}
+                                                            &#8595;
+                                                        {% elseif pagination1.getDirection() == 'asc' and pagination1.getSort() == 'e.price' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th  {% if pagination1.isSorted('[e.date]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination1, 'Datum ', 'e.date', {'alias': 'e'}) }}
+                                                        {% if pagination1.getDirection() == 'desc' and pagination1.getSort() == 'e.date' %}
+                                                            &#8595;
+                                                        {% elseif pagination1.getDirection() == 'asc' and pagination1.getSort() == 'e.date' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for expense in pagination1 %}
+                                                    <tr>
+                                                        <td>{{ expense.id }}</td>
+                                                        <td>{{ expense.car.getCarName() }}</td>
+                                                        <td>
+                                                            {{ expense.getTypeData }}
+                                                        </td>
+                                                        <td>{{ expense.price | number_format(2, '.', ',') }}</td>
+                                                        <td>
+                                                            {% if expense.date is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ expense.date | date("d.m.Y")}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                    <i class="ph-gear"></i>
+                                                                </a>
 
-                                                                    <div class="modal-body">
-                                                                        <p>Da li ste sigurni da želite da obrišete ovaj trošak?</p>
-                                                                    </div>
+                                                                <div class="dropdown-menu dropdown-menu-end">
+                                                                    <a href="{{ path('app_car_employee_expense_view', { id: expense.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                                    <a href="{{ path('app_car_employee_expense_edit', { id: expense.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_expense{{ expense.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
+                                                                </div>
 
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Odustanite</button>
-                                                                        <a href="{{ path('app_car_expense_delete', {id: expense.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                <div id="modal_delete_expense{{ expense.id }}" class="modal fade" tabindex="-1">
+                                                                    <div class="modal-dialog">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header bg-danger text-white border-0">
+                                                                                <h6 class="modal-title">Potvrda</h6>
+                                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                            </div>
+
+                                                                            <div class="modal-body">
+                                                                                <p>Da li ste sigurni da želite da obrišete ovaj trošak?</p>
+                                                                            </div>
+
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Odustanite</button>
+                                                                                <a href="{{ path('app_car_expense_delete', {id: expense.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <!-- /delete task modal -->
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination1) }}
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- /state saving -->
 

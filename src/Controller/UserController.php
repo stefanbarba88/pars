@@ -11,15 +11,12 @@ use App\Entity\UserHistory;
 use App\Form\UserEditImageFormType;
 use App\Form\UserEditInfoFormType;
 use App\Form\UserEditAccountFormType;
-use App\Form\UserEditSelfAccountFormType;
 use App\Form\UserRegistrationFormType;
 use App\Form\UserSuspendedFormType;
 use App\Service\UploadService;
-use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -131,7 +128,8 @@ class UserController extends AbstractController {
 
   #[Route('/edit-info/{id}', name: 'app_user_edit_info_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editInfo(User $usr, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function editInfo(User $usr, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
@@ -168,24 +166,16 @@ class UserController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
 
-        if ($type != 1) {
-          return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
-        }
-        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
+        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+
       }
     }
     $args['form'] = $form->createView();
     $args['user'] = $usr;
     $args['type'] = $type;
 
-    if ($type != 1) {
-      return $this->render('user/edit_info.html.twig', $args);
-    }
-      $mobileDetect = new MobileDetect();
-      if($mobileDetect->isMobile()) {
-        return $this->render('employee/phone/edit_info.html.twig', $args);
-      }
-    return $this->render('employee/edit_info.html.twig', $args);
+    return $this->render('user/edit_info.html.twig', $args);
+
   }
 
   #[Route('/edit-account/{id}', name: 'app_user_edit_account_form')]
@@ -214,11 +204,7 @@ class UserController extends AbstractController {
       $history = $history->getContent();
     }
 
-    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      $form = $this->createForm(UserEditSelfAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId(), 'type' => $type])]]);
-    } else {
-      $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId(), 'type' => $type])]]);
-    }
+    $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId(), 'type' => $type])]]);
 
     if ($request->isMethod('POST')) {
 
@@ -235,33 +221,15 @@ class UserController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
 
-        if ($type != 1) {
-          return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
-        }
-        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
+        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+
       }
     }
     $args['form'] = $form->createView();
     $args['user'] = $usr;
     $args['type'] = $type;
 
-    if ($type != 1) {
-      return $this->render('user/edit_account.html.twig', $args);
-    } else {
-      if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-        $mobileDetect = new MobileDetect();
-        if($mobileDetect->isMobile()) {
-          return $this->render('employee/phone/edit_account.html.twig', $args);
-        }
-        return $this->render('employee/edit_account.html.twig', $args);
-      } else {
-
-        return $this->render('employee/manager_edit_account.html.twig', $args);
-      }
-
-    }
-
-
+    return $this->render('user/edit_account.html.twig', $args);
 
   }
 
@@ -312,25 +280,17 @@ class UserController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_USER_IMAGE_SUCCESS);
 
-        if ($type != 1) {
-          return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
-        }
 
-        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
+        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+
       }
     }
     $args['form'] = $form->createView();
     $args['user'] = $usr;
     $args['type'] = $type;
 
-    if ($type != 1) {
-      return $this->render('user/edit_image.html.twig', $args);
-    }
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('employee/phone/edit_image.html.twig', $args);
-    }
-    return $this->render('employee/edit_image.html.twig', $args);
+    return $this->render('user/edit_image.html.twig', $args);
+
   }
 
   #[Route('/view-profile/{id}', name: 'app_user_profile_view')]

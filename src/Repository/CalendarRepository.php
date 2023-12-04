@@ -121,6 +121,7 @@ class CalendarRepository extends ServiceEntityRepository {
 //    };
 
     return $this->createQueryBuilder('c')
+      ->orderBy('c.status', 'DESC')
       ->addOrderBy('c.start', 'DESC')
       ->getQuery();
 

@@ -2,10 +2,14 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\UserRolesData;
+use App\Entity\Availability;
 use App\Entity\Car;
 use App\Entity\CarReservation;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -83,6 +87,16 @@ class CarReservationRepository extends ServiceEntityRepository {
       return new CarReservation();
     }
     return $this->getEntityManager()->getRepository(CarReservation::class)->find($id);
+
+  }
+
+  public function getReservationsByUserPaginator(User $user) {
+
+    return $this->createQueryBuilder('u')
+      ->where('u.driver = :driver')
+      ->setParameter('driver', $user)
+      ->orderBy('u.id', 'DESC')
+      ->getQuery();
 
   }
 

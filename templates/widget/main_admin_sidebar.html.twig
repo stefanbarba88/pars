@@ -357,25 +357,39 @@
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_employees') }}" class="nav-link">
-                            <i class="ph-user-circle"></i>
+                            <i class="ph-users"></i>
                             <span>Lista</span>
                             <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countEmployeesActive }}/{{ countEmployees }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_employees', { type : 1 }) }}" class="nav-link">
-                            <i class="ph-user-circle-gear"></i>
-                            <span>Na zadatku</span>
-                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countEmployeesOnTask }}</span>
+                        <a href="{{ path('app_availability_available') }}" class="nav-link">
+                            <i class="ph-user-plus"></i>
+                            <span>Dostupni</span>
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_employees', { type : 2 }) }}" class="nav-link">
-                            <i class="ph-user-circle-gear"></i>
-                            <span>Van zadatka</span>
-                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countEmployeesOffTask }}</span>
+                        <a href="{{ path('app_availability_unavailable') }}" class="nav-link">
+                            <i class="ph-user-minus"></i>
+                            <span>Nedostupni</span>
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
+{#                    <li class="nav-item">#}
+{#                        <a href="{{ path('app_employees', { type : 1 }) }}" class="nav-link">#}
+{#                            <i class="ph-user-circle-gear"></i>#}
+{#                            <span>Na zadatku</span>#}
+{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countEmployeesOnTask }}</span>#}
+{#                        </a>#}
+{#                    </li>#}
+{#                    <li class="nav-item">#}
+{#                        <a href="{{ path('app_employees', { type : 2 }) }}" class="nav-link">#}
+{#                            <i class="ph-user-circle-gear"></i>#}
+{#                            <span>Van zadatka</span>#}
+{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countEmployeesOffTask }}</span>#}
+{#                        </a>#}
+{#                    </li>#}
                     <li class="nav-item">
                         <a href="{{ path('app_employee_reports') }}" class="nav-link">
                             <i class="ph-file-text"></i>
@@ -674,20 +688,20 @@
                             {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_availability_available') }}" class="nav-link">
-                            <i class="ph-user-plus"></i>
-                            <span>Dostupni</span>
-                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_availability_unavailable') }}" class="nav-link">
-                            <i class="ph-user-minus"></i>
-                            <span>Nedostupni</span>
-                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
-                        </a>
-                    </li>
+{#                    <li class="nav-item">#}
+{#                        <a href="{{ path('app_availability_available') }}" class="nav-link">#}
+{#                            <i class="ph-user-plus"></i>#}
+{#                            <span>Dostupni</span>#}
+{#                            #}{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+{#                        </a>#}
+{#                    </li>#}
+{#                    <li class="nav-item">#}
+{#                        <a href="{{ path('app_availability_unavailable') }}" class="nav-link">#}
+{#                            <i class="ph-user-minus"></i>#}
+{#                            <span>Nedostupni</span>#}
+{#                            #}{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+{#                        </a>#}
+{#                    </li>#}
 {#                    <li class="nav-item">#}
 {#                        <a href="{{ path('app_calendar_list') }}" class="nav-link">#}
 {#                            <i class="ph-calendar"></i>#}

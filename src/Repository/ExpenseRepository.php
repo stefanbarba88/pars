@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Car;
 use App\Entity\CarReservation;
 use App\Entity\Expense;
+use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -77,6 +78,18 @@ class ExpenseRepository extends ServiceEntityRepository {
       return $expense;
     }
     return $this->getEntityManager()->getRepository(Expense::class)->find($id);
+
+  }
+
+  public function getExpensesByUserPaginator(User $user) {
+
+    return $this->createQueryBuilder('e')
+      ->where('e.createdBy = :user')
+      ->setParameter('user', $user)
+      ->orderBy('e.isSuspended', 'ASC')
+      ->addOrderBy('e.date', 'DESC')
+      ->addOrderBy('e.id', 'DESC')
+      ->getQuery();
 
   }
 

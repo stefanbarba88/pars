@@ -21,25 +21,6 @@
                         </div>
                     </div>
 
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                {% if not is_granted('ROLE_EMPLOYEE') %}
-                                    <a href="{{ path('app_employees') }}" class="breadcrumb-item">Zaposleni</a>
-                                {% endif %}
-                                <span class="breadcrumb-item">{{ user.getFullName() }}</span>
-                                <span class="breadcrumb-item active">Oprema</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
-
                     {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigation', { user: user } )) }}
 
                 </div>
@@ -67,60 +48,92 @@
                                             <a href="{{ path('app_tool_reservation_user_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Zadužite</a>
                                         </div>
                                     </div>
-                                    <table class="table datatable-colvis-state-pars table-bordered">
-                                        <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Naziv</th>
-                                            <th>Zadužen</th>
-                                            <th>Razdužen</th>
-                                            <th>Status</th>
-                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for reservation in reservations %}
-                                            <tr>
-                                                <td>{{ reservation.id }}</td>
-                                                <td><div class="fw-semibold">{{ reservation.tool.title }}</div></td>
-                                                <td>
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ reservation.created | date("d.m.Y H:i:s")}}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    {% if reservation.finished is null %}
-                                                        /
-                                                    {% else %}
-                                                        <div class="d-inline-flex align-items-center">
-                                                            <i class="ph-calendar me-2"></i>
-                                                            {{ reservation.finished | date("d.m.Y H:i:s")}}
-                                                        </div>
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    {% if reservation.finished is null %}
-                                                        <span class="badge bg-warning">Zadužen</span>
-                                                    {% endif %}
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="dropdown">
-                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                            <i class="ph-gear"></i>
-                                                        </a>
-                                                        <div class="dropdown-menu dropdown-menu-end">
-                                                            <a href="{{ path('app_tool_employee_reservation_view', { id: reservation.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                            {% if reservation.finished is null %}
-                                                                <a href="{{ path('app_tool_employee_reservation_stop', { id: reservation.id}) }}" class="dropdown-item"><i class="ph-wrench me-2"></i> Razdužite</a>
+                                    <div class="card-body">
+                                        <div class="table-responsive ">
+                                            <table class="table table-bordered table-hover table-responsive">
+                                                <thead>
+                                                <tr>
+                                                    <th {% if pagination.isSorted('[u.id]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, '# ID ', 'u.id', {'alias': 'u'}) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.id' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.id' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th>Naziv</th>
+                                                    <th  {% if pagination.isSorted('[u.created]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Zadužen ', 'u.created', {'alias': 'u'}) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.created' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.created' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th  {% if pagination.isSorted('[u.finished]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Razdužen ', 'u.finished', {'alias': 'u'}) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.finished' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.finished' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for reservation in pagination %}
+                                                    <tr>
+                                                        <td>{{ reservation.id }}</td>
+                                                        <td>
+                                                            {{ reservation.tool.title }}
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-inline-flex align-items-center">
+                                                                <i class="ph-calendar me-2"></i>
+                                                                {{ reservation.created | date("d.m.Y")}}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {% if reservation.finished is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ reservation.finished | date("d.m.Y")}}
+                                                                </div>
                                                             {% endif %}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                    <i class="ph-gear"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-end">
+                                                                    <a href="{{ path('app_tool_employee_reservation_view', { id: reservation.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                                    {% if reservation.finished is null %}
+                                                                        <a href="{{ path('app_tool_employee_reservation_stop', { id: reservation.id}) }}" class="dropdown-item"><i class="ph-wrench me-2"></i> Razdužite</a>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- State saving -->
 

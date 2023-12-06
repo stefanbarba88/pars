@@ -34,7 +34,7 @@
                                             </td>
                                             <td>
                                                 <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
-                                                    <span class="text-muted">{{ task.task }}</span>
+                                                    <span class="text-muted">{{ task.task | slice(0, 20) ~ (task.task | length > 20 ? '...' : '') }}</span>
                                                 </a>
                                             </td>
                                             <td>

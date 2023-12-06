@@ -129,9 +129,9 @@ class Currency {
 
   public function getBadgeByStatus(): string {
     if ($this->isSuspended) {
-      return '<span class="badge bg-danger">Neaktivan</span>';
+      return '<span class="badge bg-yellow text-primary">Deaktiviran</span>';
     }
-    return '<span class="badge bg-info">Aktivan</span>';
+    return '<span class="badge bg-primary text-white">Aktivan</span>';
 
   }
 

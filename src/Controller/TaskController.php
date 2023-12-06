@@ -1030,6 +1030,14 @@ class TaskController extends AbstractController {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
+  if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+    if (in_array($this->getUser(), $task->getAssignedUsers()->toArray())) {
+      return $this->redirectToRoute('app_task_view_user', ['id' => $task->getId()]);
+    } else {
+      return $this->redirectToRoute('app_home');
+    }
+  }
+
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();
     $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
@@ -1064,6 +1072,11 @@ class TaskController extends AbstractController {
   public function viewUser(Task $task)    : Response { if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
+
+    if ($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+    }
+
 
     $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
 

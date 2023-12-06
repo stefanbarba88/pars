@@ -40,10 +40,12 @@
 
                                 <div class="card">
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Beleške: </h5>
-                                        <div class="mt-1 my-lg-auto ms-lg-auto">
-                                            <a href="{{ path('app_note_form') }}" type="button" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
-                                        </div>
+                                        <h5 class="py-lg-3 mb-0">Beleške </h5>
+                                        {% if app.user == user %}
+                                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                                <a href="{{ path('app_note_form') }}" type="button" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                            </div>
+                                        {% endif %}
                                     </div>
 
 
@@ -83,8 +85,8 @@
                                                         <td>{{ note.id }}</td>
 
                                                         <td>
-                                                            <a href="" class="text-body">
-                                                                <span class="text-muted">{{ note.notes }}</span>
+                                                            <a href="{{ path('app_note_view', {id: note.id}) }}" class="text-body">
+                                                                <span class="text-muted">{{ note.notes | slice(0, 20) ~ (note.notes | length > 20 ? '...' : '') }}</span>
                                                             </a>
                                                         </td>
 
@@ -99,17 +101,27 @@
 
 
                                                         <td class="text-center">
-                                                            <div class="dropdown">
-                                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                                    <i class="ph-gear"></i>
-                                                                </a>
-                                                                <div class="dropdown-menu dropdown-menu-end">
-                                                                    <a href="" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_note{{ note.id }}" class="btn btn-primary">
+                                                                <i class="ph-trash me-2"></i>
+                                                                Obrišite
+                                                            </a>
+                                                            <div id="modal_delete_note{{ note.id }}" class="modal fade" tabindex="-1">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content text-start">
+                                                                        <div class="modal-header bg-danger text-white border-0">
+                                                                            <h6 class="modal-title">Potvrda</h6>
+                                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                        </div>
 
-                                                                    <a href="{{ path('app_note_delete', {id: note.id}) }}" class="dropdown-item">
-                                                                        <i class="ph-trash me-2"></i>
-                                                                        Obrišite
-                                                                    </a>
+                                                                        <div class="modal-body">
+                                                                            <p>Da li ste sigurni da želite da obrišete ovu belešku?</p>
+                                                                        </div>
+
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                            <a href="{{ path('app_note_delete', {id: note.id}) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </td>

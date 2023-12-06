@@ -10,7 +10,7 @@
                 <div class="card-img-actions d-inline-block mb-3">
                     <img class="img-fluid rounded-circle" src="{{ asset(user.image.thumbnail500) }}" width="150" height="150" alt="{{ user.fullName }}">
                     <div class="card-img-actions-overlay card-img rounded-circle">
-                        <a href="{{ path('app_user_edit_image_form', {id: user.id, type: 1}) }}" class="btn btn-outline-white btn-icon rounded-pill">
+                        <a href="{{ path('app_employee_edit_image_form', {id: user.id, type: 1}) }}" class="btn btn-outline-white btn-icon rounded-pill">
                             <i class="ph-note-pencil"></i>
                         </a>
                     </div>
@@ -25,19 +25,17 @@
                         Profil
                     </a>
                 </li>
-{#                <li class="nav-item">#}
-{#                    <a href="{{ path('app_employee_activity_view', { id: user.id}) }}" class="nav-link">#}
-{#                        <i class="ph-activity me-2"></i>#}
-{#                        Aktivnosti#}
-{#                        <span class="badge bg-secondary rounded-pill ms-auto">29</span>#}
-{#                    </a>#}
-{#                </li>#}
-{#                <li class="nav-item">#}
-{#                    <a href="{{ path('app_employee_calendar_view', { id: user.id}) }}" class="nav-link">#}
-{#                        <i class="ph-calendar me-2"></i>Raspored#}
-{#                        <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>#}
-{#                    </a>#}
-{#                </li>#}
+                <li class="nav-item">
+                    <a href="{{ path('app_employee_activity_view', { id: user.id}) }}" class="nav-link">
+                        <i class="ph-activity me-2"></i>
+                        Aktivnosti
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path('app_employee_calendar_view', { id: user.id}) }}" class="nav-link">
+                        <i class="ph-calendar me-2"></i>Raspored
+                    </a>
+                </li>
                 <li class="nav-item-divider"></li>
                 <li class="nav-item">
                     {% if user == app.user %}
@@ -51,7 +49,7 @@
                             <span class="ms-auto">{{ user.badgeByStatus | raw }}</span>
                         </a>
                     {% else %}
-                        <a href="#" class="nav-link">
+                        <a href="" class="nav-link">
                             <i class="ph-lightbulb me-2"></i>Status
                             <span class="ms-auto">{{ user.badgeByStatus | raw }}</span>
                         </a>

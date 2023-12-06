@@ -21,25 +21,6 @@
                         </div>
                     </div>
 
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                {% if not is_granted('ROLE_EMPLOYEE') %}
-                                    <a href="{{ path('app_employees') }}" class="breadcrumb-item">Zaposleni</a>
-                                {% endif %}
-                                <a href="{{ path('app_employee_profile_view', { id: user.id}) }}" class="breadcrumb-item">Profil</a>
-                                <span class="breadcrumb-item active">Izmena profilne slike/avatara</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
-
                     {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigation', { user: user } )) }}
 
                 </div>

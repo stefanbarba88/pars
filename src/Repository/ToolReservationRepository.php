@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Tool;
 use App\Entity\ToolReservation;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -64,6 +65,16 @@ class ToolReservationRepository extends ServiceEntityRepository {
       return new ToolReservation();
     }
     return $this->getEntityManager()->getRepository(ToolReservation::class)->find($id);
+
+  }
+
+  public function getReservationsByUserPaginator(User $user) {
+
+    return $this->createQueryBuilder('u')
+      ->where('u.user = :user')
+      ->setParameter('user', $user)
+      ->orderBy('u.id', 'DESC')
+      ->getQuery();
 
   }
 

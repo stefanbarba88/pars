@@ -198,7 +198,7 @@ class EmployeeController extends AbstractController {
     $pagination = $paginator->paginate(
       $reservations, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      10,
+      5,
       [
         'pageName' => 'page',  // Menjamo naziv parametra za stranicu
         'pageParameterName' => 'page',  // Menjamo naziv parametra za stranicu
@@ -209,7 +209,7 @@ class EmployeeController extends AbstractController {
     $pagination1 = $paginator->paginate(
       $expenses, /* query NOT result */
       $request->query->getInt('page1', 1), /*page number*/
-      10,
+      5,
       [
         'pageName' => 'page1',  // Menjamo naziv parametra za stranicu
         'pageParameterName' => 'page1',  // Menjamo naziv parametra za stranicu
@@ -233,7 +233,7 @@ class EmployeeController extends AbstractController {
 
   #[Route('/view-tools/{id}', name: 'app_employee_tools_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewTools(User $usr): Response {
+  public function viewTools(User $usr, PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
@@ -244,10 +244,21 @@ class EmployeeController extends AbstractController {
       }
     }
     $args['user'] = $usr;
-    $args['reservations'] = $usr->getToolReservations();
+    $reservations = $this->em->getRepository(ToolReservation::class)->getReservationsByUserPaginator($usr);
+
+    $pagination = $paginator->paginate(
+      $reservations, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      10
+    );
+
+    $args['pagination'] = $pagination;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/view_tools.html.twig', $args);
+      }
       return $this->render('employee/phone/view_tools.html.twig', $args);
     }
 
@@ -271,6 +282,9 @@ class EmployeeController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/view_docs.html.twig', $args);
+      }
       return $this->render('employee/phone/view_docs.html.twig', $args);
     }
 
@@ -294,6 +308,9 @@ class EmployeeController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/view_images.html.twig', $args);
+      }
       return $this->render('employee/phone/view_images.html.twig', $args);
     }
 
@@ -302,7 +319,7 @@ class EmployeeController extends AbstractController {
 
   #[Route('/view-comments/{id}', name: 'app_employee_comments_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewComments(User $usr): Response {
+  public function viewComments(User $usr, PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
@@ -313,10 +330,21 @@ class EmployeeController extends AbstractController {
       }
     }
     $args['user'] = $usr;
-    $args['comments'] = $this->em->getRepository(Comment::class)->getCommentsByUser($usr);
+    $reservations = $this->em->getRepository(Comment::class)->getCommentsByUserPaginator($usr);
+
+    $pagination = $paginator->paginate(
+      $reservations, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      10
+    );
+
+    $args['pagination'] = $pagination;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/view_comments.html.twig', $args);
+      }
       return $this->render('employee/phone/view_comments.html.twig', $args);
     }
 
@@ -343,7 +371,7 @@ class EmployeeController extends AbstractController {
     $pagination = $paginator->paginate(
       $notes, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      10
     );
 
     $args['pagination'] = $pagination;
@@ -353,6 +381,9 @@ class EmployeeController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/view_notes.html.twig', $args);
+      }
       return $this->render('employee/phone/view_notes.html.twig', $args);
     }
 
@@ -794,230 +825,197 @@ class EmployeeController extends AbstractController {
     return $this->render('report_project/control.html.twig', $args);
   }
 
+  #[Route('/edit-info/{id}', name: 'app_employee_edit_info_form')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function editInfo(User $usr, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
 
-//  #[Route('/edit-info/{id}', name: 'app_user_edit_info_form')]
-////  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function editInfo(User $usr, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
-//    return $this->redirect($this->generateUrl('app_login'));
-//  }
-//    $korisnik = $this->getUser();
-//    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-//      if ($korisnik->getId() != $usr->getId()) {
-//        return $this->redirect($this->generateUrl('app_home'));
-//      }
-//    }
-//    $type = $request->query->getInt('type');
-//
-//    $history = null;
-//    if($usr->getId()) {
-//      $history = $this->json($usr, Response::HTTP_OK, [], [
-//          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-//            return $object->getId();
-//          }
-//        ]
-//      );
-//      $history = $history->getContent();
-//    }
-//
-//    $form = $this->createForm(UserEditInfoFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_info_form', ['id' => $usr->getId(), 'type' => $type])]]);
-//    if ($request->isMethod('POST')) {
-//      $form->handleRequest($request);
-//
-//      if ($form->isSubmitted() && $form->isValid()) {
-//
-//        $this->em->getRepository(User::class)->save($usr, $history);
-//
-//        notyf()
-//          ->position('x', 'right')
-//          ->position('y', 'top')
-//          ->duration(5000)
-//          ->dismissible(true)
-//          ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
-//
-//        if ($type != 1) {
-//          return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
-//        }
-//        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
-//      }
-//    }
-//    $args['form'] = $form->createView();
-//
-//    $args['user'] = $usr;
-//    $args['type'] = $type;
-//
-//    if ($type != 1) {
-//      return $this->render('user/edit_info.html.twig', $args);
-//    }
-//    $mobileDetect = new MobileDetect();
-//    if($mobileDetect->isMobile()) {
-//      return $this->render('employee/phone/edit_info.html.twig', $args);
-//    }
-//    return $this->render('employee/edit_info.html.twig', $args);
-//  }
-//
-//  #[Route('/edit-account/{id}', name: 'app_user_edit_account_form')]
-////  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function editAccount(User $usr, Request $request)    : Response {
-//    if (!$this->isGranted('ROLE_USER')) {
-//      return $this->redirect($this->generateUrl('app_login'));
-//    }
-//    $korisnik = $this->getUser();
-//    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-//      if ($korisnik->getId() != $usr->getId()) {
-//        return $this->redirect($this->generateUrl('app_home'));
-//      }
-//    }
-//
-//    $type = $request->query->getInt('type');
-//    $usr->setPlainUserType($this->getUser()->getUserType());
-//    $history = null;
-//    if($usr->getId()) {
-//      $history = $this->json($usr, Response::HTTP_OK, [], [
-//          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-//            return $object->getId();
-//          }
-//        ]
-//      );
-//      $history = $history->getContent();
-//    }
-//
-//    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-//      $form = $this->createForm(UserEditSelfAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId(), 'type' => $type])]]);
-//    } else {
-//      $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_account_form', ['id' => $usr->getId(), 'type' => $type])]]);
-//    }
-//
-//    if ($request->isMethod('POST')) {
-//
-//      $form->handleRequest($request);
-//
-//      if ($form->isSubmitted() && $form->isValid()) {
-//
-//        $this->em->getRepository(User::class)->save($usr, $history);
-//
-//        notyf()
-//          ->position('x', 'right')
-//          ->position('y', 'top')
-//          ->duration(5000)
-//          ->dismissible(true)
-//          ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
-//
-//        if ($type != 1) {
-//          return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
-//        }
-//        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
-//      }
-//    }
-//    $args['form'] = $form->createView();
-//    $args['user'] = $usr;
-//    $args['type'] = $type;
-//
-//    if ($type != 1) {
-//      return $this->render('user/edit_account.html.twig', $args);
-//    } else {
-//      if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-//        $mobileDetect = new MobileDetect();
-//        if($mobileDetect->isMobile()) {
-//          return $this->render('employee/phone/edit_account.html.twig', $args);
-//        }
-//        return $this->render('employee/edit_account.html.twig', $args);
-//      } else {
-//
-//        return $this->render('employee/manager_edit_account.html.twig', $args);
-//      }
-//
-//    }
-//
-//
-//
-//  }
-//
-//  #[Route('/edit-image/{id}', name: 'app_user_edit_image_form')]
-////  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function editImage(User $usr, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
-//    return $this->redirect($this->generateUrl('app_login'));
-//  }
-//    $korisnik = $this->getUser();
-//    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-//      if ($korisnik->getId() != $usr->getId()) {
-//        return $this->redirect($this->generateUrl('app_home'));
-//      }
-//    }
-//    $type = $request->query->getInt('type');
-//
-//    $usr->setEditBy($this->getUser());
-//
-//    $form = $this->createForm(UserEditImageFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_edit_image_form', ['id' => $usr->getId(), 'type' => $type])]]);
-//    if ($request->isMethod('POST')) {
-//      $history = null;
-//      if($usr->getId()) {
-//        $history = $this->json($usr, Response::HTTP_OK, [], [
-//            ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-//              return $object->getId();
-//            }
-//          ]
-//        );
-//        $history = $history->getContent();
-//      }
-//
-//      $form->handleRequest($request);
-//
-//      if ($form->isSubmitted() && $form->isValid()) {
-//
-//        $file = $request->files->all()['user_edit_image_form']['slika'];
-//        $file = $uploadService->upload($file, $usr->getImageUploadPath());
-//
-//        $image = $this->em->getRepository(Image::class)->addImage($file, $usr->getThumbUploadPath(), $this->getParameter('kernel.project_dir'));
-//        $usr->setImage($image);
-//
-//        $this->em->getRepository(User::class)->save($usr, $history);
-//
-//        notyf()
-//          ->position('x', 'right')
-//          ->position('y', 'top')
-//          ->duration(5000)
-//          ->dismissible(true)
-//          ->addSuccess(NotifyMessagesData::EDIT_USER_IMAGE_SUCCESS);
-//
-//        if ($type != 1) {
-//          return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
-//        }
-//
-//        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
-//      }
-//    }
-//    $args['form'] = $form->createView();
-//    $args['user'] = $usr;
-//    $args['type'] = $type;
-//
-//    if ($type != 1) {
-//      return $this->render('user/edit_image.html.twig', $args);
-//    }
-//    $mobileDetect = new MobileDetect();
-//    if($mobileDetect->isMobile()) {
-//      return $this->render('employee/phone/edit_image.html.twig', $args);
-//    }
-//    return $this->render('employee/edit_image.html.twig', $args);
-//  }
-//
-//  #[Route('/view-profile/{id}', name: 'app_user_profile_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewProfile(User $usr)    : Response {
-//    if (!$this->isGranted('ROLE_USER')) {
-//      return $this->redirect($this->generateUrl('app_login'));
-//    }
-//    $korisnik = $this->getUser();
-//    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-//      if ($korisnik->getId() != $usr->getId()) {
-//        return $this->redirect($this->generateUrl('app_home'));
-//      }
-//    }
-//    $args['user'] = $usr;
-//
-//    return $this->render('user/view_profile.html.twig', $args);
-//  }
-//
-//  #[Route('/settings/{id}', name: 'app_user_settings_form')]
+    $history = null;
+    if($usr->getId()) {
+      $history = $this->json($usr, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
+
+    $form = $this->createForm(UserEditInfoFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_employee_edit_info_form', ['id' => $usr->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(User::class)->save($usr, $history);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
+
+        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+
+    $args['user'] = $usr;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/edit_info.html.twig', $args);
+      }
+      return $this->render('employee/phone/edit_info.html.twig', $args);
+    }
+    return $this->render('employee/edit_info.html.twig', $args);
+  }
+  #[Route('/edit-account/{id}', name: 'app_employee_edit_account_form')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function editAccount(User $usr, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
+    $type = $request->query->getInt('type');
+    $usr->setPlainUserType($this->getUser()->getUserType());
+    $history = null;
+    if($usr->getId()) {
+      $history = $this->json($usr, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
+
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $form = $this->createForm(UserEditSelfAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_employee_edit_account_form', ['id' => $usr->getId()])]]);
+    } else {
+      $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_employee_edit_account_form', ['id' => $usr->getId()])]]);
+    }
+
+    if ($request->isMethod('POST')) {
+
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(User::class)->save($usr, $history);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
+
+
+        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['user'] = $usr;
+    $args['type'] = $type;
+
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/manager_edit_account.html.twig', $args);
+      }
+      return $this->render('employee/phone/edit_account.html.twig', $args);
+    }
+    if($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      return $this->render('employee/edit_account.html.twig', $args);
+    }
+    return $this->render('employee/manager_edit_account.html.twig', $args);
+
+  }
+  #[Route('/edit-image/{id}', name: 'app_employee_edit_image_form')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function editImage(User $usr, Request $request, UploadService $uploadService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    $type = $request->query->getInt('type');
+
+    $usr->setEditBy($this->getUser());
+
+    $form = $this->createForm(UserEditImageFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_employee_edit_image_form', ['id' => $usr->getId(), 'type' => $type])]]);
+    if ($request->isMethod('POST')) {
+      $history = null;
+      if($usr->getId()) {
+        $history = $this->json($usr, Response::HTTP_OK, [], [
+            ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+              return $object->getId();
+            }
+          ]
+        );
+        $history = $history->getContent();
+      }
+
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $file = $request->files->all()['user_edit_image_form']['slika'];
+        $file = $uploadService->upload($file, $usr->getImageUploadPath());
+
+        $image = $this->em->getRepository(Image::class)->addImage($file, $usr->getThumbUploadPath(), $this->getParameter('kernel.project_dir'));
+        $usr->setImage($image);
+
+        $this->em->getRepository(User::class)->save($usr, $history);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_USER_IMAGE_SUCCESS);
+
+        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['user'] = $usr;
+    $args['type'] = $type;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/edit_image.html.twig', $args);
+      }
+      return $this->render('employee/phone/edit_image.html.twig', $args);
+    }
+    return $this->render('employee/edit_image.html.twig', $args);
+
+  }
+
+//  #[Route('/settings/{id}', name: 'app_employee_settings_form')]
 ////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
 //  public function settings(User $usr, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
 //    return $this->redirect($this->generateUrl('app_login'));
@@ -1074,50 +1072,8 @@ class EmployeeController extends AbstractController {
 //    $args['user'] = $usr;
 //    return $this->render('user/settings.html.twig', $args);
 //  }
-//
-//  #[Route('/history-user-list/{id}', name: 'app_user_history_list')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function listUserHistory(User $user, PaginatorInterface $paginator, Request $request)    : Response {
-//    if (!$this->isGranted('ROLE_USER')) {
-//      return $this->redirect($this->generateUrl('app_login'));
-//    }
-//    $korisnik = $this->getUser();
-//    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-//      if ($korisnik->getId() != $user->getId()) {
-//        return $this->redirect($this->generateUrl('app_home'));
-//      }
-//    }
-//
-//    $args=[];
-//    $histories = $this->em->getRepository(UserHistory::class)->getAllPaginator($user);
-//
-//    $pagination = $paginator->paginate(
-//      $histories, /* query NOT result */
-//      $request->query->getInt('page', 1), /*page number*/
-//      20
-//    );
-//
-//    $args['pagination'] = $pagination;
-//    $args['user'] = $user;
-//
-//
-//    return $this->render('user/user_history_list.html.twig', $args);
-//  }
-//
-//  #[Route('/history-user-view/{id}', name: 'app_user_profile_history_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewUserHistory(UserHistory $userHistory, SerializerInterface $serializer)    : Response { if (!$this->isGranted('ROLE_USER')) {
-//    return $this->redirect($this->generateUrl('app_login'));
-//  }
-//    $korisnik = $this->getUser();
-//    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-//      return $this->redirect($this->generateUrl('app_home'));
-//    }
-//    $args['userH'] = $serializer->deserialize($userHistory->getHistory(), user::class, 'json');
-//    $args['userHistory'] = $userHistory;
-//
-//    return $this->render('user/view_history_profile.html.twig', $args);
-//  }
+
+
 
 
 }

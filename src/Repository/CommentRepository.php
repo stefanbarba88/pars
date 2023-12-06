@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\UserRolesData;
 use App\Entity\Comment;
 use App\Entity\Project;
 use App\Entity\Task;
@@ -51,6 +52,24 @@ class CommentRepository extends ServiceEntityRepository {
       ->getQuery()
       ->getResult();
 
+  }
+
+
+  public function getCommentsByUserPaginator(User $user) {
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      return $this->createQueryBuilder('c')
+        ->where('c.user = :userId')
+        ->setParameter(':userId', $user->getId())
+        ->orderBy('c.isSuspended', 'ASC')
+        ->addOrderBy('c.id', 'DESC')
+        ->getQuery();
+    }
+
+    return $this->createQueryBuilder('c')
+      ->orderBy('c.isSuspended', 'ASC')
+      ->addOrderBy('c.id', 'DESC')
+      ->getQuery();
   }
 
   public function countCommentsActive(): int {

@@ -41,105 +41,119 @@
 
                                 <div class="card">
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Komentari dodati od: {{ user.getFullName }}</h5>
+                                        <h5 class="py-lg-3 mb-0">Komentari</h5>
                                     </div>
-                                    <table class="table datatable-colvis-state-pars-mobile">
-                                        <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Komentar</th>
-                                            <th>Zadatak</th>
-                                            <th>Kreiran</th>
-                                            <th>Izmenjen</th>
-                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for comment in comments %}
-                                            <tr>
-                                                <td>{{ comment.id }}</td>
-                                                <td>
-                                                    {% if comment.isSuspended %}
-                                                        <a class="d-inline-block text-truncate" style="max-width: 200px;" href="#" data-bs-toggle="modal" data-bs-target="#modal_view_comment{{ comment.id }}"><del>{{ comment.comment }}</del></a>
-                                                    {% else %}
-                                                        <a class="d-inline-block text-truncate" style="max-width: 200px;" href="#" data-bs-toggle="modal" data-bs-target="#modal_view_comment{{ comment.id }}">{{ comment.comment }}</a>
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    <a href="{{ path('app_task_view', { id: comment.task.id}) }}">{{ comment.task.title }}</a>
-                                                </td>
-                                                <td>
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ comment.created | date("d.m.Y H:i:s")}}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ comment.updated | date("d.m.Y H:i:s")}}
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="dropdown">
-                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                            <i class="ph-gear"></i>
-                                                        </a>
-                                                        <div class="dropdown-menu dropdown-menu-end">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_view_comment{{ comment.id }}" class="dropdown-item"><i class="ph-eye me-2"></i>Vidite</a>
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
-                                                        </div>
-                                                        <!-- delete comment modal -->
-                                                        <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
-                                                            <div class="modal-dialog">
-                                                                <div class="modal-content text-start">
-                                                                    <div class="modal-header bg-danger text-white border-0">
-                                                                        <h6 class="modal-title">Potvrda</h6>
-                                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive ">
+                                            <table class="table table-bordered table-hover table-responsive">
+                                                <thead>
+                                                <tr>
+                                                    <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th>Komentar</th>
+                                                    <th>Zadatak</th>
+                                                    <th  {% if pagination.isSorted('[c.created]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Kreiran ', ['c.created']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.created' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.created' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th  {% if pagination.isSorted('[c.updated]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Izmenjen ', ['c.updated']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.updated' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.updated' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
 
-                                                                    <div class="modal-body">
-                                                                        <p>Da li ste sigurni da želite da obrišete ovaj komentar?</p>
-                                                                    </div>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for comment in pagination %}
+                                                    <tr>
+                                                        <td>{{ comment.id }}</td>
 
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                        <a href="{{ path('app_comment_delete', {id: comment.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
-                                                                    </div>
+                                                        <td>
+                                                            <a href="" class="text-body">
+                                                                <span class="text-muted">{{ comment.comment | slice(0, 20) ~ (comment.comment | length > 20 ? '...' : '') }}</span>
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <a href="" class="text-body">
+                                                                {{ comment.task.title }}
+                                                            </a>
+                                                        </td>
+
+                                                        <td>
+                                                            {% if comment.created is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ comment.created | date("d.m.Y")}}
                                                                 </div>
-                                                            </div>
-                                                        </div>
-                                                        <!-- /delete task modal -->
-                                                        <div id="modal_view_comment{{ comment.id }}" class="modal fade" tabindex="-1">
-                                                            <div class="modal-dialog text-start">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <div class="modal-title">
-                                                                            <h5 class="lh-base mb-0">Komentar: {{ comment.created | date("d.m.Y H:i:s")}}</h5>
-                                                                            <a href="{{ path('app_task_view', { id: comment.task.id}) }}">{{ comment.task.title }}</a>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if comment.updated is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ comment.updated | date("d.m.Y")}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}" class="btn btn-primary">
+                                                                <i class="ph-trash me-2"></i>
+                                                                Obrišite
+                                                            </a>
+                                                            <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content text-start">
+                                                                        <div class="modal-header bg-danger text-white border-0">
+                                                                            <h6 class="modal-title">Potvrda</h6>
+                                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                                                         </div>
 
-                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                                    </div>
+                                                                        <div class="modal-body">
+                                                                            <p>Da li ste sigurni da želite da obrišete ovaj komentar?</p>
+                                                                        </div>
 
-                                                                    <div class="modal-body">
-                                                                        {{ comment.comment }}
-                                                                    </div>
-
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Zatvorite</button>
-                                                                        <a href="{{ path('app_comment_edit', {id: comment.id} ) }}" id="link-stop" class="btn btn-primary"><i class="ph-note-pencil me-2"></i>Izmenite</a>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                            <a href="{{ path('app_comment_delete', {id: comment.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
 
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

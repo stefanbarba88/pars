@@ -40,11 +40,10 @@
 
                                 <div class="card">
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Dokumentacija dodata od: {{ user.getFullName }}</h5>
+                                        <h5 class="py-lg-3 mb-0">Dodata dokumenta</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-4">
-                                            <h6>Dokumentacija</h6>
                                             <div class="row">
                                                 {% if pdfs is empty %}
                                                     <div class="d-flex align-items-start mb-3">
@@ -111,12 +110,6 @@
     {{ parent() }}
 
     <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
 
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
@@ -154,88 +147,3 @@
     {% endif %}
 
 {% endblock includeJavascript %}
-
-{#{% block footerJavascript %}#}
-{#    <script type="text/javascript">#}
-{#        $(document).ready(function() {#}
-{#            var options = {#}
-{#                // target:        '#output1',   // target element(s) to be updated with server response#}
-{#                success:       editInfoResponse,  // post-submit callback#}
-{#                //         // target:        '#error',#}
-{#                //         // other available options:#}
-{#                //         //url:       url         // override for form's 'action' attribute#}
-{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#                //         //clearForm: true        // clear all form fields after successful submit#}
-{#                        resetForm: true,        // reset the form after successful submit#}
-{#                //         success:   editInfoResponse#}
-{#                //         // $.ajax options can be used here too, for example:#}
-{#                //         //timeout:   3000#}
-{#            };#}
-
-{#            // bind form using 'ajaxForm'#}
-{#            $('#infoForma').ajaxForm(options);#}
-{#        });#}
-{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
-{#        //     // for normal html responses, the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseText property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'xml' then the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseXML property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'json' then the first argument to the success callback#}
-{#        //     // is the json data object returned by the server#}
-{#        //#}
-{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
-{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
-{#        // }#}
-{#        // $(function () {#}
-{#        //     var options = {#}
-{#        //         // target:        '#error',#}
-{#        //         // other available options:#}
-{#        //         //url:       url         // override for form's 'action' attribute#}
-{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#        //         //clearForm: true        // clear all form fields after successful submit#}
-{#        //         resetForm: true,        // reset the form after successful submit#}
-{#        //         success:   editInfoResponse#}
-{#        //         // $.ajax options can be used here too, for example:#}
-{#        //         //timeout:   3000#}
-{#        //     };#}
-{#        //     // bind form using ajaxForm#}
-{#        //     $('#infoForma').submit(function() {#}
-{#        //         // inside event callbacks 'this' is the DOM element so we first#}
-{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
-{#        //         $(this).ajaxSubmit(options);#}
-{#        //#}
-{#        //         // !!! Important !!!#}
-{#        //         // always return false to prevent standard browser submit and page navigation#}
-{#        //         return false;#}
-{#        //     });#}
-{#        // });#}
-{#        //#}
-{#        function editInfoResponse(data) {#}
-{#            // 'data' is the json object returned from the server#}
-
-{#            if (data.success === 1) {#}
-{#                swal({#}
-{#                    type: 'success',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-{#            else {#}
-{#                var error = data.error_msg.toString();#}
-{#                swal({#}
-{#                    type: 'error',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-
-{#        }#}
-
-{#    </script>#}
-{#{% endblock footerJavascript %}#}

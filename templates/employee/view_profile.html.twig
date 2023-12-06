@@ -29,11 +29,10 @@
                 <!-- Content area -->
                 <div class="content">
 
-                                    <!-- Inner container -->
-                                    <div class="d-lg-flex align-items-lg-start">
-
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
                                         <!-- Left sidebar component -->
-                                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
+                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
                                         <!-- /left sidebar component -->
 
                                         <!-- Right content -->
@@ -42,7 +41,7 @@
                                                 <div class="card">
                                                     <div class="card-header">
 
-                                                        <h5 class="mb-0">Lični i kontakt podaci <a href="{{ path('app_user_edit_info_form', {id: user.id, type : 1}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                                        <h5 class="mb-0">Lični i kontakt podaci <a href="{{ path('app_employee_edit_info_form', {id: user.id, type : 1}) }}"><i class="ph-note-pencil"></i></a></h5>
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="row p-2">
@@ -126,7 +125,7 @@
                                                 </div>
                                                 <div class="card">
                                                     <div class="card-header">
-                                                        <h5 class="mb-0">Login podaci <a href="{{ path('app_user_edit_account_form', {id: user.id, type : 1}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                                        <h5 class="mb-0">Login podaci <a href="{{ path('app_employee_edit_account_form', {id: user.id, type : 1}) }}"><i class="ph-note-pencil"></i></a></h5>
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="row p-2">
@@ -198,12 +197,6 @@
     {{ parent() }}
 
     <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
-    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
-    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
-    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
-    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
-    {#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
-    {#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
 
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>

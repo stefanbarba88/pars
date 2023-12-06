@@ -503,7 +503,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     if ($this->isSuspended) {
       return '<span class="badge bg-yellow text-primary">Deaktiviran</span>';
     }
-    return '<span class="badge bg-primary text-secondary">Aktiviran</span>';
+    return '<span class="badge bg-primary text-white">Aktivan</span>';
 
   }
 

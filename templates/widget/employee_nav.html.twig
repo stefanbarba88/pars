@@ -30,7 +30,7 @@
                     <div class="d-flex align-items-center mx-lg-1">
                         <i class="ph-car"></i>
                         <span class="d-none d-lg-inline-block ms-2">
-												Vozila
+                            Vozila
                         </span>
                         {% if user.car is not null %}
                             <span class="bg-yellow rounded-circle p-1 mx-2"></span>
@@ -90,15 +90,15 @@
                     </a>
 
                     <div class="dropdown-menu dropdown-menu-end">
-                        <a href="{{ path('app_user_edit_info_form', { id: user.id, type: 1}) }}" class="dropdown-item">
+                        <a href="{{ path('app_employee_edit_info_form', { id: user.id, type: 1}) }}" class="dropdown-item">
                             <i class="ph-note-pencil me-2"></i>
                             Lični i kontakt podaci
                         </a>
-                        <a href="{{ path('app_user_edit_account_form', { id: user.id, type: 1}) }}" class="dropdown-item">
+                        <a href="{{ path('app_employee_edit_account_form', { id: user.id, type: 1}) }}" class="dropdown-item">
                             <i class="ph-note-pencil me-2"></i>
                             Login podaci
                         </a>
-                        <a href="{{ path('app_user_edit_image_form', { id: user.id, type: 1}) }}" class="dropdown-item">
+                        <a href="{{ path('app_employee_edit_image_form', { id: user.id, type: 1}) }}" class="dropdown-item">
                             <i class="ph-image me-2"></i>
                             Profilna slika/avatar
                         </a>

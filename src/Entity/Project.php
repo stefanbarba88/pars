@@ -378,17 +378,17 @@ class Project implements JsonSerializable {
 
   public function getBadgeByStatus(): string {
     if ($this->isSuspended) {
-      return '<span class="badge bg-danger">Neaktivan</span>';
+      return '<span class="badge bg-yellow text-primary">Deaktiviran</span>';
     }
-    return '<span class="badge bg-info">Aktivan</span>';
+    return '<span class="badge bg-primary text-white">Aktivan</span>';
 
   }
 
   public function getBadgeByClientView(): string {
     if ($this->isClientView) {
-      return '<span class="badge bg-info"><i class="ph-eye ph-sm m-1"></i></span>';
+      return '<span class="badge bg-secondary"><i class="ph-eye ph-sm m-1"></i></span>';
     }
-    return '<span class="badge bg-danger"><i class="ph-eye-slash ph-sm m-1"></i></span>';
+    return '<span class="badge bg-yellow"><i class="ph-eye-slash ph-sm m-1"></i></span>';
 
   }
 

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Car;
 use App\Entity\CarHistory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -35,6 +36,17 @@ class CarHistoryRepository extends ServiceEntityRepository {
     if ($flush) {
       $this->getEntityManager()->flush();
     }
+  }
+
+  public function getCarsHistoryPaginator(Car $car) {
+
+    return $this->createQueryBuilder('c')
+      ->where('c.car = :car')
+      ->setParameter('car', $car)
+      ->orderBy('c.id', 'DESC')
+      ->getQuery();
+
+
   }
 
 //    /**

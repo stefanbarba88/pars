@@ -117,10 +117,31 @@
                                                             {% endif %}
                                                         </td>
                                                         <td class="text-center">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}" class="btn btn-primary">
-                                                                <i class="ph-trash me-2"></i>
-                                                                Obrišite
-                                                            </a>
+                                                            <div class="dropdown">
+                                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                    <i class="ph-gear"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-end">
+                                                                    <a href="{{ path('app_comment_view', {id:comment.id}) }}" class="dropdown-item">
+                                                                        <i class="ph-eye me-2"></i>
+                                                                        Vidite
+                                                                    </a>
+                                                                    {% if app.user == user %}
+
+                                                                        <a href="{{ path('app_comment_edit', {id:comment.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-note-pencil me-2"></i>
+                                                                            Izmenite
+                                                                        </a>
+
+                                                                        {% if comment.isSuspended == 0 %}
+                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}" class="dropdown-item">
+                                                                                <i class="ph-trash me-2"></i>
+                                                                                Obrišite
+                                                                            </a>
+                                                                        {% endif  %}
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
                                                             <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
                                                                 <div class="modal-dialog">
                                                                     <div class="modal-content text-start">
@@ -135,7 +156,7 @@
 
                                                                         <div class="modal-footer">
                                                                             <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                            <a href="{{ path('app_comment_delete', {id: comment.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                            <a href="{{ path('app_comment_admin_delete', {id: comment.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
                                                                         </div>
                                                                     </div>
                                                                 </div>

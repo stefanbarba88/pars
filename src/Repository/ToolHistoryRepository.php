@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Tool;
 use App\Entity\ToolHistory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -35,6 +36,17 @@ class ToolHistoryRepository extends ServiceEntityRepository {
     if ($flush) {
       $this->getEntityManager()->flush();
     }
+  }
+
+  public function getToolsHistoryPaginator(Tool $tool) {
+
+    return $this->createQueryBuilder('c')
+      ->where('c.tool = :tool')
+      ->setParameter('tool', $tool)
+      ->orderBy('c.id', 'DESC')
+      ->getQuery();
+
+
   }
 
 //    /**

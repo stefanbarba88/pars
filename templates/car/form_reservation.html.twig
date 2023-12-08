@@ -16,34 +16,12 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ car.getCarName() }}
+                                Vozila
                             </h4>
                         </div>
                     </div>
 
 
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
-                                <a href="{{ path('app_cars_reservations', {id:car.id}) }}" class="breadcrumb-item">Rezervacije</a>
-                                <span class="breadcrumb-item active">
-                                    {% if reservation.id is not null %}
-                                        Izmena
-                                    {% else %}
-                                        Dodavanje
-                                    {% endif %}
-                                </span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
                     {{ render(controller('App\\Controller\\WidgetController::carProfilNavigation', { car: car } )) }}
                 </div>
                 <!-- /page header -->
@@ -60,14 +38,15 @@
                             {%endfor%}
                         {%endfor%}
                     {%endif%}
+
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
-                                 {% if reservation.id is not null %}
-                                     Izmena rezervacije
-                                 {% else %}
-                                     Dodavanje rezervacije
-                                 {% endif %}
+                                {% if reservation.id is not null %}
+                                    Izmena rezervacije
+                                {% else %}
+                                    Dodavanje rezervacije
+                                {% endif %}
                             </h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
@@ -114,17 +93,17 @@
                                         {{ form_label(form.descStart, 'Napomena:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.descStart, {attr: { class: 'form-control' }}) }}
                                     </div>
-                            </div>
+                                </div>
 
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                </div>
                             </div>
+                            {{ form_end(form) }}
                         </div>
-                        {{ form_end(form) }}
-                    </div>
-                                                <!-- /wizard with validation -->
+                        <!-- /wizard with validation -->
 
-                </div>
+                    </div>
                 <!-- /content area -->
 
             </div>
@@ -178,3 +157,37 @@
 
 
 {% endblock includeJavascript %}
+{% block footerJavascript %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Definišemo mapu sa podacima carId -> kmStart
+            var carKmMap = {
+            {% for vozilo in minKm %}
+            {{ vozilo.id }}: {{ vozilo.minKm }},
+            {% endfor %}
+        }
+
+            // Funkcija za podešavanje vrednosti polja "kmStart"
+            function updateKmStartField(selectedCarId) {
+                if (carKmMap.hasOwnProperty(selectedCarId)) {
+                    var kmStart = carKmMap[selectedCarId];
+                    $("#car_reservation_form_kmStart").val(kmStart);
+                    $("#car_reservation_form_kmStart").attr("min", kmStart);
+                } else {
+                    $("#car_reservation_form_kmStart").val("");
+                    $("#car_reservation_form_kmStart").removeAttr("min");
+                }
+            }
+
+            // Pozivamo funkciju pri učitavanju stranice
+            updateKmStartField($("#car_reservation_form_car").val());
+
+            // Handler za promenu polja "car"
+            $("#car_reservation_form_car").on("change", function() {
+                var selectedCarId = $(this).val();
+                updateKmStartField(selectedCarId);
+            });
+        });
+
+    </script>
+{% endblock footerJavascript %}

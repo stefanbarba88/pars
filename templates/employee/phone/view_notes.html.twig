@@ -101,29 +101,31 @@
 
 
                                                         <td class="text-center">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_note{{ note.id }}" class="btn btn-primary">
-                                                                <i class="ph-trash me-2"></i>
-                                                                Obrišite
-                                                            </a>
-                                                            <div id="modal_delete_note{{ note.id }}" class="modal fade" tabindex="-1">
-                                                                <div class="modal-dialog">
-                                                                    <div class="modal-content text-start">
-                                                                        <div class="modal-header bg-danger text-white border-0">
-                                                                            <h6 class="modal-title">Potvrda</h6>
-                                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                        </div>
+                                                            {% if app.user == user %}
+                                                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_note{{ note.id }}" class="btn btn-primary">
+                                                                    <i class="ph-trash me-2"></i>
+                                                                    Obrišite
+                                                                </a>
+                                                                <div id="modal_delete_note{{ note.id }}" class="modal fade" tabindex="-1">
+                                                                    <div class="modal-dialog">
+                                                                        <div class="modal-content text-start">
+                                                                            <div class="modal-header bg-danger text-white border-0">
+                                                                                <h6 class="modal-title">Potvrda</h6>
+                                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                            </div>
 
-                                                                        <div class="modal-body">
-                                                                            <p>Da li ste sigurni da želite da obrišete ovu belešku?</p>
-                                                                        </div>
+                                                                            <div class="modal-body">
+                                                                                <p>Da li ste sigurni da želite da obrišete ovu belešku?</p>
+                                                                            </div>
 
-                                                                        <div class="modal-footer">
-                                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                            <a href="{{ path('app_note_delete', {id: note.id}) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                                <a href="{{ path('app_note_delete', {id: note.id}) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            {% endif %}
                                                         </td>
                                                     </tr>
                                                 {% endfor %}

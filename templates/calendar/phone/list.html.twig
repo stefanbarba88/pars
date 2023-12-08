@@ -83,7 +83,7 @@
                                                 <div class="fw-semibold">
                                                     {% if calendar.user is not empty %}
                                                         {% for user in calendar.user %}
-                                                            <a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.getFullName() }}</a>
+                                                            <a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.getFullName() }}</a>
                                                         {% endfor %}
                                                     {% endif %}
                                                 </div>
@@ -96,7 +96,7 @@
                                                 {% elseif calendar.type == 3 %}
                                                     <span class="badge bg-purple text-white">Bolovanje</span>
                                                 {% elseif calendar.type == 4 %}
-                                                    <span class="badge bg-primary text-secondary">Slava</span>
+                                                    <span class="badge bg-primary text-white">Slava</span>
                                                 {% endif %}
                                             </td>
                                             <td>
@@ -124,7 +124,7 @@
                                                 {% elseif calendar.status == 1 %}
                                                     <span class="badge bg-secondary text-primary">Na čekanju</span>
                                                 {% elseif calendar.status == 2 %}
-                                                    <span class="badge bg-primary text-secondary">Odobren</span>
+                                                    <span class="badge bg-primary text-white">Odobren</span>
                                                 {% elseif calendar.status == 3 %}
                                                     <span class="badge bg-yellow text-primary">Odbijen</span>
                                                 {% endif %}

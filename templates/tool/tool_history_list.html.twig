@@ -16,27 +16,11 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ tool.title }}
+                                Oprema
                             </h4>
                         </div>
                     </div>
 
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_tools') }}" class="breadcrumb-item">Oprema</a>
-                                <a href="{{ path('app_tool_view', { id: tool.id}) }}" class="breadcrumb-item">Profil</a>
-                                <span class="breadcrumb-item active">Istorija izmena</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
                     {{ render(controller('App\\Controller\\WidgetController::toolProfilNavigation', { tool:tool} )) }}
                 </div>
                 <!-- /page header -->
@@ -52,40 +36,81 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Lista izmena</h5>
+                                        <h5 class="py-lg-3 mb-0">Lista izmena - {{ tool.title }}</h5>
                                     </div>
-                                    <table class="table datatable-colvis-state-pars">
-                                        <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Verzija</th>
-                                            <th>Naziv</th>
-                                            <th>Datum i vreme izmene</th>
-                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for toolH in historyTools %}
-                                            <tr>
-                                                <td>{{ toolH.id }}</td>
-                                                <td><div class="fw-semibold">
-                                                        <a href="{{ path('app_tool_profile_history_view', { id: toolH.id}) }}">V.{{ toolH.version }}</a>
-                                                    </div></td>
-                                                <td><a href="{{ path('app_tool_profile_history_view', { id: toolH.id}) }}">{{ tool.title | upper }}</a></td>
-                                                <td>{{ toolH.created | date("d.m.Y H:i:s")}}</td>
-                                                <td>
-                                                    <a href="{{ path('app_tool_profile_history_view', { id: toolH.id}) }}">
-                                                        <i class="ph-eye me-2"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                                    <div class="card-body">
+                                        <div class="table-responsive ">
+                                            <table class="table table-bordered table-hover table-responsive">
+                                                <thead>
+                                                <tr>
+                                                    <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th>Verzija</th>
+                                                    <th>Oprema</th>
+                                                    <th  {% if pagination.isSorted('[c.updated]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Datum i vreme izmene ', ['c.updated']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.updated' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.updated' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                {% for toolH in pagination %}
+                                                    <tr>
+                                                        <td>{{ toolH.id }}</td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_tool_profile_history_view', { id: toolH.id}) }}">V.{{ toolH.version }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {{ tool.title }}
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-inline-flex align-items-center">
+                                                                <i class="ph-calendar me-2"></i>
+                                                                {{ toolH.created | date("d.m.Y H:i:s")}}
+                                                            </div>
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <a href="{{ path('app_tool_profile_history_view', { id: toolH.id}) }}" class="btn btn-primary">
+                                                                <i class="ph-eye me-2"></i> Vidite
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <!-- /right content -->
+
 
                     </div>
                     <!-- /inner container -->

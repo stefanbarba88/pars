@@ -144,6 +144,8 @@
                                                                         <i class="ph-eye me-2"></i>
                                                                         Vidite
                                                                     </a>
+                                                                    {% if app.user == user %}
+
                                                                     <a href="{{ path('app_comment_edit', {id:comment.id}) }}" class="dropdown-item">
                                                                         <i class="ph-note-pencil me-2"></i>
                                                                         Izmenite
@@ -155,6 +157,7 @@
                                                                             Obrišite
                                                                         </a>
                                                                     {% endif  %}
+                                                                    {% endif %}
                                                                 </div>
                                                             </div>
                                                             <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">

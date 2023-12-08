@@ -87,6 +87,17 @@ class CarRepository extends ServiceEntityRepository {
     return $vozila;
   }
 
+  public function getCarsPaginator() {
+
+    return $this->createQueryBuilder('c')
+        ->orderBy('c.isSuspended', 'ASC')
+        ->addOrderBy('c.isReserved', 'ASC')
+        ->addOrderBy('c.id', 'ASC')
+        ->getQuery();
+
+
+  }
+
 //    /**
 //     * @return Car[] Returns an array of Car objects
 //     */

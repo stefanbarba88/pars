@@ -77,6 +77,15 @@ class ToolReservationRepository extends ServiceEntityRepository {
       ->getQuery();
 
   }
+  public function getReservationsByToolPaginator(Tool $tool) {
+
+    return $this->createQueryBuilder('u')
+      ->where('u.tool = :tool')
+      ->setParameter('tool', $tool)
+      ->orderBy('u.id', 'DESC')
+      ->getQuery();
+
+  }
 
 //    /**
 //     * @return ToolReservation[] Returns an array of ToolReservation objects

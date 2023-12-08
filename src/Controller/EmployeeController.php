@@ -194,7 +194,6 @@ class EmployeeController extends AbstractController {
     $expenses = $this->em->getRepository(Expense::class)->getExpensesByUserPaginator($usr);
 
 
-
     $pagination = $paginator->paginate(
       $reservations, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/

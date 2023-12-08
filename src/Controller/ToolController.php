@@ -20,6 +20,7 @@ use App\Form\ToolStopReservationFormType;
 use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,31 +35,22 @@ class ToolController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_tools')]
-  public function list(Request $request): Response {
+  public function list(PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $type = $request->query->getInt('type');
     $args = [];
 
-    switch ($type) {
-      case 1:
-        $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isReserved' => true, 'isSuspended' => false]);
-        break;
-      case 2:
-        $args['tools'] = $this->em->getRepository(Tool::class)->getInactiveTools();
-        break;
-      default:
-        $args['tools'] = $this->em->getRepository(Tool::class)->findAll();
-    }
+    $cars = $this->em->getRepository(Tool::class)->getToolsPaginator();
 
-    $args['type'] = $type;
+    $pagination = $paginator->paginate(
+      $cars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
 
-    $user = $this->getUser();
+    $args['pagination'] = $pagination;
 
-//    if ($user->getUserType() == UserRolesData::ROLE_ADMIN || $user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN) {
-//      $args['type'] = $type;
-//    }
     return $this->render('tool/list.html.twig', $args);
   }
 
@@ -166,12 +158,22 @@ class ToolController extends AbstractController {
 
   #[Route('/history-tool-list/{id}', name: 'app_tool_history_list')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function listToolHistory(Tool $tool): Response {
+  public function listToolHistory(Tool $tool, PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $args = [];
     $args['tool'] = $tool;
-    $args['historyTools'] = $this->em->getRepository(ToolHistory::class)->findBy(['tool' => $tool], ['id' => 'DESC']);
+
+    $cars = $this->em->getRepository(ToolHistory::class)->getToolsHistoryPaginator($tool);
+
+    $pagination = $paginator->paginate(
+      $cars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('tool/tool_history_list.html.twig', $args);
   }
@@ -189,16 +191,26 @@ class ToolController extends AbstractController {
     return $this->render('tool/view_history_profile.html.twig', $args);
   }
 
+
+
   #[Route('/list-reservations/{id}', name: 'app_tools_reservations')]
-  public function listReservations(Tool $tool): Response {
+  public function listReservations(Tool $tool, PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
-    $args['reservations'] = $this->em->getRepository(ToolReservation::class)->findBy(['tool' => $tool], ['id' => 'desc']);
+    $args['tool'] = $tool;
+    $reservations = $this->em->getRepository(ToolReservation::class)->getReservationsByToolPaginator($tool);
     $args['lastReservation'] = $this->em->getRepository(ToolReservation::class)->findOneBy(['tool' => $tool], ['id' => 'desc']);
 
-    $args['tool'] = $tool;
+    $pagination = $paginator->paginate(
+      $reservations, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
+
 
     return $this->render('tool/list_reservations.html.twig', $args);
   }
@@ -376,9 +388,9 @@ class ToolController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      return $this->render('tool/phone/form_reservation_stop_details.html.twig', $args);
+      return $this->render('tool/phone/form_reservation_stop_employee.html.twig', $args);
     }
-    return $this->render('tool/form_reservation_stop_details.html.twig', $args);
+    return $this->render('tool/form_reservation_stop_employee.html.twig', $args);
   }
 
   #[Route('/form-employee-reservation-details-tool/{id}', name: 'app_employee_reservation_details_tool_form', defaults: ['id' => 0])]
@@ -424,10 +436,11 @@ class ToolController extends AbstractController {
     $args['reservation'] = $reservation;
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      return $this->render('tool/phone/form_reservation_employee_details_form.html.twig', $args);
+      return $this->render('tool/phone/form_reservation_employee_details_form_user.html.twig', $args);
     }
-    return $this->render('tool/form_reservation_employee_details_form.html.twig', $args);
+    return $this->render('tool/form_reservation_employee_details_form_user.html.twig', $args);
   }
+
 
   #[Route('/stop-employee-reservation-tool/{id}', name: 'app_tool_employee_reservation_stop')]
   public function stopEmployeeReservationTool(ToolReservation $reservation, Request $request): Response {

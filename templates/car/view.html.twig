@@ -16,26 +16,11 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ car.getCarName }}
+                                Vozila
                             </h4>
                         </div>
                     </div>
 
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
-                                <span class="breadcrumb-item active">Profil</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
                     {{ render(controller('App\\Controller\\WidgetController::carProfilNavigation', { car: car } )) }}
                 </div>
                 <!-- /page header -->
@@ -45,7 +30,10 @@
 
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
-
+                        {% set currentDate = date()|date("Y-m-d") %}
+                        {% set nextRegistrationDate = car.datumNaredneRegistracije|date("Y-m-d") %}
+                        {% set difference = nextRegistrationDate|date_modify('-30 days') %}
+                        {% set difference = difference|date("Y-m-d") %}
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
@@ -73,16 +61,22 @@
                                         </div>
                                         <div class="row p-2">
                                             <div class="col-4">Datum naredne registracije:</div>
-                                            <div class="col-8">{{ car.datumNaredneRegistracije | date("d.m.Y")}}
+                                            <div class="col-8">
+                                                {{ car.datumNaredneRegistracije | date("d.m.Y")}}
+                                                {% if currentDate <= nextRegistrationDate and currentDate >= difference %}
+                                                    <span class="badge bg-yellow text-primary rounded-pill p-1 mx-2">
+                                                            <i class="ph-warning-circle"></i>
+                                                        </span>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Status:</div>
                                             <div class="col-8">
                                                 {% if car.isSuspended %}
-                                                    <span class="badge bg-danger">Obrisan</span>
+                                                    <span class="badge bg-yellow text-primary">Deaktivirano</span>
                                                 {% else %}
-                                                    <span class="badge bg-success">Aktivan</span>
+                                                    <span class="badge bg-primary text-white">Aktivno</span>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -94,10 +88,12 @@
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Rezervacija:</div>
                                             <div class="col-8">
-                                                {% if car.isReserved %}
-                                                    <span class="badge bg-warning">Zadužen</span>
-                                                {% else %}
-                                                    <span class="badge bg-success">Slobodan</span>
+                                                {% if car.isSuspended == false %}
+                                                    {% if car.isReserved %}
+                                                        <span class="badge bg-primary text-white">Zaduženo</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary text-primary">Slobodno</span>
+                                                    {% endif %}
                                                 {% endif %}
                                             </div>
                                         </div>

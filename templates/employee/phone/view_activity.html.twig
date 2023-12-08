@@ -58,83 +58,63 @@
                                                 </thead>
                                                 <tbody>
                                                 {% for task in pagination %}
+                                                    {#                                                    {{ getLogStatus(task.task) }}#}
                                                     <tr>
-                                                        <td>{{ task.task.id }}</td>
+                                                        <td>{{ task.id }}</td>
                                                         <td>
                                                             <div class="fw-semibold">
-                                                                {% if app.user.userType != 4 %}
-                                                                    <a href="{{ path('app_task_view', { id: task.task.id}) }}">{{ task.task.title }}</a>
-                                                                {% else %}
-                                                                    {% if app.user in task.task.assignedUsers %}
-                                                                        <a href="{{ path('app_task_view_user', { id: task.task.id}) }}">{{ task.task.title }}</a>
-                                                                    {% else %}
-                                                                        {{ task.title }}
-                                                                    {% endif %}
-                                                                {% endif %}
+                                                                <a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a>
                                                             </div>
-                                                            {% if task.task.label is not empty %}
+                                                            {% if task.label is not empty %}
                                                                 <div class="d-inline-flex">
-                                                                    {% for label in task.task.label %}
+                                                                    {% for label in task.label %}
                                                                         {{label.label | raw}}
                                                                     {% endfor %}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
                                                         <td>
-                                                            {% if task.task.category %}
-                                                                {{ task.task.category.title }}
+                                                            {% if task.category %}
+                                                                {{ task.category.title }}
                                                             {% endif %}
                                                         </td>
                                                         <td>
-                                                            {% if task.task.project %}
-                                                                {{ task.task.project.title }}
+                                                            {% if task.project %}
+                                                                <a href="{{ path('app_project_profile_view', { id: task.project.id}) }}">{{ task.project.title }}</a>
                                                             {% endif %}
                                                         </td>
                                                         <td>
                                                             <div class="d-inline-flex align-items-center">
                                                                 <i class="ph-calendar me-2"></i>
-                                                                {{ task.task.datumKreiranja | date("d.m.Y")}}
+                                                                {{ task.datumKreiranja | date("d.m.Y")}}
                                                             </div>
                                                         </td>
                                                         <td>
                                                             <div class="text-body">
-                                                                {% for user in task.task.assignedUsers %}
-                                                                    {% for userId, userStatus in task.logStatus %}
-                                                                        {% if userId == user.id and userStatus.otvoren == 1 %}
-                                                                            <div class="btn-group">
-                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
-                                                                                    {{ user.fullName }}
-                                                                                    <div class="live p-1 mx-2"></div>
-                                                                                </a>
-                                                                            </div>
-                                                                        {% endif %}
-                                                                        {% if userId == user.id and userStatus.zatvoren == 1 %}
-                                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
+                                                                {% for user in task.assignedUsers %}
+                                                                    {% if getLogStatusByUser(task, user) == 1 %}
+                                                                        <div class="btn-group">
+                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">
                                                                                 {{ user.fullName }}
+                                                                                <div class="live p-1 mx-2"></div>
                                                                             </a>
-                                                                        {% endif %}
-                                                                        {% if userId == user.id and userStatus.nije_zapocet == 1 %}
-                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold link-dark d-inline-flex align-items-center ">
-                                                                                {{ user.fullName }}
-                                                                            </a>
-                                                                        {% endif %}
-                                                                    {% endfor %}<br>
+                                                                        </div>
+                                                                    {% else %}
+                                                                        <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">
+                                                                            {{ user.fullName }}
+                                                                        </a>
+                                                                    {% endif %}<br>
                                                                 {% endfor %}
                                                             </div>
                                                         </td>
-                                                        {#                                                        <td>#}
-                                                        {#                                                            {% for user in task.task.assignedUsers %}#}
-                                                        {#                                                                <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="32" height="32" alt="{{ user.getFullName() }}" title="{{ user.getFullName() }}"></a>#}
-                                                        {#                                                            {% endfor %}#}
-                                                        {#                                                        </td>#}
                                                         <td>
-                                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                            {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
                                                                 <span class="badge bg-secondary text-primary">Nije startovan</span>
                                                             {% endif %}
-                                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                            {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
                                                                 <span class="badge bg-yellow text-primary">Otvoren</span>
                                                             {% endif %}
-                                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                            {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
                                                                 <span class="badge bg-primary text-white">Zatvoren</span>
                                                             {% endif %}
                                                         </td>
@@ -146,34 +126,34 @@
                                                                 </a>
                                                                 <div class="dropdown-menu dropdown-menu-end">
                                                                     {% if is_granted('ROLE_EMPLOYEE') %}
-                                                                        {% if app.user in task.task.getAssignedUsers %}
-                                                                            <a href="{{ path('app_task_view_user', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                                        {% if app.user in task.getAssignedUsers %}
+                                                                            <a href="{{ path('app_task_view_user', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                                         {% else %}
-                                                                            <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                                            <a href="{{ path('app_task_view', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                                         {% endif %}
-                                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.task.isDeleted and task.task.createdBy == app.user %}
-                                                                            <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
+                                                                        {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted and task.createdBy == app.user %}
+                                                                            <a href="{{ path('app_task_reassign', {id: task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
                                                                         {% endif %}
-                                                                        {% if not task.task.isDeleted and task.task.createdBy == app.user %}
-                                                                            <a href="{{ path('app_task_edit_info', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
-                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
+                                                                        {% if not task.isDeleted and task.createdBy == app.user %}
+                                                                            <a href="{{ path('app_task_edit_info', {id: task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
+                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
                                                                         {% endif %}
                                                                     {% else %}
-                                                                        <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.task.isDeleted %}
-                                                                            <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
+                                                                        <a href="{{ path('app_task_view', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                                        {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
+                                                                            <a href="{{ path('app_task_reassign', {id: task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
                                                                         {% endif %}
-                                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
-                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_close_task{{ task.task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Zatvorite</a>
+                                                                        {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_close_task{{ task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Zatvorite</a>
                                                                         {% endif %}
-                                                                        {% if not task.task.isDeleted %}
-                                                                            <a href="{{ path('app_task_edit_info', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
-                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.task.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                        {% if not task.isDeleted %}
+                                                                            <a href="{{ path('app_task_edit_info', {id: task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
+                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
                                                                         {% endif %}
                                                                     {% endif %}
                                                                 </div>
                                                                 <!-- delete task modal -->
-                                                                <div id="modal_delete_task{{ task.task.id }}" class="modal fade" tabindex="-1">
+                                                                <div id="modal_delete_task{{ task.id }}" class="modal fade" tabindex="-1">
                                                                     <div class="modal-dialog">
                                                                         <div class="modal-content">
                                                                             <div class="modal-header bg-danger text-white border-0">
@@ -187,14 +167,14 @@
 
                                                                             <div class="modal-footer">
                                                                                 <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                                <a href="{{ path('app_task_delete', {id: task.task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                                <a href="{{ path('app_task_delete', {id: task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                                 <!-- /delete task modal -->
                                                                 <!-- close task modal -->
-                                                                <div id="modal_close_task{{ task.task.id }}" class="modal fade" tabindex="-1">
+                                                                <div id="modal_close_task{{ task.id }}" class="modal fade" tabindex="-1">
                                                                     <div class="modal-dialog">
                                                                         <div class="modal-content">
                                                                             <div class="modal-header bg-primary text-white border-0">
@@ -208,7 +188,7 @@
 
                                                                             <div class="modal-footer">
                                                                                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                                <a href="{{ path('app_task_close',{id: task.task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
+                                                                                <a href="{{ path('app_task_close',{id: task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -310,87 +290,3 @@
 
 {% endblock includeJavascript %}
 
-{#{% block footerJavascript %}#}
-{#    <script type="text/javascript">#}
-{#        $(document).ready(function() {#}
-{#            var options = {#}
-{#                // target:        '#output1',   // target element(s) to be updated with server response#}
-{#                success:       editInfoResponse,  // post-submit callback#}
-{#                //         // target:        '#error',#}
-{#                //         // other available options:#}
-{#                //         //url:       url         // override for form's 'action' attribute#}
-{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#                //         //clearForm: true        // clear all form fields after successful submit#}
-{#                        resetForm: true,        // reset the form after successful submit#}
-{#                //         success:   editInfoResponse#}
-{#                //         // $.ajax options can be used here too, for example:#}
-{#                //         //timeout:   3000#}
-{#            };#}
-
-{#            // bind form using 'ajaxForm'#}
-{#            $('#infoForma').ajaxForm(options);#}
-{#        });#}
-{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
-{#        //     // for normal html responses, the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseText property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'xml' then the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseXML property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'json' then the first argument to the success callback#}
-{#        //     // is the json data object returned by the server#}
-{#        //#}
-{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
-{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
-{#        // }#}
-{#        // $(function () {#}
-{#        //     var options = {#}
-{#        //         // target:        '#error',#}
-{#        //         // other available options:#}
-{#        //         //url:       url         // override for form's 'action' attribute#}
-{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#        //         //clearForm: true        // clear all form fields after successful submit#}
-{#        //         resetForm: true,        // reset the form after successful submit#}
-{#        //         success:   editInfoResponse#}
-{#        //         // $.ajax options can be used here too, for example:#}
-{#        //         //timeout:   3000#}
-{#        //     };#}
-{#        //     // bind form using ajaxForm#}
-{#        //     $('#infoForma').submit(function() {#}
-{#        //         // inside event callbacks 'this' is the DOM element so we first#}
-{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
-{#        //         $(this).ajaxSubmit(options);#}
-{#        //#}
-{#        //         // !!! Important !!!#}
-{#        //         // always return false to prevent standard browser submit and page navigation#}
-{#        //         return false;#}
-{#        //     });#}
-{#        // });#}
-{#        //#}
-{#        function editInfoResponse(data) {#}
-{#            // 'data' is the json object returned from the server#}
-
-{#            if (data.success === 1) {#}
-{#                swal({#}
-{#                    type: 'success',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-{#            else {#}
-{#                var error = data.error_msg.toString();#}
-{#                swal({#}
-{#                    type: 'error',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-
-{#        }#}
-
-{#    </script>#}
-{#{% endblock footerJavascript %}#}

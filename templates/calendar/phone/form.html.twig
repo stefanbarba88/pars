@@ -60,6 +60,17 @@
                                             </select>
                                         </div>
                                     </div>
+                                {% else %}
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label required" for="form_zaposleni">Zaposleni:*</label>
+                                            <select id="form_zaposleni" name="form[zaposleni]" class="form-control required">
+                                                {% for user in calendar.user %}
+                                                    <option value="{{ user.id }}">{{ user.fullName }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
                                 {% endif %}
                                 <div class="col-lg-6">
                                     <div class="mb-3">

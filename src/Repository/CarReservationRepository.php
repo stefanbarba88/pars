@@ -100,6 +100,16 @@ class CarReservationRepository extends ServiceEntityRepository {
 
   }
 
+  public function getReservationsByCarPaginator(Car $car) {
+
+    return $this->createQueryBuilder('u')
+      ->where('u.car = :car')
+      ->setParameter('car', $car)
+      ->orderBy('u.id', 'DESC')
+      ->getQuery();
+
+  }
+
 //    /**
 //     * @return CarReservation[] Returns an array of CarReservation objects
 //     */

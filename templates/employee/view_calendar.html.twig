@@ -46,7 +46,9 @@
                                     <div class="card-header d-lg-flex py-lg-0">
                                         <h5 class="py-lg-3 mb-0">Lista zahteva</h5>
                                         <div class="mt-1 my-lg-auto ms-lg-auto">
-                                            <a href="{{ path('app_calendar_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                        {% if app.user == user%}
+                                            <a href="{{ path('app_calendar_form', {user:user.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                        {% endif %}
                                         </div>
                                     </div>
                                     <div class="card-body">
@@ -75,7 +77,7 @@
                                                             {% elseif calendar.type == 3 %}
                                                                 <span class="badge bg-purple text-white">Bolovanje</span>
                                                             {% elseif calendar.type == 4 %}
-                                                                <span class="badge bg-primary text-secondary">Slava</span>
+                                                                <span class="badge bg-primary text-white">Slava</span>
                                                             {% endif %}
                                                         </td>
                                                         <td>
@@ -103,7 +105,7 @@
                                                             {% elseif calendar.status == 1 %}
                                                                 <span class="badge bg-secondary text-primary">Na čekanju</span>
                                                             {% elseif calendar.status == 2 %}
-                                                                <span class="badge bg-primary text-secondary">Odobren</span>
+                                                                <span class="badge bg-primary text-white">Odobren</span>
                                                             {% elseif calendar.status == 3 %}
                                                                 <span class="badge bg-yellow text-primary">Odbijen</span>
                                                             {% endif %}
@@ -119,6 +121,20 @@
                                                                         <i class="ph-eye me-2"></i>
                                                                         Vidite
                                                                     </a>
+                                                                    {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
+                                                                        {% if calendar.status != 2  %}
+                                                                            <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
+                                                                                <i class="ph-check me-2"></i>
+                                                                                Dozvolite
+                                                                            </a>
+                                                                        {% endif %}
+                                                                        {% if calendar.status != 3  %}
+                                                                            <a href="{{ path('app_calendar_decline', {id: calendar.id}) }}" class="dropdown-item">
+                                                                                <i class="ph-minus me-2"></i>
+                                                                                Odbijte
+                                                                            </a>
+                                                                        {% endif %}
+                                                                    {% endif %}
                                                                     {% if calendar.status != 0 %}
                                                                         <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
                                                                             <i class="ph-trash me-2"></i>

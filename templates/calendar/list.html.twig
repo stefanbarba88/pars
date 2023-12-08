@@ -45,7 +45,7 @@
                         <div class="card-header d-lg-flex py-lg-0">
                             <h5 class="py-lg-3 mb-0">Lista zahteva</h5>
                             <div class="mt-1 my-lg-auto ms-lg-auto">
-                                <a href="{{ path('app_calendar_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                <a href="{{ path('app_calendar_admin_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
                         <div class="card-body">
@@ -111,7 +111,7 @@
                                                 {% elseif calendar.type == 3 %}
                                                     <span class="badge bg-purple text-white">Bolovanje</span>
                                                 {% elseif calendar.type == 4 %}
-                                                    <span class="badge bg-primary text-secondary">Slava</span>
+                                                    <span class="badge bg-primary text-white">Slava</span>
                                                 {% endif %}
                                             </td>
                                             <td>
@@ -139,7 +139,7 @@
                                                 {% elseif calendar.status == 1 %}
                                                     <span class="badge bg-secondary text-primary">Na čekanju</span>
                                                 {% elseif calendar.status == 2 %}
-                                                    <span class="badge bg-primary text-secondary">Odobren</span>
+                                                    <span class="badge bg-primary text-white">Odobren</span>
                                                 {% elseif calendar.status == 3 %}
                                                     <span class="badge bg-yellow text-primary">Odbijen</span>
                                                 {% endif %}

@@ -54,7 +54,6 @@ class CalendarController extends AbstractController {
     return $this->render('calendar/list.html.twig', $args);
   }
 
-
   #[Route('/form/{id}', name: 'app_calendar_form', defaults: ['id' => 0])]
   #[Entity('calendar', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -63,20 +62,77 @@ class CalendarController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
-    $user = $this->getUser();
+    $korisnik = $this->getUser();
 
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      $calendar->addUser($user);
+    if ($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $calendar->addUser($korisnik);
+    } else {
+      if (!is_null($request->get('user'))) {
+        $calendar->addUser($this->em->getRepository(User::class)->find($request->get('user')));
+      }
     }
-
 
     $mobileDetect = new MobileDetect();
 
     if($mobileDetect->isMobile()) {
-      $form = $this->createForm(PhoneCalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
+
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
+      } else {
+        $form = $this->createForm(PhoneCalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
+      }
     } else {
       $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
     }
+
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        if ($calendar->getUser()->isEmpty()) {
+          $data = $request->request->all();
+          $user = $this->em->getRepository(User::class)->find($data['form']['zaposleni']);
+          $calendar->addUser($user);
+        }
+        $this->em->getRepository(Calendar::class)->save($calendar);
+        $korisnik = $calendar->getUser()->first();
+        $mailService->calendar($calendar, CompanyInfo::ORGANIZATION_MAIL_ADDRESS);
+        $mailService->calendar($calendar, 'marceta.pars@gmail.com');
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return $this->redirectToRoute('app_employee_calendar_view', ['id' => $korisnik->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['calendar'] = $calendar;
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
+
+    if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('calendar/form.html.twig', $args);
+      }
+      return $this->render('calendar/phone/form.html.twig', $args);
+    }
+    return $this->render('calendar/form.html.twig', $args);
+  }
+
+  #[Route('/form-admin/{id}', name: 'app_calendar_admin_form', defaults: ['id' => 0])]
+  #[Entity('calendar', expr: 'repository.findForForm(id)')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formAdmin(Request $request, Calendar $calendar, MailService $mailService): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_admin_form', ['id' => $calendar->getId()])]]);
+
 
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -106,9 +162,6 @@ class CalendarController extends AbstractController {
     $args['calendar'] = $calendar;
     $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
 
-    if($mobileDetect->isMobile()) {
-      return $this->render('calendar/phone/form.html.twig', $args);
-    }
     return $this->render('calendar/form.html.twig', $args);
   }
 

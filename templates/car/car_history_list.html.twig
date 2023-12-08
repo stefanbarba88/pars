@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -16,27 +16,11 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ car.getCarName}}
+                                Vozila
                             </h4>
                         </div>
                     </div>
 
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
-                                <a href="{{ path('app_car_view', { id: car.id}) }}" class="breadcrumb-item">Profil</a>
-                                <span class="breadcrumb-item active">Istorija izmena</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
                     {{ render(controller('App\\Controller\\WidgetController::carProfilNavigation', { car : car} )) }}
                 </div>
                 <!-- /page header -->
@@ -52,36 +36,76 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Lista izmena</h5>
+                                        <h5 class="py-lg-3 mb-0">Lista izmena - {{ car.carName }}</h5>
                                     </div>
-                                    <table class="table datatable-colvis-state-pars">
-                                        <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Verzija</th>
-                                            <th>Naziv</th>
-                                            <th>Datum i vreme izmene</th>
-                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for carH in historyCars %}
-                                            <tr>
-                                                <td>{{ carH.id }}</td>
-                                                <td><div class="fw-semibold">
-                                                        <a href="{{ path('app_car_profile_history_view', { id: carH.id}) }}">V.{{ carH.version }}</a>
-                                                    </div></td>
-                                                <td><a href="{{ path('app_car_profile_history_view', { id: carH.id}) }}">{{ car.getCarName | upper }}</a></td>
-                                                <td>{{ carH.created | date("d.m.Y H:i:s")}}</td>
-                                                <td>
-                                                    <a href="{{ path('app_car_profile_history_view', { id: carH.id}) }}">
-                                                        <i class="ph-eye me-2"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                                    <div class="card-body">
+                                        <div class="table-responsive ">
+                                            <table class="table table-bordered table-hover table-responsive">
+                                                <thead>
+                                                <tr>
+                                                    <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th>Verzija</th>
+                                                    <th>Vozilo</th>
+                                                    <th  {% if pagination.isSorted('[c.updated]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Datum i vreme izmene ', ['c.updated']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.updated' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.updated' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                {% for carH in pagination %}
+                                                    <tr>
+                                                        <td>{{ carH.id }}</td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_car_profile_history_view', { id: carH.id}) }}">V.{{ carH.version }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {{ car.getCarName }}
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-inline-flex align-items-center">
+                                                                <i class="ph-calendar me-2"></i>
+                                                                {{ carH.created | date("d.m.Y H:i:s")}}
+                                                            </div>
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <a href="{{ path('app_car_profile_history_view', { id: carH.id}) }}" class="btn btn-primary">
+                                                                <i class="ph-eye me-2"></i> Vidite
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

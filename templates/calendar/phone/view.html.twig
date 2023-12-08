@@ -67,13 +67,13 @@
                                             <div class="col-4">Tip:</div>
                                             <div class="col-8">
                                                 {% if calendar.type == 1 %}
-                                                    <span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-secondary">Slobodan dan</span>
+                                                    <span class="badge bg-secondary text-primary">Slobodan dan</span>
                                                 {% elseif calendar.type == 2 %}
-                                                    <span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-success">Odmor</span>
+                                                    <span class="badge bg-yellow text-primary">Odmor</span>
                                                 {% elseif calendar.type == 3 %}
-                                                    <span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-danger">Bolovanje</span>
+                                                    <span class="badge bg-purple text-white">Bolovanje</span>
                                                 {% elseif calendar.type == 4 %}
-                                                    <span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Slava</span>
+                                                    <span class="badge bg-primary text-white">Slava</span>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -99,13 +99,13 @@
                                             <div class="col-4">Status:</div>
                                             <div class="col-8">
                                                 {% if calendar.status == 0 %}
-                                                    <span class="badge bg-danger">Obrisan</span>
+                                                    <span class="badge bg-danger text-white">Obrisan</span>
                                                 {% elseif calendar.status == 1 %}
-                                                    <span class="badge bg-info">Na čekanju</span>
+                                                    <span class="badge bg-secondary text-primary">Na čekanju</span>
                                                 {% elseif calendar.status == 2 %}
-                                                    <span class="badge bg-success">Odobren</span>
+                                                    <span class="badge bg-primary text-white">Odobren</span>
                                                 {% elseif calendar.status == 3 %}
-                                                    <span class="badge bg-warning">Odbijen</span>
+                                                    <span class="badge bg-yellow text-primary">Odbijen</span>
                                                 {% endif %}
                                             </div>
                                         </div>

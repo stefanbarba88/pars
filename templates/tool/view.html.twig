@@ -16,26 +16,11 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ tool.title }}
+                                Oprema
                             </h4>
                         </div>
                     </div>
 
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_tools') }}" class="breadcrumb-item">Oprema</a>
-                                <span class="breadcrumb-item active">Profil</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
                     {{ render(controller('App\\Controller\\WidgetController::toolProfilNavigation', { tool: tool } )) }}
                 </div>
                 <!-- /page header -->
@@ -121,9 +106,9 @@
                                             <div class="col-4">Status:</div>
                                             <div class="col-8">
                                                 {% if tool.isSuspended %}
-                                                    <span class="badge bg-danger">Obrisan</span>
+                                                    <span class="badge bg-yellow text-primary">Deaktivirano</span>
                                                 {% else %}
-                                                    <span class="badge bg-success">Aktivan</span>
+                                                    <span class="badge bg-primary text-white">Aktivno</span>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -131,9 +116,9 @@
                                             <div class="col-4">Rezervacija:</div>
                                             <div class="col-8">
                                                 {% if tool.isReserved %}
-                                                    <span class="badge bg-warning">Zadužen</span>
+                                                    <span class="badge bg-primary text-white">Zaduženo</span>
                                                 {% else %}
-                                                    <span class="badge bg-success">Slobodan</span>
+                                                    <span class="badge bg-secondary text-primary">Slobodno</span>
                                                 {% endif %}
                                             </div>
                                         </div>

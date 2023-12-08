@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
 <div class="page-content">
     {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
     <!-- Main content -->
@@ -10,7 +10,15 @@
 
         <!-- Inner content -->
         <div class="content-inner">
-
+            <div class="page-header page-header-light shadow">
+                <div class="page-header-content d-lg-flex">
+                    <div class="d-flex">
+                        <h4 class="page-title mb-0">
+                            Razduživanje vozila i opreme
+                        </h4>
+                    </div>
+                </div>
+            </div>
             <!-- Content area -->
             <div class="content">
 

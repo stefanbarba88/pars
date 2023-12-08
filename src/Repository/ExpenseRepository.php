@@ -93,6 +93,18 @@ class ExpenseRepository extends ServiceEntityRepository {
 
   }
 
+  public function getExpensesByCarPaginator(Car $car) {
+
+    return $this->createQueryBuilder('e')
+      ->where('e.car = :car')
+      ->setParameter('car', $car)
+      ->orderBy('e.isSuspended', 'ASC')
+      ->addOrderBy('e.date', 'DESC')
+      ->addOrderBy('e.id', 'DESC')
+      ->getQuery();
+
+  }
+
 //    /**
 //     * @return Expense[] Returns an array of Expense objects
 //     */

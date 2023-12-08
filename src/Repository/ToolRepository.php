@@ -83,6 +83,16 @@ class ToolRepository extends ServiceEntityRepository {
 
   }
 
+  public function getToolsPaginator() {
+
+    return $this->createQueryBuilder('c')
+      ->orderBy('c.isSuspended', 'ASC')
+      ->addOrderBy('c.isReserved', 'ASC')
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery();
+
+  }
+
   public function countToolsActive(): int {
 
 

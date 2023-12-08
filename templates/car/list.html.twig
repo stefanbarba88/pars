@@ -21,28 +21,6 @@
                         </div>
                     </div>
 
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                {% if type == 1 %}
-                                    <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
-                                    <span class="breadcrumb-item active">Zadužena vozila</span>
-                                {% elseif type == 2 %}
-                                    <a href="{{ path('app_cars') }}" class="breadcrumb-item">Vozila</a>
-                                    <span class="breadcrumb-item active">Nezadužena vozila</span>
-                                {% else %}
-                                    <span class="breadcrumb-item active">Vozila</span>
-                                {% endif %}
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
                 </div>
                 <!-- /page header -->
 
@@ -51,106 +29,163 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">
-                                {% if type == 1 %}
-                                    Lista zaduženih vozila
-                                {% elseif type == 2 %}
-                                    Lista nezaduženih vozila
-                                {% else %}
-                                    Lista vozila
-                                {% endif %}
-                            </h5>
+                            <h5 class="py-lg-3 mb-0">Lista vozila</h5>
                             <div class="mt-1 my-lg-auto ms-lg-auto">
                                 <a href="{{ path('app_car_form', {type: 1}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
-                        <table class="table datatable-colvis-state-pars">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Registracioni broj</th>
-                                <th>Brend</th>
-                                <th>Model</th>
-                                <th>Dostupnost</th>
-                                <th>Zaduženi</th>
-                                <th>Datum registracije</th>
-                                <th>Naredna registracija</th>
-                                <th>Status</th>
-                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for car in cars %}
-                                <tr>
-                                    <td>{{ car.id }}</td>
-                                    <td><div class="fw-semibold"><a href="{{ path('app_car_view', { id: car.id}) }}">{{ car.plate }}</a></div></td>
-                                    <td>{{ car.brand }}</td>
-                                    <td>{{ car.model }}</td>
-                                    <td>
-                                        {% if car.isSuspended == false %}
-                                            {% if car.isReserved %}
-                                                <span class="badge bg-warning">Zadužen</span>
+                        <div class="card-body">
+                            <div class="table-responsive ">
+                                <table class="table table-bordered table-hover table-responsive">
+                                    <thead>
+                                    <tr>
+                                        <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
+                                                &#8593;
                                             {% else %}
-                                                <span class="badge bg-success">Slobodan</span>
+                                                &#8597;
                                             {% endif %}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% for res in car.carReservations %}
-                                            {% if res.finished is null %}
-                                                {{ res.driver.fullName }}
+                                        </th>
+                                        <th>Registracija</th>
+                                        <th>Brend</th>
+                                        <th>Model</th>
+                                        <th  {% if pagination.isSorted('[c.isReserved]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Dostupnost ', ['c.isReserved']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.isReserved' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.isReserved' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
                                             {% endif %}
-                                        {% endfor %}
-                                    </td>
-                                    <td>
-                                        <div class="d-inline-flex align-items-center">
-                                            <i class="ph-calendar me-2"></i>
-                                            {{ car.datumRegistracije | date("d.m.Y")}}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-inline-flex align-items-center">
-                                            <i class="ph-calendar me-2"></i>
-                                            {{ car.datumNaredneRegistracije | date("d.m.Y")}}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if car.isSuspended %}
-                                            <span class="badge bg-danger">Obrisan</span>
-                                        {% else %}
-                                            <span class="badge bg-success">Aktivan</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="dropdown">
-                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                <i class="ph-gear"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a href="{{ path('app_car_view', { id: car.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                {% if car.isSuspended %}
-                                                    <a href="{{ path('app_car_activate', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>
-                                                {% else %}
+                                        </th>
+                                        <th>Zaduženi</th>
+                                        <th  {% if pagination.isSorted('[c.datumRegistracije]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Registracija ', ['c.datumRegistracije']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.datumRegistracije' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.datumRegistracije' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th {% if pagination.isSorted('[c.datumNaredneRegistracije]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Naredna registracija ', ['c.datumNaredneRegistracije']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.datumNaredneRegistracije' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.datumNaredneRegistracije' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.isSuspended]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Status ', ['c.isSuspended']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.isSuspended' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.isSuspended' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% set currentDate = date()|date("Y-m-d") %}
+                                    {% for car in pagination %}
+                                        {% set nextRegistrationDate = car.datumNaredneRegistracije|date("Y-m-d") %}
+                                        {% set difference = nextRegistrationDate|date_modify('-30 days') %}
+                                        {% set difference = difference|date("Y-m-d") %}
+                                        <tr>
+                                            <td>{{ car.id }}</td>
+                                            <td><div class="fw-semibold">{{ car.plate }}</div></td>
+                                            <td><div class="fw-semibold">{{ car.brand }}</div></td>
+                                            <td><div class="fw-semibold">{{ car.model }}</div></td>
+                                            <td>
+                                                {% if car.isSuspended == false %}
                                                     {% if car.isReserved %}
-                                                        {% for res in car.carReservations %}
-                                                            {% if res.finished is null%}
-                                                                <a href="{{ path('app_car_reservation_stop', { id: res.id, type:1}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Razdužite</a>
-                                                            {% endif %}
-                                                        {% endfor %}
+                                                        <span class="badge bg-primary text-white">Zaduženo</span>
                                                     {% else %}
-                                                        <a href="{{ path('app_car_reservation_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Zadužite</a>
+                                                        <span class="badge bg-secondary text-primary">Slobodno</span>
                                                     {% endif %}
-                                                    <a href="{{ path('app_car_expense_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-money me-2"></i> Trošak</a>
-                                                    <a href="{{ path('app_car_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
-                                                    <a href="{{ path('app_car_activate', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>
                                                 {% endif %}
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                                            </td>
+                                            <td>
+                                                {% for res in car.carReservations %}
+                                                    {% if res.finished is null %}
+                                                        {{ res.driver.fullName }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ car.datumRegistracije | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ car.datumNaredneRegistracije | date("d.m.Y")}}
+                                                    {% if currentDate <= nextRegistrationDate and currentDate >= difference %}
+                                                        <span class="badge bg-yellow text-primary rounded-pill p-1 mx-2">
+                                                            <i class="ph-warning-circle"></i>
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if car.isSuspended %}
+                                                    <span class="badge bg-yellow text-primary">Deaktivirano</span>
+                                                {% else %}
+                                                    <span class="badge bg-primary text-white">Aktivno</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_car_view', { id: car.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        {% if car.isSuspended %}
+                                                            <a href="{{ path('app_car_activate', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>
+                                                        {% else %}
+                                                            {% if car.isReserved %}
+                                                                {% for res in car.carReservations %}
+                                                                    {% if res.finished is null%}
+                                                                        <a href="{{ path('app_car_reservation_stop', { id: res.id, type:1}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Razdužite</a>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                <a href="{{ path('app_car_reservation_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Zadužite</a>
+                                                            {% endif %}
+                                                            <a href="{{ path('app_car_expense_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-money me-2"></i> Trošak</a>
+                                                            <a href="{{ path('app_car_form', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                            <a href="{{ path('app_car_activate', { id: car.id, type:1}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
                     </div>
                     <!-- /state saving -->
                 </div>

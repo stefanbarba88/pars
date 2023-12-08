@@ -43,12 +43,14 @@
                                     <div class="card-header d-lg-flex py-lg-0">
                                         <h5 class="py-lg-3 mb-0">Zaduženo vozilo</h5>
                                         <div class="mt-1 my-lg-auto ms-lg-auto">
-                                            {% if user.car is null %}
-                                                <a href="{{ path('app_car_employee_reservation_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Zadužite</a>
-                                            {% else %}
-                                                <a href="{{ path('app_car_employee_expense_form', {id:lastReservation.car.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Trošak</a>
-                                                <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Slike</a>
-                                                <a href="{{ path('app_car_employee_reservation_stop', {id:lastReservation.id}) }}" class="btn btn-primary"> Razdužite</a>
+                                            {% if app.user == user%}
+                                                {% if user.car is null %}
+                                                    <a href="{{ path('app_car_employee_reservation_form', {user:user.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Zadužite</a>
+                                                {% else %}
+                                                    <a href="{{ path('app_car_employee_expense_form', {id:lastReservation.car.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Trošak</a>
+                                                    <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Slike</a>
+                                                    <a href="{{ path('app_car_employee_reservation_stop', {id:lastReservation.id}) }}" class="btn btn-primary"> Razdužite</a>
+                                                {% endif %}
                                             {% endif %}
                                         </div>
                                     </div>
@@ -185,8 +187,10 @@
                                                                 </a>
                                                                 <div class="dropdown-menu dropdown-menu-end">
                                                                     <a href="{{ path('app_car_employee_reservation_view', { id: reservation.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                                    {% if reservation.finished is null %}
-                                                                        <a href="{{ path('app_car_employee_reservation_stop', { id: reservation.id}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Razdužite</a>
+                                                                    {% if app.user == user%}
+                                                                        {% if reservation.finished is null %}
+                                                                            <a href="{{ path('app_car_employee_reservation_stop', { id: reservation.id}) }}" class="dropdown-item"><i class="ph-car me-2"></i> Razdužite</a>
+                                                                        {% endif %}
                                                                     {% endif %}
                                                                 </div>
                                                             </div>
@@ -284,8 +288,10 @@
 
                                                                 <div class="dropdown-menu dropdown-menu-end">
                                                                     <a href="{{ path('app_car_employee_expense_view', { id: expense.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                                    <a href="{{ path('app_car_employee_expense_edit', { id: expense.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
-                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_expense{{ expense.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
+                                                                    {% if app.user == user%}
+                                                                        <a href="{{ path('app_car_employee_expense_edit', { id: expense.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_expense{{ expense.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
+                                                                    {% endif %}
                                                                 </div>
 
                                                                 <div id="modal_delete_expense{{ expense.id }}" class="modal fade" tabindex="-1">
@@ -302,7 +308,7 @@
 
                                                                                 <div class="modal-footer">
                                                                                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Odustanite</button>
-                                                                                    <a href="{{ path('app_car_expense_delete', {id: expense.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                                    <a href="{{ path('app_car_expense_delete', {id: expense.id, type:1} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
                                                                                 </div>
                                                                             </div>
                                                                         </div>

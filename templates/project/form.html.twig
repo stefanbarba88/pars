@@ -16,34 +16,9 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {% if project.id is not null %}
-                                    {{project.title }}
-                                {% else %}
-                                    Projekti
-                                {% endif %}
+                                Projekti
                             </h4>
                         </div>
-                    </div>
-
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
-                                {% if project.id is not null %}
-                                    <a href="{{ path('app_project_profile_view', {id: project.id} ) }}" class="breadcrumb-item">Informacije</a>
-                                    <span class="breadcrumb-item active">Izmena</span>
-                                {% else %}
-                                    <span class="breadcrumb-item active">Dodavanje</span>
-                                {% endif %}
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
                     </div>
                 </div>
                 <!-- /page header -->
@@ -98,7 +73,7 @@
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             {{ form_label(form.description, 'Opis:', {'label_attr': {'class': 'form-category'}}) }}
-                                            {{ form_widget(form.description, {attr: { class: 'form-control ckeditor' }}) }}
+                                            {{ form_widget(form.description, {attr: { class: 'form-control' }}) }}
                                         </div>
                                     </div>
                                 </div>
@@ -615,11 +590,11 @@
                 }
             });
 
-            ClassicEditor.create(document.querySelector('.ckeditor'), {
-                toolbar: [ 'heading', 'bold', 'italic', 'bulletedList', 'numberedList', 'blockQuote' , 'link', 'undo', 'redo' ]
-            }).catch(error => {
-                console.error(error);
-            });
+            // ClassicEditor.create(document.querySelector('.ckeditor'), {
+            //     toolbar: [ 'heading', 'bold', 'italic', 'bulletedList', 'numberedList', 'blockQuote' , 'link', 'undo', 'redo' ]
+            // }).catch(error => {
+            //     console.error(error);
+            // });
         });
     </script>
 

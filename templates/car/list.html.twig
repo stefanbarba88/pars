@@ -50,8 +50,6 @@
                                             {% endif %}
                                         </th>
                                         <th>Registracija</th>
-                                        <th>Brend</th>
-                                        <th>Model</th>
                                         <th  {% if pagination.isSorted('[c.isReserved]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Dostupnost ', ['c.isReserved']) }}
                                             {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.isReserved' %}
@@ -63,6 +61,7 @@
                                             {% endif %}
                                         </th>
                                         <th>Zaduženi</th>
+                                        <th>Nivo goriva</th>
                                         <th  {% if pagination.isSorted('[c.datumRegistracije]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Registracija ', ['c.datumRegistracije']) }}
                                             {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.datumRegistracije' %}
@@ -104,9 +103,7 @@
                                         {% set difference = difference|date("Y-m-d") %}
                                         <tr>
                                             <td>{{ car.id }}</td>
-                                            <td><div class="fw-semibold">{{ car.plate }}</div></td>
-                                            <td><div class="fw-semibold">{{ car.brand }}</div></td>
-                                            <td><div class="fw-semibold">{{ car.model }}</div></td>
+                                            <td><a href="{{ path('app_car_view', {id:car.id}) }}" class="fw-semibold">{{ car.getCarName }}</a></td>
                                             <td>
                                                 {% if car.isSuspended == false %}
                                                     {% if car.isReserved %}
@@ -125,18 +122,64 @@
                                             </td>
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
+                                                    {% if car.carReservations.last %}
+                                                        {% if car.carReservations.last.fuelStop is not null %}
+                                                            {% if car.carReservations.last.fuelStop <= constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                                                {% if car.carReservations.last.fuelStop == constant('App\\Classes\\Data\\FuelData::PRAZNO') %}
+                                                                    <span class="badge bg-yellow text-primary">Prazan</span>
+                                                                {% endif %}
+                                                                {% if car.carReservations.last.fuelStop == constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                                                    <span class="badge bg-yellow text-primary">1/4</span>
+                                                                {% endif %}
+                                                            {% else %}
+                                                                {% if car.carReservations.last.fuelStop == constant('App\\Classes\\Data\\FuelData::POLA') %}
+                                                                    <span class="badge bg-secondary text-primary">1/2</span>
+                                                                {% endif %}
+                                                                {% if car.carReservations.last.fuelStop == constant('App\\Classes\\Data\\FuelData::TRI_CETVRTI') %}
+                                                                    <span class="badge bg-secondary text-primary">3/4</span>
+                                                                {% endif %}
+                                                                {% if car.carReservations.last.fuelStop == constant('App\\Classes\\Data\\FuelData::PUN') %}
+                                                                    <span class="badge bg-secondary text-primary">Pun</span>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% else %}
+                                                            {% if car.carReservations.last.fuelStart <= constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                                                {% if car.carReservations.last.fuelStart == constant('App\\Classes\\Data\\FuelData::PRAZNO') %}
+                                                                    <span class="badge bg-yellow text-primary">Prazan</span>
+                                                                {% endif %}
+                                                                {% if car.carReservations.last.fuelStart == constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                                                    <span class="badge bg-yellow text-primary">1/4</span>
+                                                                {% endif %}
+                                                            {% else %}
+                                                                {% if car.carReservations.last.fuelStart == constant('App\\Classes\\Data\\FuelData::POLA') %}
+                                                                    <span class="badge bg-secondary text-primary">1/2</span>
+                                                                {% endif %}
+                                                                {% if car.carReservations.last.fuelStart == constant('App\\Classes\\Data\\FuelData::TRI_CETVRTI') %}
+                                                                    <span class="badge bg-secondary text-primary">3/4</span>
+                                                                {% endif %}
+                                                                {% if car.carReservations.last.fuelStart == constant('App\\Classes\\Data\\FuelData::PUN') %}
+                                                                    <span class="badge bg-secondary text-primary">Pun</span>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endif %}
+
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
                                                     {{ car.datumRegistracije | date("d.m.Y")}}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
-                                                    <i class="ph-calendar me-2"></i>
-                                                    {{ car.datumNaredneRegistracije | date("d.m.Y")}}
+
+
                                                     {% if currentDate <= nextRegistrationDate and currentDate >= difference %}
-                                                        <span class="badge bg-yellow text-primary rounded-pill p-1 mx-2">
-                                                            <i class="ph-warning-circle"></i>
-                                                        </span>
+                                                        <span class="badge bg-yellow text-primary"><i class="ph-calendar me-2"></i>{{ car.datumNaredneRegistracije | date("d.m.Y")}}</span>
+                                                    {% else %}
+                                                        <i class="ph-calendar me-2"></i>{{ car.datumNaredneRegistracije | date("d.m.Y")}}
                                                     {% endif %}
                                                 </div>
                                             </td>

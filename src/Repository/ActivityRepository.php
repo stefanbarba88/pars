@@ -43,6 +43,17 @@ class ActivityRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(Activity::class)->find($id);
   }
 
+  public function getActivitiesPaginator() {
+
+    return $this->createQueryBuilder('c')
+      ->orderBy('c.isSuspended', 'ASC')
+      ->orderBy('c.title', 'ASC')
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery();
+
+
+  }
+
 //    /**
 //     * @return Activity[] Returns an array of Activity objects
 //     */

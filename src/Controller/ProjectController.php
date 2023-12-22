@@ -56,8 +56,6 @@ class ProjectController extends AbstractController {
     $args = [];
     $user = $this->getUser();
 
-
-
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
       $projects = $this->em->getRepository(Project::class)->getProjectsByUserPaginator($user);
     } else {
@@ -74,9 +72,11 @@ class ProjectController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('project/list_paginator.html.twig', $args);
+      }
       return $this->render('project/phone/list_paginator.html.twig', $args);
     }
-
     return $this->render('project/list_paginator.html.twig', $args);
   }
 
@@ -99,9 +99,11 @@ class ProjectController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('project/list_paginator_change.html.twig', $args);
+      }
       return $this->render('project/phone/list_paginator_change.html.twig', $args);
     }
-
     return $this->render('project/list_paginator_change.html.twig', $args);
   }
 
@@ -124,9 +126,11 @@ class ProjectController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('project/list_paginator_permanent.html.twig', $args);
+      }
       return $this->render('project/phone/list_paginator_permanent.html.twig', $args);
     }
-
     return $this->render('project/list_paginator_permanent.html.twig', $args);
   }
 
@@ -149,9 +153,11 @@ class ProjectController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('project/list_paginator_mix.html.twig', $args);
+      }
       return $this->render('project/phone/list_paginator_mix.html.twig', $args);
     }
-
     return $this->render('project/list_paginator_mix.html.twig', $args);
   }
 
@@ -174,56 +180,13 @@ class ProjectController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('project/list_paginator_archive.html.twig', $args);
+      }
       return $this->render('project/phone/list_paginator_archive.html.twig', $args);
     }
-
     return $this->render('project/list_paginator_archive.html.twig', $args);
   }
-
-//  #[Route('/list/', name: 'app_projects')]
-//  public function list(PaginatorInterface $paginator, Request $request)    : Response {
-//    if (!$this->isGranted('ROLE_USER')) {
-//      return $this->redirect($this->generateUrl('app_login'));
-//    }
-//    $args = [];
-//    $user = $this->getUser();
-//
-////    $permanent = $request->query->getInt('permanent');
-////    $pagination = $paginator->paginate(
-////      $tasks, /* query NOT result */
-////      $request->query->getInt('page', 1), /*page number*/
-////      10
-////    );
-////
-////    $args['pagination'] = $pagination;
-//
-//
-//    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-//
-//      $args['projects'] = $this->em->getRepository(Project::class)->getProjectsByUser($user);
-//    } else {
-//      if($permanent == 1) {
-//        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsPermanent();
-//        $args['type'] = 1;
-//      } elseif ($permanent == 2) {
-//        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsChange();
-//        $args['type'] = 2;
-//      } elseif ($permanent == 3) {
-//        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjectsSuspended();
-//        $args['type'] = 3;
-//      }else {
-//        $args['projects'] = $this->em->getRepository(Project::class)->getAllProjects();
-//        $args['type'] = 0;
-//      }
-//    }
-//
-//    $mobileDetect = new MobileDetect();
-//    if($mobileDetect->isMobile()) {
-//      return $this->render('project/phone/list.html.twig', $args);
-//    }
-//
-//    return $this->render('project/list.html.twig', $args);
-//  }
 
   #[Route('/form/{id}', name: 'app_project_form', defaults: ['id' => 0])]
   #[Entity('project', expr: 'repository.findForForm(id)')]
@@ -275,7 +238,8 @@ class ProjectController extends AbstractController {
 
   #[Route('/suspend/{id}', name: 'app_project_suspend')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function suspend(Project $project, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function suspend(Project $project, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
     $history = null;
@@ -313,20 +277,29 @@ class ProjectController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('project/view_profile.html.twig', $args);
+      }
       return $this->render('project/phone/view_profile.html.twig', $args);
     }
-
     return $this->render('project/view_profile.html.twig', $args);
   }
 
   #[Route('/history-project-list/{id}', name: 'app_project_profile_history_list')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function listProjectHistory(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function listProjectHistory(Project $project, PaginatorInterface $paginator, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['project'] = $project;
-    $args['historyProjects'] = $this->em->getRepository(ProjectHistory::class)->findBy(['project' => $project], ['id' => 'DESC']);
+    $histories = $this->em->getRepository(ProjectHistory::class)->getAllPaginator($project);
 
+    $pagination = $paginator->paginate(
+      $histories, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
     return $this->render('project/project_history_list.html.twig', $args);
   }
 
@@ -345,15 +318,27 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-tasks/{id}', name: 'app_project_tasks_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewTasks(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function viewTasks(Project $project, PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['project'] = $project;
 
-    $args['tasks'] = $this->em->getRepository(Task::class)->getTasksByProject($project);
+    $tasks = $this->em->getRepository(Task::class)->getTasksByProjectPaginator($project);
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
+
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('project/view_tasks.html.twig', $args);
+      }
       return $this->render('project/phone/view_tasks.html.twig', $args);
     }
 
@@ -375,108 +360,111 @@ class ProjectController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('project/view_activity.html.twig', $args);
+      }
       return $this->render('project/phone/view_activity.html.twig', $args);
     }
 
     return $this->render('project/view_activity.html.twig', $args);
   }
 
-  #[Route('/view-calendar/{id}', name: 'app_project_calendar_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCalendar(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args['project'] = $project;
+//  #[Route('/view-calendar/{id}', name: 'app_project_calendar_view')]
+////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function viewCalendar(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $args['project'] = $project;
+//
+//    return $this->render('project/view_calendar.html.twig', $args);
+//  }
+//
+//  #[Route('/view-time/{id}', name: 'app_project_time_view')]
+////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function viewTime(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $args['project'] = $project;
+//
+//    return $this->render('project/view_time.html.twig', $args);
+//  }
+//
+//  #[Route('/view-expenses/{id}', name: 'app_project_expenses_view')]
+////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function viewExpenses(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $args['project'] = $project;
+//
+//    return $this->render('project/view_expenses.html.twig', $args);
+//  }
 
-    return $this->render('project/view_calendar.html.twig', $args);
-  }
+//  #[Route('/view-users/{id}', name: 'app_project_users_view')]
+////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function viewUsers(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $args['project'] = $project;
+//
+//    return $this->render('project/view_users.html.twig', $args);
+//  }
 
-  #[Route('/view-time/{id}', name: 'app_project_time_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewTime(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args['project'] = $project;
+//  #[Route('/view-teams/{id}', name: 'app_project_teams_view')]
+////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function viewTeams(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $args['project'] = $project;
+//    $args['teams'] = $project->getTeam();
+//
+//    return $this->render('project/view_teams.html.twig', $args);
+//  }
 
-    return $this->render('project/view_time.html.twig', $args);
-  }
-
-  #[Route('/view-expenses/{id}', name: 'app_project_expenses_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewExpenses(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args['project'] = $project;
-
-    return $this->render('project/view_expenses.html.twig', $args);
-  }
-
-  #[Route('/view-users/{id}', name: 'app_project_users_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewUsers(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args['project'] = $project;
-
-    return $this->render('project/view_users.html.twig', $args);
-  }
-
-  #[Route('/view-teams/{id}', name: 'app_project_teams_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewTeams(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args['project'] = $project;
-    $args['teams'] = $project->getTeam();
-
-    return $this->render('project/view_teams.html.twig', $args);
-  }
-
-  #[Route('/team-list/{id}', name: 'app_project_team_list')]
-//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function teamList(Project $project, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $history = null;
-    //ovde izvlacimo ulogovanog usera
-    $user = $this->getUser();
-
-    if($project->getId()) {
-      $history = $this->json($project, Response::HTTP_OK, [], [
-          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-            return $object->getId();
-          }
-        ]
-      );
-      $history = $history->getContent();
-    }
-
-    $form = $this->createForm(ProjectTeamListFormType::class, $project, ['attr' => ['action' => $this->generateUrl('app_project_team_list', ['id' => $project->getId()])]]);
-
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-//        $test1 = $serializer->deserialize($test->getContent(), Project::class, 'json');
-
-        $this->em->getRepository(Project::class)->saveProject($project, $user, $history);
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
-
-        return $this->redirectToRoute('app_project_teams_view', ['id' => $project->getId()]);
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['project'] = $project;
-
-    return $this->render('project/edit_team_list.html.twig', $args);
-  }
+//  #[Route('/team-list/{id}', name: 'app_project_team_list')]
+////  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function teamList(Project $project, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $history = null;
+//    //ovde izvlacimo ulogovanog usera
+//    $user = $this->getUser();
+//
+//    if($project->getId()) {
+//      $history = $this->json($project, Response::HTTP_OK, [], [
+//          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+//            return $object->getId();
+//          }
+//        ]
+//      );
+//      $history = $history->getContent();
+//    }
+//
+//    $form = $this->createForm(ProjectTeamListFormType::class, $project, ['attr' => ['action' => $this->generateUrl('app_project_team_list', ['id' => $project->getId()])]]);
+//
+//    if ($request->isMethod('POST')) {
+//      $form->handleRequest($request);
+//
+//      if ($form->isSubmitted() && $form->isValid()) {
+//
+////        $test1 = $serializer->deserialize($test->getContent(), Project::class, 'json');
+//
+//        $this->em->getRepository(Project::class)->saveProject($project, $user, $history);
+//
+//        notyf()
+//          ->position('x', 'right')
+//          ->position('y', 'top')
+//          ->duration(5000)
+//          ->dismissible(true)
+//          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+//
+//        return $this->redirectToRoute('app_project_teams_view', ['id' => $project->getId()]);
+//      }
+//    }
+//    $args['form'] = $form->createView();
+//    $args['project'] = $project;
+//
+//    return $this->render('project/edit_team_list.html.twig', $args);
+//  }
 
   #[Route('/view-images/{id}', name: 'app_project_images_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]

@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Vozila
+                                {{ car.carName }}
                             </h4>
                         </div>
                     </div>
@@ -36,6 +36,26 @@
                         {% set difference = difference|date("Y-m-d") %}
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
+                            {% if currentDate <= nextRegistrationDate and currentDate >= difference %}
+                                <div class="alert alert-danger fade show">
+                                    <span class="fw-semibold">Registracija na vozilu ističe za manje od 30 dana.</span> Datum naredne registracije je {{ car.datumNaredneRegistracije | date("d.m.Y")}}. Kada izvršite registraciju izmenite podatke o vozilu.
+                                </div>
+                            {% endif %}
+                            {% if lastReservation %}
+                                {% if lastReservation.fuelStop is not null %}
+                                    {% if lastReservation.fuelStop <= constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                        <div class="alert alert-warning fade show">
+                                            <span class="fw-semibold">Nivo goriva u vozilu {{ car.getCarName()}} je na manje od 1/2 rezervoara.</span> Proverite nivo goriva u vozilu.
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    {% if lastReservation.fuelStart <= constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                        <div class="alert alert-warning fade show">
+                                            <span class="fw-semibold">Nivo goriva u vozilu {{ car.getCarName()}} je na manje od 1/2 rezervoara.</span> Proverite nivo goriva u vozilu.
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header">
@@ -63,11 +83,6 @@
                                             <div class="col-4">Datum naredne registracije:</div>
                                             <div class="col-8">
                                                 {{ car.datumNaredneRegistracije | date("d.m.Y")}}
-                                                {% if currentDate <= nextRegistrationDate and currentDate >= difference %}
-                                                    <span class="badge bg-yellow text-primary rounded-pill p-1 mx-2">
-                                                            <i class="ph-warning-circle"></i>
-                                                        </span>
-                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">

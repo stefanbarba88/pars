@@ -44,6 +44,17 @@ class ZaposleniPozicijaRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(ZaposleniPozicija::class)->find($id);
   }
 
+  public function getPositionsPaginator() {
+
+    return $this->createQueryBuilder('c')
+      ->orderBy('c.isSuspended', 'ASC')
+      ->orderBy('c.title', 'ASC')
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery();
+
+
+  }
+
 //    /**
 //     * @return ZaposleniPozicija[] Returns an array of ZaposleniPozicija objects
 //     */

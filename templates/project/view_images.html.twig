@@ -16,26 +16,9 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{project.title }}
+                                {{ project.title }}
                             </h4>
                         </div>
-                    </div>
-
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
-                                <a href="{{ path('app_project_profile_view', {id: project.id} ) }}" class="breadcrumb-item">Informacije</a>
-                                <span class="breadcrumb-item active">Slike</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
                     </div>
                     {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: project } )) }}
                 </div>
@@ -48,14 +31,10 @@
                         <div class="flex-1 order-2 order-lg-1">
                             <div class="card">
                                 <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">{{ project.title }}</h5>
-{#                                    <div class="mt-1 my-lg-auto ms-lg-auto">#}
-{#                                        <a href="#" class="btn btn-primary"><i class="ph-plus me-2"></i>Dodajte</a>#}
-{#                                    </div>#}
+                                    <h5 class="py-lg-3 mb-0">Dodate slike</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-4">
-                                        <h6>Slike</h6>
                                         <div class="row">
                                             {% if images is empty %}
                                                 <div class="d-flex align-items-start mb-3">
@@ -65,19 +44,19 @@
                                                 </div>
                                             {% else %}
                                                 {% for image in images %}
-                                                <div class="col-xl-2 col-sm-6">
-                                                    <div class="card">
-                                                        <div class="card-img-actions">
-                                                            <img class="card-img img-fluid" src="{{ asset(image.thumbnail500) }}" alt="">
-                                                            <div class="card-img-actions-overlay card-img">
-                                                                <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                                    <i class="ph-magnifying-glass-plus"></i>
-                                                                </a>
+                                                    <div class="col-xl-2 col-sm-6">
+                                                        <div class="card">
+                                                            <div class="card-img-actions">
+                                                                <img class="card-img img-fluid" src="{{ asset(image.thumbnail500) }}" alt="">
+                                                                <div class="card-img-actions-overlay card-img">
+                                                                    <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
+                                                                        <i class="ph-magnifying-glass-plus"></i>
+                                                                    </a>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            {% endfor %}
+                                                {% endfor %}
                                             {% endif %}
                                         </div>
                                     </div>

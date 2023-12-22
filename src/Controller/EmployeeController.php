@@ -11,8 +11,10 @@ use App\Entity\CarReservation;
 use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\Expense;
+use App\Entity\Holiday;
 use App\Entity\Image;
 use App\Entity\Notes;
+use App\Entity\Overtime;
 use App\Entity\Pdf;
 use App\Entity\Task;
 use App\Entity\ToolReservation;
@@ -150,8 +152,6 @@ class EmployeeController extends AbstractController {
     };
     usort($calendars, $compareFunction);
 
-
-
     $pagination = $paginator->paginate(
       $calendars, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
@@ -162,8 +162,12 @@ class EmployeeController extends AbstractController {
 
     $args['user'] = $usr;
 
-    $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUser($usr);
-    $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUser($usr);
+    $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuce();
+
+    $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUser($usr, 2023);
+    $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUser($usr, 2023);
+    $args['overtime'] = $this->em->getRepository(Overtime::class)->getOvertimeByUser($usr);
+
     $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostByUser($usr);
 
     $mobileDetect = new MobileDetect();

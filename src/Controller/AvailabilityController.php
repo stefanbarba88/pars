@@ -39,20 +39,20 @@ class AvailabilityController extends AbstractController {
     return $this->render('availability/list.html.twig', $args);
   }
 
-  #[Route('/calendar/', name: 'app_availability_calendar')]
-  public function calendar(): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    $args = [];
-    $user = $this->getUser();
-
-    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnost();
-
-
-    return $this->render('availability/calendar.html.twig', $args);
-  }
+//  #[Route('/calendar/', name: 'app_availability_calendar')]
+//  public function calendar(): Response {
+//    if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//
+//    $args = [];
+//    $user = $this->getUser();
+//
+//    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnost();
+//
+//
+//    return $this->render('availability/calendar.html.twig', $args);
+//  }
 
   #[Route('/available/', name: 'app_availability_available')]
   public function dostupni(PaginatorInterface $paginator, Request $request): Response {
@@ -113,7 +113,6 @@ class AvailabilityController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
 
     $this->em->getRepository(Availability::class)->makeAvailable($user);
 

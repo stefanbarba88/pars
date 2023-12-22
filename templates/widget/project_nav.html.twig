@@ -26,46 +26,46 @@
                         </div>
                     </a>
                 </li>
-                <li class="nav-item me-1">
-                    <a href="{{ path('app_project_calendar_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
-                        <div class="d-flex align-items-center mx-lg-1">
-                            <i class="ph-calendar"></i>
-                            <span class="d-none d-lg-inline-block ms-2">Raspored<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>
-                        </div>
-                    </a>
-                </li>
-                <li class="nav-item me-1">
-                    <a href="{{ path('app_project_time_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
-                        <div class="d-flex align-items-center mx-lg-1">
-                            <i class="ph-timer"></i>
-                            <span class="d-none d-lg-inline-block ms-2">Vreme<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>
-                        </div>
-                    </a>
-                </li>
-                <li class="nav-item me-1">
-                    <a href="{{ path('app_project_expenses_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
-                        <div class="d-flex align-items-center mx-lg-1">
-                            <i class="ph-money"></i>
-                            <span class="d-none d-lg-inline-block ms-2">Troškovi<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>
-                        </div>
-                    </a>
-                </li>
-                <li class="nav-item me-1">
-                    <a href="{{ path('app_project_users_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
-                        <div class="d-flex align-items-center mx-lg-1">
-                            <i class="ph-user"></i>
-                            <span class="d-none d-lg-inline-block ms-2">Korisnici<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>
-                        </div>
-                    </a>
-                </li>
-                <li class="nav-item me-1">
-                    <a href="{{ path('app_project_teams_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
-                        <div class="d-flex align-items-center mx-lg-1">
-                            <i class="ph-users-three"></i>
-                            <span class="d-none d-lg-inline-block ms-2">Timovi<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>
-                        </div>
-                    </a>
-                </li>
+{#                <li class="nav-item me-1">#}
+{#                    <a href="{{ path('app_project_calendar_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
+{#                        <div class="d-flex align-items-center mx-lg-1">#}
+{#                            <i class="ph-calendar"></i>#}
+{#                            <span class="d-none d-lg-inline-block ms-2">Raspored<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>#}
+{#                        </div>#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="nav-item me-1">#}
+{#                    <a href="{{ path('app_project_time_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
+{#                        <div class="d-flex align-items-center mx-lg-1">#}
+{#                            <i class="ph-timer"></i>#}
+{#                            <span class="d-none d-lg-inline-block ms-2">Vreme<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>#}
+{#                        </div>#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="nav-item me-1">#}
+{#                    <a href="{{ path('app_project_expenses_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
+{#                        <div class="d-flex align-items-center mx-lg-1">#}
+{#                            <i class="ph-money"></i>#}
+{#                            <span class="d-none d-lg-inline-block ms-2">Troškovi<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>#}
+{#                        </div>#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="nav-item me-1">#}
+{#                    <a href="{{ path('app_project_users_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
+{#                        <div class="d-flex align-items-center mx-lg-1">#}
+{#                            <i class="ph-user"></i>#}
+{#                            <span class="d-none d-lg-inline-block ms-2">Korisnici<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>#}
+{#                        </div>#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="nav-item me-1">#}
+{#                    <a href="{{ path('app_project_teams_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
+{#                        <div class="d-flex align-items-center mx-lg-1">#}
+{#                            <i class="ph-users-three"></i>#}
+{#                            <span class="d-none d-lg-inline-block ms-2">Timovi<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>#}
+{#                        </div>#}
+{#                    </a>#}
+{#                </li>#}
             {% endif %}
 
 
@@ -106,11 +106,11 @@
                                 <i class="ph-clock-counter-clockwise me-2"></i>
                                 Istorija izmena
                             </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="{{ path('app_project_profile_view', { id: project.id}) }}" class="dropdown-item">
-                                <i class="ph-gear me-2"></i>
-                                Podešavanja
-                            </a>
+{#                            <div class="dropdown-divider"></div>#}
+{#                            <a href="{{ path('app_project_profile_view', { id: project.id}) }}" class="dropdown-item">#}
+{#                                <i class="ph-gear me-2"></i>#}
+{#                                Podešavanja#}
+{#                            </a>#}
                         </div>
                     </li>
                 {% endif %}

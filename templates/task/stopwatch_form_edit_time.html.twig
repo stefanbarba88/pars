@@ -12,65 +12,15 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow d-none d-sm-block">
+                <div class="page-header page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ task.project.title | default ('Zadatak bez projekta') }}: {{ task.title }}
+                                #{{ task.id }}: {{task.title }}
                             </h4>
-
-                            <a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        <div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
-                            <div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
-                                <div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
-                                <div class="d-inline-flex mt-3 mt-sm-0">
-                                    <a href="{{ path('app_task_form') }}" class="btn btn-outline-primary btn-icon w-32px h-32px rounded-pill ms-3">
-                                        <i class="ph-plus"></i>
-                                    </a>
-                                </div>
-                            </div>
                         </div>
                     </div>
-
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            {% if task.project is null %}
-                                <div class="breadcrumb py-2">
-                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                    <a href="{{ path('app_tasks') }}" class="breadcrumb-item">Zadaci</a>
-                                    <a href="{{ path('app_task_view', {id: task.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
-                                    <span class="breadcrumb-item active">Dnevnik: {{ taskLog.user.getFullName() }}</span>
-                                </div>
-                            {% else %}
-                                <div class="breadcrumb py-2">
-                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                    <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>
-                                    <a href="{{ path('app_project_profile_view', {id: task.project.id} ) }}" class="breadcrumb-item">Informacije</a>
-                                    <a href="{{ path('app_project_tasks_view', {id: task.project.id} ) }}" class="breadcrumb-item">Zadaci</a>
-                                    {% if app.user in task.getAssignedUsers %}
-                                        <a href="{{ path('app_task_view_user', {id: task.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
-                                    {% else %}
-                                        <a href="{{ path('app_task_view', {id: task.id} ) }}" class="breadcrumb-item">{{ task.title }}</a>
-                                    {% endif %}
-
-
-                                    <span class="breadcrumb-item active">Dnevnik: {{ taskLog.user.getFullName() }}</span>
-                                </div>
-                            {% endif %}
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
-                    {% if task.project is not null %}
-                        {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}
-                    {% endif %}
+                    {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}
 
                 </div>
                 <!-- /page header -->
@@ -80,7 +30,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
-                               Izmena vremenskog zapisa
+                               Izmena vremenskog zapisa - {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }}
                             </h6>
                         </div>
                         <form name="datumCheckForm" method="post" action="{{ path('app_stopwatch_edit_time_forma' , {id: stopwatch.id})}}" class="form-validate-jquery" novalidation="novalidation"  id="check_datum_form">

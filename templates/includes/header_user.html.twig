@@ -1,7 +1,7 @@
 <!-- Main navbar -->
 <div class="navbar navbar-dark navbar-expand-lg navbar-static border-bottom border-bottom-white border-opacity-10">
     <div class="container-fluid">
-        <div class="d-flex d-lg-none me-2">
+        <div class="d-flex d-lg-none">
             <button type="button" class="navbar-toggler sidebar-mobile-main-toggle rounded-pill">
                 <i class="ph-list"></i>
             </button>
@@ -16,7 +16,7 @@
         <div class="navbar-brand flex-1 flex-lg-0">
             <a href="{{ path('app_home') }}" class="d-inline-flex align-items-center">
 {#                <img src="{{ asset('assets/images/logo/logo_admin.png') }}" alt="">#}
-                <img src="{{ asset('assets/images/logo/logo_admin.png') }}" class="d-none d-sm-inline-block h-16px ms-3" alt="">
+                <img src="{{ asset('assets/images/logo/epars.png') }}" class="h-25px" alt="">
             </a>
         </div>
 
@@ -31,7 +31,7 @@
         <div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse" id="navbar_search">
             <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
                 <div class="form-control-feedback form-control-feedback-start flex-grow-1" data-color-theme="dark">
-                    <input type="text" class="form-control bg-transparent rounded-pill" placeholder="Search" data-bs-toggle="dropdown">
+                    <input type="text" class="form-control bg-transparent rounded-pill" placeholder="Pretraga" data-bs-toggle="dropdown">
                     <div class="form-control-feedback-icon">
                         <i class="ph-magnifying-glass"></i>
                     </div>
@@ -221,12 +221,12 @@
         </div>
 
         <ul class="nav flex-row justify-content-end order-1 order-lg-2">
-            <li class="nav-item ms-lg-2">
-                <a href="#" class="navbar-nav-link navbar-nav-link-icon rounded-pill" data-bs-toggle="offcanvas" data-bs-target="#notifications">
-                    <i class="ph-bell"></i>
-                    <span class="badge bg-yellow text-black position-absolute top-0 end-0 translate-middle-top zindex-1 rounded-pill mt-1 me-1">2</span>
-                </a>
-            </li>
+{#            <li class="nav-item ms-lg-2">#}
+{#                <a href="#" class="navbar-nav-link navbar-nav-link-icon rounded-pill" data-bs-toggle="offcanvas" data-bs-target="#notifications">#}
+{#                    <i class="ph-bell"></i>#}
+{#                    <span class="badge bg-yellow text-black position-absolute top-0 end-0 translate-middle-top zindex-1 rounded-pill mt-1 me-1">2</span>#}
+{#                </a>#}
+{#            </li>#}
             {% if is_granted('ROLE_USER') %}
                 <li class="nav-item nav-item-dropdown-lg dropdown ms-lg-2">
                     <a href="#" class="navbar-nav-link align-items-center rounded-pill p-1" data-bs-toggle="dropdown">

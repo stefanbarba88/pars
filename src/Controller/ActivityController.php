@@ -6,6 +6,7 @@ use App\Classes\Data\NotifyMessagesData;
 use App\Entity\Activity;
 use App\Form\ActivityFormType;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,12 +19,21 @@ class ActivityController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_activities')]
-  public function list(): Response {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
-    $args['activities'] = $this->em->getRepository(Activity::class)->findAll();
+
+    $activities = $this->em->getRepository(Activity::class)->getActivitiesPaginator();
+
+    $pagination = $paginator->paginate(
+      $activities, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('activity/list.html.twig', $args);
   }

@@ -20,21 +20,6 @@
                             </h4>
                         </div>
                     </div>
-
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Aktivnosti</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
                 </div>
                 <!-- /page header -->
 
@@ -48,36 +33,73 @@
                                 <a href="{{ path('app_activity_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
-                        <table class="table datatable-colvis-state-pars">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Naziv</th>
-                                <th>Status</th>
-                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for activity in activities %}
-                                <tr>
-                                    <td>{{ activity.id }}</td>
-                                    <td><div class="fw-semibold"><a href="{{ path('app_activity_view', { id: activity.id}) }}">{{ activity.title }}</a></div></td>
-                                    <td>{{ activity.badgeByStatus | raw }}</td>
-                                    <td class="text-center">
-                                        <div class="dropdown">
-                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                <i class="ph-gear"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a href="{{ path('app_activity_view', { id: activity.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                <a href="{{ path('app_activity_form', { id: activity.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                        <div class="card-body">
+                            <div class="table-responsive ">
+                                <table class="table table-bordered table-hover table-responsive">
+                                    <thead>
+                                    <tr>
+                                        <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.title]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Naziv ', ['c.title']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.title' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.title' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.isSuspended]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Status ', ['c.isSuspended']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.isSuspended' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.isSuspended' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for activity in pagination %}
+                                        <tr>
+                                            <td>{{ activity.id }}</td>
+                                            <td><div class="fw-semibold"><a href="{{ path('app_activity_view', { id: activity.id}) }}">{{ activity.title }}</a></div></td>
+                                            <td>{{ activity.badgeByStatus | raw }}</td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_activity_view', { id: activity.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        <a href="{{ path('app_activity_form', { id: activity.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
                     </div>
                     <!-- /state saving -->
                 </div>

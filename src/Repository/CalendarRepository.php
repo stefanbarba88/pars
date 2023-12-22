@@ -47,29 +47,33 @@ class CalendarRepository extends ServiceEntityRepository {
 
   }
 
-  public function getRequestByUser(User $user): array {
+  public function getRequestByUser(User $user, $year): array {
+    $startDate = new DateTimeImmutable("$year-01-01");
 
     $dan = 0;
     $odmor = 0;
     $slava = 0;
     $bolovanje = 0;
+
     $requests = $user->getCalendars()->toArray();
 
     foreach ($requests as $req) {
-      if ($req->getStatus() != 0) {
-        if ($req->getType() == CalendarColorsData::DAN) {
-          $dan++;
-        }
-        if ($req->getType() == CalendarColorsData::ODMOR) {
-          $odmor++;
-        }
-        if ($req->getType() == CalendarColorsData::BOLOVANJE) {
-          $bolovanje++;
-        }
-        if ($req->getType() == CalendarColorsData::SLAVA) {
-          $slava++;
-        }
+      if($req->getStart() >= $startDate) {
+        if ($req->getStatus() != 0) {
+          if ($req->getType() == CalendarColorsData::DAN) {
+            $dan++;
+          }
+          if ($req->getType() == CalendarColorsData::ODMOR) {
+            $odmor++;
+          }
+          if ($req->getType() == CalendarColorsData::BOLOVANJE) {
+            $bolovanje++;
+          }
+          if ($req->getType() == CalendarColorsData::SLAVA) {
+            $slava++;
+          }
 
+        }
       }
     }
 

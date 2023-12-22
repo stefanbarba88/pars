@@ -43,6 +43,17 @@ class CurrencyRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(Currency::class)->find($id);
   }
 
+  public function getCurrenciesPaginator() {
+
+    return $this->createQueryBuilder('c')
+      ->orderBy('c.isSuspended', 'ASC')
+      ->orderBy('c.title', 'ASC')
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery();
+
+
+  }
+
 //    /**
 //     * @return Currency[] Returns an array of Currency objects
 //     */

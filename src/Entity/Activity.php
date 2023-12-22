@@ -117,9 +117,9 @@ class Activity {
 
   public function getBadgeByStatus(): string {
     if ($this->isSuspended) {
-      return '<span class="badge bg-danger">Deaktiviran</span>';
+      return '<span class="badge bg-yellow text-primary">Deaktivirana</span>';
     }
-    return '<span class="badge bg-info">Aktiviran</span>';
+    return '<span class="badge bg-primary text-white">Aktivna</span>';
 
   }
 

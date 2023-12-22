@@ -7,6 +7,7 @@ use App\Classes\ResponseMessages;
 use App\Entity\Category;
 use App\Form\CategoryFormType;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,11 +20,21 @@ class CategoryController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_categories')]
-  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
-    $args['categories'] = $this->em->getRepository(Category::class)->findAll();
+
+    $categories = $this->em->getRepository(Category::class)->getCategoriesPaginator();
+
+    $pagination = $paginator->paginate(
+      $categories, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('category/list.html.twig', $args);
   }

@@ -178,6 +178,9 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\Column(nullable: true)]
   private ?int $ProjectType = null;
 
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: Overtime::class, orphanRemoval: true)]
+  private Collection $overtimes;
+
 
   public function __construct() {
     $this->userHistories = new ArrayCollection();
@@ -189,6 +192,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     $this->carReservations = new ArrayCollection();
     $this->calendars = new ArrayCollection();
     $this->toolReservations = new ArrayCollection();
+    $this->overtimes = new ArrayCollection();
 
   }
 
@@ -993,6 +997,36 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   public function setProjectType(?int $ProjectType): self
   {
       $this->ProjectType = $ProjectType;
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Overtime>
+   */
+  public function getOvertimes(): Collection
+  {
+      return $this->overtimes;
+  }
+
+  public function addOvertime(Overtime $overtime): self
+  {
+      if (!$this->overtimes->contains($overtime)) {
+          $this->overtimes->add($overtime);
+          $overtime->setUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeOvertime(Overtime $overtime): self
+  {
+      if ($this->overtimes->removeElement($overtime)) {
+          // set the owning side to null (unless already changed)
+          if ($overtime->getUser() === $this) {
+              $overtime->setUser(null);
+          }
+      }
 
       return $this;
   }

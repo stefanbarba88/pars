@@ -8,6 +8,7 @@ use App\Classes\ResponseMessages;
 use App\Entity\Label;
 use App\Form\LabelFormType;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,11 +21,21 @@ class LabelController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_labels')]
-  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
-    $args['labels'] = $this->em->getRepository(Label::class)->findAll();
+
+    $labels = $this->em->getRepository(Label::class)->getLabelsPaginator();
+
+    $pagination = $paginator->paginate(
+      $labels, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('label/list.html.twig', $args);
   }

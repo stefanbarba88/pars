@@ -53,6 +53,7 @@ class NoteController extends AbstractController {
 
     return $this->render('note/view.html.twig', $args);
   }
+
   #[Route('/form/{id}', name: 'app_note_form', defaults: ['id' => 0])]
   #[Entity('notes', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]

@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TaskStatusData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\Availability;
 use App\Entity\Image;
+use App\Entity\Overtime;
 use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
@@ -18,6 +20,7 @@ use App\Service\UploadService;
 use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -81,7 +84,7 @@ class StopwatchController extends AbstractController {
     }
     $days = $stopwatch->getStart()->diff($stopwatch->getStop())->d;
     $hours = $stopwatch->getStart()->diff($stopwatch->getStop())->h;
-    $hours = $days*24 + $hours;
+    $hours = $days * 24 + $hours;
     $minutes = $stopwatch->getStart()->diff($stopwatch->getStop())->i;
 
     $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTime($stopwatch, $hours, $minutes);
@@ -111,6 +114,9 @@ class StopwatchController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
+
+        $sati = $request->request->get('overtime_vreme_sati');
+        $minuti = $request->request->get('overtime_vreme_minuti');
 
         $uploadFiles = $request->files->all()['stopwatch_time_form']['pdf'];
         if (!empty ($uploadFiles)) {
@@ -150,7 +156,18 @@ class StopwatchController extends AbstractController {
         }
 
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
-//        dd($stopwatch);
+
+        if (!is_null($sati)) {
+          $overtime = new Overtime();
+          $overtime->setUser($stopwatch->getTaskLog()->getUser());
+          $overtime->setHours($sati);
+          $overtime->setMinutes($minuti);
+          $overtime->setDatum($stopwatch->getCreated()->setTime(0,0));
+          $overtime->setStatus(0);
+          $overtime->setTask($stopwatch->getTaskLog()->getTask());
+          $this->em->getRepository(Overtime::class)->save($overtime);
+        }
+
         $user = $this->getUser();
         $user->setIsInTask(false);
         $this->em->getRepository(User::class)->save($user);
@@ -164,7 +181,7 @@ class StopwatchController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+          ->addSuccess(NotifyMessagesData::STOPWATCH_ADD);
 
 //        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
         return $this->redirectToRoute('app_home');
@@ -262,7 +279,7 @@ class StopwatchController extends AbstractController {
 
         $stopwatch->setIsEdited(true);
         $stopwatch->setEditedBy($user);
-        $this->em->getRepository(Availability::class)->addDostupnost($stopwatch);
+//        $this->em->getRepository(Availability::class)->addDostupnost($stopwatch);
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 
         notyf()
@@ -270,7 +287,7 @@ class StopwatchController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+          ->addSuccess(NotifyMessagesData::STOPWATCH_ADD);
 
         return $this->redirectToRoute('app_task_log_view', ['id' => $taskLog->getId()]);
       }
@@ -300,8 +317,10 @@ class StopwatchController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('task/stopwatch_form_modal.html.twig', $args);
+      }
       return $this->render('task/phone/stopwatch_form_modal.html.twig', $args);
-
     }
     return $this->render('task/stopwatch_form_modal.html.twig', $args);
   }
@@ -371,7 +390,7 @@ class StopwatchController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+          ->addSuccess(NotifyMessagesData::STOPWATCH_EDIT);
 
         return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
       }
@@ -384,6 +403,9 @@ class StopwatchController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('task/stopwatch_form_edit.html.twig', $args);
+      }
       return $this->render('task/phone/stopwatch_form_edit.html.twig', $args);
     }
     return $this->render('task/stopwatch_form_edit.html.twig', $args);
@@ -413,7 +435,7 @@ class StopwatchController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+          ->addSuccess(NotifyMessagesData::STOPWATCH_EDIT);
 
         return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
 
@@ -425,6 +447,9 @@ class StopwatchController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('task/stopwatch_form_edit_time.html.twig', $args);
+      }
       return $this->render('task/phone/stopwatch_form_edit_time.html.twig', $args);
     }
     return $this->render('task/stopwatch_form_edit_time.html.twig', $args);
@@ -436,7 +461,7 @@ class StopwatchController extends AbstractController {
     }
     $taskLogId = $stopwatch->getTaskLog()->getId();
     $user = $this->getUser();
-    $this->em->getRepository(Availability::class)->addDostupnostDelete($stopwatch);
+//    $this->em->getRepository(Availability::class)->addDostupnostDelete($stopwatch);
     $this->em->getRepository(StopwatchTime::class)->deleteStopwatch($stopwatch, $user);
 
     notyf()
@@ -444,24 +469,35 @@ class StopwatchController extends AbstractController {
       ->position('y', 'top')
       ->duration(5000)
       ->dismissible(true)
-      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+      ->addSuccess(NotifyMessagesData::STOPWATCH_DELETE);
 
     return $this->redirectToRoute('app_task_log_view', ['id' => $taskLogId]);
   }
 
   #[Route('/list/', name: 'app_stopwatch_list')]
-  public function list()    : Response {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
     $args = [];
-    $args['stopwatches'] = $this->em->getRepository(StopwatchTime::class)->findAllToCheck();
+
+    $tasks = $this->em->getRepository(StopwatchTime::class)->findAllToCheck();
+
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('task/stopwatches_to_check.html.twig', $args);
+
   }
 
   #[Route('/close/{id}', name: 'app_stopwatch_close')]
-  public function close(StopwatchTime $stopwatch)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function close(StopwatchTime $stopwatch)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $task = $stopwatch->getTaskLog()->getTask();
@@ -472,7 +508,7 @@ class StopwatchController extends AbstractController {
       ->position('y', 'top')
       ->duration(5000)
       ->dismissible(true)
-      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+      ->addSuccess(NotifyMessagesData::STOPWATCH_CLOSE);
 
     return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
   }

@@ -5,8 +5,10 @@ namespace App\Repository;
 use App\Classes\Data\AvailabilityData;
 use App\Classes\Data\CalendarColorsData;
 use App\Classes\Data\TaskStatusData;
+use App\Classes\Data\TipNeradnihDanaData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Availability;
+use App\Entity\Holiday;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\User;
@@ -39,11 +41,20 @@ class AvailabilityRepository extends ServiceEntityRepository {
     return $availability;
   }
 
-  public function getDaysByUser(User $user): array {
+  public function getDaysByUser(User $user, $year): array {
 
     $nedostupan = 0;
     $izasao = 0;
     $dostupan = 0;
+
+    $praznik = 0;
+    $nedelja = 0;
+    $kolektivniOdmor = 0;
+
+    $neradniPraznik = 0;
+    $neradnaNedelja = 0;
+    $neradniKolektivniOdmor = 0;
+
 
     $dan = 0;
     $odmor = 0;
@@ -51,11 +62,34 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $bolovanje = 0;
     $ostalo = 0;
 
-    $requests = $this->getEntityManager()->getRepository(Availability::class)->findBy(['User' => $user]);
+    $startDate = new DateTimeImmutable("$year-01-01");
+    $endDate = new DateTimeImmutable("$year-12-31");
+
+    $requests = $this->createQueryBuilder('c')
+      ->where('c.datum BETWEEN :startDate AND :endDate')
+      ->andWhere('c.User = :user')
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->setParameter('user', $user)
+      ->getQuery()
+      ->getResult();
 
     foreach ($requests as $req) {
         if ($req->getType() == AvailabilityData::PRISUTAN) {
           $dostupan++;
+          if ($req->getTypeDay() == TipNeradnihDanaData::PRAZNIK) {
+            $praznik++;
+          }
+          if ($req->getTypeDay() == TipNeradnihDanaData::KOLEKTIVNI_ODMOR) {
+            $kolektivniOdmor++;
+          }
+          if ($req->getTypeDay() == TipNeradnihDanaData::NEDELJA) {
+            $nedelja++;
+          }
+          if ($req->getTypeDay() == TipNeradnihDanaData::NEDELJA_PRAZNIK) {
+            $nedelja++;
+            $praznik++;
+          }
         }
         if ($req->getType() == AvailabilityData::IZASAO) {
           $izasao++;
@@ -78,11 +112,23 @@ class AvailabilityRepository extends ServiceEntityRepository {
           if (is_null($req->getZahtev())) {
             $ostalo++;
           }
+          if ($req->getTypeDay() == TipNeradnihDanaData::PRAZNIK) {
+            $neradniPraznik++;
+          }
+          if ($req->getTypeDay() == TipNeradnihDanaData::KOLEKTIVNI_ODMOR) {
+            $neradniKolektivniOdmor++;
+          }
+          if ($req->getTypeDay() == TipNeradnihDanaData::NEDELJA) {
+            $neradnaNedelja++;
+          }
         }
     }
 
     return  [
       'dostupan' => $dostupan,
+      'praznik' => $praznik,
+      'kolektivniOdmor' => $kolektivniOdmor,
+      'nedelja' => $nedelja,
       'izasao' => $izasao,
       'nedostupan' => $nedostupan,
       'dan' => $dan,
@@ -90,7 +136,10 @@ class AvailabilityRepository extends ServiceEntityRepository {
       'bolovanje' => $bolovanje,
       'slava' => $slava,
       'ostalo' => $ostalo,
-      'ukupno' => $dan + $odmor + $bolovanje + $slava
+      'neradniPraznik' => $neradniPraznik,
+      'neradniKolektivniOdmor' => $neradniKolektivniOdmor,
+      'neradnaNedelja' => $neradnaNedelja,
+      'ukupno' => $dan + $odmor + $bolovanje + $slava + $neradniKolektivniOdmor + $ostalo
     ];
 
   }
@@ -111,7 +160,6 @@ class AvailabilityRepository extends ServiceEntityRepository {
       ->setParameter('type', AvailabilityData::PRISUTAN)
       ->getQuery()
       ->getResult();
-
 
 
     $dostupnost = $dostupnosti[0];
@@ -190,8 +238,12 @@ class AvailabilityRepository extends ServiceEntityRepository {
         ];
       }
     }
+//    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format('Y'));
+    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format(2024));
 
-    return $dostupnost;
+
+
+    return array_merge($dostupnost, $dostupnost1);
   }
 
   public function getDostupnostPaginator() {
@@ -212,7 +264,6 @@ class AvailabilityRepository extends ServiceEntityRepository {
   public function getDostupnostByUser(User $user): array {
     $dostupnost = [];
     $datum = new DateTimeImmutable();
-    $danas = $datum->format('Y-m-d 00:00:00');
     $dostupnosti = $this->createQueryBuilder('t')
       ->where('t.type <> 3')
       ->andWhere('t.User = :user')
@@ -227,21 +278,27 @@ class AvailabilityRepository extends ServiceEntityRepository {
         } else {
           $zahtev = $dost->getZahtev();
         }
-        $dostupnost[] = [
-          "title" => CalendarColorsData::getTitleByType($zahtev),
-          "start" => $dost->getDatum()->format('Y-m-d'),
-          "datum" => $dost->getDatum()->format('d.m.Y'),
-          "color" => CalendarColorsData::getColorByType($zahtev),
-          "name" => $dost->getUser()->getFullName(),
-          "id" => $dost->getUser()->getId(),
-          "zahtev" => $dost->getZahtev(),
-          "razlog" => CalendarColorsData::getTitleByType($zahtev),
-          "text" => CalendarColorsData::getTextByType($zahtev)
-        ];
+        if ($dost->getDatum()->format('N') != 7) {
+          $dostupnost[] = [
+            "title" => CalendarColorsData::getTitleByType($zahtev),
+            "start" => $dost->getDatum()->format('Y-m-d'),
+            "datum" => $dost->getDatum()->format('d.m.Y'),
+            "color" => CalendarColorsData::getColorByType($zahtev),
+            "name" => $dost->getUser()->getFullName(),
+            "id" => $dost->getUser()->getId(),
+            "zahtev" => $dost->getZahtev(),
+            "razlog" => CalendarColorsData::getTitleByType($zahtev),
+            "text" => CalendarColorsData::getTextByType($zahtev)
+          ];
+        }
       }
     }
 
-    return $dostupnost;
+//    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format('Y'));
+    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format(2024));
+
+
+    return array_merge($dostupnost, $dostupnost1);
   }
 
   public function getDostupnostByUserTwig(User $user): ?int {
@@ -492,8 +549,10 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
     $dostupnosti = $this->createQueryBuilder('t')
       ->where('t.datum BETWEEN :startDate AND :endDate')
+      ->andWhere('t.User = :user')
       ->setParameter('startDate', $startDate)
       ->setParameter('endDate', $endDate)
+      ->setParameter('user', $stopwatchTime->getTaskLog()->getUser())
       ->getQuery()
       ->getResult();
 
@@ -501,6 +560,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
       $this->getEntityManager()->getRepository(Availability::class)->save($dostupnost);
     } else {
       foreach ($dostupnosti as $dost) {
+        dd($dost);
         if ($dost->getType() == AvailabilityData::PRISUTAN) {
           $this->getEntityManager()->getRepository(Availability::class)->remove($dost);
           $this->getEntityManager()->getRepository(Availability::class)->save($dostupnost);

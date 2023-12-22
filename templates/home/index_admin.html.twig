@@ -28,16 +28,16 @@
                                             <td colspan="4">Aktivni</td>
                                         </tr>
                                         {% for task in checklistActive %}
-
+                                        <tr>
                                             <td>
                                                 {{ task.created | date("d.m.Y")}}
                                             </td>
                                             <td>
                                                 <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
-                                                    <span class="text-muted">{{ task.task | slice(0, 20) ~ (task.task | length > 20 ? '...' : '') }}</span>
+                                                    <span class="text-muted">{{ task.task | slice(0, 50) ~ (task.task | length > 20 ? '...' : '') }}</span>
                                                 </a>
                                             </td>
-                                            <td>
+                                            <td class="text-center">
                                                 {% if task.priority == 1 %}
                                                     <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
                                                 {% elseif task.priority == 2 %}
@@ -46,20 +46,20 @@
                                                     <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
                                                 {% elseif task.priority == 5 %}
                                                     <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                {% else %}
+                                                    <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
                                                 {% endif %}
                                             </td>
                                             <td class="text-center">
                                                 {% if task.status == 0 %}
-                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="btn btn-primary btn-sm">
-                                                        Završite
+                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="btn btn-primary">
+                                                        <i class="ph-check me-2"></i>Završite
                                                     </a>
                                                 {% endif %}
                                             </td>
-                                        {% endfor %}
-                                        <tr>
                                         </tr>
-
-                                        <tr class="table-light fw-semibold">
+                                        {% endfor %}
+                                         <tr class="table-light fw-semibold">
                                             <td colspan="3"></td>
                                             <td class="text-center">
                                                 <div class="d-inline-flex mb-0">
@@ -84,7 +84,7 @@
                                 <div class="card">
 
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>
+                                        <h5 class="py-lg-3 mb-0">Plan rada za {{ danas | date('d.m.Y') }}</h5>
                                         {#                                    <div class="mt-1 my-lg-auto ms-lg-auto">#}
                                         {#                                        <a href="{{ path('app_quick_tasks') }}" class="btn btn-light">#}
                                         {#                                            <i class="ph-clock-afternoon me-2"></i>#}
@@ -118,7 +118,7 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo1'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo1'].id }) }}">{{ task['geo1'].fullName}}</a> <br>
                                                                     {% endif %}
@@ -201,7 +201,7 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo'].id }) }}">{{ task['geo'].fullName}}</a>
                                                                     {% endif %}
@@ -248,7 +248,7 @@
                                 <div class="card">
 
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>
+                                        <h5 class="py-lg-3 mb-0">Plan rada za {{ danas | date('d.m.Y') }}</h5>
                                         {#                                    <div class="mt-1 my-lg-auto ms-lg-auto">#}
                                         {#                                        <a href="{{ path('app_quick_tasks') }}" class="btn btn-light">#}
                                         {#                                            <i class="ph-clock-afternoon me-2"></i>#}
@@ -278,7 +278,7 @@
                                                                 </div>
                                                             </td>
                                                             <td style="width: 50%;">
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo1'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo1'].id }) }}">{{ task['geo1'].getNameWithFirstLetter }}</a> <br>
                                                                     {% endif %}
@@ -333,7 +333,7 @@
                                                                 </div>
                                                             </td>
                                                             <td style="width: 50%;">
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo'].id }) }}">{{ task['geo'].getNameWithFirstLetter }}</a>
                                                                     {% endif %}
@@ -367,10 +367,10 @@
                                 <!-- Marketing campaigns -->
                                 <div class="card">
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
+                                        <h5 class="py-lg-3 mb-0">Plan rada za {{ sutra | date('d.m.Y') }}</h5>
                                         {% if tomorrowTimetableId != 0 %}
                                             <div class="mt-1 my-lg-auto ms-lg-auto">
-                                                <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-clock-afternoon me-2"></i> Raspored</a>
+                                                <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-clipboard me-2"></i> Plan rada </a>
                                             </div>
                                         {% endif %}
                                     </div>
@@ -390,6 +390,7 @@
                                             </tr>
                                             </thead>
                                             <tbody>
+
                                             {% if tomorrowTimetable is not empty %}
                                                 {% for task in tomorrowTimetable %}
                                                     {% if task['projekat'] is not null %}
@@ -400,7 +401,7 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo1'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo1'].id }) }}">{{ task['geo1'].fullName }}</a> <br>
                                                                     {% endif %}
@@ -483,7 +484,7 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo'].id }) }}">{{ task['geo'].fullName }}</a>
                                                                     {% endif %}
@@ -530,10 +531,10 @@
                                 <div class="card">
 
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
+                                        <h5 class="py-lg-3 mb-0">Plan rada za {{ sutra | date('d.m.Y') }}</h5>
                                         {% if tomorrowTimetableId != 0 %}
                                             <div class="mt-1 my-lg-auto ms-lg-auto">
-                                                <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-clock-afternoon me-2"></i> Raspored</a>
+                                                <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-clipboard me-2"></i> Plan rada </a>
                                             </div>
                                         {% endif %}
                                     </div>
@@ -559,7 +560,7 @@
                                                                 </div>
                                                             </td>
                                                             <td style="width: 50%;">
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo1'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo1'].id }) }}">{{ task['geo1'].getNameWithFirstLetter }}</a> <br>
                                                                     {% endif %}
@@ -614,7 +615,7 @@
                                                                 </div>
                                                             </td>
                                                             <td style="width: 50%;">
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo'] is not null %}
                                                                         {{ task['geo'].getNameWithFirstLetter }}
                                                                     {% endif %}
@@ -644,102 +645,94 @@
                         </div>
                     {% endif %}
 
-
-
-                    <div class="card card-body d-none d-sm-block">
-                            <div class="row text-center">
-                                <div class="col-3">
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_nedostupni">
-                                        <p><i class="ph-house bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
-                                    </a>
-                                    <h5 class="mb-0">
-                                        {% if currentTime < "14:30" %}
-                                            {{ dostupnosti.noNedostupni }}
-                                        {% else %}
-                                            {{ dostupnostiSutra.noNedostupni }}
-                                        {% endif %}
-                                    </h5>
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_nedostupni" class="text-primary">
-                                        {% if currentTime < "14:30" %}
-                                            Odsutni
-                                        {% else %}
-                                            Odsutni (sutra)
-                                        {% endif %}
-                                    </a>
+                    <div class="mb-3 d-none d-sm-block">
+                        <div class="d-flex btn-group">
+                            <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-start py-2" data-bs-toggle="modal" data-bs-target="#modal_nedostupni">
+                                <i class="ph-house bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                <h5 class="mb-0">
+                                    {% if currentTime < "14:30" %}
+                                        {{ dostupnosti.noNedostupni }}
+                                    {% else %}
+                                        {{ dostupnostiSutra.noNedostupni }}
+                                    {% endif %}
+                                </h5>
+                                <div class="fw-semibold"> {% if currentTime < "14:30" %}
+                                        Odsutni
+                                    {% else %}
+                                        Odsutni (sutra)
+                                    {% endif %}
                                 </div>
+                            </button>
 
-                                <div class="col-3">
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_vanzadatka" class="text-primary">
-                                        <p><i class="ph-coffee bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
-                                    </a>
-                                    <h5 class="mb-0">{{ dostupnosti.noVanZadatka }}</h5>
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_vanzadatka" class="text-primary">Bez zadatka</a>
+                            <button type="button" class="btn btn-light w-100 flex-column rounded-0 py-2" data-bs-toggle="modal" data-bs-target="#modal_vanzadatka">
+                                <i class="ph-coffee bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                <h5 class="mb-0">{{ dostupnosti.noVanZadatka }}</h5>
+                                <div class="fw-semibold">
+                                    Bez zadatka
                                 </div>
+                            </button>
 
-                                <div class="col-3">
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_kancelarija" class="text-primary">
-                                        <p><i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
-                                    </a>
-
+                            <button type="button" class="btn btn-light w-100 flex-column rounded-0 py-2" data-bs-toggle="modal" data-bs-target="#modal_kancelarija">
+                                <i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                <h5 class="mb-0">{{ dostupnosti.noKancelarija }}</h5>
+                                <div class="fw-semibold">
+                                    Kancelarija
+                                </div>
+                            </button>
+                            <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-end py-2" data-bs-toggle="modal" data-bs-target="#modal_unknown">
+                                <i class="ph-warning-circle bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                <h5 class="mb-0">{{ dostupnosti.noUnknown }}</h5>
+                                <div class="fw-semibold">
+                                    Neodređeni
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3 d-block d-sm-none">
+                        <div class="row row-tile g-0">
+                            <div class="col">
+                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-top-start py-2" data-bs-toggle="modal" data-bs-target="#modal_nedostupni">
+                                            <i class="ph-house bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <h5 class="mb-0">
+                                                {% if currentTime < "14:30" %}
+                                                    {{ dostupnosti.noNedostupni }}
+                                                {% else %}
+                                                    {{ dostupnostiSutra.noNedostupni }}
+                                                {% endif %}
+                                            </h5>
+                                            <div class="fw-semibold"> {% if currentTime < "14:30" %}
+                                                    Odsutni
+                                                {% else %}
+                                                    Odsutni (sutra)
+                                                {% endif %}
+                                            </div>
+                                        </button>
+                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2" data-bs-toggle="modal" data-bs-target="#modal_kancelarija">
+                                    <i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
                                     <h5 class="mb-0">{{ dostupnosti.noKancelarija }}</h5>
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_kancelarija" class="text-primary">Kancelarija</a>
-                                </div>
-
-                                <div class="col-3">
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_unknown" class="text-primary">
-                                        <p><i class="ph-warning-circle bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
-                                    </a>
-
-                                    <h5 class="mb-0">{{ dostupnosti.noUnknown }}</h5>
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_unknown" class="text-primary">Neodređeni</a>
-                                </div>
+                                    <div class="fw-semibold">
+                                        Kancelarija
+                                    </div>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-top-end py-2" data-bs-toggle="modal" data-bs-target="#modal_vanzadatka">
+                                    <i class="ph-coffee bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                    <h5 class="mb-0">{{ dostupnosti.noVanZadatka }}</h5>
+                                    <div class="fw-semibold">
+                                        Bez zadatka
+                                    </div>
+                                </button>
+                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-end py-2" data-bs-toggle="modal" data-bs-target="#modal_unknown">
+                                            <i class="ph-warning-circle bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <h5 class="mb-0">{{ dostupnosti.noUnknown }}</h5>
+                                            <div class="fw-semibold">
+                                                Neodređeni
+                                            </div>
+                                        </button>
                             </div>
                         </div>
-                    <div class="card card-body d-block d-sm-none">
-                            <div class="row text-center">
-                                <div class="col-6">
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_nedostupni">
-                                        <p><i class="ph-house bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
-                                    </a>
-                                    <h5 class="mb-0">
-                                        {% if currentTime < "14:30" %}
-                                            {{ dostupnosti.noNedostupni }}
-                                        {% else %}
-                                            {{ dostupnostiSutra.noNedostupni }}
-                                        {% endif %}</h5>
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_nedostupni" class="text-primary">Odsutni</a>
-                                </div>
-
-                                <div class="col-6">
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_vanzadatka" class="text-primary">
-                                        <p><i class="ph-coffee bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
-                                    </a>
-                                    <h5 class="mb-0">{{ dostupnosti.noVanZadatka }}</h5>
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_vanzadatka" class="text-primary">Bez zadatka</a>
-                                </div>
-                            </div>
-                            <div class="row text-center">
-                                <div class="col-6">
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_kancelarija" class="text-primary">
-                                        <p><i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
-                                    </a>
-
-                                    <h5 class="mb-0">{{ dostupnosti.noKancelarija }}</h5>
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_kancelarija" class="text-primary">Kancelarija</a>
-                                </div>
-
-                                <div class="col-6">
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_unknown" class="text-primary">
-                                        <p><i class="ph-warning-circle bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i></p>
-                                    </a>
-
-                                    <h5 class="mb-0">{{ dostupnosti.noUnknown }}</h5>
-                                    <a data-bs-toggle="modal" data-bs-target="#modal_unknown" class="text-primary">Neodređeni</a>
-                                </div>
-                            </div>
-                        </div>
-
-
+                    </div>
 
                     <div class="row d-none d-sm-block">
                         <div class="col-xl-12">
@@ -793,7 +786,7 @@
                                                                 {{ task.task.project.title }}
                                                             </div>
                                                         </td> <td>
-                                                        <div class="text-body">
+                                                        <div class="fw-semibold">
                                                             {% for user in task.task.assignedUsers %}
                                                                 {% for userId, userStatus in task.logStatus %}
                                                                     {% if userId == user.id and userStatus.otvoren == 1 %}
@@ -886,7 +879,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="text-body">
+                                                            <div class="fw-semibold">
                                                                 {% for user in task.task.assignedUsers %}
                                                                     {% for userId, userStatus in task.logStatus %}
                                                                         {% if userId == user.id and userStatus.otvoren == 1 %}
@@ -978,7 +971,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="text-body">
+                                                            <div class="fw-semibold">
                                                                 {% for user in task.task.assignedUsers %}
                                                                     {% for userId, userStatus in task.logStatus %}
                                                                         {% if userId == user.id and userStatus.otvoren == 1 %}
@@ -1070,7 +1063,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="text-body">
+                                                            <div class="fw-semibold">
                                                                 {% for user in task.task.assignedUsers %}
                                                                     {% for userId, userStatus in task.logStatus %}
                                                                         {% if userId == user.id and userStatus.otvoren == 1 %}
@@ -1207,7 +1200,7 @@
                                                     </div>
                                                 </td>
                                                 <td style="width: 50%;">
-                                                    <div class="text-body">
+                                                    <div class="fw-semibold">
                                                         {% for user in task.task.assignedUsers %}
                                                             {% for userId, userStatus in task.logStatus %}
                                                                 {% if userId == user.id and userStatus.otvoren == 1 %}
@@ -1263,7 +1256,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 50%;">
-                                                            <div class="text-body">
+                                                            <div class="fw-semibold">
                                                                 {% for user in task.task.assignedUsers %}
                                                                     {% for userId, userStatus in task.logStatus %}
                                                                         {% if userId == user.id and userStatus.otvoren == 1 %}
@@ -1319,7 +1312,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 50%;">
-                                                            <div class="text-body">
+                                                            <div class="fw-semibold">
                                                                 {% for user in task.task.assignedUsers %}
                                                                     {% for userId, userStatus in task.logStatus %}
                                                                         {% if userId == user.id and userStatus.otvoren == 1 %}
@@ -1375,7 +1368,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 50%;">
-                                                            <div class="text-body">
+                                                            <div class="fw-semibold">
                                                                 {% for user in task.task.assignedUsers %}
                                                                     {% for userId, userStatus in task.logStatus %}
                                                                         {% if userId == user.id and userStatus.otvoren == 1 %}
@@ -1432,10 +1425,10 @@
                                 <!-- Marketing campaigns -->
                                 <div class="card">
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
+                                        <h5 class="py-lg-3 mb-0">Plan rada za {{ sutra | date('d.m.Y') }}</h5>
                                         {% if tomorrowTimetableId != 0 %}
                                             <div class="mt-1 my-lg-auto ms-lg-auto">
-                                                <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-clock-afternoon me-2"></i> Raspored</a>
+                                                <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-clipboard me-2"></i> Plan rada </a>
                                             </div>
                                         {% endif %}
                                     </div>
@@ -1465,7 +1458,7 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo1'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo1'].id }) }}">{{ task['geo1'].fullName }}</a> <br>
                                                                     {% endif %}
@@ -1548,7 +1541,7 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo'].id }) }}">{{ task['geo'].fullName }}</a>
                                                                     {% endif %}
@@ -1595,10 +1588,10 @@
                                 <div class="card">
 
                                     <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
+                                        <h5 class="py-lg-3 mb-0">Plan rada za {{ sutra | date('d.m.Y') }}</h5>
                                         {% if tomorrowTimetableId != 0 %}
                                             <div class="mt-1 my-lg-auto ms-lg-auto">
-                                                <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-clock-afternoon me-2"></i> Raspored</a>
+                                                <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-clipboard me-2"></i> Plan rada </a>
                                             </div>
                                         {% endif %}
                                     </div>
@@ -1624,7 +1617,7 @@
                                                                 </div>
                                                             </td>
                                                             <td style="width: 50%;">
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo1'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo1'].id }) }}">{{ task['geo1'].getNameWithFirstLetter }}</a> <br>
                                                                     {% endif %}
@@ -1679,7 +1672,7 @@
                                                                 </div>
                                                             </td>
                                                             <td style="width: 50%;">
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {% if task['geo'] is not null %}
                                                                         {{ task['geo'].getNameWithFirstLetter }}
                                                                     {% endif %}
@@ -2081,8 +2074,8 @@
     {% endif %}
 
 
-
-    {% if dostupnosti.nedostupni is not empty %}
+    {% if currentTime < "14:30" %}
+        {% if dostupnosti.nedostupni is not empty %}
         <div id="modal_nedostupni" class="modal fade" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -2093,8 +2086,7 @@
                     <div class="modal-body">
                         <div class="card">
                             <div class="card-body">
-                                {% if currentTime < "14:30" %}
-                                    {% for user in dostupnosti.nedostupni %}
+                                {% for user in dostupnosti.nedostupni %}
                                         {% set dost = getDostupnostByUser(user) %}
                                         <div class="row p-2">
                                             <div class="col-6"><a href="{{ path('app_employee_calendar_view', {id: user.id}) }}">{{ user.fullName }}</a></div>
@@ -2115,8 +2107,30 @@
                                             </div>
                                         </div>
                                     {% endfor %}
-                                {% else %}
-                                    {% for user in dostupnostiSutra.nedostupni %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% else %}
+        {% if dostupnostiSutra.nedostupni is not empty %}
+        <div id="modal_nedostupni" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white border-0">
+                        <h6 class="modal-title">Odsutni zaposleni</h6>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card">
+                            <div class="card-body">
+                                {% for user in dostupnostiSutra.nedostupni %}
                                         {% set dost = getDostupnostByUserSutra(user) %}
                                         <div class="row p-2">
                                             <div class="col-6"><a href="{{ path('app_employee_calendar_view', {id: user.id}) }}">{{ user.fullName }}</a></div>
@@ -2137,8 +2151,6 @@
                                             </div>
                                         </div>
                                     {% endfor %}
-                                {% endif %}
-
                             </div>
                         </div>
                     </div>
@@ -2149,6 +2161,7 @@
                 </div>
             </div>
         </div>
+    {% endif %}
     {% endif %}
     {% if dostupnosti.vanZadatka is not empty %}
         <div id="modal_vanzadatka" class="modal fade" tabindex="-1">

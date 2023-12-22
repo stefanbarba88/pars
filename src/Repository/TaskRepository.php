@@ -158,6 +158,8 @@ class TaskRepository extends ServiceEntityRepository {
       $this->getEntityManager()->getRepository(StopwatchTime::class)->close($stopwatch);
     }
 
+    $task->setIsClosed(true);
+    $this->save($task);
   }
 
   public function deleteTask(Task $task, User $user): Task {
@@ -172,13 +174,14 @@ class TaskRepository extends ServiceEntityRepository {
       ->getResult();
 
     foreach ($stopwatches as $stop) {
+
       $stopwatch = $this->getEntityManager()->getRepository(StopwatchTime::class)->find($stop);
-      if (is_null($stopwatch->getDiff() && !is_null($stopwatch->getStart()))) {
-        $user = $stopwatch->getTaskLog()->getUser();
-        $user->setIsInTask(false);
-        $this->getEntityManager()->getRepository(User::class)->save($user);
-        $this->getEntityManager()->getRepository(StopwatchTime::class)->close($stopwatch);
-      }
+//      if (is_null($stopwatch->getDiff() && !is_null($stopwatch->getStart()))) {
+//        $user = $stopwatch->getTaskLog()->getUser();
+//        $user->setIsInTask(false);
+//        $this->getEntityManager()->getRepository(User::class)->save($user);
+//        $this->getEntityManager()->getRepository(StopwatchTime::class)->close($stopwatch);
+//      }
 
       $this->getEntityManager()->getRepository(StopwatchTime::class)->deleteStopwatch($stopwatch, $user);
     }
@@ -223,6 +226,22 @@ class TaskRepository extends ServiceEntityRepository {
     return $list;
   }
 
+  public function getTasksByProjectPaginator(Project $project) {
+
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+
+    return $this->createQueryBuilder('t')
+      ->where('t.datumKreiranja <= :startDate')
+      ->andWhere('t.project = :project')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':project', $project)
+      ->setParameter(':startDate', $startDate)
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery();
+  }
+
+
   public function getTasksByUser(User $user): array {
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
@@ -256,6 +275,33 @@ class TaskRepository extends ServiceEntityRepository {
       return $a['status'] <=> $b['status'];
     });
     return $list;
+  }
+
+
+
+  public function getTaskByUserCheck(User $user): bool {
+
+    $currentTime = new DateTimeImmutable();
+
+    $startDate = $currentTime->add(new DateInterval('PT1M'))->format('Y-m-d H:i:s');
+    $endDate = $currentTime->sub(new DateInterval('PT1M'))->format('Y-m-d H:i:s');
+
+    $tasks =  $this->createQueryBuilder('t')
+      ->where('t.createdBy = :user')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.created < :startDate')
+      ->andWhere('t.created > :endDate')
+      ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
+      ->setParameter(':user', $user)
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    if (!empty($tasks)){
+      return true;
+    }
+    return false;
   }
 
   public function getTasksByUserPaginator(User $user) {
@@ -304,14 +350,18 @@ class TaskRepository extends ServiceEntityRepository {
   public function getTasksUnclosedByUser(User $user): array {
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $endDate = $currentTime->sub(new DateInterval('P15D'))->format('Y-m-d 00:00:00');
+
 
     $list = [];
     $tasks =  $this->createQueryBuilder('t')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
       ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.datumKreiranja > :endDate')
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
       ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
       ->setParameter(':userId', $user->getId())
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
@@ -336,17 +386,54 @@ class TaskRepository extends ServiceEntityRepository {
     return $list;
   }
 
-  public function getTasksUnclosedLogsByUser(User $user): array {
+  public function getTasksUnclosedByUserPaginator(User $user): array {
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $endDate = $currentTime->sub(new DateInterval('P15D'))->format('Y-m-d 00:00:00');
+
 
     $list = [];
     $tasks =  $this->createQueryBuilder('t')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
       ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.datumKreiranja > :endDate')
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
       ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
+      ->setParameter(':userId', $user->getId())
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        $list[] = [
+          'task' => $task,
+        ];
+      }
+    }
+    return $list;
+
+  }
+
+  public function getTasksUnclosedLogsByUser(User $user): array {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
+
+    $list = [];
+    $tasks =  $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.datumKreiranja > :endDate')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
       ->setParameter(':userId', $user->getId())
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
@@ -414,17 +501,62 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
+
+  public function getTasksUnclosedLogsPaginator(): array {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
+
+    $list = [];
+    $tasks =  $this->createQueryBuilder('t')
+      ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.datumKreiranja > :endDate')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        foreach ($task->getTaskLogs() as $log) {
+          $logStatus = $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatusByLog($log);
+          if ($logStatus == 0) {
+            $list[] = [
+              'log' => $log,
+              'logStatus' => $logStatus
+            ];
+          }
+        }
+
+      }
+    }
+    usort($list, function ($a, $b) {
+      return $a['logStatus'] <=> $b['logStatus'];
+    });
+    return $list;
+
+  }
+
   public function countGetTasksUnclosedLogsByUser(User $user): int {
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
+
 
     $count = 0;
     $tasks =  $this->createQueryBuilder('t')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
       ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.datumKreiranja > :endDate')
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
       ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
       ->setParameter(':userId', $user->getId())
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
@@ -451,13 +583,15 @@ class TaskRepository extends ServiceEntityRepository {
   public function countGetTasksUnclosedLogs(): int {
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
 
     $count = 0;
     $tasks =  $this->createQueryBuilder('t')
       ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.datumKreiranja > :endDate')
       ->andWhere('t.isDeleted <> 1')
-
       ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
       ->addOrderBy('t.isClosed', 'ASC')
       ->addOrderBy('t.isPriority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
@@ -484,14 +618,18 @@ class TaskRepository extends ServiceEntityRepository {
   public function countGetTasksUnclosedByUser(User $user): int {
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
+
 
     $count = 0;
     $tasks =  $this->createQueryBuilder('t')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
       ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.datumKreiranja > :endDate')
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
       ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
       ->setParameter(':userId', $user->getId())
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
@@ -653,6 +791,7 @@ class TaskRepository extends ServiceEntityRepository {
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
       ->getResult();
+
 
     foreach ($tasks as $task) {
       $status = $this->taskStatus($task);
@@ -845,12 +984,15 @@ class TaskRepository extends ServiceEntityRepository {
   public function getTasksUnclosed(): array {
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $endDate = $currentTime->sub(new DateInterval('P30D'))->format('Y-m-d 00:00:00');
 
     $list = [];
     $tasks =  $this->createQueryBuilder('t')
       ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.datumKreiranja > :endDate')
       ->andWhere('t.isDeleted <> 1')
       ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
       ->addOrderBy('t.isClosed', 'ASC')
       ->addOrderBy('t.isPriority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
@@ -874,15 +1016,48 @@ class TaskRepository extends ServiceEntityRepository {
     return $list;
   }
 
+  public function getTasksUnclosedPaginator(): array {
+    $currentTime = new DateTimeImmutable();
+    $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $endDate = $currentTime->sub(new DateInterval('P15D'))->format('Y-m-d 00:00:00');
+
+    $list = [];
+    $tasks =  $this->createQueryBuilder('t')
+      ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.datumKreiranja > :endDate')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
+      ->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    foreach ($tasks as $task) {
+      $status = $this->taskStatus($task);
+
+      if ($status != TaskStatusData::ZAVRSENO ) {
+        $list[] = [
+          'task' => $task,
+        ];
+      }
+    }
+    return $list;
+  }
+
   public function countGetTasksUnclosed(): int {
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
 
-    $count = 0;
+   $count = 0;
     $tasks =  $this->createQueryBuilder('t')
       ->where('t.datumKreiranja < :startDate')
+      ->andWhere('t.datumKreiranja > :endDate')
       ->andWhere('t.isDeleted <> 1')
       ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
       ->addOrderBy('t.isClosed', 'ASC')
       ->addOrderBy('t.isPriority', 'DESC')
       ->addOrderBy('t.id', 'DESC')

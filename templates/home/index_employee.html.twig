@@ -13,9 +13,9 @@
 
                 <!-- Content area -->
                 <div class="content">
-                    {% if  countTasksUnclosed > 0%}
+                    {% if  countTasksUnclosedByUser > 0%}
                         <div class="alert alert-danger alert-dismissible fade show">
-                            <span class="fw-semibold">Važno!</span> Imate <a href="{{ path('app_tasks_unclosed_logs') }}" class="alert-link">nezatvoren dnevnik</a> od predhodnog dana. Morate prvo njega zatvoriti da bi pokrenuli današnje.
+                            <span class="fw-semibold">Važno!</span> Imate <a href="{{ path('app_tasks_unclosed_logs') }}" class="alert-link">nezatvoren dnevnik</a> u predhodnih 7 dana. Morate prvo njega zatvoriti da bi pokrenuli današnje.
                         </div>
                     {% endif %}
 
@@ -40,16 +40,16 @@
                                             <td colspan="4">Aktivni</td>
                                         </tr>
                                         {% for task in checklistActive %}
-
+                                            <tr>
                                             <td>
                                                 {{ task.created | date("d.m.Y")}}
                                             </td>
                                             <td>
                                                 <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
-                                                    <span class="text-muted">{{ task.task | slice(0, 20) ~ (task.task | length > 20 ? '...' : '') }}</span>
+                                                    <span class="text-muted">{{ task.task | slice(0, 50) ~ (task.task | length > 20 ? '...' : '') }}</span>
                                                 </a>
                                             </td>
-                                            <td>
+                                            <td class="text-center">
                                                 {% if task.priority == 1 %}
                                                     <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
                                                 {% elseif task.priority == 2 %}
@@ -58,20 +58,20 @@
                                                     <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
                                                 {% elseif task.priority == 5 %}
                                                     <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                {% else %}
+                                                    <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
                                                 {% endif %}
                                             </td>
                                             <td class="text-center">
                                                 {% if task.status == 0 %}
-                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="btn btn-primary btn-sm">
-                                                        Završite
+                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="btn btn-primary">
+                                                        <i class="ph-check me-2"></i>Završite
                                                     </a>
                                                 {% endif %}
                                             </td>
+                                            </tr>
                                         {% endfor %}
-                                        <tr>
-                                        </tr>
-
-                                        <tr class="table-light fw-semibold">
+                                       <tr class="table-light fw-semibold">
 {#                                            <td colspan="3"></td>#}
                                             <td colspan="4" class="text-center">
                                                 <div class="d-inline-flex mb-0">
@@ -292,7 +292,7 @@
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <div class="text-body">
+                                                        <div class="fw-semibold">
                                                             {% for user in task.task.assignedUsers %}
                                                                 {{ user.fullName }} <br>
                                                             {% endfor %}
@@ -375,7 +375,7 @@
                                                         </div>
                                                     </td>
                                                     <td style="width: 50%;">
-                                                        <div class="text-body">
+                                                        <div class="fw-semibold">
                                                             {% for user in task.task.assignedUsers %}
                                                                 {{ user.getNameWithFirstLetter }} <br>
                                                             {% endfor %}
@@ -430,7 +430,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="text-body">
+                                                            <div class="fw-semibold">
                                                                 {% if task['geo1'] is not null %}
                                                                     {{ task['geo1'].fullName }} <br>
                                                                 {% endif %}
@@ -513,7 +513,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 50%;">
-                                                            <div class="text-body">
+                                                            <div class="fw-semibold">
                                                                 {% if task['geo1'] is not null %}
                                                                     {{ task['geo1'].getNameWithFirstLetter }} <br>
                                                                 {% endif %}

@@ -85,7 +85,7 @@ class ToolController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::TOOL_ADD);
 
 
         if ($type == 1) {
@@ -134,7 +134,7 @@ class ToolController extends AbstractController {
         ->position('y', 'top')
         ->duration(5000)
         ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::CAR_ACTIVATE);
+        ->addSuccess(NotifyMessagesData::TOOL_ACTIVATE);
     } else {
       $tool->setIsSuspended(true);
 
@@ -143,7 +143,7 @@ class ToolController extends AbstractController {
         ->position('y', 'top')
         ->duration(5000)
         ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::CAR_DEACTIVATE);
+        ->addSuccess(NotifyMessagesData::TOOL_DEACTIVATE);
     }
 
 
@@ -244,7 +244,7 @@ class ToolController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::TOOL_RESERVE);
         if ($type == 1) {
           return $this->redirectToRoute('app_tools');
         }
@@ -289,7 +289,7 @@ class ToolController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::TOOL_RESERVE);
 
 
         return $this->redirectToRoute('app_employee_tools_view', ['id' => $user->getId()]);
@@ -321,13 +321,6 @@ class ToolController extends AbstractController {
         $reservation->setFinished(new DateTimeImmutable());
         $this->em->getRepository(ToolReservation::class)->save($reservation);
 
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
         if ($type == 1) {
           return $this->redirectToRoute('app_tools');
         }
@@ -368,14 +361,6 @@ class ToolController extends AbstractController {
 
         $reservation->setFinished(new DateTimeImmutable());
         $this->em->getRepository(ToolReservation::class)->save($reservation);
-
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
 
         return $this->redirectToRoute('app_car_tools_details_view');
       }
@@ -425,7 +410,7 @@ class ToolController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::TOOL_RESERVE);
 
         return $this->redirectToRoute('app_car_tools_details_view');
 
@@ -457,14 +442,6 @@ class ToolController extends AbstractController {
 
         $reservation->setFinished(new DateTimeImmutable());
         $this->em->getRepository(ToolReservation::class)->save($reservation);
-
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
 
         return $this->redirectToRoute('app_employee_tools_view', ['id' => $user->getId()]);
       }

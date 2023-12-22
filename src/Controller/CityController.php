@@ -6,6 +6,7 @@ use App\Classes\Data\NotifyMessagesData;
 use App\Entity\City;
 use App\Form\CityFormType;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,11 +21,21 @@ class CityController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_cities')]
-  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
-    $args['cities'] = $this->em->getRepository(City::class)->findAll();
+
+    $cities = $this->em->getRepository(City::class)->getCitiesPaginator();
+
+    $pagination = $paginator->paginate(
+      $cities, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('city/list.html.twig', $args);
   }
@@ -33,7 +44,8 @@ class CityController extends AbstractController {
   #[Route('/form/{id}', name: 'app_city_form', defaults: ['id' => 0])]
   #[Entity('city', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, City $city)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function form(Request $request, City $city)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $city->setEditBy($this->getUser());
@@ -73,7 +85,8 @@ class CityController extends AbstractController {
 
   #[Route('/view/{id}', name: 'app_city_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(City $city)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function view(City $city)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['city'] = $city;

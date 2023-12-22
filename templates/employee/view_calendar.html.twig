@@ -160,7 +160,7 @@
 
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">Prisutnost</h5>
+                                        <h5 class="mb-0">Prisutnost od početka godine</h5>
                                     </div>
 
                                     <div class="card-body">
@@ -169,8 +169,8 @@
                                                 <div class="card card-body bg-primary text-white">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-fill">
-                                                            <h4 class="mb-0">{{ noDays['dostupan'] }}</h4>
-                                                            Broj dana
+                                                            <h4 class="mb-0">{{ noDays['dostupan'] }}/{{ noRadnihDana }}</h4>
+                                                            Broj radnih dana
                                                         </div>
 
                                                         <i class="ph-briefcase ph-2x opacity-75 ms-3"></i>
@@ -178,49 +178,94 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="row">
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['praznik'] }}</h4>
+                                                            Praznik
+                                                        </div>
+
+                                                        <i class="ph-cake ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-yellow text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['kolektivniOdmor'] }}</h4>
+                                                            Kolektivni odmor
+                                                        </div>
+                                                        <i class="ph-globe-hemisphere-west ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['nedelja'] }}</h4>
+                                                            Nedelja
+                                                        </div>
+
+                                                        <i class="ph-calendar-x ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-yellow text-primary">
+                                                    <div class="d-flex align-items-center">
+
+
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ overtime }}</h4>
+                                                            Prekovremeni sati
+                                                        </div>
+                                                        <i class="ph-hourglass-high ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                            {#                                            <div class="col-sm-6 col-xl-3">#}
+                                            {#                                                <div class="card card-body bg-primary text-white">#}
+                                            {#                                                    <div class="d-flex align-items-center">#}
+                                            {#                                                        <div class="flex-fill">#}
+                                            {#                                                            <h4 class="mb-0">{{ noDays['ostalo'] }}</h4>#}
+                                            {#                                                            Nema zabeležen zadatak#}
+                                            {#                                                        </div>#}
+
+                                            {#                                                        <i class="ph-calendar-x ph-2x opacity-75 ms-3"></i>#}
+                                            {#                                                    </div>#}
+                                            {#                                                </div>#}
+                                            {#                                            </div>#}
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">Odsutnost</h5>
+                                        <h5 class="mb-0">Odsutnost od početka godine</h5>
                                     </div>
 
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-sm-6 col-xl-4">
-                                                <div class="card card-body bg-yellow text-primary">
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-primary text-white">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-fill">
-                                                            <h4 class="mb-0">{{ noDays['ukupno'] }}</h4>
-                                                            Broj dana
+                                                            <h4 class="mb-0">{{ noDays['ukupno'] }}/{{ noRadnihDana }}</h4>
+                                                            Broj dana odsustva
                                                         </div>
 
                                                         <i class="ph-briefcase ph-2x opacity-75 ms-3"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6 col-xl-4">
-                                                <div class="card card-body bg-secondary text-primary">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-fill">
-                                                            <h4 class="mb-0">{{ noRequests['ukupno'] }}</h4>
-                                                            Broj zahteva
-                                                        </div>
-
-                                                        <i class="ph-question ph-2x opacity-75 ms-3"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6 col-xl-4">
-                                                <div class="card card-body bg-danger text-white">
-                                                    <div class="d-flex align-items-center">
-
-                                                        <div class="flex-fill">
-                                                            <h4 class="mb-0">{{ noDays['izasao'] }}</h4>
-                                                            Izlasci
-                                                        </div>
-                                                        <i class="ph-person-simple-run ph-2x opacity-75 ms-3"></i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -240,7 +285,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <div class="col-sm-6 col-xl-3">
                                                 <div class="card card-body bg-yellow text-primary">
                                                     <div class="d-flex align-items-center">
@@ -254,7 +298,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <div class="col-sm-6 col-xl-3">
                                                 <div class="card card-body bg-secondary text-primary">
                                                     <div class="d-flex align-items-center">
@@ -267,7 +310,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <div class="col-sm-6 col-xl-3">
                                                 <div class="card card-body bg-yellow text-primary">
                                                     <div class="d-flex align-items-center">
@@ -281,21 +323,46 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noRequests['ukupno'] }}</h4>
+                                                            Broj zahteva
+                                                        </div>
+
+                                                        <i class="ph-question ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-yellow text-primary">
+                                                    <div class="d-flex align-items-center">
+
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['izasao'] }}</h4>
+                                                            Izlasci
+                                                        </div>
+                                                        <i class="ph-person-simple-run ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
 
 
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['neradniKolektivniOdmor'] }}</h4>
+                                                            Kolektivni
+                                                        </div>
+                                                        <i class="ph-globe-hemisphere-west ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-{#                                            <div class="col-sm-6 col-xl-3">#}
-{#                                                <div class="card card-body bg-primary text-white">#}
-{#                                                    <div class="d-flex align-items-center">#}
-{#                                                        <div class="flex-fill">#}
-{#                                                            <h4 class="mb-0">{{ noDays['ostalo'] }}</h4>#}
-{#                                                            Nema zabeležen zadatak#}
-{#                                                        </div>#}
-
-{#                                                        <i class="ph-calendar-x ph-2x opacity-75 ms-3"></i>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
                                         </div>
                                     </div>
                                 </div>
@@ -328,6 +395,17 @@
                                                         </div>
                                                     </div>
 
+                                                </div>
+                                                <div class="mb-3">
+                                                    <h6>Neradni dani</h6>
+                                                    <div class="bg-light border rounded p-2 mb-3">
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-danger bg-opacity-75 text-white d-block">Državni/Verski praznik</span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-warning bg-opacity-75 text-white d-block">Kolektivni odmor</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-9">
@@ -379,13 +457,6 @@
     {{ parent() }}
 
     <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
-
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
@@ -429,12 +500,22 @@
         const eventColors =
             [
                 {% for event in dostupnosti %}
-                {
-                    title: '{{ event.title }}',
-                    start: '{{ event.start }}',
-                    color: '{{ event.color }}',
-                    textColor: '{{ event.text }}'
-                },
+                    {% if event.id == '' %}
+                    {
+                        {#title: '{{ event.title }}',#}
+                        start: '{{ event.start }}',
+                        backgroundColor: '{{ event.color }}',
+                        text: '{{ event.text }}',
+                        display: 'background',
+                    },
+                    {% else %}
+                    {
+                        title: '{{ event.title }}',
+                        start: '{{ event.start }}',
+                        color: '{{ event.color }}',
+                        textColor: '{{ event.text }}',
+                    },
+                    {% endif %}
                 {% endfor %}
             ]
         const initialLocaleCode = 'sr';

@@ -3,9 +3,11 @@
 namespace App\Repository;
 
 use App\Classes\Data\AvailabilityData;
+use App\Classes\Data\TipNeradnihDanaData;
 use App\Entity\Availability;
 use App\Entity\Category;
 use App\Entity\Client;
+use App\Entity\Holiday;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -59,6 +61,33 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     }
     $dostupnost->setDatum($datum->setTime(0, 0));
     $dostupnost->setUser($user);
+
+    $dostupnost->setTypeDay(0);
+
+    $praznik = $this->getEntityManager()->getRepository(Holiday::class)->findOneBy(['datum' => $datum]);
+
+    if ($datum->format('N') == 7) {
+      $dostupnost->setTypeDay(TipNeradnihDanaData::NEDELJA);
+      if (!empty($praznik)) {
+        if ($praznik->getType() == TipNeradnihDanaData::KOLEKTIVNI_ODMOR) {
+          $dostupnost->setTypeDay(TipNeradnihDanaData::NEDELJA_ODMOR);
+          if ($praznik->getType() == TipNeradnihDanaData::PRAZNIK) {
+            $dostupnost->setTypeDay(TipNeradnihDanaData::NEDELJA_PRAZNIK);
+          }
+        }
+      }
+    } else {
+      if (!empty($praznik)) {
+        if ($praznik->getType() == TipNeradnihDanaData::KOLEKTIVNI_ODMOR) {
+          $dostupnost->setTypeDay(TipNeradnihDanaData::KOLEKTIVNI_ODMOR);
+          if ($praznik->getType() == TipNeradnihDanaData::PRAZNIK) {
+            $dostupnost->setTypeDay(TipNeradnihDanaData::PRAZNIK);
+          }
+        }
+      }
+    }
+
+
     $this->getEntityManager()->getRepository(Availability::class)->save($dostupnost);
     return $dostupnost;
   }
@@ -102,7 +131,10 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
   public function close(StopwatchTime $stopwatch): StopwatchTime {
 
     $stopwatch->setStop(new DateTimeImmutable());
+
+    $days = $stopwatch->getStart()->diff($stopwatch->getStop())->d;
     $hours = $stopwatch->getStart()->diff($stopwatch->getStop())->h;
+    $hours = $days * 24 + $hours;
     $minutes = $stopwatch->getStart()->diff($stopwatch->getStop())->i;
     $this->setTime($stopwatch, $hours, $minutes);
     $stopwatch->setIsManuallyClosed(true);
@@ -1347,6 +1379,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       ->andWhere('u.stop BETWEEN :start AND :end')
       ->setParameter('start', $oneMonthAgo)
       ->setParameter('end', $now)
+      ->orderBy('u.created', 'DESC')
       ->getQuery()
       ->getResult();
 
@@ -1368,6 +1401,27 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     }
 
     return $stopwatches;
+
+  }
+
+  public function findAllToCheckCount(): int {
+    $now = new DateTimeImmutable();
+    $oneMonthAgo = new DateTimeImmutable('-1 month');
+
+    $times = $this->createQueryBuilder('u')
+      ->andWhere('u.diff < :dif')
+      ->setParameter(':dif', 10)
+      ->andWhere('u.diff is NOT NULL')
+      ->andWhere('u.isDeleted = 0')
+      ->andWhere('u.stop BETWEEN :start AND :end')
+      ->setParameter('start', $oneMonthAgo)
+      ->setParameter('end', $now)
+      ->orderBy('u.created', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+
+    return count($times);
 
   }
 

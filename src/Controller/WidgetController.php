@@ -3,16 +3,21 @@
 namespace App\Controller;
 
 use App\Classes\Data\TipProjektaData;
+use App\Classes\Data\UserRolesData;
+use App\Entity\Availability;
 use App\Entity\Calendar;
 use App\Entity\Car;
 use App\Entity\CarReservation;
 use App\Entity\Client;
 use App\Entity\Comment;
 use App\Entity\Expense;
+use App\Entity\FastTask;
 use App\Entity\Image;
 use App\Entity\ManagerChecklist;
 use App\Entity\Notes;
+use App\Entity\Overtime;
 use App\Entity\Project;
+use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\Team;
 use App\Entity\Tool;
@@ -29,71 +34,66 @@ class WidgetController extends AbstractController {
     $loggedUser = $this->getUser();
     $args = [];
 
-    $args['countUsers'] = $this->em->getRepository(User::class)->countUsersByLoggedUser($loggedUser);
-    $args['countUsersActive'] = $this->em->getRepository(User::class)->countUsersActiveByLoggedUser($loggedUser);
-
-    $args['countContacts'] = $this->em->getRepository(User::class)->countContacts();
-    $args['countContactsActive'] = $this->em->getRepository(User::class)->countContactsActive();
-    $args['countClients'] = $this->em->getRepository(Client::class)->count([]);
-    $args['countClientsActive'] = $this->em->getRepository(Client::class)->countClientsActive();
-
-    $args['countEmployees'] = $this->em->getRepository(User::class)->countEmployees();
-    $args['countEmployeesActive'] = $this->em->getRepository(User::class)->countEmployeesActive();
-
-    $args['countEmployeesOnTask'] = $this->em->getRepository(User::class)->countEmployeesOnTask();
-    $args['countEmployeesOffTask'] = $this->em->getRepository(User::class)->countEmployeesOffTask();
-
-    $args['countProjectsPermanent'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::FIKSNO]);
-    $args['countProjectsChange'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::LETECE]);
-    $args['countProjectsMix'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::KOMBINOVANO]);
-    $args['countProjectsArchive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => true]);
-    $args['countProjectsActive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false]);
-
-    $args['countCalendarRequests'] = $this->em->getRepository(Calendar::class)->countCalendarRequests();
-
-    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $this->getUser(), 'status' => 0]);
-    $args['checklistCreatedActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['createdBy' => $this->getUser(), 'status' => 0]);
-    $args['countChecklistActive'] = count($args['checklistActive']);
-    $args['countChecklistCreatedActive'] = count($args['checklistCreatedActive']);
-
-//    $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
-//    $args['countCommentsActive'] = $this->em->getRepository(Comment::class)->countCommentsActive();
-
-    $args['countComments'] = '';
-    $args['countCommentsActive'] = '';
-
-
-//    $args['countTasksActive'] = $this->em->getRepository(Task::class)->countGetTasks();
-//    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosed();
-//    $args['countTasksArchive'] = $this->em->getRepository(Task::class)->countGetTasksArchive();
-//
-//    $args['countTasksActiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksByUser($loggedUser);
-//    $args['countTasksUnclosedByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedByUser($loggedUser);
+    if ($loggedUser->getuserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $args['countTasksActiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksByUser($loggedUser);
+      $args['countTasksUnclosedByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedByUser($loggedUser);
 //    $args['countTasksArchiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksArchiveByUser($loggedUser);
 //
-//    $args['countTasksUnclosedLogsByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($loggedUser);
-//    $args['countTasksUnclosedLogs'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
+      $args['countTasksUnclosedLogsByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($loggedUser);
+    } else {
+      $args['countPlanRada'] = $this->em->getRepository(FastTask::class)->countPlanRadaActive();
 
-    $args['countTasksActive'] = '';
-    $args['countTasksUnclosed'] = '';
-    $args['countTasksArchive'] = '';
+      $args['countUsers'] = $this->em->getRepository(User::class)->countUsersByLoggedUser($loggedUser);
+      $args['countUsersActive'] = $this->em->getRepository(User::class)->countUsersActiveByLoggedUser($loggedUser);
 
-    $args['countTasksActiveByUser'] = '';
-    $args['countTasksUnclosedByUser'] = '';
-    $args['countTasksArchiveByUser'] = '';
+      $args['countContacts'] = $this->em->getRepository(User::class)->countContacts();
+      $args['countContactsActive'] = $this->em->getRepository(User::class)->countContactsActive();
+      $args['countClients'] = $this->em->getRepository(Client::class)->count([]);
+      $args['countClientsActive'] = $this->em->getRepository(Client::class)->countClientsActive();
 
-    $args['countTasksUnclosedLogsByUser'] = '';
-    $args['countTasksUnclosedLogs'] = '';
+      $args['countEmployees'] = $this->em->getRepository(User::class)->countEmployees();
+      $args['countEmployeesActive'] = $this->em->getRepository(User::class)->countEmployeesActive();
 
-    $args['countAllTools'] = $this->em->getRepository(Tool::class)->count([]);
-    $args['countTools'] = $this->em->getRepository(Tool::class)->countTools();
-    $args['countToolsActive'] = $this->em->getRepository(Tool::class)->countToolsActive();
-    $args['countToolsInactive'] = $this->em->getRepository(Tool::class)->countToolsInactive();
+      $args['countEmployeesOnTask'] = $this->em->getRepository(User::class)->countEmployeesOnTask();
+      $args['countEmployeesOffTask'] = $this->em->getRepository(User::class)->countEmployeesOffTask();
 
-    $args['countCars'] = $this->em->getRepository(Car::class)->count([]);
-    $args['countActiveCars'] = $this->em->getRepository(Car::class)->count(['isSuspended' => false]);
-    $args['countCarsActive'] = $this->em->getRepository(Car::class)->count(['isReserved' => true, 'isSuspended' => false]);
-    $args['countCarsInactive'] = $this->em->getRepository(Car::class)->count(['isReserved' => false, 'isSuspended' => false]);
+      $args['countProjectsPermanent'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::FIKSNO]);
+      $args['countProjectsChange'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::LETECE]);
+      $args['countProjectsMix'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::KOMBINOVANO]);
+      $args['countProjectsArchive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => true]);
+      $args['countProjectsActive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false]);
+
+      $args['countCalendarRequests'] = $this->em->getRepository(Calendar::class)->countCalendarRequests();
+
+
+//    $args['checklistCreatedActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['createdBy' => $this->getUser(), 'status' => 0]);
+
+
+//    $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
+      $args['countCommentsActive'] = $this->em->getRepository(Comment::class)->countCommentsActive();
+
+      $args['countOvertime'] = $this->em->getRepository(Overtime::class)->count(['status' => 0]);
+      $args['countLogCheck'] = $this->em->getRepository(StopwatchTime::class)->findAllToCheckCount();
+
+      $args['countTasksActive'] = $this->em->getRepository(Task::class)->countGetTasks();
+      $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosed();
+//    $args['countTasksArchive'] = $this->em->getRepository(Task::class)->countGetTasksArchive();
+//
+      $args['countTasksUnclosedLogs'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
+      $args['countAllTools'] = $this->em->getRepository(Tool::class)->count([]);
+      $args['countTools'] = $this->em->getRepository(Tool::class)->countTools();
+      $args['countToolsActive'] = $this->em->getRepository(Tool::class)->countToolsActive();
+      $args['countToolsInactive'] = $this->em->getRepository(Tool::class)->countToolsInactive();
+
+      $args['countCars'] = $this->em->getRepository(Car::class)->count([]);
+      $args['countActiveCars'] = $this->em->getRepository(Car::class)->count(['isSuspended' => false]);
+      $args['countCarsActive'] = $this->em->getRepository(Car::class)->count(['isReserved' => true, 'isSuspended' => false]);
+      $args['countCarsInactive'] = $this->em->getRepository(Car::class)->count(['isReserved' => false, 'isSuspended' => false]);
+    }
+
+
+    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $this->getUser(), 'status' => 0]);
+    $args['countChecklistActive'] = count($args['checklistActive']);
 
     $args['user'] = $loggedUser;
     $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $loggedUser, 'finished' => null], ['id' => 'desc']);

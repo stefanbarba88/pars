@@ -20,21 +20,6 @@
                             </h4>
                         </div>
                     </div>
-
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Dostupnost</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
                 </div>
                 <!-- /page header -->
 
@@ -69,6 +54,17 @@
                                             </div>
                                         </div>
 
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6>Neradni dani</h6>
+                                        <div class="bg-light border rounded p-2 mb-3">
+                                            <div class="mb-2">
+                                                <span class="badge bg-danger bg-opacity-75 text-white d-block">Državni/Verski praznik</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="badge bg-warning bg-opacity-75 text-white d-block">Kolektivni odmor</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-9">
@@ -129,7 +125,7 @@
                                                 {% elseif dost.zahtev == 3 %}
                                                     <span class="badge bg-purple text-white">Bolovanje</span>
                                                 {% elseif dost.zahtev == 4 %}
-                                                    <span class="badge bg-primary text-secondary">Slava</span>
+                                                    <span class="badge bg-primary text-white">Slava</span>
                                                 {% endif %}
                                             </td>
                                             <td>
@@ -203,12 +199,22 @@
         const eventColors =
             [
                 {% for event in dostupnosti %}
-                {
-                    title: '{{ event.title }}',
-                    start: '{{ event.start }}',
-                    color: '{{ event.color }}',
-                    textColor: '{{ event.text }}'
-                },
+                    {% if event.id == '' %}
+                        {
+                            {#title: '{{ event.title }}',#}
+                            start: '{{ event.start }}',
+                            backgroundColor: '{{ event.color }}',
+                            text: '{{ event.text }}',
+                            display: 'background',
+                        },
+                    {% else %}
+                        {
+                            title: '{{ event.title }}',
+                            start: '{{ event.start }}',
+                            color: '{{ event.color }}',
+                            textColor: '{{ event.text }}',
+                        },
+                    {% endif %}
                 {% endfor %}
             ]
         const initialLocaleCode = 'sr';
@@ -236,6 +242,7 @@
                 // editable: true,
                 direction: document.dir == 'rtl' ? 'rtl' : 'ltr',
                 events: eventColors,
+                dayMaxEvents: true
                 // height: 500
             });
 
@@ -249,6 +256,7 @@
                 })
             });
         }
+        $(".fc-daygrid-day-bg .fc-event-title").addClass("pozadinkiEvent");
 
     </script>
 {% endblock footerJavascript %}

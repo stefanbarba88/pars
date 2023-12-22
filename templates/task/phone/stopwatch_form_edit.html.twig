@@ -12,11 +12,11 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow d-none d-sm-block">
+                <div class="page-header page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ task.project.title | default ('Zadatak bez projekta') }}: {{ task.title }}
+                                #{{ task.id }}: {{task.title }}
                             </h4>
                         </div>
                     </div>
@@ -39,23 +39,11 @@
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
-                                Izmena vremenskog zapisa
+                                Izmena vremenskog zapisa - {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }}
                             </h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
                         <div class="card-body">
-                            {#                <div class="fw-bold border-bottom pb-2 mb-3">Utrošeno vreme</div>#}
-                            {#                <div class="row">#}
-                            {#                    <div class="col-lg-12">#}
-                            {#                        <div class="mb-3">#}
-                            {#                            <label class="form-category" for="stopwatch_time_add_form_period">Vreme:*</label>#}
-                            {#                            <div class="input-group">#}
-                            {#                                <span class="input-group-text"><i class="ph-calendar"></i></span>#}
-                            {#                                <input type="text" class="form-control daterange-locale-sr-stopwatch required" id="stopwatch_time_add_form_period" name="stopwatch_time_add_form_period">#}
-                            {#                            </div>#}
-                            {#                        </div>#}
-                            {#                    </div>#}
-                            {#                </div>#}
                             <div class="fw-bold border-bottom pb-2 mb-3">Aktivnosti</div>
                             <div class="row">
                                 <div class="col-lg-12">

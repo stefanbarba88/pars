@@ -37,6 +37,14 @@ class ProjectHistoryRepository extends ServiceEntityRepository {
     }
   }
 
+  public function getAllPaginator(Project $project) {
+
+    return $this->createQueryBuilder('u')
+      ->andWhere('u.project = :project')
+      ->setParameter(':project', $project)
+      ->addOrderBy('u.id', 'DESC')
+      ->getQuery();
+  }
 
 
 //    /**

@@ -131,9 +131,9 @@ class Category {
 
   public function getBadgeByStatus(): string {
     if ($this->isSuspended) {
-      return '<span class="badge bg-danger">Neaktivan</span>';
+      return '<span class="badge bg-yellow text-primary">Deaktivirana</span>';
     }
-    return '<span class="badge bg-info">Aktivan</span>';
+    return '<span class="badge bg-primary text-white">Aktivna</span>';
 
   }
 

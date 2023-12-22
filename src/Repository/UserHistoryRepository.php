@@ -34,7 +34,7 @@ class UserHistoryRepository extends ServiceEntityRepository {
     return $this->createQueryBuilder('u')
       ->andWhere('u.user = :user')
       ->setParameter(':user', $user)
-      ->addOrderBy('u.id', 'ASC')
+      ->addOrderBy('u.id', 'DESC')
       ->getQuery();
   }
 

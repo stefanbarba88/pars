@@ -45,6 +45,17 @@ class LabelRepository extends ServiceEntityRepository {
     }
     return $this->getEntityManager()->getRepository(Label::class)->find($id);
   }
+  public function getLabelsPaginator() {
+
+    return $this->createQueryBuilder('c')
+      ->orderBy('c.isSuspended', 'ASC')
+      ->orderBy('c.title', 'ASC')
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery();
+
+
+  }
+
 
 //    /**
 //     * @return Label[] Returns an array of Label objects

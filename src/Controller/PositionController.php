@@ -6,6 +6,7 @@ use App\Classes\Data\NotifyMessagesData;
 use App\Entity\ZaposleniPozicija;
 use App\Form\PositionFormType;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,11 +18,21 @@ class PositionController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
   #[Route('/list', name: 'app_positions')]
-  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
-    $args['positions'] = $this->em->getRepository(ZaposleniPozicija::class)->findAll();
+
+    $positions = $this->em->getRepository(ZaposleniPozicija::class)->getPositionsPaginator();
+
+    $pagination = $paginator->paginate(
+      $positions, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('position/list.html.twig', $args);
 }

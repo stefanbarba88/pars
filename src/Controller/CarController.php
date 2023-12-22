@@ -113,6 +113,7 @@ class CarController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['car'] = $car;
+    $args['lastReservation'] = $car->getCarReservations()->last();
 
     return $this->render('car/view.html.twig', $args);
   }
@@ -257,7 +258,7 @@ class CarController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::CAR_RESERVE);
         if ($type == 1) {
           return $this->redirectToRoute('app_cars');
         }
@@ -293,6 +294,7 @@ class CarController extends AbstractController {
     }
     return $this->render('car/view_images.html.twig', $args);
   }
+
   #[Route('/add-image-car/{id}', name: 'app_car_image_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function addImage(CarReservation $reservation, UploadService $uploadService, Request $request): Response {
@@ -333,7 +335,7 @@ class CarController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::CAR_ADD_IMAGE);
 
         return $this->redirectToRoute('app_car_images_view', ['id' => $reservation->getId()]);
 
@@ -371,13 +373,6 @@ class CarController extends AbstractController {
         $reservation->setFinished(new DateTimeImmutable());
         $this->em->getRepository(CarReservation::class)->save($reservation);
 
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
         if ($type == 1) {
           return $this->redirectToRoute('app_cars');
         }
@@ -422,6 +417,7 @@ class CarController extends AbstractController {
 
     return $this->render('car/list_expenses.html.twig', $args);
   }
+
   #[Route('/form-expense/{id}', name: 'app_car_expense_form')]
   #[Entity('car', expr: 'repository.find(id)')]
   #[Entity('expense', expr: 'repository.findForFormCar(car)')]
@@ -445,7 +441,7 @@ class CarController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
         if ($type == 1) {
           return $this->redirectToRoute('app_cars');
         }
@@ -458,6 +454,7 @@ class CarController extends AbstractController {
 
     return $this->render('car/form_expense.html.twig', $args);
   }
+
   #[Route('/edit-expense/{id}', name: 'app_car_expense_edit')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editExpense(Expense $expense, Request $request): Response {
@@ -478,7 +475,7 @@ class CarController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
 
         return $this->redirectToRoute('app_cars_expenses', ['id' => $expense->getCar()->getId()]);
       }
@@ -489,6 +486,7 @@ class CarController extends AbstractController {
 
     return $this->render('car/form_expense.html.twig', $args);
   }
+
   #[Route('/view-expense/{id}', name: 'app_car_expense_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewExpense(Expense $expense): Response {
@@ -534,7 +532,7 @@ class CarController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::CAR_RESERVE);
 
         return $this->redirectToRoute('app_employee_car_view', ['id' => $reservation->getDriver()->getId()]);
       }
@@ -570,14 +568,6 @@ class CarController extends AbstractController {
 
         $reservation->setFinished(new DateTimeImmutable());
         $this->em->getRepository(CarReservation::class)->save($reservation);
-
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
 
         return $this->redirectToRoute('app_employee_car_view', ['id' => $user->getId()]);
       }
@@ -651,7 +641,7 @@ class CarController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
 
         return $this->redirectToRoute('app_employee_car_view', ['id' => $user->getId()]);
       }
@@ -698,7 +688,7 @@ class CarController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
 
         return $this->redirectToRoute('app_employee_car_view', ['id' => $user->getId()]);
       }
@@ -748,7 +738,7 @@ class CarController extends AbstractController {
       ->position('y', 'top')
       ->duration(5000)
       ->dismissible(true)
-      ->addSuccess(NotifyMessagesData::CAR_DEACTIVATE);
+      ->addSuccess(NotifyMessagesData::CAR_DELETE_EXPENSE);
 
 
     if ($type == 1) {
@@ -803,14 +793,6 @@ class CarController extends AbstractController {
         $reservation->setFinished(new DateTimeImmutable());
         $this->em->getRepository(CarReservation::class)->save($reservation);
 
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
-
         return $this->redirectToRoute('app_car_tools_details_view');
       }
     }
@@ -856,7 +838,7 @@ class CarController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
+          ->addSuccess(NotifyMessagesData::CAR_RESERVE);
 
           return $this->redirectToRoute('app_car_tools_details_view');
 

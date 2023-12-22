@@ -77,6 +77,16 @@ class CityRepository extends ServiceEntityRepository {
     return $municipalities;
   }
 
+  public function getCitiesPaginator() {
+
+    return $this->createQueryBuilder('c')
+      ->orderBy('c.isSuspended', 'ASC')
+      ->orderBy('c.title', 'ASC')
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery();
+
+
+  }
 
 
 //    /**

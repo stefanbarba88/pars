@@ -43,6 +43,17 @@ class CategoryRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(Category::class)->find($id);
   }
 
+  public function getCategoriesPaginator() {
+
+    return $this->createQueryBuilder('c')
+      ->orderBy('c.isSuspended', 'ASC')
+      ->orderBy('c.title', 'ASC')
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery();
+
+
+  }
+
 //    /**
 //     * @return Category[] Returns an array of Category objects
 //     */

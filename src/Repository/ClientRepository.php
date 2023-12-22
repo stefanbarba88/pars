@@ -84,6 +84,13 @@ class ClientRepository extends ServiceEntityRepository {
 
   }
 
+  public function getAllClientsPaginator() {
+    return $this->createQueryBuilder('u')
+      ->orderBy('u.isSuspended', 'ASC')
+      ->getQuery();
+
+  }
+
 //    /**
 //     * @return Client[] Returns an array of Client objects
 //     */

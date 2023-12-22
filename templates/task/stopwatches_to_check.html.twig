@@ -16,24 +16,9 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                               Vremenski zapisi za proveru
+                               Zadaci
                             </h4>
                         </div>
-                    </div>
-
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Vremensi zapisi</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
                     </div>
                 </div>
                 <!-- /page header -->
@@ -43,45 +28,104 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista vremenskih zapisa</h5>
+                            <h5 class="py-lg-3 mb-0">Lista vremenskih zapisa za proveru</h5>
                         </div>
-                        <table class="table datatable-colvis-state-pars">
-                            <thead>
-                            <tr>
-                                <th>Zadatak</th>
-                                <th>Zaduženi</th>
-                                <th>Datum zadatka</th>
-                                <th>Start</th>
-                                <th>Stop</th>
-                                <th>Razlika</th>
-                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for time in stopwatches %}
-                                <tr>
-                                    <td><div class="fw-semibold"><a href="{{ path('app_task_view', { id: time.task.id}) }}">{{ time.task.title }}</a></div></td>
-                                    <td><div class="fw-semibold">{{ time.user.fullName }}</div></td>
-                                    <td>{{ time.task.datumKreiranja | date('d.m.Y') }}</td>
-                                    <td>{{ time.start | date ('H:i') }}</td>
-                                    <td>{{ time.stop | date ('H:i') }}</td>
-                                    <td>{{ time.diff }}</td>
-                                    <td class="text-center">
-                                        <div class="dropdown">
-                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                <i class="ph-gear"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a href="{{ path('app_task_log_view', { id: time.taskLog.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-{#                                                <a href="{{ path('app_stopwatch_delete', { id: time.id}) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>#}
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ time.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                        <div class="card-body">
+                            <div class="table-responsive ">
+                                <table class="table table-bordered table-hover table-responsive">
+                                    <thead>
+                                    <tr>
+                                        <th># ID</th>
+                                        <th>Zadatak</th>
+                                        <th>Datum zadatka</th>
+                                        <th>Zaduženi</th>
+                                        <th>Start</th>
+                                        <th>Stop</th>
+                                        <th>Razlika</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for time in pagination %}
+
+                                        <tr>
+                                            <td>{{ time.task.id }}</td>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    <a href="{{ path('app_task_view', { id: time.task.id}) }}">{{ time.task.title }}</a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ time.task.datumKreiranja | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="text-body">
+                                                    {% for user in time.task.assignedUsers %}
+                                                        {% if getLogStatusByUser(time.task, user) == 1 %}
+                                                            <div class="btn-group">
+                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">
+                                                                    {{ user.fullName }}
+                                                                    <div class="live p-1 mx-2"></div>
+                                                                </a>
+                                                            </div>
+                                                        {% else %}
+                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">
+                                                                {{ user.fullName }}
+                                                            </a>
+                                                        {% endif %}<br>
+                                                    {% endfor %}
+                                                </div>
+                                            </td>
+                                            <td>{{ time.start | date ('H:i') }}</td>
+                                            <td>{{ time.stop | date ('H:i') }}</td>
+                                            <td>{{ time.diff }}</td>
+
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_task_log_view', { id: time.taskLog.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        {#                                                <a href="{{ path('app_stopwatch_delete', { id: time.id}) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>#}
+                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ time.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <div id="modal_delete_task{{ time.id }}" class="modal fade" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white border-0">
+                                                        <h6 class="modal-title">Potvrda</h6>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <p>Da li ste sigurni da želite da obrišete ovaj zapis?</p>
+                                                    </div>
+
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                        <a href="{{ path('app_stopwatch_delete', {id: time.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
                     </div>
                     <!-- /state saving -->
                 </div>
@@ -100,27 +144,6 @@
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
     {% include 'includes/notification.html.twig' %}
-    {% for time in stopwatches %}
-        <div id="modal_delete_task{{ time.id }}" class="modal fade" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white border-0">
-                        <h6 class="modal-title">Potvrda</h6>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <p>Da li ste sigurni da želite da obrišete ovaj zapis?</p>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                        <a href="{{ path('app_stopwatch_delete', {id: time.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endfor %}
 {% endblock content %}
 
 {% block includeJavascript %}

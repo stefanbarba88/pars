@@ -1,0 +1,206 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Prekovremeni sati
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-lg-flex py-lg-0">
+                            <h5 class="py-lg-3 mb-0">Arhiva prekovremenih sati</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive ">
+                                <table class="table table-bordered table-hover table-responsive">
+                                    <thead>
+                                    <tr>
+                                        <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.user]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Zaposleni ', ['c.user']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.user' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.user' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.datum]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Datum ', ['c.datum']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.datum' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.datum' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.hours]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Sati ', ['c.hours']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.hours' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.hours' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.minutes]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Minuti ', ['c.minutes']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.minutes' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.minutes' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.task]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Zadatak ', ['c.task']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.task' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.task' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.status]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Status ', ['c.status']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.status' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.status' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for overtime in pagination %}
+                                        <tr>
+                                            <td>{{ overtime.id }}</td>
+                                            <td><div class="fw-semibold">{{ overtime.user.fullName }}</div></td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ overtime.datum | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+                                            <td>{{ overtime.hours }}</td>
+                                            <td>{{ overtime.minutes }}</td>
+                                            <td>
+                                                {% if overtime.task is not null %}
+                                                    <div class="fw-semibold"><a href="{{ path('app_task_view', { id: overtime.task.id}) }}">{{ overtime.task.title }}</a></div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if overtime.status == 0 %}
+                                                    <span class="badge bg-secondary text-primary">Na čekanju</span>
+                                                {% endif %}
+                                                {% if overtime.status == 1 %}
+                                                    <span class="badge bg-primary text-white">Prihvaćeno</span>
+                                                {% endif %}
+                                                {% if overtime.status == 2 %}
+                                                    <span class="badge bg-yellow text-primary">Odbijeno</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_overtime_view', { id: overtime.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+
+                                                        {% if overtime.status == 2  %}
+                                                            <a href="{{ path('app_overtime_allow', {id: overtime.id}) }}" class="dropdown-item">
+                                                                <i class="ph-check me-2"></i>
+                                                                Dozvolite
+                                                            </a>
+                                                        {% endif %}
+                                                        {% if overtime.status == 1  %}
+                                                            <a href="{{ path('app_overtime_decline', {id: overtime.id}) }}" class="dropdown-item">
+                                                                <i class="ph-minus me-2"></i>
+                                                                Odbijte
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

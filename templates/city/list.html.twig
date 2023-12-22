@@ -20,21 +20,6 @@
                             </h4>
                         </div>
                     </div>
-
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <span class="breadcrumb-item active">Gradovi</span>
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
                 </div>
                 <!-- /page header -->
 
@@ -48,42 +33,98 @@
                                 <a href="{{ path('app_city_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
-                        <table class="table datatable-colvis-state-pars">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Naziv</th>
-                                <th>PTT broj</th>
-                                <th>Opština</th>
-                                <th>Region</th>
-                                <th>Država</th>
-                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for city in cities %}
-                                <tr>
-                                    <td>{{ city.id }}</td>
-                                    <td><div class="fw-semibold"><a href="{{ path('app_city_view', { id: city.id}) }}">{{ city.title }}</a></div></td>
-                                    <td>{{ city.ptt }}</td>
-                                    <td>{{ city.municipality }}</td>
-                                    <td>{{ city.region }}</td>
-                                    <td>{{ city.drzava.title }}</td>
-                                    <td class="text-center">
-                                        <div class="dropdown">
-                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                <i class="ph-gear"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a href="{{ path('app_city_view', { id: city.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                <a href="{{ path('app_city_form', { id: city.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                        <div class="card-body">
+                            <div class="table-responsive ">
+                                <table class="table table-bordered table-hover table-responsive">
+                                    <thead>
+                                    <tr>
+                                        <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.title]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Naziv ', ['c.title']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.title' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.title' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th>PTT broj</th>
+                                        <th  {% if pagination.isSorted('[c.municipality]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Opština ', ['c.municipality']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.municipality' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.municipality' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.region]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Region ', ['c.region']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.region' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.region' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th  {% if pagination.isSorted('[c.country]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Država ', ['c.country']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.country' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.country' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for city in pagination %}
+                                        <tr>
+                                            <td>{{ city.id }}</td>
+                                            <td><div class="fw-semibold"><a href="{{ path('app_city_view', { id: city.id}) }}">{{ city.title }}</a></div></td>
+                                            <td>{{ city.ptt }}</td>
+                                            <td>{{ city.municipality }}</td>
+                                            <td>{{ city.region }}</td>
+                                            <td>{{ city.drzava.title }}</td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_city_view', { id: city.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        <a href="{{ path('app_city_form', { id: city.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
                     </div>
                     <!-- /state saving -->
                 </div>

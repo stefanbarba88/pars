@@ -102,8 +102,14 @@ FastTaskController extends AbstractController {
           ->duration(5000)
           ->dismissible(true)
           ->addError(NotifyMessagesData::PLAN_ERROR);
+      } else {
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::PLAN_ADD);
       }
-
 
       return $this->redirectToRoute('app_quick_tasks');
 
@@ -136,13 +142,12 @@ FastTaskController extends AbstractController {
       $data = $request->request->all();
       $fastTask = $this->em->getRepository(FastTask::class)->saveFastTask($fastTask, $data);
 
-//
-//        notyf()
-//          ->position('x', 'right')
-//          ->position('y', 'top')
-//          ->duration(5000)
-//          ->dismissible(true)
-//          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::PLAN_ADD);
 
       return $this->redirectToRoute('app_quick_tasks');
 
@@ -165,7 +170,8 @@ FastTaskController extends AbstractController {
 
   #[Route('/create-tasks/{id}', name: 'app_create_tasks')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function createTasks(FastTask $fastTask, MailService $mail, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function createTasks(FastTask $fastTask, MailService $mail, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -199,7 +205,7 @@ FastTaskController extends AbstractController {
         ->position('y', 'top')
         ->duration(5000)
         ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+        ->addSuccess(NotifyMessagesData::PLAN_DELETE);
     }
 
     return $this->redirectToRoute('app_quick_tasks');

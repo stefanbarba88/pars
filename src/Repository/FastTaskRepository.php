@@ -34,14 +34,24 @@ class FastTaskRepository extends ServiceEntityRepository {
     $this->mail = $mail;
   }
 
+  public function countPlanRadaActive():int {
+    $noPlan = $this->createQueryBuilder('c')
+      ->andWhere('c.status <> :final')
+      ->setParameter('final', FastTaskData::FINAL)
+      ->getQuery()
+      ->getResult();
+
+    return count($noPlan);
+  }
+
   public function findTaskInPlan(Task $task): bool {
 
     $qb = $this->createQueryBuilder('t');
     $qb
       ->where('t.status = :status1')
       ->orWhere('t.status = :status2')
-      ->setParameter('status1', 2)
-      ->setParameter('status2', 3);
+      ->setParameter('status1', FastTaskData::SAVED)
+      ->setParameter('status2', FastTaskData::EDIT);
 
     $query = $qb->getQuery();
     $fastTask = $query->getResult();
@@ -82,6 +92,7 @@ class FastTaskRepository extends ServiceEntityRepository {
 
 
     }
+
     return false;
 
   }

@@ -12,44 +12,15 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow d-none d-sm-block">
+                <div class="page-header page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-{#                                {{ task.project.title | default ('Zadatak bez projekta') }}: {{ task.title }}#}
+                                #{{ task.id }}: {{task.title }}
                             </h4>
                         </div>
                     </div>
-
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-{#                            {% if task.project is null %}#}
-{#                                <div class="breadcrumb py-2">#}
-{#                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>#}
-{#                                    <span class="breadcrumb-item active">Zadaci</span>#}
-{#                                </div>#}
-{#                            {% else %}#}
-{#                                <div class="breadcrumb py-2">#}
-{#                                    <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>#}
-{#                                    <a href="{{ path('app_projects') }}" class="breadcrumb-item">Projekti</a>#}
-{#                                    <a href="{{ path('app_project_profile_view', {id: task.project.id} ) }}" class="breadcrumb-item">Informacije</a>#}
-{#                                    <a href="{{ path('app_project_tasks_view', {id: task.project.id} ) }}" class="breadcrumb-item">Zadaci</a>#}
-{#                                    <span class="breadcrumb-item active">{{task.title }}</span>#}
-{#                                </div>#}
-{#                            {% endif %}#}
-{#                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">#}
-{#                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>#}
-{#                            </a>#}
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
-{#                    {% if task.project is not null %}#}
-{#                        {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: task.project } )) }}#}
-{#                    {% endif %}#}
-
                 </div>
-                <!-- /page header -->
 
                 <!-- Content area -->
                 <div class="content">
@@ -77,16 +48,20 @@
                                 <div class="fw-bold border-bottom pb-2 mb-3">Zadate aktivnosti</div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {% for activity in task.activity %}
-                                            <li>{{ activity.title }}</li>
-                                        {% endfor %}
+                                        {% if task.activity.toArray is not empty %}
+                                            {% for act in task.activity %}
+                                                <i class="ph-checks me-2"></i>{{ act.title }}<br>
+                                            {% endfor %}
+                                        {% else %}
+                                            Nema određenih aktivnosti za ovaj zadatak.
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        <span class="badge bg-warning bg-opacity-20 text-warning">{{ hours }} : {{ minutes }}h</span>
+                                        <span class="badge bg-secondary text-primary me-2">{{ hours }} : {{ minutes }}h</span>
                                     </div>
                                 </div>
                             </div>
@@ -115,6 +90,43 @@
                                     </div>
                                 </div>
                             </div>
+
+
+                            {% set currentTime = "now"|date("H:i") %}
+                            {% if currentTime > "15:30" %}
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="overtime_vreme">Prekovremeni sati:</label>
+                                            <div class="row gy-3">
+                                                <div class="col">
+                                                    <div class="input-group">
+                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                                            <i class="ph-minus ph-sm"></i>
+                                                        </button>
+                                                        <input class="form-control form-control-number text-center" type="number" min="0" max="23" name="overtime_vreme_sati" value="0">
+                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                                            <i class="ph-plus ph-sm"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="input-group">
+                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                                            <i class="ph-minus ph-sm"></i>
+                                                        </button>
+                                                        <input class="form-control form-control-number text-center" type="number" min="0" max="59" step="5" name="overtime_vreme_minuti" value="0">
+                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                                            <i class="ph-plus ph-sm"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
                             <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-client" aria-expanded="false">Klijent</div>
                             <div class="row collapse" id="collapse-client">
                                 <div class="col-lg-12">

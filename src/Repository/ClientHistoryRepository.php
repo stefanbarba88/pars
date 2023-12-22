@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Client;
 use App\Entity\ClientHistory;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,6 +38,14 @@ class ClientHistoryRepository extends ServiceEntityRepository {
     }
   }
 
+  public function getAllPaginator(Client $client) {
+
+    return $this->createQueryBuilder('u')
+      ->andWhere('u.client = :client')
+      ->setParameter(':client', $client)
+      ->addOrderBy('u.id', 'DESC')
+      ->getQuery();
+  }
 
 
 //    /**

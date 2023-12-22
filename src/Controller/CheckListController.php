@@ -107,26 +107,6 @@ class CheckListController extends AbstractController {
 
     }
 
-
-//    $form = $this->createForm(ManagerChecklistFormType::class, $checklist, ['attr' => ['action' => $this->generateUrl('app_checklist_form', ['id' => $checklist->getId()])]]);
-//    if ($request->isMethod('POST')) {
-//      $form->handleRequest($request);
-//
-//      if ($form->isSubmitted() && $form->isValid()) {
-//
-//        $this->em->getRepository(ManagerChecklist::class)->save($checklist);
-//
-//        notyf()
-//          ->position('x', 'right')
-//          ->position('y', 'top')
-//          ->duration(5000)
-//          ->dismissible(true)
-//          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
-//
-//        return $this->redirectToRoute('app_checklist_list');
-//      }
-//    }
-
     $args['users'] = $this->em->getRepository(User::class)->getUsersForChecklist();
     $args['priority'] = PrioritetData::form();
 
@@ -212,6 +192,13 @@ class CheckListController extends AbstractController {
     }
 
     $this->em->getRepository(ManagerChecklist::class)->delete($checklist);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::DELETE_SUCCESS);
 
     return $this->redirectToRoute('app_checklist_list');
   }

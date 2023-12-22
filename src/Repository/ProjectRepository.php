@@ -386,13 +386,14 @@ class ProjectRepository extends ServiceEntityRepository {
   public function getCountTasksByProject(Project $project):array {
 
     $category = $this->getEntityManager()->getRepository(Category::class)->find(5);
-    $prethodniMesecDatum = new DateTimeImmutable('last day of last month');
+    $prethodniMesecDatum = new DateTimeImmutable('first day of this month');
 
     if ($project->getId() == 5) {
       $prethodniMesecDatum = $prethodniMesecDatum->setDate($prethodniMesecDatum->format('Y'), $prethodniMesecDatum->format('m'), 26);
     }
 
     $datum = new DateTimeImmutable();
+
 
     return $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectAllCategory($prethodniMesecDatum, $datum, $project, $category);
 

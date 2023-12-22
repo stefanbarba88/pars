@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\Client;
 use App\Entity\ClientHistory;
 use App\Entity\Image;
@@ -10,6 +11,7 @@ use App\Entity\User;
 use App\Form\ClientFormType;
 use App\Form\ClientSuspendedFormType;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\File;
@@ -26,11 +28,24 @@ class ClientController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_clients')]
-  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function list(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args=[];
-    $args['clients'] = $this->em->getRepository(Client::class)->findBy([], ['isSuspended' => 'ASC']);
+    $clients = $this->em->getRepository(Client::class)->getAllClientsPaginator();
+
+    $pagination = $paginator->paginate(
+      $clients, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('client/list.html.twig', $args);
   }
@@ -66,7 +81,7 @@ class ClientController extends AbstractController {
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+          ->addSuccess(NotifyMessagesData::CLIENT_ADD);
 
         return $this->redirectToRoute('app_clients');
       }
@@ -79,7 +94,8 @@ class ClientController extends AbstractController {
 
   #[Route('/view-profile/{id}', name: 'app_client_profile_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewProfile(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function viewProfile(Client $client)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['client'] = $client;
@@ -87,45 +103,45 @@ class ClientController extends AbstractController {
     return $this->render('client/view_profile.html.twig', $args);
   }
 
-  #[Route('/view-activity/{id}', name: 'app_client_activity_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewActivity(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args['client'] = $client;
+//  #[Route('/view-activity/{id}', name: 'app_client_activity_view')]
+////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function viewActivity(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $args['client'] = $client;
+//
+//    return $this->render('client/view_activity.html.twig', $args);
+//  }
+//
+//  #[Route('/view-calendar/{id}', name: 'app_client_calendar_view')]
+////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function viewCalendar(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $args['client'] = $client;
+//
+//    return $this->render('client/view_calendar.html.twig', $args);
+//  }
 
-    return $this->render('client/view_activity.html.twig', $args);
-  }
-
-  #[Route('/view-calendar/{id}', name: 'app_client_calendar_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCalendar(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args['client'] = $client;
-
-    return $this->render('client/view_calendar.html.twig', $args);
-  }
-
-  #[Route('/view-cars/{id}', name: 'app_client_car_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCar(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args['client'] = $client;
-
-    return $this->render('client/view_cars.html.twig', $args);
-  }
-
-  #[Route('/view-tools/{id}', name: 'app_client_tools_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewTools(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args['client'] = $client;
-
-    return $this->render('client/view_tools.html.twig', $args);
-  }
+//  #[Route('/view-cars/{id}', name: 'app_client_car_view')]
+////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function viewCar(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $args['client'] = $client;
+//
+//    return $this->render('client/view_cars.html.twig', $args);
+//  }
+//
+//  #[Route('/view-tools/{id}', name: 'app_client_tools_view')]
+////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function viewTools(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $args['client'] = $client;
+//
+//    return $this->render('client/view_tools.html.twig', $args);
+//  }
 
   #[Route('/settings/{id}', name: 'app_client_settings_form')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -181,14 +197,14 @@ class ClientController extends AbstractController {
             ->position('y', 'top')
             ->duration(5000)
             ->dismissible(true)
-            ->addSuccess(NotifyMessagesData::USER_SUSPENDED_TRUE);
+            ->addSuccess(NotifyMessagesData::CLIENT_SUSPENDED_TRUE);
         } else {
           notyf()
             ->position('x', 'right')
             ->position('y', 'top')
             ->duration(5000)
             ->dismissible(true)
-            ->addSuccess(NotifyMessagesData::USER_SUSPENDED_FALSE);
+            ->addSuccess(NotifyMessagesData::CLIENT_SUSPENDED_FALSE);
         }
 
         return $this->redirectToRoute('app_client_profile_view', ['id' => $client->getId()]);
@@ -202,11 +218,22 @@ class ClientController extends AbstractController {
 
   #[Route('/history-client-list/{id}', name: 'app_client_history_list')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function listClientHistory(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function listClientHistory(Client $client, PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+
+    $args=[];
     $args['client'] = $client;
-    $args['historyClients'] = $this->em->getRepository(ClientHistory::class)->findBy(['client' => $client], ['id' => 'DESC']);
+    $histories = $this->em->getRepository(ClientHistory::class)->getAllPaginator($client);
+
+    $pagination = $paginator->paginate(
+      $histories, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      20
+    );
+
+    $args['pagination'] = $pagination;
 
     return $this->render('client/client_history_list.html.twig', $args);
   }

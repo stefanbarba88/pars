@@ -54,7 +54,7 @@ class HomeController extends AbstractController {
     $args['countChecklistActive'] = count($args['checklistActive']);
 
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-
+      $args['countTasksUnclosedByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedByUser($user);
 //      $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($user);
       $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUser($user);
       $args['countLogs'] = $this->em->getRepository(TaskLog::class)->countLogsByUser($user);

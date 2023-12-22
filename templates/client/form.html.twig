@@ -1,12 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {% if client.id is not null %}
-        {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
-    {% else %}
-        {{ render(controller('App\\Controller\\WidgetController::header' )) }}
-    {% endif %}
-
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
 
@@ -21,96 +16,16 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {% if client.id is not null %}
-                                    {{ client.title | upper}}
-                                {% else %}
-                                    Klijenti
-                                {% endif %}
+                                Klijenti
                             </h4>
                         </div>
                     </div>
-
-                    <div class="page-header-content d-lg-flex border-top">
-                        <div class="d-flex">
-                            <div class="breadcrumb py-2">
-                                <a href="{{ path('app_home') }}" class="breadcrumb-item"><i class="ph-house"></i></a>
-                                <a href="{{ path('app_clients') }}" class="breadcrumb-item">Klijenti</a>
-                                {% if client.id is not null %}
-                                    <a href="{{ path('app_client_profile_view', {id: client.id} ) }}" class="breadcrumb-item">Profil</a>
-                                    <span class="breadcrumb-item active">Izmena</span>
-                                {% else %}
-                                    <span class="breadcrumb-item active">Dodavanje</span>
-                                {% endif %}
-                            </div>
-
-                            <a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
-                                <i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
-                            </a>
-                        </div>
-
-                        {{ render(controller('App\\Controller\\WidgetController::support' )) }}
-                    </div>
-
-                    {% if client.id is not null %}
-                        {{ render(controller('App\\Controller\\WidgetController::clientProfilNavigation', { client: client} )) }}
-                    {% endif %}
                 </div>
                 <!-- /page header -->
                  <div class="content">
                     <!-- Content area -->
                     <div class="d-lg-flex align-items-lg-start">
-                        {% if client.id is not null %}
-                            <div class="sidebar sidebar-component sidebar-expand-lg sidebar-expand-sm sidebar-expand-md sidebar-expand-xl sidebar-expand-xxl sidebar-mobile-expanded bg-transparent shadow-none me-lg-3">
 
-                            <!-- Sidebar content -->
-                                <div class="sidebar-content">
-                                    <!-- Navigation -->
-                                    <div class="card">
-                                        <div class="sidebar-section-body text-center">
-                                            <div class="card-img-actions d-inline-block mb-3">
-                                                <img class="img-fluid rounded-circle" src="{{ asset(client.image.thumbnail500) }}" width="150" height="150" alt="{{ client.title }}">
-                                            </div>
-                                            <h6 class="mb-0">{{ client.title | upper }}</h6>
-                                        </div>
-                                        <ul class="nav nav-sidebar">
-                                            <li class="nav-item">
-                                                <a href="{{ path('app_client_profile_view', { id: client.id}) }}" class="nav-link" >
-                                                    <i class="ph-user me-2"></i>
-                                                    Profil
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a href="{{ path('app_client_activity_view', { id: client.id}) }}" class="nav-link">
-                                                    <i class="ph-activity me-2"></i>
-                                                    Aktivnosti
-                                                    <span class="badge bg-secondary rounded-pill ms-auto">29</span>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a href="{{ path('app_client_calendar_view', { id: client.id}) }}" class="nav-link">
-                                                    <i class="ph-calendar me-2"></i>Raspored
-                                                    <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item-divider"></li>
-                                            <li class="nav-item">
-                                                {#                    <a href="{{ path('app_logout') }}" class="nav-link" data-bs-toggle="tab">#}
-                                                {#                        <i class="ph-sign-out me-2"></i>Odjavite se#}
-                                                {#                    </a>#}
-                                                <a href="{{ path('app_client_settings_form', { id: client.id}) }}" class="nav-link">
-                                                    <i class="ph-lightbulb me-2"></i>Status
-                                                    <span class="ms-auto">{{ client.badgeByStatus | raw }}</span>
-                                                </a>
-
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <!-- /navigation -->
-                                </div>
-                                <!-- /sidebar content -->
-                            </div>
-                        {% endif %}
-                        <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
                                     {% if not form.vars.valid %}

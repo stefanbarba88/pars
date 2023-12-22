@@ -709,7 +709,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ->andWhere('u.userType = :userType')
         ->andWhere('u.isSuspended = 0')
         ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
-        ->addOrderBy('u.prezime', 'ASC')
+        ->orderBy('u.prezime', 'ASC')
         ->addOrderBy('u.id', 'ASC')
         ->getQuery(),
 
@@ -718,7 +718,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ->andWhere('u.userType = :userType')
         ->andWhere('u.isSuspended = 0')
         ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
-        ->addOrderBy('u.prezime', 'ASC')
+        ->orderBy('u.prezime', 'ASC')
         ->addOrderBy('u.id', 'ASC')
         ->getQuery(),
 

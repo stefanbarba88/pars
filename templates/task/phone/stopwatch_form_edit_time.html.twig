@@ -12,11 +12,11 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow d-none d-sm-block">
+                <div class="page-header page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ task.project.title | default ('Zadatak bez projekta') }}: {{ task.title }}
+                                #{{ task.id }}: {{task.title }}
                             </h4>
                         </div>
                     </div>
@@ -28,7 +28,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
-                               Izmena vremenskog zapisa
+                                Izmena vremenskog zapisa - {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }}
                             </h6>
                         </div>
                         <form name="datumCheckForm" method="post" action="{{ path('app_stopwatch_edit_time_forma' , {id: stopwatch.id})}}" class="form-validate-jquery" novalidation="novalidation"  id="check_datum_form">

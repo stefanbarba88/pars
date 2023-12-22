@@ -21,6 +21,9 @@ class Availability {
   #[ORM\Column]
   private ?int $type = 1;
 
+  #[ORM\Column]
+  private ?int $typeDay = 0;
+
   #[ORM\Column(nullable: true)]
   private ?int $zahtev = null;
 
@@ -163,6 +166,20 @@ class Availability {
    */
   public function setCalendar(?int $calendar): void {
     $this->calendar = $calendar;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTypeDay(): ?int {
+    return $this->typeDay;
+  }
+
+  /**
+   * @param int|null $typeDay
+   */
+  public function setTypeDay(?int $typeDay): void {
+    $this->typeDay = $typeDay;
   }
 
 

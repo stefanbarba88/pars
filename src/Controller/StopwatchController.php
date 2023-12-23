@@ -158,14 +158,16 @@ class StopwatchController extends AbstractController {
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 
         if (!is_null($sati)) {
-          $overtime = new Overtime();
-          $overtime->setUser($stopwatch->getTaskLog()->getUser());
-          $overtime->setHours($sati);
-          $overtime->setMinutes($minuti);
-          $overtime->setDatum($stopwatch->getCreated()->setTime(0,0));
-          $overtime->setStatus(0);
-          $overtime->setTask($stopwatch->getTaskLog()->getTask());
-          $this->em->getRepository(Overtime::class)->save($overtime);
+          if ($sati != 0 && $minuti != 0) {
+            $overtime = new Overtime();
+            $overtime->setUser($stopwatch->getTaskLog()->getUser());
+            $overtime->setHours($sati);
+            $overtime->setMinutes($minuti);
+            $overtime->setDatum($stopwatch->getCreated()->setTime(0, 0));
+            $overtime->setStatus(0);
+            $overtime->setTask($stopwatch->getTaskLog()->getTask());
+            $this->em->getRepository(Overtime::class)->save($overtime);
+          }
         }
 
         $user = $this->getUser();

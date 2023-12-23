@@ -124,8 +124,12 @@ class CalendarRepository extends ServiceEntityRepository {
 //
 //    };
 
+//    return $this->createQueryBuilder('c')
+//      ->orderBy('CASE WHEN c.status = 1 THEN 0 WHEN c.status = 2 THEN 1 WHEN c.status = 3 THEN 2 ELSE 3 END', 'ASC')
+//      ->addOrderBy('c.start', 'DESC')
+//      ->getQuery();
+
     return $this->createQueryBuilder('c')
-      ->orderBy('CASE WHEN c.status = 1 THEN 0 WHEN c.status = 2 THEN 1 WHEN c.status = 3 THEN 2 ELSE 3 END', 'ASC')
       ->addOrderBy('c.start', 'DESC')
       ->getQuery();
 

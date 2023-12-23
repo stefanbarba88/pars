@@ -32,8 +32,7 @@ class AvailabilityCheckCommand extends Command {
 
   protected function configure() {
     $this
-      ->setName('
-      ')
+      ->setName('app:check:availability')
       ->setDescription('Proverava dostupnost za predhodni dan!')
       ->setHelp('');
   }

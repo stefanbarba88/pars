@@ -28,6 +28,20 @@ use Symfony\Component\Validator\Constraints\File;
 
 class ProjectFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
+
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getReservation(): ?Project {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $company = $dataObject->getReservation()->getCompany();
+
     $builder
       ->add('title')
       ->add('description', TextareaType::class, [
@@ -39,9 +53,11 @@ class ProjectFormType extends AbstractType {
       ->add('label', EntityType::class, [
         'required' => false,
         'class' => Label::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.isTaskLabel = :isTaskLabel')
+            ->andWhere('g.company = :company')
+            ->setParameter(':company', $company)
             ->setParameter(':isTaskLabel', 0)
             ->orderBy('g.id', 'ASC');
         },
@@ -53,9 +69,11 @@ class ProjectFormType extends AbstractType {
         'required' => false,
         'class' => Category::class,
         'placeholder' => '--Izaberite kategoriju--',
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.isTaskCategory = :isTaskCategory')
+            ->andWhere('g.company = :company')
+            ->setParameter(':company', $company)
             ->setParameter(':isTaskCategory', 0)
             ->orderBy('g.id', 'ASC');
         },
@@ -66,9 +84,11 @@ class ProjectFormType extends AbstractType {
 
       ->add('client', EntityType::class, [
         'class' => Client::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.isSuspended = :isSuspended')
+            ->andWhere('g.company = :company')
+            ->setParameter(':company', $company)
             ->setParameter(':isSuspended', 0)
             ->orderBy('g.id', 'ASC');
         },

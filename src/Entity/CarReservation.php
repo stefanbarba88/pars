@@ -61,9 +61,22 @@ class CarReservation {
   #[ORM\OneToMany(mappedBy: 'carReservation', targetEntity: Image::class, cascade: ["persist", "remove"])]
   private Collection $image;
 
-  public function __construct()
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?Company $company = null;
+  public function getCompany(): ?Company
   {
-      $this->image = new ArrayCollection();
+    return $this->company;
+  }
+
+  public function setCompany(?Company $company): self
+  {
+    $this->company = $company;
+
+    return $this;
+  }
+  public function __construct() {
+    $this->image = new ArrayCollection();
   }
 
 
@@ -255,31 +268,28 @@ class CarReservation {
   /**
    * @return Collection<int, Image>
    */
-  public function getImage(): Collection
-  {
-      return $this->image;
+  public function getImage(): Collection {
+    return $this->image;
   }
 
-  public function addImage(Image $image): self
-  {
-      if (!$this->image->contains($image)) {
-          $this->image->add($image);
-          $image->setCarReservation($this);
-      }
+  public function addImage(Image $image): self {
+    if (!$this->image->contains($image)) {
+      $this->image->add($image);
+      $image->setCarReservation($this);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeImage(Image $image): self
-  {
-      if ($this->image->removeElement($image)) {
-          // set the owning side to null (unless already changed)
-          if ($image->getCarReservation() === $this) {
-              $image->setCarReservation(null);
-          }
+  public function removeImage(Image $image): self {
+    if ($this->image->removeElement($image)) {
+      // set the owning side to null (unless already changed)
+      if ($image->getCarReservation() === $this) {
+        $image->setCarReservation(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
 

@@ -40,6 +40,7 @@ class UserRegistrationFormType extends AbstractType {
     };
 
     $plainUserType = $dataObject->getUser()->getPlainUserType();
+    $company = $dataObject->getUser()->getCompany();
 
     $builder
       ->add('ime')
@@ -189,8 +190,10 @@ class UserRegistrationFormType extends AbstractType {
         'required' => false,
         'placeholder' => 'Izaberite poziciju',
         'class' => ZaposleniPozicija::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
+            ->andWhere('g.company = :company')
+            ->setParameter(':company', $company)
             ->orderBy('g.id', 'ASC');
         },
         'choice_label' => 'title',

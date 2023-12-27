@@ -31,6 +31,19 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class ManagerChecklistFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
 
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getReservation(): ?ManagerChecklist {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $company = $dataObject->getReservation()->getCompany();
+
     $builder
       ->add('task', TextareaType::class)
       ->add('priority', ChoiceType::class, [
@@ -46,11 +59,23 @@ class ManagerChecklistFormType extends AbstractType {
       ->add('user', EntityType::class, [
         'class' => User::class,
         'placeholder' => "---Izaberite zaposlenog---",
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.userType = :userType')
-            ->setParameter(':userType', UserRolesData::ROLE_MANAGER)
-            ->orderBy('g.id', 'ASC');
+        'query_builder' => function (EntityRepository $em) use ($company) {
+          return $em->createQueryBuilder('u')
+            ->where('u.userType = :userType')
+            ->orWhere('u.userType = :userType1')
+            ->orWhere('u.userType = :userType2')
+            ->andWhere('u.isSuspended = :isSuspended')
+            ->andWhere('u.company = :company')
+            ->setParameter(':company', $company)
+            ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
+            ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
+            ->setParameter(':userType2', UserRolesData::ROLE_MANAGER)
+            ->setParameter(':isSuspended', 0)
+            ->orderBy('u.userType', 'ASC')
+            ->addOrderBy('u.prezime', 'ASC')
+            ->getQuery()
+            ->getResult();
+
         },
         'choice_label' => function ($user) {
           return $user->getFullName();

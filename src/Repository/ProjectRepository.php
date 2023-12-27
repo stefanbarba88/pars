@@ -17,6 +17,7 @@ use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
@@ -28,8 +29,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * @method Project[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ProjectRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, Project::class);
+    $this->security = $security;
   }
 
   public function saveProject(Project $project, User $user, ?string $history): Project  {
@@ -46,8 +49,6 @@ class ProjectRepository extends ServiceEntityRepository {
 
       return $this->save($project);
     }
-
-    $project->setCreatedBy($user);
 
     return $this->save($project);
 
@@ -74,125 +75,139 @@ class ProjectRepository extends ServiceEntityRepository {
     return $this->save($project);
 
   }
-  public function getProjectsByUser(User $user) {
-
-    return $this->createQueryBuilder('p')
-      ->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
-      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
-      ->andWhere('tl.user = :userId')
-      ->setParameter(':userId', $user->getId())
-      ->addOrderBy('p.isSuspended', 'ASC')
-      ->getQuery()
-      ->getResult();
-
-  }
-  public function getAllProjects(): array {
-    return $this->createQueryBuilder('p')
-      ->andWhere('p.isSuspended = 0')
-      ->addOrderBy('p.isSuspended', 'ASC')
-      ->getQuery()
-      ->getResult();
-  }
+//  public function getProjectsByUser(User $user) {
+//    return $this->createQueryBuilder('p')
+//      ->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
+//      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+//      ->andWhere('tl.user = :userId')
+//      ->setParameter(':userId', $user->getId())
+//      ->addOrderBy('p.isSuspended', 'ASC')
+//      ->getQuery()
+//      ->getResult();
+//
+//  }
+//  public function getAllProjects(): array {
+//    return $this->createQueryBuilder('p')
+//      ->andWhere('p.isSuspended = 0')
+//      ->addOrderBy('p.isSuspended', 'ASC')
+//      ->getQuery()
+//      ->getResult();
+//  }
 
   public function getAllProjectsPaginator() {
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('p')
       ->andWhere('p.isSuspended = 0')
+      ->andWhere('p.company = :company')
+      ->setParameter(':company', $company)
       ->orderBy('p.title', 'ASC')
       ->getQuery();
   }
 
-  public function getAllProjectsSuspended(): array {
-    return $this->createQueryBuilder('p')
-      ->andWhere('p.isSuspended = 1')
-      ->addOrderBy('p.isSuspended', 'ASC')
-      ->getQuery()
-      ->getResult();
-  }
-
-
-  public function getAllProjectsPermanent(): array {
-
-    $projects = $this->createQueryBuilder('p')
-      ->andWhere('p.isSuspended = 0')
-      ->andWhere('p.type <> 2')
-      ->addOrderBy('p.isSuspended', 'ASC')
-      ->getQuery()
-      ->getResult();
-
-    return $projects;
-  }
-  public function getAllProjectsChange(): array {
-
-    $projects = $this->createQueryBuilder('p')
-      ->andWhere('p.isSuspended = 0')
-      ->andWhere('p.type <> 1')
-      ->addOrderBy('p.isSuspended', 'ASC')
-      ->getQuery()
-      ->getResult();
-
-    return $projects;
-  }
+//  public function getAllProjectsSuspended(): array {
+//    return $this->createQueryBuilder('p')
+//      ->andWhere('p.isSuspended = 1')
+//      ->addOrderBy('p.isSuspended', 'ASC')
+//      ->getQuery()
+//      ->getResult();
+//  }
+//
+//
+//  public function getAllProjectsPermanent(): array {
+//
+//    $projects = $this->createQueryBuilder('p')
+//      ->andWhere('p.isSuspended = 0')
+//      ->andWhere('p.type <> 2')
+//      ->addOrderBy('p.isSuspended', 'ASC')
+//      ->getQuery()
+//      ->getResult();
+//
+//    return $projects;
+//  }
+//  public function getAllProjectsChange(): array {
+//
+//    $projects = $this->createQueryBuilder('p')
+//      ->andWhere('p.isSuspended = 0')
+//      ->andWhere('p.type <> 1')
+//      ->addOrderBy('p.isSuspended', 'ASC')
+//      ->getQuery()
+//      ->getResult();
+//
+//    return $projects;
+//  }
 
   public function getAllProjectsChangePaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('p')
       ->andWhere('p.isSuspended = 0')
       ->andWhere('p.type = 2')
+      ->andWhere('p.company = :company')
+      ->setParameter(':company', $company)
       ->orderBy('p.title', 'ASC')
       ->getQuery();
 
   }
   public function getAllProjectsMixPaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('p')
       ->andWhere('p.isSuspended = 0')
       ->andWhere('p.type = 3')
+      ->andWhere('p.company = :company')
+      ->setParameter(':company', $company)
       ->orderBy('p.title', 'ASC')
       ->getQuery();
 
   }
   public function getAllProjectsPermanentPaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('p')
       ->andWhere('p.isSuspended = 0')
       ->andWhere('p.type = 1')
+      ->andWhere('p.company = :company')
+      ->setParameter(':company', $company)
       ->addOrderBy('p.title', 'ASC')
       ->getQuery();
 
   }
   public function getAllProjectsSuspendedPaginator() {
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('p')
       ->andWhere('p.isSuspended = 1')
+      ->andWhere('p.company = :company')
+      ->setParameter(':company', $company)
       ->orderBy('p.title', 'ASC')
       ->getQuery();
   }
   public function countProjectsChange(): int {
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('p')
       ->select('count(p.id)')
       ->andWhere('p.isSuspended = 0 ')
       ->andWhere('p.type <> 1')
+      ->andWhere('p.company = :company')
+      ->setParameter(':company', $company)
       ->getQuery()
       ->getSingleScalarResult();
 
   }
-  public function countProjectsPermanent(): int {
-    return $this->createQueryBuilder('p')
-      ->select('count(p.id)')
-      ->andWhere('p.isSuspended = 0 ')
-      ->andWhere('p.type <> 2')
-      ->getQuery()
-      ->getSingleScalarResult();
-
-  }
-  public function countProjectsActive(): int {
-
-    return $this->createQueryBuilder('p')
-      ->select('count(p.id)')
-      ->andWhere('p.isSuspended = 0')
-      ->getQuery()
-      ->getSingleScalarResult();
-
-  }
+//  public function countProjectsPermanent(): int {
+//    return $this->createQueryBuilder('p')
+//      ->select('count(p.id)')
+//      ->andWhere('p.isSuspended = 0 ')
+//      ->andWhere('p.type <> 2')
+//      ->getQuery()
+//      ->getSingleScalarResult();
+//
+//  }
+//  public function countProjectsActive(): int {
+//
+//    return $this->createQueryBuilder('p')
+//      ->select('count(p.id)')
+//      ->andWhere('p.isSuspended = 0')
+//      ->getQuery()
+//      ->getSingleScalarResult();
+//
+//  }
 
   public function getImagesByProject(Project $project): array {
 
@@ -293,8 +308,12 @@ class ProjectRepository extends ServiceEntityRepository {
     return $project;
   }
   public function findForForm(int $id = 0): Project {
+
     if (empty($id)) {
-      return new Project();
+      $project = new Project();
+      $project->setCreatedBy($this->security->getUser());
+      $project->setCompany($this->security->getUser()->getCompany());
+      return $project;
     }
     return $this->getEntityManager()->getRepository(Project::class)->find($id);
   }
@@ -324,6 +343,7 @@ class ProjectRepository extends ServiceEntityRepository {
   }
 
   public function getReportAll(array $data): array {
+    $company = $this->security->getUser()->getCompany();
     $projectsData = [];
 
     $dates = explode(' - ', $data['period']);
@@ -339,7 +359,7 @@ class ProjectRepository extends ServiceEntityRepository {
       $kategorija [] = 0;
     }
 
-    $projects = $this->getEntityManager()->getRepository(Project::class)->findBy(['isSuspended' => false], ['title' => 'ASC']);
+    $projects = $this->getEntityManager()->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $company], ['title' => 'ASC']);
 
     foreach ($projects as $project) {
 
@@ -364,9 +384,11 @@ class ProjectRepository extends ServiceEntityRepository {
 
 
   public function countClientTasks(Client $client, Category $category, DateTimeImmutable $prethodniMesecDatum, DateTimeImmutable $danas) : array {
+
+    $company = $this->security->getUser()->getCompany();
     $projectsByClient = [];
 
-    $projects = $this->getEntityManager()->getRepository(Project::class)->findBy(['isSuspended' => false]);
+    $projects = $this->getEntityManager()->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $company]);
     $totalTasks = 0;
 
     foreach ($projects as $project) {
@@ -400,6 +422,7 @@ class ProjectRepository extends ServiceEntityRepository {
   }
 
   public function processMonthlyTasks(Project $project): array {
+
     $zadaci = [];
     $category = $this->getEntityManager()->getRepository(Category::class)->find(5);
     $currentYear = date('Y');
@@ -426,6 +449,7 @@ class ProjectRepository extends ServiceEntityRepository {
 
 
   public function getReportXls(string $datum, Project $projekat): array {
+
     $dates = explode(' - ', $datum);
 
     $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
@@ -460,6 +484,7 @@ class ProjectRepository extends ServiceEntityRepository {
 //        ;
 //    }
   public function getProjectsByUserPaginator(User $user) {
+
     return $this->createQueryBuilder('p')
       ->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')

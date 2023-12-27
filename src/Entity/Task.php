@@ -143,6 +143,20 @@ class Task implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Tool::class, inversedBy: 'tasks')]
   private Collection $oprema;
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: false)]
+  private ?Company $company = null;
+  public function getCompany(): ?Company
+  {
+    return $this->company;
+  }
+
+  public function setCompany(?Company $company): self
+  {
+    $this->company = $company;
+
+    return $this;
+  }
 
   public function __construct() {
     $this->assignedUsers = new ArrayCollection();

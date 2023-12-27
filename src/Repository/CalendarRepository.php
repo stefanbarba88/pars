@@ -10,6 +10,7 @@ use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Calendar>
@@ -20,8 +21,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Calendar[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class CalendarRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, Calendar::class);
+    $this->security = $security;
   }
 
   public function save(Calendar $calendar): Calendar {
@@ -35,10 +38,13 @@ class CalendarRepository extends ServiceEntityRepository {
   }
 
   public function countCalendarRequests(): int{
+    $company = $this->security->getUser()->getCompany();
     $qb = $this->createQueryBuilder('c');
 
     $qb->select($qb->expr()->count('c'))
       ->andWhere('c.status = :status')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':status', 1);
 
     $query = $qb->getQuery();
@@ -104,7 +110,9 @@ class CalendarRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): Calendar {
     if (empty($id)) {
-      return new Calendar();
+      $cal = new Calendar();
+      $cal->setCompany($this->security->getUser()->getCompany());
+      return $cal;
     }
     return $this->getEntityManager()->getRepository(Calendar::class)->find($id);
   }
@@ -128,8 +136,10 @@ class CalendarRepository extends ServiceEntityRepository {
 //      ->orderBy('CASE WHEN c.status = 1 THEN 0 WHEN c.status = 2 THEN 1 WHEN c.status = 3 THEN 2 ELSE 3 END', 'ASC')
 //      ->addOrderBy('c.start', 'DESC')
 //      ->getQuery();
-
+    $company = $loggedUser->getCompany();
     return $this->createQueryBuilder('c')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
       ->addOrderBy('c.start', 'DESC')
       ->getQuery();
 

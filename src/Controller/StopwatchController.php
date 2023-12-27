@@ -45,6 +45,7 @@ class StopwatchController extends AbstractController {
     $stopwatch->setStart(new DateTimeImmutable());
     $stopwatch->setLon($request->query->get('lon'));
     $stopwatch->setLat($request->query->get('lat'));
+    $stopwatch->setCompany($taskLog->getTask()->getCompany());
 
     $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
     $user = $this->getUser();
@@ -222,6 +223,7 @@ class StopwatchController extends AbstractController {
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
+
 //    $user = $this->em->getRepository(User::class)->find(1);
 //    if ($task->getId()) {
 //      $history = $this->json($task, Response::HTTP_OK, [], [
@@ -281,6 +283,7 @@ class StopwatchController extends AbstractController {
 
         $stopwatch->setIsEdited(true);
         $stopwatch->setEditedBy($user);
+        $stopwatch->setCompany($user->getCompany());
 //        $this->em->getRepository(Availability::class)->addDostupnost($stopwatch);
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 

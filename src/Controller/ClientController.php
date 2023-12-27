@@ -53,7 +53,8 @@ class ClientController extends AbstractController {
   #[Route('/form/{id}', name: 'app_client_form', defaults: ['id' => 0])]
   #[Entity('client', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function form(Request $request, Client $client)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 

@@ -65,14 +65,17 @@ class CarRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): Car {
     if (empty($id)) {
-      return new Car();
+      $car = new Car();
+      $car->setCompany($this->security->getUser()->getCompany());
+      return $car;
     }
     return $this->getEntityManager()->getRepository(Car::class)->find($id);
   }
 
   public function getCarsKm(): array {
+    $company = $this->security->getUser()->getCompany();
     $vozila = [];
-    $cars = $this->getEntityManager()->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
+    $cars = $this->getEntityManager()->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $company], ['id' => 'ASC']);
     foreach ($cars as $car) {
       if (is_null($car->getKm())) {
         $min = 0;
@@ -88,8 +91,10 @@ class CarRepository extends ServiceEntityRepository {
   }
 
   public function getCarsPaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('c')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
         ->orderBy('c.isSuspended', 'ASC')
         ->addOrderBy('c.isReserved', 'ASC')
         ->addOrderBy('c.id', 'ASC')

@@ -41,7 +41,9 @@ class CarReservationFormType extends AbstractType {
     };
 
     $car = $dataObject->getReservation()->getCar();
+    $company = $dataObject->getReservation()->getCompany();
     $driver = $dataObject->getReservation()->getDriver();
+
 
     if (!is_null($car)){
       $minKm = $car->getKm();
@@ -51,10 +53,12 @@ class CarReservationFormType extends AbstractType {
       $builder
       ->add('car', EntityType::class, [
         'class' => Car::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('c')
             ->andWhere('c.isReserved = :isReserved')
             ->andWhere('c.isSuspended = :isSuspended')
+            ->andWhere('c.company = :company')
+            ->setParameter(':company', $company)
             ->setParameter(':isReserved', 0)
             ->setParameter(':isSuspended', 0)
             ->orderBy('c.id', 'ASC');
@@ -89,10 +93,12 @@ class CarReservationFormType extends AbstractType {
       $builder
         ->add('car', EntityType::class, [
           'class' => Car::class,
-          'query_builder' => function (EntityRepository $em) {
+          'query_builder' => function (EntityRepository $em) use ($company) {
             return $em->createQueryBuilder('c')
               ->andWhere('c.isReserved = :isReserved')
               ->andWhere('c.isSuspended = :isSuspended')
+              ->andWhere('c.company = :company')
+              ->setParameter(':company', $company)
               ->setParameter(':isReserved', 0)
               ->setParameter(':isSuspended', 0)
               ->orderBy('c.id', 'ASC');
@@ -130,11 +136,13 @@ class CarReservationFormType extends AbstractType {
       $builder
         ->add('driver', EntityType::class, [
           'class' => User::class,
-          'query_builder' => function (EntityRepository $em) {
+          'query_builder' => function (EntityRepository $em) use ($company) {
             return $em->createQueryBuilder('d')
               ->andWhere('d.car IS NULL')
               ->andWhere('d.isSuspended = :isSuspended')
               ->andWhere('d.userType = :userType')
+              ->andWhere('d.company = :company')
+              ->setParameter(':company', $company)
               ->setParameter(':isSuspended', 0)
               ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
               ->orderBy('d.id', 'ASC');

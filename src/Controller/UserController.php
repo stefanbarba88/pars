@@ -88,6 +88,11 @@ class UserController extends AbstractController {
     if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
       return $this->redirect($this->generateUrl('app_home'));
     }
+
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     $usr->setPlainUserType($this->getUser()->getUserType());
     $type = $request->query->getInt('type');
     $form = $this->createForm(UserRegistrationFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_form', ['id' => $usr->getId(), 'type' => $type])]]);
@@ -137,6 +142,10 @@ class UserController extends AbstractController {
       if ($korisnik->getId() != $usr->getId()) {
         return $this->redirect($this->generateUrl('app_home'));
       }
+
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $type = $request->query->getInt('type');
 
@@ -189,8 +198,11 @@ class UserController extends AbstractController {
       if ($korisnik->getId() != $usr->getId()) {
         return $this->redirect($this->generateUrl('app_home'));
       }
-    }
 
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $type = $request->query->getInt('type');
     $usr->setPlainUserType($this->getUser()->getUserType());
     $history = null;
@@ -243,6 +255,10 @@ class UserController extends AbstractController {
       if ($korisnik->getId() != $usr->getId()) {
         return $this->redirect($this->generateUrl('app_home'));
       }
+
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $type = $request->query->getInt('type');
 
@@ -305,6 +321,9 @@ class UserController extends AbstractController {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['user'] = $usr;
 
     return $this->render('user/view_profile.html.twig', $args);
@@ -320,8 +339,11 @@ class UserController extends AbstractController {
       if ($korisnik->getId() != $usr->getId()) {
         return $this->redirect($this->generateUrl('app_home'));
       }
-    }
 
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $history = null;
     if($usr->getId()) {
       $history = $this->json($usr, Response::HTTP_OK, [], [
@@ -379,8 +401,11 @@ class UserController extends AbstractController {
       if ($korisnik->getId() != $user->getId()) {
         return $this->redirect($this->generateUrl('app_home'));
       }
-    }
 
+    }
+    if ($korisnik->getCompany() != $user->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args=[];
     $histories = $this->em->getRepository(UserHistory::class)->getAllPaginator($user);
 
@@ -399,14 +424,16 @@ class UserController extends AbstractController {
 
   #[Route('/history-user-view/{id}', name: 'app_user_profile_history_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewUserHistory(UserHistory $userHistory, SerializerInterface $serializer)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function viewUserHistory(UserHistory $userHistory, SerializerInterface $serializer)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
     if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
       return $this->redirect($this->generateUrl('app_home'));
+
     }
-    $args['userH'] = $serializer->deserialize($userHistory->getHistory(), user::class, 'json');
+    $args['userH'] = $serializer->deserialize($userHistory->getHistory(), User::class, 'json');
     $args['userHistory'] = $userHistory;
 
     return $this->render('user/view_history_profile.html.twig', $args);

@@ -43,14 +43,17 @@ class PhoneExpenseFormType extends AbstractType {
     };
 
     $car = $dataObject->getReservation()->getCar();
+    $company = $dataObject->getReservation()->getCompany();
 
     if (is_null($car)) {
       $builder
         ->add('car', EntityType::class, [
           'class' => Car::class,
-          'query_builder' => function (EntityRepository $em) {
+          'query_builder' => function (EntityRepository $em) use ($company) {
             return $em->createQueryBuilder('c')
               ->andWhere('c.isSuspended = :isSuspended')
+              ->andWhere('c.company = :company')
+              ->setParameter(':company', $company)
               ->setParameter(':isSuspended', 0)
               ->orderBy('c.id', 'ASC');
           },

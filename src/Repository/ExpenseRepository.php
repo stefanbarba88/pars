@@ -67,6 +67,7 @@ class ExpenseRepository extends ServiceEntityRepository {
     $expense = new Expense();
     $expense->setCar($car);
     $expense->setDate(new DateTimeImmutable());
+    $expense->setCompany($car->getCompany());
     return $expense;
 
   }
@@ -75,6 +76,7 @@ class ExpenseRepository extends ServiceEntityRepository {
     if (empty($id)) {
       $expense = new Expense();
       $expense->setDate(new DateTimeImmutable());
+      $expense->setCompany($this->security->getUser()->getCompany());
       return $expense;
     }
     return $this->getEntityManager()->getRepository(Expense::class)->find($id);

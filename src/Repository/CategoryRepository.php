@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Category>
@@ -15,8 +16,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Category[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class CategoryRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, Category::class);
+    $this->security = $security;
   }
 
   public function save(Category $category): Category {
@@ -38,18 +41,55 @@ class CategoryRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): Category {
     if (empty($id)) {
-      return new Category();
+      $cat =  new Category();
+      $cat->setCompany($this->security->getUser()->getCompany());
+      return $cat;
     }
     return $this->getEntityManager()->getRepository(Category::class)->find($id);
   }
 
   public function getCategoriesPaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('c')
+      ->where('c.company = :company')
+      ->orWhere('c.company is NULL')
+      ->setParameter('company', $company)
       ->orderBy('c.isSuspended', 'ASC')
       ->orderBy('c.title', 'ASC')
       ->addOrderBy('c.id', 'ASC')
       ->getQuery();
+
+
+  }
+
+  public function getCategoriesProject() {
+    $company = $this->security->getUser()->getCompany();
+    return $this->createQueryBuilder('c')
+      ->where('c.company = :company')
+      ->orWhere('c.company is NULL')
+      ->andWhere('c.isSuspended <> 1')
+      ->andWhere('c.isTaskCategory <> 1')
+      ->setParameter('company', $company)
+      ->orderBy('c.title', 'ASC')
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+
+  }
+
+  public function getCategoriesTask() {
+    $company = $this->security->getUser()->getCompany();
+    return $this->createQueryBuilder('c')
+      ->where('c.company = :company')
+      ->orWhere('c.company is NULL')
+      ->andWhere('c.isSuspended <> 1')
+      ->andWhere('c.isTaskCategory = 1')
+      ->setParameter('company', $company)
+      ->orderBy('c.title', 'ASC')
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery()
+      ->getResult();
 
 
   }

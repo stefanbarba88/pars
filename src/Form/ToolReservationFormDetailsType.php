@@ -46,6 +46,7 @@ class ToolReservationFormDetailsType extends AbstractType {
 
     };
 
+    $company = $dataObject->getReservation()->getCompany();
 
 
 
@@ -166,10 +167,12 @@ class ToolReservationFormDetailsType extends AbstractType {
         'required' => false,
         'placeholder' => '---Izaberite opremu---',
         'class' => Tool::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.isReserved IS NULL OR g.isReserved <> 1')
             ->andWhere('g.isReserved IS NULL OR g.isReserved <> 1')
+            ->andWhere('g.company = :company')
+            ->setParameter(':company', $company)
             ->andWhere('g.type <> 1')
             ->andWhere('g.type <> 2')
             ->orderBy('g.id', 'ASC');

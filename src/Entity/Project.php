@@ -134,6 +134,21 @@ class Project implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Team::class, inversedBy: 'projects')]
   private Collection $team;
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: false)]
+  private ?Company $company = null;
+  public function getCompany(): ?Company
+  {
+    return $this->company;
+  }
+
+  public function setCompany(?Company $company): self
+  {
+    $this->company = $company;
+
+    return $this;
+  }
+
   public function __construct() {
     $this->client = new ArrayCollection();
     $this->projectHistories = new ArrayCollection();

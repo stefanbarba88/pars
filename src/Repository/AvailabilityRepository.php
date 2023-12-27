@@ -17,6 +17,7 @@ use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use PhpParser\Node\Expr\Array_;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Availability>
@@ -27,8 +28,10 @@ use PhpParser\Node\Expr\Array_;
  * @method Availability[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class AvailabilityRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, Availability::class);
+    $this->security = $security;
   }
 
   public function save(Availability $availability): Availability {
@@ -176,6 +179,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $dostupnost->setType(AvailabilityData::IZASAO);
     $dostupnost->setDatum($datum->setTime(0, 0));
     $dostupnost->setUser($user);
+    $dostupnost->setCompany($user->getCompany());
 
     return $this->save($dostupnost);
 
@@ -213,12 +217,16 @@ class AvailabilityRepository extends ServiceEntityRepository {
     return $dostupnost;
   }
   public function getDostupnost(): array {
+    $company = $this->security->getUser()->getCompany();
+
     $dostupnost = [];
     $datum = new DateTimeImmutable();
     $danas = $datum->format('Y-m-d 00:00:00');
     $dostupnosti = $this->createQueryBuilder('t')
       ->where('t.type <> 3')
       ->andWhere('t.datum >= :danas')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':danas', $danas)
       ->getQuery()
       ->getResult();
@@ -239,7 +247,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
       }
     }
 //    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format('Y'));
-    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format(2024));
+    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format('Y'));
 
 
 
@@ -247,12 +255,14 @@ class AvailabilityRepository extends ServiceEntityRepository {
   }
 
   public function getDostupnostPaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     $datum = new DateTimeImmutable();
     $danas = $datum->format('Y-m-d 00:00:00');
     $dostupnosti = $this->createQueryBuilder('t')
       ->where('t.type <> 3')
       ->andWhere('t.datum >= :danas')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':danas', $danas)
       ->orderBy('t.datum', 'ASC')
       ->getQuery();
@@ -295,7 +305,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     }
 
 //    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format('Y'));
-    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format(2024));
+    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format('Y'));
 
 
     return array_merge($dostupnost, $dostupnost1);
@@ -361,12 +371,15 @@ class AvailabilityRepository extends ServiceEntityRepository {
   }
 
   public function getDostupnostDanas(): array {
+    $company = $this->security->getUser()->getCompany();
     $dostupnost = [];
     $datum = new DateTimeImmutable();
     $danas = $datum->format('Y-m-d 00:00:00');
     $dostupnosti = $this->createQueryBuilder('t')
       ->where('t.type <> 3')
       ->andWhere('t.datum = :danas')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':danas', $danas)
       ->getQuery()
       ->getResult();
@@ -390,7 +403,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
   }
 
   public function getAllDostupnostiDanas(): array {
-
+    $company = $this->security->getUser()->getCompany();
     $datum = date("d.m.Y");
     $danas = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
     $start = $danas->setTime(0,0);
@@ -405,7 +418,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $kancelarija = [];
     $unknown = [];
 
-    $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
+    $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $company], ['prezime' => 'ASC']);
 
     foreach ($users as $user) {
       if (!$this->checkDostupnost($user, $datum)) {
@@ -449,7 +462,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
   }
 
   public function getAllDostupnostiSutra(): array {
-
+    $company = $this->security->getUser()->getCompany();
     $datum = date("d.m.Y");
     $danas = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
 
@@ -469,7 +482,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $kancelarija = [];
     $unknown = [];
 
-    $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
+    $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $company], ['prezime' => 'ASC']);
 
     foreach ($users as $user) {
       if (!$this->checkDostupnost($user, $datumSutra)) {
@@ -512,8 +525,6 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
   }
 
-
-
   public function checkDostupnost(User $user, string $datum): bool {
 
     $datum = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
@@ -533,7 +544,6 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
     return false;
   }
-
 
   public function addDostupnostDelete(StopwatchTime $stopwatchTime): ?Availability {
     $datum = $stopwatchTime->getStart();

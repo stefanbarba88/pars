@@ -89,6 +89,21 @@ class StopwatchTime {
   #[ORM\ManyToOne(inversedBy: 'stopwatchTimes')]
   private ?Client $client = null;
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?Company $company = null;
+  public function getCompany(): ?Company
+  {
+    return $this->company;
+  }
+
+  public function setCompany(?Company $company): self
+  {
+    $this->company = $company;
+
+    return $this;
+  }
+
   public function __construct()
   {
       $this->activity = new ArrayCollection();

@@ -576,6 +576,20 @@ class FastTask {
   #[ORM\Column(nullable: true)]
   private ?int $zstatus10 = null;
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: false)]
+  private ?Company $company = null;
+  public function getCompany(): ?Company
+  {
+    return $this->company;
+  }
+
+  public function setCompany(?Company $company): self
+  {
+    $this->company = $company;
+
+    return $this;
+  }
 
   #[ORM\PrePersist]
   public function prePersist(): void {

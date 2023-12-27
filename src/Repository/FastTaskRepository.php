@@ -17,6 +17,7 @@ use DateInterval;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Validator\Constraints\Date;
 
 /**
@@ -29,14 +30,19 @@ use Symfony\Component\Validator\Constraints\Date;
  */
 class FastTaskRepository extends ServiceEntityRepository {
   private $mail;
-  public function __construct(ManagerRegistry $registry, MailService $mail) {
+  private $security;
+  public function __construct(ManagerRegistry $registry, MailService $mail, Security $security) {
     parent::__construct($registry, FastTask::class);
     $this->mail = $mail;
+    $this->security = $security;
   }
 
   public function countPlanRadaActive():int {
+    $company = $this->security->getUser()->getCompany();
     $noPlan = $this->createQueryBuilder('c')
       ->andWhere('c.status <> :final')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter('final', FastTaskData::FINAL)
       ->getQuery()
       ->getResult();
@@ -45,11 +51,13 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function findTaskInPlan(Task $task): bool {
-
+    $company = $task->getCompany();
     $qb = $this->createQueryBuilder('t');
     $qb
       ->where('t.status = :status1')
       ->orWhere('t.status = :status2')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter('status1', FastTaskData::SAVED)
       ->setParameter('status2', FastTaskData::EDIT);
 
@@ -98,8 +106,8 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function getAllPlans(): array {
-
-    $fastTasks = $this->getEntityManager()->getRepository(FastTask::class)->findAll();
+    $company = $this->security->getUser()->getCompany();
+    $fastTasks = $this->getEntityManager()->getRepository(FastTask::class)->findBy(['company' => $company]);
     $plans = [];
     foreach ($fastTasks as $plan) {
       $plans[] = [ $plan, $this->getPlanStatus($plan)];
@@ -108,14 +116,15 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function getAllPlansPaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     $qb = $this->createQueryBuilder('f');
-    $qb ->orderBy('f.datum', 'DESC');
+    $qb
+      ->where('f.company = :company')
+      ->setParameter(':company', $company)
+      ->orderBy('f.datum', 'DESC');
     return $qb->getQuery();
 
   }
-
-
 
   public function getPlanStatus(FastTask $plan): int {
 
@@ -132,7 +141,7 @@ class FastTaskRepository extends ServiceEntityRepository {
 
 
   public function findCarToReserve(User $user): ?Car {
-
+    $company = $this->security->getUser()->getCompany();
     $sutra = new DateTimeImmutable('tomorrow');
     $danas = new DateTimeImmutable();
 
@@ -172,6 +181,9 @@ class FastTaskRepository extends ServiceEntityRepository {
           $qb->expr()->eq('f.status', ':status2'),
           $qb->expr()->eq('f.status', ':status3')
         ))
+
+        ->andWhere('f.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter('status2', FastTaskData::SAVED)
         ->setParameter('status3', FastTaskData::EDIT)
         ->setMaxResults(1); // Postavljamo da vrati samo jedan rezultat
@@ -181,6 +193,7 @@ class FastTaskRepository extends ServiceEntityRepository {
 
 
       if(!is_null($fastTask)) {
+
         if (!is_null($fastTask->getDriver1())) {
           if ($fastTask->getDriver1() == $user->getId()) {
             if (!is_null($fastTask->getTime1())) {
@@ -380,7 +393,7 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function findToolsToReserve(User $user): array {
-
+    $company = $this->security->getUser()->getCompany();
     $sutra = new DateTimeImmutable('tomorrow');
     $danas = new DateTimeImmutable();
 
@@ -431,6 +444,8 @@ class FastTaskRepository extends ServiceEntityRepository {
           $qb->expr()->eq('f.status', ':status2'),
           $qb->expr()->eq('f.status', ':status3')
         ))
+        ->andWhere('f.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter('status2', FastTaskData::SAVED)
         ->setParameter('status3', FastTaskData::EDIT)
         ->setMaxResults(1); // Postavljamo da vrati samo jedan rezultat
@@ -655,7 +670,7 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function whereCarShouldGo(Car $car): ?User {
-
+    $company = $this->security->getUser()->getCompany();
     $sutra = new DateTimeImmutable('tomorrow');
     $danas = new DateTimeImmutable();
 
@@ -694,6 +709,8 @@ class FastTaskRepository extends ServiceEntityRepository {
           $qb->expr()->eq('f.status', ':status2'),
           $qb->expr()->eq('f.status', ':status3')
         ))
+        ->andWhere('f.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter('status2', FastTaskData::SAVED)
         ->setParameter('status3', FastTaskData::EDIT)
         ->setMaxResults(1); // Postavljamo da vrati samo jedan rezultat
@@ -900,7 +917,7 @@ class FastTaskRepository extends ServiceEntityRepository {
 
   }
   public function whereToolShouldGo(Tool $tool): ?User {
-
+    $company = $this->security->getUser()->getCompany();
     $sutra = new DateTimeImmutable('tomorrow');
     $danas = new DateTimeImmutable();
 
@@ -951,6 +968,8 @@ class FastTaskRepository extends ServiceEntityRepository {
           $qb->expr()->eq('f.status', ':status2'),
           $qb->expr()->eq('f.status', ':status3')
         ))
+        ->andWhere('f.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter('status2', FastTaskData::SAVED)
         ->setParameter('status3', FastTaskData::EDIT)
         ->setMaxResults(1); // Postavljamo da vrati samo jedan rezultat
@@ -1722,7 +1741,7 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function getTimeTable(DateTimeImmutable $date): array {
-
+    $company = $this->security->getUser()->getCompany();
 //    $today = new DateTimeImmutable(); // Trenutni datum i vrijeme
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
@@ -1730,8 +1749,10 @@ class FastTaskRepository extends ServiceEntityRepository {
     $qb = $this->createQueryBuilder('f');
     $qb
       ->where($qb->expr()->between('f.datum', ':start', ':end'))
+      ->andWhere('f.company = :company')
       ->setParameter('start', $startDate)
-      ->setParameter('end', $endDate);
+      ->setParameter('end', $endDate)
+      ->setParameter(':company', $company);
 
     $query = $qb->getQuery();
     $fastTasks = $query->getResult();
@@ -2101,6 +2122,7 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function getTimeTableActive(): array {
+    $company = $this->security->getUser()->getCompany();
     $datum = new DateTimeImmutable();
     $startDate = $datum->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $datum->format('Y-m-d 23:59:59'); // Kraj dana
@@ -2108,6 +2130,8 @@ class FastTaskRepository extends ServiceEntityRepository {
     $qb
       ->andWhere('f.status <> :status')
       ->andWhere('f.datum BETWEEN :startDate AND :endDate')
+      ->andWhere('f.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':status', FastTaskData::OPEN)
       ->setParameter('startDate', $startDate)
       ->setParameter('endDate', $endDate)
@@ -2483,7 +2507,7 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function getTimeTableSubsActive(): array {
-
+    $company = $this->security->getUser()->getCompany();
     $datum = new DateTimeImmutable();
     $startDate = $datum->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $datum->format('Y-m-d 23:59:59'); // Kraj dana
@@ -2491,6 +2515,8 @@ class FastTaskRepository extends ServiceEntityRepository {
     $qb
       ->andWhere('f.status <> :status')
       ->andWhere('f.datum BETWEEN :startDate AND :endDate')
+      ->andWhere('f.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':status', FastTaskData::OPEN)
       ->setParameter('startDate', $startDate)
       ->setParameter('endDate', $endDate)
@@ -2628,7 +2654,7 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function getSubs(DateTimeImmutable $date): array {
-
+    $company = $this->security->getUser()->getCompany();
 //    $today = new DateTimeImmutable(); // Trenutni datum i vrijeme
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
@@ -2636,6 +2662,8 @@ class FastTaskRepository extends ServiceEntityRepository {
     $qb = $this->createQueryBuilder('f');
     $qb
       ->where($qb->expr()->between('f.datum', ':start', ':end'))
+      ->andWhere('f.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate);
 
@@ -2770,7 +2798,7 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function getTimeTableId(DateTimeImmutable $date): int {
-
+    $company = $this->security->getUser()->getCompany();
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
 
@@ -2778,6 +2806,8 @@ class FastTaskRepository extends ServiceEntityRepository {
     $qb
       ->where($qb->expr()->between('f.datum', ':start', ':end'))
       ->andWhere('f.status = :status1 OR f.status = :status2')
+      ->andWhere('f.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
       ->setParameter('status1', FastTaskData::SAVED)
@@ -2795,13 +2825,15 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function getTimeTableTomorrowId(DateTimeImmutable $date): int {
-
+    $company = $this->security->getUser()->getCompany();
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
 
     $qb = $this->createQueryBuilder('f');
     $qb
       ->where($qb->expr()->between('f.datum', ':start', ':end'))
+      ->andWhere('f.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
       ->setMaxResults(1);
@@ -2822,12 +2854,15 @@ class FastTaskRepository extends ServiceEntityRepository {
     $dateTime = DateTimeImmutable::createFromFormat($format, $datum . '14:30:00');
 
     if (is_null($fastTask->getId())) {
+      $company = $fastTask->getCompany();
       $startPlan = $dateTime->format('Y-m-d 00:00:00'); // Početak dana
       $endPlan = $dateTime->format('Y-m-d 23:59:59'); // Kraj dana
 
       $qb = $this->createQueryBuilder('f');
       $qb
         ->where($qb->expr()->between('f.datum', ':start', ':end'))
+        ->andWhere('f.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter('start', $startPlan)
         ->setParameter('end', $endPlan)
         ->setMaxResults(1);
@@ -6294,17 +6329,21 @@ class FastTaskRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): FastTask {
     if (empty($id)) {
-      return new FastTask();
+      $task = new FastTask();
+      $task->setCompany($this->security->getUser()->getCompany());
+      return $task;
     }
     return $this->getEntityManager()->getRepository(FastTask::class)->find($id);
 
   }
 
   public function getPlan(): FastTask {
-
+    $company = $this->security->getUser()->getCompany();
     $qb = $this->createQueryBuilder('f');
     $qb
       ->andWhere('f.status <> :status')
+      ->andWhere('f.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':status', FastTaskData::OPEN)
       ->orderBy('f.datum', 'DESC')
       ->setMaxResults(1);
@@ -6318,7 +6357,7 @@ class FastTaskRepository extends ServiceEntityRepository {
   }
 
   public function getDisabledDates(): array {
-
+    $company = $this->security->getUser()->getCompany();
     $dates = [];
     $qb = $this->createQueryBuilder('f');
     $qb
@@ -6327,6 +6366,8 @@ class FastTaskRepository extends ServiceEntityRepository {
         $qb->expr()->eq('f.status', ':status3'),
         $qb->expr()->eq('f.status', ':status4')
       ))
+      ->andWhere('f.company = :company')
+      ->setParameter('company', $company)
       ->setParameter('status2', FastTaskData::OPEN)
       ->setParameter('status3', FastTaskData::SAVED)
       ->setParameter('status4', FastTaskData::EDIT);

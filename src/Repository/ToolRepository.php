@@ -54,10 +54,13 @@ class ToolRepository extends ServiceEntityRepository {
   }
 
   public function countTools(): int {
+    $company = $this->security->getUser()->getCompany();
     $qb = $this->createQueryBuilder('c');
 
     $qb->select($qb->expr()->count('c'))
       ->andWhere('c.isSuspended = :isSuspended')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':isSuspended', 0);
 
     $query = $qb->getQuery();
@@ -67,13 +70,15 @@ class ToolRepository extends ServiceEntityRepository {
   }
 
   public function getInactiveTools(): array {
-
+    $company = $this->security->getUser()->getCompany();
     $qb = $this->createQueryBuilder('c');
 
     $qb
       ->andWhere('c.isSuspended = :isSuspended')
       ->andWhere('c.isReserved <> :isReserved')
       ->orWhere('c.isReserved IS NULL')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':isSuspended', 0)
       ->setParameter(':isReserved', 1);
 
@@ -84,8 +89,10 @@ class ToolRepository extends ServiceEntityRepository {
   }
 
   public function getToolsPaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('c')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
       ->orderBy('c.isSuspended', 'ASC')
       ->addOrderBy('c.isReserved', 'ASC')
       ->addOrderBy('c.id', 'ASC')
@@ -94,13 +101,15 @@ class ToolRepository extends ServiceEntityRepository {
   }
 
   public function countToolsActive(): int {
-
+    $company = $this->security->getUser()->getCompany();
 
     $qb = $this->createQueryBuilder('c');
 
     $qb->select($qb->expr()->count('c'))
       ->andWhere('c.isSuspended = :isSuspended')
       ->andWhere('c.isReserved <> :isReserved')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':isSuspended', 0)
       ->setParameter(':isReserved', 0);
 
@@ -112,13 +121,15 @@ class ToolRepository extends ServiceEntityRepository {
 
   public function countToolsInactive(): int {
 
-
+    $company = $this->security->getUser()->getCompany();
     $qb = $this->createQueryBuilder('c');
 
     $qb->select($qb->expr()->count('c'))
       ->andWhere('c.isSuspended = :isSuspended')
       ->andWhere('c.isReserved <> :isReserved')
       ->orWhere('c.isReserved IS NULL')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':isSuspended', 0)
       ->setParameter(':isReserved', 1);
 
@@ -137,7 +148,9 @@ class ToolRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): Tool {
     if (empty($id)) {
-      return new Tool();
+      $tool = new Tool();
+      $tool->setCompany($this->security->getUser()->getCompany());
+      return $tool;
     }
     return $this->getEntityManager()->getRepository(Tool::class)->find($id);
   }

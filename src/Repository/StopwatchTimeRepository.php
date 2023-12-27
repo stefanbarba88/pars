@@ -18,6 +18,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<StopwatchTime>
@@ -28,8 +29,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method StopwatchTime[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class StopwatchTimeRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, StopwatchTime::class);
+    $this->security = $security;
   }
 
   public function addDostupnost(User $user): ?Availability {
@@ -1367,18 +1370,23 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
   }
 
   public function findAllToCheck(): array {
+    $company = $this->security->getUser()->getCompany();
     $now = new DateTimeImmutable();
     $oneMonthAgo = new DateTimeImmutable('-1 month');
     $stopwatches = [];
 
     $times = $this->createQueryBuilder('u')
       ->andWhere('u.diff < :dif')
+      ->orWhere('u.diff > :dif1')
       ->setParameter(':dif', 10)
+      ->setParameter(':dif1', 540)
       ->andWhere('u.diff is NOT NULL')
       ->andWhere('u.isDeleted = 0')
       ->andWhere('u.stop BETWEEN :start AND :end')
+      ->andWhere('u.company = :company')
       ->setParameter('start', $oneMonthAgo)
       ->setParameter('end', $now)
+      ->setParameter('company', $company)
       ->orderBy('u.created', 'DESC')
       ->getQuery()
       ->getResult();
@@ -1405,17 +1413,22 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
   }
 
   public function findAllToCheckCount(): int {
+    $company = $this->security->getUser()->getCompany();
     $now = new DateTimeImmutable();
     $oneMonthAgo = new DateTimeImmutable('-1 month');
 
     $times = $this->createQueryBuilder('u')
       ->andWhere('u.diff < :dif')
+      ->orWhere('u.diff > :dif1')
       ->setParameter(':dif', 10)
+      ->setParameter(':dif1', 540)
       ->andWhere('u.diff is NOT NULL')
       ->andWhere('u.isDeleted = 0')
       ->andWhere('u.stop BETWEEN :start AND :end')
+      ->andWhere('u.company = :company')
       ->setParameter('start', $oneMonthAgo)
       ->setParameter('end', $now)
+      ->setParameter('company', $company)
       ->orderBy('u.created', 'DESC')
       ->getQuery()
       ->getResult();

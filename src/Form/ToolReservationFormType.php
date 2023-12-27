@@ -43,6 +43,7 @@ class ToolReservationFormType extends AbstractType {
     };
 
     $tool = $dataObject->getReservation()->getTool();
+    $company = $dataObject->getReservation()->getCompany();
     $user = $dataObject->getReservation()->getUser();
     $type = $tool->getType();
 
@@ -272,10 +273,12 @@ class ToolReservationFormType extends AbstractType {
     $builder
       ->add('user', EntityType::class, [
         'class' => User::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('d')
             ->andWhere('d.isSuspended = :isSuspended')
             ->andWhere('d.userType = :userType')
+            ->andWhere('d.company = :company')
+            ->setParameter(':company', $company)
             ->setParameter(':isSuspended', 0)
             ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
             ->orderBy('d.id', 'ASC');

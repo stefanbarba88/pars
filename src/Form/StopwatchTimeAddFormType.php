@@ -31,6 +31,19 @@ use Symfony\Component\Validator\Constraints\Image;
 
 class StopwatchTimeAddFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
+
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getReservation(): ?StopwatchTime {
+        return $this->builder->getData();
+      }
+
+    };
+    $company = $dataObject->getReservation()->getTaskLog()->getTask()->getCompany();
+
     $builder
 
 
@@ -45,9 +58,11 @@ class StopwatchTimeAddFormType extends AbstractType {
         'placeholder' => '--Izaberite klijenta--',
         'required' => false,
         'class' => Client::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('a')
             ->andWhere('a.isSuspended <> 1')
+            ->andWhere('a.company = :company')
+            ->setParameter(':company', $company)
 //            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
             ->orderBy('a.id', 'ASC');
         },
@@ -101,8 +116,10 @@ class StopwatchTimeAddFormType extends AbstractType {
 
       ->add('activity', EntityType::class, [
         'class' => Activity::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('a')
+            ->andWhere('a.company = :company')
+            ->setParameter(':company', $company)
 //            ->andWhere('g.userType = :userType')
 //            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
             ->orderBy('a.id', 'ASC');

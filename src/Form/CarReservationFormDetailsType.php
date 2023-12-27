@@ -42,14 +42,17 @@ class CarReservationFormDetailsType extends AbstractType {
 
     $car = $dataObject->getReservation()->getCar();
     $driver = $dataObject->getReservation()->getDriver();
+    $company = $dataObject->getReservation()->getCompany();
 
       $builder
         ->add('car', EntityType::class, [
           'class' => Car::class,
-          'query_builder' => function (EntityRepository $em) {
+          'query_builder' => function (EntityRepository $em) use ($company) {
             return $em->createQueryBuilder('c')
               ->andWhere('c.isReserved = :isReserved')
               ->andWhere('c.isSuspended = :isSuspended')
+              ->andWhere('c.company = :company')
+              ->setParameter(':company', $company)
               ->setParameter(':isReserved', 0)
               ->setParameter(':isSuspended', 0)
               ->orderBy('c.id', 'ASC');
@@ -87,10 +90,12 @@ class CarReservationFormDetailsType extends AbstractType {
       $builder
         ->add('driver', EntityType::class, [
           'class' => User::class,
-          'query_builder' => function (EntityRepository $em) {
+          'query_builder' => function (EntityRepository $em) use ($company) {
             return $em->createQueryBuilder('d')
               ->andWhere('d.car IS NULL')
               ->andWhere('d.isSuspended = :isSuspended')
+              ->andWhere('d.company = :company')
+              ->setParameter(':company', $company)
               ->setParameter(':isSuspended', 0)
               ->orderBy('d.id', 'ASC');
           },
@@ -104,9 +109,11 @@ class CarReservationFormDetailsType extends AbstractType {
       $builder
         ->add('driver', EntityType::class, [
           'class' => User::class,
-          'query_builder' => function (EntityRepository $em) use ($driver) {
+          'query_builder' => function (EntityRepository $em) use ($company, $driver) {
             return $em->createQueryBuilder('d')
               ->andWhere('d.id = :id')
+              ->andWhere('d.company = :company')
+              ->setParameter(':company', $company)
               ->setParameter(':id', $driver->getId())
               ->orderBy('d.id', 'ASC');
           },

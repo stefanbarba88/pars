@@ -161,6 +161,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     if (empty($id)) {
       $user = new User();
       $user->setCreatedBy($this->security->getUser());
+      $user->setCompany($this->security->getUser()->getCompany());
       return $user;
     }
     return $this->getEntityManager()->getRepository(User::class)->find($id);
@@ -168,11 +169,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getAllByLoggedUser(User $loggedUser): array {
 
+    $company = $loggedUser->getCompany();
+
     $users = match ($loggedUser->getUserType()) {
       UserRolesData::ROLE_SUPER_ADMIN => $this->getEntityManager()->getRepository(User::class)->findBy([], ['isSuspended' => 'ASC', 'userType' => 'ASC']),
       UserRolesData::ROLE_ADMIN => $this->createQueryBuilder('u')
         ->andWhere('u.userType <> :userType')
         ->andWhere('u.userType <> :userType1')
+        ->andWhere('u.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
         ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
         ->addOrderBy('u.isSuspended', 'ASC')
@@ -183,6 +188,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ->andWhere('u.userType <> :userType')
         ->andWhere('u.userType <> :userType1')
         ->andWhere('u.userType <> :userType2')
+        ->andWhere('u.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
         ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
         ->setParameter(':userType2', UserRolesData::ROLE_MANAGER)
@@ -211,8 +218,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getAllByLoggedUserPaginator(User $loggedUser) {
 
+    $company = $loggedUser->getCompany();
     return match ($loggedUser->getUserType()) {
       UserRolesData::ROLE_SUPER_ADMIN => $this->createQueryBuilder('u')
+        ->where('u.company = :company')
+        ->setParameter(':company', $company)
         ->orderBy('u.isSuspended', 'ASC')
         ->addOrderBy('u.userType', 'ASC')
         ->addOrderBy('u.id', 'ASC')
@@ -221,6 +231,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       UserRolesData::ROLE_ADMIN => $this->createQueryBuilder('u')
         ->andWhere('u.userType <> :userType')
         ->andWhere('u.userType <> :userType1')
+        ->andWhere('u.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
         ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
         ->orderBy('u.isSuspended', 'ASC')
@@ -232,6 +244,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ->andWhere('u.userType <> :userType')
         ->andWhere('u.userType <> :userType1')
         ->andWhere('u.userType <> :userType2')
+        ->andWhere('u.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
         ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
         ->setParameter(':userType2', UserRolesData::ROLE_MANAGER)
@@ -261,8 +275,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getAllContactsPaginator() {
 
+    $company = $this->security->getUser()->getCompany();
+
     return $this->createQueryBuilder('u')
       ->andWhere('u.userType = :userType')
+      ->where('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
       ->addOrderBy('u.isSuspended', 'ASC')
       ->getQuery();
@@ -270,7 +288,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getAllContacts(): array {
 
-    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_CLIENT], ['isSuspended' => 'ASC']);
+    $company = $this->security->getUser()->getCompany();
+
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_CLIENT, 'company' => $company], ['isSuspended' => 'ASC']);
 
     $usersList = [];
     foreach ($users as $user) {
@@ -325,7 +345,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getUsersCars(): array {
 
-    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['prezime' => 'ASC']);
+    $company = $this->security->getUser()->getCompany();
+
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $company],['prezime' => 'ASC']);
 
     $usersList = [];
     foreach ($users as $user) {
@@ -345,7 +367,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getUsersCarsAvailable(string $dan): array {
 
-    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['prezime' => 'ASC']);
+    $company = $this->security->getUser()->getCompany();
+
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false],['prezime' => 'ASC']);
 
     $usersList = [];
     foreach ($users as $user) {
@@ -372,7 +396,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getUsersAvailable(DateTimeImmutable $dan): array {
 
-    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['prezime' => 'ASC']);
+    $company = $this->security->getUser()->getCompany();
+
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false],['prezime' => 'ASC']);
     $dan = $dan->format('d.m.Y');
     $usersList = [];
     foreach ($users as $user) {
@@ -396,10 +422,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
    * @throws NoResultException
    */
   public function countEmployees(): int{
+
+    $company = $this->security->getUser()->getCompany();
+
     $qb = $this->createQueryBuilder('u');
 
     $qb->select($qb->expr()->count('u'))
       ->andWhere('u.userType = :userType')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE);
 
     $query = $qb->getQuery();
@@ -413,11 +444,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
    * @throws NoResultException
    */
   public function countEmployeesActive(): int{
+
+    $company = $this->security->getUser()->getCompany();
+
     $qb = $this->createQueryBuilder('u');
 
     $qb->select($qb->expr()->count('u'))
       ->andWhere('u.userType = :userType')
       ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
       ->setParameter(':isSuspended', 0);
 
@@ -427,12 +463,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   }
   public function countEmployeesOnTask(): int{
+
+    $company = $this->security->getUser()->getCompany();
+
     $qb = $this->createQueryBuilder('u');
 
     $qb->select($qb->expr()->count('u'))
       ->andWhere('u.userType = :userType')
       ->andWhere('u.isInTask = :isInTask')
       ->andWhere('u.isSuspended = 0')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
       ->setParameter(':isInTask', 1);
 
@@ -443,12 +484,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
   }
 
   public function countEmployeesOffTask(): int{
+
+    $company = $this->security->getUser()->getCompany();
+
     $qb = $this->createQueryBuilder('u');
 
     $qb->select($qb->expr()->count('u'))
       ->andWhere('u.userType = :userType')
       ->andWhere('u.isInTask = :isInTask')
       ->andWhere('u.isSuspended = 0')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
       ->setParameter(':isInTask', 0);
 
@@ -463,10 +509,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
    * @throws NoResultException
    */
   public function countContacts(): int{
+
+    $company = $this->security->getUser()->getCompany();
+
     $qb = $this->createQueryBuilder('u');
 
     $qb->select($qb->expr()->count('u'))
       ->andWhere('u.userType = :userType')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_CLIENT);
 
     $query = $qb->getQuery();
@@ -476,11 +527,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
   }
 
   public function countContactsActive(): int{
+
+    $company = $this->security->getUser()->getCompany();
+
     $qb = $this->createQueryBuilder('u');
 
     $qb->select($qb->expr()->count('u'))
       ->andWhere('u.userType = :userType')
       ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
       ->setParameter(':isSuspended', 0);
 
@@ -492,16 +548,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function countUsersByLoggedUser(User $loggedUser): int {
 
+    $company = $this->security->getUser()->getCompany();
+
 
     $qb = $this->createQueryBuilder('u');
     switch ($loggedUser->getUserType()) {
       case UserRolesData::ROLE_SUPER_ADMIN:
-        $qb->select($qb->expr()->count('u'));
+        $qb->select($qb->expr()->count('u'))
+        ->andWhere('u.company = :company')
+        ->setParameter(':company', $company);
         break;
       case UserRolesData::ROLE_ADMIN:
         $qb->select($qb->expr()->count('u'))
           ->andWhere('u.userType <> :userType')
           ->andWhere('u.userType <> :userType1')
+          ->andWhere('u.company = :company')
+          ->setParameter(':company', $company)
           ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
           ->setParameter(':userType1', UserRolesData::ROLE_ADMIN);
         break;
@@ -510,6 +572,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
           ->andWhere('u.userType <> :userType')
           ->andWhere('u.userType <> :userType1')
           ->andWhere('u.userType <> :userType2')
+          ->andWhere('u.company = :company')
+          ->setParameter(':company', $company)
           ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
           ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
           ->setParameter(':userType2', UserRolesData::ROLE_MANAGER);
@@ -527,6 +591,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       case UserRolesData::ROLE_SUPER_ADMIN:
         $qb->select($qb->expr()->count('u'))
           ->andWhere('u.isSuspended = :isSuspended')
+          ->andWhere('u.company = :company')
+          ->setParameter(':company', $loggedUser->getCompany())
           ->setParameter(':isSuspended', 0);
         break;
       case UserRolesData::ROLE_ADMIN:
@@ -534,6 +600,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
           ->andWhere('u.userType <> :userType')
           ->andWhere('u.userType <> :userType1')
           ->andWhere('u.isSuspended = :isSuspended')
+          ->andWhere('u.company = :company')
+          ->setParameter(':company', $loggedUser->getCompany())
           ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
           ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
           ->setParameter(':isSuspended', 0);
@@ -544,6 +612,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
           ->andWhere('u.userType <> :userType1')
           ->andWhere('u.userType <> :userType2')
           ->andWhere('u.isSuspended = :isSuspended')
+          ->andWhere('u.company = :company')
+          ->setParameter(':company', $loggedUser->getCompany())
           ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
           ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
           ->setParameter(':userType2', UserRolesData::ROLE_MANAGER)
@@ -556,11 +626,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
   }
 
   public function getDostupni(): array {
+
+
+    $company = $this->security->getUser()->getCompany();
+
     $dostupni = [];
     $danas = new DateTimeImmutable();
     $users = $this->createQueryBuilder('u')
       ->andWhere('u.userType = :userType')
       ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
       ->setParameter('isSuspended', 0)
       ->getQuery()
@@ -584,12 +660,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getNedostupniPaginator() {
 
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('u')
       ->select('u.id', 'u.ime', 'u.prezime', 'a.type', 'a.zahtev')
       ->innerJoin(Availability::class, 'a', Join::WITH, 'u = a.User')
       ->andWhere('a.datum = :today')
       ->andWhere('u.userType = :userType')
       ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
       ->setParameter('isSuspended', 0)
       ->setParameter('today', new DateTimeImmutable('today'), Types::DATETIME_IMMUTABLE)
@@ -597,12 +676,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       ->getQuery();
   }
   public function getDostupniPaginator() {
+    $company = $this->security->getUser()->getCompany();
 
     return $this->createQueryBuilder('u')
       ->leftJoin(Availability::class, 'a', Join::WITH, 'u = a.User AND a.datum = :today')
       ->andWhere('a.id IS NULL')
       ->andWhere('u.userType = :userType')
       ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
       ->setParameter('isSuspended', 0)
       ->setParameter('today', new DateTimeImmutable('today'), Types::DATETIME_IMMUTABLE)
@@ -612,10 +694,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
   }
 
   public function getZaposleni(): array {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('u')
       ->andWhere('u.userType = :userType')
       ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
       ->setParameter(':isSuspended', 0)
       ->getQuery()
@@ -623,10 +707,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
   }
 
   public function getUsersForChecklist(): array {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('u')
       ->andWhere('u.userType <> :userType')
       ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
       ->setParameter(':isSuspended', 0)
       ->orderBy('u.userType', 'ASC')
@@ -637,21 +723,50 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getUsersForQuickChecklist(): array {
 
-    $user1 = $this->find(1);
-    $user2 = $this->find(26);
-    $user3 = $this->find(27);
-    $user4 = $this->find(40);
-    $user5 = $this->find(47);
+    $user = $this->security->getUser();
+    $userId = $this->security->getUser()->getId();
+    $company = $user->getCompany();
 
-    return [$user2, $user3, $user4, $user5, $user1];
+    return $this->createQueryBuilder('u')
+      ->where('u.userType = :userType')
+      ->orWhere('u.userType = :userType1')
+      ->orWhere('u.userType = :userType2')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->andWhere('u.id <> :id')
+      ->setParameter(':id', $userId)
+      ->setParameter(':company', $company)
+      ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
+      ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
+      ->setParameter(':userType2', UserRolesData::ROLE_MANAGER)
+      ->setParameter(':isSuspended', 0)
+      ->orderBy('u.userType', 'ASC')
+      ->addOrderBy('u.prezime', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+
+
+//    $user1 = $this->find(1);
+//    $user2 = $this->find(26);
+//    $user3 = $this->find(27);
+//    $user4 = $this->find(40);
+//    $user5 = $this->find(47);
+
+//    return [$user2, $user3, $user4, $user5, $user1];
   }
 
   public function getNedostupni(): array {
+
+    $company = $this->security->getUser()->getCompany();
+
     $nedostupni = [];
     $danas = new DateTimeImmutable();
     $users = $this->createQueryBuilder('u')
       ->andWhere('u.userType = :userType')
       ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
       ->setParameter(':isSuspended', 0)
       ->getQuery()
@@ -674,7 +789,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $nedostupni;
   }
   public function getEmployees(int $type): array {
-
+    $company = $this->security->getUser()->getCompany();
     if ($type == 1) {
       $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isInTask' => true, 'isSuspended' => false]);
     } elseif ( $type == 2) {
@@ -702,12 +817,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
   }
 
   public function getEmployeesPaginator(int $type) {
-
+    $company = $this->security->getUser()->getCompany();
     return match ($type) {
       1 => $this->createQueryBuilder('u')
         ->where('u.isInTask = 1')
         ->andWhere('u.userType = :userType')
         ->andWhere('u.isSuspended = 0')
+        ->andWhere('u.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
         ->orderBy('u.prezime', 'ASC')
         ->addOrderBy('u.id', 'ASC')
@@ -717,6 +834,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ->where('u.isInTask = 0')
         ->andWhere('u.userType = :userType')
         ->andWhere('u.isSuspended = 0')
+        ->andWhere('u.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
         ->orderBy('u.prezime', 'ASC')
         ->addOrderBy('u.id', 'ASC')
@@ -724,6 +843,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
       default => $this->createQueryBuilder('u')
         ->where('u.userType = :userType')
+        ->andWhere('u.company = :company')
+        ->setParameter(':company', $company)
         ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
         ->orderBy('u.isSuspended', 'ASC')
         ->addOrderBy('u.userType', 'ASC')

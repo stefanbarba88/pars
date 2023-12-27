@@ -66,17 +66,22 @@ class ClientRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): Client {
     if (empty($id)) {
-      return new Client();
+      $cli = new Client();
+      $cli->setCompany($this->security->getUser()->getCompany());
+      return $cli;
     }
     return $this->getEntityManager()->getRepository(Client::class)->find($id);
   }
 
   public function countClientsActive(): int{
+    $company = $this->security->getUser()->getCompany();
     $qb = $this->createQueryBuilder('u');
 
     $qb->select($qb->expr()->count('u'))
       ->andWhere('u.isSuspended = :isSuspended')
-      ->setParameter(':isSuspended', 0);
+      ->andWhere('u.company = :company')
+      ->setParameter('company', $company)
+      ->setParameter('isSuspended', 0);
 
     $query = $qb->getQuery();
 
@@ -85,8 +90,11 @@ class ClientRepository extends ServiceEntityRepository {
   }
 
   public function getAllClientsPaginator() {
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('u')
-      ->orderBy('u.isSuspended', 'ASC')
+      ->andWhere('u.company = :company')
+      ->setParameter('company', $company)
+      ->setParameter('isSuspended', 0)
       ->getQuery();
 
   }

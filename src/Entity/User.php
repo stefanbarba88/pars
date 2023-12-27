@@ -11,7 +11,6 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -180,6 +179,21 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
   #[ORM\OneToMany(mappedBy: 'user', targetEntity: Overtime::class, orphanRemoval: true)]
   private Collection $overtimes;
+
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: false)]
+  private ?Company $company = null;
+  public function getCompany(): ?Company
+  {
+    return $this->company;
+  }
+
+  public function setCompany(?Company $company): self
+  {
+    $this->company = $company;
+
+    return $this;
+  }
 
 
   public function __construct() {

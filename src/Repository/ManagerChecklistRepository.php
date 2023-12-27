@@ -8,6 +8,7 @@ use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<ManagerChecklist>
@@ -18,8 +19,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ManagerChecklist[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ManagerChecklistRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, ManagerChecklist::class);
+    $this->security = $security;
   }
 
   public function save(ManagerChecklist $checklist): ManagerChecklist {
@@ -34,9 +37,11 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
 
   public function getChecklistPaginator(User $loggedUser) {
-
+    $company = $this->security->getUser()->getCompany();
     return match ($loggedUser->getUserType()) {
       UserRolesData::ROLE_SUPER_ADMIN => $this->createQueryBuilder('c')
+        ->where('c.company = :company')
+        ->setParameter('company', $company)
         ->orderBy('c.status', 'ASC')
         ->addOrderBy('c.priority', 'ASC')
         ->addOrderBy('c.created', 'DESC')
@@ -104,7 +109,9 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): ManagerChecklist {
     if (empty($id)) {
-      return new ManagerChecklist();
+      $label =  new ManagerChecklist();
+      $label->setCompany($this->security->getUser()->getCompany());
+      return $label;
     }
     return $this->getEntityManager()->getRepository(ManagerChecklist::class)->find($id);
   }
@@ -114,6 +121,7 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
     $task = new ManagerChecklist();
     $task->setUser($user);
+    $task->setCompany($user->getCompany());
     return $task;
 
   }

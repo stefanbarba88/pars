@@ -24,6 +24,7 @@ use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Task>
@@ -34,8 +35,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Task[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class TaskRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, Task::class);
+    $this->security = $security;
   }
 
   public function taskStatus(Task $task): int {
@@ -465,6 +468,8 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function getTasksUnclosedLogs(): array {
+
+    $company = $this->security->getUser()->getCompany();
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
 
@@ -472,6 +477,8 @@ class TaskRepository extends ServiceEntityRepository {
     $tasks =  $this->createQueryBuilder('t')
       ->where('t.datumKreiranja < :startDate')
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':startDate', $startDate)
       ->addOrderBy('t.isClosed', 'ASC')
       ->addOrderBy('t.isPriority', 'DESC')
@@ -503,6 +510,7 @@ class TaskRepository extends ServiceEntityRepository {
 
 
   public function getTasksUnclosedLogsPaginator(): array {
+    $company = $this->security->getUser()->getCompany();
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
     $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
@@ -512,6 +520,8 @@ class TaskRepository extends ServiceEntityRepository {
       ->where('t.datumKreiranja < :startDate')
       ->andWhere('t.datumKreiranja > :endDate')
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':startDate', $startDate)
       ->setParameter(':endDate', $endDate)
       ->addOrderBy('t.isClosed', 'ASC')
@@ -581,6 +591,7 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function countGetTasksUnclosedLogs(): int {
+    $company = $this->security->getUser()->getCompany();
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
     $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
@@ -590,6 +601,8 @@ class TaskRepository extends ServiceEntityRepository {
       ->where('t.datumKreiranja < :startDate')
       ->andWhere('t.datumKreiranja > :endDate')
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':startDate', $startDate)
       ->setParameter(':endDate', $endDate)
       ->addOrderBy('t.isClosed', 'ASC')
@@ -764,12 +777,15 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function getAllTasksPaginator() {
+    $company = $this->security->getUser()->getCompany();
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
 
     return  $this->createQueryBuilder('t')
       ->where('t.datumKreiranja >= :startDate')
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':startDate', $startDate)
       ->addOrderBy('t.isClosed', 'ASC')
       ->addOrderBy('t.isPriority', 'DESC')
@@ -778,6 +794,7 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function countGetTasks(): int {
+    $company = $this->security->getUser()->getCompany();
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
 
@@ -785,6 +802,8 @@ class TaskRepository extends ServiceEntityRepository {
     $tasks =  $this->createQueryBuilder('t')
       ->where('t.datumKreiranja >= :startDate')
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':startDate', $startDate)
       ->addOrderBy('t.isClosed', 'ASC')
       ->addOrderBy('t.isPriority', 'DESC')
@@ -805,7 +824,7 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function getTasksPaginator($filterBy, User $user){
-
+    $company = $this->security->getUser()->getCompany();
     $today = new DateTimeImmutable(); // Dohvati trenutni datum i vrijeme
     $endDate = $today->sub(new DateInterval('P1D')); // Trenutni datum
 
@@ -830,6 +849,8 @@ class TaskRepository extends ServiceEntityRepository {
       $qb->setParameter('endDate', $endDate);
     }
 
+    $qb->andWhere('t.company = :company');
+    $qb->setParameter(':company', $company);
 
     if (!empty($filterBy['projekat'])) {
       $qb->andWhere('t.project = :projekat');
@@ -1017,6 +1038,7 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function getTasksUnclosedPaginator(): array {
+    $company = $this->security->getUser()->getCompany();
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
     $endDate = $currentTime->sub(new DateInterval('P15D'))->format('Y-m-d 00:00:00');
@@ -1026,6 +1048,8 @@ class TaskRepository extends ServiceEntityRepository {
       ->where('t.datumKreiranja < :startDate')
       ->andWhere('t.datumKreiranja > :endDate')
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':startDate', $startDate)
       ->setParameter(':endDate', $endDate)
       ->addOrderBy('t.isClosed', 'ASC')
@@ -1047,6 +1071,7 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function countGetTasksUnclosed(): int {
+    $company = $this->security->getUser()->getCompany();
     $currentTime = new DateTimeImmutable();
     $startDate = $currentTime->format('Y-m-d 00:00:00');
     $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
@@ -1056,6 +1081,8 @@ class TaskRepository extends ServiceEntityRepository {
       ->where('t.datumKreiranja < :startDate')
       ->andWhere('t.datumKreiranja > :endDate')
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':startDate', $startDate)
       ->setParameter(':endDate', $endDate)
       ->addOrderBy('t.isClosed', 'ASC')
@@ -1119,6 +1146,7 @@ class TaskRepository extends ServiceEntityRepository {
     }
 
     $task->setCreatedBy($user);
+    $task->setCompany($task->getProject()->getCompany());
 
     return $this->save($task);
 
@@ -1413,7 +1441,7 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function getTasksByDate(DateTimeImmutable $date): array  {
-
+    $company = $this->security->getUser()->getCompany();
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
 
@@ -1421,6 +1449,8 @@ class TaskRepository extends ServiceEntityRepository {
     $qb
       ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
       ->orderBy('t.time', 'ASC');
@@ -1472,7 +1502,7 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function getTasksByDateForEmail(DateTimeImmutable $date): array  {
-
+    $company = $this->security->getUser()->getCompany();
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
 
@@ -1480,6 +1510,8 @@ class TaskRepository extends ServiceEntityRepository {
     $qb
       ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
       ->orderBy('t.time', 'ASC');
@@ -2642,6 +2674,7 @@ class TaskRepository extends ServiceEntityRepository {
 
       $task = new Task();
       $task->setProject($project);
+      $task->setCompany($project->getCompany());
       return $task;
 
   }

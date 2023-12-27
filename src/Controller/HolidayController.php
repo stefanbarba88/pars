@@ -32,7 +32,7 @@ class HolidayController extends AbstractController {
 
     $year = date("Y");
 
-    $holidays = $this->em->getRepository(Holiday::class)->getHolidaysPaginator(2024);
+    $holidays = $this->em->getRepository(Holiday::class)->getHolidaysPaginator($year);
 
     $pagination = $paginator->paginate(
       $holidays, /* query NOT result */
@@ -78,6 +78,7 @@ class HolidayController extends AbstractController {
 
   #[Route('/vacation/{id}', name: 'app_holiday_vacation_form', defaults: ['id' => 0])]
   public function vacation(Request $request): Response {
+
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }

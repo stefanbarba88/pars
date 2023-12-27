@@ -36,6 +36,20 @@ class Comment {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?Company $company = null;
+  public function getCompany(): ?Company
+  {
+    return $this->company;
+  }
+
+  public function setCompany(?Company $company): self
+  {
+    $this->company = $company;
+
+    return $this;
+  }
   #[ORM\PrePersist]
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();

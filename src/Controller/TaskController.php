@@ -364,6 +364,7 @@ class TaskController extends AbstractController {
           }
         }
 
+        $task->setCompany($task->getProject()->getCompany());
         $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 
         notyf()
@@ -385,7 +386,7 @@ class TaskController extends AbstractController {
     $args['task'] = $task;
 
 //    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
-    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $user->getCompany()], ['id' => 'ASC']);
 
     if($mobileDetect->isMobile()) {
       if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
@@ -400,7 +401,8 @@ class TaskController extends AbstractController {
   #[Entity('project', expr: 'repository.find(project)')]
   #[Entity('task', expr: 'repository.findForFormProject(project)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formByProject(Task $task, Project $project, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function formByProject(Task $task, Project $project, Request $request, UploadService $uploadService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
@@ -574,7 +576,7 @@ class TaskController extends AbstractController {
     $args['project'] = $project->getId();
     $args['korisnik'] = $user;
     $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
-    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $user->getCompany()], ['id' => 'ASC']);
 
     if($mobileDetect->isMobile()) {
       if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
@@ -725,7 +727,8 @@ class TaskController extends AbstractController {
 
   #[Route('/add-docs/{id}', name: 'app_task_add_docs')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function addDocs(Task $task,UploadService $uploadService, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function addDocs(Task $task,UploadService $uploadService, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
     $history = null;
@@ -874,7 +877,7 @@ class TaskController extends AbstractController {
     $args['assignedUsers'] = $this->em->getRepository(Task::class)->getAssignedUsersByTask($task);
     $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
 //    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
-    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false], ['id' => 'ASC']);
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $user->getCompany()], ['id' => 'ASC']);
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -1082,7 +1085,8 @@ class TaskController extends AbstractController {
   }
 
   #[Route('/close/{id}', name: 'app_task_close')]
-  public function close(Task $task)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function close(Task $task)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
@@ -1142,7 +1146,8 @@ class TaskController extends AbstractController {
 
   #[Route('/view/{id}', name: 'app_task_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(Task $task)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function view(Task $task)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
@@ -1185,7 +1190,8 @@ class TaskController extends AbstractController {
 
   #[Route('/view-user/{id}', name: 'app_task_view_user')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewUser(Task $task)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function viewUser(Task $task)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
 

@@ -33,6 +33,10 @@ class Activity {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?Company $company = null;
+
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -121,6 +125,16 @@ class Activity {
     }
     return '<span class="badge bg-primary text-white">Aktivna</span>';
 
+  }
+
+  public function getCompany(): ?Company {
+    return $this->company;
+  }
+
+  public function setCompany(?Company $company): self {
+    $this->company = $company;
+
+    return $this;
   }
 
 

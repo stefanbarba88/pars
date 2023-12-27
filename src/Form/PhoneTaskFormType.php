@@ -43,15 +43,18 @@ class PhoneTaskFormType extends AbstractType {
     };
 
     $task = $dataObject->getTask();
+    $company = $dataObject->getTask()->getCompany();
 
    if (is_null($task->getProject())) {
      $builder
        ->add('project', EntityType::class, [
          'placeholder' => '--Izaberite projekat--',
          'class' => Project::class,
-         'query_builder' => function (EntityRepository $em) {
+         'query_builder' => function (EntityRepository $em) use ($company) {
            return $em->createQueryBuilder('g')
              ->andWhere('g.isSuspended = :isSuspended')
+             ->andWhere('g.company = :company')
+             ->setParameter(':company', $company)
              ->setParameter(':isSuspended', 0)
              ->orderBy('g.title', 'ASC');
          },
@@ -77,10 +80,12 @@ class PhoneTaskFormType extends AbstractType {
       ->add('oprema', EntityType::class, [
         'required' => false,
         'class' => Tool::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('o')
             ->andWhere('o.type <> :laptop')
             ->andWhere('o.type <> :telefon')
+            ->andWhere('o.company = :company')
+            ->setParameter(':company', $company)
             ->setParameter(':laptop', 1)
             ->setParameter(':telefon', 2)
             ->orderBy('o.id', 'ASC');
@@ -92,9 +97,11 @@ class PhoneTaskFormType extends AbstractType {
       ->add('label', EntityType::class, [
         'required' => false,
         'class' => Label::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.isTaskLabel = :isTaskLabel')
+            ->andWhere('g.company = :company')
+            ->setParameter(':company', $company)
             ->setParameter(':isTaskLabel', 1)
             ->orderBy('g.id', 'ASC');
         },
@@ -106,9 +113,11 @@ class PhoneTaskFormType extends AbstractType {
         'placeholder' => '--Izaberite kategoriju--',
         'required' => false,
         'class' => Category::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.isTaskCategory = :isTaskCategory')
+            ->andWhere('g.company = :company')
+            ->setParameter(':company', $company)
             ->setParameter(':isTaskCategory', 1)
             ->orderBy('g.id', 'ASC');
         },
@@ -205,10 +214,10 @@ class PhoneTaskFormType extends AbstractType {
       ->add('activity', EntityType::class, [
         'required' => false,
         'class' => Activity::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('a')
-//            ->andWhere('g.userType = :userType')
-//            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+            ->andWhere('a.company = :company')
+            ->setParameter(':company', $company)
             ->orderBy('a.id', 'ASC');
         },
         'choice_label' => 'title',

@@ -48,7 +48,7 @@ class WidgetController extends AbstractController {
 
       $args['countContacts'] = $this->em->getRepository(User::class)->countContacts();
       $args['countContactsActive'] = $this->em->getRepository(User::class)->countContactsActive();
-      $args['countClients'] = $this->em->getRepository(Client::class)->count([]);
+      $args['countClients'] = $this->em->getRepository(Client::class)->count(['company' => $loggedUser->getCompany()]);
       $args['countClientsActive'] = $this->em->getRepository(Client::class)->countClientsActive();
 
       $args['countEmployees'] = $this->em->getRepository(User::class)->countEmployees();
@@ -57,11 +57,11 @@ class WidgetController extends AbstractController {
       $args['countEmployeesOnTask'] = $this->em->getRepository(User::class)->countEmployeesOnTask();
       $args['countEmployeesOffTask'] = $this->em->getRepository(User::class)->countEmployeesOffTask();
 
-      $args['countProjectsPermanent'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::FIKSNO]);
-      $args['countProjectsChange'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::LETECE]);
-      $args['countProjectsMix'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::KOMBINOVANO]);
-      $args['countProjectsArchive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => true]);
-      $args['countProjectsActive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false]);
+      $args['countProjectsPermanent'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::FIKSNO, 'company' => $loggedUser->getCompany()]);
+      $args['countProjectsChange'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::LETECE, 'company' => $loggedUser->getCompany()]);
+      $args['countProjectsMix'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::KOMBINOVANO, 'company' => $loggedUser->getCompany()]);
+      $args['countProjectsArchive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => true, 'company' => $loggedUser->getCompany()]);
+      $args['countProjectsActive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'company' => $loggedUser->getCompany()]);
 
       $args['countCalendarRequests'] = $this->em->getRepository(Calendar::class)->countCalendarRequests();
 
@@ -72,7 +72,7 @@ class WidgetController extends AbstractController {
 //    $args['countComments'] = $this->em->getRepository(Comment::class)->count([]);
       $args['countCommentsActive'] = $this->em->getRepository(Comment::class)->countCommentsActive();
 
-      $args['countOvertime'] = $this->em->getRepository(Overtime::class)->count(['status' => 0]);
+      $args['countOvertime'] = $this->em->getRepository(Overtime::class)->count(['status' => 0, 'company' => $loggedUser->getCompany()]);
       $args['countLogCheck'] = $this->em->getRepository(StopwatchTime::class)->findAllToCheckCount();
 
       $args['countTasksActive'] = $this->em->getRepository(Task::class)->countGetTasks();
@@ -80,15 +80,15 @@ class WidgetController extends AbstractController {
 //    $args['countTasksArchive'] = $this->em->getRepository(Task::class)->countGetTasksArchive();
 //
       $args['countTasksUnclosedLogs'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
-      $args['countAllTools'] = $this->em->getRepository(Tool::class)->count([]);
+      $args['countAllTools'] = $this->em->getRepository(Tool::class)->count(['company' => $loggedUser->getCompany()]);
       $args['countTools'] = $this->em->getRepository(Tool::class)->countTools();
       $args['countToolsActive'] = $this->em->getRepository(Tool::class)->countToolsActive();
       $args['countToolsInactive'] = $this->em->getRepository(Tool::class)->countToolsInactive();
 
-      $args['countCars'] = $this->em->getRepository(Car::class)->count([]);
-      $args['countActiveCars'] = $this->em->getRepository(Car::class)->count(['isSuspended' => false]);
-      $args['countCarsActive'] = $this->em->getRepository(Car::class)->count(['isReserved' => true, 'isSuspended' => false]);
-      $args['countCarsInactive'] = $this->em->getRepository(Car::class)->count(['isReserved' => false, 'isSuspended' => false]);
+      $args['countCars'] = $this->em->getRepository(Car::class)->count(['company' => $loggedUser->getCompany()]);
+      $args['countActiveCars'] = $this->em->getRepository(Car::class)->count(['isSuspended' => false, 'company' => $loggedUser->getCompany()]);
+      $args['countCarsActive'] = $this->em->getRepository(Car::class)->count(['isReserved' => true, 'isSuspended' => false, 'company' => $loggedUser->getCompany()]);
+      $args['countCarsInactive'] = $this->em->getRepository(Car::class)->count(['isReserved' => false, 'isSuspended' => false, 'company' => $loggedUser->getCompany()]);
     }
 
 
@@ -102,10 +102,10 @@ class WidgetController extends AbstractController {
   }
 
   public function userProfilSidebar(User $user): Response {
-
+    $loggedUser = $this->getUser();
     $args['user'] = $user;
 //    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['user' => $user]);
-    $args['users'] = $this->em->getRepository(User::class)->findAll();
+    $args['users'] = $this->em->getRepository(User::class)->findBy(['company' => $loggedUser->getCompany()]);
 
     return $this->render('widget/user_profil_sidebar.html.twig', $args);
   }
@@ -119,7 +119,7 @@ class WidgetController extends AbstractController {
 
     $args['user'] = $user;
 //    $args['image'] = $this->em->getRepository(Image::class)->findOneBy(['user' => $user]);
-    $args['users'] = $this->em->getRepository(User::class)->findAll();
+    $args['users'] = $this->em->getRepository(User::class)->findBy(['company' => $user->getCompany()]);
 
     return $this->render('widget/employee_profil_sidebar.html.twig', $args);
   }

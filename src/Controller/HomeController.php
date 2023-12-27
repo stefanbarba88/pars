@@ -50,7 +50,7 @@ class HomeController extends AbstractController {
 //    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
     $args['countTasksUnclosed'] = 0;
 
-    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $user, 'status' => 0], ['priority' => 'DESC', 'id' => 'ASC']);
+    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $user, 'status' => 0], ['priority' => 'ASC', 'id' => 'ASC']);
     $args['countChecklistActive'] = count($args['checklistActive']);
 
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {

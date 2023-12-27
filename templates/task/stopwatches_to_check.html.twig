@@ -36,9 +36,9 @@
                                     <thead>
                                     <tr>
                                         <th># ID</th>
+                                        <th>Zapis</th>
                                         <th>Zadatak</th>
                                         <th>Datum zadatka</th>
-                                        <th>Zaduženi</th>
                                         <th>Start</th>
                                         <th>Stop</th>
                                         <th>Razlika</th>
@@ -52,6 +52,11 @@
                                             <td>{{ time.task.id }}</td>
                                             <td>
                                                 <div class="fw-semibold">
+                                                    <a href="{{ path('app_task_log_view', { id: time.taskLog.id}) }}">{{ time.taskLog.user.fullName }}</a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">
                                                     <a href="{{ path('app_task_view', { id: time.task.id}) }}">{{ time.task.title }}</a>
                                                 </div>
                                             </td>
@@ -61,24 +66,24 @@
                                                     {{ time.task.datumKreiranja | date("d.m.Y")}}
                                                 </div>
                                             </td>
-                                            <td>
-                                                <div class="text-body">
-                                                    {% for user in time.task.assignedUsers %}
-                                                        {% if getLogStatusByUser(time.task, user) == 1 %}
-                                                            <div class="btn-group">
-                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">
-                                                                    {{ user.fullName }}
-                                                                    <div class="live p-1 mx-2"></div>
-                                                                </a>
-                                                            </div>
-                                                        {% else %}
-                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">
-                                                                {{ user.fullName }}
-                                                            </a>
-                                                        {% endif %}<br>
-                                                    {% endfor %}
-                                                </div>
-                                            </td>
+{#                                            <td>#}
+{#                                                <div class="text-body">#}
+{#                                                    {% for user in time.task.assignedUsers %}#}
+{#                                                        {% if getLogStatusByUser(time.task, user) == 1 %}#}
+{#                                                            <div class="btn-group">#}
+{#                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">#}
+{#                                                                    {{ user.fullName }}#}
+{#                                                                    <div class="live p-1 mx-2"></div>#}
+{#                                                                </a>#}
+{#                                                            </div>#}
+{#                                                        {% else %}#}
+{#                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">#}
+{#                                                                {{ user.fullName }}#}
+{#                                                            </a>#}
+{#                                                        {% endif %}<br>#}
+{#                                                    {% endfor %}#}
+{#                                                </div>#}
+{#                                            </td>#}
                                             <td>{{ time.start | date ('H:i') }}</td>
                                             <td>{{ time.stop | date ('H:i') }}</td>
                                             <td>{{ time.diff }}</td>

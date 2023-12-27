@@ -26,13 +26,29 @@ use Symfony\Component\Validator\Constraints\File;
 
 class ReassignTaskFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
+
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getReservation(): ?Project {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $company = $dataObject->getReservation()->getCompany();
+
     $builder
 //dodati da ne moze da izabere primarnog sa tog zadatka i ako ima jos neki na tom zadatku
       ->add('assignedUsers', EntityType::class, [
         'class' => User::class,
-        'query_builder' => function (EntityRepository $em) {
+        'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.userType = :userType')
+            ->andWhere('g.company = :company')
+            ->setParameter(':company', $company)
             ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
             ->orderBy('g.id', 'ASC');
         },

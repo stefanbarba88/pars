@@ -86,7 +86,20 @@ class Car implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'car', targetEntity: Expense::class)]
   private Collection $expenses;
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?Company $company = null;
+  public function getCompany(): ?Company
+  {
+    return $this->company;
+  }
 
+  public function setCompany(?Company $company): self
+  {
+    $this->company = $company;
+
+    return $this;
+  }
   public function __construct() {
     $this->carHistories = new ArrayCollection();
     $this->carReservations = new ArrayCollection();

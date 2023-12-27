@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\ZaposleniPozicija;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<ZaposleniPozicija>
@@ -15,8 +16,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ZaposleniPozicija[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ZaposleniPozicijaRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, ZaposleniPozicija::class);
+    $this->security = $security;
   }
 
   public function save(ZaposleniPozicija $pozicija): ZaposleniPozicija {
@@ -39,20 +42,22 @@ class ZaposleniPozicijaRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): ZaposleniPozicija {
     if (empty($id)) {
-      return new ZaposleniPozicija();
+      $pos =  new ZaposleniPozicija();
+      $pos->setCompany($this->security->getUser()->getCompany());
+      return $pos;
     }
     return $this->getEntityManager()->getRepository(ZaposleniPozicija::class)->find($id);
   }
 
   public function getPositionsPaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('c')
+      ->where('c.company = :company')
+      ->setParameter('company', $company)
       ->orderBy('c.isSuspended', 'ASC')
       ->orderBy('c.title', 'ASC')
       ->addOrderBy('c.id', 'ASC')
       ->getQuery();
-
-
   }
 
 //    /**

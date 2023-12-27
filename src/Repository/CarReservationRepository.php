@@ -11,6 +11,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<CarReservation>
@@ -21,8 +22,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method CarReservation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class CarReservationRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, CarReservation::class);
+    $this->security = $security;
   }
 
   public function save(CarReservation $carReservation): CarReservation {
@@ -78,13 +81,16 @@ class CarReservationRepository extends ServiceEntityRepository {
     $reservation = new CarReservation();
     $reservation->setCar($car);
     $reservation->setKmStart($car->getKm());
+    $reservation->setCompany($this->security->getUser()->getCompany());
     return $reservation;
 
   }
 
   public function findForForm(int $id = 0): CarReservation {
     if (empty($id)) {
-      return new CarReservation();
+      $tool = new CarReservation();
+      $tool->setCompany($this->security->getUser()->getCompany());
+      return $tool;
     }
     return $this->getEntityManager()->getRepository(CarReservation::class)->find($id);
 

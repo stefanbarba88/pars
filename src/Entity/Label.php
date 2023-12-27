@@ -47,7 +47,20 @@ class Label {
 
   #[ORM\ManyToMany(targetEntity: Task::class, mappedBy: 'label')]
   private Collection $tasks;
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?Company $company = null;
+  public function getCompany(): ?Company
+  {
+    return $this->company;
+  }
 
+  public function setCompany(?Company $company): self
+  {
+    $this->company = $company;
+
+    return $this;
+  }
   public function __construct() {
     $this->projects = new ArrayCollection();
     $this->tasks = new ArrayCollection();

@@ -114,7 +114,7 @@ class CalendarController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['calendar'] = $calendar;
-    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $korisnik->getCompany()],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
 
     if($mobileDetect->isMobile()) {
       if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
@@ -167,7 +167,7 @@ class CalendarController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['calendar'] = $calendar;
-    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $korisnik->getCompany()],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
 
     return $this->render('calendar/form.html.twig', $args);
   }
@@ -214,6 +214,7 @@ class CalendarController extends AbstractController {
           $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
           $dostupnost->setZahtev($calendar->getType());
           $dostupnost->setCalendar($calendar->getId());
+          $dostupnost->setCompany($calendar->getCompany());
           $this->em->getRepository(Availability::class)->save($dostupnost);
         }
       }

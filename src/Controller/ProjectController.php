@@ -195,9 +195,13 @@ class ProjectController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
+    if ($user->getCompany() != $project->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     if($project->getId()) {
       $history = $this->json($project, Response::HTTP_OK, [], [
@@ -245,6 +249,9 @@ class ProjectController extends AbstractController {
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
+    if ($user->getCompany() != $project->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     if($project->getId()) {
       $history = $this->json($project, Response::HTTP_OK, [], [
@@ -270,8 +277,13 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-profile/{id}', name: 'app_project_profile_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewProfile(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function viewProfile(Project $project)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $user = $this->getUser();
+    if ($user->getCompany() != $project->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['project'] = $project;
 
@@ -289,6 +301,10 @@ class ProjectController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function listProjectHistory(Project $project, PaginatorInterface $paginator, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $user = $this->getUser();
+    if ($user->getCompany() != $project->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['project'] = $project;
     $histories = $this->em->getRepository(ProjectHistory::class)->getAllPaginator($project);
@@ -322,6 +338,10 @@ class ProjectController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $user = $this->getUser();
+    if ($user->getCompany() != $project->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['project'] = $project;
 
     $tasks = $this->em->getRepository(Task::class)->getTasksByProjectPaginator($project);
@@ -349,6 +369,10 @@ class ProjectController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewActivity(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $user = $this->getUser();
+    if ($user->getCompany() != $project->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['project'] = $project;
 
@@ -468,8 +492,13 @@ class ProjectController extends AbstractController {
 
   #[Route('/view-images/{id}', name: 'app_project_images_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewImages(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function viewImages(Project $project)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $user = $this->getUser();
+    if ($user->getCompany() != $project->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['project'] = $project;
     $args['images'] = $this->em->getRepository(Project::class)->getImagesByProject($project);
@@ -481,6 +510,10 @@ class ProjectController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewDocs(Project $project)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $user = $this->getUser();
+    if ($user->getCompany() != $project->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['project'] = $project;
     $args['pdfs'] = $this->em->getRepository(Project::class)->getPdfsByProject($project);
@@ -553,8 +586,8 @@ class ProjectController extends AbstractController {
 
     $args = [];
 
-    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
-    $args['categories'] = $this->em->getRepository(Category::class)->findBy(['isTaskCategory' => true, 'isSuspended' => false]);
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany()]);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
 
     return $this->render('report_project/control.html.twig', $args);
   }
@@ -1268,8 +1301,8 @@ class ProjectController extends AbstractController {
 
     $args = [];
 
-    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
-    $args['categories'] = $this->em->getRepository(Category::class)->findBy(['isTaskCategory' => true, 'isSuspended' => false]);
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany()]);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
 
     return $this->render('report_project/control.html.twig', $args);
   }

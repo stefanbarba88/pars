@@ -6,6 +6,7 @@ use App\Entity\Overtime;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Overtime>
@@ -16,8 +17,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Overtime[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class OvertimeRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, Overtime::class);
+    $this->security = $security;
   }
 
   public function save(Overtime $overtime): Overtime {
@@ -39,15 +42,19 @@ class OvertimeRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): Overtime {
     if (empty($id)) {
-      return new Overtime();
+      $overtime =  new Overtime();
+      $overtime->setCompany($this->security->getUser()->getCompany());
+      return $overtime;
     }
     return $this->getEntityManager()->getRepository(Overtime::class)->find($id);
   }
 
   public function getOvertimePaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('c')
       ->where('c.status = :status')
+      ->andWhere('c.company = :company')
+      ->setParameter('company', $company)
       ->setParameter('status', 0)
       ->orderBy('c.datum', 'DESC')
       ->addOrderBy('c.id', 'DESC')
@@ -55,9 +62,11 @@ class OvertimeRepository extends ServiceEntityRepository {
   }
 
   public function getOvertimeArchivePaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('c')
       ->where('c.status > :status')
+      ->andWhere('c.company = :company')
+      ->setParameter('company', $company)
       ->setParameter('status', 0)
       ->orderBy('c.datum', 'DESC')
       ->addOrderBy('c.id', 'DESC')
@@ -65,6 +74,8 @@ class OvertimeRepository extends ServiceEntityRepository {
   }
 
   public function getOvertimeByUser(User $user): string {
+    //dodati da bude samo u godini
+
     $sati = 0;
     $minuti = 0;
 

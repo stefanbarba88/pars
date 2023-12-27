@@ -41,7 +41,7 @@ class FinishedTasksCommand extends Command {
     $start = microtime(true);
 
     $danas = new DateTimeImmutable();
-
+//za sve firme
     $timetable = $this->em->getRepository(Task::class)->getTasksByDateForEmail($danas);
 
     if (!empty($timetable)) {

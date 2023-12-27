@@ -86,6 +86,9 @@ class EmployeeController extends AbstractController {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['user'] = $usr;
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -108,6 +111,9 @@ class EmployeeController extends AbstractController {
       if ($korisnik->getId() != $usr->getId()) {
         return $this->redirect($this->generateUrl('app_home'));
       }
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args = [];
     $args['user'] = $usr;
@@ -138,13 +144,16 @@ class EmployeeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+
     $korisnik = $this->getUser();
     if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
       if ($korisnik->getId() != $usr->getId()) {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
-
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     $calendars = $usr->getCalendars()->toArray();
     $compareFunction = function ($a, $b) {
@@ -161,11 +170,11 @@ class EmployeeController extends AbstractController {
     $args['pagination'] = $pagination;
 
     $args['user'] = $usr;
+    $year = date('Y');
 
     $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuce();
-
-    $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUser($usr, 2023);
-    $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUser($usr, 2023);
+    $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUser($usr, $year);
+    $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUser($usr, $year);
     $args['overtime'] = $this->em->getRepository(Overtime::class)->getOvertimeByUser($usr);
 
     $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostByUser($usr);
@@ -191,6 +200,9 @@ class EmployeeController extends AbstractController {
       if ($korisnik->getId() != $usr->getId()) {
         return $this->redirect($this->generateUrl('app_home'));
       }
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['user'] = $usr;
     $reservations = $this->em->getRepository(CarReservation::class)->getReservationsByUserPaginator($usr);
@@ -246,6 +258,9 @@ class EmployeeController extends AbstractController {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['user'] = $usr;
     $reservations = $this->em->getRepository(ToolReservation::class)->getReservationsByUserPaginator($usr);
 
@@ -280,6 +295,9 @@ class EmployeeController extends AbstractController {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['user'] = $usr;
     $args['pdfs'] = $this->em->getRepository(User::class)->getPdfsByUser($usr);
 
@@ -306,6 +324,9 @@ class EmployeeController extends AbstractController {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['user'] = $usr;
     $args['images'] = $this->em->getRepository(User::class)->getImagesByUser($usr);
 
@@ -331,6 +352,9 @@ class EmployeeController extends AbstractController {
       if ($korisnik->getId() != $usr->getId()) {
         return $this->redirect($this->generateUrl('app_home'));
       }
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['user'] = $usr;
     $reservations = $this->em->getRepository(Comment::class)->getCommentsByUserPaginator($usr);
@@ -366,7 +390,9 @@ class EmployeeController extends AbstractController {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
-
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     $notes = $this->em->getRepository(Notes::class)->getNotesByUserPaginator($usr);
 
@@ -451,8 +477,8 @@ class EmployeeController extends AbstractController {
 
     $args = [];
 
-    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
-    $args['categories'] = $this->em->getRepository(Category::class)->findBy(['isTaskCategory' => true, 'isSuspended' => false]);
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $this->getUser()->getCompany()],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
     return $this->render('report_employee/control.html.twig', $args);
   }
 
@@ -823,7 +849,7 @@ class EmployeeController extends AbstractController {
     $args = [];
 //
 //    $args['projects'] = $this->em->getRepository(Project::class)->findAll();
-    $args['categories'] = $this->em->getRepository(Category::class)->findBy(['isTaskCategory' => true, 'isSuspended' => false]);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
 
     return $this->render('report_project/control.html.twig', $args);
   }
@@ -840,7 +866,9 @@ class EmployeeController extends AbstractController {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
-
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $history = null;
     if($usr->getId()) {
       $history = $this->json($usr, Response::HTTP_OK, [], [
@@ -895,7 +923,9 @@ class EmployeeController extends AbstractController {
         return $this->redirect($this->generateUrl('app_home'));
       }
     }
-
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $type = $request->query->getInt('type');
     $usr->setPlainUserType($this->getUser()->getUserType());
     $history = null;
@@ -963,6 +993,9 @@ class EmployeeController extends AbstractController {
       if ($korisnik->getId() != $usr->getId()) {
         return $this->redirect($this->generateUrl('app_home'));
       }
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $type = $request->query->getInt('type');
 

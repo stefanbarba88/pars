@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Label;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Label>
@@ -15,8 +16,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Label[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class LabelRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, Label::class);
+    $this->security = $security;
   }
 
   public function save(Label $label): Label {
@@ -41,13 +44,17 @@ class LabelRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): Label {
     if (empty($id)) {
-      return new Label();
+      $label =  new Label();
+      $label->setCompany($this->security->getUser()->getCompany());
+      return $label;
     }
     return $this->getEntityManager()->getRepository(Label::class)->find($id);
   }
   public function getLabelsPaginator() {
-
+    $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('c')
+      ->where('c.company = :company')
+      ->setParameter('company', $company)
       ->orderBy('c.isSuspended', 'ASC')
       ->orderBy('c.title', 'ASC')
       ->addOrderBy('c.id', 'ASC')

@@ -10,6 +10,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Holiday>
@@ -20,8 +21,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Holiday[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class HolidayRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, Holiday::class);
+    $this->security = $security;
   }
 
   public function save(Holiday $holiday): Holiday {
@@ -43,17 +46,25 @@ class HolidayRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): Holiday {
     if (empty($id)) {
-      return new Holiday();
+      $holiday =  new Holiday();
+      $holiday->setCompany($this->security->getUser()->getCompany());
+      return $holiday;
+
     }
     return $this->getEntityManager()->getRepository(Holiday::class)->find($id);
   }
 
   public function getHolidaysPaginator($year) {
+
+    $company = $this->security->getUser()->getCompany();
+
     $startDate = new DateTimeImmutable("$year-01-01");
     $endDate = new DateTimeImmutable("$year-12-31");
 
     return $this->createQueryBuilder('c')
       ->where('c.datum BETWEEN :startDate AND :endDate')
+      ->andWhere('c.company = :company')
+      ->setParameter('company', $company)
       ->setParameter('startDate', $startDate)
       ->setParameter('endDate', $endDate)
       ->orderBy('c.datum', 'ASC')
@@ -64,6 +75,7 @@ class HolidayRepository extends ServiceEntityRepository {
   }
 
   public function getDostupnostHoliday($year): array {
+    $company = $this->security->getUser()->getCompany();
     $dostupnost = [];
 
     $startDate = new DateTimeImmutable("$year-01-01");
@@ -71,6 +83,8 @@ class HolidayRepository extends ServiceEntityRepository {
 
     $dostupnosti = $this->createQueryBuilder('c')
       ->where('c.datum BETWEEN :startDate AND :endDate')
+      ->andWhere('c.company = :company')
+      ->setParameter('company', $company)
       ->setParameter('startDate', $startDate)
       ->setParameter('endDate', $endDate)
       ->orderBy('c.datum', 'ASC')
@@ -123,6 +137,7 @@ class HolidayRepository extends ServiceEntityRepository {
   }
 
   public function brojNeradnihDana(): int {
+    $company = $this->security->getUser()->getCompany();
     $year = date('Y');
     $startDate = new DateTimeImmutable("$year-01-01");
     $endDate = new DateTimeImmutable();
@@ -130,6 +145,8 @@ class HolidayRepository extends ServiceEntityRepository {
     $noPraznici = $this->createQueryBuilder('c')
       ->where('c.datum BETWEEN :startDate AND :endDate')
       ->andWhere('c.type = :praznik')
+      ->andWhere('c.company = :company')
+      ->setParameter('company', $company)
       ->setParameter('startDate', $startDate)
       ->setParameter('endDate', $endDate)
       ->setParameter('praznik', TipNeradnihDanaData::PRAZNIK)

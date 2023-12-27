@@ -42,6 +42,21 @@ class ZaposleniPozicija {
     $this->updated = new DateTimeImmutable();
   }
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?Company $company = null;
+  public function getCompany(): ?Company
+  {
+    return $this->company;
+  }
+
+  public function setCompany(?Company $company): self
+  {
+    $this->company = $company;
+
+    return $this;
+  }
+
   #[ORM\PreUpdate]
   public function preUpdate(): void {
     $this->updated = new DateTimeImmutable();

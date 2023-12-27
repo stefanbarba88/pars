@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Repository\ClientRepository;
+use App\Repository\CompanyRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,26 +10,26 @@ use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-#[ORM\Table(name: 'clients')]
+#[ORM\Table(name: 'companies')]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['pib'], message: 'U bazi već postoji klijent sa ovim pib-om.')]
-#[ORM\Entity(repositoryClass: ClientRepository::class)]
-class Client implements JsonSerializable {
+#[ORM\Entity(repositoryClass: CompanyRepository::class)]
+class Company {
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]
   private ?int $id = null;
 
   public function getImageUploadPath(): ?string {
-    return $_ENV['USER_IMAGE_PATH'] . date('Y/m/d/');
+    return $_ENV['COMPANY_IMAGE_PATH'] . date('Y/m/d/');
   }
 
   public function getAvatarUploadPath(): ?string {
-    return $_ENV['USER_AVATAR_PATH'] . date('Y/m/d/');
+    return $_ENV['COMPANY_AVATAR_PATH'] . date('Y/m/d/');
   }
 
   public function getThumbUploadPath(): ?string {
-    return $_ENV['USER_THUMB_PATH'] . date('Y/m/d/');
+    return $_ENV['COMPANY_THUMB_PATH'] . date('Y/m/d/');
   }
 
   #[ORM\Column(length: 255)]
@@ -71,38 +71,11 @@ class Client implements JsonSerializable {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\OneToMany(mappedBy: 'client', targetEntity: ClientHistory::class, cascade: ["persist", "remove"])]
-  private Collection $clientHistories;
 
-  #[ORM\ManyToOne(inversedBy: 'clients')]
+  #[ORM\ManyToOne(inversedBy: 'companies')]
   private ?Image $image = null;
 
-  #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'clients')]
-  private Collection $contact;
 
-  #[ORM\OneToMany(mappedBy: 'client', targetEntity: StopwatchTime::class)]
-  private Collection $stopwatchTimes;
-
-  #[ORM\ManyToOne]
-  #[ORM\JoinColumn(nullable: true)]
-  private ?Company $company = null;
-  public function getCompany(): ?Company
-  {
-    return $this->company;
-  }
-
-  public function setCompany(?Company $company): self
-  {
-    $this->company = $company;
-
-    return $this;
-  }
-
-  public function __construct() {
-    $this->clientHistories = new ArrayCollection();
-    $this->contact = new ArrayCollection();
-    $this->stopwatchTimes = new ArrayCollection();
-  }
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -115,22 +88,22 @@ class Client implements JsonSerializable {
     $this->updated = new DateTimeImmutable();
   }
 
-  public function jsonSerialize(): array {
-
-    return [
-      'id' => $this->getId(),
-      'title' => $this->getTitle(),
-      'adresa' => $this->getAdresa(),
-      'grad' => $this->getGrad(),
-      'telefon1' => $this->getTelefon1(),
-      'telefon2' => $this->getTelefon2(),
-      'pib' => $this->getPib(),
-      'contact' => $this->getContact(),
-      'editBy' => $this->editBy,
-      'isSuspended' => $this->isSuspended(),
-      'isSerbian' => $this->isSerbian(),
-    ];
-  }
+//  public function jsonSerialize(): array {
+//
+//    return [
+//      'id' => $this->getId(),
+//      'title' => $this->getTitle(),
+//      'adresa' => $this->getAdresa(),
+//      'grad' => $this->getGrad(),
+//      'telefon1' => $this->getTelefon1(),
+//      'telefon2' => $this->getTelefon2(),
+//      'pib' => $this->getPib(),
+//      'contact' => $this->getContact(),
+//      'editBy' => $this->editBy,
+//      'isSuspended' => $this->isSuspended(),
+//      'isSerbian' => $this->isSerbian(),
+//    ];
+//  }
 
   public function getId(): ?int {
     return $this->id;
@@ -292,7 +265,7 @@ class Client implements JsonSerializable {
   public function setUpdated(DateTimeImmutable $updated): void {
     $this->updated = $updated;
   }
-  
+
   public function getBadgeByStatus(): string {
     if ($this->isSuspended) {
       return '<span class="badge bg-yellow text-primary">Deaktiviran</span>';
@@ -301,32 +274,7 @@ class Client implements JsonSerializable {
 
   }
 
-  /**
-   * @return Collection<int, ClientHistory>
-   */
-  public function getClientHistories(): Collection {
-    return $this->clientHistories;
-  }
 
-  public function addClientHistory(ClientHistory $clientHistory): self {
-    if (!$this->clientHistories->contains($clientHistory)) {
-      $this->clientHistories->add($clientHistory);
-      $clientHistory->setClient($this);
-    }
-
-    return $this;
-  }
-
-  public function removeClientHistory(ClientHistory $clientHistory): self {
-    if ($this->clientHistories->removeElement($clientHistory)) {
-      // set the owning side to null (unless already changed)
-      if ($clientHistory->getClient() === $this) {
-        $clientHistory->setClient(null);
-      }
-    }
-
-    return $this;
-  }
 
   public function getImage(): ?Image {
     return $this->image;
@@ -338,58 +286,5 @@ class Client implements JsonSerializable {
     return $this;
   }
 
-  /**
-   * @return Collection<int, User>
-   */
-  public function getContact(): Collection
-  {
-      return $this->contact;
-  }
-
-  public function addContact(User $contact): self
-  {
-      if (!$this->contact->contains($contact)) {
-          $this->contact->add($contact);
-      }
-
-      return $this;
-  }
-
-  public function removeContact(User $contact): self
-  {
-      $this->contact->removeElement($contact);
-
-      return $this;
-  }
-
-  /**
-   * @return Collection<int, StopwatchTime>
-   */
-  public function getStopwatchTimes(): Collection
-  {
-      return $this->stopwatchTimes;
-  }
-
-  public function addStopwatchTime(StopwatchTime $stopwatchTime): self
-  {
-      if (!$this->stopwatchTimes->contains($stopwatchTime)) {
-          $this->stopwatchTimes->add($stopwatchTime);
-          $stopwatchTime->setClient($this);
-      }
-
-      return $this;
-  }
-
-  public function removeStopwatchTime(StopwatchTime $stopwatchTime): self
-  {
-      if ($this->stopwatchTimes->removeElement($stopwatchTime)) {
-          // set the owning side to null (unless already changed)
-          if ($stopwatchTime->getClient() === $this) {
-              $stopwatchTime->setClient(null);
-          }
-      }
-
-      return $this;
-  }
 
 }

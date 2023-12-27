@@ -7,6 +7,7 @@ use App\Entity\ToolReservation;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<ToolReservation>
@@ -17,8 +18,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ToolReservation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ToolReservationRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, ToolReservation::class);
+    $this->security = $security;
   }
 
   public function save(ToolReservation $toolReservation): ToolReservation {
@@ -56,13 +59,16 @@ class ToolReservationRepository extends ServiceEntityRepository {
 
     $reservation = new ToolReservation();
     $reservation->setTool($tool);
+    $reservation->setCompany($this->security->getUser()->getCompany());
     return $reservation;
 
   }
 
   public function findForForm(int $id = 0): ToolReservation {
     if (empty($id)) {
-      return new ToolReservation();
+      $tool = new ToolReservation();
+      $tool->setCompany($this->security->getUser()->getCompany());
+      return $tool;
     }
     return $this->getEntityManager()->getRepository(ToolReservation::class)->find($id);
 

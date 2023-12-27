@@ -27,6 +27,20 @@ use Symfony\Component\Validator\Constraints\File;
 
 class ProjectTeamListFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
+
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getReservation(): ?Project {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $company = $dataObject->getReservation()->getCompany();
+
     $builder
 
       ->add('team', EntityType::class, [

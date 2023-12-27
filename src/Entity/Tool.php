@@ -73,6 +73,20 @@ class Tool implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Task::class, mappedBy: 'oprema')]
   private Collection $tasks;
 
+  #[ORM\ManyToOne]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?Company $company = null;
+  public function getCompany(): ?Company
+  {
+    return $this->company;
+  }
+
+  public function setCompany(?Company $company): self
+  {
+    $this->company = $company;
+
+    return $this;
+  }
 
   public function __construct() {
     $this->toolHistories = new ArrayCollection();

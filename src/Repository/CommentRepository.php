@@ -9,6 +9,7 @@ use App\Entity\Task;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Comment>
@@ -19,8 +20,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Comment[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class CommentRepository extends ServiceEntityRepository {
-  public function __construct(ManagerRegistry $registry) {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
     parent::__construct($registry, Comment::class);
+    $this->security = $security;
   }
 
   public function save(Comment $comment): Comment {
@@ -56,7 +59,7 @@ class CommentRepository extends ServiceEntityRepository {
 
 
   public function getCommentsByUserPaginator(User $user) {
-
+    $company = $user->getCompany();
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
       return $this->createQueryBuilder('c')
         ->where('c.user = :userId')
@@ -67,16 +70,21 @@ class CommentRepository extends ServiceEntityRepository {
     }
 
     return $this->createQueryBuilder('c')
+      ->andWhere('c.company = :company')
+      ->setParameter('company', $company)
       ->orderBy('c.isSuspended', 'ASC')
       ->addOrderBy('c.id', 'DESC')
       ->getQuery();
   }
 
   public function countCommentsActive(): int {
+    $company = $this->security->getUser()->getCompany();
     $qb = $this->createQueryBuilder('c');
 
     $qb->select($qb->expr()->count('c'))
       ->andWhere('c.isSuspended = :isSuspended')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
       ->setParameter(':isSuspended', 0);
 
     $query = $qb->getQuery();
@@ -89,6 +97,7 @@ class CommentRepository extends ServiceEntityRepository {
 
     $comment = new Comment();
     $comment->setTask($task);
+    $comment->setCompany($task->getCompany());
     return $comment;
 
   }

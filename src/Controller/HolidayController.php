@@ -32,7 +32,8 @@ class HolidayController extends AbstractController {
 
     $year = date("Y");
 
-    $holidays = $this->em->getRepository(Holiday::class)->getHolidaysPaginator($year);
+//    $holidays = $this->em->getRepository(Holiday::class)->getHolidaysPaginator($year);
+    $holidays = $this->em->getRepository(Holiday::class)->getHolidaysPaginator();
 
     $pagination = $paginator->paginate(
       $holidays, /* query NOT result */
@@ -82,6 +83,7 @@ class HolidayController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+
     $args = [];
 
     if ($request->isMethod('POST')) {
@@ -107,6 +109,7 @@ class HolidayController extends AbstractController {
             $odmor->setDatum($datum);
             $odmor->setTitle('Kolektivni odmor');
             $odmor->setType(TipNeradnihDanaData::KOLEKTIVNI_ODMOR);
+            $odmor->setCompany($this->getUser()->getCompany());
             $this->em->getRepository(Holiday::class)->save($odmor);
           }
         }

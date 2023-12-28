@@ -16,6 +16,7 @@ use App\Entity\Team;
 use App\Entity\User;
 use App\Form\ProjectFormType;
 use App\Form\ProjectTeamListFormType;
+use App\Repository\ProjectRepository;
 use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
@@ -525,8 +526,8 @@ class ProjectController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function formReport(Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     if ($request->isMethod('POST')) {
 
@@ -592,6 +593,33 @@ class ProjectController extends AbstractController {
     return $this->render('report_project/control.html.twig', $args);
   }
 
+  #[Route('/reports-izlasci', name: 'app_project_izlasci_reports')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportIzlasci(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $company = $this->getUser()->getCompany();
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+      $args['reports'] = $this->em->getRepository(Project::class)->getCountTasksByProjectCompany($company, $data);
+      $args['period'] = $data['report_form']['period'];
+      $args['kategorije'] = $args['reports'][1];
+
+      return $this->render('report_project/view_izlasci.html.twig', $args);
+
+    }
+
+    $args = [];
+//
+//    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany()]);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
+
+    return $this->render('report_project/control_izlasci.html.twig', $args);
+  }
+
   #[Route('/report-xls', name: 'app_project_report_xls')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function xlsReport(Request $request, Slugify $slugify)    : Response {
@@ -608,7 +636,7 @@ class ProjectController extends AbstractController {
     $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
 
     $projekat = $this->em->getRepository(Project::class)->find($request->query->get('projekat'));
-
+    $company = $projekat->getCompany();
     $report = $this->em->getRepository(Project::class)->getReportXls($datum, $projekat);
 
 
@@ -1133,7 +1161,7 @@ class ProjectController extends AbstractController {
 
         $sheet->mergeCells('F' . $startAktivnosti + 3 . ':H' . $startAktivnosti + 3);
         $sheet->mergeCells('F' . $startAktivnosti + 4 . ':H' . $startAktivnosti + 4);
-        $sheet->setCellValue('F' . $startAktivnosti + 3, 'Za PARS DOO:');
+        $sheet->setCellValue('F' . $startAktivnosti + 3, 'Za ' . $company->getTitle() . ':');
 
         $sheet->getStyle('F' . $startAktivnosti + 3)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('F' . $startAktivnosti + 3)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
@@ -1147,8 +1175,13 @@ class ProjectController extends AbstractController {
 
         $drawing = new Drawing();
         $drawing->setName('Logo');
-        $drawing->setDescription('Pars logo');
-        $drawing->setPath('assets/images/logo/logoXls.png'); /* put your path and image here */
+        $drawing->setDescription('Logo');
+//        $image = $company->getImage()->getThumbnail100();
+        $drawing->setPath('assets/images/logo/default_logo.png');
+        if ($company->getId() == 1){
+          $drawing->setPath('assets/images/logo/logoXls.png'); /* put your path and image here */
+        }
+
 
         $drawing->setCoordinates2('A1:B1'); // Postavite visinu slike
         $drawing->setWidth(100);
@@ -1157,14 +1190,21 @@ class ProjectController extends AbstractController {
 
 
 //      $sheet->mergeCells('F1:I4');
+        $sheet->setCellValue('B1', $company->getTitle());
+        if ($company->getId() == 1){
+          $sheet->setCellValue('B1', "PARS DOO\nAGENCIJA  ZA KONSALTING\nPROJEKTOVANJE I\nGEODETSKE  POSLOVE");
+        }
 
-        $sheet->setCellValue('B1', "PARS DOO\nAGENCIJA  ZA KONSALTING\nPROJEKTOVANJE I\nGEODETSKE  POSLOVE");
         $sheet->getStyle('B1')->getAlignment()->setWrapText(true);
         $sheet->getStyle('B1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
         $sheet->getStyle('B1')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
         $sheet->mergeCells('A5:B8');
-        $sheet->setCellValue('A5', "11211 Beograd   Put za Crvenku broj 56e\nTel/fax+381 (0)63 289026. +381 (0)64 1598100\ne-mail:vladapars@gmail.com\nPIB: SR110533773  Matični broj:21360031  Šifra del:7112");
+        $sheet->setCellValue('A5', "" . $company->getGrad()->getPtt()." " . $company->getGrad()->getTitle().", " . $company->getAdresa() ."\nTel/fax:" . $company->getTelefon1() ."\ne-mail:" . $company->getEmail(). "\nPIB:" . $company->getPib());
+
+        if ($company->getId() == 1){
+          $sheet->setCellValue('A5', "11211 Beograd   Put za Crvenku broj 56e\nTel/fax:+381 (0)63 289026. +381 (0)64 1598100\ne-mail:vladapars@gmail.com\nPIB: SR110533773  Matični broj:21360031  Šifra del:7112");
+        }
         $sheet->getStyle('A5')->getAlignment()->setWrapText(true);
         $sheet->getStyle('A5:B8')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
         $sheet->getStyle('A5:B8')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);

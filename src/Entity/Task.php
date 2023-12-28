@@ -144,7 +144,7 @@ class Task implements JsonSerializable {
   private Collection $oprema;
 
   #[ORM\ManyToOne]
-  #[ORM\JoinColumn(nullable: false)]
+  #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
   public function getCompany(): ?Company
   {

@@ -31,7 +31,10 @@ class ToolFormType extends AbstractType {
     $builder
       ->add('title')
       ->add('serial')
-      ->add('sertifikat')
+      ->add('sertifikat', NumberType::class, [
+        'required' => false,
+        'html5' => true,
+      ])
       ->add('model')
       ->add('type', ChoiceType::class, [
         'placeholder' => '--Izaberite tip opreme--',

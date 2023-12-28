@@ -169,8 +169,7 @@ class ToolReservationFormDetailsType extends AbstractType {
         'class' => Tool::class,
         'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
-            ->andWhere('g.isReserved IS NULL OR g.isReserved <> 1')
-            ->andWhere('g.isReserved IS NULL OR g.isReserved <> 1')
+            ->where('g.isReserved IS NULL OR g.isReserved <> 1')
             ->andWhere('g.company = :company')
             ->setParameter(':company', $company)
             ->andWhere('g.type <> 1')

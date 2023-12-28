@@ -271,6 +271,7 @@ class ToolController extends AbstractController {
     $type = $request->query->getInt('type');
     $user = $this->getUser();
     $reservation = new ToolReservation();
+    $reservation->setCompany($user->getCompany());
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
       $reservation->setUser($user);
     }

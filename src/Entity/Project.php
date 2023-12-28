@@ -135,7 +135,7 @@ class Project implements JsonSerializable {
   private Collection $team;
 
   #[ORM\ManyToOne]
-  #[ORM\JoinColumn(nullable: false)]
+  #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
   public function getCompany(): ?Company
   {

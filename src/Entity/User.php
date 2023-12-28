@@ -181,7 +181,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   private Collection $overtimes;
 
   #[ORM\ManyToOne]
-  #[ORM\JoinColumn(nullable: false)]
+  #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
   public function getCompany(): ?Company
   {

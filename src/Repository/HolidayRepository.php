@@ -54,19 +54,19 @@ class HolidayRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(Holiday::class)->find($id);
   }
 
-  public function getHolidaysPaginator($year) {
+  public function getHolidaysPaginator() {
 
     $company = $this->security->getUser()->getCompany();
 
-    $startDate = new DateTimeImmutable("$year-01-01");
-    $endDate = new DateTimeImmutable("$year-12-31");
+//    $startDate = new DateTimeImmutable("$year-01-01");
+//    $endDate = new DateTimeImmutable("$year-12-31");
 
     return $this->createQueryBuilder('c')
-      ->where('c.datum BETWEEN :startDate AND :endDate')
+//      ->where('c.datum BETWEEN :startDate AND :endDate')
       ->andWhere('c.company = :company')
       ->setParameter('company', $company)
-      ->setParameter('startDate', $startDate)
-      ->setParameter('endDate', $endDate)
+//      ->setParameter('startDate', $startDate)
+//      ->setParameter('endDate', $endDate)
       ->orderBy('c.datum', 'ASC')
       ->addOrderBy('c.isSuspended', 'ASC')
       ->addOrderBy('c.title', 'ASC')
@@ -74,19 +74,19 @@ class HolidayRepository extends ServiceEntityRepository {
       ->getQuery();
   }
 
-  public function getDostupnostHoliday($year): array {
+  public function getDostupnostHoliday(): array {
     $company = $this->security->getUser()->getCompany();
     $dostupnost = [];
 
-    $startDate = new DateTimeImmutable("$year-01-01");
-    $endDate = new DateTimeImmutable("$year-12-31");
+//    $startDate = new DateTimeImmutable("$year-01-01");
+//    $endDate = new DateTimeImmutable("$year-12-31");
 
     $dostupnosti = $this->createQueryBuilder('c')
-      ->where('c.datum BETWEEN :startDate AND :endDate')
+//      ->where('c.datum BETWEEN :startDate AND :endDate')
       ->andWhere('c.company = :company')
       ->setParameter('company', $company)
-      ->setParameter('startDate', $startDate)
-      ->setParameter('endDate', $endDate)
+//      ->setParameter('startDate', $startDate)
+//      ->setParameter('endDate', $endDate)
       ->orderBy('c.datum', 'ASC')
       ->addOrderBy('c.isSuspended', 'ASC')
       ->addOrderBy('c.title', 'ASC')

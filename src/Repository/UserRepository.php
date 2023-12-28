@@ -7,6 +7,7 @@ use App\Classes\DTO\UploadedFileDTO;
 use App\Entity\Availability;
 use App\Entity\Car;
 use App\Entity\Category;
+use App\Entity\Company;
 use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\Project;
@@ -278,8 +279,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     $company = $this->security->getUser()->getCompany();
 
     return $this->createQueryBuilder('u')
-      ->andWhere('u.userType = :userType')
-      ->where('u.company = :company')
+      ->where('u.userType = :userType')
+      ->andWhere('u.company = :company')
       ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
       ->addOrderBy('u.isSuspended', 'ASC')
@@ -695,6 +696,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   public function getZaposleni(): array {
     $company = $this->security->getUser()->getCompany();
+    return $this->createQueryBuilder('u')
+      ->andWhere('u.userType = :userType')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
+      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+      ->setParameter(':isSuspended', 0)
+      ->getQuery()
+      ->getResult();
+  }
+
+  public function getZaposleniCommand(Company $company): array {
     return $this->createQueryBuilder('u')
       ->andWhere('u.userType = :userType')
       ->andWhere('u.isSuspended = :isSuspended')

@@ -4,8 +4,10 @@ namespace App\Repository;
 
 use App\Classes\Data\FastTaskData;
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
 use App\Entity\Car;
+use App\Entity\Company;
 use App\Entity\FastTask;
 use App\Entity\Project;
 use App\Entity\Task;
@@ -2824,6 +2826,29 @@ class FastTaskRepository extends ServiceEntityRepository {
 
   }
 
+  public function getTimeTableFinishCommand(DateTimeImmutable $date, Company $company): array {
+
+    $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('f');
+    $qb
+      ->where($qb->expr()->between('f.datum', ':start', ':end'))
+      ->andWhere('f.status = :status1 OR f.status = :status2')
+      ->andWhere('f.company = :company')
+      ->setParameter(':company', $company)
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->setParameter('status1', FastTaskData::SAVED)
+      ->setParameter('status2', FastTaskData::EDIT)
+      ->setMaxResults(1);
+
+    $query = $qb->getQuery();
+    return $query->getResult();
+
+
+  }
+
   public function getTimeTableTomorrowId(DateTimeImmutable $date): int {
     $company = $this->security->getUser()->getCompany();
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
@@ -2852,9 +2877,9 @@ class FastTaskRepository extends ServiceEntityRepository {
     $datum = $data['task_quick_form_datum'];
     $format = "d.m.Y H:i:s";
     $dateTime = DateTimeImmutable::createFromFormat($format, $datum . '14:30:00');
-
+    $company = $fastTask->getCompany();
     if (is_null($fastTask->getId())) {
-      $company = $fastTask->getCompany();
+
       $startPlan = $dateTime->format('Y-m-d 00:00:00'); // Početak dana
       $endPlan = $dateTime->format('Y-m-d 23:59:59'); // Kraj dana
 
@@ -6283,7 +6308,10 @@ class FastTaskRepository extends ServiceEntityRepository {
 
     if ($currentTime > $editTime) {
       if (is_null($fastTask->getId())) {
-        $plan = $this->getEntityManager()->getRepository(Task::class)->createTasksFromList($fastTask, $this->getEntityManager()->getRepository(User::class)->find(1));
+
+        $superadmin = $this->getEntityManager()->getRepository(User::class)->findOneBy(['company' => $company, 'userType' => UserRolesData::ROLE_SUPER_ADMIN, 'isSuspended' => false], ['id' => 'ASC']);
+
+        $plan = $this->getEntityManager()->getRepository(Task::class)->createTasksFromList($fastTask, $superadmin);
         $datum = $plan->getDatum();
 
         $timetable = $this->getEntityManager()->getRepository(FastTask::class)->getTimetableByFastTasks($plan);

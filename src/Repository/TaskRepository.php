@@ -8,6 +8,7 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
 use App\Entity\Car;
 use App\Entity\Category;
+use App\Entity\Company;
 use App\Entity\FastTask;
 use App\Entity\Image;
 use App\Entity\Pdf;
@@ -1329,6 +1330,85 @@ class TaskRepository extends ServiceEntityRepository {
     return $lista;
   }
 
+
+  public function getTasksByDateAndProjectAllCategoryReport(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project, array $category): array {
+    $catCheck = [];
+    foreach ($category as $cCheck) {
+      $catCheck[] = $cCheck->getId();
+    }
+
+    $total = 0;
+    $free = 0;
+    $kategorije = [];
+
+//    foreach ($category as $cat) {
+//      $kategorije[] = [
+//        'naziv' => mb_strtolower($cat->getTitle()),
+//        'count' => 0,
+//      ];
+//    }
+
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('t.project = :project')
+      ->andWhere('t.isDeleted <> 1')
+//      ->andWhere('t.category = :category')
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->setParameter('project', $project->getId())
+//      ->setParameter('category', $category->getId())
+      ->orderBy('t.created', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+    foreach ($taskovi as $tsk) {
+      $total++;
+      if ($tsk->getIsFree()) {
+        $free++;
+      }
+      if (!is_null($tsk->getCategory())) {
+        if (in_array($tsk->getCategory(), $category)) {
+          $kategorije[] = $tsk->getCategory()->getId();
+        }
+      }
+    }
+
+    $brojPonavljanja = array_count_values($kategorije);
+    $okrenutNiz = array_flip($brojPonavljanja);
+
+    $razlika = array_diff($catCheck, $okrenutNiz);
+
+    $razlika = array_flip($razlika);
+
+    foreach ($razlika as &$vredn) {
+      $vredn = 0;
+    }
+
+    $brojPonavljanjaMerge = $brojPonavljanja + $razlika;
+    ksort($brojPonavljanjaMerge);
+
+    $kat = [];
+    foreach ($brojPonavljanjaMerge as $vrednost => $broj) {
+      $kat[] = [
+        $this->getEntityManager()->getRepository(Category::class)->find($vrednost)->getTitle() => $broj,
+      ];
+    }
+
+    return [
+      'project' => $project->getTitle(),
+      'total' => $total,
+      'free' => $free,
+      'kategorije' => $kat,
+    ];
+
+  }
+
   public function getTasksByDateAndProjectAllCategory(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project, Category $category): array {
 
     $total = 0;
@@ -1501,8 +1581,8 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
-  public function getTasksByDateForEmail(DateTimeImmutable $date): array  {
-    $company = $this->security->getUser()->getCompany();
+  public function getTasksByDateForEmail(DateTimeImmutable $date, Company $company): array  {
+
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
 
@@ -1526,10 +1606,11 @@ class TaskRepository extends ServiceEntityRepository {
     }
 
     if(!empty($lista)) {
-      $statusi = $this->getEntityManager()->getRepository(TaskEmail::class)->findOneBy([]);
+      $statusi = $this->getEntityManager()->getRepository(TaskEmail::class)->findOneBy(['company' => $company]);
       if (is_null($statusi)) {
         $status = new TaskEmail();
         $status->setTasks($lista);
+        $status->setCompany($company);
         $this->getEntityManager()->getRepository(TaskEmail::class)->save($status);
         return $lista;
       } else {
@@ -1584,10 +1665,7 @@ class TaskRepository extends ServiceEntityRepository {
       $task1->setRoundingInterval(15);
       $task1->setCreatedBy($user);
       $task1->setCategory($category);
-
-
       $task1->setIsFree($fastTask->getFree1());
-
 
       if(!is_null($fastTask->getDescription1())) {
         $task1->setDescription($fastTask->getDescription1());
@@ -2681,7 +2759,9 @@ class TaskRepository extends ServiceEntityRepository {
 
   public function findForForm(int $id = 0): Task {
     if (empty($id)) {
-      return new Task();
+      $task = new Task();
+      $task->setCompany($this->security->getUser()->getCompany());
+      return $task;
     }
     return $this->getEntityManager()->getRepository(Task::class)->find($id);
 

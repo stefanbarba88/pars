@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Classes\Data\VrstaPlacanjaData;
 use App\Entity\Category;
 use App\Entity\Client;
+use App\Entity\Company;
 use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\Project;
@@ -383,9 +384,8 @@ class ProjectRepository extends ServiceEntityRepository {
   }
 
 
-  public function countClientTasks(Client $client, Category $category, DateTimeImmutable $prethodniMesecDatum, DateTimeImmutable $danas) : array {
+  public function countClientTasks(Company $company, Client $client, Category $category, DateTimeImmutable $prethodniMesecDatum, DateTimeImmutable $danas) : array {
 
-    $company = $this->security->getUser()->getCompany();
     $projectsByClient = [];
 
     $projects = $this->getEntityManager()->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $company]);
@@ -418,6 +418,51 @@ class ProjectRepository extends ServiceEntityRepository {
 
 
     return $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectAllCategory($prethodniMesecDatum, $datum, $project, $category);
+
+  }
+
+  public function getCountTasksByProjectCompany(Company $company, $data):array {
+
+    $projects = $this->getEntityManager()->getRepository(Project::class)->findBy(['company' => $company, 'isSuspended' => false], ['title' => 'ASC']);
+
+    $datum = $data['report_form']['period'];
+    $dates = explode(' - ', $datum);
+
+    $category = [];
+
+    if (isset($data['report_form']['category'])) {
+      foreach ($data['report_form']['category'] as $cat) {
+        if ($cat != '') {
+          $category[] = $this->getEntityManager()->getRepository(Category::class)->find($cat);
+        }
+      }
+    }
+
+    if (empty($category)) {
+      $category1 = $this->getEntityManager()->getRepository(Category::class)->findBy(['isSuspended' => false, 'company' => $company], ['id' => 'ASC']);
+      $category2 = $this->getEntityManager()->getRepository(Category::class)->findBy(['isSuspended' => false, 'company' => NULL], ['id' => 'ASC']);
+      $category = array_merge($category1, $category2);
+    }
+
+    usort($category, function ($a, $b) {
+      return $a->getId() - $b->getId();
+    });
+
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+
+    $reports = [];
+
+//    $project = $this->getEntityManager()->getRepository(Project::class)->find(25);
+    foreach ($projects as $project) {
+      $reports[] = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectAllCategoryReport($start, $stop, $project, $category);
+    }
+    usort($reports, function ($a, $b) {
+      return $b['total'] - $a['total'];
+    });
+
+    return [$reports, $category];
 
   }
 

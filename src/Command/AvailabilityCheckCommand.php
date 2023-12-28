@@ -6,6 +6,7 @@ use App\Classes\Data\FastTaskData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
 use App\Entity\Availability;
+use App\Entity\Company;
 use App\Entity\FastTask;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -44,12 +45,16 @@ class AvailabilityCheckCommand extends Command {
 
     $danas = new DateTimeImmutable();
 
-    $users = $this->em->getRepository(User::class)->getZaposleni();
+    $companies = $this->em->getRepository(Company::class)->findBy(['isSuspended' => false]);
 
-    foreach ($users as $user) {
-      $dostupnost = $this->em->getRepository(Availability::class)->findOneBy(['datum' => $danas->setTime(0,0), 'User' => $user]);
-      if (is_null($dostupnost)) {
-        $this->em->getRepository(StopwatchTime::class)->addDostupnost($user);
+    foreach ($companies as $company) {
+    $users = $this->em->getRepository(User::class)->getZaposleniCommand($company);
+
+      foreach ($users as $user) {
+        $dostupnost = $this->em->getRepository(Availability::class)->findOneBy(['datum' => $danas->setTime(0,0), 'User' => $user]);
+        if (is_null($dostupnost)) {
+          $this->em->getRepository(StopwatchTime::class)->addDostupnost($user);
+        }
       }
     }
 

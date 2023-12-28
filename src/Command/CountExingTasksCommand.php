@@ -6,6 +6,7 @@ use App\Classes\Data\FastTaskData;
 use App\Entity\Activity;
 use App\Entity\Category;
 use App\Entity\Client;
+use App\Entity\Company;
 use App\Entity\FastTask;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
@@ -45,13 +46,14 @@ class CountExingTasksCommand extends Command {
 
     $client = $this->em->getRepository(Client::class)->find(5);
     $category = $this->em->getRepository(Category::class)->find(5);
+    $company = $this->em->getRepository(Company::class)->find(1);
 
     $prethodniMesecDatum = new DateTimeImmutable('last day of last month');
     $prethodniMesecDatum = $prethodniMesecDatum->setDate($prethodniMesecDatum->format('Y'), $prethodniMesecDatum->format('m'), 26);
 
     $datum = new DateTimeImmutable();
 
-    $projects = $this->em->getRepository(Project::class)->countClientTasks($client, $category, $prethodniMesecDatum, $datum);
+    $projects = $this->em->getRepository(Project::class)->countClientTasks($company, $client, $category, $prethodniMesecDatum, $datum);
 
 
     $this->mail->tasksByClient($projects, $client, $prethodniMesecDatum, $datum, 'vladapars@gmail.com');

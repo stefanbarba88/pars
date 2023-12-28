@@ -337,7 +337,7 @@ class CarController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::CAR_ADD_IMAGE);
 
-        return $this->redirectToRoute('app_car_images_view', ['id' => $reservation->getId()]);
+        return $this->redirectToRoute('app_car_images_view', ['id' => $reservation->getCar()->getId()]);
 
       }
     }

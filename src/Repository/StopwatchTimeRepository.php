@@ -37,6 +37,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
   public function addDostupnost(User $user): ?Availability {
 
+    $company = $user->getCompany();
+
     $datum = new DateTimeImmutable();
 
     $startDate = $datum->format('Y-m-d 00:00:00'); // Početak dana
@@ -45,6 +47,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     $merenja = $this->createQueryBuilder('t')
       ->where('t.start BETWEEN :startDate AND :endDate')
       ->andWhere('t.isDeleted = 0')
+      ->andWhere('t.company = :company')
+      ->setParameter('company', $company)
       ->setParameter('startDate', $startDate)
       ->setParameter('endDate', $endDate)
       ->getQuery()
@@ -64,6 +68,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     }
     $dostupnost->setDatum($datum->setTime(0, 0));
     $dostupnost->setUser($user);
+    $dostupnost->setCompany($company);
 
     $dostupnost->setTypeDay(0);
 
@@ -94,6 +99,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     $this->getEntityManager()->getRepository(Availability::class)->save($dostupnost);
     return $dostupnost;
   }
+
+
 
   public function removeDostupnost(StopwatchTime $stopwatchTime): ?Availability {
 

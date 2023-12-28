@@ -3,16 +3,12 @@
 namespace App\Command;
 
 use App\Classes\Data\FastTaskData;
-use App\Entity\Activity;
+use App\Entity\Company;
 use App\Entity\FastTask;
-use App\Entity\Task;
-use App\Entity\User;
-use App\Service\ImportService;
 use App\Service\MailService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -40,24 +36,30 @@ class FinishTimetableCommand extends Command {
 
     $start = microtime(true);
 
-    $plan = $this->em->getRepository(FastTask::class)->getTimeTableId(new DateTimeImmutable());
+    $danas = new DateTimeImmutable();
 
-    if ($plan != 0) {
-      $fastTask = $this->em->getRepository(FastTask::class)->find($plan);
-      $fastTask->setStatus(FastTaskData::FINAL);
-      $fastTask = $this->em->getRepository(FastTask::class)->save($fastTask);
+    $companies = $this->em->getRepository(Company::class)->findBy(['isSuspended' => false]);
 
-      $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
-      $datum = $fastTask->getDatum();
-      $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask, FastTaskData::FINAL);
+    foreach ($companies as $company) {
 
-      $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($fastTask);
-      $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($fastTask, FastTaskData::SAVED);
+      $plan = $this->em->getRepository(FastTask::class)->getTimeTableFinishCommand($danas, $company);
 
-      $this->mail->plan($timetable, $users, $datum);
-      $this->mail->subs($subs, $usersSub, $datum);
+      if (!empty($plan)) {
+        $fastTask = $plan[0];
+        $fastTask->setStatus(FastTaskData::FINAL);
+        $fastTask = $this->em->getRepository(FastTask::class)->save($fastTask);
+
+        $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
+        $datum = $fastTask->getDatum();
+        $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask, FastTaskData::FINAL);
+
+        $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($fastTask);
+        $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($fastTask, FastTaskData::SAVED);
+
+        $this->mail->plan($timetable, $users, $datum);
+        $this->mail->subs($subs, $usersSub, $datum);
+      }
     }
-
 
     $end = microtime(true);
 

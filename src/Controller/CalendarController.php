@@ -59,6 +59,7 @@ class CalendarController extends AbstractController {
     }
 
     $korisnik = $this->getUser();
+    $company = $calendar->getCompany();
 
     if ($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
       $calendar->addUser($korisnik);
@@ -93,10 +94,10 @@ class CalendarController extends AbstractController {
         }
         $this->em->getRepository(Calendar::class)->save($calendar);
         $korisnik = $calendar->getUser()->first();
-        $mailService->calendar($calendar, CompanyInfo::ORGANIZATION_MAIL_ADDRESS);
-        $mailService->calendar($calendar, 'marceta.pars@gmail.com');
-
-
+        $mailService->calendar($calendar, $company->getEmail());
+        if ($company->getId() == 1) {
+          $mailService->calendar($calendar, 'marceta.pars@gmail.com');
+        }
 
         notyf()
           ->position('x', 'right')
@@ -132,7 +133,7 @@ class CalendarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $company = $calendar->getCompany();
     $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_admin_form', ['id' => $calendar->getId()])]]);
 
 
@@ -147,8 +148,10 @@ class CalendarController extends AbstractController {
           $calendar->addUser($user);
         }
         $this->em->getRepository(Calendar::class)->save($calendar);
-        $mailService->calendar($calendar, CompanyInfo::ORGANIZATION_MAIL_ADDRESS);
-        $mailService->calendar($calendar, 'marceta.pars@gmail.com');
+        $mailService->calendar($calendar, $company->getEmail());
+        if ($company->getId() == 1) {
+          $mailService->calendar($calendar, 'marceta.pars@gmail.com');
+        }
 
         notyf()
           ->position('x', 'right')
@@ -221,6 +224,7 @@ class CalendarController extends AbstractController {
     }
 
     $mailService->responseCalendar($calendar);
+
     $this->em->getRepository(Calendar::class)->save($calendar);
 
     if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {

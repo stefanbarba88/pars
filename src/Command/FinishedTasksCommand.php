@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Classes\Data\FastTaskData;
 use App\Entity\Activity;
+use App\Entity\Company;
 use App\Entity\FastTask;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -41,15 +42,20 @@ class FinishedTasksCommand extends Command {
     $start = microtime(true);
 
     $danas = new DateTimeImmutable();
-//za sve firme
-    $timetable = $this->em->getRepository(Task::class)->getTasksByDateForEmail($danas);
 
-    if (!empty($timetable)) {
-      foreach ($timetable as $taskId) {
-        $task = $this->em->getRepository(Task::class)->find($taskId);
-        $logs = $this->em->getRepository(StopwatchTime::class)->getEndTime($task);
-        $datum = $task->getDatumKreiranja();
-        $this->mail->endTask($task, $datum, $logs);
+    $companies = $this->em->getRepository(Company::class)->findBy(['isSuspended' => false]);
+
+    foreach ($companies as $company) {
+  //za sve firme
+      $timetable = $this->em->getRepository(Task::class)->getTasksByDateForEmail($danas, $company);
+
+      if (!empty($timetable)) {
+        foreach ($timetable as $taskId) {
+          $task = $this->em->getRepository(Task::class)->find($taskId);
+          $logs = $this->em->getRepository(StopwatchTime::class)->getEndTime($task);
+          $datum = $task->getDatumKreiranja();
+          $this->mail->endTask($task, $datum, $logs, $company->getEmail());
+        }
       }
     }
 

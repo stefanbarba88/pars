@@ -4,11 +4,13 @@ namespace App\Command;
 
 use App\Classes\Data\FastTaskData;
 use App\Entity\Activity;
+use App\Entity\Company;
 use App\Entity\FastTask;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Service\ImportService;
 use App\Service\MailService;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -39,19 +41,25 @@ class EditTimetableCommand extends Command {
 
     $start = microtime(true);
 
-    $plan = $this->em->getRepository(FastTask::class)->findOneBy(['status' => FastTaskData::EDIT],['datum' => 'ASC']);
-    if (!is_null($plan)) {
+    $companies = $this->em->getRepository(Company::class)->findBy(['isSuspended' => false]);
 
-      $datum = $plan->getDatum();
-      $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
-      $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($plan);
+    foreach ($companies as $company) {
 
-      $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::SAVED);
-      $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($plan, FastTaskData::SAVED);
+      $plan = $this->em->getRepository(FastTask::class)->findOneBy(['status' => FastTaskData::EDIT, 'company' => $company], ['datum' => 'ASC']);
 
-      $this->mail->plan($timetable, $users, $datum);
-      $this->mail->subs($subs, $usersSub, $datum);
+      if (!is_null($plan)) {
 
+        $datum = $plan->getDatum();
+        $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
+        $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($plan);
+
+        $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::SAVED);
+        $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($plan, FastTaskData::SAVED);
+
+        $this->mail->plan($timetable, $users, $datum);
+        $this->mail->subs($subs, $usersSub, $datum);
+
+      }
     }
 
 

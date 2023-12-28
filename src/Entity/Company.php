@@ -38,6 +38,9 @@ class Company {
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $adresa = null;
 
+  #[ORM\Column(length: 255, nullable: true)]
+  private ?string $email = null;
+
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?City $grad = null;
@@ -284,6 +287,20 @@ class Company {
     $this->image = $image;
 
     return $this;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getEmail(): ?string {
+    return $this->email;
+  }
+
+  /**
+   * @param string|null $email
+   */
+  public function setEmail(?string $email): void {
+    $this->email = $email;
   }
 
 

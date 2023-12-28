@@ -49,7 +49,7 @@ class MailService {
     $args = [];
     $to = $user->getEmail();
     $subject = 'Registracija na ' . CompanyInfo::ORGANIZATION_TITLE;
-    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/registration.html.twig';
 
@@ -68,7 +68,7 @@ class MailService {
 
     $args = [];
     $subject = 'Plan rada za ' .  $datum->format('d.m.Y');
-    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/plan.html.twig';
     $args['timetable'] = $plan;
@@ -84,7 +84,7 @@ class MailService {
 
     $args = [];
     $subject = 'Izmene na stalnim gradilištima za ' .  $datum->format('d.m.Y');
-    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/subs.html.twig';
     $args['subs'] = $subs;
@@ -97,17 +97,16 @@ class MailService {
     }
   }
 
-  public function endTask($task, $datum, $logs): void {
+  public function endTask($task, $datum, $logs, $to): void {
 
     $args = [];
     $subject = 'Zatvoren zadatak ' .  $task->getTitle();
-    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/task.html.twig';
     $args['task'] = $task;
     $args['danas'] = $datum;
     $args['logs'] = $logs;
-    $to = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 
@@ -119,7 +118,7 @@ class MailService {
 
     $subject = 'Zahtev od ' . $calendar->getUser()->first()->getFullName();
 
-    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/zahtev.html.twig';
     $args['user'] = $calendar->getUser()->first()->getFullName();
@@ -136,7 +135,7 @@ class MailService {
 
     $subject = 'Odgovor na zahtev ' . $calendar->getUser()->first()->getFullName();
 
-    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/odgovor.html.twig';
     $args['user'] = $calendar->getUser()->first()->getFullName();
@@ -154,7 +153,7 @@ class MailService {
 
     $subject = 'Broj izlazaka za  ' . $client->getTitle() . ' do ' . $date->format('d.m.Y');
 
-    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/izlasci.html.twig';
     $args['client'] = $client;
@@ -171,7 +170,7 @@ class MailService {
     $args = [];
     $to = $user->getEmail();
     $subject = 'Izmena profila na ' . CompanyInfo::ORGANIZATION_TITLE;
-    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/edit_account.html.twig';
 
@@ -190,7 +189,7 @@ class MailService {
     $args = [];
     $to = $user->getEmail();
     $subject = 'Deaktivacija naloga na ' . CompanyInfo::ORGANIZATION_TITLE;
-    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/deactivate.html.twig';
 
@@ -205,7 +204,7 @@ class MailService {
     $args = [];
     $to = $user->getEmail();
     $subject = 'Aktivacija naloga na ' . CompanyInfo::ORGANIZATION_TITLE;
-    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/activate.html.twig';
 
@@ -221,7 +220,7 @@ class MailService {
     $args = [];
     $to = $user->getEmail();
     $subject = 'Reset lozinke na ' . CompanyInfo::ORGANIZATION_TITLE;
-    $from = CompanyInfo::REGISTRATION_MAIL_ADDRESS;
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/reset_password.html.twig';
 

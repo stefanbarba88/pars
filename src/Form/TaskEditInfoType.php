@@ -85,6 +85,7 @@ TaskEditInfoType extends AbstractType {
           return $em->createQueryBuilder('g')
             ->andWhere('g.isTaskCategory = :isTaskCategory')
             ->andWhere('g.company = :company')
+            ->orWhere('g.company IS NULL')
             ->setParameter(':company', $company)
             ->setParameter(':isTaskCategory', 1)
             ->orderBy('g.id', 'ASC');

@@ -577,7 +577,7 @@ class FastTask {
   private ?int $zstatus10 = null;
 
   #[ORM\ManyToOne]
-  #[ORM\JoinColumn(nullable: false)]
+  #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
   public function getCompany(): ?Company
   {

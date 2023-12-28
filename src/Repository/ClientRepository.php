@@ -93,6 +93,7 @@ class ClientRepository extends ServiceEntityRepository {
     $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('u')
       ->andWhere('u.company = :company')
+      ->andWhere('u.isSuspended = :isSuspended')
       ->setParameter('company', $company)
       ->setParameter('isSuspended', 0)
       ->getQuery();

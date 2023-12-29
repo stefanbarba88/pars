@@ -167,6 +167,7 @@ class StopwatchController extends AbstractController {
             $overtime->setDatum($stopwatch->getCreated()->setTime(0, 0));
             $overtime->setStatus(0);
             $overtime->setTask($stopwatch->getTaskLog()->getTask());
+            $overtime->setCompany($stopwatch->getTaskLog()->getTask()->getCompany());
             $this->em->getRepository(Overtime::class)->save($overtime);
           }
         }

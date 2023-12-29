@@ -21,15 +21,15 @@ class Company {
   private ?int $id = null;
 
   public function getImageUploadPath(): ?string {
-    return $_ENV['COMPANY_IMAGE_PATH'] . date('Y/m/d/');
+    return $_ENV['COMPANY_IMAGE_PATH'] . $this->getId() . '/'. date('Y/m/d/');
   }
 
   public function getAvatarUploadPath(): ?string {
-    return $_ENV['COMPANY_AVATAR_PATH'] . date('Y/m/d/');
+    return $_ENV['COMPANY_AVATAR_PATH'] . $this->getId() . '/'. date('Y/m/d/');
   }
 
   public function getThumbUploadPath(): ?string {
-    return $_ENV['COMPANY_THUMB_PATH'] . date('Y/m/d/');
+    return $_ENV['COMPANY_THUMB_PATH'] . $this->getId() . '/'. date('Y/m/d/');
   }
 
   #[ORM\Column(length: 255)]

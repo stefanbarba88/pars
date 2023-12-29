@@ -28,15 +28,15 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   private ?int $id = null;
 
   public function getImageUploadPath(): ?string {
-    return $_ENV['USER_IMAGE_PATH'] . date('Y/m/d/');
+    return $_ENV['USER_IMAGE_PATH'] . $this->getCompany()->getId() . '/'. date('Y/m/d/');
   }
 
   public function getAvatarUploadPath(): ?string {
-    return $_ENV['USER_AVATAR_PATH'] . date('Y/m/d/');
+    return $_ENV['USER_AVATAR_PATH'] . $this->getCompany()->getId() . '/'. date('Y/m/d/');
   }
 
   public function getThumbUploadPath(): ?string {
-    return $_ENV['USER_THUMB_PATH'] . date('Y/m/d/');
+    return $_ENV['USER_THUMB_PATH'] . $this->getCompany()->getId() . '/'. date('Y/m/d/');
   }
 
   #[ORM\Column(length: 180, unique: true)]

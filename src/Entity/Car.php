@@ -19,11 +19,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Car implements JsonSerializable {
 
   public function getUploadPath(): ?string {
-    return $_ENV['CAR_IMAGE_PATH'] . Slugify::slugify($this->getCarName()) . '/';
+    return $_ENV['CAR_IMAGE_PATH'] . $this->getCompany()->getId() . '/'. Slugify::slugify($this->getCarName()) . '/';
   }
 
   public function getThumbUploadPath(): ?string {
-    return $_ENV['CAR_THUMB_PATH'] . Slugify::slugify($this->getCarName()) . '/';
+    return $_ENV['CAR_THUMB_PATH'] . $this->getCompany()->getId() . '/'. Slugify::slugify($this->getCarName()) . '/';
   }
 
   #[ORM\Id]

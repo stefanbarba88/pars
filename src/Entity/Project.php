@@ -18,11 +18,11 @@ use JsonSerializable;
 class Project implements JsonSerializable {
 
   public function getUploadPath(): ?string {
-    return $_ENV['PROJECT_IMAGE_PATH'] . Slugify::slugify($this->title) . '/';
+    return $_ENV['PROJECT_IMAGE_PATH'] . $this->getCompany()->getId() . '/'. Slugify::slugify($this->title) . '/';
   }
 
   public function getThumbUploadPath(): ?string {
-    return $_ENV['PROJECT_THUMB_PATH'] . Slugify::slugify($this->title) . '/';
+    return $_ENV['PROJECT_THUMB_PATH'] . $this->getCompany()->getId() . '/'. Slugify::slugify($this->title) . '/';
   }
 
   public function getNoProjectUploadPath(): ?string {

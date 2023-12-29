@@ -103,7 +103,7 @@ class HolidayController extends AbstractController {
 
       foreach ($datumi as $datum) {
         if ($datum->format('N') != 7) {
-          $check = $this->em->getRepository(Holiday::class)->findBy( ['datum' => $datum]);
+          $check = $this->em->getRepository(Holiday::class)->findBy( ['datum' => $datum, 'company' => $this->getUser()->getCompany()]);
           if (empty($check)) {
             $odmor = new Holiday();
             $odmor->setDatum($datum);

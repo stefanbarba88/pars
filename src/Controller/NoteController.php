@@ -20,7 +20,6 @@ class NoteController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
 
-
   #[Route('/list/', name: 'app_notes')]
   public function list(PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {

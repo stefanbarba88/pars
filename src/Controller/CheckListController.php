@@ -93,6 +93,7 @@ class CheckListController extends AbstractController {
         $task->setPriority($data['checklist']['prioritet']);
         $task->setCreatedBy($this->getUser());
         $task->setUser($this->em->getRepository(User::class)->find($zaduzeni));
+        $task->setCompany($this->getUser()->getCompany());
         $this->em->getRepository(ManagerChecklist::class)->save($task);
       }
 

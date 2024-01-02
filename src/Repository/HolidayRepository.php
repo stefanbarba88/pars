@@ -151,9 +151,11 @@ class HolidayRepository extends ServiceEntityRepository {
       ->setParameter('endDate', $endDate)
       ->setParameter('praznik', TipNeradnihDanaData::PRAZNIK)
       ->getQuery()
-      ->getOneOrNullResult();
+      ->getResult();
 
-    return $noPraznici === null ? 0 : $noPraznici[1];
+
+
+    return count($noPraznici);
   }
 
 //    /**

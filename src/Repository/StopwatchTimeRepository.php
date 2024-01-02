@@ -95,7 +95,9 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       }
     }
 
-
+    if (empty($praznik) && empty($merenjeUser)) {
+      return $dostupnost;
+    }
     $this->getEntityManager()->getRepository(Availability::class)->save($dostupnost);
     return $dostupnost;
   }

@@ -321,47 +321,93 @@ class TaskController extends AbstractController {
             }
           }
         } else {
-          $uploadFiles = $request->files->all()['phone_task_form']['pdf'];
-          if(!empty ($uploadFiles)) {
-            foreach ($uploadFiles as $uploadFile) {
-              $pdf = new Pdf();
-              $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
-              $pdf->setTitle($file->getFileName());
-              $pdf->setPath($file->getUrl());
-              if (!is_null($task->getProject())) {
-                $pdf->setProject($task->getProject());
+          if ($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+            $uploadFiles = $request->files->all()['task_form']['pdf'];
+            if(!empty ($uploadFiles)) {
+              foreach ($uploadFiles as $uploadFile) {
+                $pdf = new Pdf();
+                $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+                $pdf->setTitle($file->getFileName());
+                $pdf->setPath($file->getUrl());
+                if (!is_null($task->getProject())) {
+                  $pdf->setProject($task->getProject());
+                }
+                $task->addPdf($pdf);
               }
-              $task->addPdf($pdf);
             }
-          }
-          if (!empty($request->request->all('phone_task_form')['car'])) {
-            $task->setCar($request->request->all('phone_task_form')['car']);
-            if (!empty($request->request->all('phone_task_form')['driver'])) {
-              $task->setDriver($request->request->all('phone_task_form')['driver']);
+            if (!empty($request->request->all('task_form')['car'])) {
+              $task->setCar($request->request->all('task_form')['car']);
+              if (!empty($request->request->all('task_form')['driver'])) {
+                $task->setDriver($request->request->all('task_form')['driver']);
+              }
+              $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
             }
-            $task->setDriver($request->request->all('phone_task_form')['assignedUsers'][0]);
-          }
-          $date = $task->getDatumKreiranja();
-          if (!empty($request->request->all('phone_task_form')['vreme'])) {
-            $time = $request->request->all('phone_task_form')['vreme'];
-            $time1 = $date->modify($time);
-            $task->setTime($time1);
-          }
-          else {
-            $task->setTime($date);
-          }
-          foreach ($request->request->all('phone_task_form')['assignedUsers'] as $key => $assignedUser) {
-            if (!empty($assignedUser)){
-              $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
-              if(!is_null($member)) {
-                $task->addAssignedUser($member);
+            $date = $task->getDatumKreiranja();
+            if (!empty($request->request->all('task_form')['vreme'])) {
+              $time = $request->request->all('task_form')['vreme'];
+              $time1 = $date->modify($time);
+              $task->setTime($time1);
+            }
+            else {
+              $task->setTime($date);
+            }
+            foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
 
-                if ($key === 0) {
-                  $task->setPriorityUserLog($assignedUser);
+              if (!empty($assignedUser)){
+                $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+                if(!is_null($member)) {
+                  $task->addAssignedUser($member);
+
+                  if ($key === 0) {
+                    $task->setPriorityUserLog($assignedUser);
+                  }
+                }
+              }
+            }
+          } else {
+            $uploadFiles = $request->files->all()['phone_task_form']['pdf'];
+            if(!empty ($uploadFiles)) {
+              foreach ($uploadFiles as $uploadFile) {
+                $pdf = new Pdf();
+                $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+                $pdf->setTitle($file->getFileName());
+                $pdf->setPath($file->getUrl());
+                if (!is_null($task->getProject())) {
+                  $pdf->setProject($task->getProject());
+                }
+                $task->addPdf($pdf);
+              }
+            }
+            if (!empty($request->request->all('phone_task_form')['car'])) {
+              $task->setCar($request->request->all('phone_task_form')['car']);
+              if (!empty($request->request->all('phone_task_form')['driver'])) {
+                $task->setDriver($request->request->all('phone_task_form')['driver']);
+              }
+              $task->setDriver($request->request->all('phone_task_form')['assignedUsers'][0]);
+            }
+            $date = $task->getDatumKreiranja();
+            if (!empty($request->request->all('phone_task_form')['vreme'])) {
+              $time = $request->request->all('phone_task_form')['vreme'];
+              $time1 = $date->modify($time);
+              $task->setTime($time1);
+            }
+            else {
+              $task->setTime($date);
+            }
+            foreach ($request->request->all('phone_task_form')['assignedUsers'] as $key => $assignedUser) {
+              if (!empty($assignedUser)){
+                $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+                if(!is_null($member)) {
+                  $task->addAssignedUser($member);
+
+                  if ($key === 0) {
+                    $task->setPriorityUserLog($assignedUser);
+                  }
                 }
               }
             }
           }
+
         }
 
         $task->setCompany($task->getProject()->getCompany());

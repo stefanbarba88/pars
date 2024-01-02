@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Overtime;
 use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -74,18 +75,28 @@ class OvertimeRepository extends ServiceEntityRepository {
   }
 
   public function getOvertimeByUser(User $user): string {
-    //dodati da bude samo u godini
-
+    $yearStart = new DateTimeImmutable(date('Y-01-01'));
     $sati = 0;
     $minuti = 0;
-
     $overtimes = $this->createQueryBuilder('c')
       ->where('c.status = :status')
       ->andWhere('c.user = :user')
+      ->andWhere('c.datum >= :yearStart')  // Dodajte uvjet za datum
       ->setParameter('status', 1)
       ->setParameter('user', $user)
+      ->setParameter('yearStart', $yearStart)
       ->getQuery()
       ->getResult();
+
+//
+//
+//    $overtimes = $this->createQueryBuilder('c')
+//      ->where('c.status = :status')
+//      ->andWhere('c.user = :user')
+//      ->setParameter('status', 1)
+//      ->setParameter('user', $user)
+//      ->getQuery()
+//      ->getResult();
 
     if (!empty($overtimes)) {
       foreach ($overtimes as $over) {

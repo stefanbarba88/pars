@@ -72,7 +72,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
     $dostupnost->setTypeDay(0);
 
-    $praznik = $this->getEntityManager()->getRepository(Holiday::class)->findOneBy(['datum' => $datum]);
+    $praznik = $this->getEntityManager()->getRepository(Holiday::class)->findOneBy(['datum' => $startDate, 'company' => $company, 'isSuspended' => false]);
 
     if ($datum->format('N') == 7) {
       $dostupnost->setTypeDay(TipNeradnihDanaData::NEDELJA);

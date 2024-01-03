@@ -120,15 +120,41 @@ class HolidayRepository extends ServiceEntityRepository {
   }
 
   public function brojRadnihDanaDoJuce(): int {
+//    $danas = time();  // Trenutni timestamp
+//    $pocetakGodine = strtotime(date('Y-01-01'));  // Početak godine timestamp
+//
+//    $brojRadnihDana = 0;
+//
+//    // Petlja kroz svaki dan između početka godine i juče
+//    for ($dan = $pocetakGodine; $dan < $danas; $dan += 86400) {  // 86400 sekundi u danu
+//      // Proveri da li je trenutni dan radni dan i nije nedelja
+//      if (date('N', $dan) < 6) {
+//        $brojRadnihDana++;
+//      }
+//    }
     $danas = time();  // Trenutni timestamp
     $pocetakGodine = strtotime(date('Y-01-01'));  // Početak godine timestamp
 
+    // Kreiraj DateTime objekte za današnji datum i početak godine
+    $danasObj = new DateTimeImmutable(date('Y-m-d', $danas));
+    $pocetakGodineObj = new DateTimeImmutable(date('Y-m-d', $pocetakGodine));
+
+    // Izračunaj razliku između današnjeg datuma i početka godine
+    $razlika = date_diff($pocetakGodineObj, $danasObj);
+
+    // Uzmi broj dana iz razlike
+    $brojDana = $razlika->days;
+
+    // Inicijalizuj broj radnih dana
     $brojRadnihDana = 0;
 
     // Petlja kroz svaki dan između početka godine i juče
-    for ($dan = $pocetakGodine; $dan < $danas; $dan += 86400) {  // 86400 sekundi u danu
+    for ($i = 0; $i < $brojDana; $i++) {
+      // Kreiraj DateTime objekat za trenutni dan
+      $trenutniDanObj = $pocetakGodineObj->modify("+1 day");
+
       // Proveri da li je trenutni dan radni dan i nije nedelja
-      if (date('N', $dan) < 6) {
+      if ($trenutniDanObj->format('N') < 6) {
         $brojRadnihDana++;
       }
     }
@@ -152,7 +178,6 @@ class HolidayRepository extends ServiceEntityRepository {
       ->setParameter('praznik', TipNeradnihDanaData::PRAZNIK)
       ->getQuery()
       ->getResult();
-
 
 
     return count($noPraznici);

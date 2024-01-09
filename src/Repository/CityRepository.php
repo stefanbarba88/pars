@@ -43,35 +43,69 @@ class CityRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(City::class)->find($id);
   }
 
-  public function getRegionsSerbia(): array {
+//  public function getRegionsSerbia(): array {
+//
+//    $regions = [];
+//    $queryBuilder = $this->getEntityManager()->getRepository(City::class)
+//      ->createQueryBuilder('c');
+//    $query = $queryBuilder
+//      ->select("c")
+//      ->groupBy("c.region")
+//      ->getQuery();
+//
+//    foreach ($query->getResult() as $reg) {
+//      $regions[] = $reg->getRegion();
+//    }
+//
+//    return $regions;
+//  }
 
+  public function getRegionsSerbia(): array {
     $regions = [];
     $queryBuilder = $this->getEntityManager()->getRepository(City::class)
       ->createQueryBuilder('c');
+
     $query = $queryBuilder
-      ->select("c")
+      ->select("c.region")
       ->groupBy("c.region")
       ->getQuery();
 
     foreach ($query->getResult() as $reg) {
-      $regions[] = $reg->getRegion();
+      $regions[] = $reg['region'];
     }
 
     return $regions;
   }
 
-  public function getMunicipalitiesSerbia(): array {
+//  public function getMunicipalitiesSerbia(): array {
+//
+//    $municipalities = [];
+//    $queryBuilder = $this->getEntityManager()->getRepository(City::class)
+//      ->createQueryBuilder('c');
+//    $query = $queryBuilder
+//      ->select("c")
+//      ->groupBy("c.municipality")
+//      ->getQuery();
+//
+//    foreach ($query->getResult() as $reg) {
+//      $municipalities[] = $reg->getMunicipality();
+//    }
+//
+//    return $municipalities;
+//  }
 
+  public function getMunicipalitiesSerbia(): array {
     $municipalities = [];
     $queryBuilder = $this->getEntityManager()->getRepository(City::class)
       ->createQueryBuilder('c');
+
     $query = $queryBuilder
-      ->select("c")
+      ->select("c.municipality")
       ->groupBy("c.municipality")
       ->getQuery();
 
-    foreach ($query->getResult() as $reg) {
-      $municipalities[] = $reg->getMunicipality();
+    foreach ($query->getResult() as $result) {
+      $municipalities[] = $result['municipality'];
     }
 
     return $municipalities;

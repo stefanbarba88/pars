@@ -78,7 +78,8 @@ class Company {
   #[ORM\ManyToOne(inversedBy: 'companies')]
   private ?Image $image = null;
 
-
+  #[ORM\Column]
+  private ?int $workWeek = 6;
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -301,6 +302,20 @@ class Company {
    */
   public function setEmail(?string $email): void {
     $this->email = $email;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getWorkWeek(): ?int {
+    return $this->workWeek;
+  }
+
+  /**
+   * @param int|null $workWeek
+   */
+  public function setWorkWeek(?int $workWeek): void {
+    $this->workWeek = $workWeek;
   }
 
 

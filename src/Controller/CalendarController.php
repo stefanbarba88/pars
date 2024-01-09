@@ -170,7 +170,7 @@ class CalendarController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['calendar'] = $calendar;
-    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $korisnik->getCompany()],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $company],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
 
     return $this->render('calendar/form.html.twig', $args);
   }

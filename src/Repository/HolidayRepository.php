@@ -120,6 +120,8 @@ class HolidayRepository extends ServiceEntityRepository {
   }
 
   public function brojRadnihDanaDoJuce(): int {
+
+    $company = $this->security->getUser()->getCompany();
 //    $danas = time();  // Trenutni timestamp
 //    $pocetakGodine = strtotime(date('Y-01-01'));  // Početak godine timestamp
 //
@@ -151,14 +153,15 @@ class HolidayRepository extends ServiceEntityRepository {
     // Petlja kroz svaki dan između početka godine i juče
     for ($i = 0; $i < $brojDana; $i++) {
       // Kreiraj DateTime objekat za trenutni dan
-      $trenutniDanObj = $pocetakGodineObj->modify("+1 day");
 
       // Proveri da li je trenutni dan radni dan i nije nedelja
-      if ($trenutniDanObj->format('N') < 6) {
+      if ($pocetakGodineObj->format('N') < $company->getWorkWeek()) {
         $brojRadnihDana++;
       }
-    }
 
+      $pocetakGodineObj = $pocetakGodineObj->modify("+1 day");
+    }
+//dd($brojRadnihDana);
     return $brojRadnihDana - $this->brojNeradnihDana();
   }
 
@@ -179,8 +182,17 @@ class HolidayRepository extends ServiceEntityRepository {
       ->getQuery()
       ->getResult();
 
+    $praznici = 0;
 
-    return count($noPraznici);
+    if (count($noPraznici) > 0 ) {
+      foreach ($noPraznici as $praz) {
+        if ($praz->getDatum()->format('N') < $company->getWorkWeek()) {
+          $praznici++;
+        }
+      }
+    }
+
+    return $praznici;
   }
 
 //    /**

@@ -44,6 +44,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     $startDate = $datum->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $datum->format('Y-m-d 23:59:59'); // Kraj dana
 
+    $datumCheck = $datum->setTime(0,0);
+
     $merenja = $this->createQueryBuilder('t')
       ->where('t.start BETWEEN :startDate AND :endDate')
       ->andWhere('t.isDeleted = 0')
@@ -54,12 +56,15 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       ->getQuery()
       ->getResult();
 
+
+
     $merenjeUser = [];
     foreach ($merenja as $merenje) {
       if ($merenje->getTaskLog()->getUser() == $user) {
         $merenjeUser[] = $merenje;
       }
     }
+
     $dostupnost = new Availability();
     if (!empty($merenjeUser)) {
       $dostupnost->setType(AvailabilityData::PRISUTAN);
@@ -72,11 +77,11 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
     $dostupnost->setTypeDay(0);
 
-    $praznik = $this->getEntityManager()->getRepository(Holiday::class)->findOneBy(['datum' => $startDate, 'company' => $company, 'isSuspended' => false]);
+    $praznik = $this->getEntityManager()->getRepository(Holiday::class)->findOneBy(['datum' => $datumCheck, 'company' => $company, 'isSuspended' => false]);
 
     if ($datum->format('N') == 7) {
       $dostupnost->setTypeDay(TipNeradnihDanaData::NEDELJA);
-      if (!empty($praznik)) {
+      if (!is_null($praznik)) {
         if ($praznik->getType() == TipNeradnihDanaData::KOLEKTIVNI_ODMOR) {
           $dostupnost->setTypeDay(TipNeradnihDanaData::NEDELJA_ODMOR);
           if ($praznik->getType() == TipNeradnihDanaData::PRAZNIK) {
@@ -85,7 +90,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         }
       }
     } else {
-      if (!empty($praznik)) {
+      if (!is_null($praznik)) {
         if ($praznik->getType() == TipNeradnihDanaData::KOLEKTIVNI_ODMOR) {
           $dostupnost->setTypeDay(TipNeradnihDanaData::KOLEKTIVNI_ODMOR);
           if ($praznik->getType() == TipNeradnihDanaData::PRAZNIK) {
@@ -95,9 +100,14 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       }
     }
 
-    if (empty($praznik) && empty($merenjeUser)) {
-      return $dostupnost;
+    if (!is_null($praznik)) {
+      if ($praznik->getType() == TipNeradnihDanaData::PRAZNIK || $praznik->getType() == TipNeradnihDanaData::NEDELJA_PRAZNIK) {
+        if (empty($merenjeUser)) {
+          return $dostupnost;
+        }
+      }
     }
+
     $this->getEntityManager()->getRepository(Availability::class)->save($dostupnost);
     return $dostupnost;
   }

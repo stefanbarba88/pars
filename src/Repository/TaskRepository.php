@@ -827,7 +827,8 @@ class TaskRepository extends ServiceEntityRepository {
   public function getTasksPaginator($filterBy, User $user){
     $company = $this->security->getUser()->getCompany();
     $today = new DateTimeImmutable(); // Dohvati trenutni datum i vrijeme
-    $endDate = $today->sub(new DateInterval('P1D')); // Trenutni datum
+//    $endDate = $today->sub(new DateInterval('P1D')); // Trenutni datum
+    $endDate = $today; // Trenutni datum
 
     $list = [];
 

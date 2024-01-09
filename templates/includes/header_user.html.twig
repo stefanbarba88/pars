@@ -238,10 +238,17 @@
                     </a>
 
                     <div class="dropdown-menu dropdown-menu-end">
+                        {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE')  %}
                         <a href="{{ path('app_employee_profile_view', {id: logged.id}) }}" class="dropdown-item">
                             <i class="ph-user-circle me-2"></i>
                             Profil
                         </a>
+                        {% else %}
+                        <a href="{{ path('app_user_profile_view', {id: logged.id}) }}" class="dropdown-item">
+                            <i class="ph-user-circle me-2"></i>
+                            Profil
+                        </a>
+                        {% endif %}
                         {#                    <a href="#" class="dropdown-item">#}
                         {#                        <i class="ph-currency-circle-dollar me-2"></i>#}
                         {#                        My subscription#}
@@ -256,10 +263,10 @@
                         {#                        <span class="badge bg-primary rounded-pill ms-auto">26</span>#}
                         {#                    </a>#}
                         <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">
-                            <i class="ph-gear me-2"></i>
-                            Podešavanja
-                        </a>
+{#                        <a href="#" class="dropdown-item">#}
+{#                            <i class="ph-gear me-2"></i>#}
+{#                            Podešavanja#}
+{#                        </a>#}
                         <a href="{{ path('app_logout') }}" class="dropdown-item">
                             <i class="ph-sign-out me-2"></i>
                             Odjavite se

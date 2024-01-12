@@ -13,11 +13,19 @@ class TimerPriorityData implements DataClassInterface {
   public const ROLE_GEO = 3;
   public const ROLE_FIG = 4;
 
+
+//  public const DATA = [
+//    1 => 'Svi dnevnici zadatka',
+//    2 => 'Dnevnik prvog zaduženog',
+//    3 => 'Dnevnik geodete',
+//    4 => 'Dnevnik figuranta',
+//  ];
+
   public const DATA = [
-    1 => 'Svi dnevnici zadatka',
-    2 => 'Dnevnik prvog zaduženog',
+//    1 => 'Svi dnevnici zadatka',
+//    2 => 'Dnevnik prvog zaduženog',
     3 => 'Dnevnik geodete',
-    4 => 'Dnevnik figuranta',
+//    4 => 'Dnevnik figuranta',
   ];
 
   public static function form(): array {

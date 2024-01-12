@@ -187,20 +187,48 @@
 
 {% block footerJavascript %}
     <script>
-        $(function () {
+        $(document).ready(function() {
+            // Čeka se da se dokument učita
+
+            // Provera pri učitavanju strane
+            checkSerbianValue();
+
+            // Postavljanje događaja na promenu vrednosti polja client_form_isSerbian
             $("#client_form_isSerbian").change(function() {
-                if ($(this).val() === 1) {
-                    $("#client_form_pib").attr({
-                        "maxlength": 9,
-                        "minlength": 9
-                    });
+                checkSerbianValue();
+            });
+
+            // Funkcija za proveru vrednosti i postavljanje atributa
+            function checkSerbianValue() {
+                var isSerbianValue = $("#client_form_isSerbian").val();
+
+                // Ako je vrednost 1, postavi ograničenja
+                if (isSerbianValue == 1) {
+                    $("#client_form_pib").attr("maxLength", "9");
+                    $("#client_form_pib").attr("minLength", "9");
                     $("#formatPib").text('Format: Uneti tačno 9 cifara.');
                 } else {
-                    $("#client_form_pib").removeAttr("maxlength")
-                        .removeAttr("minlength");
+                    // Ako nije, ukloni ograničenja
+                    $("#client_form_pib").removeAttr("maxLength");
+                    $("#client_form_pib").removeAttr("minLength");
                     $("#formatPib").text('Format: Uneti cifre u skladu sa formatom države u kojoj se kompanija nalazi.');
                 }
-            });
+            }
         });
+        // $(function () {
+        //     $("#client_form_isSerbian").change(function() {
+        //         if ($(this).val() === 1) {
+        //             $("#client_form_pib").attr({
+        //                 "maxlength": 9,
+        //                 "minlength": 9
+        //             });
+        //             $("#formatPib").text('Format: Uneti tačno 9 cifara.');
+        //         } else {
+        //             $("#client_form_pib").removeAttr("maxlength")
+        //                 .removeAttr("minlength");
+        //             $("#formatPib").text('Format: Uneti cifre u skladu sa formatom države u kojoj se kompanija nalazi.');
+        //         }
+        //     });
+        // });
     </script>
 {% endblock footerJavascript %}

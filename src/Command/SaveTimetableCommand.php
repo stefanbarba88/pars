@@ -51,7 +51,7 @@ class SaveTimetableCommand extends Command {
 
       if (!is_null($plan)) {
 
-        $superadmin = $this->em->getRepository(User::class)->findOneBy(['company' => $company, 'userType' => UserRolesData::ROLE_SUPER_ADMIN, 'isSuspended' => false], ['id' => 'ASC']);
+        $superadmin = $this->em->getRepository(User::class)->findOneBy(['company' => $company, 'userType' => UserRolesData::ROLE_ADMIN, 'isSuspended' => false], ['id' => 'ASC']);
         $datum = $plan->getDatum();
         $this->em->getRepository(Task::class)->createTasksFromList($plan, $superadmin);
 

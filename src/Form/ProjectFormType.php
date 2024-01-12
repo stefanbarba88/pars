@@ -96,22 +96,22 @@ class ProjectFormType extends AbstractType {
         'expanded' => false,
         'multiple' => true,
       ])
-      ->add('isClientView', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('isViewLog', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('isClientView', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'choices' => PotvrdaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
+//      ->add('isViewLog', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'choices' => PotvrdaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
 
       ->add('payment', ChoiceType::class, [
         'placeholder' => '--Izaberite tip finansiranja--',
@@ -185,32 +185,32 @@ class ProjectFormType extends AbstractType {
 //        ],
 //      ])
 
-      ->add('isTimeRoundUp', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('minEntry', IntegerType::class, [
-        'required' => false,
-        'attr' => [
-          'min' => '1',
-          'max' => '60'
-        ],
-      ])
-      ->add('roundingInterval', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'required' => false,
-        'placeholder' => '--Izaberite model zaokruživanja--',
-        'choices' => RoundingIntervalData::form(),
-        'expanded' => false,
-        'multiple' => false,
-        'data' => RoundingIntervalData::MIN_15,
-      ])
+//      ->add('isTimeRoundUp', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'choices' => PotvrdaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
+//      ->add('minEntry', IntegerType::class, [
+//        'required' => false,
+//        'attr' => [
+//          'min' => '1',
+//          'max' => '60'
+//        ],
+//      ])
+//      ->add('roundingInterval', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'required' => false,
+//        'placeholder' => '--Izaberite model zaokruživanja--',
+//        'choices' => RoundingIntervalData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//        'data' => RoundingIntervalData::MIN_15,
+//      ])
 
       ->add('timerPriority', ChoiceType::class, [
         'attr' => [

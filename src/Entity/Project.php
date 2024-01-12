@@ -107,7 +107,7 @@ class Project implements JsonSerializable {
   private ?Currency $currency = null;
 
   #[ORM\Column(nullable: true)]
-  private ?int $roundingInterval = null;
+  private ?int $roundingInterval = 15;
 
   #[ORM\Column(nullable: true)]
   private ?int $minEntry = 30;

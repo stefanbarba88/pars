@@ -115,13 +115,13 @@
 {#                                            <span class="form-text">Projekat može imati i stalne timove.</span>#}
 {#                                        </div>#}
 {#                                    </div>#}
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.isViewLog, 'Uvid u dnevnik:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.isViewLog, {attr: { class: 'form-control required select' }}) }}
-                                            <span class="form-text">Zaposleni koji rade na istom zadatku imaju uvid jedan drugom u dnevnik.</span>
-                                        </div>
-                                    </div>
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.isViewLog, 'Uvid u dnevnik:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.isViewLog, {attr: { class: 'form-control required select' }}) }}#}
+{#                                            <span class="form-text">Zaposleni koji rade na istom zadatku imaju uvid jedan drugom u dnevnik.</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
                                 </div>
                             </fieldset>
 
@@ -135,13 +135,13 @@
                                             <span class="form-text">Više klijenata mogu biti vlasnici nad projekatom.</span>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.isClientView, 'Klijent ima uvid u projekat:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.isClientView, {attr: { class: 'form-control required select' }}) }}
-                                            <span class="form-text">Klijent ima uvid u razvoj projekta. Može se definisati kasnije i na nivou zadataka.</span>
-                                        </div>
-                                    </div>
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.isClientView, 'Klijent ima uvid u projekat:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.isClientView, {attr: { class: 'form-control required select' }}) }}#}
+{#                                            <span class="form-text">Klijent ima uvid u razvoj projekta. Može se definisati kasnije i na nivou zadataka.</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
                                 </div>
                             </fieldset>
 
@@ -319,50 +319,50 @@
 {#                                        </div>#}
 {#                                    </div>#}
                                 </div>
-                                <div class="row">
-                                    <div class="col-lg-6 ">
-                                        <div class="mb-3">
-                                            {{ form_label(form.isTimeRoundUp, 'Zaokruživanje vremena:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.isTimeRoundUp, {attr: { class: 'form-control required select round' }}) }}
-                                            <span class="form-text">Mereno vreme se zaokružuje. Može se definisati kasnije i na nivou zadataka.</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% if project.timeRoundUp %}
-                                    <div class="row timeRound">
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval required select' }}) }}
-                                                <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.minEntry, {attr: { class: 'form-control minent required' }}) }}
-                                                <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% else %}
-                                    <div class="row hide timeRound">
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval select' }}) }}
-                                                <span class="form-text">Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.minEntry, {attr: { class: 'form-control minent' }}) }}
-                                                <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
+{#                                <div class="row">#}
+{#                                    <div class="col-lg-6 ">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.isTimeRoundUp, 'Zaokruživanje vremena:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.isTimeRoundUp, {attr: { class: 'form-control required select round' }}) }}#}
+{#                                            <span class="form-text">Mereno vreme se zaokružuje. Može se definisati kasnije i na nivou zadataka.</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                {% if project.timeRoundUp %}#}
+{#                                    <div class="row timeRound">#}
+{#                                        <div class="col-lg-6">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval required select' }}) }}#}
+{#                                                <span class="form-text">(min 1 max 60) Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-lg-6">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.minEntry, {attr: { class: 'form-control minent required' }}) }}#}
+{#                                                <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                {% else %}#}
+{#                                    <div class="row hide timeRound">#}
+{#                                        <div class="col-lg-6">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval select' }}) }}#}
+{#                                                <span class="form-text">Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-lg-6">#}
+{#                                            <div class="mb-3">#}
+{#                                                {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                {{ form_widget(form.minEntry, {attr: { class: 'form-control minent' }}) }}#}
+{#                                                <span class="form-text">(min 1 max 60) Najmanja vrednost u minutima koja će biti zabeležena pri merenju.</span>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                {% endif %}#}
 
                             </fieldset>
 

@@ -83,7 +83,31 @@
                                         <tr>
                                             <td>{{ tool.id }}</td>
                                             <td><div class="fw-semibold">{{ tool.title }}</div></td>
-                                            <td><div class="fw-semibold">{{ tool.type }}</div></td>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::LAPTOP') %}
+                                                        Laptop
+                                                    {% endif %}
+                                                    {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::TELEFON') %}
+                                                        Mobilni telefon
+                                                    {% endif %}
+                                                    {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::TS') %}
+                                                        TS
+                                                    {% endif %}
+                                                    {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::LS') %}
+                                                        LS
+                                                    {% endif %}
+                                                    {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::GPS') %}
+                                                        GPS
+                                                    {% endif %}
+                                                    {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::DRON') %}
+                                                        Dron
+                                                    {% endif %}
+                                                    {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::SKENER') %}
+                                                        Skener
+                                                    {% endif %}
+                                                </div>
+                                            </td>
                                             <td>
                                                 {% if tool.isSuspended == false %}
                                                     {% if tool.isReserved %}

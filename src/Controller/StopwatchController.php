@@ -118,6 +118,7 @@ class StopwatchController extends AbstractController {
 
         $sati = $request->request->get('overtime_vreme_sati');
         $minuti = $request->request->get('overtime_vreme_minuti');
+        $napomena = $request->request->get('overtime_napomena');
 
         $uploadFiles = $request->files->all()['stopwatch_time_form']['pdf'];
         if (!empty ($uploadFiles)) {
@@ -159,11 +160,12 @@ class StopwatchController extends AbstractController {
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 
         if (!is_null($sati)) {
-          if ($sati != 0 && $minuti != 0) {
+          if ($sati != 0 || $minuti != 0) {
             $overtime = new Overtime();
             $overtime->setUser($stopwatch->getTaskLog()->getUser());
             $overtime->setHours($sati);
             $overtime->setMinutes($minuti);
+            $overtime->setNote($napomena);
             $overtime->setDatum($stopwatch->getCreated()->setTime(0, 0));
             $overtime->setStatus(0);
             $overtime->setTask($stopwatch->getTaskLog()->getTask());
@@ -171,7 +173,6 @@ class StopwatchController extends AbstractController {
             $this->em->getRepository(Overtime::class)->save($overtime);
           }
         }
-
         $user = $this->getUser();
         $user->setIsInTask(false);
         $this->em->getRepository(User::class)->save($user);

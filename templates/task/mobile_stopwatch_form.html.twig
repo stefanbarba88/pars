@@ -94,10 +94,12 @@
 
                             {% set currentTime = "now"|date("H:i") %}
                             {% if currentTime > "15:30" %}
-                                <div class="row">
+                                <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-overtime" aria-expanded="false">Prekovremeni sati</div>
+
+                                <div class="row collapse show" id="collapse-overtime">
                                     <div class="col-lg-12">
                                         <div class="mb-3">
-                                            <label class="form-label" for="overtime_vreme">Prekovremeni sati:</label>
+                                            <label class="form-label" for="overtime_vreme">Sati i minuti:</label>
                                             <div class="row gy-3">
                                                 <div class="col">
                                                     <div class="input-group">
@@ -125,6 +127,15 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row collapse show" id="collapse-overtime">
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="overtime_napomena">Napomena:</label>
+                                            <textarea id="overtime_napomena" name="overtime_napomena" class="form-control"  rows="1"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
                             {% endif %}
 
                             <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-client" aria-expanded="false">Klijent</div>

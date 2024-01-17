@@ -29,6 +29,9 @@ class Overtime {
   #[ORM\Column(nullable: true)]
   private ?int $minutes = null;
 
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $note = null;
+
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $datum = null;
 
@@ -166,6 +169,20 @@ class Overtime {
    */
   public function setDatum(?DateTimeImmutable $datum): void {
     $this->datum = $datum;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getNote(): ?string {
+    return $this->note;
+  }
+
+  /**
+   * @param string|null $note
+   */
+  public function setNote(?string $note): void {
+    $this->note = $note;
   }
 
 

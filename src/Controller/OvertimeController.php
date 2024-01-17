@@ -7,6 +7,7 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Overtime;
 use App\Entity\User;
 use DateTimeImmutable;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -23,6 +24,9 @@ class OvertimeController extends AbstractController {
   #[Route('/list/', name: 'app_overtimes')]
   public function list(PaginatorInterface $paginator, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -43,6 +47,9 @@ class OvertimeController extends AbstractController {
   #[Route('/archive/', name: 'app_overtime_archive')]
   public function archive(PaginatorInterface $paginator, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -66,19 +73,23 @@ class OvertimeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     if ($request->isMethod('POST')) {
 
       $user = $this->em->getRepository(User::class)->find($request->request->get('overtime_zaduzeni'));
       $sati = $request->request->get('overtime_vreme_sati');
       $minuti = $request->request->get('overtime_vreme_minuti');
       $datum = $request->request->get('overtime_datum');
+      $napomena = $request->request->get('overtime_napomena');
 
       $overtime->setUser($user);
       $overtime->setHours($sati);
       $overtime->setMinutes($minuti);
       $overtime->setDatum(DateTimeImmutable::createFromFormat('d.m.Y', $datum)->setTime(0, 0));
       $overtime->setStatus(1);
+      $overtime->setNote($napomena);
 
 
       $this->em->getRepository(Overtime::class)->save($overtime);
@@ -90,7 +101,7 @@ class OvertimeController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-        return $this->redirectToRoute('app_overtimes');
+        return $this->redirectToRoute('app_overtime_archive');
 
     }
 
@@ -100,9 +111,55 @@ class OvertimeController extends AbstractController {
     return $this->render('overtime/form.html.twig', $args);
   }
 
+  #[Route('/form-employee/{id}', name: 'app_overtime_employee_form', defaults: ['id' => 0])]
+  #[Entity('overtime', expr: 'repository.findForForm(id)')]
+  public function formEmployee(Request $request, Overtime $overtime): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+
+    if ($request->isMethod('POST')) {
+
+      $user = $this->em->getRepository(User::class)->find($request->request->get('overtime_zaduzeni'));
+      $sati = $request->request->get('overtime_vreme_sati');
+      $minuti = $request->request->get('overtime_vreme_minuti');
+      $datum = $request->request->get('overtime_datum');
+      $napomena = $request->request->get('overtime_napomena');
+
+      $overtime->setUser($user);
+      $overtime->setHours($sati);
+      $overtime->setMinutes($minuti);
+      $overtime->setDatum(DateTimeImmutable::createFromFormat('d.m.Y', $datum)->setTime(0, 0));
+      $overtime->setStatus(0);
+      $overtime->setNote($napomena);
+
+
+      $this->em->getRepository(Overtime::class)->save($overtime);
+
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+      return $this->redirectToRoute('app_employee_calendar_view', (['id' => $user->getId()]));
+
+    }
+
+    $args['overtime'] = $overtime;
+    $args['user'] = $this->getUser();
+
+    return $this->render('overtime/form_employee.html.twig', $args);
+  }
+
   #[Route('/view/{id}', name: 'app_overtime_view')]
   public function view(Overtime $overtime): Response {
     if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['overtime'] = $overtime;
@@ -116,6 +173,9 @@ class OvertimeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $overtime->setStatus(1);
     $this->em->getRepository(Overtime::class)->save($overtime);
 
@@ -125,7 +185,9 @@ class OvertimeController extends AbstractController {
   #[Route('/decline/{id}', name: 'app_overtime_decline')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function decline(Overtime $overtime): Response {
-
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $overtime->setStatus(2);
     $this->em->getRepository(Overtime::class)->save($overtime);
 

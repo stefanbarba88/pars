@@ -28,16 +28,14 @@
                         <div class="card-header">
                             <h6 class="mb-0">Dodavanje prekovremenih sati</h6>
                         </div>
-                        <form name="overtime_form" method="post" action="{{ path('app_overtime_form') }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="overtime_form">
+                        <form name="overtime_form" method="post" action="{{ path('app_overtime_employee_form') }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="overtime_form">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <label class="form-label" for="overtime_zaduzeni">Zaduženi:*</label>
                                             <select id="overtime_zaduzeni" name="overtime_zaduzeni" class="form-control required select" required>
-                                                {% for user in users %}
-                                                    <option value="{{ user.id }}">{{ user.getFullName }}</option>
-                                                {% endfor %}
+                                                <option value="{{ user.id }}">{{ user.getFullName }}</option>
                                             </select>
                                         </div>
                                     </div>

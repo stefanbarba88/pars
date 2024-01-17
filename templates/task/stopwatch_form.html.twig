@@ -95,37 +95,48 @@
 
                             {% set currentTime = "now"|date("H:i") %}
                             {% if currentTime > "15:30" %}
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="overtime_vreme">Prekovremeni sati:</label>
-                                            <div class="row gy-3">
-                                                <div class="col">
-                                                    <div class="input-group">
-                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                                            <i class="ph-minus ph-sm"></i>
-                                                        </button>
-                                                        <input class="form-control form-control-number text-center" type="number" min="0" max="23" name="overtime_vreme_sati" value="0">
-                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                                                            <i class="ph-plus ph-sm"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="input-group">
-                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                                            <i class="ph-minus ph-sm"></i>
-                                                        </button>
-                                                        <input class="form-control form-control-number text-center" type="number" min="0" max="59" step="5" name="overtime_vreme_minuti" value="0">
-                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                                                            <i class="ph-plus ph-sm"></i>
-                                                        </button>
+                                <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-overtime" aria-expanded="false">Prekovremeni sati</div>
+
+                                <div class="row collapse show" id="collapse-overtime">
+                                                <div class="col-lg-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="overtime_vreme">Sati i minuti:</label>
+                                                        <div class="row gy-3">
+                                                            <div class="col">
+                                                                <div class="input-group">
+                                                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                                                        <i class="ph-minus ph-sm"></i>
+                                                                    </button>
+                                                                    <input class="form-control form-control-number text-center" type="number" min="0" max="23" name="overtime_vreme_sati" value="0">
+                                                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                                                        <i class="ph-plus ph-sm"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col">
+                                                                <div class="input-group">
+                                                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                                                        <i class="ph-minus ph-sm"></i>
+                                                                    </button>
+                                                                    <input class="form-control form-control-number text-center" type="number" min="0" max="59" step="5" name="overtime_vreme_minuti" value="0">
+                                                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                                                        <i class="ph-plus ph-sm"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div class="row collapse show" id="collapse-overtime">
+                                                <div class="col-lg-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="overtime_napomena">Napomena:</label>
+                                                        <textarea id="overtime_napomena" name="overtime_napomena" class="form-control"  rows="1"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                             {% endif %}
 
                             <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-client" aria-expanded="false">Klijent</div>

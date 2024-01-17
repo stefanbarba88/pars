@@ -134,6 +134,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
       'nedelja' => $nedelja,
       'izasao' => $izasao,
       'nedostupan' => $nedostupan,
+      'nedostupanBezNedelje' => $nedostupan - $neradnaNedelja,
       'dan' => $dan,
       'odmor' => $odmor,
       'bolovanje' => $bolovanje,

@@ -2768,6 +2768,89 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
+  public function getTasksSearchPaginator($filterBy, User $user){
+    $company = $user->getCompany();
+
+    $qb = $this->createQueryBuilder('t');
+
+    $qb->where('t.company = :company');
+    $qb->setParameter(':company', $company);
+
+
+    if ($filterBy['status'] == 1) {
+
+        $qb->andWhere('t.isDeleted = :status');
+        $qb->setParameter('status', $filterBy['statusStanje']);
+
+    } else {
+
+        $qb->andWhere('t.isSuspended <> :status');
+        $qb->setParameter('status', $filterBy['statusStanje']);
+
+    }
+
+
+    $keywords = explode(" ", $filterBy['tekst']);
+
+
+    foreach ($keywords as $key => $keyword) {
+      $qb
+        ->andWhere($qb->expr()->orX(
+          $qb->expr()->like('t.title', ':keyword'.$key),
+        ))
+        ->setParameter('keyword'.$key, '%' . $keyword . '%');
+    }
+
+    $qb
+      ->addOrderBy('t.datumKreiranja', 'DESC')
+      ->getQuery();
+
+    return $qb;
+  }
+
+  public function proveriPoKat(DateTimeImmutable $datum, Project $project, Category $category): int {
+
+    $startDate = $datum->format('Y-m-d 00:00:00');
+    $endDate = $datum->format('Y-m-d 23:59:00');
+
+    $zadaci =  $this->createQueryBuilder('t')
+      ->select('t.id')
+      ->where('t.datumKreiranja BETWEEN :startDate AND :endDate')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.project = :project')
+      ->andWhere('t.category = :category')
+      ->setParameter(':project', $project)
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->setParameter('category', $category)
+      ->getQuery()
+      ->getResult();
+
+      return count($zadaci);
+  }
+
+
+  public function countTasksInMonth(Project $project, $start, $end): int {
+
+    $startDate = $start->format('Y-m-d 00:00:00');
+    $endDate = $end->format('Y-m-d 23:59:00');
+
+    $zadaci = $this->createQueryBuilder('t')
+      ->select('t.id')
+      ->where('t.datumKreiranja BETWEEN :startDate AND :endDate')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.project = :project')
+      ->setParameter(':project', $project)
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->getQuery()
+      ->getResult();
+
+    return count($zadaci);
+
+  }
+
+
 //    /**
 //     * @return Task[] Returns an array of Task objects
 //     */

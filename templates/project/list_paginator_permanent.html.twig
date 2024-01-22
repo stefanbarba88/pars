@@ -60,7 +60,9 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Broj zadataka</th>
+                                        <th>Zadaci</th>
+                                        <th>Teren/Kancelarija</th>
+                                        <th>Radni dani</th>
                                         <th>Klijent</th>
                                         <th {% if pagination.isSorted('[p.type]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Tip ', ['p.type']) }}
@@ -103,6 +105,17 @@
                                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
                                                     {% set noTasks = getCountTasksByProject(project)  %}
                                                     {{ noTasks.teren }}/{{ noTasks.total }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {% set noDays = getCountDaysTasksByProject(project)  %}
+                                                    {{ noDays.teren }}/{{ noDays.kancelarija }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ daysAtMoment }}/{{ daysMonth }}
                                                 </span>
                                             </td>
                                             <td>

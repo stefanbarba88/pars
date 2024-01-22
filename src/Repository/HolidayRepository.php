@@ -119,6 +119,120 @@ class HolidayRepository extends ServiceEntityRepository {
     return $dostupnost;
   }
 
+//broj radnih dana u mesecu
+  public function brojRadnihDanaMesecu(): int {
+    $company = $this->security->getUser()->getCompany();
+
+    $trenutniDatum = new DateTimeImmutable();
+
+    $brojDana = $trenutniDatum->format('t');
+    $brojNeradnihMesecu = $this->brojNeradnihDanaMesecu();
+
+    $startDate = new DateTimeImmutable('first day of this month');
+
+    $brojRadnihDana = 0;
+
+    for ($i = 0; $i < $brojDana; $i++) {
+
+      if ($startDate->format('N') < $company->getWorkWeek()) {
+        $brojRadnihDana++;
+      }
+
+      $startDate = $startDate->modify("+1 day");
+    }
+
+    return $brojRadnihDana - $this->brojNeradnihDanaMesecu();
+  }
+  public function brojRadnihDanaTrenutno(): int {
+    $company = $this->security->getUser()->getCompany();
+
+    $brojNeradnihMesecu = $this->brojNeradnihDanaTrenutno();
+    $trenutniDatum = new DateTimeImmutable();
+    $startDate = new DateTimeImmutable('first day of this month');
+
+    $brojDana = $trenutniDatum->modify('+2 day')->diff($startDate)->days;
+
+    $brojRadnihDana = 0;
+    for ($i = 0; $i < $brojDana; $i++) {
+      if ($startDate->format('N') < $company->getWorkWeek()) {
+        $brojRadnihDana++;
+      }
+      $startDate = $startDate->modify("+1 day");
+    }
+    return $brojRadnihDana - $this->brojNeradnihDanaTrenutno();
+  }
+  public function brojNeradnihDanaMesecu(): int {
+    $company = $this->security->getUser()->getCompany();
+
+    $startDate = new DateTimeImmutable("first day of this month");
+    $startDate = $startDate->setTime(0,0);
+    $endDate = new DateTimeImmutable('last day of this month');
+    $endDate = $endDate->setTime(23, 59);
+
+    $noPraznici = $this->createQueryBuilder('c')
+      ->where('c.datum BETWEEN :startDate AND :endDate')
+      ->andWhere('(
+        c.type = :praznik OR
+        c.type = :odmor
+    )')
+      ->andWhere('c.company = :company')
+      ->setParameter('company', $company)
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->setParameter('praznik', TipNeradnihDanaData::PRAZNIK)
+      ->setParameter('odmor', TipNeradnihDanaData::KOLEKTIVNI_ODMOR)
+      ->getQuery()
+      ->getResult();
+
+    $praznici = 0;
+
+    if (count($noPraznici) > 0 ) {
+      foreach ($noPraznici as $praz) {
+        if ($praz->getDatum()->format('N') < $company->getWorkWeek()) {
+          $praznici++;
+        }
+      }
+    }
+
+    return $praznici;
+  }
+  public function brojNeradnihDanaTrenutno(): int {
+    $company = $this->security->getUser()->getCompany();
+
+    $startDate = new DateTimeImmutable("first day of this month");
+    $startDate = $startDate->setTime(0,0);
+    $endDate = new DateTimeImmutable();
+    $endDate = $endDate->setTime(23, 59);
+
+    $noPraznici = $this->createQueryBuilder('c')
+      ->where('c.datum BETWEEN :startDate AND :endDate')
+      ->andWhere('(
+        c.type = :praznik OR
+        c.type = :odmor
+    )')
+      ->andWhere('c.company = :company')
+      ->setParameter('company', $company)
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->setParameter('praznik', TipNeradnihDanaData::PRAZNIK)
+      ->setParameter('odmor', TipNeradnihDanaData::KOLEKTIVNI_ODMOR)
+      ->getQuery()
+      ->getResult();
+
+    $praznici = 0;
+
+    if (count($noPraznici) > 0 ) {
+      foreach ($noPraznici as $praz) {
+        if ($praz->getDatum()->format('N') < $company->getWorkWeek()) {
+          $praznici++;
+        }
+      }
+    }
+
+    return $praznici;
+  }
+
+
   public function brojRadnihDanaDoJuce(): int {
 
     $company = $this->security->getUser()->getCompany();
@@ -164,7 +278,6 @@ class HolidayRepository extends ServiceEntityRepository {
 //dd($brojRadnihDana);
     return $brojRadnihDana - $this->brojNeradnihDana();
   }
-
   public function brojNeradnihDana(): int {
     $company = $this->security->getUser()->getCompany();
     $year = date('Y');

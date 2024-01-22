@@ -28,7 +28,7 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista projekata sa letećim ekipama</h5>
+                            <h5 class="py-lg-3 mb-0">Lista projekata</h5>
                             {% if not is_granted('ROLE_EMPLOYEE') %}
                                 <div class="mt-1 my-lg-auto ms-lg-auto">
                                     <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
@@ -60,9 +60,6 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Zadaci</th>
-                                        <th>Teren/Kancelarija</th>
-                                        <th>Radni dani</th>
                                         <th>Klijent</th>
                                         <th {% if pagination.isSorted('[p.type]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Tip ', ['p.type']) }}
@@ -100,23 +97,6 @@
                                                         {% endfor %}
                                                     </div>
                                                 {% endif %}
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                    {% set noTasks = getCountTasksByProject(project)  %}
-                                                    {{ noTasks.teren }}/{{ noTasks.total }}
-                                                </span>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                    {% set noDays = getCountDaysTasksByProject(project)  %}
-                                                    {{ noDays.teren }}/{{ noDays.kancelarija }}
-                                                </span>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                    {{ daysAtMoment }}/{{ daysMonth }}
-                                                </span>
                                             </td>
                                             <td>
                                                 {% if is_granted('ROLE_EMPLOYEE') %}

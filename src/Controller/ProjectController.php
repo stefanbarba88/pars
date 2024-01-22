@@ -9,6 +9,7 @@ use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
 use App\Classes\Slugify;
 use App\Entity\Category;
+use App\Entity\Holiday;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
 use App\Entity\Task;
@@ -66,10 +67,12 @@ class ProjectController extends AbstractController {
     $pagination = $paginator->paginate(
       $projects, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
+    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -77,6 +80,9 @@ class ProjectController extends AbstractController {
         return $this->render('project/list_paginator.html.twig', $args);
       }
       return $this->render('project/phone/list_paginator.html.twig', $args);
+    }
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      return $this->render('project/list_paginator_employee.html.twig', $args);
     }
     return $this->render('project/list_paginator.html.twig', $args);
   }
@@ -93,10 +99,12 @@ class ProjectController extends AbstractController {
     $pagination = $paginator->paginate(
       $projects, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
+    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -120,10 +128,12 @@ class ProjectController extends AbstractController {
     $pagination = $paginator->paginate(
       $projects, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
+    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -147,10 +157,12 @@ class ProjectController extends AbstractController {
     $pagination = $paginator->paginate(
       $projects, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
+    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {

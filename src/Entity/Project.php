@@ -110,6 +110,9 @@ class Project implements JsonSerializable {
   private ?int $roundingInterval = 15;
 
   #[ORM\Column(nullable: true)]
+  private ?int $noTasks = null;
+
+  #[ORM\Column(nullable: true)]
   private ?int $minEntry = 30;
 
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
@@ -727,6 +730,20 @@ class Project implements JsonSerializable {
     $this->team->removeElement($team);
 
     return $this;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getNoTasks(): ?int {
+    return $this->noTasks;
+  }
+
+  /**
+   * @param int|null $noTasks
+   */
+  public function setNoTasks(?int $noTasks): void {
+    $this->noTasks = $noTasks;
   }
 
 

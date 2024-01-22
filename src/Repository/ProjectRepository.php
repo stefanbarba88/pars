@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VrstaPlacanjaData;
 use App\Entity\Category;
 use App\Entity\Client;
@@ -101,7 +102,7 @@ class ProjectRepository extends ServiceEntityRepository {
       ->andWhere('p.isSuspended = 0')
       ->andWhere('p.company = :company')
       ->setParameter(':company', $company)
-      ->orderBy('p.title', 'ASC')
+      ->orderBy('p.noTasks', 'DESC')
       ->getQuery();
   }
 
@@ -144,7 +145,7 @@ class ProjectRepository extends ServiceEntityRepository {
       ->andWhere('p.type = 2')
       ->andWhere('p.company = :company')
       ->setParameter(':company', $company)
-      ->orderBy('p.title', 'ASC')
+      ->orderBy('p.noTasks', 'DESC')
       ->getQuery();
 
   }
@@ -155,7 +156,7 @@ class ProjectRepository extends ServiceEntityRepository {
       ->andWhere('p.type = 3')
       ->andWhere('p.company = :company')
       ->setParameter(':company', $company)
-      ->orderBy('p.title', 'ASC')
+      ->orderBy('p.noTasks', 'DESC')
       ->getQuery();
 
   }
@@ -166,7 +167,7 @@ class ProjectRepository extends ServiceEntityRepository {
       ->andWhere('p.type = 1')
       ->andWhere('p.company = :company')
       ->setParameter(':company', $company)
-      ->addOrderBy('p.title', 'ASC')
+      ->addOrderBy('p.noTasks', 'DESC')
       ->getQuery();
 
   }
@@ -410,14 +411,69 @@ class ProjectRepository extends ServiceEntityRepository {
     $category = $this->getEntityManager()->getRepository(Category::class)->find(5);
     $prethodniMesecDatum = new DateTimeImmutable('first day of this month');
 
-    if ($project->getId() == 5) {
+    $datum = new DateTimeImmutable();
+    $datum = $datum->setTime(23,59);
+
+    if ($project->getClient()->first()->getId() == 5) {
+      if ($datum->format('j') < 27) {
+        $prethodniMesecDatum = new DateTimeImmutable('last day of last month');
+
+      }
       $prethodniMesecDatum = $prethodniMesecDatum->setDate($prethodniMesecDatum->format('Y'), $prethodniMesecDatum->format('m'), 26);
     }
 
-    $datum = new DateTimeImmutable();
+
+    $prethodniMesecDatum = $prethodniMesecDatum->setTime(0,0);
 
 
     return $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectAllCategory($prethodniMesecDatum, $datum, $project, $category);
+
+  }
+
+  // A/B/C/D
+  // A - broj terenskih dana
+  // B - broj kancelarijskih dana ali da nije bilo terena taj dan
+  // C - trenutni broj radnih dana u mesecu
+  // D - ukupan broj radnih dana u mesecu
+  public function getCountDaysTasksByProject(Project $project):array {
+
+    $teren = $this->getEntityManager()->getRepository(Category::class)->find(5);
+    $kancelarija = $this->getEntityManager()->getRepository(Category::class)->find(6);
+
+
+    $datum = new DateTimeImmutable();
+    $datum = $datum->setTime(23,59);
+
+    $startDate = new DateTimeImmutable('first day of this month');
+    if ($project->getClient()->first()->getId() == 5) {
+      if ($datum->format('j') < 27) {
+        $startDate = new DateTimeImmutable('last day of last month');
+      }
+      $startDate = $startDate->setDate($startDate->format('Y'), $startDate->format('m'), 26);
+    }
+
+    $brojDana = $startDate->format('t');
+
+    $brojTeren = 0;
+    $brojKancelarija = 0;
+
+    for ($i = 0; $i < $brojDana; $i++) {
+      $task = $this->getEntityManager()->getRepository(Task::class)->proveriPoKat($startDate, $project, $teren);
+      if ($task > 0) {
+        $brojTeren++;
+      } else {
+        $task = $this->getEntityManager()->getRepository(Task::class)->proveriPoKat($startDate, $project, $kancelarija);
+        if ($task > 0) {
+          $brojKancelarija++;
+        }
+      }
+      $startDate = $startDate->modify("+1 day");
+    }
+
+    return [
+      'teren' => $brojTeren,
+      'kancelarija' =>$brojKancelarija
+    ];
 
   }
 
@@ -528,6 +584,32 @@ class ProjectRepository extends ServiceEntityRepository {
 //            ->getOneOrNullResult()
 //        ;
 //    }
+  public function getProjectsSearchByUserPaginator(User $user, $filterBy) {
+    $keywords = explode(" ", $filterBy['tekst']);
+
+    $qb = $this->createQueryBuilder('p')
+      ->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('p.isSuspended = 0')
+      ->andWhere('p.company = :company')
+      ->setParameter(':userId', $user->getId())
+      ->setParameter(':company', $user->getCompany());
+
+        foreach ($keywords as $key => $keyword) {
+      $qb
+        ->andWhere($qb->expr()->orX(
+          $qb->expr()->like('p.title', ':keyword'.$key),
+        ))
+        ->setParameter('keyword'.$key, '%' . $keyword . '%');
+      }
+
+      $qb->addOrderBy('p.title', 'ASC');
+      $qb->getQuery();
+
+    return $qb;
+  }
+
   public function getProjectsByUserPaginator(User $user) {
 
     return $this->createQueryBuilder('p')
@@ -539,5 +621,40 @@ class ProjectRepository extends ServiceEntityRepository {
       ->addOrderBy('p.title', 'ASC')
       ->getQuery();
   }
+
+  public function getProjectsSearchPaginator($filterBy, User $user){
+    $company = $user->getCompany();
+    $qb = $this->createQueryBuilder('t');
+
+    $qb->where('t.company = :company');
+    $qb->setParameter(':company', $company);
+
+
+    if ($filterBy['status'] == 1) {
+      $qb->andWhere('t.isSuspended = :status');
+      $qb->setParameter('status', $filterBy['statusStanje']);
+    } else {
+      $qb->andWhere('t.isSuspended <> :status');
+      $qb->setParameter('status', $filterBy['statusStanje']);
+    }
+
+    $keywords = explode(" ", $filterBy['tekst']);
+
+    foreach ($keywords as $key => $keyword) {
+      $qb
+        ->andWhere($qb->expr()->orX(
+          $qb->expr()->like('t.title', ':keyword'.$key),
+        ))
+        ->setParameter('keyword'.$key, '%' . $keyword . '%');
+    }
+
+    $qb
+      ->addOrderBy('t.title', 'ASC')
+      ->getQuery();
+
+
+    return $qb;
+  }
+
 
 }

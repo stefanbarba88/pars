@@ -926,6 +926,49 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
   }
 
+  public function getUsersSearchPaginator($filterBy, User $user){
+    $company = $user->getCompany();
+
+    $qb = $this->createQueryBuilder('t');
+
+    $qb->where('t.company = :company');
+    $qb->setParameter(':company', $company);
+
+    $qb->andWhere('t.userType = :type');
+    $qb->setParameter(':type', UserRolesData::ROLE_EMPLOYEE);
+
+
+    if ($filterBy['status'] == 1) {
+
+        $qb->andWhere('t.isSuspended = :status');
+        $qb->setParameter('status', $filterBy['statusStanje']);
+
+    } else {
+
+        $qb->andWhere('t.isSuspended <> :status');
+        $qb->setParameter('status', $filterBy['statusStanje']);
+
+    }
+
+
+    $keywords = explode(" ", $filterBy['tekst']);
+
+
+    foreach ($keywords as $key => $keyword) {
+      $qb
+        ->andWhere($qb->expr()->orX(
+          $qb->expr()->like('t.ime', ':keyword'.$key),
+          $qb->expr()->like('t.prezime', ':keyword'.$key)
+        ))
+        ->setParameter('keyword'.$key, '%' . $keyword . '%');
+    }
+    $qb
+      ->addOrderBy('t.prezime', 'ASC')
+      ->getQuery();
+
+
+    return $qb;
+  }
 
 //    /**
 //     * @return User[] Returns an array of User objects

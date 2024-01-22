@@ -335,7 +335,7 @@
                     {#                    </a>#}
                     {#                </li>#}
 
-                    {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN') %}
+{#                    {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN') %}#}
                     <!-- Korisnici -->
                         <li class="nav-item-header">
                             <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Korisnici</div>
@@ -348,7 +348,7 @@
                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countUsersActive }}/{{ countUsers }}</span>
                             </a>
                         </li>
-                    {% endif %}
+{#                    {% endif %}#}
 {#                    <li class="nav-item">#}
 {#                        <a href="" class="nav-link">#}
 {#                            <i class="ph-file-text"></i>#}
@@ -768,6 +768,8 @@
                             <li class="nav-item"><a href="{{ path('app_labels') }}" class="nav-link">Oznake</a></li>
                             <li class="nav-item"><a href="{{ path('app_holidays') }}" class="nav-link">Neradni dani</a></li>
                             <li class="nav-item"><a href="{{ path('app_holiday_vacation_form') }}" class="nav-link">Kolektivni odmor</a></li>
+                            <li class="nav-item"><a href="{{ asset('/assets/manual/manual.pdf') }}" class="nav-link" download>Uputstvo korisnik</a></li>
+                            <li class="nav-item"><a href="{{ asset('/assets/manual/manual_admin.pdf') }}" class="nav-link" download>Uputstvo administrator</a></li>
                             <li class="nav-item"><a href = "mailto: stefanmaksimovic88@gmail.com.com" class="nav-link">Pitanja i sugestije</a></li>
 {#                            <li class="nav-item nav-item-submenu">#}
 {#                                <a href="#" class="nav-link">Katalog</a>#}

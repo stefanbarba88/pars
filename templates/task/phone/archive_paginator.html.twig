@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -29,115 +29,109 @@
                     {% set difference = date()|date_modify('-96 hours') %}
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Arhiva zadataka</h5>
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Arhiva zadataka</h5>
                         </div>
-                        <form method="get" action="{{ path('app_tasks_arhiva') }}" class="form-validate-jquery" novalidation="novalidation">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <div class="mb-3">
-                                            <label class="form-label required" for="projekat">Projekat:</label>
-                                            <select id="projekat" name="projekat" class="form-control">
-                                                <option value="">--Izaberite projekat--</option>
-                                                {% for project in projekti %}
-                                                    <option value="{{ project.id }}">{{ project.title }}</option>
-                                                {% endfor %}
-                                            </select>
-                                            <span class="form-text">Ako ne izaberete projekat, biće prikazani svi zadaci.</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <div class="mb-3">
-                                            <label class="form-label required" for="kategorija">Kategorija:</label>
-                                            <select id="kategorija" name="kategorija" class="form-control">
-                                                <option value="">--Izaberite kategoriju--</option>
-                                                {% for kat in kategorije %}
-                                                    <option value="{{ kat.id }}">{{ kat.title }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    {% if app.user.userType != 4 %}
-                                        <div class="col-lg-4">
-                                            <div class="mb-3">
-                                                <label class="form-label required" for="zaposleni">Zaposleni:</label>
-                                                <select id="zaposleni" name="zaposleni" class="form-control">
-                                                    <option value="">--Izaberite zaposlenog--</option>
-                                                    {% for user in users %}
-                                                        <option value="{{ user.id }}">{{ user.fullName }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="period">Period:</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="ph-calendar"></i></span>
-                                                <input type="text" class="form-control daterange-locale-sr required" id="period" name="period">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="card-body">
+                            <div class="accordion" id="accordion_collapsed">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item_filter" aria-expanded="false">
+                                            Filter
+                                        </button>
+                                    </h2>
+                                    <div id="collapsed_item_filter" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
+                                        <form method="get" action="{{ path('app_tasks_arhiva') }}" class="form-validate-jquery" novalidation="novalidation">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label required" for="projekat">Projekat:</label>
+                                                            <select id="projekat" name="projekat" class="form-control">
+                                                                <option value="">--Izaberite projekat--</option>
+                                                                {% for project in projekti %}
+                                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                            <span class="form-text">Ako ne izaberete projekat, biće prikazani svi zadaci.</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label required" for="kategorija">Kategorija:</label>
+                                                            <select id="kategorija" name="kategorija" class="form-control">
+                                                                <option value="">--Izaberite kategoriju--</option>
+                                                                {% for kat in kategorije %}
+                                                                    <option value="{{ kat.id }}">{{ kat.title }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    {% if app.user.userType != 4 %}
+                                                        <div class="col-lg-4">
+                                                            <div class="mb-3">
+                                                                <label class="form-label required" for="zaposleni">Zaposleni:</label>
+                                                                <select id="zaposleni" name="zaposleni" class="form-control">
+                                                                    <option value="">--Izaberite zaposlenog--</option>
+                                                                    {% for user in users %}
+                                                                        <option value="{{ user.id }}">{{ user.fullName }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="period">Period:</label>
+                                                            <div class="input-group">
+                                                                <span class="input-group-text"><i class="ph-calendar"></i></span>
+                                                                <input type="text" class="form-control daterange-locale-sr required" id="period" name="period">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                <div class="text-end">
-                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikaži</button>
+                                                <div class="text-end">
+                                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                        </form>
+                        </div>
+
 
                         <div class="card-body">
-                            <div class="table-responsive ">
-                                <table class="table table-bordered table-hover table-responsive">
-                                    <thead>
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                    <thead class="bg-light text-primary">
                                     <tr>
+                                        <td>#</td>
                                         <th>Zadatak</th>
-                                        <th {% if pagination.isSorted('[t.datumKreiranja]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Datum kreiranja ', ['t.datumKreiranja']) }}
-                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 't.datumKreiranja' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 't.datumKreiranja' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
-                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for task in pagination %}
                                         <tr>
+                                            <td>
+                                                {{ task.id }}
+                                            </td>
                                             {% if is_granted('ROLE_EMPLOYEE')%}
                                                 {% if app.user in task.getAssignedUsers %}
                                                     <td>
                                                         <div class="fw-semibold">
                                                             <a href="{{ path('app_task_view_user', { id: task.id}) }}">{{ task.title }}</a>
                                                         </div>
-                                                        {% if task.label is not empty %}
-                                                            <div class="d-inline-flex">
-                                                                {% for label in task.label %}
-                                                                    {{label.label | raw}}
-                                                                {% endfor %}
-                                                            </div>
-                                                        {% endif %}
                                                     </td>
                                                 {% else %}
                                                     <td>
                                                         <div class="fw-semibold">
                                                             {{ task.title }}
                                                         </div>
-                                                        {% if task.label is not empty %}
-                                                            <div class="d-inline-flex">
-                                                                {% for label in task.label %}
-                                                                    {{label.label | raw}}
-                                                                {% endfor %}
-                                                            </div>
-                                                        {% endif %}
                                                     </td>
                                                 {% endif %}
                                             {% else %}
@@ -145,21 +139,8 @@
                                                     <div class="fw-semibold">
                                                         <a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a>
                                                     </div>
-                                                    {% if task.label is not empty %}
-                                                        <div class="d-inline-flex">
-                                                            {% for label in task.label %}
-                                                                {{label.label | raw}}
-                                                            {% endfor %}
-                                                        </div>
-                                                    {% endif %}
                                                 </td>
                                             {% endif %}
-                                            <td>
-                                                <div class="d-inline-flex align-items-center">
-                                                    <i class="ph-calendar me-2"></i>
-                                                    {{ task.datumKreiranja | date("d.m.Y")}}
-                                                </div>
-                                            </td>
                                             <td class="text-center">
                                                 {% if is_granted('ROLE_EMPLOYEE') and app.user in task.getAssignedUsers %}
                                                     <div class="dropdown">

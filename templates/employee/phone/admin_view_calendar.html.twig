@@ -1,0 +1,571 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ user.getFullName() }}
+                            </h4>
+                        </div>
+                    </div>
+                    {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigation', { user: user } )) }}
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Left sidebar component -->
+                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
+                        <!-- /left sidebar component -->
+
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Lista zahteva</h5>
+                                        <div class="my-auto ms-auto">
+                                            {% if app.user == user%}
+                                                <a href="{{ path('app_calendar_form', {user:user.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th>Početak</th>
+                                                    <th>Kraj</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for calendar in pagination %}
+                                                    <tr>
+                                                        <td>
+                                                            {% if calendar.start is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ calendar.start | date("d.m.Y")}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if calendar.finish is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ calendar.finish | date("d.m.Y")}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ calendar.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr id="collapsed_item{{ calendar.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
+
+                                                    <td>
+                                                            {% if calendar.type == 1 %}
+                                                                <span class="badge bg-secondary bg-opacity-75 text-primary">Slobodan dan</span>
+                                                            {% elseif calendar.type == 2 %}
+                                                                <span class="badge bg-secondary text-primary">Odmor</span>
+                                                            {% elseif calendar.type == 3 %}
+                                                                <span class="badge bg-primary bg-opacity-75 text-white">Bolovanje</span>
+                                                            {% elseif calendar.type == 4 %}
+                                                                <span class="badge bg-primary bg-opacity text-white">Slava</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if calendar.status == 0 %}
+                                                                <span class="badge bg-danger text-white">Obrisan</span>
+                                                            {% elseif calendar.status == 1 %}
+                                                                <span class="badge bg-secondary text-primary">Na čekanju</span>
+                                                            {% elseif calendar.status == 2 %}
+                                                                <span class="badge bg-primary text-white">Odobren</span>
+                                                            {% elseif calendar.status == 3 %}
+                                                                <span class="badge bg-yellow text-primary">Odbijen</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                    <i class="ph-gear"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-end">
+                                                                    <a href="{{ path('app_calendar_view', {id: calendar.id}) }}" class="dropdown-item">
+                                                                        <i class="ph-eye me-2"></i>
+                                                                        Vidite
+                                                                    </a>
+                                                                    {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
+                                                                        {% if calendar.status != 2  %}
+                                                                            <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
+                                                                                <i class="ph-check me-2"></i>
+                                                                                Dozvolite
+                                                                            </a>
+                                                                        {% endif %}
+                                                                        {% if calendar.status != 3  %}
+                                                                            <a href="{{ path('app_calendar_decline', {id: calendar.id}) }}" class="dropdown-item">
+                                                                                <i class="ph-minus me-2"></i>
+                                                                                Odbijte
+                                                                            </a>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                    {% if calendar.status != 0 %}
+                                                                        <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-trash me-2"></i>
+                                                                            Obrišite
+                                                                        </a>
+                                                                    {% endif  %}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Prisutnost od početka godine</h5>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-primary text-white">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['dostupan'] }}/{{ noRadnihDana }}</h4>
+                                                            Broj radnih dana
+                                                        </div>
+
+                                                        <i class="ph-briefcase ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['praznik'] }}</h4>
+                                                            Praznik
+                                                        </div>
+
+                                                        <i class="ph-cake ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['kolektivniOdmor'] }}</h4>
+                                                            Kolektivni odmor
+                                                        </div>
+                                                        <i class="ph-globe-hemisphere-west ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['nedelja'] }}</h4>
+                                                            Nedelja
+                                                        </div>
+
+                                                        <i class="ph-calendar-x ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-yellow text-primary">
+                                                    <div class="d-flex align-items-center">
+
+
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ overtime }}</h4>
+                                                            Prekovremeni sati
+                                                        </div>
+                                                        <i class="ph-hourglass-high ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                            {#                                            <div class="col-sm-6 col-xl-3">#}
+                                            {#                                                <div class="card card-body bg-primary text-white">#}
+                                            {#                                                    <div class="d-flex align-items-center">#}
+                                            {#                                                        <div class="flex-fill">#}
+                                            {#                                                            <h4 class="mb-0">{{ noDays['ostalo'] }}</h4>#}
+                                            {#                                                            Nema zabeležen zadatak#}
+                                            {#                                                        </div>#}
+
+                                            {#                                                        <i class="ph-calendar-x ph-2x opacity-75 ms-3"></i>#}
+                                            {#                                                    </div>#}
+                                            {#                                                </div>#}
+                                            {#                                            </div>#}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Odsutnost od početka godine</h5>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-primary text-white">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['nedostupanBezNedelje'] }}/{{ noRadnihDana }}</h4>
+                                                            Broj dana odsustva
+                                                        </div>
+
+                                                        <i class="ph-briefcase ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['dan'] }}</h4>
+                                                            Slobodni dani
+                                                        </div>
+
+                                                        <i class="ph-coffee ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+
+
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['odmor'] }}</h4>
+                                                            Odmor
+                                                        </div>
+                                                        <i class="ph-globe-hemisphere-west ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['bolovanje'] }}</h4>
+                                                            Bolovanje
+                                                        </div>
+
+                                                        <i class="ph-first-aid-kit ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+
+
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['slava'] }}</h4>
+                                                            Slava
+                                                        </div>
+                                                        <i class="ph-first-aid ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noRequests['ukupno'] }}</h4>
+                                                            Broj zahteva
+                                                        </div>
+
+                                                        <i class="ph-question ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['izasao'] }}</h4>
+                                                            Izlasci
+                                                        </div>
+                                                        <i class="ph-person-simple-run ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+
+
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['neradniKolektivniOdmor'] }}</h4>
+                                                            Kolektivni odmor
+                                                        </div>
+                                                        <i class="ph-globe-hemisphere-west ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Kalendar</h5>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <div class="mb-3">
+                                                    <h6>Legenda</h6>
+                                                    <div class="bg-light border rounded p-2 mb-3">
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-secondary bg-opacity-75 text-primary d-block">Slobodan dan</span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-secondary text-primary d-block">Odmor</span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-primary bg-opacity-75 text-white d-block">Bolovanje</span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-primary bg-opacity text-white d-block">Slava</span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-yellow text-primary d-block">Ostalo</span>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="mb-3">
+                                                    <h6>Neradni dani</h6>
+                                                    <div class="bg-light border rounded p-2 mb-3">
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-secondary bg-opacity-50 text-primary d-block">Državni/Verski praznik</span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-primary bg-opacity-50 text-white d-block">Kolektivni odmor</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9">
+                                                <div class="fullcalendar-event-colors"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                {#                                <!-- Schedule -->#}
+                                {#                                <div class="card">#}
+                                {#                                    <div class="card-header">#}
+                                {#                                        <h5 class="mb-0">My schedule</h5>#}
+                                {#                                    </div>#}
+
+                                {#                                    <div class="card-body">#}
+                                {#                                        <div class="my-schedule"></div>#}
+                                {#                                    </div>#}
+                                {#                                </div>#}
+                                {#                                <!-- /schedule -->#}
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fab.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/prism.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/locales/sr.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+
+{% block footerJavascript %}
+    <script type="text/javascript">
+        const eventColors =
+            [
+                {% for event in dostupnosti %}
+                {% if event.id == '' %}
+                {
+                    {#title: '{{ event.title }}',#}
+                    start: '{{ event.start }}',
+                    backgroundColor: '{{ event.color }}',
+                    text: '{{ event.text }}',
+                    display: 'background',
+                },
+                {% else %}
+                {
+                    title: '{{ event.title }}',
+                    start: '{{ event.start }}',
+                    color: '{{ event.color }}',
+                    textColor: '{{ event.text }}',
+                },
+                {% endif %}
+                {% endfor %}
+            ]
+        const initialLocaleCode = 'sr';
+        // Define element
+        const calendarEventColorsElement = document.querySelector('.fullcalendar-event-colors');
+
+        // Initialize
+        if(calendarEventColorsElement) {
+            const calendarEventColorsInit = new FullCalendar.Calendar(calendarEventColorsElement, {
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,timeGridDay'
+                },
+                {#validRange: {#}
+                {#    start: '{{ "now"|date("Y") }}-{{ "now"|date("m") }}-01'#}
+                {#},#}
+                initialView: 'dayGridMonth' +
+                    '',
+                locale: initialLocaleCode,
+                initialDate: new Date(),
+                navLinks: true, // can click day/week names to navigate views
+                businessHours: true, // display business hours
+                // editable: true,
+                // selectable: true,
+                // editable: true,
+                direction: document.dir == 'rtl' ? 'rtl' : 'ltr',
+                events: eventColors,
+                // height: 500
+            });
+
+            // Init
+            calendarEventColorsInit.render();
+
+            // Resize calendar when sidebar toggler is clicked
+            document.querySelectorAll('.sidebar-control').forEach(function(sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    calendarEventColorsInit.updateSize();
+                })
+            });
+        }
+
+    </script>
+{% endblock footerJavascript %}

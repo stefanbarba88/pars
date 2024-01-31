@@ -36,10 +36,14 @@ class OvertimeController extends AbstractController {
     $pagination = $paginator->paginate(
       $holidays, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('overtime/phone/list.html.twig', $args);
+    }
 
     return $this->render('overtime/list.html.twig', $args);
   }
@@ -59,11 +63,14 @@ class OvertimeController extends AbstractController {
     $pagination = $paginator->paginate(
       $holidays, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('overtime/phone/archive.html.twig', $args);
+    }
     return $this->render('overtime/archive.html.twig', $args);
   }
 

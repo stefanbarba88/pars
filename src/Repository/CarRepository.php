@@ -90,17 +90,64 @@ class CarRepository extends ServiceEntityRepository {
     return $vozila;
   }
 
-  public function getCarsPaginator() {
+  public function getCarsPaginator($filter, $suspended) {
     $company = $this->security->getUser()->getCompany();
-    return $this->createQueryBuilder('c')
+
+    $qb =  $this->createQueryBuilder('c')
       ->andWhere('c.company = :company')
       ->setParameter(':company', $company)
-        ->orderBy('c.isSuspended', 'ASC')
-        ->addOrderBy('c.isReserved', 'ASC')
-        ->addOrderBy('c.id', 'ASC')
-        ->getQuery();
+      ->andWhere('c.isSuspended = :suspenzija')
+      ->setParameter('suspenzija', $suspended);
+
+    if (!empty($filter['naziv'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('c.brand', ':naziv'),
+      ))
+        ->setParameter('naziv', '%' . $filter['naziv'] . '%');
+    }
+    if (!empty($filter['registracija'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('c.plate', ':registracija'),
+      ))
+        ->setParameter('registracija', '%' . $filter['registracija'] . '%');
+    }
 
 
+    $qb->orderBy('c.isReserved', 'ASC')
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery();
+
+    return $qb;
+  }
+
+  public function getCarsReservedPaginator($filter, $reserved) {
+    $company = $this->security->getUser()->getCompany();
+
+    $qb =  $this->createQueryBuilder('c')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
+      ->andWhere('c.isReserved = :reserved')
+      ->setParameter('reserved', $reserved);
+
+    if (!empty($filter['naziv'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('c.brand', ':naziv'),
+      ))
+        ->setParameter('naziv', '%' . $filter['naziv'] . '%');
+    }
+    if (!empty($filter['registracija'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('c.plate', ':registracija'),
+      ))
+        ->setParameter('registracija', '%' . $filter['registracija'] . '%');
+    }
+
+
+    $qb
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery();
+
+    return $qb;
   }
 
 //    /**

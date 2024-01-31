@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Classes\Data\NotifyMessagesData;
 use App\Entity\ZaposleniPozicija;
 use App\Form\PositionFormType;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -29,10 +30,15 @@ class PositionController extends AbstractController {
     $pagination = $paginator->paginate(
       $positions, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('position/phone/list.html.twig', $args);
+    }
 
     return $this->render('position/list.html.twig', $args);
 }

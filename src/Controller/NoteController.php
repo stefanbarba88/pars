@@ -34,10 +34,14 @@ class NoteController extends AbstractController {
     $pagination = $paginator->paginate(
       $notes, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('note/phone/list.html.twig', $args);
+    }
 
     return $this->render('note/list.html.twig', $args);
   }

@@ -10,6 +10,7 @@ use App\Entity\ManagerChecklist;
 use App\Entity\User;
 use App\Form\CityFormType;
 use App\Form\ManagerChecklistFormType;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -31,17 +32,44 @@ class CheckListController extends AbstractController {
     $args = [];
     $user = $this->getUser();
 
-    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator($user);
+    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator($user, 0);
 
     $pagination = $paginator->paginate(
       $dostupnosti, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('check_list/phone/list.html.twig', $args);
+    }
     return $this->render('check_list/list.html.twig', $args);
+  }
+
+  #[Route('/list-archive/', name: 'app_checklist_archive')]
+  public function archive(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+    $user = $this->getUser();
+
+    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator($user, 1);
+
+    $pagination = $paginator->paginate(
+      $dostupnosti, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $args['pagination'] = $pagination;
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('check_list/phone/archive.html.twig', $args);
+    }
+    return $this->render('check_list/archive.html.twig', $args);
   }
 
   #[Route('/to-do/', name: 'app_checklist_to_do')]
@@ -57,11 +85,14 @@ class CheckListController extends AbstractController {
     $pagination = $paginator->paginate(
       $dostupnosti, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('check_list/phone/list_to_do.html.twig', $args);
+    }
     return $this->render('check_list/list_to_do.html.twig', $args);
   }
 

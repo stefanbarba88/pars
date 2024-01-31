@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\TipOpremeData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Car;
 use App\Entity\CarReservation;
@@ -25,6 +26,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -41,17 +43,133 @@ class ToolController extends AbstractController {
     }
     $args = [];
 
-    $cars = $this->em->getRepository(Tool::class)->getToolsPaginator();
+    $search = [];
+
+    $search['naziv'] = $request->query->get('naziv');
+    $search['tip'] = $request->query->get('tip');
+
+    $cars = $this->em->getRepository(Tool::class)->getToolsPaginator($search, 0);
 
     $pagination = $paginator->paginate(
       $cars, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
     $args['pagination'] = $pagination;
+    $args['tip'] = TipOpremeData::TIP;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/list.html.twig', $args);
+    }
 
     return $this->render('tool/list.html.twig', $args);
+  }
+
+  #[Route('/list-reserved/', name: 'app_tools_reserved')]
+  public function reserved(PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $search = [];
+
+    $search['naziv'] = $request->query->get('naziv');
+    $search['tip'] = $request->query->get('tip');
+
+    $cars = $this->em->getRepository(Tool::class)->getToolsReservedPaginator($search, 1);
+
+    $pagination = $paginator->paginate(
+      $cars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+    $args['tip'] = TipOpremeData::TIP;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/reserved.html.twig', $args);
+    }
+
+    return $this->render('tool/reserved.html.twig', $args);
+  }
+
+  #[Route('/list-available/', name: 'app_tools_available')]
+  public function available(PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $search = [];
+
+    $search['naziv'] = $request->query->get('naziv');
+    $search['tip'] = $request->query->get('tip');
+
+    $cars = $this->em->getRepository(Tool::class)->getToolsReservedPaginator($search, 0);
+
+    $pagination = $paginator->paginate(
+      $cars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+    $args['tip'] = TipOpremeData::TIP;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/available.html.twig', $args);
+    }
+
+    return $this->render('tool/available.html.twig', $args);
+  }
+
+  #[Route('/list-archive/', name: 'app_tools_archive')]
+  public function archive(PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $search = [];
+
+    $search['naziv'] = $request->query->get('naziv');
+    $search['tip'] = $request->query->get('tip');
+
+    $cars = $this->em->getRepository(Tool::class)->getToolsPaginator($search, 1);
+
+    $pagination = $paginator->paginate(
+      $cars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+    $args['tip'] = TipOpremeData::TIP;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/archive.html.twig', $args);
+    }
+
+    return $this->render('tool/archive.html.twig', $args);
   }
 
   #[Route('/form/{id}', name: 'app_tool_form', defaults: ['id' => 0])]
@@ -170,12 +288,18 @@ class ToolController extends AbstractController {
     $pagination = $paginator->paginate(
       $cars, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/tool_history_list.html.twig', $args);
+    }
+
     return $this->render('tool/tool_history_list.html.twig', $args);
+
   }
 
   #[Route('/history-tool-view/{id}', name: 'app_tool_profile_history_view')]
@@ -191,8 +315,6 @@ class ToolController extends AbstractController {
     return $this->render('tool/view_history_profile.html.twig', $args);
   }
 
-
-
   #[Route('/list-reservations/{id}', name: 'app_tools_reservations')]
   public function listReservations(Tool $tool, PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
@@ -206,11 +328,15 @@ class ToolController extends AbstractController {
     $pagination = $paginator->paginate(
       $reservations, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/list_reservations.html.twig', $args);
+    }
 
     return $this->render('tool/list_reservations.html.twig', $args);
   }

@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -38,9 +38,9 @@
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
                                 <div class="card">
-                                    <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Zaduženo vozilo</h5>
-                                        <div class="mt-1 my-lg-auto ms-lg-auto">
+                                    <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Zaduženo vozilo</h5>
+                                        <div class="my-auto ms-auto">
                                             {% if app.user == user%}
                                                 {% if user.car is null %}
                                                     <a href="{{ path('app_car_employee_reservation_form', {user:user.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Zadužite</a>
@@ -115,52 +115,22 @@
                                     {% endif %}
                                 </div>
                                 <div class="card">
-                                    <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Lista rezervacija</h5>
+                                    <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista rezervacija</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive ">
-                                            <table class="table table-bordered table-hover table-responsive">
-                                                <thead>
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
                                                 <tr>
-                                                    <th {% if pagination.isSorted('[u.id]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination, '# ID ', 'u.id', {'alias': 'u'}) }}
-                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.id' %}
-                                                            &#8595;
-                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.id' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
                                                     <th>Vozilo</th>
-                                                    <th  {% if pagination.isSorted('[u.created]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination, 'Zadužen ', 'u.created', {'alias': 'u'}) }}
-                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.created' %}
-                                                            &#8595;
-                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.created' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
-                                                    <th  {% if pagination.isSorted('[u.finished]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination, 'Razdužen ', 'u.finished', {'alias': 'u'}) }}
-                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.finished' %}
-                                                            &#8595;
-                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.finished' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
-                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                    <th>Zadužen</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 {% for reservation in pagination %}
                                                     <tr>
-                                                        <td>{{ reservation.id }}</td>
                                                         <td>
                                                             {{ reservation.car.getCarName() }}
                                                         </td>
@@ -170,7 +140,12 @@
                                                                 {{ reservation.created | date("d.m.Y")}}
                                                             </div>
                                                         </td>
-                                                        <td>
+                                                        <td class="text-center">
+                                                            <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item1{{ reservation.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr id="collapsed_item1{{ reservation.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
+                                                        <td colspan="2">
                                                             {% if reservation.finished is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
@@ -195,7 +170,6 @@
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
-
                                                 </tbody>
                                             </table>
                                         </div>
@@ -209,66 +183,31 @@
                                 </div>
                                 <!-- State saving -->
                                 <div class="card">
-                                    <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Lista troškova</h5>
+                                    <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista troškova</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive ">
-                                            <table class="table table-bordered table-hover table-responsive">
-                                                <thead>
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
                                                 <tr>
-                                                    <th {% if pagination1.isSorted('[e.id]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination1, '# ID ', 'e.id', {'alias': 'e'}) }}
-                                                        {% if pagination1.getDirection() == 'desc' and pagination1.getSort() == 'e.id' %}
-                                                            &#8595;
-                                                        {% elseif pagination1.getDirection() == 'asc' and pagination1.getSort() == 'e.id' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
                                                     <th>Vozilo</th>
-                                                    <th  {% if pagination1.isSorted('[e.type]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination1, 'Tip troška ', 'e.type', {'alias': 'e'}) }}
-                                                        {% if pagination1.getDirection() == 'desc' and pagination1.getSort() == 'e.type' %}
-                                                            &#8595;
-                                                        {% elseif pagination1.getDirection() == 'asc' and pagination1.getSort() == 'e.type' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
-                                                    <th  {% if pagination1.isSorted('[e.price]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination1, 'Iznos ', 'e.price', {'alias': 'e'}) }}
-                                                        {% if pagination1.getDirection() == 'desc' and pagination1.getSort() == 'e.price' %}
-                                                            &#8595;
-                                                        {% elseif pagination1.getDirection() == 'asc' and pagination1.getSort() == 'e.price' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
-                                                    <th  {% if pagination1.isSorted('[e.date]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination1, 'Datum ', 'e.date', {'alias': 'e'}) }}
-                                                        {% if pagination1.getDirection() == 'desc' and pagination1.getSort() == 'e.date' %}
-                                                            &#8595;
-                                                        {% elseif pagination1.getDirection() == 'asc' and pagination1.getSort() == 'e.date' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
-                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                    <th>Tip troška</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 {% for expense in pagination1 %}
                                                     <tr>
-                                                        <td>{{ expense.id }}</td>
                                                         <td>{{ expense.car.getCarName() }}</td>
                                                         <td>
                                                             {{ expense.getTypeData }}
                                                         </td>
+                                                        <td class="text-center">
+                                                            <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item2{{ expense.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr id="collapsed_item2{{ expense.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
                                                         <td>{{ expense.price | number_format(2, '.', ',') }}</td>
                                                         <td>
                                                             {% if expense.date is not null %}

@@ -52,7 +52,7 @@ class TaskController extends AbstractController {
     $pagination = $paginator->paginate(
       $tasks, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
@@ -60,9 +60,6 @@ class TaskController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/list.html.twig', $args);
-      }
       return $this->render('task/phone/list.html.twig', $args);
     }
     return $this->render('task/list.html.twig', $args);
@@ -90,7 +87,7 @@ class TaskController extends AbstractController {
     $pagination = $paginator->paginate(
       $tasks, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $session = new Session();
@@ -104,9 +101,6 @@ class TaskController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/archive_paginator.html.twig', $args);
-      }
       return $this->render('task/phone/archive_paginator.html.twig', $args);
     }
 
@@ -130,16 +124,13 @@ class TaskController extends AbstractController {
     $pagination = $paginator->paginate(
       $tasks, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/unclosed.html.twig', $args);
-      }
       return $this->render('task/phone/unclosed.html.twig', $args);
     }
     return $this->render('task/unclosed.html.twig', $args);
@@ -161,16 +152,13 @@ class TaskController extends AbstractController {
     $pagination = $paginator->paginate(
       $tasks, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/unclosed_logs.html.twig', $args);
-      }
       return $this->render('task/phone/unclosed_logs.html.twig', $args);
     }
 
@@ -1189,6 +1177,8 @@ class TaskController extends AbstractController {
     }
     return $this->redirectToRoute('app_tasks');
   }
+
+
 
   #[Route('/view/{id}', name: 'app_task_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]

@@ -1,0 +1,119 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Zaposleni
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <h5 class="mb-0">Lista nedostupnih zaposlenih - {{ "now"|date("d.m.Y") }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive card">
+                                    <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                        <thead class="bg-light text-primary">
+                                        <tr>
+                                            <th>Zaposleni</th>
+                                            <th>Razlog</th>
+                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for calendar in pagination %}
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-semibold">
+                                                        <a href="{{ path('app_employee_profile_view', { id: calendar.id}) }}">{{ calendar.ime }} {{ calendar.prezime }}</a>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    {% if calendar.zahtev == 1 %}
+                                                        <span class="badge bg-secondary text-primary">Slobodan dan</span>
+                                                    {% elseif calendar.zahtev == 2 %}
+                                                        <span class="badge bg-yellow text-primary">Odmor</span>
+                                                    {% elseif calendar.zahtev == 3 %}
+                                                        <span class="badge bg-purple text-white">Bolovanje</span>
+                                                    {% elseif calendar.zahtev == 4 %}
+                                                        <span class="badge bg-primary text-white">Slava</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-gear"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <a href="{{ path('app_availability_add', {id: calendar.id}) }}" class="dropdown-item">
+                                                                <i class="ph-plus me-2"></i>
+                                                                Dostupan
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card-footer">
+                                <div class="navigation float-end">
+                                    {{ knp_pagination_render(pagination) }}
+                                </div>
+                            </div>
+                        </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+
+{% endblock includeJavascript %}

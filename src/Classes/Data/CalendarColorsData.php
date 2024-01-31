@@ -17,32 +17,32 @@ class CalendarColorsData implements DataClassInterface {
   public const DATA = [
     'DAN' => [
       'id' => self::DAN,
-      'color' => '#C4DFEA',
+      'color' => '#d0e4ed',
       'text' => '#00233F',
       'title' => 'Slobodan dan',
     ],
     'ODMOR' => [
       'id' => self::ODMOR,
-      'color' => '#B4FF00',
+      'color' => '#c4dfea',
       'text' => '#00233F',
       'title' => 'Odmor',
     ],
     'BOLOVANJE' => [
       'id' => self::BOLOVANJE,
-      'color' => '#8c70c4',
+      'color' => '#3d576d',
       'text' => '#FFF',
       'title' => 'Bolovanje',
     ],
     'SLAVA' => [
       'id' => self::SLAVA,
-      'color' => '#00233F',
+      'color' => '#00233f',
       'text' => '#FFF',
       'title' => 'Slava',
     ],
     'OSTALO' => [
       'id' => self::OSTALO,
-      'color' => '#26A69A',
-      'text' => '#FFF',
+      'color' => '#b4ff00',
+      'text' => '#00233f',
       'title' => 'Nema merenje',
     ],
 

@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -40,58 +40,25 @@
                             <div class="tab-pane fade active show">
 
                                 <div class="card">
-                                    <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Komentari</h5>
+                                    <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Komentari</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive ">
-                                            <table class="table table-bordered table-hover table-responsive">
-                                                <thead>
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
                                                 <tr>
-                                                    <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
-                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
-                                                            &#8595;
-                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
                                                     <th>Komentar</th>
                                                     <th>Zadatak</th>
-                                                    <th  {% if pagination.isSorted('[c.created]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination, 'Kreiran ', ['c.created']) }}
-                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.created' %}
-                                                            &#8595;
-                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.created' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
-                                                    <th  {% if pagination.isSorted('[c.updated]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination, 'Izmenjen ', ['c.updated']) }}
-                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.updated' %}
-                                                            &#8595;
-                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.updated' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
-
-                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 {% for comment in pagination %}
                                                     <tr>
-                                                        <td>{{ comment.id }}</td>
-
                                                         <td>
                                                             <a href="" class="text-body">
-                                                                <span class="text-muted">{{ comment.comment | slice(0, 20) ~ (comment.comment | length > 20 ? '...' : '') }}</span>
+                                                                <span>{{ comment.comment | slice(0, 20) ~ (comment.comment | length > 20 ? '...' : '') }}</span>
                                                             </a>
                                                         </td>
                                                         <td>
@@ -99,6 +66,11 @@
                                                                 {{ comment.task.title }}
                                                             </a>
                                                         </td>
+                                                        <td class="text-center">
+                                                            <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ comment.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr id="collapsed_item{{ comment.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
 
                                                         <td>
                                                             {% if comment.created is not null %}

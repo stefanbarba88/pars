@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -27,58 +27,25 @@
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista zahteva</h5>
-                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista zahteva</h5>
+                            <div class="my-auto ms-auto">
                                 <a href="{{ path('app_calendar_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive ">
-                                <table class="table table-bordered table-hover table-responsive">
-                                    <thead>
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                    <thead class="bg-light text-primary">
                                     <tr>
-                                        <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
                                         <th>Zaposleni</th>
-                                        <th  {% if pagination.isSorted('[c.type]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Tip ', ['c.type']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.type' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.type' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
-                                        <th>Početak</th>
-                                        <th>Kraj</th>
-                                        <th>Napomena</th>
-                                        <th {% if pagination.isSorted('[c.status]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Status ', ['c.status']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.status' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.status' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
-                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        <th>Tip</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for calendar in pagination %}
                                         <tr>
-                                            <td>{{ calendar.id }}</td>
                                             <td>
                                                 <div class="fw-semibold">
                                                     {% if calendar.user is not empty %}
@@ -99,6 +66,11 @@
                                                     <span class="badge bg-primary text-white">Slava</span>
                                                 {% endif %}
                                             </td>
+                                            <td class="text-center">
+                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ calendar.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr id="collapsed_item{{ calendar.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
                                             <td>
                                                 {% if calendar.start is not null %}
                                                     <div class="d-inline-flex align-items-center">
@@ -113,20 +85,6 @@
                                                         <i class="ph-calendar me-2"></i>
                                                         {{ calendar.finish | date("d.m.Y")}}
                                                     </div>
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                {{ calendar.note }}
-                                            </td>
-                                            <td>
-                                                {% if calendar.status == 0 %}
-                                                    <span class="badge bg-danger text-white">Obrisan</span>
-                                                {% elseif calendar.status == 1 %}
-                                                    <span class="badge bg-secondary text-primary">Na čekanju</span>
-                                                {% elseif calendar.status == 2 %}
-                                                    <span class="badge bg-primary text-white">Odobren</span>
-                                                {% elseif calendar.status == 3 %}
-                                                    <span class="badge bg-yellow text-primary">Odbijen</span>
                                                 {% endif %}
                                             </td>
 

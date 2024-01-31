@@ -1,0 +1,203 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ user.getFullName() }}
+                            </h4>
+                        </div>
+                    </div>
+                    {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigation', { user: user } )) }}
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Left sidebar component -->
+                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
+                        <!-- /left sidebar component -->
+
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Beleške </h5>
+                                        {% if app.user == user %}
+                                            <div class="my-auto ms-auto">
+                                                <a href="{{ path('app_note_form') }}" type="button" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th>Beleška</th>
+                                                    <th>Kreirana</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for note in pagination %}
+                                                    <tr>
+                                                        <td>
+                                                            <a href="{{ path('app_note_view', {id: note.id}) }}" class="text-body">
+                                                                <span class="text-muted">{{ note.notes | slice(0, 20) ~ (note.notes | length > 20 ? '...' : '') }}</span>
+                                                            </a>
+                                                        </td>
+
+                                                        <td>
+                                                            {% if note.created is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ note.created | date("d.m.Y")}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+
+
+                                                        <td class="text-center">
+                                                            {% if app.user == user %}
+                                                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_note{{ note.id }}" class="btn btn-primary">
+                                                                    <i class="ph-trash me-2"></i>
+                                                                    Obrišite
+                                                                </a>
+                                                                <div id="modal_delete_note{{ note.id }}" class="modal fade" tabindex="-1">
+                                                                    <div class="modal-dialog">
+                                                                        <div class="modal-content text-start">
+                                                                            <div class="modal-header bg-danger text-white border-0">
+                                                                                <h6 class="modal-title">Potvrda</h6>
+                                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                            </div>
+
+                                                                            <div class="modal-body">
+                                                                                <p>Da li ste sigurni da želite da obrišete ovu belešku?</p>
+                                                                            </div>
+
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                                <a href="{{ path('app_note_delete', {id: note.id}) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/media/glightbox.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+    <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
+
+{% endblock includeJavascript %}

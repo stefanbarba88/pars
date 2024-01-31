@@ -24,86 +24,93 @@
 {#                    </div>#}
 
                     {% if checklistActive is not empty %}
-                        <div class="card">
-                            <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                <h5 class="py-sm-2 my-sm-1">Interni zadaci</h5>
-                                <div class="d-inline-flex ms-auto">
-                                    <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item1" aria-expanded="false">{{ countChecklistActive }}</span>
-                                </div>
-                            </div>
+                        <div class="row ">
+                            <div class="col-xl-12">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Interni zadaci</h5>
+                                        <div class="d-inline-flex ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item1" aria-expanded="false">{{ countChecklistActive }}</span>
+                                        </div>
+                                    </div>
 
-                            <div id="collapsed_item1" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-bordered table-sm table-condensed">
-                                        <tbody>
-                                        <tr class="table-light fw-semibold">
-                                            <td colspan="4">Aktivni</td>
-                                        </tr>
-                                        {% for task in checklistActive %}
-                                            <tr>
-                                            <td>
-                                                {{ task.created | date("d.m.Y")}}
-                                            </td>
-                                            <td>
-                                                <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
-                                                    <span class="text-muted">{{ task.task | slice(0, 50) ~ (task.task | length > 20 ? '...' : '') }}</span>
-                                                </a>
-                                            </td>
-                                            <td class="text-center">
-                                                {% if task.priority == 1 %}
-                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
-                                                {% elseif task.priority == 2 %}
-                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
-                                                {% elseif task.priority == 4 %}
-                                                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
-                                                {% elseif task.priority == 5 %}
-                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
-                                                {% else %}
-                                                    <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
-                                                {% endif %}
-                                            </td>
-                                            <td class="text-center">
-                                                {% if task.status == 0 %}
-                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="btn btn-primary">
-                                                        <i class="ph-check me-2"></i>Završite
-                                                    </a>
-                                                {% endif %}
-                                            </td>
-                                            </tr>
-                                        {% endfor %}
-                                       <tr class="table-light fw-semibold">
-{#                                            <td colspan="3"></td>#}
-                                            <td colspan="4" class="text-center">
-                                                <div class="d-inline-flex mb-0">
-                                                    <a href="{{ path('app_checklist_to_do') }}" class="btn-sm btn-primary"> Vidi sve</a>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                    <div id="collapsed_item1" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
+                                        <div class="table-responsive card">
+                                            <table class="table table-hover table-bordered table-sm">
+                                                <tbody>
+                                                <tr class="table-light fw-semibold">
+                                                    <td colspan="4">Aktivni</td>
+                                                </tr>
+                                                {% for task in checklistActive | slice (0,5) %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-inline-flex align-items-center">
+                                                                <i class="ph-calendar me-2"></i>
+                                                                {{ task.created | date("d.m.Y")}}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
+                                                                {{ task.task | slice(0, 100) ~ (task.task | length > 100 ? '...' : '') }}
+                                                            </a>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            {% if task.priority == 1 %}
+                                                                <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                            {% elseif task.priority == 2 %}
+                                                                <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                            {% elseif task.priority == 4 %}
+                                                                <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                            {% elseif task.priority == 5 %}
+                                                                <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                            {% else %}
+                                                                <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            {% if task.status == 0 %}
+                                                                <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="btn btn-primary">
+                                                                    <i class="ph-check me-2"></i>Završite
+                                                                </a>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                <tr class="table-light fw-semibold">
+                                                    <td colspan="3"></td>
+                                                    <td class="text-center">
+                                                        <div class="d-inline-flex mb-0">
+                                                            <a href="{{ path('app_checklist_to_do') }}" class="btn-sm btn-primary"> Vidi sve</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
 
-                                        </tbody>
-                                    </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     {% endif %}
 
-                    <div class="row d-none d-sm-block">
+                    <div class="row ">
                         <div class="col-xl-12">
 
                             <!-- Marketing campaigns -->
                             <div class="card">
-                                <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">{{ app.user.fullName }}, {{ danas | date('d.m.Y') }}</h5>
-                                    <div class="mt-1 my-lg-auto ms-lg-auto">
+                            <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">{{ app.user.fullName }}, {{ danas | date('d.m.Y') }}</h5>
+                                    <div class="my-auto ms-auto">
                                         <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>
                                     </div>
                                 </div>
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-bordered table-sm table-condensed">
-                                        <thead>
+                                <div class="table-responsive card">
+                                    <table class="table table-hover table-bordered table-sm">
+                                        <thead class="bg-light">
                                         <tr class="table-light">
                                             <th colspan="4">Lista zadataka za danas</th>
-                                            <th class="text-end">
+                                            <th class="text-center">
                                                 <span class="badge bg-yellow rounded-pill">{{ countLogs }}</span>
                                             </th>
                                         </tr>
@@ -134,7 +141,7 @@
                                                         {% if log[0].task.time is not null %}
                                                             <div class="fw-semibold">
                                                                 {% if log[0].task.time|date('H:i') != '00:00' %}
-                                                                    {{ log[0].task.time|date('H:i') }}h
+                                                                    {{ log[0].task.time|date('H:i') }}
                                                                 {% else %}
                                                                     Vreme nije zadato
                                                                 {% endif %}
@@ -144,8 +151,8 @@
                                                     <td>
                                                         <div class="fw-semibold">
                                                             <div class="btn-group">
-                                                                <a href="#" class="fw-semibold link-dark d-inline-flex align-items-center ">
-                                                                    {{ log[0].task.project.title }}
+                                                                <a href="#" class="d-inline-flex align-items-center ">
+                                                                    <a href="{{ path('app_project_tasks_view', { id: log[0].task.project.id }) }}">{{ log[0].task.project.title }}</a>
                                                                     {% if log[3] == 0 %}<div class="live p-1 mx-2"></div>{% endif %}
                                                                 </a>
                                                             </div>
@@ -177,86 +184,18 @@
                             <!-- /marketing campaigns -->
                         </div>
                     </div>
-                    <div class="row d-block d-sm-none">
+
+                    <div class="row ">
                         <div class="col-xl-12">
                             <!-- Marketing campaigns -->
                             <div class="card">
 
-                                <div class="card-header d-flex justify-content-between align-items-center d-lg-flex py-lg-0">
-                                    <div class="d-flex align-items-center">
-                                        <h5 class="py-lg-3 mb-0">{{ app.user.getNameWithFirstLetter }}</h5>
-                                    </div>
-
-                                    <div class="d-inline-flex mb-0">
-                                        <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>
-                                    </div>
+                            <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>
                                 </div>
-                                <div class="table-responsive ">
-                                    <table class="table table-hover table-bordered table-sm table-condensed">
-                                        <thead>
-                                        <tr>
-                                            <th>Projekat</th>
-                                            <th>Kolege</th>
-                                            <th class="text-center" style="width: 20px;">
-                                                <i class="ph-dots-three"></i>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% if logs is not empty %}
-                                            {% for log in logs %}
-                                                {% if log[3] == 1 %}
-                                                    <tr>
-                                                {% endif %}
-                                                {% if log[3] == 0 %}
-                                                    <tr>
-                                                {% endif %}
-                                                {% if log[3] == 2 %}
-                                                    <tr class="bg-secondary">
-                                                {% endif %}
-                                                    <td style="width: 40%;">
-                                                        <div class="fw-semibold">
-                                                            <div class="btn-group">
-                                                                <a href="#" class="fw-semibold link-dark d-inline-flex align-items-center ">
-                                                                    {{ log[0].task.project.title }}
-                                                                    {% if log[0].task.time|date('H:i') != '00:00' %}
-                                                                        ({{ log[0].task.time|date('H:i') }})h
-                                                                    {% endif %}
-                                                                    {% if log[3] == 0 %}<div class="live p-1 mx-2"></div>{% endif %}
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td style="width: 50%;">
-                                                        {% for user in log[0].task.assignedUsers %}
-                                                            <div class="fw-semibold">{{ user.getNameWithFirstLetter }}</div>
-                                                        {% endfor %}
-                                                    </td>
-                                                    <td>
-                                                        <a href="{{ path('app_task_view_user', { id: log[0].task.id}) }}" class="btn btn-primary"><i class="ph-clipboard"></i></a>
-                                                    </td>
-                                                </tr>
-                                            {% endfor %}
-                                        {% endif %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <!-- /marketing campaigns -->
-                        </div>
-                    </div>
-
-                    <div class="row d-none d-sm-block">
-                        <div class="col-xl-12">
-                            <!-- Marketing campaigns -->
-                            <div class="card">
-
-                                <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>
-                                </div>
-                                <div class="table-responsive ">
-                                    <table class="table table-hover table-bordered table-sm table-condensed">
-                                        <thead>
+                                <div class="table-responsive card">
+                                    <table class="table table-hover table-bordered table-sm">
+                                        <thead class="bg-light">
                                         <tr class="table-light">
                                             <th colspan="6">PARS raspored</th>
                                         </tr>
@@ -299,7 +238,7 @@
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <div class="text-body">
+                                                        <div class="fw-semibold">
                                                             {% for opt in task.task.oprema %}
                                                                 {{ opt.title }} <br>
                                                             {% endfor %}
@@ -307,16 +246,16 @@
                                                     </td>
                                                     <td>
                                                         {% if task.car is not empty %}
-                                                            <div class="text-body">
+                                                            <div class="fw-semibold">
                                                                 {{ task.car[0].plate }}
                                                             </div>
                                                         {% endif %}
                                                     </td>
                                                     <td>
                                                         {% if task.task.time is not null %}
-                                                            <div class="text-body">
+                                                            <div class="fw-semibold">
                                                                 {% if task.task.time|date('H:i') != '00:00' %}
-                                                                    {{ task.task.time|date('H:i') }}h
+                                                                    {{ task.task.time|date('H:i') }}
                                                                 {% else %}
                                                                     Vreme nije zadato
                                                                 {% endif %}
@@ -339,74 +278,18 @@
                             <!-- /marketing campaigns -->
                         </div>
                     </div>
-                    <div class="row d-block d-sm-none">
+
+                    <div class="row ">
                         <div class="col-xl-12">
                             <!-- Marketing campaigns -->
                             <div class="card">
 
-                                <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>
+                            <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
                                 </div>
-                                <div class="table-responsive ">
-                                    <table class="table table-hover table-bordered table-sm table-condensed">
-                                        <thead>
-                                        <tr>
-                                            <th>Projekat</th>
-                                            <th>Geodete</th>
-                                            <th class="text-center" style="width: 20px;">
-                                                <i class="ph-dots-three"></i>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% if timetable is not empty %}
-                                            {% for task in timetable %}
-                                                {% if task.task.project is not null %}
-                                                    {% if app.user in task.task.assignedUsers %}
-                                                        <tr class="table-active">
-                                                    {% else %}
-                                                        <tr>
-                                                    {% endif %}
-                                                    <td style="width: 40%;">
-                                                        <div class="fw-semibold">
-                                                            {{ task.task.project.title }} {% if task.task.time|date('H:i') != '00:00' %}
-                                                                ({{ task.task.time|date('H:i') }})h
-                                                            {% endif %}
-                                                        </div>
-                                                    </td>
-                                                    <td style="width: 50%;">
-                                                        <div class="fw-semibold">
-                                                            {% for user in task.task.assignedUsers %}
-                                                                {{ user.getNameWithFirstLetter }} <br>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <button data-bs-toggle="modal" data-bs-target="#modal_details_task{{ loop.index }}" class="btn btn-secondary"><i class="ph-info"></i></button>
-                                                    </td>
-                                                    </tr>
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <!-- /marketing campaigns -->
-                        </div>
-                    </div>
-
-                    <div class="row d-none d-sm-block">
-                        <div class="col-xl-12">
-                            <!-- Marketing campaigns -->
-                            <div class="card">
-
-                                <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
-                                </div>
-                                <div class="table-responsive ">
-                                    <table class="table table-hover table-bordered table-sm table-condensed">
-                                        <thead>
+                                <div class="table-responsive card">
+                                    <table class="table table-hover table-bordered table-sm">
+                                        <thead class="bg-light">
                                         <tr class="table-light">
                                             <th colspan="6">PARS raspored</th>
                                         </tr>
@@ -443,7 +326,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="text-body">
+                                                            <div class="fw-semibold">
                                                                 {% for opr in task['oprema'] %}
                                                                     {{ opr.title }} <br>
                                                                 {% endfor %}
@@ -451,18 +334,18 @@
                                                         </td>
                                                         <td>
                                                             {% if task.vozilo is not null %}
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     {{ task.vozilo.plate }}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
                                                         <td>
                                                             {% if task.vreme is not null %}
-                                                                <div class="text-body">
-                                                                    {{ task.vreme}}h
+                                                                <div class="fw-semibold">
+                                                                    {{ task.vreme}}
                                                                 </div>
                                                             {% else %}
-                                                                <div class="text-body">
+                                                                <div class="fw-semibold">
                                                                     Vreme nije zadato
                                                                 </div>
                                                             {% endif %}
@@ -483,63 +366,6 @@
                             <!-- /marketing campaigns -->
                         </div>
                     </div>
-                    <div class="row d-block d-sm-none">
-                        <div class="col-xl-12">
-                            <!-- Marketing campaigns -->
-                            <div class="card">
-
-                                <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
-                                </div>
-                                <div class="table-responsive ">
-                                    <table class="table table-hover table-bordered table-sm table-condensed">
-                                        <thead>
-                                        <tr>
-                                            <th>Projekat</th>
-                                            <th>Geodete</th>
-                                            <th class="text-center" style="width: 20px;">
-                                                <i class="ph-dots-three"></i>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% if tomorrowTimetable is not empty %}
-                                            {% for task in tomorrowTimetable %}
-                                                {% if task['projekat'] is not null %}
-                                                    <tr>
-                                                        <td style="width: 40%;">
-                                                            <div class="fw-semibold">
-                                                                {{ task['projekat'].title }} {% if task.vreme is not null %} ({{ task.vreme}})h {% endif %}
-                                                            </div>
-                                                        </td>
-                                                        <td style="width: 50%;">
-                                                            <div class="fw-semibold">
-                                                                {% if task['geo1'] is not null %}
-                                                                    {{ task['geo1'].getNameWithFirstLetter }} <br>
-                                                                {% endif %}
-                                                                {% if task['geo2'] is not null %}
-                                                                    {{ task['geo2'].getNameWithFirstLetter }} <br>
-                                                                {% endif %}
-                                                                {% if task['geo3'] is not null %}
-                                                                    {{ task['geo3'].getNameWithFirstLetter }}
-                                                                {% endif %}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <button data-bs-toggle="modal" data-bs-target="#modal_details1_task{{ loop.index }}" class="btn btn-secondary"><i class="ph-info"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <!-- /marketing campaigns -->
-                        </div>
-                    </div>
-
 
                 </div>
                 <!-- /content area -->

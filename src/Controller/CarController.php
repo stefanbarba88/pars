@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\TipOpremeData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Car;
 use App\Entity\CarHistory;
@@ -31,6 +32,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -46,19 +48,123 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
+    $search = [];
 
-    $cars = $this->em->getRepository(Car::class)->getCarsPaginator();
+    $search['naziv'] = $request->query->get('naziv');
+    $search['registracija'] = $request->query->get('registracija');
+
+    $cars = $this->em->getRepository(Car::class)->getCarsPaginator($search, 0);
 
     $pagination = $paginator->paginate(
       $cars, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
 
     $args['pagination'] = $pagination;
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/list.html.twig', $args);
+    }
+
     return $this->render('car/list.html.twig', $args);
+  }
+
+  #[Route('/list-reserved/', name: 'app_cars_reserved')]
+  public function reserved(PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $search = [];
+
+    $search['naziv'] = $request->query->get('naziv');
+    $search['registracija'] = $request->query->get('registracija');
+
+    $cars = $this->em->getRepository(Car::class)->getCarsReservedPaginator($search, 1);
+
+    $pagination = $paginator->paginate(
+      $cars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/reserved.html.twig', $args);
+    }
+
+    return $this->render('car/reserved.html.twig', $args);
+  }
+
+  #[Route('/list-available/', name: 'app_cars_available')]
+  public function available(PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $search = [];
+
+    $search['naziv'] = $request->query->get('naziv');
+    $search['registracija'] = $request->query->get('registracija');
+
+    $cars = $this->em->getRepository(Car::class)->getCarsReservedPaginator($search, 0);
+
+    $pagination = $paginator->paginate(
+      $cars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/available.html.twig', $args);
+    }
+
+    return $this->render('car/available.html.twig', $args);
+  }
+
+  #[Route('/list-archive/', name: 'app_cars_archive')]
+  public function archive(PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $search = [];
+
+    $search['naziv'] = $request->query->get('naziv');
+    $search['registracija'] = $request->query->get('registracija');
+
+    $cars = $this->em->getRepository(Car::class)->getCarsPaginator($search, 1);
+
+    $pagination = $paginator->paginate(
+      $cars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/archive.html.twig', $args);
+    }
+
+    return $this->render('car/archive.html.twig', $args);
   }
 
   #[Route('/form/{id}', name: 'app_car_form', defaults: ['id' => 0])]
@@ -185,10 +291,15 @@ class CarController extends AbstractController {
     $pagination = $paginator->paginate(
       $cars, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/car_history_list.html.twig', $args);
+    }
 
     return $this->render('car/car_history_list.html.twig', $args);
   }
@@ -218,13 +329,20 @@ class CarController extends AbstractController {
     $pagination = $paginator->paginate(
       $cars, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
-    $args['pagination'] = $pagination;
+
     $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'desc']);
 
     $args['car'] = $car;
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/list_reservations.html.twig', $args);
+    }
 
     return $this->render('car/list_reservations.html.twig', $args);
   }
@@ -398,7 +516,6 @@ class CarController extends AbstractController {
   }
 
 
-
   #[Route('/list-expenses/{id}', name: 'app_cars_expenses')]
   public function listExpenses(Car $car, PaginatorInterface $paginator, Request $request): Response {
     $args = [];
@@ -408,12 +525,17 @@ class CarController extends AbstractController {
     $pagination = $paginator->paginate(
       $cars, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
 
     $args['car'] = $car;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/list_expenses.html.twig', $args);
+    }
 
     return $this->render('car/list_expenses.html.twig', $args);
   }

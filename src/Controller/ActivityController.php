@@ -4,13 +4,16 @@ namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
 use App\Entity\Activity;
+use App\Entity\Country;
 use App\Form\ActivityFormType;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/activities')]
@@ -23,17 +26,27 @@ class ActivityController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
+    $search = [];
 
-    $activities = $this->em->getRepository(Activity::class)->getActivitiesPaginator();
+    $search['title'] = $request->query->get('title');
+
+    $activities = $this->em->getRepository(Activity::class)->getActivitiesPaginator($search);
 
     $pagination = $paginator->paginate(
       $activities, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
     $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('activity/phone/list.html.twig', $args);
+    }
 
     return $this->render('activity/list.html.twig', $args);
   }

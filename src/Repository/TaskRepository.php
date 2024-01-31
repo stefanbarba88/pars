@@ -230,19 +230,90 @@ class TaskRepository extends ServiceEntityRepository {
     return $list;
   }
 
-  public function getTasksByProjectPaginator(Project $project) {
+//  public function getTasksByProjectPaginator(Project $project) {
+//
+//    $currentTime = new DateTimeImmutable();
+//    $startDate = $currentTime->format('Y-m-d 00:00:00');
+//
+//    return $this->createQueryBuilder('t')
+//      ->where('t.datumKreiranja <= :startDate')
+//      ->andWhere('t.project = :project')
+//      ->andWhere('t.isDeleted <> 1')
+//      ->setParameter(':project', $project)
+//      ->setParameter(':startDate', $startDate)
+//      ->addOrderBy('t.id', 'DESC')
+//      ->getQuery();
+//  }
 
-    $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
+  public function getTasksByProjectPaginator($filterBy, User $user, Project $project){
+    $company = $project->getCompany();
+    $today = new DateTimeImmutable(); // Dohvati trenutni datum i vrijeme
+//    $endDate = $today->sub(new DateInterval('P1D')); // Trenutni datum
+    $endDate = $today; // Trenutni datum
 
-    return $this->createQueryBuilder('t')
-      ->where('t.datumKreiranja <= :startDate')
-      ->andWhere('t.project = :project')
-      ->andWhere('t.isDeleted <> 1')
-      ->setParameter(':project', $project)
-      ->setParameter(':startDate', $startDate)
+
+    $qb = $this->createQueryBuilder('t');
+    if (!empty($filterBy['period'])) {
+
+      $dates = explode(' - ', $filterBy['period']);
+
+      $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+      $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+      $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+      $stopDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+      $qb->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'));
+      $qb->setParameter('start', $startDate);
+      $qb->setParameter('end', $stopDate);
+
+    } else {
+      $qb->where('t.datumKreiranja < :endDate');
+      $qb->setParameter('endDate', $endDate);
+    }
+
+    $qb->andWhere('t.company = :company');
+    $qb->setParameter(':company', $company);
+    $qb->andWhere('t.project = :projekat');
+    $qb->setParameter('projekat', $project);
+
+    if (!empty($filterBy['kategorija'])) {
+      $qb->andWhere('t.category = :kategorija');
+      $qb->setParameter('kategorija', $filterBy['kategorija']);
+    }
+    if (!empty($filterBy['zaposleni'])) {
+      $qb->join('t.assignedUsers', 'u'); // Zamijenite 'u' imenom koje odgovara vašoj entitetu za korisnike (user entity).
+      $qb->andWhere($qb->expr()->in('u.id', ':zaposleni'));
+      $qb->setParameter('zaposleni', $filterBy['zaposleni']);
+    }
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $qb->join('t.assignedUsers', 'u'); // Zamijenite 'u' imenom koje odgovara vašoj entitetu za korisnike (user entity).
+      $qb->andWhere($qb->expr()->in('u.id', ':zaposleni'));
+      $qb->setParameter('zaposleni', $user->getId());
+    }
+
+
+    $qb->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.datumKreiranja', 'DESC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery();
+
+//    foreach ($tasks as $task) {
+//      $status = $this->taskStatus($task);
+//
+//      if ($status == TaskStatusData::ZAVRSENO ) {
+//        $list[] = [
+//          'task' => $task,
+//          'status' => $status,
+//          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($task)
+//        ];
+//      }
+//    }
+//    usort($list, function ($a, $b) {
+//      return $a['status'] <=> $b['status'];
+//    });
+
+    return $qb;
   }
 
 

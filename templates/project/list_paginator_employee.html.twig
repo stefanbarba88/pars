@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -27,29 +27,19 @@
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista projekata</h5>
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista projekata</h5>
                             {% if not is_granted('ROLE_EMPLOYEE') %}
-                                <div class="mt-1 my-lg-auto ms-lg-auto">
+                                <div class="my-auto ms-auto">
                                     <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                 </div>
                             {% endif %}
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive ">
-                                <table class="table table-bordered table-hover table-responsive">
-                                    <thead>
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light text-primary">
                                     <tr>
-                                        <th {% if pagination.isSorted('[p.id]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, '# ', ['p.id']) }}
-                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.id' %}
-                                                &#8593;
-                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.id' %}
-                                                &#8595;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
                                         <th {% if pagination.isSorted('[p.title]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Naziv ', ['p.title']) }}
                                             {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.title' %}
@@ -81,13 +71,12 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for project in pagination %}
                                         <tr>
-                                            <td>{{ project.id }}</td>
                                             <td>
                                                 <div class="fw-semibold"><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></div>
                                                 {% if project.label is not empty %}
@@ -190,5 +179,8 @@
     <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
 
 {% endblock includeJavascript %}

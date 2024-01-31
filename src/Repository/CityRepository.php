@@ -122,6 +122,38 @@ class CityRepository extends ServiceEntityRepository {
 
   }
 
+  public function getCitiesFilterPaginator($filter) {
+
+    $qb =  $this->createQueryBuilder('c');
+
+    if (!empty($filter['title'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('c.title', ':title'),
+      ))
+        ->setParameter('title', '%' . $filter['title'] . '%');
+    }
+    if (!empty($filter['grad'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('c.municipality', ':grad'),
+      ))
+        ->setParameter('grad', '%' . $filter['grad'] . '%');
+    }
+    if (!empty($filter['ptt'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('c.ptt', ':ptt'),
+      ))
+        ->setParameter('ptt', '%' . $filter['ptt'] . '%');
+    }
+    if (!empty($filter['drzava'])) {
+      $qb->andWhere('c.drzava = :drzava');
+      $qb->setParameter('drzava', $filter['drzava']);
+    }
+
+    return $qb;
+
+
+  }
+
 
 //    /**
 //     * @return City[] Returns an array of City objects

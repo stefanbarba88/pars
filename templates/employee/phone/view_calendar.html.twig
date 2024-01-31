@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -39,41 +39,27 @@
                             <div class="tab-pane fade active show">
 
                                 <div class="card">
-                                    <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Lista zahteva</h5>
-                                        {% if app.user == user%}
-                                            <a href="{{ path('app_calendar_form', {user:user.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
-                                        {% endif %}
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Lista zahteva</h5>
+                                        <div class="my-auto ms-auto">
+                                            {% if app.user == user%}
+                                                <a href="{{ path('app_calendar_form', {user:user.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive ">
-                                            <table class="table table-bordered table-hover table-responsive">
-                                                <thead>
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
                                                 <tr>
-                                                    <th># ID</th>
                                                     <th>Tip</th>
-                                                    <th>Početak</th>
-                                                    <th>Kraj</th>
-                                                    <th>Napomena</th>
                                                     <th>Status</th>
-                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 {% for calendar in pagination %}
                                                     <tr>
-                                                        <td>{{ calendar.id }}</td>
-                                                        <td>
-                                                            {% if calendar.type == 1 %}
-                                                                <span class="badge bg-secondary text-primary">Slobodan dan</span>
-                                                            {% elseif calendar.type == 2 %}
-                                                                <span class="badge bg-yellow text-primary">Odmor</span>
-                                                            {% elseif calendar.type == 3 %}
-                                                                <span class="badge bg-purple text-white">Bolovanje</span>
-                                                            {% elseif calendar.type == 4 %}
-                                                                <span class="badge bg-primary text-white">Slava</span>
-                                                            {% endif %}
-                                                        </td>
                                                         <td>
                                                             {% if calendar.start is not null %}
                                                                 <div class="d-inline-flex align-items-center">
@@ -90,8 +76,25 @@
                                                                 </div>
                                                             {% endif %}
                                                         </td>
-                                                        <td>
-                                                            {{ calendar.note }}
+
+                                                        <td class="text-center">
+                                                            <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ calendar.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr id="collapsed_item{{ calendar.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
+
+                                                    <td>
+                                                            {% if calendar.type == 1 %}
+                                                                <span class="badge bg-secondary bg-opacity-75 text-primary">Slobodan dan</span>
+                                                            {% elseif calendar.type == 2 %}
+                                                                <span class="badge bg-secondary text-primary">Odmor</span>
+                                                            {% elseif calendar.type == 3 %}
+                                                                <span class="badge bg-primary bg-opacity-75 text-white">Bolovanje</span>
+                                                            {% elseif calendar.type == 4 %}
+                                                                <span class="badge bg-primary bg-opacity text-white">Slava</span>
+                                                            {% endif %}
                                                         </td>
                                                         <td>
                                                             {% if calendar.status == 0 %}
@@ -104,7 +107,6 @@
                                                                 <span class="badge bg-yellow text-primary">Odbijen</span>
                                                             {% endif %}
                                                         </td>
-
                                                         <td class="text-center">
                                                             <div class="dropdown">
                                                                 <a href="#" class="text-body" data-bs-toggle="dropdown">
@@ -115,6 +117,20 @@
                                                                         <i class="ph-eye me-2"></i>
                                                                         Vidite
                                                                     </a>
+                                                                    {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
+                                                                        {% if calendar.status != 2  %}
+                                                                            <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
+                                                                                <i class="ph-check me-2"></i>
+                                                                                Dozvolite
+                                                                            </a>
+                                                                        {% endif %}
+                                                                        {% if calendar.status != 3  %}
+                                                                            <a href="{{ path('app_calendar_decline', {id: calendar.id}) }}" class="dropdown-item">
+                                                                                <i class="ph-minus me-2"></i>
+                                                                                Odbijte
+                                                                            </a>
+                                                                        {% endif %}
+                                                                    {% endif %}
                                                                     {% if calendar.status != 0 %}
                                                                         <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
                                                                             <i class="ph-trash me-2"></i>
@@ -174,7 +190,7 @@
                                             </div>
 
                                             <div class="col-sm-6 col-xl-3">
-                                                <div class="card card-body bg-yellow text-primary">
+                                                <div class="card card-body bg-secondary text-primary">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-fill">
                                                             <h4 class="mb-0">{{ noDays['kolektivniOdmor'] }}</h4>
@@ -229,7 +245,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="card">
                                     <div class="card-header">
                                         <h5 class="mb-0">Odsutnost od početka godine</h5>
@@ -266,7 +281,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-6 col-xl-3">
-                                                <div class="card card-body bg-yellow text-primary">
+                                                <div class="card card-body bg-secondary text-primary">
                                                     <div class="d-flex align-items-center">
 
 
@@ -291,7 +306,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-6 col-xl-3">
-                                                <div class="card card-body bg-yellow text-primary">
+                                                <div class="card card-body bg-secondary text-primary">
                                                     <div class="d-flex align-items-center">
 
 
@@ -318,7 +333,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-6 col-xl-3">
-                                                <div class="card card-body bg-yellow text-primary">
+                                                <div class="card card-body bg-secondary text-primary">
                                                     <div class="d-flex align-items-center">
 
                                                         <div class="flex-fill">
@@ -359,19 +374,19 @@
                                                     <h6>Legenda</h6>
                                                     <div class="bg-light border rounded p-2 mb-3">
                                                         <div class="mb-2">
-                                                            <span class="badge bg-secondary text-primary d-block">Slobodan dan</span>
+                                                            <span class="badge bg-secondary bg-opacity-75 text-primary d-block">Slobodan dan</span>
                                                         </div>
                                                         <div class="mb-2">
-                                                            <span class="badge bg-yellow text-primary d-block">Odmor</span>
+                                                            <span class="badge bg-secondary text-primary d-block">Odmor</span>
                                                         </div>
                                                         <div class="mb-2">
-                                                            <span class="badge bg-purple text-white d-block">Bolovanje</span>
+                                                            <span class="badge bg-primary bg-opacity-75 text-white d-block">Bolovanje</span>
                                                         </div>
                                                         <div class="mb-2">
-                                                            <span class="badge bg-primary text-white d-block">Slava</span>
+                                                            <span class="badge bg-primary bg-opacity text-white d-block">Slava</span>
                                                         </div>
                                                         <div class="mb-2">
-                                                            <span class="badge bg-teal text-white d-block">Ostalo</span>
+                                                            <span class="badge bg-yellow text-primary d-block">Ostalo</span>
                                                         </div>
                                                     </div>
 
@@ -380,16 +395,16 @@
                                                     <h6>Neradni dani</h6>
                                                     <div class="bg-light border rounded p-2 mb-3">
                                                         <div class="mb-2">
-                                                            <span class="badge bg-danger bg-opacity-75 text-white d-block">Državni/Verski praznik</span>
+                                                            <span class="badge bg-secondary bg-opacity-50 text-primary d-block">Državni/Verski praznik</span>
                                                         </div>
                                                         <div class="mb-2">
-                                                            <span class="badge bg-warning bg-opacity-75 text-white d-block">Kolektivni odmor</span>
+                                                            <span class="badge bg-primary bg-opacity-50 text-white d-block">Kolektivni odmor</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-9">
-                                                <div class="fullcalendar-event-colors "></div>
+                                                <div class="fullcalendar-event-colors"></div>
                                             </div>
                                         </div>
                                     </div>

@@ -28,7 +28,7 @@
         {% if is_granted('ROLE_EMPLOYEE') %}
             <div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse" id="navbar_search">
                 <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
-                    <form method="get" id="searchForm" action="{{ path('app_search_employee') }}" class="form-validate-jquery" novalidation="novalidation">
+                    <form method="get" id="searchForm" action="{{ path('app_search_employee') }}">
                         <div class="form-control-feedback form-control-feedback-start flex-grow-1" data-color-theme="dark">
                             <input type="text" name="tekst" class="form-control bg-transparent rounded-pill" placeholder="Pretraga" data-bs-toggle="dropdown">
                             <div class="form-control-feedback-icon">
@@ -157,7 +157,7 @@
         {% else %}
             <div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse" id="navbar_search">
                 <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
-                    <form method="get" id="searchForm" action="{{ path('app_search') }}" class="form-validate-jquery" novalidation="novalidation">
+                    <form method="get" id="searchForm" action="{{ path('app_search') }}">
                         <div class="form-control-feedback form-control-feedback-start flex-grow-1" data-color-theme="dark">
                             <input type="text" name="tekst" class="form-control bg-transparent rounded-pill" placeholder="Pretraga" data-bs-toggle="dropdown">
                             {#                        <div class="form-control-feedback-icon">#}

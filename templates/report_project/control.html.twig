@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -27,8 +27,9 @@
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Detalji izveštaja</h5>                        </div>
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Detalji izveštaja</h5>
+                        </div>
                         <form name="report_form" method="post" action="{{ path('app_project_reports') }}" class="form-validate-jquery" novalidation="novalidation" id="report_form">
                             <div class="card-body">
                                 <div class="row">
@@ -65,7 +66,7 @@
                                             <label class="form-label" for="report_form_period">Period:*</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="ph-calendar"></i></span>
-                                                <input type="text" class="form-control daterange-locale-sr required" id="report_form_period" name="report_form[period]">
+                                                <input type="text" autocomplete="off" class="form-control daterange-locale-sr required" id="report_form_period" name="report_form[period]">
                                             </div>
                                         </div>
                                     </div>

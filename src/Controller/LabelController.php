@@ -7,6 +7,7 @@ use App\Classes\Data\NotifyMessagesData;
 use App\Classes\ResponseMessages;
 use App\Entity\Label;
 use App\Form\LabelFormType;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -32,11 +33,14 @@ class LabelController extends AbstractController {
     $pagination = $paginator->paginate(
       $labels, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('label/phone/list.html.twig', $args);
+    }
     return $this->render('label/list.html.twig', $args);
   }
 

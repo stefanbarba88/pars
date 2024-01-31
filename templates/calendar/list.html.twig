@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -27,27 +27,17 @@
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista zahteva</h5>
-                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista zahteva</h5>
+                            <div class="my-auto ms-auto">
                                 <a href="{{ path('app_calendar_admin_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive ">
-                                <table class="table table-bordered table-hover table-responsive">
-                                    <thead>
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light text-primary">
                                     <tr>
-                                        <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
                                         <th>Zaposleni</th>
                                         <th  {% if pagination.isSorted('[c.type]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Tip ', ['c.type']) }}
@@ -59,8 +49,26 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Početak</th>
-                                        <th>Kraj</th>
+                                        <th {% if pagination.isSorted('[c.start]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Početak ', ['c.start']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.start' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.start' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th {% if pagination.isSorted('[c.finish]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Kraj ', ['c.finish']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.finish' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.finish' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
                                         <th>Napomena</th>
                                         <th {% if pagination.isSorted('[c.status]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Status ', ['c.status']) }}
@@ -72,13 +80,12 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for calendar in pagination %}
                                         <tr>
-                                            <td>{{ calendar.id }}</td>
                                             <td>
                                                 <div class="fw-semibold">
                                                     {% if calendar.user is not empty %}

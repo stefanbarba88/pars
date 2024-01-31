@@ -96,14 +96,33 @@ class ProjectRepository extends ServiceEntityRepository {
 //      ->getResult();
 //  }
 
-  public function getAllProjectsPaginator() {
+  public function getAllProjectsPaginator($filter, $suspended) {
     $company = $this->security->getUser()->getCompany();
-    return $this->createQueryBuilder('p')
-      ->andWhere('p.isSuspended = 0')
+
+    $qb = $this->createQueryBuilder('p');
+
+      $qb->andWhere('p.isSuspended = :suspended')
       ->andWhere('p.company = :company')
-      ->setParameter(':company', $company)
+      ->setParameter(':suspended', $suspended)
+      ->setParameter(':company', $company);
+
+      if (!empty($filter['title'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('p.title', ':title'),
+      ))
+        ->setParameter('title', '%' . $filter['title'] . '%');
+    }
+    if (!empty($filter['tip'])) {
+      $qb->andWhere('p.type = :tip');
+      $qb->setParameter('tip', $filter['tip']);
+    }
+
+    $qb
       ->orderBy('p.noTasks', 'DESC')
+      ->addOrderBy('p.title', 'ASC')
       ->getQuery();
+
+    return $qb;
   }
 
 //  public function getAllProjectsSuspended(): array {
@@ -138,16 +157,30 @@ class ProjectRepository extends ServiceEntityRepository {
 //    return $projects;
 //  }
 
-  public function getAllProjectsChangePaginator() {
+  public function getAllProjectsTypePaginator($filter, $type) {
     $company = $this->security->getUser()->getCompany();
-    return $this->createQueryBuilder('p')
-      ->andWhere('p.isSuspended = 0')
-      ->andWhere('p.type = 2')
+
+    $qb = $this->createQueryBuilder('p');
+
+    $qb->andWhere('p.isSuspended = 0')
       ->andWhere('p.company = :company')
       ->setParameter(':company', $company)
+      ->andWhere('p.type = :tip')
+      ->setParameter(':tip', $type);
+
+    if (!empty($filter['title'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('p.title', ':title'),
+      ))
+        ->setParameter('title', '%' . $filter['title'] . '%');
+    }
+
+
+    $qb
       ->orderBy('p.noTasks', 'DESC')
       ->getQuery();
 
+    return $qb;
   }
   public function getAllProjectsMixPaginator() {
     $company = $this->security->getUser()->getCompany();
@@ -610,16 +643,31 @@ class ProjectRepository extends ServiceEntityRepository {
     return $qb;
   }
 
-  public function getProjectsByUserPaginator(User $user) {
+  public function getProjectsByUserPaginator(User $user, $filter) {
 
-    return $this->createQueryBuilder('p')
-      ->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
+    $qb = $this->createQueryBuilder('p');
+
+      $qb->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
       ->andWhere('tl.user = :userId')
       ->andWhere('p.isSuspended = 0')
-      ->setParameter(':userId', $user->getId())
-      ->addOrderBy('p.title', 'ASC')
+      ->setParameter(':userId', $user->getId());
+
+    if (!empty($filter['title'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('p.title', ':title'),
+      ))
+        ->setParameter('title', '%' . $filter['title'] . '%');
+    }
+    if (!empty($filter['tip'])) {
+      $qb->andWhere('p.type = :tip');
+      $qb->setParameter('tip', $filter['tip']);
+    }
+
+      $qb->addOrderBy('p.title', 'ASC')
       ->getQuery();
+
+    return $qb;
   }
 
   public function getProjectsSearchPaginator($filterBy, User $user){

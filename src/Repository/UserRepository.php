@@ -217,74 +217,155 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $usersList;
   }
 
-  public function getAllByLoggedUserPaginator(User $loggedUser) {
+  public function getAllByLoggedUserPaginator(User $loggedUser, $filter, $suspended) {
 
     $company = $loggedUser->getCompany();
-    return match ($loggedUser->getUserType()) {
-      UserRolesData::ROLE_SUPER_ADMIN => $this->createQueryBuilder('u')
-        ->where('u.company = :company')
-        ->setParameter(':company', $company)
-        ->orderBy('u.isSuspended', 'ASC')
-        ->addOrderBy('u.userType', 'ASC')
-        ->addOrderBy('u.id', 'ASC')
-        ->getQuery(),
+    $qb = $this->createQueryBuilder('u');
 
-      UserRolesData::ROLE_ADMIN => $this->createQueryBuilder('u')
+    if ($loggedUser->getUserType() == UserRolesData::ROLE_SUPER_ADMIN) {
+      $qb->where('u.company = :company')
+        ->setParameter(':company', $company)
+        ->andWhere('u.isSuspended = :suspenzija')
+        ->setParameter('suspenzija', $suspended);
+
+      if (!empty($filter['ime'])) {
+      $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.ime', ':ime'),
+        ))
+          ->setParameter('ime', '%' . $filter['ime'] . '%');
+      }
+      if (!empty($filter['prezime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.prezime', ':prezime'),
+        ))
+          ->setParameter('prezime', '%' . $filter['prezime'] . '%');
+      }
+      if (!empty($filter['pozicija'])) {
+        $qb->andWhere('u.pozicija = :pozicija');
+        $qb->setParameter('pozicija', $filter['pozicija']);
+      }
+      if (!empty($filter['vrsta'])) {
+        $qb->andWhere('u.userType = :vrsta');
+        $qb->setParameter('vrsta', $filter['vrsta']);
+      }
+
+      $qb
+        ->addOrderBy('u.userType', 'ASC')
+        ->addOrderBy('u.prezime', 'ASC')
+        ->getQuery();
+    }
+
+    if ($loggedUser->getUserType() == UserRolesData::ROLE_ADMIN) {
+      $qb->where('u.company = :company')
+        ->setParameter(':company', $company)
+        ->andWhere('u.isSuspended = :suspenzija')
+        ->setParameter('suspenzija', $suspended)
         ->andWhere('u.userType <> :userType')
         ->andWhere('u.userType <> :userType1')
-        ->andWhere('u.company = :company')
-        ->setParameter(':company', $company)
         ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
-        ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
-        ->orderBy('u.isSuspended', 'ASC')
-        ->addOrderBy('u.userType', 'ASC')
-        ->addOrderBy('u.id', 'ASC')
-        ->getQuery(),
+        ->setParameter(':userType1', UserRolesData::ROLE_ADMIN);
 
-      default => $this->createQueryBuilder('u')
+      if (!empty($filter['ime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.ime', ':ime'),
+        ))
+          ->setParameter('ime', '%' . $filter['ime'] . '%');
+      }
+      if (!empty($filter['prezime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.prezime', ':prezime'),
+        ))
+          ->setParameter('prezime', '%' . $filter['prezime'] . '%');
+      }
+      if (!empty($filter['pozicija'])) {
+        $qb->andWhere('u.pozicija = :pozicija');
+        $qb->setParameter('pozicija', $filter['pozicija']);
+      }
+      if (!empty($filter['vrsta'])) {
+        $qb->andWhere('u.userType = :vrsta');
+        $qb->setParameter('vrsta', $filter['vrsta']);
+      }
+
+      $qb
+        ->addOrderBy('u.userType', 'ASC')
+        ->addOrderBy('u.prezime', 'ASC')
+        ->getQuery();
+    }
+
+    if ($loggedUser->getUserType() == UserRolesData::ROLE_MANAGER) {
+      $qb->where('u.company = :company')
+        ->setParameter(':company', $company)
+        ->andWhere('u.isSuspended = :suspenzija')
+        ->setParameter('suspenzija', $suspended)
         ->andWhere('u.userType <> :userType')
         ->andWhere('u.userType <> :userType1')
         ->andWhere('u.userType <> :userType2')
-        ->andWhere('u.company = :company')
-        ->setParameter(':company', $company)
         ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
         ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
-        ->setParameter(':userType2', UserRolesData::ROLE_MANAGER)
-        ->orderBy('u.isSuspended', 'ASC')
+        ->setParameter(':userType2', UserRolesData::ROLE_MANAGER);
+
+      if (!empty($filter['ime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.ime', ':ime'),
+        ))
+          ->setParameter('ime', '%' . $filter['ime'] . '%');
+      }
+      if (!empty($filter['prezime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.prezime', ':prezime'),
+        ))
+          ->setParameter('prezime', '%' . $filter['prezime'] . '%');
+      }
+      if (!empty($filter['pozicija'])) {
+        $qb->andWhere('u.pozicija = :pozicija');
+        $qb->setParameter('pozicija', $filter['pozicija']);
+      }
+      if (!empty($filter['vrsta'])) {
+        $qb->andWhere('u.userType = :vrsta');
+        $qb->setParameter('vrsta', $filter['vrsta']);
+      }
+
+      $qb
         ->addOrderBy('u.userType', 'ASC')
-        ->addOrderBy('u.id', 'ASC')
-        ->getQuery(),
+        ->addOrderBy('u.prezime', 'ASC')
+        ->getQuery();
+    }
 
-    };
 
-//    $usersList = [];
-//    foreach ($users as $user) {
-//
-//      $usersList [] = [
-//        'id' => $user->getId(),
-//        'ime' => $user->getIme(),
-//        'prezime' => $user->getPrezime(),
-//        'slika' => $user->getImage(),
-//        'isSuspended' => $user->getBadgeByStatus(),
-//        'datumRodjenja' => $user->getDatumRodjenja(),
-//        'role' => $user->getBadgeByUserType(),
-//      ];
-//    }
-//
-//    return $usersList;
+    return $qb;
   }
 
-  public function getAllContactsPaginator() {
+  public function getAllContactsPaginator($filter) {
 
     $company = $this->security->getUser()->getCompany();
 
-    return $this->createQueryBuilder('u')
+    $qb = $this->createQueryBuilder('u')
       ->where('u.userType = :userType')
       ->andWhere('u.company = :company')
       ->setParameter(':company', $company)
-      ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
+      ->setParameter(':userType', UserRolesData::ROLE_CLIENT);
+
+    if (!empty($filter['ime'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.ime', ':ime'),
+      ))
+        ->setParameter('ime', '%' . $filter['ime'] . '%');
+    }
+    if (!empty($filter['prezime'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.prezime', ':prezime'),
+      ))
+        ->setParameter('prezime', '%' . $filter['prezime'] . '%');
+    }
+
+
+    $qb
       ->addOrderBy('u.isSuspended', 'ASC')
+      ->addOrderBy('u.userType', 'ASC')
+      ->addOrderBy('u.prezime', 'ASC')
       ->getQuery();
+
+    return $qb;
   }
 
   public function getAllContacts(): array {
@@ -829,59 +910,102 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $usersList;
   }
 
-  public function getEmployeesPaginator(int $type) {
-    $company = $this->security->getUser()->getCompany();
-    return match ($type) {
-      1 => $this->createQueryBuilder('u')
-        ->where('u.isInTask = 1')
-        ->andWhere('u.userType = :userType')
-        ->andWhere('u.isSuspended = 0')
-        ->andWhere('u.company = :company')
-        ->setParameter(':company', $company)
-        ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
-        ->orderBy('u.prezime', 'ASC')
-        ->addOrderBy('u.id', 'ASC')
-        ->getQuery(),
+//  public function getEmployeesPaginator(int $type) {
+//    $company = $this->security->getUser()->getCompany();
+//    return match ($type) {
+//      1 => $this->createQueryBuilder('u')
+//        ->where('u.isInTask = 1')
+//        ->andWhere('u.userType = :userType')
+//        ->andWhere('u.isSuspended = 0')
+//        ->andWhere('u.company = :company')
+//        ->setParameter(':company', $company)
+//        ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+//        ->orderBy('u.prezime', 'ASC')
+//        ->addOrderBy('u.id', 'ASC')
+//        ->getQuery(),
+//
+//      2 => $this->createQueryBuilder('u')
+//        ->where('u.isInTask = 0')
+//        ->andWhere('u.userType = :userType')
+//        ->andWhere('u.isSuspended = 0')
+//        ->andWhere('u.company = :company')
+//        ->setParameter(':company', $company)
+//        ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+//        ->orderBy('u.prezime', 'ASC')
+//        ->addOrderBy('u.id', 'ASC')
+//        ->getQuery(),
+//
+//      default => $this->createQueryBuilder('u')
+//        ->where('u.userType = :userType')
+//        ->andWhere('u.company = :company')
+//        ->setParameter(':company', $company)
+//        ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+//        ->orderBy('u.isSuspended', 'ASC')
+//        ->addOrderBy('u.userType', 'ASC')
+//        ->addOrderBy('u.prezime', 'ASC')
+//        ->addOrderBy('u.id', 'ASC')
+//        ->getQuery(),
+//
+//    };
+//
+////    $usersList = [];
+////    foreach ($users as $user) {
+////
+////      $usersList [] = [
+////        'id' => $user->getId(),
+////        'ime' => $user->getIme(),
+////        'prezime' => $user->getPrezime(),
+////        'slika' => $user->getImage(),
+////        'isSuspended' => $user->getBadgeByStatus(),
+////        'datumRodjenja' => $user->getDatumRodjenja(),
+////        'role' => $user->getBadgeByUserType(),
+////      ];
+////    }
+////
+////    return $usersList;
+//  }
 
-      2 => $this->createQueryBuilder('u')
-        ->where('u.isInTask = 0')
-        ->andWhere('u.userType = :userType')
-        ->andWhere('u.isSuspended = 0')
-        ->andWhere('u.company = :company')
-        ->setParameter(':company', $company)
-        ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
-        ->orderBy('u.prezime', 'ASC')
-        ->addOrderBy('u.id', 'ASC')
-        ->getQuery(),
+  public function getEmployeesPaginator(User $loggedUser, $filter, $suspended) {
 
-      default => $this->createQueryBuilder('u')
-        ->where('u.userType = :userType')
-        ->andWhere('u.company = :company')
+    $company = $loggedUser->getCompany();
+    $qb = $this->createQueryBuilder('u');
+
+
+    if ($loggedUser->getUserType() == UserRolesData::ROLE_SUPER_ADMIN) {
+      $qb->where('u.company = :company')
         ->setParameter(':company', $company)
-        ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
-        ->orderBy('u.isSuspended', 'ASC')
-        ->addOrderBy('u.userType', 'ASC')
+        ->andWhere('u.isSuspended = :suspenzija')
+        ->setParameter('suspenzija', $suspended)
+        ->andWhere('u.userType = :userType')
+        ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE);
+
+      if (!empty($filter['ime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.ime', ':ime'),
+        ))
+          ->setParameter('ime', '%' . $filter['ime'] . '%');
+      }
+      if (!empty($filter['prezime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.prezime', ':prezime'),
+        ))
+          ->setParameter('prezime', '%' . $filter['prezime'] . '%');
+      }
+      if (!empty($filter['pozicija'])) {
+        $qb->andWhere('u.pozicija = :pozicija');
+        $qb->setParameter('pozicija', $filter['pozicija']);
+      }
+//      if (!empty($filter['vrsta'])) {
+//        $qb->andWhere('u.userType = :vrsta');
+//        $qb->setParameter('vrsta', $filter['vrsta']);
+//      }
+
+      $qb
         ->addOrderBy('u.prezime', 'ASC')
-        ->addOrderBy('u.id', 'ASC')
-        ->getQuery(),
+        ->getQuery();
+    }
 
-    };
-
-//    $usersList = [];
-//    foreach ($users as $user) {
-//
-//      $usersList [] = [
-//        'id' => $user->getId(),
-//        'ime' => $user->getIme(),
-//        'prezime' => $user->getPrezime(),
-//        'slika' => $user->getImage(),
-//        'isSuspended' => $user->getBadgeByStatus(),
-//        'datumRodjenja' => $user->getDatumRodjenja(),
-//        'role' => $user->getBadgeByUserType(),
-//      ];
-//    }
-//
-//    return $usersList;
+    return $qb;
   }
 
   public function getPdfsByUser(User $user): array {

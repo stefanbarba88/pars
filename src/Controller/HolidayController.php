@@ -10,6 +10,7 @@ use App\Entity\Holiday;
 use App\Form\HolidayFormType;
 use DateInterval;
 use DateTimeImmutable;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -31,17 +32,20 @@ class HolidayController extends AbstractController {
     $args = [];
 
     $year = date("Y");
-
-//    $holidays = $this->em->getRepository(Holiday::class)->getHolidaysPaginator($year);
-    $holidays = $this->em->getRepository(Holiday::class)->getHolidaysPaginator();
+    $holidays = $this->em->getRepository(Holiday::class)->getHolidaysPaginator($year);
 
     $pagination = $paginator->paginate(
       $holidays, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('holiday/phone/list.html.twig', $args);
+    }
+
 
     return $this->render('holiday/list.html.twig', $args);
   }

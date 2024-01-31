@@ -6,6 +6,7 @@ use App\Classes\Data\NotifyMessagesData;
 use App\Classes\ResponseMessages;
 use App\Entity\Category;
 use App\Form\CategoryFormType;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -31,11 +32,14 @@ class CategoryController extends AbstractController {
     $pagination = $paginator->paginate(
       $categories, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('category/phone/list.html.twig', $args);
+    }
     return $this->render('category/list.html.twig', $args);
   }
 

@@ -48,16 +48,24 @@ class ActivityRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(Activity::class)->find($id);
   }
 
-  public function getActivitiesPaginator() {
+  public function getActivitiesPaginator($filter) {
     $company = $this->security->getUser()->getCompany();
-    return $this->createQueryBuilder('c')
+    $qb = $this->createQueryBuilder('c')
       ->where('c.company = :company')
-      ->setParameter('company', $company)
-      ->orderBy('c.isSuspended', 'ASC')
+      ->setParameter('company', $company);
+
+    if (!empty($filter['title'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('c.title', ':title'),
+      ))
+        ->setParameter('title', '%' . $filter['title'] . '%');
+    }
+     $qb->orderBy('c.isSuspended', 'ASC')
       ->orderBy('c.title', 'ASC')
       ->addOrderBy('c.id', 'ASC')
       ->getQuery();
 
+    return $qb;
 
   }
 

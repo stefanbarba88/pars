@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\TipOpremeData;
 use App\Entity\City;
+use App\Entity\Country;
 use App\Form\CityFormType;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -12,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 
@@ -25,17 +29,31 @@ class CityController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
+    $search = [];
 
-    $cities = $this->em->getRepository(City::class)->getCitiesPaginator();
+    $search['title'] = $request->query->get('title');
+    $search['drzava'] = $request->query->get('drzava');
+    $search['grad'] = $request->query->get('grad');
+    $search['ptt'] = $request->query->get('ptt');
+
+    $cities = $this->em->getRepository(City::class)->getCitiesFilterPaginator($search);
 
     $pagination = $paginator->paginate(
       $cities, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
     $args['pagination'] = $pagination;
+    $args['countries'] = $this->em->getRepository(Country::class)->findAll();
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('city/phone/list.html.twig', $args);
+    }
 
     return $this->render('city/list.html.twig', $args);
   }

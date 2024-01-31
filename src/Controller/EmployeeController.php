@@ -20,6 +20,7 @@ use App\Entity\Task;
 use App\Entity\ToolReservation;
 use App\Entity\User;
 use App\Entity\UserHistory;
+use App\Entity\ZaposleniPozicija;
 use App\Form\UserEditAccountFormType;
 use App\Form\UserEditImageFormType;
 use App\Form\UserEditInfoFormType;
@@ -40,6 +41,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -59,19 +61,80 @@ class EmployeeController extends AbstractController {
     if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
       return $this->redirect($this->generateUrl('app_home'));
     }
-    $type = $request->query->getInt('type');
-    $users = $this->em->getRepository(User::class)->getEmployeesPaginator($type);
+
+    $args = [];
+
+    $search = [];
+
+    $search['ime'] = $request->query->get('ime');
+    $search['prezime'] = $request->query->get('prezime');
+    $search['pozicija'] = $request->query->get('pozicija');
+    $search['vrsta'] = $request->query->get('vrsta');
+
+    $users = $this->em->getRepository(User::class)->getEmployeesPaginator($korisnik, $search, 0);
+//    $users = $this->em->getRepository(User::class)->getEmployeesPaginator($type);
 
     $pagination = $paginator->paginate(
       $users, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
-    $args['pagination'] = $pagination;
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
 
+    $args['pagination'] = $pagination;
+    $args['pozicije'] = $this->em->getRepository(ZaposleniPozicija::class)->findBy(['company' => $korisnik->getCompany(), 'isSuspended' => false]);
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('employee/phone/list.html.twig', $args);
+    }
 
     return $this->render('employee/list.html.twig', $args);
+  }
+
+  #[Route('/list-archive/', name: 'app_employees_archive')]
+  public function archive(PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    $args = [];
+
+    $search = [];
+
+    $search['ime'] = $request->query->get('ime');
+    $search['prezime'] = $request->query->get('prezime');
+    $search['pozicija'] = $request->query->get('pozicija');
+    $search['vrsta'] = $request->query->get('vrsta');
+
+    $type = $request->query->getInt('type');
+    $users = $this->em->getRepository(User::class)->getEmployeesPaginator($korisnik, $search, 1);
+//    $users = $this->em->getRepository(User::class)->getEmployeesPaginator($type);
+
+    $pagination = $paginator->paginate(
+      $users, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+    $args['pozicije'] = $this->em->getRepository(ZaposleniPozicija::class)->findBy(['company' => $korisnik->getCompany(), 'isSuspended' => false]);
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('employee/phone/archive.html.twig', $args);
+    }
+
+    return $this->render('employee/archive.html.twig', $args);
   }
 
   #[Route('/view-profile/{id}', name: 'app_employee_profile_view')]
@@ -131,7 +194,7 @@ class EmployeeController extends AbstractController {
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('employee/view_activity.html.twig', $args);
+        return $this->render('employee/phone/admin_view_activity.html.twig', $args);
       }
       return $this->render('employee/phone/view_activity.html.twig', $args);
     }
@@ -182,7 +245,7 @@ class EmployeeController extends AbstractController {
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('employee/view_calendar.html.twig', $args);
+        return $this->render('employee/phone/admin_view_calendar.html.twig', $args);
       }
       return $this->render('employee/phone/view_calendar.html.twig', $args);
     }
@@ -239,7 +302,7 @@ class EmployeeController extends AbstractController {
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('employee/view_cars.html.twig', $args);
+        return $this->render('employee/phone/admin_view_cars.html.twig', $args);
       }
       return $this->render('employee/phone/view_cars.html.twig', $args);
     }
@@ -275,7 +338,7 @@ class EmployeeController extends AbstractController {
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('employee/view_tools.html.twig', $args);
+        return $this->render('employee/phone/admin_view_tools.html.twig', $args);
       }
       return $this->render('employee/phone/view_tools.html.twig', $args);
     }
@@ -370,7 +433,7 @@ class EmployeeController extends AbstractController {
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('employee/view_comments.html.twig', $args);
+        return $this->render('employee/phone/admin_view_comments.html.twig', $args);
       }
       return $this->render('employee/phone/view_comments.html.twig', $args);
     }
@@ -411,7 +474,7 @@ class EmployeeController extends AbstractController {
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('employee/view_notes.html.twig', $args);
+        return $this->render('employee/phone/admin_view_notes.html.twig', $args);
       }
       return $this->render('employee/phone/view_notes.html.twig', $args);
     }
@@ -477,7 +540,69 @@ class EmployeeController extends AbstractController {
 
     $args = [];
 
-    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $this->getUser()->getCompany()],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $this->getUser()->getCompany(), 'isSuspended' => false],['prezime' => 'ASC']);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
+    return $this->render('report_employee/control.html.twig', $args);
+  }
+
+  #[Route('/reports-archive', name: 'app_employee_archive_reports')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportArchive(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+      $data = $request->request->all();
+//      dd($data);
+//      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
+      $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
+
+      $args['period'] = $data['report_form']['period'];
+      $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
+
+      if (isset($data['report_form']['datum'])){
+        $args['datum'] = 1;
+      }
+      if (isset($data['report_form']['opis'])){
+        $args['opis'] = 1;
+      }
+      if (isset($data['report_form']['klijent'])){
+        $args['klijent'] = 1;
+      }
+      if (isset($data['report_form']['start'])){
+        $args['start'] = 1;
+      }
+      if (isset($data['report_form']['stop'])){
+        $args['stop'] = 1;
+      }
+      if (isset($data['report_form']['razlika'])){
+        $args['razlika'] = 1;
+      }
+      if (isset($data['report_form']['razlikaz'])){
+        $args['razlikaz'] = 1;
+      }
+      if (isset($data['report_form']['ukupno'])){
+        $args['ukupno'] = 1;
+      }
+      if (isset($data['report_form']['ukupnoz'])){
+        $args['ukupnoz'] = 1;
+      }
+      if (isset($data['report_form']['zaduzeni'])){
+        $args['zaduzeni'] = 1;
+      }
+      if (isset($data['report_form']['napomena'])){
+        $args['napomena'] = 1;
+      }
+
+
+      return $this->render('report_employee/view.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $this->getUser()->getCompany(), 'isSuspended' => true],['prezime' => 'ASC']);
     $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
     return $this->render('report_employee/control.html.twig', $args);
   }

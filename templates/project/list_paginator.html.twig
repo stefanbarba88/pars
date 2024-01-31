@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -27,29 +27,51 @@
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista projekata</h5>
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista projekata - radni dan  <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ daysAtMoment }}/{{ daysMonth }}
+                                                </span></h5>
                             {% if not is_granted('ROLE_EMPLOYEE') %}
-                                <div class="mt-1 my-lg-auto ms-lg-auto">
+                                <div class="my-auto ms-auto">
                                     <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                 </div>
                             {% endif %}
                         </div>
+                        <form method="get" action="{{ path('app_projects') }}" class="form-validate-jquery" novalidation="novalidation">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="title">Naziv:</label>
+                                            <input id="title" name="title" class="form-control" type="text">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="form-label required" for="tip">Tip:</label>
+                                            <select id="tip" name="tip" class="form-control select">
+                                                <option value="">--Izaberite tip projekta--</option>
+                                                {% for key, value in tipovi %}
+                                                    <option value="{{ key }}">{{ value }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
+                                </div>
+                            </div>
+                        </form>
                         <div class="card-body">
-                            <div class="table-responsive ">
-                                <table class="table table-bordered table-hover table-responsive">
-                                    <thead>
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light text-primary">
                                     <tr>
-                                        <th {% if pagination.isSorted('[p.id]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, '# ', ['p.id']) }}
-                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.id' %}
-                                                &#8593;
-                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.id' %}
-                                                &#8595;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
                                         <th {% if pagination.isSorted('[p.title]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Naziv ', ['p.title']) }}
                                             {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.title' %}
@@ -60,9 +82,8 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Zadaci</th>
-                                        <th>Teren/Kancelarija</th>
-                                        <th>Radni dani</th>
+                                        <th>Zadaci (teren/ukupno)</th>
+                                        <th>Radni dani (teren/kanc)</th>
                                         <th>Klijent</th>
                                         <th {% if pagination.isSorted('[p.type]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Tip ', ['p.type']) }}
@@ -84,13 +105,12 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for project in pagination %}
                                         <tr>
-                                            <td>{{ project.id }}</td>
                                             <td>
                                                 <div class="fw-semibold"><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></div>
                                                 {% if project.label is not empty %}
@@ -111,11 +131,6 @@
                                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
                                                     {% set noDays = getCountDaysTasksByProject(project)  %}
                                                     {{ noDays.teren }}/{{ noDays.kancelarija }}
-                                                </span>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                    {{ daysAtMoment }}/{{ daysMonth }}
                                                 </span>
                                             </td>
                                             <td>
@@ -210,5 +225,8 @@
     <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
 
 {% endblock includeJavascript %}

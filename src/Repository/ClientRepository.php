@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\UserRolesData;
 use App\Entity\Client;
 use App\Entity\ClientHistory;
 use App\Entity\Image;
@@ -89,15 +90,32 @@ class ClientRepository extends ServiceEntityRepository {
 
   }
 
-  public function getAllClientsPaginator() {
+  public function getAllClientsPaginator($filter, $suspended) {
     $company = $this->security->getUser()->getCompany();
-    return $this->createQueryBuilder('u')
-      ->andWhere('u.company = :company')
-      ->andWhere('u.isSuspended = :isSuspended')
-      ->setParameter('company', $company)
-      ->setParameter('isSuspended', 0)
-      ->getQuery();
+    $qb = $this->createQueryBuilder('u');
 
+    $qb->where('u.company = :company')
+      ->setParameter(':company', $company)
+      ->andWhere('u.isSuspended = :suspenzija')
+      ->setParameter('suspenzija', $suspended);
+
+    if (!empty($filter['title'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.title', ':title'),
+      ))
+        ->setParameter('title', '%' . $filter['title'] . '%');
+    }
+    if (!empty($filter['pib'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.pib', ':pib'),
+      ))
+        ->setParameter('pib', '%' . $filter['pib'] . '%');
+    }
+
+    $qb
+      ->addOrderBy('u.title', 'ASC')
+      ->getQuery();
+    return $qb;
   }
 
 //    /**

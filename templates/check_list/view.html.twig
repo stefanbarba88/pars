@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -33,9 +33,9 @@
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
                                 <div class="card">
-                                    <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Zadatak</h5>
-                                        <div class="mt-1 my-lg-auto ms-lg-auto">
+                                    <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Zadatak</h5>
+                                        <div class="my-auto ms-auto">
 
                                             {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') %}
                                                 {% if checklist.status == 1 %}

@@ -1,0 +1,131 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Neradni dani
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista neradnih dana</h5>
+                            <div class="my-auto ms-auto">
+                                <a href="{{ path('app_holiday_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                    <thead class="bg-light text-primary">
+                                    <tr>
+                                        <th>Naziv</th>
+                                        <th>Datum</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for holiday in pagination %}
+                                        <tr>
+                                            <td><div class="fw-semibold"><a href="{{ path('app_holiday_view', { id: holiday.id}) }}">{{ holiday.title }}</a></div></td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ holiday.datum | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ holiday.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                            </td>
+                                        </tr>
+
+                                        <tr id="collapsed_item{{ holiday.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
+                                            <td>
+                                                {% if holiday.type == constant('App\\Classes\\Data\\TipNeradnihDanaData::PRAZNIK') %}
+                                                    <span class="badge bg-secondary text-primary">Praznik</span>
+                                                {% endif %}
+                                                {% if holiday.type == constant('App\\Classes\\Data\\TipNeradnihDanaData::KOLEKTIVNI_ODMOR') %}
+                                                    <span class="badge bg-primary text-white">Kolektivni odmor</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if holiday.isSuspended %}
+                                                    <span class="badge bg-yellow text-primary">Deaktiviran</span>
+                                                {% else %}
+                                                    <span class="badge bg-primary text-white">Aktivan</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_holiday_view', { id: holiday.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        <a href="{{ path('app_holiday_form', { id: holiday.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

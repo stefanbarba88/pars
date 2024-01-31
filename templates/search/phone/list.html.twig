@@ -1,0 +1,506 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Rezultati pretrage
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+                <!-- Content area -->
+                <div class="content">
+
+                    {% set zap = app.request.query.get('zaposleni') %}
+                    {% set pro = app.request.query.get('projekat') %}
+                    {% set zad = app.request.query.get('zadatak') %}
+
+                    {% if pro is null and  zad is null and  zap is null %}
+
+                            {% if pagination.totalItemCount > 0 %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Projekti</h5>
+                                        <div class="ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination.totalItemCount }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th>Projekat</th>
+
+                                                    <th>Status</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for project in pagination %}
+                                                    <tr>
+
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_project_profile_view', { id: project.id}) }}">{{ project.title }}</a>
+                                                            </div>
+                                                        </td>
+
+                                                        <td>
+                                                            {% if project.isSuspended%}
+                                                                <span class="badge bg-yellow text-primary">Deaktiviran</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary text-primary">Aktivan</span>
+                                                            {% endif %}
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <a href="{{ path('app_project_profile_view', {id: project.id}) }}" class="btn btn-primary">
+                                                                <i class="ph-eye"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Projekti</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info fade show">
+                                            <span class="fw-semibold">Nije pronađen nijedan rezultat među projektima.</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if pagination1.totalItemCount > 0 %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zadaci</h5>
+                                        <div class="ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination1.totalItemCount }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th>Zadatak</th>
+
+                                                    <th>Status</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for task in pagination1 %}
+                                                    <tr>
+
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a>
+                                                            </div>
+                                                        </td>
+
+
+                                                        <td>
+                                                            {% if task.isDeleted%}
+                                                                <span class="badge bg-yellow text-primary">Obrisan</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary text-primary">Aktivan</span>
+                                                            {% endif %}
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <a href="{{ path('app_task_view', {id: task.id}) }}" class="btn btn-primary">
+                                                                <i class="ph-eye"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination1) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zadaci</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info fade show">
+                                            <span class="fw-semibold">Nije pronađen nijedan rezultat među zadacima.</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if pagination2.totalItemCount > 0 %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zaposleni</h5>
+                                        <div class="ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination2.totalItemCount }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th>Zaposleni</th>
+
+                                                    <th>Status</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for user in pagination2 %}
+                                                    <tr>
+
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.fullName }}</a>
+                                                            </div>
+                                                        </td>
+
+                                                        <td>
+                                                            {% if user.isSuspended%}
+                                                                <span class="badge bg-yellow text-primary">Deaktiviran</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary text-primary">Aktivan</span>
+                                                            {% endif %}
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <a href="{{ path('app_employee_profile_view', {id: user.id}) }}" class="btn btn-primary">
+                                                                <i class="ph-eye"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination1) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zaposleni</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info fade show">
+                                            <span class="fw-semibold">Nije pronađen nijedan rezultat među zaposlenima.</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                    {% else %}
+
+                        {% if pro is not null %}
+                            {% if pagination.totalItemCount > 0 %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h6 class="mb-0">Projekti</h6>
+                                        <div class="ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination.totalItemCount }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                            <tr>
+                                                <th>Projekat</th>
+
+                                                <th>Status</th>
+                                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for project in pagination %}
+                                                <tr>
+
+                                                    <td>
+                                                        <div class="fw-semibold">
+                                                            <a href="{{ path('app_project_profile_view', { id: project.id}) }}">{{ project.title }}</a>
+                                                        </div>
+                                                    </td>
+
+                                                    <td>
+                                                        {% if project.isSuspended%}
+                                                            <span class="badge bg-yellow text-primary">Deaktiviran</span>
+                                                        {% else %}
+                                                            <span class="badge bg-secondary text-primary">Aktivan</span>
+                                                        {% endif %}
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <a href="{{ path('app_project_profile_view', {id: project.id}) }}" class="btn btn-primary">
+                                                            <i class="ph-eye"></i>
+
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer">
+                                    <div class="navigation float-end">
+                                        {{ knp_pagination_render(pagination) }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Projekti</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info fade show">
+                                            <span class="fw-semibold">Nije pronađen nijedan rezultat među projektima.</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if zad is not null %}
+                            {% if pagination1.totalItemCount > 0 %}
+                                <div class="card">
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Zadaci</h5>
+                                    <div class="ms-auto">
+                                        <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination1.totalItemCount }}</span>
+                                    </div>
+                                </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                            <tr>
+                                                <th>Zadatak</th>
+
+                                                <th>Status</th>
+                                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for task in pagination1 %}
+                                                <tr>
+
+                                                    <td>
+                                                        <div class="fw-semibold">
+                                                            <a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a>
+                                                        </div>
+                                                    </td>
+
+                                                    <td>
+                                                        {% if task.isDeleted%}
+                                                            <span class="badge bg-yellow text-primary">Obrisan</span>
+                                                        {% else %}
+                                                            <span class="badge bg-secondary text-primary">Aktivan</span>
+                                                        {% endif %}
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <a href="{{ path('app_task_view', {id: task.id}) }}" class="btn btn-primary">
+                                                            <i class="ph-eye"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer">
+                                    <div class="navigation float-end">
+                                        {{ knp_pagination_render(pagination1) }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zadaci</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info fade show">
+                                            <span class="fw-semibold">Nije pronađen nijedan rezultat među zadacima.</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if zap is not null %}
+                            {% if pagination2.totalItemCount > 0 %}
+                                <div class="card">
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Zaposleni</h5>
+                                    <div class="ms-auto">
+                                        <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination2.totalItemCount }}</span>
+                                    </div>
+                                </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                            <tr>
+                                                <th>Zaposleni</th>
+
+                                                <th>Status</th>
+                                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for user in pagination2 %}
+                                                <tr>
+
+                                                    <td>
+                                                        <div class="fw-semibold">
+                                                            <a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.fullName }}</a>
+                                                        </div>
+                                                    </td>
+                                     
+                                                    <td>
+                                                        {% if user.isSuspended%}
+                                                            <span class="badge bg-yellow text-primary">Deaktiviran</span>
+                                                        {% else %}
+                                                            <span class="badge bg-secondary text-primary">Aktivan</span>
+                                                        {% endif %}
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <a href="{{ path('app_employee_profile_view', {id: user.id}) }}" class="btn btn-primary">
+                                                            <i class="ph-eye"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer">
+                                    <div class="navigation float-end">
+                                        {{ knp_pagination_render(pagination2) }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zaposleni</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info fade show">
+                                            <span class="fw-semibold">Nije pronađen nijedan rezultat među zaposlenima.</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                    {% endif %}
+                </div>
+                <!-- /content area -->
+
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

@@ -8,8 +8,10 @@ use App\Entity\Client;
 use App\Entity\ClientHistory;
 use App\Entity\Image;
 use App\Entity\User;
+use App\Entity\ZaposleniPozicija;
 use App\Form\ClientFormType;
 use App\Form\ClientSuspendedFormType;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -17,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -36,18 +39,69 @@ class ClientController extends AbstractController {
     if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
       return $this->redirect($this->generateUrl('app_home'));
     }
-    $args=[];
-    $clients = $this->em->getRepository(Client::class)->getAllClientsPaginator();
+    $args = [];
+
+    $search = [];
+
+    $search['title'] = $request->query->get('title');
+    $search['pib'] = $request->query->get('pib');
+
+    $clients = $this->em->getRepository(Client::class)->getAllClientsPaginator($search, 0);
 
     $pagination = $paginator->paginate(
       $clients, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
 
     $args['pagination'] = $pagination;
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('client/phone/list.html.twig', $args);
+    }
+
     return $this->render('client/list.html.twig', $args);
+  }
+
+  #[Route('/list-archive/', name: 'app_clients_archive')]
+  public function archive(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+    $args = [];
+
+    $search = [];
+
+    $search['title'] = $request->query->get('title');
+    $search['pib'] = $request->query->get('pib');
+
+    $clients = $this->em->getRepository(Client::class)->getAllClientsPaginator($search, 1);
+
+    $pagination = $paginator->paginate(
+      $clients, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('client/phone/archive.html.twig', $args);
+    }
+
+    return $this->render('client/archive.html.twig', $args);
   }
 
   #[Route('/form/{id}', name: 'app_client_form', defaults: ['id' => 0])]
@@ -231,10 +285,14 @@ class ClientController extends AbstractController {
     $pagination = $paginator->paginate(
       $histories, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('client/phone/client_history_list.html.twig', $args);
+    }
 
     return $this->render('client/client_history_list.html.twig', $args);
   }

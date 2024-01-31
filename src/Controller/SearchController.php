@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\User;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -90,7 +91,10 @@ class SearchController extends AbstractController {
     $session->set('url', $request->getRequestUri());
     $args['search'] = $search;
 
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('search/phone/list.html.twig', $args);
+    }
     return $this->render('search/list.html.twig', $args);
   }
 
@@ -162,7 +166,10 @@ class SearchController extends AbstractController {
     $session->set('url', $request->getRequestUri());
     $args['search'] = $search;
 
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('search/phone/list_employee.html.twig', $args);
+    }
     return $this->render('search/list_employee.html.twig', $args);
   }
 }

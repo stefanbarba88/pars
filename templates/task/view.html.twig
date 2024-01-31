@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -231,8 +231,8 @@
                                 </div>
                             {% endif %}
                             <div class="card">
-                                <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }}
+                            <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">#{{ task.id }}: {{task.title }}
                                         {% if not task.isDeleted %}
                                             {% if not is_granted('ROLE_EMPLOYEE') or task.createdBy == app.user %}
                                                 <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>
@@ -240,7 +240,7 @@
                                         {% endif %}
                                     </h5>
                                     {% if status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
-                                        <div class="mt-1 my-lg-auto ms-lg-auto">
+                                        <div class="my-auto ms-auto">
                                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_close_task"><i class="ph-x me-2"></i>Zatvorite</button>
                                         </div>
                                     {% endif %}
@@ -250,7 +250,7 @@
                                     <div class="row">
                                         <div class="col-xl-6">
                                             <div class="card">
-                                                <div class="card-header d-lg-flex py-lg-0">
+                                                <div class="card-header d-flex align-items-center py-lg-0">
                                                     <h6 class="py-lg-3 mb-0">Informacije o zadatku</h6>
                                                 </div>
                                                 <div class="card-body">
@@ -358,7 +358,7 @@
                                         </div>
                                         <div class="col-xl-6">
                                             <div class="card">
-                                                <div class="card-header d-lg-flex py-lg-0">
+                                                <div class="card-header d-flex align-items-center py-lg-0">
                                                     <h6 class="py-lg-3 mb-0">Primarni dnevnik: {{ taskLog.user.fullName}} <a href="{{ path('app_task_reassign_primary_log', {id: task.id}) }}"><i class="ph-note-pencil"></i></a></h6>
                                                 </div>
                                                 {% if stopwatchesActive is empty %}

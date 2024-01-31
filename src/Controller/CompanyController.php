@@ -42,7 +42,7 @@ class CompanyController extends AbstractController {
     $pagination = $paginator->paginate(
       $companies, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;

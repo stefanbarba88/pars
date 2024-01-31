@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -31,9 +31,9 @@
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
                                 <div class="card">
-                                    <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">{{ user.fullName }}: {{ period }}</h5>
-                                        <div class="mt-1 my-lg-auto ms-lg-auto">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">{{ user.fullName }}: {{ period }}</h5>
+                                        <div class="my-auto ms-auto">
                                             {% if reports[0] is not empty %}
                                                 <div class="dropdown">
                                                     <a href="#" class="btn btn-light" data-bs-toggle="dropdown">
@@ -41,8 +41,8 @@
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a href="{{ path('app_employee_report_xls', {date: period, user: user.id, type:1}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Pun prikaz</a>
-{#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:2}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Složen prikaz</a>#}
-{#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:3}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Prost prikaz</a>#}
+                                                        {#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:2}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Složen prikaz</a>#}
+                                                        {#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:3}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Prost prikaz</a>#}
                                                     </div>
                                                 </div>
                                             {% endif %}
@@ -50,8 +50,8 @@
                                     </div>
 
                                     <div class="card-body">
-                                        <div class="table-responsive ">
-                                            <table class="table table-hover table-bordered table-condensed">
+                                        <div class="table-responsive card">
+                                            <table class="table table-hover table-bordered table_morecondensed">
                                                 <thead>
                                                 <tr class="table-light">
                                                     {% if datum is defined %}

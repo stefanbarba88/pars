@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\ProjectHelper;
 use App\Classes\ProjectHistoryHelper;
@@ -38,6 +39,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -56,12 +58,18 @@ class ProjectController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
+
+    $search = [];
+
+    $search['title'] = $request->query->get('title');
+    $search['tip'] = $request->query->get('tip');
+
     $user = $this->getUser();
 
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $projects = $this->em->getRepository(Project::class)->getProjectsByUserPaginator($user);
+      $projects = $this->em->getRepository(Project::class)->getProjectsByUserPaginator($user, $search);
     } else {
-      $projects = $this->em->getRepository(Project::class)->getAllProjectsPaginator();
+      $projects = $this->em->getRepository(Project::class)->getAllProjectsPaginator($search, 0);
     }
 
     $pagination = $paginator->paginate(
@@ -70,14 +78,19 @@ class ProjectController extends AbstractController {
       15
     );
 
-    $args['pagination'] = $pagination;
     $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
     $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+    $args['tipovi'] = TipProjektaData::TIP;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('project/list_paginator.html.twig', $args);
+        return $this->render('project/phone/admin_list_paginator.html.twig', $args);
       }
       return $this->render('project/phone/list_paginator.html.twig', $args);
     }
@@ -92,9 +105,11 @@ class ProjectController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
+    $search = [];
 
-    $projects = $this->em->getRepository(Project::class)->getAllProjectsChangePaginator();
+    $search['title'] = $request->query->get('title');
+
+    $projects = $this->em->getRepository(Project::class)->getAllProjectsTypePaginator($search, TipProjektaData::LETECE);
 
     $pagination = $paginator->paginate(
       $projects, /* query NOT result */
@@ -102,18 +117,19 @@ class ProjectController extends AbstractController {
       15
     );
 
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
     $args['pagination'] = $pagination;
     $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
     $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('project/list_paginator_change.html.twig', $args);
-      }
       return $this->render('project/phone/list_paginator_change.html.twig', $args);
     }
     return $this->render('project/list_paginator_change.html.twig', $args);
+
   }
 
   #[Route('/list-permanent/', name: 'app_projects_permanent')]
@@ -121,9 +137,11 @@ class ProjectController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
+    $search = [];
 
-    $projects = $this->em->getRepository(Project::class)->getAllProjectsPermanentPaginator();
+    $search['title'] = $request->query->get('title');
+
+    $projects = $this->em->getRepository(Project::class)->getAllProjectsTypePaginator($search, TipProjektaData::FIKSNO);
 
     $pagination = $paginator->paginate(
       $projects, /* query NOT result */
@@ -131,15 +149,15 @@ class ProjectController extends AbstractController {
       15
     );
 
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
     $args['pagination'] = $pagination;
     $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
     $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('project/list_paginator_permanent.html.twig', $args);
-      }
       return $this->render('project/phone/list_paginator_permanent.html.twig', $args);
     }
     return $this->render('project/list_paginator_permanent.html.twig', $args);
@@ -150,9 +168,11 @@ class ProjectController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
+    $search = [];
 
-    $projects = $this->em->getRepository(Project::class)->getAllProjectsMixPaginator();
+    $search['title'] = $request->query->get('title');
+
+    $projects = $this->em->getRepository(Project::class)->getAllProjectsTypePaginator($search, TipProjektaData::KOMBINOVANO);
 
     $pagination = $paginator->paginate(
       $projects, /* query NOT result */
@@ -160,15 +180,15 @@ class ProjectController extends AbstractController {
       15
     );
 
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
     $args['pagination'] = $pagination;
     $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
     $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('project/list_paginator_mix.html.twig', $args);
-      }
       return $this->render('project/phone/list_paginator_mix.html.twig', $args);
     }
     return $this->render('project/list_paginator_mix.html.twig', $args);
@@ -181,21 +201,27 @@ class ProjectController extends AbstractController {
     }
     $args = [];
 
-    $projects = $this->em->getRepository(Project::class)->getAllProjectsSuspendedPaginator();
+    $search = [];
+
+    $search['title'] = $request->query->get('title');
+    $search['tip'] = $request->query->get('tip');
+
+    $projects = $this->em->getRepository(Project::class)->getAllProjectsPaginator($search, 1);
 
     $pagination = $paginator->paginate(
       $projects, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
     $args['pagination'] = $pagination;
+    $args['tipovi'] = TipProjektaData::TIP;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('project/list_paginator_archive.html.twig', $args);
-      }
       return $this->render('project/phone/list_paginator_archive.html.twig', $args);
     }
     return $this->render('project/list_paginator_archive.html.twig', $args);
@@ -325,10 +351,15 @@ class ProjectController extends AbstractController {
     $pagination = $paginator->paginate(
       $histories, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/project_history_list.html.twig', $args);
+    }
     return $this->render('project/project_history_list.html.twig', $args);
   }
 
@@ -355,26 +386,34 @@ class ProjectController extends AbstractController {
     if ($user->getCompany() != $project->getCompany()) {
       return $this->redirect($this->generateUrl('app_home'));
     }
+    $args = [];
+    $search = [];
+    $search['kategorija'] = $request->query->get('kategorija');
+    $search['period'] = $request->query->get('period');
+    $search['zaposleni'] = $request->query->get('zaposleni');
     $args['project'] = $project;
 
-    $tasks = $this->em->getRepository(Task::class)->getTasksByProjectPaginator($project);
+    $tasks = $this->em->getRepository(Task::class)->getTasksByProjectPaginator($search, $user, $project);
     $pagination = $paginator->paginate(
       $tasks, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
     $args['pagination'] = $pagination;
+    $args['search'] = $search;
+    
+    $args['kategorije'] = $this->em->getRepository(Category::class)->findBy(['isTaskCategory' => true],['title' => 'ASC']);
+    $args['users'] = $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE],['prezime' => 'ASC']);
 
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('project/view_tasks.html.twig', $args);
-      }
       return $this->render('project/phone/view_tasks.html.twig', $args);
     }
-
     return $this->render('project/view_tasks.html.twig', $args);
   }
 
@@ -599,7 +638,78 @@ class ProjectController extends AbstractController {
 
     $args = [];
 
-    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany()]);
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
+
+    return $this->render('report_project/control.html.twig', $args);
+  }
+
+  #[Route('/reports-archive', name: 'app_project_reports_archive')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportArchive(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+
+      if (empty($data['report_form']['project'])) {
+        $args['reportsAll'] = $this->em->getRepository(Project::class)->getReportAll($data['report_form']);
+      } else {
+        $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
+        $args['project'] = $this->em->getRepository(Project::class)->find($data['report_form']['project']);
+      }
+
+      $args['period'] = $data['report_form']['period'];
+
+      if (isset($data['report_form']['datum'])){
+        $args['datum'] = 1;
+      }
+      if (isset($data['report_form']['opis'])){
+        $args['opis'] = 1;
+      }
+      if (isset($data['report_form']['klijent'])){
+        $args['klijent'] = 1;
+      }
+      if (isset($data['report_form']['start'])){
+        $args['start'] = 1;
+      }
+      if (isset($data['report_form']['stop'])){
+        $args['stop'] = 1;
+      }
+      if (isset($data['report_form']['razlika'])){
+        $args['razlika'] = 1;
+      }
+      if (isset($data['report_form']['razlikaz'])){
+        $args['razlikaz'] = 1;
+      }
+      if (isset($data['report_form']['ukupno'])){
+        $args['ukupno'] = 1;
+      }
+      if (isset($data['report_form']['ukupnoz'])){
+        $args['ukupnoz'] = 1;
+      }
+      if (isset($data['report_form']['zaduzeni'])){
+        $args['zaduzeni'] = 1;
+      }
+      if (isset($data['report_form']['napomena'])){
+        $args['napomena'] = 1;
+      }
+
+      if (empty($data['report_form']['project'])) {
+        return $this->render('report_project/view_all.html.twig', $args);
+      }
+
+      return $this->render('report_project/view.html.twig', $args);
+
+
+    }
+
+    $args = [];
+
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true], ['title' => 'ASC']);
     $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
 
     return $this->render('report_project/control.html.twig', $args);
@@ -625,8 +735,7 @@ class ProjectController extends AbstractController {
     }
 
     $args = [];
-//
-//    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany()]);
+
     $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
 
     return $this->render('report_project/control_izlasci.html.twig', $args);

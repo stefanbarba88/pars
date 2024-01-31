@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -27,24 +27,14 @@
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista dostupnih zaposlenih - {{ "now"|date("d.m.Y") }}</h5>
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista dostupnih zaposlenih - {{ "now"|date("d.m.Y") }}</h5>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive ">
-                                <table class="table table-bordered table-hover table-responsive">
-                                    <thead>
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light text-primary">
                                     <tr>
-                                        <th {% if pagination.isSorted('[u.id]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, '# ID ', ['u.id']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.id' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.id' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
                                         <th>Zaposleni</th>
                                         <th  {% if pagination.isSorted('[u.isInTask]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Na zadatku ', ['u.isInTask']) }}
@@ -67,13 +57,12 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for user in pagination %}
                                         <tr>
-                                            <td>{{ user.id }}</td>
                                             <td>
                                                 <div class="fw-semibold">
                                                     <a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.fullName }}</a>

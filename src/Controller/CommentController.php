@@ -36,10 +36,14 @@ class CommentController extends AbstractController {
     $pagination = $paginator->paginate(
       $comments, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('comment/phone/list.html.twig', $args);
+    }
 
     return $this->render('comment/list.html.twig', $args);
   }

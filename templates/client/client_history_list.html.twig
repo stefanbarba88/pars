@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -34,7 +34,7 @@
                         <!-- Left sidebar component -->
                         <div class="sidebar sidebar-component sidebar-expand-lg sidebar-expand-sm sidebar-expand-md sidebar-expand-xl sidebar-expand-xxl sidebar-mobile-expanded bg-transparent shadow-none me-lg-3">
 
-                        <!-- Sidebar content -->
+                            <!-- Sidebar content -->
                             <div class="sidebar-content">
                                 <!-- Navigation -->
                                 <div class="card">
@@ -51,19 +51,19 @@
                                                 Profil
                                             </a>
                                         </li>
-{#                                        <li class="nav-item">#}
-{#                                            <a href="{{ path('app_client_activity_view', { id: client.id}) }}" class="nav-link">#}
-{#                                                <i class="ph-activity me-2"></i>#}
-{#                                                Aktivnosti#}
-{#                                                <span class="badge bg-secondary rounded-pill ms-auto">29</span>#}
-{#                                            </a>#}
-{#                                        </li>#}
-{#                                        <li class="nav-item">#}
-{#                                            <a href="{{ path('app_client_calendar_view', { id: client.id}) }}" class="nav-link">#}
-{#                                                <i class="ph-calendar me-2"></i>Raspored#}
-{#                                                <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>#}
-{#                                            </a>#}
-{#                                        </li>#}
+                                        {#                                        <li class="nav-item">#}
+                                        {#                                            <a href="{{ path('app_client_activity_view', { id: client.id}) }}" class="nav-link">#}
+                                        {#                                                <i class="ph-activity me-2"></i>#}
+                                        {#                                                Aktivnosti#}
+                                        {#                                                <span class="badge bg-secondary rounded-pill ms-auto">29</span>#}
+                                        {#                                            </a>#}
+                                        {#                                        </li>#}
+                                        {#                                        <li class="nav-item">#}
+                                        {#                                            <a href="{{ path('app_client_calendar_view', { id: client.id}) }}" class="nav-link">#}
+                                        {#                                                <i class="ph-calendar me-2"></i>Raspored#}
+                                        {#                                                <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>#}
+                                        {#                                            </a>#}
+                                        {#                                        </li>#}
                                         <li class="nav-item-divider"></li>
                                         <li class="nav-item">
                                             {#                    <a href="{{ path('app_logout') }}" class="nav-link" data-bs-toggle="tab">#}
@@ -88,24 +88,14 @@
                             <div class="tab-pane fade active show">
                                 <!-- State saving -->
                                 <div class="card">
-                                    <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Lista izmena</h5>
+                                    <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista izmena</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive ">
-                                            <table class="table table-bordered table-hover table-responsive">
-                                                <thead>
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
                                                 <tr>
-                                                    <th {% if pagination.isSorted('[u.id]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination, '# ID ', ['u.id']) }}
-                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.id' %}
-                                                            &#8595;
-                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.id' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
                                                     <th>Verzija</th>
                                                     <th>Naziv</th>
                                                     <th {% if pagination.isSorted('[u.created]') %} class="sorted"{% endif %}>
@@ -118,13 +108,12 @@
                                                             &#8597;
                                                         {% endif %}
                                                     </th>
-                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 {% for clientH in pagination %}
                                                     <tr>
-                                                        <td>{{ clientH.id }}</td>
                                                         <td><div class="fw-semibold"><a href="{{ path('app_client_profile_history_view', { id: clientH.id}) }}">V.{{ clientH.version }}</a></div></td>
                                                         <td><a href="{{ path('app_client_profile_history_view', { id: clientH.id}) }}">{{ client.title }}</a></td>
                                                         <td>
@@ -133,9 +122,9 @@
                                                                 {{ clientH.created | date("d.m.Y H:i:s")}}
                                                             </div>
                                                         </td>
-                                                        <td>
-                                                            <a href="{{ path('app_client_profile_history_view', { id: clientH.id}) }}">
-                                                                <i class="ph-eye me-2"></i>
+                                                        <td class="text-center">
+                                                            <a href="{{ path('app_client_profile_history_view', { id: clientH.id}) }}" class="btn btn-primary">
+                                                                <i class="ph-eye me-2"></i> Vidite
                                                             </a>
                                                         </td>
                                                     </tr>

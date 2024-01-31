@@ -88,16 +88,60 @@ class ToolRepository extends ServiceEntityRepository {
 
   }
 
-  public function getToolsPaginator() {
+  public function getToolsPaginator($filter, $suspended) {
     $company = $this->security->getUser()->getCompany();
-    return $this->createQueryBuilder('c')
+
+
+    $qb =  $this->createQueryBuilder('c')
       ->andWhere('c.company = :company')
       ->setParameter(':company', $company)
-      ->orderBy('c.isSuspended', 'ASC')
-      ->addOrderBy('c.isReserved', 'ASC')
+      ->andWhere('c.isSuspended = :suspenzija')
+      ->setParameter('suspenzija', $suspended);
+
+      if (!empty($filter['naziv'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('c.title', ':naziv'),
+        ))
+          ->setParameter('naziv', '%' . $filter['naziv'] . '%');
+      }
+      if (!empty($filter['tip'])) {
+        $qb->andWhere('c.type = :tip');
+        $qb->setParameter('tip', $filter['tip']);
+      }
+
+      $qb->orderBy('c.isReserved', 'ASC')
       ->addOrderBy('c.id', 'ASC')
       ->getQuery();
 
+    return $qb;
+  }
+
+  public function getToolsReservedPaginator($filter, $reserved) {
+    $company = $this->security->getUser()->getCompany();
+
+
+    $qb =  $this->createQueryBuilder('c')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
+      ->andWhere('c.isReserved = :reserved')
+      ->setParameter('reserved', $reserved);
+
+    if (!empty($filter['naziv'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('c.title', ':naziv'),
+      ))
+        ->setParameter('naziv', '%' . $filter['naziv'] . '%');
+    }
+    if (!empty($filter['tip'])) {
+      $qb->andWhere('c.type = :tip');
+      $qb->setParameter('tip', $filter['tip']);
+    }
+
+    $qb
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery();
+
+    return $qb;
   }
 
   public function countToolsActive(): int {

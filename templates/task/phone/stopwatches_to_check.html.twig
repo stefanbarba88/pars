@@ -1,0 +1,153 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Zadaci
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista vremenskih zapisa za proveru</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                    <thead class="bg-light text-primary">
+                                    <tr>
+                                        <th>Zapis</th>
+                                        <th>Zadatak</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for time in pagination %}
+
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    <a href="{{ path('app_task_log_view', { id: time.taskLog.id}) }}">{{ time.taskLog.user.fullName }}</a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    <a href="{{ path('app_task_view', { id: time.task.id}) }}">{{ time.task.title }}</a>
+                                                </div>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ time.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                            </td>
+
+                                        </tr>
+
+                                        <tr id="collapsed_item{{ time.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
+
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ time.task.datumKreiranja | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+
+                                            <td>{{ time.diff }}</td>
+
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_task_log_view', { id: time.taskLog.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        {#                                                <a href="{{ path('app_stopwatch_delete', { id: time.id}) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>#}
+                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ time.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <div id="modal_delete_task{{ time.id }}" class="modal fade" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white border-0">
+                                                        <h6 class="modal-title">Potvrda</h6>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <p>Da li ste sigurni da želite da obrišete ovaj zapis?</p>
+                                                    </div>
+
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                        <a href="{{ path('app_stopwatch_delete', {id: time.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fab.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/prism.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
+{% endblock includeJavascript %}

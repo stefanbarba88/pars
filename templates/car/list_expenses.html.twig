@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -28,29 +28,19 @@
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista troškova</h5>
-                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista troškova</h5>
+                            <div class="my-auto ms-auto">
                                 {% if car.suspended == false %}
                                     <a href="{{ path('app_car_expense_form', { id : car.id }) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                 {% endif %}
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive ">
-                                <table class="table table-bordered table-hover table-responsive">
-                                    <thead>
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light text-primary">
                                     <tr>
-                                        <th {% if pagination.isSorted('[e.id]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, '# ID ', 'e.id', {'alias': 'e'}) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'e.id' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'e.id' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
                                         <th>Vozač</th>
                                         <th  {% if pagination.isSorted('[e.type]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Tip troška ', 'e.type', {'alias': 'e'}) }}
@@ -82,13 +72,12 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for expense in pagination %}
                                         <tr>
-                                            <td>{{ expense.id }}</td>
                                             <td>{{ expense.createdBy.fullName }}</td>
                                             <td>
                                                 {{ expense.getTypeData }}

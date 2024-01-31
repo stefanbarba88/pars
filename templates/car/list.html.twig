@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -28,27 +28,41 @@
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista vozila</h5>
-                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista vozila</h5>
+                            <div class="my-auto ms-auto">
                                 <a href="{{ path('app_car_form', {type: 1}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
+                        <form method="get" action="{{ path('app_cars') }}" class="form-validate-jquery" novalidation="novalidation">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="naziv">Brend:</label>
+                                            <input id="naziv" name="naziv" class="form-control" type="text">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="registracija">Registracija:</label>
+                                            <input id="registracija" name="registracija" class="form-control" type="text">
+                                            <span class="form-text">Unesite format koji ste koristili pri kreiranju novog vozila</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
+                                </div>
+                            </div>
+                        </form>
                         <div class="card-body">
-                            <div class="table-responsive ">
-                                <table class="table table-bordered table-hover table-responsive">
-                                    <thead>
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive card-sm">
+                                    <thead class="bg-light text-primary">
                                     <tr>
-                                        <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
                                         <th>Registracija</th>
                                         <th  {% if pagination.isSorted('[c.isReserved]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Dostupnost ', ['c.isReserved']) }}
@@ -92,7 +106,7 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -102,7 +116,6 @@
                                         {% set difference = nextRegistrationDate|date_modify('-30 days') %}
                                         {% set difference = difference|date("Y-m-d") %}
                                         <tr>
-                                            <td>{{ car.id }}</td>
                                             <td><a href="{{ path('app_car_view', {id:car.id}) }}" class="fw-semibold">{{ car.getCarName }}</a></td>
                                             <td>
                                                 {% if car.isSuspended == false %}

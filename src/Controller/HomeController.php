@@ -12,6 +12,7 @@ use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
 use DateTimeImmutable;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,11 +59,17 @@ class HomeController extends AbstractController {
 //      $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($user);
       $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUser($user);
       $args['countLogs'] = $this->em->getRepository(TaskLog::class)->countLogsByUser($user);
-
+      $mobileDetect = new MobileDetect();
+      if($mobileDetect->isMobile()) {
+        return $this->render('home/phone/index_employee.html.twig', $args);
+      }
       return $this->render('home/index_employee.html.twig', $args);
     }
 
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('home/phone/index_admin.html.twig', $args);
+    }
 
     return $this->render('home/index_admin.html.twig', $args);
   }

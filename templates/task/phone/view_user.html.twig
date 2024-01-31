@@ -26,7 +26,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -39,7 +39,7 @@
 
                 <!-- Content area -->
                 <div class="content">
-                    {% set difference = date()|date_modify('-72 hours') %}
+                    {% set difference = date()|date_modify('-96 hours') %}
                     <div class="d-flex align-items-stretch align-items-lg-start flex-column flex-lg-row">
                         <!-- Left content -->
                         <div class="flex-1 order-2 order-lg-1">
@@ -232,8 +232,8 @@
                             </div>
 
                             <div class="card">
-                                <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }}
+                            <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">#{{ task.id }}: {{task.title }}
                                         {% if not task.isDeleted and task.createdBy == app.user and task.created > difference %}
                                             <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>
                                         {% endif %}
@@ -244,7 +244,7 @@
                                     <div class="row">
                                         <div class="col-xl-6">
                                             <div class="card">
-                                                <div class="card-header d-lg-flex py-lg-0">
+                                                <div class="card-header d-flex align-items-center py-lg-0">
                                                     <h6 class="py-lg-3 mb-0">Informacije o zadatku</h6>
                                                 </div>
                                                 <div class="card-body">
@@ -336,9 +336,9 @@
                                         </div>
                                         <div class="col-xl-6">
                                             <div class="card">
-                                                <div class="card-header d-lg-flex py-lg-0">
+                                                <div class="card-header d-flex align-items-center py-lg-0">
                                                     <h6 class="py-lg-3 mb-0">Dnevnik: {{ taskLog.user.fullName}}</h6>
-                                                    <div class="mt-1 my-lg-auto ms-lg-auto">
+                                                    <div class="my-auto ms-auto">
                                                         <a href="{{ path('app_task_log_view',{id: taskLog.id} ) }}" class="btn btn-primary"><i class="ph-eye me-2"></i> Pogledajte</a>
                                                     </div>
                                                 </div>

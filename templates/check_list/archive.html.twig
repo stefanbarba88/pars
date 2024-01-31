@@ -1,0 +1,183 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Interni zadaci
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Arhiva zadataka</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light test-primary">
+                                    <tr>
+                                        <th>Zadatak</th>
+                                        <th>Zaposleni</th>
+                                        <th  {% if pagination.isSorted('[c.priority]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Prioritet ', ['c.priority']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.priority' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.priority' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th>Kreiran</th>
+                                        <th>Završen</th>
+                                        <th {% if pagination.isSorted('[c.status]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Status ', ['c.status']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.status' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.status' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for task in pagination %}
+                                        <tr>
+                                            <td>
+                                                <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
+                                                    {{ task.task }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    <a href="{{ path('app_employee_profile_view', { id: task.user.id}) }}">{{ task.user.getFullName() }}</a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if task.priority == 1 %}
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                {% elseif task.priority == 2 %}
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                {% elseif task.priority == 4 %}
+                                                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                {% elseif task.priority == 5 %}
+                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.created is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ task.created | date("d.m.Y")}}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.finish is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ task.finish | date("d.m.Y")}}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.status == 0 %}
+                                                    <span class="badge bg-secondary text-primary">Kreiran</span>
+                                                {% elseif task.status == 1 %}
+                                                    <span class="badge bg-primary text-white">Završen</span>
+                                                {% elseif task.status == 2 %}
+                                                    <span class="badge bg-yellow text-primary">Obrisan</span>
+                                                {% endif %}
+                                            </td>
+
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="dropdown-item">
+                                                            <i class="ph-eye me-2"></i>
+                                                            Vidite
+                                                        </a>
+                                                        {% if task.status == 1 %}
+                                                            <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-arrows-counter-clockwise me-2"></i>
+                                                                Ponovite
+                                                            </a>
+                                                        {% endif %}
+                                                        {% if task.status != 2 %}
+                                                            <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-minus me-2"></i>
+                                                                Obrišite
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

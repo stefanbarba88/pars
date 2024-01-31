@@ -14,12 +14,14 @@ use App\Form\UserEditAccountFormType;
 use App\Form\UserRegistrationFormType;
 use App\Form\UserSuspendedFormType;
 use App\Service\UploadService;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -42,17 +44,73 @@ class UserController extends AbstractController {
 
     $args = [];
 
-    $users = $this->em->getRepository(User::class)->getAllByLoggedUserPaginator($korisnik);
+    $search = [];
+
+    $search['ime'] = $request->query->get('ime');
+    $search['prezime'] = $request->query->get('prezime');
+    $search['pozicija'] = $request->query->get('pozicija');
+    $search['vrsta'] = $request->query->get('vrsta');
+
+    $users = $this->em->getRepository(User::class)->getAllByLoggedUserPaginator($korisnik, $search, 0);
 
     $pagination = $paginator->paginate(
       $users, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
     $args['pagination'] = $pagination;
+    $args['vrste'] = UserRolesData::DATA;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('user/phone/list.html.twig', $args);
+    }
 
     return $this->render('user/list.html.twig', $args);
+  }
+  #[Route('/archive/', name: 'app_users_archive')]
+  public function archive(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    $args = [];
+
+    $search = [];
+
+    $search['ime'] = $request->query->get('ime');
+    $search['prezime'] = $request->query->get('prezime');
+    $search['pozicija'] = $request->query->get('pozicija');
+    $search['vrsta'] = $request->query->get('vrsta');
+
+    $users = $this->em->getRepository(User::class)->getAllByLoggedUserPaginator($korisnik, $search, 1);
+
+    $pagination = $paginator->paginate(
+      $users, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+    $args['vrste'] = UserRolesData::DATA;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('user/phone/list_archive.html.twig', $args);
+    }
+
+    return $this->render('user/list_archive.html.twig', $args);
   }
 
   #[Route('/list-contact/', name: 'app_users_contact')]
@@ -64,16 +122,31 @@ class UserController extends AbstractController {
     if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
       return $this->redirect($this->generateUrl('app_home'));
     }
-    $args=[];
-    $users = $this->em->getRepository(User::class)->getAllContactsPaginator();
+
+    $args = [];
+
+    $search = [];
+
+    $search['ime'] = $request->query->get('ime');
+    $search['prezime'] = $request->query->get('prezime');
+
+    $users = $this->em->getRepository(User::class)->getAllContactsPaginator($search);
 
     $pagination = $paginator->paginate(
       $users, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
     $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('user/phone/contact_list.html.twig', $args);
+    }
 
     return $this->render('user/contact_list.html.twig', $args);
   }
@@ -412,12 +485,16 @@ class UserController extends AbstractController {
     $pagination = $paginator->paginate(
       $histories, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
     $args['user'] = $user;
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('user/phone/user_history_list.html.twig', $args);
+    }
 
     return $this->render('user/user_history_list.html.twig', $args);
   }

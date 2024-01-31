@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -32,17 +32,17 @@
                         <div class="flex-1 order-2 order-lg-1">
 
                             <div class="card">
-                                <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">#{{ task.id }}: {{task.title }} - {{ taskLog.user.getFullName() }}</h5>
+                            <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">#{{ task.id }}: {{task.title }} - {{ taskLog.user.getFullName() }}</h5>
                                     {% set difference = date()|date_modify('-96 hours') %}
                                     {% if not task.isDeleted %}
                                         {% if is_granted('ROLE_EMPLOYEE') and not task.isDeleted and task.created > difference%}
-                                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                            <div class="my-auto ms-auto">
                                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
                                             </div>
                                         {% endif %}
                                         {% if not is_granted('ROLE_EMPLOYEE') %}
-                                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                            <div class="my-auto ms-auto">
                                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-plus me-2"></i> Dodajte</button>
                                             </div>
                                         {% endif %}
@@ -245,8 +245,8 @@
                             </div>
 
                             <div class="card">
-                                <div class="card-header d-lg-flex py-lg-0">
-                                    <h5 class="py-lg-3 mb-0">Vremenski zapisi</h5>
+                            <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Vremenski zapisi</h5>
                                 </div>
 
                                 <div class="card-body">

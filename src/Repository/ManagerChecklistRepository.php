@@ -36,12 +36,14 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
   }
 
 
-  public function getChecklistPaginator(User $loggedUser) {
+  public function getChecklistPaginator(User $loggedUser, $status) {
     $company = $this->security->getUser()->getCompany();
     return match ($loggedUser->getUserType()) {
       UserRolesData::ROLE_SUPER_ADMIN => $this->createQueryBuilder('c')
         ->where('c.company = :company')
         ->setParameter('company', $company)
+        ->andWhere('c.status = :status')
+        ->setParameter('status', $status)
         ->orderBy('c.status', 'ASC')
         ->addOrderBy('c.priority', 'ASC')
         ->addOrderBy('c.created', 'DESC')
@@ -50,6 +52,8 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
       default => $this->createQueryBuilder('c')
         ->andWhere('c.createdBy = :user')
         ->setParameter(':user', $loggedUser)
+        ->andWhere('c.status = :status')
+        ->setParameter('status', $status)
         ->orderBy('c.status', 'ASC')
         ->addOrderBy('c.priority', 'ASC')
         ->addOrderBy('c.created', 'DESC')

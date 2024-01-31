@@ -493,10 +493,14 @@ class StopwatchController extends AbstractController {
     $pagination = $paginator->paginate(
       $tasks, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/stopwatches_to_check.html.twig', $args);
+    }
 
     return $this->render('task/stopwatches_to_check.html.twig', $args);
 

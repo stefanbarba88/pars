@@ -15,6 +15,7 @@ use App\Entity\User;
 use App\Service\MailService;
 use DateInterval;
 use DateTimeImmutable;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -41,11 +42,15 @@ FastTaskController extends AbstractController {
     $pagination = $paginator->paginate(
       $fastTasks, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
 
     $args['pagination'] = $pagination;
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('fast_task/phone/list.html.twig', $args);
+    }
 
     return $this->render('fast_task/list.html.twig', $args);
   }

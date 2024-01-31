@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -33,21 +33,21 @@
 
                             {% if pagination.totalItemCount > 0 %}
                                 <div class="card">
-                                    <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                        <h5 class="py-sm-2 my-sm-1">Projekti</h5>
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Projekti</h5>
                                         <div class="d-inline-flex ms-auto">
                                             <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination.totalItemCount }}</span>
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive ">
-                                            <table class="table table-bordered table-hover table-responsive">
-                                                <thead>
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
                                                 <tr>
                                                     <th>Projekat</th>
                                                     <th>Klijent</th>
                                                     <th>Status</th>
-                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -92,8 +92,8 @@
                                 </div>
                             {% else %}
                                 <div class="card">
-                                    <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                        <h5 class="py-sm-2 my-sm-1">Projekti</h5>
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Projekti</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="alert alert-info fade show">
@@ -109,22 +109,22 @@
 
                             {% if pagination1.totalItemCount > 0 %}
                                 <div class="card">
-                                    <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                        <h5 class="py-sm-2 my-sm-1">Zadaci</h5>
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zadaci</h5>
                                         <div class="d-inline-flex ms-auto">
                                             <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination1.totalItemCount }}</span>
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive ">
-                                            <table class="table table-bordered table-hover table-responsive">
-                                                <thead>
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
                                                 <tr>
                                                     <th>Zadatak</th>
                                                     <th>Projekat</th>
                                                     <th>Kategorija</th>
                                                     <th>Status</th>
-                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -177,8 +177,8 @@
                                 </div>
                             {% else %}
                                 <div class="card">
-                                    <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                        <h5 class="py-sm-2 my-sm-1">Zadaci</h5>
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zadaci</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="alert alert-info fade show">
@@ -194,21 +194,21 @@
 
                             {% if pagination2.totalItemCount > 0 %}
                                 <div class="card">
-                                    <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                        <h5 class="py-sm-2 my-sm-1">Zaposleni</h5>
-                                        <div class="d-inline-flex ms-auto">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zaposleni</h5>
+                                        <div class="ms-auto">
                                             <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination2.totalItemCount }}</span>
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive ">
-                                            <table class="table table-bordered table-hover table-responsive">
-                                                <thead>
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
                                                 <tr>
                                                     <th>Zaposleni</th>
                                                     <th>Pozicija</th>
                                                     <th>Status</th>
-                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -254,8 +254,8 @@
                                 </div>
                             {% else %}
                                 <div class="card">
-                                    <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                        <h5 class="py-sm-2 my-sm-1">Zaposleni</h5>
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zaposleni</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="alert alert-info fade show">
@@ -274,21 +274,21 @@
                         {% if pro is not null %}
                             {% if pagination.totalItemCount > 0 %}
                                 <div class="card">
-                                <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                    <h5 class="py-sm-2 my-sm-1">Projekti</h5>
-                                    <div class="d-inline-flex ms-auto">
-                                        <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination.totalItemCount }}</span>
+                                    <div class="card-header d-flex align-items-center">
+                                        <h6 class="mb-0">Projekti</h6>
+                                        <div class="ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination.totalItemCount }}</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive ">
-                                        <table class="table table-bordered table-hover table-responsive">
-                                            <thead>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
                                             <tr>
                                                 <th>Projekat</th>
                                                 <th>Klijent</th>
                                                 <th>Status</th>
-                                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -334,8 +334,8 @@
                             </div>
                             {% else %}
                                 <div class="card">
-                                    <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                        <h5 class="py-sm-2 my-sm-1">Projekti</h5>
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Projekti</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="alert alert-info fade show">
@@ -353,22 +353,22 @@
                         {% if zad is not null %}
                             {% if pagination1.totalItemCount > 0 %}
                                 <div class="card">
-                                <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                    <h5 class="py-sm-2 my-sm-1">Zadaci</h5>
-                                    <div class="d-inline-flex ms-auto">
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Zadaci</h5>
+                                    <div class="ms-auto">
                                         <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination1.totalItemCount }}</span>
                                     </div>
                                 </div>
-                                <div class="card-body">
-                                    <div class="table-responsive ">
-                                        <table class="table table-bordered table-hover table-responsive">
-                                            <thead>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
                                             <tr>
                                                 <th>Zadatak</th>
                                                 <th>Projekat</th>
                                                 <th>Kategorija</th>
                                                 <th>Status</th>
-                                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -421,8 +421,8 @@
                             </div>
                             {% else %}
                                 <div class="card">
-                                    <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                        <h5 class="py-sm-2 my-sm-1">Zadaci</h5>
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zadaci</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="alert alert-info fade show">
@@ -440,21 +440,21 @@
                         {% if zap is not null %}
                             {% if pagination2.totalItemCount > 0 %}
                                 <div class="card">
-                                <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                    <h5 class="py-sm-2 my-sm-1">Zaposleni</h5>
-                                    <div class="d-inline-flex ms-auto">
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Zaposleni</h5>
+                                    <div class="ms-auto">
                                         <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination2.totalItemCount }}</span>
                                     </div>
                                 </div>
-                                <div class="card-body">
-                                    <div class="table-responsive ">
-                                        <table class="table table-bordered table-hover table-responsive">
-                                            <thead>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
                                             <tr>
                                                 <th>Zaposleni</th>
                                                 <th>Pozicija</th>
                                                 <th>Status</th>
-                                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -500,8 +500,8 @@
                             </div>
                             {% else %}
                                 <div class="card">
-                                    <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
-                                        <h5 class="py-sm-2 my-sm-1">Zaposleni</h5>
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zaposleni</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="alert alert-info fade show">

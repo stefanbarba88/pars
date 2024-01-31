@@ -12,79 +12,115 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                               Projekti
+                                Projekti
                             </h4>
                         </div>
                     </div>
-
                 </div>
                 <!-- /page header -->
 
                 <!-- Content area -->
                 <div class="content">
-
+                    <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista projekata sa letećim ekipama</h5>
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista projekata sa letećim ekipama - radni dan  <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ daysAtMoment }}/{{ daysMonth }}
+                                                </span></h5>
                             {% if not is_granted('ROLE_EMPLOYEE') %}
-                                <div class="mt-1 my-lg-auto ms-lg-auto">
+                                <div class="my-auto ms-auto">
                                     <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                 </div>
                             {% endif %}
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive ">
-                                <table class="table table-bordered table-hover table-responsive">
-                                    <thead>
+                            <div class="accordion" id="accordion_collapsed">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item_filter" aria-expanded="false">
+                                            Filter
+                                        </button>
+                                    </h2>
+                                    <div id="collapsed_item_filter" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
+                                        <form method="get" action="{{ path('app_projects_change') }}" class="form-validate-jquery" novalidation="novalidation">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="title">Naziv:</label>
+                                                            <input id="title" name="title" class="form-control" type="text">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="text-end">
+                                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                    <thead class="bg-light text-primary">
                                     <tr>
-                                        <th {% if pagination.isSorted('[p.id]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, '# ', ['p.id']) }}
-                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.id' %}
-                                                &#8593;
-                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.id' %}
-                                                &#8595;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
-                                        <th {% if pagination.isSorted('[p.title]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Naziv ', ['p.title']) }}
-                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.title' %}
-                                                &#8593;
-                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.title' %}
-                                                &#8595;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
-                                        <th>Broj zadataka</th>
-                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        <th>Naziv</th>
+                                        <th>Klijent</th>
+                                        {#                                        <th>Zadaci</th>#}
+                                        {#                                        <th>Teren/Kancelarija</th>#}
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for project in pagination %}
                                         <tr>
-                                            <td>{{ project.id }}</td>
+                                            <td><div class="fw-semibold"><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></div>
+                                            </td>
                                             <td>
-                                                <div class="fw-semibold"><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></div>
-                                                {% if project.label is not empty %}
-                                                    <div class="d-inline-flex">
-                                                        {% for label in project.label %}
-                                                            {{label.label | raw}}
-                                                        {% endfor %}
-                                                    </div>
+                                                {% if is_granted('ROLE_EMPLOYEE') %}
+                                                    {% for client in project.client %}
+                                                        {{ client.title }}{% if  not loop.last %},{% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% for client in project.client %}
+                                                        <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title }}</a>{% if  not loop.last %},{% endif %}
+                                                    {% endfor %}
                                                 {% endif %}
                                             </td>
+
                                             <td class="text-center">
+                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ project.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                            </td>
+
+                                        </tr>
+
+                                        <tr id="collapsed_item{{ project.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
+                                            <td>Zadaci (ter/uku):
                                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
                                                     {% set noTasks = getCountTasksByProject(project)  %}
                                                     {{ noTasks.teren }}/{{ noTasks.total }}
                                                 </span>
                                             </td>
+                                            <td>
+                                                Dani (ter/kanc):
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {% set noDays = getCountDaysTasksByProject(project)  %}
+                                                    {{ noDays.teren }}/{{ noDays.kancelarija }}
+                                                </span>
+                                            </td>
+
+
+
+
+
                                             <td class="text-center">
                                                 <div class="dropdown">
                                                     <a href="#" class="text-body" data-bs-toggle="dropdown">
@@ -94,9 +130,7 @@
                                                         {% if is_granted('ROLE_EMPLOYEE') %}
                                                             <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                         {% else %}
-                                                            <a href="{{ path('app_project_profile_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-info me-2"></i> Info</a>
-                                                            <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Zadaci</a>
-                                                            <a href="{{ path('app_project_activity_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-activity me-2"></i> Aktivnosti</a>
+                                                            <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                             <a href="{{ path('app_project_form', { id: project.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
                                                             {% if project.suspended == 0 %}
                                                                 <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-x me-2"></i> Deaktivirajte</a>
@@ -121,6 +155,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- /state saving -->
                 </div>
                 <!-- /content area -->
 
@@ -149,5 +184,8 @@
     <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
 
 {% endblock includeJavascript %}

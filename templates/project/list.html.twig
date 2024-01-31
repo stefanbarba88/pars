@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -54,22 +54,22 @@
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
+                        <div class="card-header d-flex align-items-center">
                             {% if type is defined %}
                                 {% if type == 1 %}
-                                    <h5 class="py-lg-3 mb-0">Lista projekata sa stalnim ekipama</h5>
+                                    <h5 class="mb-0">Lista projekata sa stalnim ekipama</h5>
                                 {% elseif type == 2 %}
-                                    <h5 class="py-lg-3 mb-0">Lista projekata sa letećim ekipama</h5>
+                                    <h5 class="mb-0">Lista projekata sa letećim ekipama</h5>
                                 {% elseif type == 3 %}
-                                    <h5 class="py-lg-3 mb-0">Arhivirani projekti</h5>
+                                    <h5 class="mb-0">Arhivirani projekti</h5>
                                 {% else %}
-                                    <h5 class="py-lg-3 mb-0">Lista projekata</h5>
+                                    <h5 class="mb-0">Lista projekata</h5>
                                 {% endif %}
                             {% else %}
-                                <h5 class="py-lg-3 mb-0">Lista projekata</h5>
+                                <h5 class="mb-0">Lista projekata</h5>
                             {% endif %}
                             {% if not is_granted('ROLE_EMPLOYEE') %}
-                                <div class="mt-1 my-lg-auto ms-lg-auto">
+                                <div class="my-auto ms-auto">
                                     <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                 </div>
                             {% endif %}
@@ -84,7 +84,7 @@
                                 <th>Kreiran</th>
                                 <th>Rok</th>
                                 <th>Stalni/Leteći</th>
-                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                             </tr>
                             </thead>
                             <tbody>

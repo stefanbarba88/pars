@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -42,29 +42,19 @@
                             <div class="tab-pane fade active show">
 
                                 <div class="card">
-                                    <div class="card-header d-lg-flex py-lg-0">
-                                        <h5 class="py-lg-3 mb-0">Beleške </h5>
+                                    <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Beleške </h5>
                                         {% if app.user == user %}
-                                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                                            <div class="my-auto ms-auto">
                                                 <a href="{{ path('app_note_form') }}" type="button" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                             </div>
                                         {% endif %}
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive ">
-                                            <table class="table table-bordered table-hover table-responsive">
-                                                <thead>
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
                                                 <tr>
-                                                    <th {% if pagination.isSorted('[c.id]') %} class="sorted"{% endif %}>
-                                                        {{ knp_pagination_sortable(pagination, '# ID ', ['c.id']) }}
-                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.id' %}
-                                                            &#8595;
-                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.id' %}
-                                                            &#8593;
-                                                        {% else %}
-                                                            &#8597;
-                                                        {% endif %}
-                                                    </th>
                                                     <th>Beleška</th>
                                                     <th  {% if pagination.isSorted('[c.created]') %} class="sorted"{% endif %}>
                                                         {{ knp_pagination_sortable(pagination, 'Kreirana ', ['c.created']) }}
@@ -76,14 +66,12 @@
                                                             &#8597;
                                                         {% endif %}
                                                     </th>
-
-                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 {% for note in pagination %}
                                                     <tr>
-                                                        <td>{{ note.id }}</td>
                                                         <td>
                                                             <a href="{{ path('app_note_view', {id: note.id}) }}" class="text-body">
                                                                 <span class="text-muted">{{ note.notes | slice(0, 20) ~ (note.notes | length > 20 ? '...' : '') }}</span>
@@ -97,8 +85,6 @@
                                                                 </div>
                                                             {% endif %}
                                                         </td>
-
-
                                                         <td class="text-center">
                                                             {% if app.user == user %}
                                                                 <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_note{{ note.id }}" class="btn btn-primary">

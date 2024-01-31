@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Availability;
 use App\Entity\Calendar;
 use App\Entity\User;
+use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,13 +31,20 @@ class AvailabilityController extends AbstractController {
     $pagination = $paginator->paginate(
       $dostupnosti, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
     $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnost();
 
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('availability/phone/list.html.twig', $args);
+    }
+
     return $this->render('availability/list.html.twig', $args);
+
   }
 
 //  #[Route('/calendar/', name: 'app_availability_calendar')]
@@ -66,11 +74,15 @@ class AvailabilityController extends AbstractController {
     $pagination = $paginator->paginate(
       $dostupnosti, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('availability/phone/dostupni.html.twig', $args);
+    }
 
     return $this->render('availability/dostupni.html.twig', $args);
   }
@@ -87,10 +99,15 @@ class AvailabilityController extends AbstractController {
     $pagination = $paginator->paginate(
       $dostupnosti, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
-      20
+      15
     );
 
     $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('availability/phone/nedostupni.html.twig', $args);
+    }
 
     return $this->render('availability/nedostupni.html.twig', $args);
   }

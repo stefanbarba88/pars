@@ -12,7 +12,7 @@
             <div class="content-inner">
 
                 <!-- Page header -->
-                <div class="page-header page-header-light shadow">
+                <div class="page-header mobile-padding-sm page-header-light shadow">
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
@@ -27,29 +27,51 @@
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
-                        <div class="card-header d-lg-flex py-lg-0">
-                            <h5 class="py-lg-3 mb-0">Lista klijenata</h5>
-                            <div class="mt-1 my-lg-auto ms-lg-auto">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista klijenata</h5>
+                            <div class="my-auto ms-auto">
                                 <a href="{{ path('app_client_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
+                        <form method="get" action="{{ path('app_clients') }}" class="form-validate-jquery" novalidation="novalidation">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="title">Naziv:</label>
+                                            <input id="title" name="title" class="form-control" type="text">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <div class="mb-3">
+                                                <label class="form-label" for="pib">PIB:</label>
+                                                <input id="pib" name="pib" class="form-control" type="text">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
+                                </div>
+                            </div>
+                        </form>
                         <div class="card-body">
-                            <div class="table-responsive ">
-                                <table class="table table-bordered table-hover table-responsive">
-                                    <thead>
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light text-primary">
                                     <tr>
-                                        <th {% if pagination.isSorted('[u.id]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, '# ID ', ['u.id']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.id' %}
+                                        <th {% if pagination.isSorted('[u.title]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Naziv ', ['u.title']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.title' %}
                                                 &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.id' %}
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.title' %}
                                                 &#8593;
                                             {% else %}
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Naziv</th>
                                         <th>PIB/VAT</th>
                                         <th>Grad</th>
                                         <th>Država</th>
@@ -64,13 +86,12 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for user in pagination %}
                                         <tr>
-                                            <td>{{ user.id }}</td>
                                             <td><div class="fw-semibold"><a href="{{ path('app_client_profile_view', { id: user.id}) }}">{{ user.title }}</a></div></td>
                                             <td>{{ user.pib }}</td>
                                             <td>{{ user.grad.title }}</td>
@@ -132,11 +153,6 @@
     {{ parent() }}
 
     <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
-    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
-
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
 {% endblock includeJavascript %}

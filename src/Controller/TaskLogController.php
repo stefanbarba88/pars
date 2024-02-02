@@ -96,9 +96,6 @@ class TaskLogController extends AbstractController {
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task_log/view.html.twig', $args);
-      }
       return $this->render('task_log/phone/view.html.twig', $args);
     }
     return $this->render('task_log/view.html.twig', $args);

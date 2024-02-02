@@ -47,6 +47,9 @@ class HomeController extends AbstractController {
     $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getAllDostupnostiDanas();
     $args['dostupnostiSutra'] = $this->em->getRepository(Availability::class)->getAllDostupnostiSutra();
 
+
+    $args['nerasporedjenost'] = $this->em->getRepository(Availability::class)->getAllNerasporedjenost();
+
 //srediti ovaj upit, uzima puno resursa
 //    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
     $args['countTasksUnclosed'] = 0;

@@ -257,13 +257,13 @@
                                                     <h2 class="accordion-header">
                                                         <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ loop.index }}">
                                                             {% if stopwatch.deleted %}
-                                                                #{{ loop.index }}: {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} - {{ stopwatch.deletedBy.getFullName() }} <span class="badge bg-yellow text-primary mx-2"><i class="ph-trash"></i></span>
+                                                                {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} - {{ stopwatch.deletedBy.getFullName() }} <span class="badge bg-yellow text-primary mx-2"><i class="ph-trash"></i></span>
                                                             {% elseif not stopwatch.deleted and stopwatch.edited %}
-                                                                #{{ loop.index }}: {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} - {{ stopwatch.editedBy.getFullName() }} <span class="badge bg-secondary text-primary mx-2"><i class="ph-hand"></i></span>
+                                                                {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} - {{ stopwatch.editedBy.getFullName() }} <span class="badge bg-secondary text-primary mx-2"><i class="ph-hand"></i></span>
                                                             {% elseif stopwatch.manually and not stopwatch.deleted %}
-                                                                #{{ loop.index }}: {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} <span class="badge bg-danger text-white mx-2"> <i class="ph-door"></i></span> *Predlažemo da ovaj vremenski zapis izmenite kako ne bi uticao na izveštaj.
+                                                                {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} <span class="badge bg-danger text-white mx-2"> <i class="ph-door"></i></span> *Predlažemo da ovaj vremenski zapis izmenite kako ne bi uticao na izveštaj.
                                                             {% else %}
-                                                                #{{ loop.index }}: {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} <span class="badge bg-primary text-white mx-2"><i class="ph-monitor"></i></span>
+                                                                {{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }} <span class="badge bg-primary text-white mx-2"><i class="ph-monitor"></i></span>
                                                             {% endif %}
                                                         </button>
                                                     </h2>

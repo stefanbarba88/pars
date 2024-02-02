@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Classes\Data\FastTaskData;
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
 use App\Entity\Car;
@@ -124,14 +125,18 @@ FastTaskController extends AbstractController {
 
     $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
     $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
-    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
+    $args['projectsS'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO]);
     $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
     $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
     $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
     $args['disabledDates'] = $this->em->getRepository(FastTask::class)->getDisabledDates();
     $args['datum'] = $datum;
 
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('fast_task/phone/form.html.twig', $args);
+    }
     return $this->render('fast_task/form.html.twig', $args);
 
   }
@@ -163,11 +168,17 @@ FastTaskController extends AbstractController {
     $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($fastTask->getDatum()->format('d.m.Y'));
     $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($fastTask->getDatum()->format('d.m.Y'));
     $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
-    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $fastTask->getCompany()]);
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
+    $args['projectsS'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO]);
     $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $fastTask->getCompany()]);
     $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isSuspended' => false, 'company' => $fastTask->getCompany()]);
     $args['fastTask'] = $fastTask;
     $args['tasks'] = $this->em->getRepository(Task::class)->getTasksByFastTask($fastTask);
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('fast_task/phone/edit.html.twig', $args);
+    }
 
     return $this->render('fast_task/edit.html.twig', $args);
 

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\DTO\UploadedFileDTO;
 use App\Entity\Availability;
@@ -451,7 +452,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     $company = $this->security->getUser()->getCompany();
 
-    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false],['prezime' => 'ASC']);
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false, 'ProjectType' => TipProjektaData::LETECE],['prezime' => 'ASC']);
 
     $usersList = [];
     foreach ($users as $user) {
@@ -459,7 +460,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
       if ($dostupan) {
         $ime = $user->getFullName();
-        $car = $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' =>$user->getCar()]);
+        $car = $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $user->getCar()]);
         if (!is_null($car)) {
           $ime = $ime . ' (' . $car->getPlate() . ')';
         }
@@ -467,6 +468,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $usersList [] = [
           'id' => $user->getId(),
           'ime' => $ime,
+          'car' => $car,
+          'user' => $user,
           'slika' => $user->getImage()->getThumbnail100(),
           'pozicija' => $user->getPozicija()->getTitle()
         ];
@@ -476,11 +479,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $usersList;
   }
 
-  public function getUsersAvailable(DateTimeImmutable $dan): array {
+  public function getUsersAvailable(DateTimeImmutable $dan, int $projectType): array {
 
     $company = $this->security->getUser()->getCompany();
 
-    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false],['prezime' => 'ASC']);
+    if ($projectType == 0) {
+      $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false],['prezime' => 'ASC']);
+    } else {
+      $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false, 'ProjectType' => $projectType],['prezime' => 'ASC']);
+    }
+
     $dan = $dan->format('d.m.Y');
     $usersList = [];
     foreach ($users as $user) {
@@ -971,7 +979,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     $qb = $this->createQueryBuilder('u');
 
 
-    if ($loggedUser->getUserType() == UserRolesData::ROLE_SUPER_ADMIN) {
       $qb->where('u.company = :company')
         ->setParameter(':company', $company)
         ->andWhere('u.isSuspended = :suspenzija')
@@ -1003,9 +1010,28 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       $qb
         ->addOrderBy('u.prezime', 'ASC')
         ->getQuery();
-    }
+
 
     return $qb;
+  }
+
+  public function getRazlikaUsers(Company $company, array $users): array {
+
+    $qb = $this->createQueryBuilder('u');
+
+    $korisnici = $qb->where('u.company = :company')
+      ->setParameter(':company', $company)
+      ->andWhere('u.isSuspended = :suspenzija')
+      ->setParameter('suspenzija', 0)
+      ->andWhere('u.ProjectType = :projekat')
+      ->setParameter('projekat', TipProjektaData::LETECE)
+      ->andWhere('u.userType = :userType')
+      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+      ->andWhere($qb->expr()->notIn('u.id', $users))
+      ->getQuery()
+      ->getResult();
+
+    return $korisnici;
   }
 
   public function getPdfsByUser(User $user): array {
@@ -1092,6 +1118,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
 
     return $qb;
+  }
+
+  public function getZaposleniNotMix(): array {
+    $company = $this->security->getUser()->getCompany();
+
+    return $this->createQueryBuilder('u')
+      ->andWhere('u.userType = :userType')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->andWhere('u.ProjectType <> :projectType')
+      ->setParameter(':company', $company)
+      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+      ->setParameter(':isSuspended', 0)
+      ->setParameter(':projectType', TipProjektaData::KOMBINOVANO)
+      ->getQuery()
+      ->getResult();
   }
 
 //    /**

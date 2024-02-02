@@ -6,8 +6,10 @@ use App\Classes\Data\AvailabilityData;
 use App\Classes\Data\CalendarColorsData;
 use App\Classes\Data\TaskStatusData;
 use App\Classes\Data\TipNeradnihDanaData;
+use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Availability;
+use App\Entity\FastTask;
 use App\Entity\Holiday;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -467,13 +469,11 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $company = $this->security->getUser()->getCompany();
     $datum = date("d.m.Y");
     $danas = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
-
     $sutra = $danas->add(new DateInterval('P1D'));
-
     $datumSutra = $sutra->format('d.m.Y');
-
     $start = $sutra->setTime(0,0);
     $stop = $sutra->setTime(23,59);
+
     $noNedostupni = 0;
     $noVanZadatka = 0;
     $noKancelarija = 0;
@@ -524,6 +524,86 @@ class AvailabilityRepository extends ServiceEntityRepository {
       'unknown' => $unknown,
     ];
 
+
+  }
+
+  public function getAllNerasporedjenost(): array {
+    $company = $this->security->getUser()->getCompany();
+    $danas = new DateTimeImmutable();
+    $sledeciDan = $danas->modify('+1 day')->setTime(14, 30);
+
+    $users = [];
+
+    $plan = $this->getEntityManager()->getRepository(FastTask::class)->findOneBy(['company' => $company, 'datum' => $sledeciDan]);
+
+    if (!is_null($plan)) {
+
+        $users[] = $plan->getGeo11();
+        $users[] = $plan->getGeo21();
+        $users[] = $plan->getGeo31();
+
+        $users[] = $plan->getGeo12();
+        $users[] = $plan->getGeo22();
+        $users[] = $plan->getGeo32();
+
+        $users[] = $plan->getGeo13();
+        $users[] = $plan->getGeo23();
+        $users[] = $plan->getGeo33();
+
+        $users[] = $plan->getGeo14();
+        $users[] = $plan->getGeo24();
+        $users[] = $plan->getGeo34();
+
+        $users[] = $plan->getGeo15();
+        $users[] = $plan->getGeo25();
+        $users[] = $plan->getGeo35();
+
+        $users[] = $plan->getGeo16();
+        $users[] = $plan->getGeo26();
+        $users[] = $plan->getGeo36();
+
+        $users[] = $plan->getGeo17();
+        $users[] = $plan->getGeo27();
+        $users[] = $plan->getGeo37();
+
+        $users[] = $plan->getGeo18();
+        $users[] = $plan->getGeo28();
+        $users[] = $plan->getGeo38();
+
+        $users[] = $plan->getGeo19();
+        $users[] = $plan->getGeo29();
+        $users[] = $plan->getGeo39();
+
+        $users[] = $plan->getGeo110();
+        $users[] = $plan->getGeo210();
+        $users[] = $plan->getGeo310();
+
+        $users = array_filter($users, function($value) {
+          return $value !== null;
+        });
+
+    // Ukloni duplikate
+        $users = array_unique($users);
+
+    // Reindeksiraj niz ako je potrebno
+        $users = array_values($users);
+
+        $sviKorisnici =  $this->getEntityManager()->getRepository(User::class)->getRazlikaUsers($company, $users);
+        $checkKoris = [];
+        foreach ($sviKorisnici as $koris) {
+          if ($this->checkDostupnost($koris, $danas->modify('+1 day')->format('d.m.Y'))) {
+            $checkKoris[] = $koris;
+          }
+        }
+      return
+        [
+          'brojNerasporedjenih' => count($checkKoris),
+          'brojDostupnih' => count($checkKoris) + count($users),
+          'nerasporedjeniSutra' => $checkKoris
+        ];
+    }
+
+    return [];
 
   }
 

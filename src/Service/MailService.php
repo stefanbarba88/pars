@@ -7,6 +7,7 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Calendar;
 use App\Entity\Client;
 use App\Entity\Email;
+use App\Entity\ManagerChecklist;
 use App\Entity\User;
 use DateTimeImmutable;
 use Twig\Environment;
@@ -123,6 +124,24 @@ class MailService {
     $template = 'email/zahtev.html.twig';
     $args['user'] = $calendar->getUser()->first()->getFullName();
     $args['calendar'] = $calendar;
+
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function checklistTask(ManagerChecklist $checklist): void {
+
+    $args = [];
+
+    $subject = 'Interni zadatak od' . $checklist->getCreatedBy()->getFullName();
+
+    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/interni_task.html.twig';
+    $args['user'] = $checklist->getUser()->getFullName();
+    $args['checklist'] = $checklist;
+    $to = $checklist->getUser()->getEmail();
 
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);

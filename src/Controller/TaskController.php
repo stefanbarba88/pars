@@ -414,8 +414,14 @@ class TaskController extends AbstractController {
       }
     }
 
+    $projectType = 0;
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $projectType = $user->getProjectType();
+    }
+
+
     $args['form'] = $form->createView();
-    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
     $args['korisnik'] = $user;
     $args['task'] = $task;
 
@@ -605,11 +611,13 @@ class TaskController extends AbstractController {
       }
     }
 
+    $projectType = $project->getType();
+
     $args['form'] = $form->createView();
     $args['task'] = $task;
     $args['project'] = $project->getId();
     $args['korisnik'] = $user;
-    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
     $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $user->getCompany()], ['id' => 'ASC']);
 
     if($mobileDetect->isMobile()) {
@@ -907,9 +915,11 @@ class TaskController extends AbstractController {
 
     }
 
+    $projectType = $task->getProject()->getType();
+
     $args['task'] = $task;
     $args['assignedUsers'] = $this->em->getRepository(Task::class)->getAssignedUsersByTask($task);
-    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
 //    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $user->getCompany()], ['id' => 'ASC']);
 
@@ -1103,10 +1113,10 @@ class TaskController extends AbstractController {
       return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
     }
-
+    $projectType = $task->getProject()->getType();
     $args['task'] = $task;
 //    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
-    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {

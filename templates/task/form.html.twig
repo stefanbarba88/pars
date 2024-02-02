@@ -120,7 +120,7 @@
                                                 <div class="mb-1">
                                                     <label class="form-label" for="task_form_geo1">Geodeta#1:*</label>
                                                     <select id="task_form_geo1" name="task_form[assignedUsers][]" class="form-control required" required>
-                                                        <option value="{{ task.assignedUsers[0].id }}">{{ task.assignedUsers[0].getNameForForm() }}</option>
+                                                        <option value="{{ task.assignedUsers[0].id }}">{{ task.assignedUsers[0].fullName }}</option>
                                                     </select>
                                                 </div>
                                             {% else %}
@@ -144,7 +144,11 @@
                                                 <select id="task_form_geo2" name="task_form[assignedUsers][]" class="form-control select">
                                                     <option>--Izaberite geodetu--</option>
                                                     {% for user in users %}
-                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                        {% if app.user.id == user.id %}
+                                                            <option value="{{ user.id }}" disabled>{{ user.ime }}</option>
+                                                        {% else%}
+                                                            <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                        {% endif %}
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -157,7 +161,11 @@
                                                 <select id="task_form_geo3" name="task_form[assignedUsers][]" class="form-control select">
                                                     <option>--Izaberite geodetu--</option>
                                                     {% for user in users %}
-                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                        {% if app.user.id == user.id %}
+                                                            <option value="{{ user.id }}" disabled>{{ user.ime }}</option>
+                                                        {% else%}
+                                                            <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                        {% endif %}
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -430,74 +438,59 @@
 
     <script>
 
-        $(function () {
-
-
-
-                var selectedValues1 = {
+        $(document).ready(function() {
+            var selectedValues1 = {
                 task_form_geodeta1: "",
                 task_form_geodeta2: "",
                 task_form_geodeta3: ""
             };
-                // Function to handle the change event of any of the three select elements
-                $("#task_form_geo1, #task_form_geo2, #task_form_geo3").change(function() {
-                // Get the ID of the current select element
-                var currentId = $(this).attr("id");
 
-                // Get the selected value
+            $("#task_form_geo1, #task_form_geo2, #task_form_geo3").change(function() {
+                var currentId = $(this).attr("id");
                 var selectedValue = $(this).val();
 
-                // Re-enable the previously disabled option
                 if (selectedValues1[currentId] !== "") {
-                $("#task_form_geo1, #task_form_geo2, #task_form_geo3")
-                .not(this)
-                .find("option[value='" + selectedValues1[currentId] + "']")
-                .prop("disabled", false);
-            }
+                    $("#task_form_geo1, #task_form_geo2, #task_form_geo3")
+                        .not(this)
+                        .find("option[value='" + selectedValues1[currentId] + "']")
+                        .prop("disabled", false);
+                }
 
-                // Disable the newly selected option in the other two select elements
                 $("#task_form_geo1, #task_form_geo2, #task_form_geo3")
-                .not(this)
-                .find("option[value='" + selectedValue + "']")
-                .prop("disabled", true);
+                    .not(this)
+                    .find("option[value='" + selectedValue + "']")
+                    .prop("disabled", true);
 
-                // Update the selected value in the array
                 selectedValues1[currentId] = selectedValue;
             });
-                function updateDriversOptions1() {
+
+            function updateDriversOptions1() {
                 var selectedGeodete11Ids = $('#task_form_geo1').val() || [];
                 var selectedGeodete12Ids = $('#task_form_geo2').val() || [];
                 var selectedGeodete13Ids = $('#task_form_geo3').val() || [];
-
-                // Spojimo vrednosti iz svih polja "Geodete" kako bismo dobili izbor za polje "Vozač"
-                // var selectedGeodeteIds = [...selectedGeodete1Ids, ...selectedGeodete2Ids, ...selectedGeodete3Ids];
                 var selectedGeodete1Ids = selectedGeodete11Ids.concat(selectedGeodete12Ids, selectedGeodete13Ids);
 
-                // Omogućavanje svih opcija u polju "Vozač"
                 $('#task_form_driver option').prop('disabled', false);
 
-                // Onemogućavanje opcija koje nisu izabrane u poljima "Geodete"
                 $('#task_form_driver option').each(function() {
-                var driverId = $(this).val();
-                if (selectedGeodete1Ids.indexOf(driverId) === -1) {
-                $(this).prop('disabled', true);
-            }
-            });
+                    var driverId = $(this).val();
+                    if (selectedGeodete1Ids.indexOf(driverId) === -1) {
+                        $(this).prop('disabled', true);
+                    }
+                });
 
-                // Resetovanje izbora u polju "Vozač" ako izabrani vozač više nije dostupan
                 var selectedDriverId = $('#task_form_driver').val();
                 if (selectedDriverId && selectedGeodete1Ids.indexOf(selectedDriverId) === -1) {
-                $('#task_form_driver').val('');
+                    $('#task_form_driver').val('');
+                }
             }
-            }
-                // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
-                $('#task_form_geo1, #task_form_geo2, #task_form_geo3').change(function() {
-                updateDriversOptions1();
-            });
-                // Pozovite funkciju za inicijalno postavljanje opcija u polju "Vozač" prilikom učitavanja stranice
-                updateDriversOptions1();
 
+            $('#task_form_geo1, #task_form_geo2, #task_form_geo3').change(function() {
+                updateDriversOptions1();
             });
+
+            updateDriversOptions1();
+        });
 
         // Date format
         // izmenjen format da bi bio po srpskim standardima

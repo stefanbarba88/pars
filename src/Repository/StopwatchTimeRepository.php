@@ -174,20 +174,34 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
   }
 
 
-//  public function countClientTasks(Client $client) : array {
-//    $rez = [];
-//    $projects = $this->createQueryBuilder('u')
-//      ->andWhere('u.client = :client')
-//      ->setParameter(':client', $client)
-//
-//      ->getQuery()
-//      ->getResult();
-//
-////    $projects = $this->getEntityManager()->getRepository(Project::class)->findOneBy(['client' => $client]);
-//    dd($projects);
-//
-//    return $projects;
-//  }
+  public function checkAddStopwatch(string $datum, TaskLog $taskLog): bool {
+
+    list($pocetak, $kraj) = explode(' - ', $datum);
+
+    $format = 'd.m.Y H:i';
+
+    $start = DateTimeImmutable::createFromFormat($format, $pocetak);
+    $stop = DateTimeImmutable::createFromFormat($format, $kraj);
+
+    $times = $this->createQueryBuilder('u')
+      ->where('u.taskLog = :taskLog')
+      ->setParameter(':taskLog', $taskLog)
+      ->andWhere('u.diff IS NOT NULL')
+      ->andWhere('u.isDeleted = 0')
+      ->andWhere('((u.start BETWEEN :startFrom AND :startTo OR u.stop BETWEEN :endFrom AND :endTo) OR (u.start < :startFrom AND u.stop > :endTo))')
+      ->setParameter(':startFrom', $start)
+      ->setParameter(':startTo', $stop)
+      ->setParameter(':endFrom', $start)
+      ->setParameter(':endTo', $stop)
+      ->getQuery()
+      ->getResult();
+
+    if (!empty($times)) {
+      return true;
+    }
+    return false;
+
+  }
   public function getStopwatchesByProjectCommand($start, $stop, Project $project, Category $category): int {
 
     $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectTeren($start, $stop, $project, $category);

@@ -25,10 +25,10 @@
                     {% if checklistActive is not empty %}
                         <div class="col-xl-12">
                                 <div class="card">
-                                    <div class="card-header d-flex align-items-center">
+                                    <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_item1" aria-expanded="false" type="button">
                                         <h5 class="mb-0">Interni zadaci</h5>
                                         <div class="d-inline-flex ms-auto">
-                                            <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item1" aria-expanded="false">{{ countChecklistActive }}</span>
+                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{{ countChecklistActive }}</span>
                                         </div>
                                     </div>
 

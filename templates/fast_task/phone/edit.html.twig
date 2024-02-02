@@ -28,14 +28,14 @@
                 <div class="content">
                     <div class="card">
                         <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_item_filter" aria-expanded="false" type="button">
-                            <h6 class="collapsed mb-0">
+                            <h6 class="collapsed mb-0"  >
                                 Dostupnost
                             </h6>
                             <div class="d-inline-flex ms-auto">
-                                <span id="brojac" class="badge bg-yellow text-primary rounded-pill fw-semibold">0/{{ users | length }}</span>
+                                <span id="brojac" class="badge bg-yellow text-primary rounded-pill fw-semibold">0/{{ users | length }} </span>
                             </div>
                         </div>
-                        <div id="collapsed_item_filter" class="accordion-collapse collapse show" data-bs-parent="#accordion_collapsed" style="">
+                        <div id="collapsed_item_filter" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-sm-6 col-lg-12">
@@ -43,18 +43,18 @@
                                             <table class="table table-bordered table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
-                                                    <th colspan="7">Zaposleni</th>
+                                                    <th colspan="2">Zaposleni</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {% for chunk in users|batch(7, '') %}
+                                                {% for chunk in users|batch(2, '') %}
                                                     <tr>
                                                         {% for member in chunk %}
                                                             <td class="zaposleni1">
                                                                 {% if member is iterable %}
                                                                     <div class="list-group-item hstack gap-3 zaposleni">
                                                                         <div class="flex-fill">
-                                                                            <div class="fw-semibold">{{ member.user.fullName }}
+                                                                            <div class="fw-semibold">{{ member.user.getNameWithFirstLetter }}
                                                                                 {% if member.car is not null %}
                                                                                     <i class="ph-car me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{ member.car.plate }}" data-bs-original-title="Zaduženo vozilo"></i>
                                                                                 {% endif %}
@@ -78,11 +78,11 @@
                                             <table class="table table-bordered table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
-                                                    <th colspan="8">Oprema</th>
+                                                    <th colspan="3">Oprema</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {% for chunk in tools|batch(8, '') %}
+                                                {% for chunk in tools|batch(3, '') %}
                                                     <tr>
                                                         {% for tool in chunk %}
                                                             <td class="tool1">

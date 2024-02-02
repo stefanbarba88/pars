@@ -44,25 +44,52 @@ class PhoneTaskFormType extends AbstractType {
 
     $task = $dataObject->getTask();
     $company = $dataObject->getTask()->getCompany();
+    $projectType = 0;
+    if (!$task->getAssignedUsers()->isEmpty()) {
+      $user = $task->getAssignedUsers()->first();
+      $projectType = $user->getProjectType();
+    }
 
-   if (is_null($task->getProject())) {
-     $builder
-       ->add('project', EntityType::class, [
-         'placeholder' => '--Izaberite projekat--',
-         'class' => Project::class,
-         'query_builder' => function (EntityRepository $em) use ($company) {
-           return $em->createQueryBuilder('g')
-             ->andWhere('g.isSuspended = :isSuspended')
-             ->andWhere('g.company = :company')
-             ->setParameter(':company', $company)
-             ->setParameter(':isSuspended', 0)
-             ->orderBy('g.title', 'ASC');
-         },
-         'choice_label' => 'title',
-         'expanded' => false,
-         'multiple' => false,
-       ]);
-   }
+    if (is_null($task->getProject())) {
+      if ($projectType == 0) {
+        $builder
+          ->add('project', EntityType::class, [
+            'placeholder' => '--Izaberite projekat--',
+            'class' => Project::class,
+            'query_builder' => function (EntityRepository $em) use ($company) {
+              return $em->createQueryBuilder('g')
+                ->andWhere('g.isSuspended = :isSuspended')
+                ->andWhere('g.company = :company')
+                ->setParameter(':company', $company)
+                ->setParameter(':isSuspended', 0)
+                ->orderBy('g.title', 'ASC');
+            },
+            'choice_label' => 'title',
+            'expanded' => false,
+            'multiple' => false,
+          ]);
+      } else {
+        $builder
+          ->add('project', EntityType::class, [
+            'placeholder' => '--Izaberite projekat--',
+            'class' => Project::class,
+            'query_builder' => function (EntityRepository $em) use ($projectType, $company) {
+              return $em->createQueryBuilder('g')
+                ->andWhere('g.isSuspended = :isSuspended')
+                ->andWhere('g.company = :company')
+                ->andWhere('g.type = :type')
+                ->setParameter(':company', $company)
+                ->setParameter(':isSuspended', 0)
+                ->setParameter(':type', $projectType)
+                ->orderBy('g.title', 'ASC');
+            },
+            'choice_label' => 'title',
+            'expanded' => false,
+            'multiple' => false,
+          ]);
+      }
+
+    }
 
     $builder
 

@@ -14,10 +14,10 @@
                     {% if checklistActive is not empty %}
                         <div class="col-xl-12">
                             <div class="card">
-                                <div class="card-header d-flex align-items-center">
+                                <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_item1" aria-expanded="false" type="button">
                                     <h5 class="mb-0">Interni zadaci</h5>
                                     <div class="d-inline-flex ms-auto">
-                                        <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item1" aria-expanded="false">{{ countChecklistActive }}</span>
+                                        <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{{ countChecklistActive }}</span>
                                     </div>
                                 </div>
 
@@ -350,13 +350,31 @@
                                         {% endif %}
                                     </div>
                                 </button>
-                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2" data-bs-toggle="modal" data-bs-target="#modal_kancelarija">
-                                    <i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
-                                    <h5 class="mb-0">{{ dostupnosti.noKancelarija }}</h5>
-                                    <div class="fw-semibold">
-                                        Kancelarija
-                                    </div>
-                                </button>
+
+                                {% if nerasporedjenost is not empty %}
+                                    <button type="button" class="btn btn-light w-100 flex-column rounded-0 py-2" data-bs-toggle="modal" data-bs-target="#modal_kancelarija">
+                                        <i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <h5 class="mb-0">{{ dostupnosti.noKancelarija }}</h5>
+                                        <div class="fw-semibold">
+                                            Kancelarija
+                                        </div>
+                                    </button>
+                                    <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2" data-bs-toggle="modal" data-bs-target="#modal_unknown_sutra">
+                                        <i class="ph-warning-circle bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <h5 class="mb-0">{{ nerasporedjenost.brojNerasporedjenih }}/{{ nerasporedjenost.brojDostupnih }}</h5>
+                                        <div class="fw-semibold">
+                                            Neraspoređeni (sutra)
+                                        </div>
+                                    </button>
+                                {% else %}
+                                    <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2" data-bs-toggle="modal" data-bs-target="#modal_kancelarija">
+                                        <i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <h5 class="mb-0">{{ dostupnosti.noKancelarija }}</h5>
+                                        <div class="fw-semibold">
+                                            Kancelarija
+                                        </div>
+                                    </button>
+                                {% endif %}
                             </div>
                             <div class="col">
                                 <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-top-end py-2" data-bs-toggle="modal" data-bs-target="#modal_vanzadatka">
@@ -1339,7 +1357,39 @@
             </div>
         </div>
     {% endif %}
+    {% if nerasporedjenost is not empty %}
+        <div id="modal_unknown_sutra" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white border-0">
+                        <h6 class="modal-title">Neraspoređeni zaposleni za sutra</h6>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card">
+                            <div class="card-body">
+                                {% set bg_class_unknown = '' %}
+                                {% for user in nerasporedjenost.nerasporedjeniSutra %}
+                                    {% if loop.index is even %}
+                                        {% set bg_class_unknown = 'bg-light' %}
+                                    {% else %}
+                                        {% set bg_class_unknown = '' %}
+                                    {% endif %}
+                                    <div class="row p-2 fw-semibold {{ bg_class_unknown }}">
+                                        <div class="col-12">{{ user.fullName }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     <!-- /vertical form modal -->
 {% endblock content %}
 

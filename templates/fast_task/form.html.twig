@@ -28,53 +28,73 @@
                 <div class="content">
 
                     <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">
+                        <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_item_filter" aria-expanded="false" type="button">
+                            <h6 class="collapsed mb-0">
                                 Dostupnost
                             </h6>
+                            <div class="d-inline-flex ms-auto">
+                                <span id="brojac" class="badge bg-yellow text-primary rounded-pill fw-semibold">0/{{ users | length }} </span>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-sm-6 col-lg-7">
-                                    <h6>Zaposleni</h6>
-                                    <div class="table-responsive ">
-                                                <table class="table table-bordered table-condensed2 table-sm">
-                                                    <tbody>
-                                                    {% for chunk in users|batch(4) %}
-                                                        <tr>
-                                                            {% for member in chunk %}
-                                                                <td>
-                                                                    <div class="list-group-item hstack gap-3 ">
+                        <div id="collapsed_item_filter" class="accordion-collapse collapse show" data-bs-parent="#accordion_collapsed" style="">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-6 col-lg-12">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th colspan="7">Zaposleni</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for chunk in users|batch(7, '') %}
+                                                    <tr>
+                                                        {% for member in chunk %}
+                                                            <td class="zaposleni1">
+                                                                {% if member is iterable %}
+                                                                    <div class="list-group-item hstack gap-3 zaposleni">
                                                                         <div class="flex-fill">
-                                                                            <div class="fw-semibold">{{ member.ime }}</div>
+                                                                            <div class="fw-semibold">{{ member.user.fullName }}
+                                                                                {% if member.car is not null %}
+                                                                                    <i class="ph-car me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{ member.car.plate }}" data-bs-original-title="Zaduženo vozilo"></i>
+                                                                                {% endif %}
+                                                                            </div>
                                                                             <span class="sakriveno d-none">{{ member.id }}</span>
                                                                         </div>
                                                                     </div>
-
-                                                                </td>
-                                                            {% endfor %}
-                                                        </tr>
-                                                    {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                                {% endif %}
+                                                            </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-sm-6 col-lg-3">
-                                    <h6>Oprema</h6>
-                                    <div class="table-responsive">
-                                            <table class="table table-bordered table-condensed2 table-sm">
+                                <div class="row">
+                                    <div class="col-sm-6 col-lg-8">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th colspan="8">Oprema</th>
+                                                </tr>
+                                                </thead>
                                                 <tbody>
-                                                {% for chunk in tools|batch(4) %}
+                                                {% for chunk in tools|batch(8, '') %}
                                                     <tr>
                                                         {% for tool in chunk %}
-                                                            <td>
-                                                                <div class="list-group-item hstack gap-3 tool">
-                                                                    <div class="flex-fill">
-                                                                        <div class="fw-semibold">{{ tool.title }}</div>
-                                                                        <span class="sakrivenoTool d-none">{{ tool.id }}</span>
+                                                            <td class="tool1">
+                                                                {% if tool != '' %}
+                                                                    <div class="list-group-item hstack gap-3 tool">
+                                                                        <div class="flex-fill">
+                                                                            <div class="fw-semibold">{{ tool.title }}</div>
+                                                                            <span class="sakrivenoTool d-none">{{ tool.id }}</span>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-
+                                                                {% endif %}
                                                             </td>
                                                         {% endfor %}
                                                     </tr>
@@ -82,22 +102,28 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                </div>
-                                <div class="col-sm-6 col-lg-2">
-                                    <h6>Vozila</h6>
-                                    <div class="table-responsive ">
-                                            <table class="table table-bordered table-condensed2 table-sm">
+                                    </div>
+                                    <div class="col-sm-6 col-lg-4">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th colspan="3">Vozila</th>
+                                                </tr>
+                                                </thead>
                                                 <tbody>
-                                                {% for chunk in cars|batch(1) %}
+                                                {% for chunk in cars|batch(3, '') %}
                                                     <tr>
                                                         {% for car in chunk %}
-                                                            <td>
-                                                                <div class="list-group-item hstack gap-3 car">
-                                                                    <div class="flex-fill">
-                                                                        <div class="fw-semibold">{{ car.plate }}</div>
-                                                                        <span class="sakrivenoCar d-none">{{ car.id }}</span>
+                                                            <td class="car1">
+                                                                {% if car != '' %}
+                                                                    <div class="list-group-item hstack gap-3 car">
+                                                                        <div class="flex-fill">
+                                                                            <div class="fw-semibold">{{ car.plate }}</div>
+                                                                            <span class="sakrivenoCar d-none">{{ car.id }}</span>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
+                                                                {% endif %}
                                                             </td>
                                                         {% endfor %}
                                                     </tr>
@@ -105,10 +131,12 @@
                                                 </tbody>
                                             </table>
                                         </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
@@ -1128,7 +1156,7 @@
                                                         <label class="form-label" for="task_form_zamena_projekat1">Projekat:</label>
                                                         <select id="task_form_zamena_projekat1" name="task_quick_zamena_form1[projekat]" class="form-control select">
                                                             <option>---</option>
-                                                            {% for project in projects %}
+                                                            {% for project in projectsS %}
                                                                 <option value="{{ project.id }}">{{ project.title }}</option>
                                                             {% endfor %}
                                                         </select>
@@ -1166,7 +1194,7 @@
                                                         <label class="form-label" for="task_form_zamena_projekat2">Projekat:</label>
                                                         <select id="task_form_zamena_projekat2" name="task_quick_zamena_form2[projekat]" class="form-control select">
                                                             <option>---</option>
-                                                            {% for project in projects %}
+                                                            {% for project in projectsS %}
                                                                 <option value="{{ project.id }}">{{ project.title }}</option>
                                                             {% endfor %}
                                                         </select>
@@ -1205,7 +1233,7 @@
                                                         <label class="form-label" for="task_form_zamena_projekat3">Projekat:</label>
                                                         <select id="task_form_zamena_projekat3" name="task_quick_zamena_form3[projekat]" class="form-control select">
                                                             <option>---</option>
-                                                            {% for project in projects %}
+                                                            {% for project in projectsS %}
                                                                 <option value="{{ project.id }}">{{ project.title }}</option>
                                                             {% endfor %}
                                                         </select>
@@ -1244,7 +1272,7 @@
                                                         <label class="form-label" for="task_form_zamena_projekat4">Projekat:</label>
                                                         <select id="task_form_zamena_projekat4" name="task_quick_zamena_form4[projekat]" class="form-control select">
                                                             <option>---</option>
-                                                            {% for project in projects %}
+                                                            {% for project in projectsS %}
                                                                 <option value="{{ project.id }}">{{ project.title }}</option>
                                                             {% endfor %}
                                                         </select>
@@ -1283,7 +1311,7 @@
                                                         <label class="form-label" for="task_form_zamena_projekat5">Projekat:</label>
                                                         <select id="task_form_zamena_projekat5" name="task_quick_zamena_form5[projekat]" class="form-control select">
                                                             <option>---</option>
-                                                            {% for project in projects %}
+                                                            {% for project in projectsS %}
                                                                 <option value="{{ project.id }}">{{ project.title }}</option>
                                                             {% endfor %}
                                                         </select>
@@ -1322,7 +1350,7 @@
                                                         <label class="form-label" for="task_form_zamena_projekat6">Projekat:</label>
                                                         <select id="task_form_zamena_projekat6" name="task_quick_zamena_form6[projekat]" class="form-control select">
                                                             <option>---</option>
-                                                            {% for project in projects %}
+                                                            {% for project in projectsS %}
                                                                 <option value="{{ project.id }}">{{ project.title }}</option>
                                                             {% endfor %}
                                                         </select>
@@ -1361,7 +1389,7 @@
                                                         <label class="form-label" for="task_form_zamena_projekat7">Projekat:</label>
                                                         <select id="task_form_zamena_projekat7" name="task_quick_zamena_form7[projekat]" class="form-control select">
                                                             <option>---</option>
-                                                            {% for project in projects %}
+                                                            {% for project in projectsS %}
                                                                 <option value="{{ project.id }}">{{ project.title }}</option>
                                                             {% endfor %}
                                                         </select>
@@ -1400,7 +1428,7 @@
                                                         <label class="form-label" for="task_form_zamena_projekat8">Projekat:</label>
                                                         <select id="task_form_zamena_projekat8" name="task_quick_zamena_form8[projekat]" class="form-control select">
                                                             <option>---</option>
-                                                            {% for project in projects %}
+                                                            {% for project in projectsS %}
                                                                 <option value="{{ project.id }}">{{ project.title }}</option>
                                                             {% endfor %}
                                                         </select>
@@ -1439,7 +1467,7 @@
                                                         <label class="form-label" for="task_form_zamena_projekat9">Projekat:</label>
                                                         <select id="task_form_zamena_projekat9" name="task_quick_zamena_form9[projekat]" class="form-control select">
                                                             <option>---</option>
-                                                            {% for project in projects %}
+                                                            {% for project in projectsS %}
                                                                 <option value="{{ project.id }}">{{ project.title }}</option>
                                                             {% endfor %}
                                                         </select>
@@ -1478,7 +1506,7 @@
                                                         <label class="form-label" for="task_form_zamena_projekat10">Projekat:</label>
                                                         <select id="task_form_zamena_projekat10" name="task_quick_zamena_form10[projekat]" class="form-control select">
                                                             <option>---</option>
-                                                            {% for project in projects %}
+                                                            {% for project in projectsS %}
                                                                 <option value="{{ project.id }}">{{ project.title }}</option>
                                                             {% endfor %}
                                                         </select>
@@ -1513,12 +1541,10 @@
                                     </div>
                                 </div>
 
-                                <div class="text-end">
-                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
-                                </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                             </div>
                         </form>
-
                     </div>
                     <!-- /wizard with validation -->
 
@@ -1599,25 +1625,62 @@
             // });
             var selectedUserIds = {}; // Objekat za praćenje trenutnih izbora korisnika
 
-            // Funkcija za dodavanje klase "live" korisnicima na osnovu trenutnih izbora
+
+            // function updateSelectedUsers() {
+            //     // Uklanjamo klasu "live" sa svih korisnika
+            //     $('.zaposleni').removeClass('disabled-div');
+            //     $('.zaposleni1').removeClass('bg-yellow');
+            //
+            //     // Iteriramo kroz sve select elemente za "geo" i dodajemo klasu "live" korisnicima sa odabranim ID-jem
+            //     $('[id^=task_form_geodeta], [id^=task_form_zamena_geodeta]').each(function() {
+            //         var selectedUserId = $(this).val();
+            //         if (selectedUserId) {
+            //             $('.sakriveno').each(function() {
+            //                 if ($(this).text() === selectedUserId) {
+            //                     $(this).closest('.zaposleni').addClass('disabled-div');
+            //                     $(this).closest('.zaposleni1').addClass('bg-yellow');
+            //                 }
+            //             });
+            //         }
+            //     });
+            //
+            // }
+            //
+            // // Pratimo promene u select elementima za "geo" u svim formama
+            // $('[id^=task_form_geodeta], [id^=task_form_zamena_geodeta]').change(function() {
+            //     updateSelectedUsers();
+            // });
+
             function updateSelectedUsers() {
                 // Uklanjamo klasu "live" sa svih korisnika
-                $('.list-group-item').removeClass('disabled-div');
+                $('.zaposleni').removeClass('disabled-div');
+                $('.zaposleni1').removeClass('bg-yellow');
+
+                var uniqueSelectedUsers = {}; // Objekat za praćenje jedinstvenih korisnika
 
                 // Iteriramo kroz sve select elemente za "geo" i dodajemo klasu "live" korisnicima sa odabranim ID-jem
                 $('[id^=task_form_geodeta], [id^=task_form_zamena_geodeta]').each(function() {
                     var selectedUserId = $(this).val();
+                    if (selectedUserId && selectedUserId !== '---') { // Proveravamo da li je vrednost različita od '---'
+                        uniqueSelectedUsers[selectedUserId] = true; // Dodajemo vrednost u objekat
+                    }
                     if (selectedUserId) {
                         $('.sakriveno').each(function() {
                             if ($(this).text() === selectedUserId) {
-                                $(this).closest('.list-group-item').addClass('disabled-div');
+                                $(this).closest('.zaposleni').addClass('disabled-div');
+                                $(this).closest('.zaposleni1').addClass('bg-yellow');
                             }
                         });
                     }
                 });
+
+                // Prikazujemo broj jedinstvenih članova
+                var uniqueCount = Object.keys(uniqueSelectedUsers).length;
+                var ratio = uniqueCount + "/" + {{ users | length }};
+                $('#brojac').text(ratio); // Ažuriramo tekst u elementu sa id="brojac"
             }
 
-            // Pratimo promene u select elementima za "geo" u svim formama
+// Pratimo promene u select elementima za "geo" u svim formama
             $('[id^=task_form_geodeta], [id^=task_form_zamena_geodeta]').change(function() {
                 updateSelectedUsers();
             });
@@ -1628,6 +1691,7 @@
             function updateSelectedTools() {
                 // Uklanjamo klasu "live" sa svih korisnika
                 $('.tool').removeClass('disabled-div');
+                $('.tool1').removeClass('bg-yellow');
 
                 // Iteriramo kroz sve select2 elemente za "oprema" i dodajemo klasu "live" korisnicima sa odabranim ID-jem
                 $('[id^=task_form_oprema], [id^=task_form_zamena_oprema]').each(function() {
@@ -1639,6 +1703,7 @@
                         $('.sakrivenoTool').each(function() {
                             if ($(this).text() === selectedToolId) {
                                 $(this).closest('.tool').addClass('disabled-div');
+                                $(this).closest('.tool1').addClass('bg-yellow');
                             }
                         });
                     });
@@ -1663,6 +1728,7 @@
             function updateSelectedCars() {
                 // Uklanjamo klasu "live" sa svih korisnika
                 $('.car').removeClass('disabled-div');
+                $('.car1').removeClass('bg-yellow');
 
                 // Iteriramo kroz sve select elemente za "geo" i dodajemo klasu "live" korisnicima sa odabranim ID-jem
                 $('[id^=task_form_vozilo], [id^=task_form_zamena_vozilo]').each(function() {
@@ -1671,6 +1737,7 @@
                         $('.sakrivenoCar').each(function() {
                             if ($(this).text() === selectedCarId) {
                                 $(this).closest('.car').addClass('disabled-div');
+                                $(this).closest('.car1').addClass('bg-yellow');
                             }
                         });
                     }
@@ -1741,6 +1808,29 @@
                     $('#task_form_vozac1').val('');
                 }
             }
+
+            $('#task_form_geodeta1_1').change(function() {
+                // Resetujemo selekt u polju "Vozač" kada se promeni izbor u polju "#task_form_geo1"
+                var selectedValue = $(this).val();
+                $('#task_form_vozac1').val(selectedValue);
+
+                var selectedDriverText = $('#task_form_vozac1 option:selected').text();
+                $('#task_form_vozac1').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+                // Omogućimo sve opcije u poljima "Geodeta" pre nego što izvršimo promene
+                // $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').find('option').prop('disabled', false);
+
+                            // Ažuriramo opcije u polju "Vozač" na osnovu novih izbora u poljima "Geodeta"
+                updateDriversOptions1();
+            });
+            $('#task_form_vozac1').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions1();
+
+                // Ažuriramo vidljivi tekst u polju "Vozač" na osnovu izbora
+                var selectedDriverText = $('#task_form_vozac1 option:selected').text();
+                $('#task_form_vozac1').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+            });
+
             // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
             $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').change(function() {
                 updateDriversOptions1();
@@ -1804,6 +1894,29 @@
                     $('#task_form_vozac2').val('');
                 }
             }
+
+            $('#task_form_geodeta1_2').change(function() {
+                // Resetujemo selekt u polju "Vozač" kada se promeni izbor u polju "#task_form_geo1"
+                var selectedValue = $(this).val();
+                $('#task_form_vozac2').val(selectedValue);
+
+                var selectedDriverText = $('#task_form_vozac2 option:selected').text();
+                $('#task_form_vozac2').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+                // Omogućimo sve opcije u poljima "Geodeta" pre nego što izvršimo promene
+                // $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').find('option').prop('disabled', false);
+
+                // Ažuriramo opcije u polju "Vozač" na osnovu novih izbora u poljima "Geodeta"
+                updateDriversOptions2();
+            });
+            $('#task_form_vozac2').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions2();
+
+                // Ažuriramo vidljivi tekst u polju "Vozač" na osnovu izbora
+                var selectedDriverText = $('#task_form_vozac2 option:selected').text();
+                $('#task_form_vozac2').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+            });
+
             // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
             $('#task_form_geodeta1_2, #task_form_geodeta2_2, #task_form_geodeta3_2').change(function() {
                 updateDriversOptions2();
@@ -1867,6 +1980,29 @@
                     $('#task_form_vozac3').val('');
                 }
             }
+
+            $('#task_form_geodeta1_3').change(function() {
+                // Resetujemo selekt u polju "Vozač" kada se promeni izbor u polju "#task_form_geo1"
+                var selectedValue = $(this).val();
+                $('#task_form_vozac3').val(selectedValue);
+
+                var selectedDriverText = $('#task_form_vozac3 option:selected').text();
+                $('#task_form_vozac3').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+                // Omogućimo sve opcije u poljima "Geodeta" pre nego što izvršimo promene
+                // $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').find('option').prop('disabled', false);
+
+                // Ažuriramo opcije u polju "Vozač" na osnovu novih izbora u poljima "Geodeta"
+                updateDriversOptions3();
+            });
+            $('#task_form_vozac3').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions3();
+
+                // Ažuriramo vidljivi tekst u polju "Vozač" na osnovu izbora
+                var selectedDriverText = $('#task_form_vozac3 option:selected').text();
+                $('#task_form_vozac3').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+            });
+
             // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
             $('#task_form_geodeta1_3, #task_form_geodeta2_3, #task_form_geodeta3_3').change(function() {
                 updateDriversOptions3();
@@ -1930,6 +2066,29 @@
                     $('#task_form_vozac4').val('');
                 }
             }
+
+            $('#task_form_geodeta1_4').change(function() {
+                // Resetujemo selekt u polju "Vozač" kada se promeni izbor u polju "#task_form_geo1"
+                var selectedValue = $(this).val();
+                $('#task_form_vozac4').val(selectedValue);
+
+                var selectedDriverText = $('#task_form_vozac4 option:selected').text();
+                $('#task_form_vozac4').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+                // Omogućimo sve opcije u poljima "Geodeta" pre nego što izvršimo promene
+                // $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').find('option').prop('disabled', false);
+
+                // Ažuriramo opcije u polju "Vozač" na osnovu novih izbora u poljima "Geodeta"
+                updateDriversOptions4();
+            });
+            $('#task_form_vozac4').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions4();
+
+                // Ažuriramo vidljivi tekst u polju "Vozač" na osnovu izbora
+                var selectedDriverText = $('#task_form_vozac4 option:selected').text();
+                $('#task_form_vozac4').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+            });
+
             // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
             $('#task_form_geodeta1_4, #task_form_geodeta2_4, #task_form_geodeta3_4').change(function() {
                 updateDriversOptions4();
@@ -1993,6 +2152,29 @@
                     $('#task_form_vozac5').val('');
                 }
             }
+
+            $('#task_form_geodeta1_5').change(function() {
+                // Resetujemo selekt u polju "Vozač" kada se promeni izbor u polju "#task_form_geo1"
+                var selectedValue = $(this).val();
+                $('#task_form_vozac5').val(selectedValue);
+
+                var selectedDriverText = $('#task_form_vozac5 option:selected').text();
+                $('#task_form_vozac5').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+                // Omogućimo sve opcije u poljima "Geodeta" pre nego što izvršimo promene
+                // $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').find('option').prop('disabled', false);
+
+                // Ažuriramo opcije u polju "Vozač" na osnovu novih izbora u poljima "Geodeta"
+                updateDriversOptions5();
+            });
+            $('#task_form_vozac5').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions5();
+
+                // Ažuriramo vidljivi tekst u polju "Vozač" na osnovu izbora
+                var selectedDriverText = $('#task_form_vozac5 option:selected').text();
+                $('#task_form_vozac5').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+            });
+
             // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
             $('#task_form_geodeta1_5, #task_form_geodeta2_5, #task_form_geodeta3_5').change(function() {
                 updateDriversOptions5();
@@ -2056,6 +2238,29 @@
                     $('#task_form_vozac6').val('');
                 }
             }
+
+            $('#task_form_geodeta1_6').change(function() {
+                // Resetujemo selekt u polju "Vozač" kada se promeni izbor u polju "#task_form_geo1"
+                var selectedValue = $(this).val();
+                $('#task_form_vozac6').val(selectedValue);
+
+                var selectedDriverText = $('#task_form_vozac6 option:selected').text();
+                $('#task_form_vozac6').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+                // Omogućimo sve opcije u poljima "Geodeta" pre nego što izvršimo promene
+                // $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').find('option').prop('disabled', false);
+
+                // Ažuriramo opcije u polju "Vozač" na osnovu novih izbora u poljima "Geodeta"
+                updateDriversOptions6();
+            });
+            $('#task_form_vozac6').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions6();
+
+                // Ažuriramo vidljivi tekst u polju "Vozač" na osnovu izbora
+                var selectedDriverText = $('#task_form_vozac6 option:selected').text();
+                $('#task_form_vozac6').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+            });
+
             // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
             $('#task_form_geodeta1_6, #task_form_geodeta2_6, #task_form_geodeta3_6').change(function() {
                 updateDriversOptions6();
@@ -2119,6 +2324,28 @@
                     $('#task_form_vozac7').val('');
                 }
             }
+
+            $('#task_form_geodeta1_7').change(function() {
+                // Resetujemo selekt u polju "Vozač" kada se promeni izbor u polju "#task_form_geo1"
+                var selectedValue = $(this).val();
+                $('#task_form_vozac7').val(selectedValue);
+
+                var selectedDriverText = $('#task_form_vozac7 option:selected').text();
+                $('#task_form_vozac7').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+                // Omogućimo sve opcije u poljima "Geodeta" pre nego što izvršimo promene
+                // $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').find('option').prop('disabled', false);
+
+                // Ažuriramo opcije u polju "Vozač" na osnovu novih izbora u poljima "Geodeta"
+                updateDriversOptions7();
+            });
+            $('#task_form_vozac7').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions7();
+
+                // Ažuriramo vidljivi tekst u polju "Vozač" na osnovu izbora
+                var selectedDriverText = $('#task_form_vozac7 option:selected').text();
+                $('#task_form_vozac7').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+            });
             // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
             $('#task_form_geodeta1_7, #task_form_geodeta2_7, #task_form_geodeta3_7').change(function() {
                 updateDriversOptions7();
@@ -2182,6 +2409,28 @@
                     $('#task_form_vozac8').val('');
                 }
             }
+
+            $('#task_form_geodeta1_8').change(function() {
+                // Resetujemo selekt u polju "Vozač" kada se promeni izbor u polju "#task_form_geo1"
+                var selectedValue = $(this).val();
+                $('#task_form_vozac8').val(selectedValue);
+
+                var selectedDriverText = $('#task_form_vozac8 option:selected').text();
+                $('#task_form_vozac8').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+                // Omogućimo sve opcije u poljima "Geodeta" pre nego što izvršimo promene
+                // $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').find('option').prop('disabled', false);
+
+                // Ažuriramo opcije u polju "Vozač" na osnovu novih izbora u poljima "Geodeta"
+                updateDriversOptions8();
+            });
+            $('#task_form_vozac8').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions8();
+
+                // Ažuriramo vidljivi tekst u polju "Vozač" na osnovu izbora
+                var selectedDriverText = $('#task_form_vozac8 option:selected').text();
+                $('#task_form_vozac8').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+            });
             // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
             $('#task_form_geodeta1_8, #task_form_geodeta2_8, #task_form_geodeta3_8').change(function() {
                 updateDriversOptions8();
@@ -2245,6 +2494,28 @@
                     $('#task_form_vozac9').val('');
                 }
             }
+
+            $('#task_form_geodeta1_9').change(function() {
+                // Resetujemo selekt u polju "Vozač" kada se promeni izbor u polju "#task_form_geo1"
+                var selectedValue = $(this).val();
+                $('#task_form_vozac9').val(selectedValue);
+
+                var selectedDriverText = $('#task_form_vozac9 option:selected').text();
+                $('#task_form_vozac9').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+                // Omogućimo sve opcije u poljima "Geodeta" pre nego što izvršimo promene
+                // $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').find('option').prop('disabled', false);
+
+                // Ažuriramo opcije u polju "Vozač" na osnovu novih izbora u poljima "Geodeta"
+                updateDriversOptions9();
+            });
+            $('#task_form_vozac9').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions9();
+
+                // Ažuriramo vidljivi tekst u polju "Vozač" na osnovu izbora
+                var selectedDriverText = $('#task_form_vozac9 option:selected').text();
+                $('#task_form_vozac9').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+            });
             // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
             $('#task_form_geodeta1_9, #task_form_geodeta2_9, #task_form_geodeta3_9').change(function() {
                 updateDriversOptions9();
@@ -2308,6 +2579,28 @@
                     $('#task_form_vozac10').val('');
                 }
             }
+
+            $('#task_form_geodeta1_10').change(function() {
+                // Resetujemo selekt u polju "Vozač" kada se promeni izbor u polju "#task_form_geo1"
+                var selectedValue = $(this).val();
+                $('#task_form_vozac10').val(selectedValue);
+
+                var selectedDriverText = $('#task_form_vozac10 option:selected').text();
+                $('#task_form_vozac10').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+                // Omogućimo sve opcije u poljima "Geodeta" pre nego što izvršimo promene
+                // $('#task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1').find('option').prop('disabled', false);
+
+                // Ažuriramo opcije u polju "Vozač" na osnovu novih izbora u poljima "Geodeta"
+                updateDriversOptions10();
+            });
+            $('#task_form_vozac10').change(function() {
+                // Ažuriramo opcije u polju "Vozač" na osnovu izbora u poljima "Geodeta"
+                updateDriversOptions10();
+
+                // Ažuriramo vidljivi tekst u polju "Vozač" na osnovu izbora
+                var selectedDriverText = $('#task_form_vozac10 option:selected').text();
+                $('#task_form_vozac10').siblings('.select2-container').find('.select2-selection__rendered').text(selectedDriverText);
+            });
             // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
             $('#task_form_geodeta1_10, #task_form_geodeta2_10, #task_form_geodeta3_10').change(function() {
                 updateDriversOptions10();
@@ -2322,7 +2615,6 @@
             function updateInputFields1() {
                 var selectedProject = $('#task_form_projekat1').val();
                 var disabledState = selectedProject === '---';
-
                 $('#task_form_vreme1, #task_form_geodeta1_1, #task_form_geodeta2_1, #task_form_geodeta3_1, #task_form_aktivnosti1, #task_form_oprema1, #task_form_napomena1, #task_form_naplativ1, #task_form_vozilo1, #task_form_vozac1').prop('disabled', disabledState);
             }
             function updateInputFieldsRequired1() {
@@ -2550,6 +2842,7 @@
             updateInputFields10();
             updateInputFieldsRequired10();
             updateDriversOptions10();
+
         });
 
 

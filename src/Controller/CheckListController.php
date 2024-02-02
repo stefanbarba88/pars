@@ -10,6 +10,7 @@ use App\Entity\ManagerChecklist;
 use App\Entity\User;
 use App\Form\CityFormType;
 use App\Form\ManagerChecklistFormType;
+use App\Service\MailService;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
@@ -99,7 +100,7 @@ class CheckListController extends AbstractController {
   #[Route('/form/{id}', name: 'app_checklist_form', defaults: ['id' => 0])]
   #[Entity('checklist', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, ManagerChecklist $checklist)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function form(Request $request, ManagerChecklist $checklist, MailService $mailService)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -126,7 +127,12 @@ class CheckListController extends AbstractController {
         $task->setUser($this->em->getRepository(User::class)->find($zaduzeni));
         $task->setCompany($this->getUser()->getCompany());
         $this->em->getRepository(ManagerChecklist::class)->save($task);
+
+        $mailService->checklistTask($task);
+
       }
+
+
 
       notyf()
         ->position('x', 'right')

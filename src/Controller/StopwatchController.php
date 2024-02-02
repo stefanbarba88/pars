@@ -217,7 +217,8 @@ class StopwatchController extends AbstractController {
   #[Route('/form-add/{taskLog}/{id}', name: 'app_stopwatch_add_form', defaults: ['id' => 0])]
   #[Entity('taskLog', expr: 'repository.find(taskLog)')]
   #[Entity('stopwatch', expr: 'repository.findForForm(taskLog, id)')]
-  public function add(TaskLog $taskLog, StopwatchTime $stopwatch, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function add(TaskLog $taskLog, StopwatchTime $stopwatch, Request $request, UploadService $uploadService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -243,6 +244,17 @@ class StopwatchController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
+
+        if ($this->em->getRepository(StopwatchTime::class)->checkAddStopwatch($request->request->get('stopwatch_time_add_form_period'), $taskLog)) {
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addError(NotifyMessagesData::STOPWATCH_ADD_ERROR);
+
+          return $this->redirectToRoute('app_task_log_view', ['id' => $taskLog->getId()]);
+        }
 
         $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTimeManual($stopwatch, $request->request->get('stopwatch_time_add_form_period'));
 
@@ -430,6 +442,19 @@ class StopwatchController extends AbstractController {
     $user = $this->getUser();
 
     if ($request->isMethod('POST')) {
+
+
+      if ($this->em->getRepository(StopwatchTime::class)->checkAddStopwatch($request->request->get('stopwatch_time_add_form_period'), $stopwatch->getTaskLog())) {
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addError(NotifyMessagesData::STOPWATCH_ADD_ERROR);
+
+        return $this->redirectToRoute('app_stopwatch_edit_time_forma', ['id' => $stopwatch->getId()]);
+      }
+
 
         $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTimeManual($stopwatch, $request->request->get('stopwatch_time_add_form_period'));
         $stopwatch->setIsEdited(true);

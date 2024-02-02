@@ -176,6 +176,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ path('app_employee_activity_view', {id:user.id}) }}" class="nav-link">
+                            <i class="ph-activity"></i>
+                            <span>Aktivnosti</span>
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ path('app_overtime_employee_form') }}" class="nav-link">
                             <i class="ph-hourglass-simple-high"></i>
                             <span>Prekovremeni sati</span>
@@ -387,6 +394,13 @@
                         <a href="{{ path('app_availability_unavailable') }}" class="nav-link">
                             <i class="ph-user-minus"></i>
                             <span>Nedostupni</span>
+                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_employees_project_type') }}" class="nav-link">
+                            <i class="ph-folder-simple-user"></i>
+                            <span>Lista po tipu projekta</span>
                             {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>

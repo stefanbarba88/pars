@@ -116,7 +116,7 @@
                                                 <div class="mb-1">
                                                     <label class="form-label" for="task_form_geo1">Geodeta#1:*</label>
                                                     <select id="task_form_geo1" name="phone_task_form[assignedUsers][]" class="form-control required" required>
-                                                        <option value="{{ task.assignedUsers[0].id }}">{{ task.assignedUsers[0].getNameForForm() }}</option>
+                                                        <option value="{{ task.assignedUsers[0].id }}">{{ task.assignedUsers[0].fullName }}</option>
                                                     </select>
                                                 </div>
                                             {% else %}
@@ -140,7 +140,11 @@
                                                 <select id="task_form_geo2" name="phone_task_form[assignedUsers][]" class="form-control">
                                                     <option>--Izaberite geodetu--</option>
                                                     {% for user in users %}
-                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                        {% if app.user.id == user.id %}
+                                                            <option value="{{ user.id }}" disabled>{{ user.ime }}</option>
+                                                        {% else%}
+                                                            <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                        {% endif %}
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -153,7 +157,11 @@
                                                 <select id="task_form_geo3" name="phone_task_form[assignedUsers][]" class="form-control">
                                                     <option>--Izaberite geodetu--</option>
                                                     {% for user in users %}
-                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                        {% if app.user.id == user.id %}
+                                                            <option value="{{ user.id }}" disabled>{{ user.ime }}</option>
+                                                        {% else%}
+                                                            <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                        {% endif %}
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -448,6 +456,7 @@
                         $('#task_form_driver').val('');
                     }
                 }
+
                 // Postavite event listenere na sva polja "Geodete" kako bismo pratili promene u izboru
                 $('#task_form_geo1, #task_form_geo2, #task_form_geo3').change(function() {
                     updateDriversOptions1();

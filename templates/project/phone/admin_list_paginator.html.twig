@@ -94,7 +94,13 @@
                                     <tbody>
                                     {% for project in pagination %}
                                         <tr>
-                                            <td><div class="fw-semibold"><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></div>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    <a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a>
+                                                    {% if project.client.first.id == 5 %}
+                                                        <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Za Exing projekte uzima se period od 26-og predhodnog meseca." data-bs-original-title="Napomena"></i>
+                                                    {% endif %}
+                                                </div>
                                             </td>
                                             <td>
                                                 {% if is_granted('ROLE_EMPLOYEE') %}

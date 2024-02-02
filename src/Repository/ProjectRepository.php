@@ -477,15 +477,18 @@ class ProjectRepository extends ServiceEntityRepository {
     $datum = new DateTimeImmutable();
     $datum = $datum->setTime(23,59);
 
+    $brojDana = date('j');
+
     $startDate = new DateTimeImmutable('first day of this month');
     if ($project->getClient()->first()->getId() == 5) {
       if ($datum->format('j') < 27) {
         $startDate = new DateTimeImmutable('last day of last month');
       }
       $startDate = $startDate->setDate($startDate->format('Y'), $startDate->format('m'), 26);
+      $brojDana = $startDate->format('t');
     }
 
-    $brojDana = $startDate->format('t');
+
 
     $brojTeren = 0;
     $brojKancelarija = 0;
@@ -501,6 +504,7 @@ class ProjectRepository extends ServiceEntityRepository {
         }
       }
       $startDate = $startDate->modify("+1 day");
+
     }
 
     return [

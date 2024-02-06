@@ -10,6 +10,7 @@ use App\Entity\FastTask;
 use App\Entity\ManagerChecklist;
 use App\Entity\Task;
 use App\Entity\TaskLog;
+use App\Entity\TimeTask;
 use App\Entity\User;
 use DateTimeImmutable;
 use Detection\MobileDetect;
@@ -49,6 +50,7 @@ class HomeController extends AbstractController {
 
 
     $args['nerasporedjenost'] = $this->em->getRepository(Availability::class)->getAllNerasporedjenost();
+    $args['tekuciPoslovi'] = $this->em->getRepository(TimeTask::class)->findBy(['company' => $user->getCompany(), 'finish' => null]);
 
 //srediti ovaj upit, uzima puno resursa
 //    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();

@@ -183,6 +183,9 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
+
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: TimeTask::class)]
+  private Collection $timeTasks;
   public function getCompany(): ?Company
   {
     return $this->company;
@@ -207,6 +210,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     $this->calendars = new ArrayCollection();
     $this->toolReservations = new ArrayCollection();
     $this->overtimes = new ArrayCollection();
+    $this->timeTasks = new ArrayCollection();
 
   }
 
@@ -1039,6 +1043,36 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
           // set the owning side to null (unless already changed)
           if ($overtime->getUser() === $this) {
               $overtime->setUser(null);
+          }
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, TimeTask>
+   */
+  public function getTimeTasks(): Collection
+  {
+      return $this->timeTasks;
+  }
+
+  public function addTimeTask(TimeTask $timeTask): self
+  {
+      if (!$this->timeTasks->contains($timeTask)) {
+          $this->timeTasks->add($timeTask);
+          $timeTask->setUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeTimeTask(TimeTask $timeTask): self
+  {
+      if ($this->timeTasks->removeElement($timeTask)) {
+          // set the owning side to null (unless already changed)
+          if ($timeTask->getUser() === $this) {
+              $timeTask->setUser(null);
           }
       }
 

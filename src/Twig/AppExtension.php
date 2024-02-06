@@ -13,6 +13,7 @@ use App\Entity\Availability;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\TaskLog;
+use App\Entity\TimeTask;
 use App\Entity\User;
 use Twig\TwigFilter;
 use Twig\Extension\AbstractExtension;
@@ -49,6 +50,7 @@ class AppExtension extends AbstractExtension {
       new TwigFunction('getDostupnostByUser', [$this, 'getDostupnostByUser']),
       new TwigFunction('getCountTasksByProject', [$this, 'getCountTasksByProject']),
       new TwigFunction('getCountDaysTasksByProject', [$this, 'getCountDaysTasksByProject']),
+      new TwigFunction('getTekuciPoslovi', [$this, 'getTekuciPoslovi']),
     ];
   }
 
@@ -78,6 +80,14 @@ class AppExtension extends AbstractExtension {
 
   public function getDostupnostByUser(User $user): ?int {
     return $this->entityManager->getRepository(Availability::class)->getDostupnostByUserTwig($user);
+  }
+
+  public function getTekuciPoslovi(User $user): bool {
+    $task = $this->entityManager->getRepository(TimeTask::class)->findOneBy(['user' => $user, 'finish' => null]);
+    if (is_null($task)) {
+      return false;
+    }
+    return true;
   }
 
   public function getDostupnostByUserSutra(User $user): ?int {

@@ -13,6 +13,7 @@ use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
+use App\Entity\TimeTask;
 use App\Entity\User;
 use App\Form\StopwatchTimeAddFormType;
 use App\Form\StopwatchTimeFormType;
@@ -548,4 +549,58 @@ class StopwatchController extends AbstractController {
 
     return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
   }
+
+
+  #[Route('/start-firma/{id}', name: 'app_stopwatch_start_firma',  defaults: ['id' => 0])]
+  #[Entity('task', expr: 'repository.findForForm(id)')]
+  public function startFirma(TimeTask $task, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $user = $this->getUser();
+
+    if ($user->isInTask()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+    $this->em->getRepository(TimeTask::class)->save($task);
+
+    $user->setIsInTask(true);
+    $this->em->getRepository(User::class)->save($user);
+
+    return $this->redirectToRoute('app_home');
+  }
+
+  #[Route('/stop-firma', name: 'app_stopwatch_stop_firma')]
+  public function stopFirma(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+    $user = $this->getUser();
+
+    if ($request->isMethod('POST')) {
+      $task = $this->em->getRepository(TimeTask::class)->findOneBy(['user' => $user, 'finish' => null]);
+      $task->setFinish(new DateTimeImmutable());
+      $task->setDescription($request->request->get('napomena'));
+      $this->em->getRepository(TimeTask::class)->save($task);
+
+      $user->setIsInTask(false);
+      $this->em->getRepository(User::class)->save($user);
+
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::TIME_TASK_CLOSE);
+
+//        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
+      return $this->redirectToRoute('app_home');
+
+    }
+
+    return $this->render('task/time_task_form.html.twig', $args);
+  }
+
 }

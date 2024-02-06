@@ -46,6 +46,7 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
+                                        <th>Tekuće obaveze</th>
                                         <th>Pozicija</th>
                                         <th  {% if pagination.isSorted('[u.ProjectType]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Tip projekta ', ['u.ProjectType']) }}
@@ -72,6 +73,9 @@
                                                 {% if user.isInTask == 1 %}
                                                     <span class="live"></span>
                                                 {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">{% if getTekuciPoslovi(user) %} Zauzet {% endif %}</div>
                                             </td>
                                             <td>
                                                 <div class="fw-semibold">{{ user.pozicija.title }}</div>

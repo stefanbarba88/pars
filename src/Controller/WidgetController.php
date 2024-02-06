@@ -20,6 +20,7 @@ use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\Team;
+use App\Entity\TimeTask;
 use App\Entity\Tool;
 use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
@@ -183,6 +184,7 @@ class WidgetController extends AbstractController {
 
     $args['checklistUsers'] = $this->em->getRepository(User::class)->getUsersForQuickChecklist();
     $args['countNotes'] = count($this->em->getRepository(Notes::class)->findBy(['isSuspended' => false, 'user' => $this->getUser()]));
+    $args['timeTask'] = count($this->em->getRepository(TimeTask::class)->findBy(['finish' => null, 'user' => $this->getUser()]));
 
 
     return $this->render('widget/right_sidebar.html.twig', $args);

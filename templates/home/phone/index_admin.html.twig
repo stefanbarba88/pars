@@ -384,6 +384,13 @@
                                         Bez obaveze
                                     </div>
                                 </button>
+                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 py-2" data-bs-toggle="modal" data-bs-target="#modal_tekuci">
+                                    <i class="ph-paint-brush-household bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                    <h5 class="mb-0">{{ tekuciPoslovi | length }}</h5>
+                                    <div class="fw-semibold">
+                                        Tekuće obaveze
+                                    </div>
+                                </button>
                                 <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-end py-2" data-bs-toggle="modal" data-bs-target="#modal_unknown">
                                     <i class="ph-warning-circle bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
                                     <h5 class="mb-0">{{ dostupnosti.noUnknown }}</h5>
@@ -1377,6 +1384,40 @@
                                     {% endif %}
                                     <div class="row p-2 fw-semibold {{ bg_class_unknown }}">
                                         <div class="col-12">{{ user.fullName }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if tekuciPoslovi is not empty %}
+        <div id="modal_tekuci" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white border-0">
+                        <h6 class="modal-title">Zaposleni na tekućim obavezama</h6>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card">
+                            <div class="card-body">
+                                {% set bg_class_unknown = '' %}
+                                {% for task in tekuciPoslovi %}
+                                    {% if loop.index is even %}
+                                        {% set bg_class_unknown = 'bg-light' %}
+                                    {% else %}
+                                        {% set bg_class_unknown = '' %}
+                                    {% endif %}
+                                    <div class="row p-2 fw-semibold {{ bg_class_unknown }}">
+                                        <div class="col-12">{{ task.user.fullName }}</div>
                                     </div>
                                 {% endfor %}
                             </div>

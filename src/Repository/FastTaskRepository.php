@@ -39,6 +39,450 @@ class FastTaskRepository extends ServiceEntityRepository {
     $this->security = $security;
   }
 
+  public function makeView(FastTask $fastTask): array {
+
+    $fastTaskView = [];
+    $fastTaskViewZamene = [];
+
+    if (!is_null($fastTask->getProject1())) {
+
+      $oprema1 = [];
+      $aktivnosti1 = [];
+
+      if (!is_null($fastTask->getOprema1())) {
+        foreach ($fastTask->getOprema1() as $opr1) {
+          $oprema1[] = $this->getEntityManager()->getRepository(Tool::class)->findOneBy(['id' => $opr1]);
+        }
+      }
+
+      if (!is_null($fastTask->getActivity1())) {
+        foreach ($fastTask->getActivity1() as $akt1) {
+          $aktivnosti1[] = $this->getEntityManager()->getRepository(Activity::class)->findOneBy(['id' => $akt1]);
+        }
+      }
+
+
+
+      $fastTaskView[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getProject1()]),
+        'vreme' => $fastTask->getTime1(),
+        'zaposleni1' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo11()]),
+        'zaposleni2' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo21()]),
+        'zaposleni3' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' =>  $fastTask->getGeo31()]),
+        'vozilo' => $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $fastTask->getCar1()]),
+        'vozac' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getDriver1()]),
+        'naplativ' => $fastTask->getFree1(),
+        'napomena' => $fastTask->getDescription1(),
+        'status' => $fastTask->getStatus1(),
+        'aktivnosti' => $aktivnosti1,
+        'oprema' => $oprema1,
+      ];
+
+    }
+    if (!is_null($fastTask->getProject2())) {
+
+      $oprema2 = [];
+      $aktivnosti2 = [];
+
+      if (!is_null($fastTask->getOprema2())) {
+        foreach ($fastTask->getOprema2() as $opr2) {
+          $oprema2[] = $this->getEntityManager()->getRepository(Tool::class)->findOneBy(['id' => $opr2]);
+        }
+      }
+
+      if (!is_null($fastTask->getActivity2())) {
+        foreach ($fastTask->getActivity2() as $akt2) {
+          $aktivnosti2[] = $this->getEntityManager()->getRepository(Activity::class)->findOneBy(['id' => $akt2]);
+        }
+      }
+
+      $fastTaskView[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getProject2()]),
+        'vreme' => $fastTask->getTime2(),
+        'zaposleni1' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo12()]),
+        'zaposleni2' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo22()]),
+        'zaposleni3' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' =>  $fastTask->getGeo32()]),
+        'vozilo' => $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $fastTask->getCar2()]),
+        'vozac' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getDriver2()]),
+        'naplativ' => $fastTask->getFree2(),
+        'napomena' => $fastTask->getDescription2(),
+        'status' => $fastTask->getStatus2(),
+        'aktivnosti' => $aktivnosti2,
+        'oprema' => $oprema2,
+      ];
+
+    }
+    if (!is_null($fastTask->getProject3())) {
+
+      $oprema3 = [];
+      $aktivnosti3 = [];
+
+      if (!is_null($fastTask->getOprema3())) {
+        foreach ($fastTask->getOprema3() as $opr3) {
+          $oprema3[] = $this->getEntityManager()->getRepository(Tool::class)->findOneBy(['id' => $opr3]);
+        }
+      }
+
+      if (!is_null($fastTask->getActivity3())) {
+        foreach ($fastTask->getActivity3() as $akt3) {
+          $aktivnosti3[] = $this->getEntityManager()->getRepository(Activity::class)->findOneBy(['id' => $akt3]);
+        }
+      }
+
+      $fastTaskView[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getProject3()]),
+        'vreme' => $fastTask->getTime3(),
+        'zaposleni1' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo13()]),
+        'zaposleni2' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo23()]),
+        'zaposleni3' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' =>  $fastTask->getGeo33()]),
+        'vozilo' => $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $fastTask->getCar3()]),
+        'vozac' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getDriver3()]),
+        'naplativ' => $fastTask->getFree3(),
+        'napomena' => $fastTask->getDescription3(),
+        'status' => $fastTask->getStatus3(),
+        'aktivnosti' => $aktivnosti3,
+        'oprema' => $oprema3,
+      ];
+
+    }
+    if (!is_null($fastTask->getProject4())) {
+
+      $oprema4 = [];
+      $aktivnosti4 = [];
+
+      if (!is_null($fastTask->getOprema4())) {
+        foreach ($fastTask->getOprema4() as $opr4) {
+          $oprema4[] = $this->getEntityManager()->getRepository(Tool::class)->findOneBy(['id' => $opr4]);
+        }
+      }
+
+      if (!is_null($fastTask->getActivity4())) {
+        foreach ($fastTask->getActivity4() as $akt4) {
+          $aktivnosti4[] = $this->getEntityManager()->getRepository(Activity::class)->findOneBy(['id' => $akt4]);
+        }
+      }
+
+      $fastTaskView[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getProject4()]),
+        'vreme' => $fastTask->getTime4(),
+        'zaposleni1' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo14()]),
+        'zaposleni2' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo24()]),
+        'zaposleni3' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' =>  $fastTask->getGeo34()]),
+        'vozilo' => $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $fastTask->getCar4()]),
+        'vozac' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getDriver4()]),
+        'naplativ' => $fastTask->getFree4(),
+        'napomena' => $fastTask->getDescription4(),
+        'status' => $fastTask->getStatus4(),
+        'aktivnosti' => $aktivnosti4,
+        'oprema' => $oprema4,
+      ];
+
+    }
+    if (!is_null($fastTask->getProject5())) {
+
+      $oprema5 = [];
+      $aktivnosti5 = [];
+
+      if (!is_null($fastTask->getOprema5())) {
+        foreach ($fastTask->getOprema5() as $opr5) {
+          $oprema5[] = $this->getEntityManager()->getRepository(Tool::class)->findOneBy(['id' => $opr5]);
+        }
+      }
+
+      if (!is_null($fastTask->getActivity5())) {
+        foreach ($fastTask->getActivity5() as $akt5) {
+          $aktivnosti5[] = $this->getEntityManager()->getRepository(Activity::class)->findOneBy(['id' => $akt5]);
+        }
+      }
+
+      $fastTaskView[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getProject5()]),
+        'vreme' => $fastTask->getTime5(),
+        'zaposleni1' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo15()]),
+        'zaposleni2' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo25()]),
+        'zaposleni3' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' =>  $fastTask->getGeo35()]),
+        'vozilo' => $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $fastTask->getCar5()]),
+        'vozac' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getDriver5()]),
+        'naplativ' => $fastTask->getFree5(),
+        'napomena' => $fastTask->getDescription5(),
+        'status' => $fastTask->getStatus5(),
+        'aktivnosti' => $aktivnosti5,
+        'oprema' => $oprema5,
+      ];
+
+    }
+    if (!is_null($fastTask->getProject6())) {
+
+      $oprema6 = [];
+      $aktivnosti6 = [];
+
+      if (!is_null($fastTask->getOprema6())) {
+        foreach ($fastTask->getOprema6() as $opr6) {
+          $oprema6[] = $this->getEntityManager()->getRepository(Tool::class)->findOneBy(['id' => $opr6]);
+        }
+      }
+
+      if (!is_null($fastTask->getActivity6())) {
+        foreach ($fastTask->getActivity6() as $akt6) {
+          $aktivnosti6[] = $this->getEntityManager()->getRepository(Activity::class)->findOneBy(['id' => $akt6]);
+        }
+      }
+
+      $fastTaskView[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getProject6()]),
+        'vreme' => $fastTask->getTime6(),
+        'zaposleni1' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo16()]),
+        'zaposleni2' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo26()]),
+        'zaposleni3' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' =>  $fastTask->getGeo36()]),
+        'vozilo' => $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $fastTask->getCar6()]),
+        'vozac' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getDriver6()]),
+        'naplativ' => $fastTask->getFree6(),
+        'napomena' => $fastTask->getDescription6(),
+        'status' => $fastTask->getStatus6(),
+        'aktivnosti' => $aktivnosti6,
+        'oprema' => $oprema6,
+      ];
+
+    }
+    if (!is_null($fastTask->getProject7())) {
+
+      $oprema7 = [];
+      $aktivnosti7 = [];
+
+      if (!is_null($fastTask->getOprema7())) {
+        foreach ($fastTask->getOprema7() as $opr7) {
+          $oprema7[] = $this->getEntityManager()->getRepository(Tool::class)->findOneBy(['id' => $opr7]);
+        }
+      }
+
+      if (!is_null($fastTask->getActivity7())) {
+        foreach ($fastTask->getActivity7() as $akt7) {
+          $aktivnosti7[] = $this->getEntityManager()->getRepository(Activity::class)->findOneBy(['id' => $akt7]);
+        }
+      }
+      $fastTaskView[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getProject7()]),
+        'vreme' => $fastTask->getTime7(),
+        'zaposleni1' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo17()]),
+        'zaposleni2' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo27()]),
+        'zaposleni3' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' =>  $fastTask->getGeo37()]),
+        'vozilo' => $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $fastTask->getCar7()]),
+        'vozac' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getDriver7()]),
+        'naplativ' => $fastTask->getFree7(),
+        'napomena' => $fastTask->getDescription7(),
+        'status' => $fastTask->getStatus7(),
+        'aktivnosti' => $aktivnosti7,
+        'oprema' => $oprema7,
+      ];
+
+    }
+    if (!is_null($fastTask->getProject8())) {
+
+      $oprema8 = [];
+      $aktivnosti8 = [];
+
+      if (!is_null($fastTask->getOprema8())) {
+        foreach ($fastTask->getOprema8() as $opr8) {
+          $oprema8[] = $this->getEntityManager()->getRepository(Tool::class)->findOneBy(['id' => $opr8]);
+        }
+      }
+
+      if (!is_null($fastTask->getActivity8())) {
+        foreach ($fastTask->getActivity8() as $akt8) {
+          $aktivnosti8[] = $this->getEntityManager()->getRepository(Activity::class)->findOneBy(['id' => $akt8]);
+        }
+      }
+
+      $fastTaskView[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getProject8()]),
+        'vreme' => $fastTask->getTime8(),
+        'zaposleni1' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo18()]),
+        'zaposleni2' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo28()]),
+        'zaposleni3' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' =>  $fastTask->getGeo38()]),
+        'vozilo' => $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $fastTask->getCar8()]),
+        'vozac' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getDriver8()]),
+        'naplativ' => $fastTask->getFree8(),
+        'napomena' => $fastTask->getDescription8(),
+        'status' => $fastTask->getStatus8(),
+        'aktivnosti' => $aktivnosti8,
+        'oprema' => $oprema8,
+      ];
+
+    }
+    if (!is_null($fastTask->getProject9())) {
+
+      $oprema9 = [];
+      $aktivnosti9 = [];
+
+      if (!is_null($fastTask->getOprema9())) {
+        foreach ($fastTask->getOprema9() as $opr9) {
+          $oprema9[] = $this->getEntityManager()->getRepository(Tool::class)->findOneBy(['id' => $opr9]);
+        }
+      }
+
+      if (!is_null($fastTask->getActivity9())) {
+        foreach ($fastTask->getActivity9() as $akt9) {
+          $aktivnosti9[] = $this->getEntityManager()->getRepository(Activity::class)->findOneBy(['id' => $akt9]);
+        }
+      }
+
+      $fastTaskView[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getProject9()]),
+        'vreme' => $fastTask->getTime9(),
+        'zaposleni1' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo19()]),
+        'zaposleni2' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo29()]),
+        'zaposleni3' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' =>  $fastTask->getGeo39()]),
+        'vozilo' => $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $fastTask->getCar9()]),
+        'vozac' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getDriver9()]),
+        'naplativ' => $fastTask->getFree9(),
+        'napomena' => $fastTask->getDescription9(),
+        'status' => $fastTask->getStatus9(),
+        'aktivnosti' => $aktivnosti9,
+        'oprema' => $oprema9,
+      ];
+
+    }
+    if (!is_null($fastTask->getProject10())) {
+
+      $oprema10 = [];
+      $aktivnosti10 = [];
+
+      if (!is_null($fastTask->getOprema10())) {
+        foreach ($fastTask->getOprema10() as $opr10) {
+          $oprema10[] = $this->getEntityManager()->getRepository(Tool::class)->findOneBy(['id' => $opr10]);
+        }
+      }
+
+      if (!is_null($fastTask->getActivity10())) {
+        foreach ($fastTask->getActivity10() as $akt10) {
+          $aktivnosti10[] = $this->getEntityManager()->getRepository(Activity::class)->findOneBy(['id' => $akt10]);
+        }
+      }
+
+      $fastTaskView[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getProject10()]),
+        'vreme' => $fastTask->getTime10(),
+        'zaposleni1' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo110()]),
+        'zaposleni2' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getGeo210()]),
+        'zaposleni3' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' =>  $fastTask->getGeo310()]),
+        'vozilo' => $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $fastTask->getCar10()]),
+        'vozac' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getDriver10()]),
+        'naplativ' => $fastTask->getFree10(),
+        'napomena' => $fastTask->getDescription10(),
+        'status' => $fastTask->getStatus10(),
+        'aktivnosti' => $aktivnosti10,
+        'oprema' => $oprema10,
+      ];
+
+    }
+
+    if (!is_null($fastTask->getZproject1())) {
+
+      $fastTaskViewZamene[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getZproject1()]),
+        'vreme' => $fastTask->getZtime1(),
+        'zaposleni' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getZgeo1()]),
+        'napomena' => $fastTask->getZdescription1(),
+      ];
+
+    }
+    if (!is_null($fastTask->getZproject2())) {
+
+      $fastTaskViewZamene[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getZproject2()]),
+        'vreme' => $fastTask->getZtime2(),
+        'zaposleni' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getZgeo2()]),
+        'napomena' => $fastTask->getZdescription2(),
+      ];
+
+    }
+    if (!is_null($fastTask->getZproject3())) {
+
+      $fastTaskViewZamene[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getZproject3()]),
+        'vreme' => $fastTask->getZtime3(),
+        'zaposleni' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getZgeo3()]),
+        'napomena' => $fastTask->getZdescription3(),
+      ];
+
+    }
+    if (!is_null($fastTask->getZproject4())) {
+
+      $fastTaskViewZamene[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getZproject4()]),
+        'vreme' => $fastTask->getZtime4(),
+        'zaposleni' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getZgeo4()]),
+        'napomena' => $fastTask->getZdescription4(),
+      ];
+
+    }
+    if (!is_null($fastTask->getZproject5())) {
+
+      $fastTaskViewZamene[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getZproject5()]),
+        'vreme' => $fastTask->getZtime5(),
+        'zaposleni' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getZgeo5()]),
+        'napomena' => $fastTask->getZdescription5(),
+      ];
+
+    }
+    if (!is_null($fastTask->getZproject6())) {
+
+      $fastTaskViewZamene[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getZproject6()]),
+        'vreme' => $fastTask->getZtime6(),
+        'zaposleni' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getZgeo6()]),
+        'napomena' => $fastTask->getZdescription6(),
+      ];
+
+    }
+    if (!is_null($fastTask->getZproject7())) {
+
+      $fastTaskViewZamene[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getZproject7()]),
+        'vreme' => $fastTask->getZtime7(),
+        'zaposleni' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getZgeo7()]),
+        'napomena' => $fastTask->getZdescription7(),
+      ];
+
+    }
+    if (!is_null($fastTask->getZproject8())) {
+
+      $fastTaskViewZamene[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getZproject8()]),
+        'vreme' => $fastTask->getZtime8(),
+        'zaposleni' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getZgeo8()]),
+        'napomena' => $fastTask->getZdescription8(),
+      ];
+
+    }
+    if (!is_null($fastTask->getZproject9())) {
+
+      $fastTaskViewZamene[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getZproject9()]),
+        'vreme' => $fastTask->getZtime9(),
+        'zaposleni' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getZgeo9()]),
+        'napomena' => $fastTask->getZdescription9(),
+      ];
+
+    }
+    if (!is_null($fastTask->getZproject10())) {
+
+      $fastTaskViewZamene[] = [
+        'projekat' => $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $fastTask->getZproject10()]),
+        'vreme' => $fastTask->getZtime10(),
+        'zaposleni' => $this->getEntityManager()->getRepository(User::class)->findOneBy(['id' => $fastTask->getZgeo10()]),
+        'napomena' => $fastTask->getZdescription10(),
+      ];
+
+    }
+
+    return [
+      'zadaci' => $fastTaskView,
+      'zamene' => $fastTaskViewZamene
+    ];
+  }
+
   public function countPlanRadaActive():int {
     $company = $this->security->getUser()->getCompany();
     $noPlan = $this->createQueryBuilder('c')

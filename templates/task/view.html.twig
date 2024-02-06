@@ -568,6 +568,11 @@
                                                     </a>
                                                 {% endif %}
                                             {% endif %}
+                                            {% if not is_granted('ROLE_EMPLOYEE')%}
+                                                <a href="{{ path('app_task_merge', {id:task.id}) }}" class="text-body ms-2">
+                                                    <i class="ph-link"></i>
+                                                </a>
+                                            {% endif %}
                                         </div>
                                     {% else %}
                                         <div class="d-flex align-items-center">
@@ -716,6 +721,7 @@
             </div>
         </div>
     {% endif %}
+
 
 {% endblock content %}
 

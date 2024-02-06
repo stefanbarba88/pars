@@ -125,8 +125,12 @@ FastTaskController extends AbstractController {
 
     $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
     $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
-    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
-    $args['projectsS'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO]);
+    $projects = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
+    $projectsS = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO]);
+    $projectsM = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::KOMBINOVANO]);
+
+    $args['projects'] = array_merge($projects, $projectsM);
+    $args['projectsS'] = array_merge($projectsS, $projectsM);
     $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
     $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
     $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
@@ -168,8 +172,13 @@ FastTaskController extends AbstractController {
     $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($fastTask->getDatum()->format('d.m.Y'));
     $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($fastTask->getDatum()->format('d.m.Y'));
     $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
-    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
-    $args['projectsS'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO]);
+    $projects = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
+    $projectsS = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO]);
+    $projectsM = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::KOMBINOVANO]);
+
+    $args['projects'] = array_merge($projects, $projectsM);
+    $args['projectsS'] = array_merge($projectsS, $projectsM);
+
     $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $fastTask->getCompany()]);
     $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isSuspended' => false, 'company' => $fastTask->getCompany()]);
     $args['fastTask'] = $fastTask;
@@ -182,6 +191,25 @@ FastTaskController extends AbstractController {
 
     return $this->render('fast_task/edit.html.twig', $args);
 
+  }
+
+  #[Route('/view/{id}', name: 'app_quick_tasks_view')]
+  public function view(FastTask $fastTask)    : Response {
+
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $args = [];
+    $args['fastTaskView'] = $this->em->getRepository(FastTask::class)->makeView($fastTask);
+    $args['fastTask'] = $fastTask;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('fast_task/phone/view.html.twig', $args);
+    }
+
+    return $this->render('fast_task/view.html.twig', $args);
   }
 
   #[Route('/create-tasks/{id}', name: 'app_create_tasks')]

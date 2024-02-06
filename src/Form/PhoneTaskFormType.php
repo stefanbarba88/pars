@@ -45,10 +45,10 @@ class PhoneTaskFormType extends AbstractType {
     $task = $dataObject->getTask();
     $company = $dataObject->getTask()->getCompany();
     $projectType = 0;
-    if (!$task->getAssignedUsers()->isEmpty()) {
-      $user = $task->getAssignedUsers()->first();
-      $projectType = $user->getProjectType();
-    }
+//    if (!$task->getAssignedUsers()->isEmpty()) {
+//      $user = $task->getAssignedUsers()->first();
+//      $projectType = $user->getProjectType();
+//    }
 
     if (is_null($task->getProject())) {
       if ($projectType == 0) {

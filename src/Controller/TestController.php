@@ -26,6 +26,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
@@ -34,20 +35,17 @@ class TestController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
 
-//  #[Route('/list/', name: 'app_tasks')]
-//  public function list()    : Response { if (!$this->isGranted('ROLE_USER')) {
-//    return $this->redirect($this->generateUrl('app_login'));
-//  }
-//    $args = [];
-//    $user = $this->getUser();
-//    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-//      $args['tasks'] = $this->em->getRepository(Task::class)->getTasksByUser($user);
-//    } else {
-//      $args['tasks'] = $this->em->getRepository(Task::class)->getTasks();
-//    }
-//
-//    return $this->render('task/list.html.twig', $args);
-//  }
+  #[Route('/kill-session/', name: 'kill_session')]
+
+    public function killSession(SessionInterface $session): Response
+    {
+      // Obrisi sve podatke iz sesije
+      $session->remove('flasher::envelopes');
+
+$session->clear();
+      // Odgovor koji potvrđuje da je sesija uspešno obrisana
+      return new Response('Sesija je uspešno obrisana.');
+    }
 //
 //  #[Route('/form/{id}', name: 'app_task_form', defaults: ['id' => 0])]
 //  #[Entity('task', expr: 'repository.findForForm(id)')]

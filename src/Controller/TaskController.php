@@ -29,6 +29,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
@@ -197,7 +198,7 @@ class TaskController extends AbstractController {
   #[Route('/form/{id}', name: 'app_task_form', defaults: ['id' => 0])]
   #[Entity('task', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Task $task, Request $request, UploadService $uploadService)    : Response {
+  public function form(Task $task, Request $request, UploadService $uploadService, SessionInterface $session)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
@@ -407,6 +408,8 @@ class TaskController extends AbstractController {
           ->duration(5000)
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::TASK_ADD);
+
+
         if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
           return $this->redirectToRoute('app_home');
         }
@@ -415,9 +418,9 @@ class TaskController extends AbstractController {
     }
 
     $projectType = 0;
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      $projectType = $user->getProjectType();
-    }
+//    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+//      $projectType = $user->getProjectType();
+//    }
 
 
     $args['form'] = $form->createView();
@@ -611,7 +614,8 @@ class TaskController extends AbstractController {
       }
     }
 
-    $projectType = $project->getType();
+//    $projectType = $project->getType();
+    $projectType = 0;
 
     $args['form'] = $form->createView();
     $args['task'] = $task;
@@ -645,6 +649,56 @@ class TaskController extends AbstractController {
     }
 
     return $this->render('task/edit_date.html.twig', $args);
+  }
+
+  #[Route('/merge-task/{id}', name: 'app_task_merge')]
+  public function merge(Task $task, Request $request, UploadService $uploadService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $history = null;
+    //ovde izvlacimo ulogovanog usera
+    $user = $this->getUser();
+
+//    $user = $this->em->getRepository(User::class)->find(1);
+//    if ($task->getId()) {
+//      $history = $this->json($task, Response::HTTP_OK, [], [
+//          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+//            return $object->getId();
+//          }
+//        ]
+//      );
+//      $history = $history->getContent();
+//    }
+//    dd($stopwatch);
+
+    if ($request->isMethod('POST')) {
+
+        $data = $request->request->all();
+
+        $task = $this->em->getRepository(Task::class)->mergeTasks($data);
+
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addSuccess(NotifyMessagesData::TASK_MERGE);
+
+          return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+
+    }
+
+    $args['task'] = $task;
+    $args['tasks'] = $this->em->getRepository(Task::class)->getTasksForMerge($task);
+
+//    $mobileDetect = new MobileDetect();
+//    if($mobileDetect->isMobile()) {
+//      return $this->render('task/phone/merge.html.twig', $args);
+//    }
+    return $this->render('task/merge.html.twig', $args);
   }
 
   #[Route('/edit-info/{id}', name: 'app_task_edit_info')]
@@ -915,7 +969,8 @@ class TaskController extends AbstractController {
 
     }
 
-    $projectType = $task->getProject()->getType();
+//    $projectType = $task->getProject()->getType();
+    $projectType = 0;
 
     $args['task'] = $task;
     $args['assignedUsers'] = $this->em->getRepository(Task::class)->getAssignedUsersByTask($task);
@@ -1113,7 +1168,8 @@ class TaskController extends AbstractController {
       return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
     }
-    $projectType = $task->getProject()->getType();
+//    $projectType = $task->getProject()->getType();
+    $projectType = 0;
     $args['task'] = $task;
 //    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);

@@ -118,7 +118,10 @@
                                                         <i class="ph-gear"></i>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
-                                                        <a href="{{ path('app_quick_task_edit', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        <a href="{{ path('app_quick_tasks_view', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        {% if task.status != constant('App\\Classes\\Data\\FastTaskData::FINAL') %}
+                                                            <a href="{{ path('app_quick_task_edit', { id: task.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                        {% endif %}
                                                         {% if task.status == constant('App\\Classes\\Data\\FastTaskData::OPEN') %}
                                                             <a href="" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
                                                         {% endif %}

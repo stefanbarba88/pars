@@ -45,6 +45,7 @@ class NotifyMessagesData {
 
   //Poruke za zadatke
   public const TASK_ADD = 'Uspešno ste kreirali/izmenili zadatak.';
+  public const TASK_MERGE = 'Uspešno ste spojili zadatke.';
   public const TASK_ADD_ERROR = 'Zadatak nije sačuvan jer ste ga verovatno već kreirali.';
   public const TASK_DELETE = 'Uspešno ste obrisali zadatak.';
   public const TASK_EDIT = 'Uspešno ste izmenili zadatak.';

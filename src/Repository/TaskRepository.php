@@ -25,6 +25,7 @@ use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+use PDO;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**
@@ -1592,6 +1593,77 @@ class TaskRepository extends ServiceEntityRepository {
     return $lista;
   }
 
+
+  public function getTasksForMerge(Task $task): array  {
+    $startDate = $task->getDatumKreiranja()->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $task->getDatumKreiranja()->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.project = :project')
+      ->andWhere('t.id <> :id')
+      ->setParameter(':project', $task->getProject())
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->setParameter('id', $task->getId())
+      ->orderBy('t.time', 'ASC');
+
+    $query = $qb->getQuery();
+    return $query->getResult();
+
+  }
+
+  public function mergeTasks($data): Task  {
+    $em = $this->getEntityManager();
+    $db = $this->getEntityManager()->getConnection();
+    $task1 = $this->find($data['task1']);
+    $task2 = $this->find($data['task2']);
+
+    foreach ($task2->getTaskLogs() as $log) {
+
+      $sql = "UPDATE " . $em->getClassMetadata(TaskLog::class)->getTableName() . "
+                  SET task_id = :task1 WHERE id = :taskLog ";
+
+      $result = $db->prepare($sql);
+      $result->bindValue(':taskLog', $log->getId());
+      $result->bindValue(':task1', $task1->getId());
+      $result->execute();
+
+
+//      $task1->addTaskLog($log);
+//      $this->getEntityManager()->getRepository(TaskLog::class)->save($log, true);
+    }
+    foreach ($task2->getAssignedUsers() as $user) {
+      $sql1 = "UPDATE task_user SET task_id = :task1 WHERE task_id = :task2 AND user_id = :user ";
+
+      $result = $db->prepare($sql1);
+      $result->bindValue(':task1', $task1->getId());
+      $result->bindValue(':task2', $task2->getId());
+      $result->bindValue(':user', $user->getId());
+      $result->execute();
+//      $task1->addAssignedUser($user);
+    }
+
+//    $task2->getAssignedUsers()->clear();
+//    $task2->getTaskLogs()->clear();
+
+    $sql = "DELETE FROM " . $em->getClassMetadata(Task::class)->getTableName() . "
+                WHERE id = :task2 ";
+
+    $result = $db->prepare($sql);
+    $result->bindValue(':task2', $task2->getId());
+    $result->execute();
+
+
+//    $this->getEntityManager()->getRepository(Task::class)->save($task1);
+//    $this->getEntityManager()->getRepository(Task::class)->remove($task2->getId());
+
+    return $task1;
+
+  }
+
   public function getTasksByDate(DateTimeImmutable $date): array  {
     $company = $this->security->getUser()->getCompany();
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
@@ -2811,7 +2883,6 @@ class TaskRepository extends ServiceEntityRepository {
   public function remove(int $taskId): void {
     $task = $this->getEntityManager()->getRepository(Task::class)->find($taskId);
     $logs = $task->getTaskLogs();
-
     foreach ($logs as $log) {
       $task->removeTaskLog($log);
     }
@@ -2819,6 +2890,8 @@ class TaskRepository extends ServiceEntityRepository {
     $this->getEntityManager()->flush();
 
   }
+
+
 
   public function findForFormProject(Project $project = null): Task {
 

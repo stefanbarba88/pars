@@ -78,6 +78,7 @@
                                                         <i class="ph-gear"></i>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_stopwatch_check', { id: time.id}) }}" class="dropdown-item"><i class="ph-check me-2"></i> Potvrdite</a>
                                                         <a href="{{ path('app_task_log_view', { id: time.taskLog.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                         {#                                                <a href="{{ path('app_stopwatch_delete', { id: time.id}) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>#}
                                                         <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ time.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>

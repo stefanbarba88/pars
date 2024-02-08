@@ -30,6 +30,9 @@ class StopwatchTime {
   #[ORM\Column(nullable: true)]
   private ?int $min = null;
 
+  #[ORM\Column(nullable: true)]
+  private ?int $checked = null;
+
   #[ORM\Column]
   private ?bool $isEdited = false;
 
@@ -430,6 +433,20 @@ class StopwatchTime {
       $this->client = $client;
 
       return $this;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getChecked(): ?int {
+    return $this->checked;
+  }
+
+  /**
+   * @param int|null $checked
+   */
+  public function setChecked(?int $checked): void {
+    $this->checked = $checked;
   }
 
 }

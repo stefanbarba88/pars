@@ -578,6 +578,21 @@ class AvailabilityRepository extends ServiceEntityRepository {
         $users[] = $plan->getGeo210();
         $users[] = $plan->getGeo310();
 
+
+        $users[] = $plan->getZgeo1();
+        $users[] = $plan->getZgeo2();
+        $users[] = $plan->getZgeo3();
+        $users[] = $plan->getZgeo4();
+        $users[] = $plan->getZgeo5();
+        $users[] = $plan->getZgeo6();
+        $users[] = $plan->getZgeo7();
+        $users[] = $plan->getZgeo8();
+        $users[] = $plan->getZgeo9();
+        $users[] = $plan->getZgeo10();
+
+
+
+
         $users = array_filter($users, function($value) {
           return $value !== null;
         });

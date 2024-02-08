@@ -445,16 +445,16 @@ class StopwatchController extends AbstractController {
     if ($request->isMethod('POST')) {
 
 
-      if ($this->em->getRepository(StopwatchTime::class)->checkAddStopwatch($request->request->get('stopwatch_time_add_form_period'), $stopwatch->getTaskLog())) {
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addError(NotifyMessagesData::STOPWATCH_ADD_ERROR);
-
-        return $this->redirectToRoute('app_stopwatch_edit_time_forma', ['id' => $stopwatch->getId()]);
-      }
+//      if ($this->em->getRepository(StopwatchTime::class)->checkAddStopwatch($request->request->get('stopwatch_time_add_form_period'), $stopwatch->getTaskLog())) {
+//        notyf()
+//          ->position('x', 'right')
+//          ->position('y', 'top')
+//          ->duration(5000)
+//          ->dismissible(true)
+//          ->addError(NotifyMessagesData::STOPWATCH_ADD_ERROR);
+//
+//        return $this->redirectToRoute('app_stopwatch_edit_time_forma', ['id' => $stopwatch->getId()]);
+//      }
 
 
         $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTimeManual($stopwatch, $request->request->get('stopwatch_time_add_form_period'));
@@ -505,6 +505,24 @@ class StopwatchController extends AbstractController {
       ->addSuccess(NotifyMessagesData::STOPWATCH_DELETE);
 
     return $this->redirectToRoute('app_task_log_view', ['id' => $taskLogId]);
+  }
+
+  #[Route('/check/{id}', name: 'app_stopwatch_check')]
+  public function check(StopwatchTime $stopwatch)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $stopwatch->setChecked(1);
+    $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::STOPWATCH_CHECKED);
+
+    return $this->redirectToRoute('app_stopwatch_list');
   }
 
   #[Route('/list/', name: 'app_stopwatch_list')]

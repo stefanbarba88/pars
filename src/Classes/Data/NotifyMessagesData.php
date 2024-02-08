@@ -43,6 +43,8 @@ class NotifyMessagesData {
   public const STOPWATCH_EDIT = 'Uspešno ste izmenili merenje.';
   public const STOPWATCH_CLOSE = 'Uspešno ste zatvorili merenje.';
 
+  public const STOPWATCH_CHECKED = 'Uspešno ste potvrdili merenje i više se neće pojavljivati u listi.';
+
   public const TIME_TASK_CLOSE = 'Uspešno ste zatvorili merenje.';
 
   //Poruke za zadatke

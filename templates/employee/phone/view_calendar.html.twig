@@ -32,7 +32,8 @@
                         <!-- Left sidebar component -->
                         {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
                         <!-- /left sidebar component -->
-
+                        {% set userCreatedYear = user.created|date('Y') %}
+                        {% set currentYear = "now"|date('Y') %}
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
@@ -155,8 +156,16 @@
                                 </div>
 
                                 <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Prisutnost od početka godine</h5>
+
+                                    <div class="card-header d-flex align-items-center">
+                                        {% if userCreatedYear == currentYear %}
+                                            <h5 class="mb-0">Prisutnost od {{ user.created | date('d.m.Y') }}</h5>
+                                        {% else %}
+                                            <h5 class="mb-0">Prisutnost od početka godine</h5>
+                                        {% endif %}
+                                        <div class="d-inline-flex ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{{ (noDays['dostupan'] / noRadnihDana) |number_format(2, '.', ',') }}</span>
+                                        </div>
                                     </div>
 
                                     <div class="card-body">
@@ -245,11 +254,15 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">Odsutnost od početka godine</h5>
+                                        {% if userCreatedYear == currentYear %}
+                                            <h5 class="mb-0">Odsutnost od {{ user.created | date('d.m.Y') }}</h5>
+                                        {% else %}
+                                            <h5 class="mb-0">Odsutnost od početka godine</h5>
+                                        {% endif %}
                                     </div>
-
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-sm-6 col-xl-3">
@@ -357,6 +370,19 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-yellow text-primary">
+                                                    <div class="d-flex align-items-center">
+
+
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ noDays['nemaMerenje'] }}</h4>
+                                                            Nema merenje
+                                                        </div>
+                                                        <i class="ph-warning-circle ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
 
                                         </div>
                                     </div>
@@ -410,19 +436,6 @@
                                     </div>
                                 </div>
 
-
-
-                                {#                                <!-- Schedule -->#}
-                                {#                                <div class="card">#}
-                                {#                                    <div class="card-header">#}
-                                {#                                        <h5 class="mb-0">My schedule</h5>#}
-                                {#                                    </div>#}
-
-                                {#                                    <div class="card-body">#}
-                                {#                                        <div class="my-schedule"></div>#}
-                                {#                                    </div>#}
-                                {#                                </div>#}
-                                {#                                <!-- /schedule -->#}
                             </div>
                         </div>
                         <!-- /right content -->

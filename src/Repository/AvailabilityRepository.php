@@ -116,6 +116,9 @@ class AvailabilityRepository extends ServiceEntityRepository {
           }
           if (is_null($req->getZahtev())) {
             $ostalo++;
+            if ($req->getTypeDay() == 0) {
+              $nemaMerenje++;
+            };
           }
           if ($req->getTypeDay() == TipNeradnihDanaData::PRAZNIK) {
             $neradniPraznik++;
@@ -145,6 +148,116 @@ class AvailabilityRepository extends ServiceEntityRepository {
       'neradniPraznik' => $neradniPraznik,
       'neradniKolektivniOdmor' => $neradniKolektivniOdmor,
       'neradnaNedelja' => $neradnaNedelja,
+      'nemaMerenje' => $nemaMerenje,
+      'ukupno' => $dan + $odmor + $bolovanje + $slava + $neradniKolektivniOdmor + $ostalo
+    ];
+
+  }
+  public function getDaysByUserUser(User $user, $year): array {
+
+    $nedostupan = 0;
+    $izasao = 0;
+    $dostupan = 0;
+
+    $praznik = 0;
+    $nedelja = 0;
+    $kolektivniOdmor = 0;
+
+    $neradniPraznik = 0;
+    $neradnaNedelja = 0;
+    $neradniKolektivniOdmor = 0;
+
+
+    $dan = 0;
+    $odmor = 0;
+    $slava = 0;
+    $bolovanje = 0;
+    $ostalo = 0;
+    $nemaMerenje = 0;
+
+    $startDate = new DateTimeImmutable("$year-01-01");
+    $endDate = new DateTimeImmutable();
+    $endDate->setTime(0,0);
+
+    $requests = $this->createQueryBuilder('c')
+      ->where('c.datum BETWEEN :startDate AND :endDate')
+      ->andWhere('c.User = :user')
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->setParameter('user', $user)
+      ->getQuery()
+      ->getResult();
+
+    foreach ($requests as $req) {
+        if ($req->getType() == AvailabilityData::PRISUTAN) {
+          $dostupan++;
+          if ($req->getTypeDay() == TipNeradnihDanaData::PRAZNIK) {
+            $praznik++;
+          }
+          if ($req->getTypeDay() == TipNeradnihDanaData::KOLEKTIVNI_ODMOR) {
+            $kolektivniOdmor++;
+          }
+          if ($req->getTypeDay() == TipNeradnihDanaData::NEDELJA) {
+            $nedelja++;
+          }
+          if ($req->getTypeDay() == TipNeradnihDanaData::NEDELJA_PRAZNIK) {
+            $nedelja++;
+            $praznik++;
+          }
+        }
+        if ($req->getType() == AvailabilityData::IZASAO) {
+          $izasao++;
+        }
+        if ($req->getType() == AvailabilityData::NEDOSTUPAN) {
+          $nedostupan++;
+
+          if ($req->getZahtev() == CalendarColorsData::DAN) {
+            $dan++;
+          }
+          if ($req->getZahtev() == CalendarColorsData::ODMOR) {
+            $odmor++;
+          }
+          if ($req->getZahtev() == CalendarColorsData::BOLOVANJE) {
+            $bolovanje++;
+          }
+          if ($req->getZahtev() == CalendarColorsData::SLAVA) {
+            $slava++;
+          }
+          if (is_null($req->getZahtev())) {
+            $ostalo++;
+            if ($req->getTypeDay() == 0) {
+              $nemaMerenje++;
+            };
+          }
+          if ($req->getTypeDay() == TipNeradnihDanaData::PRAZNIK) {
+            $neradniPraznik++;
+          }
+          if ($req->getTypeDay() == TipNeradnihDanaData::KOLEKTIVNI_ODMOR) {
+            $neradniKolektivniOdmor++;
+          }
+          if ($req->getTypeDay() == TipNeradnihDanaData::NEDELJA) {
+            $neradnaNedelja++;
+          }
+        }
+    }
+
+    return  [
+      'dostupan' => $dostupan,
+      'praznik' => $praznik,
+      'kolektivniOdmor' => $kolektivniOdmor,
+      'nedelja' => $nedelja,
+      'izasao' => $izasao,
+      'nedostupan' => $nedostupan,
+      'nedostupanBezNedelje' => $nedostupan - $neradnaNedelja,
+      'dan' => $dan,
+      'odmor' => $odmor,
+      'bolovanje' => $bolovanje,
+      'slava' => $slava,
+      'ostalo' => $ostalo,
+      'neradniPraznik' => $neradniPraznik,
+      'neradniKolektivniOdmor' => $neradniKolektivniOdmor,
+      'neradnaNedelja' => $neradnaNedelja,
+      'nemaMerenje' => $nemaMerenje,
       'ukupno' => $dan + $odmor + $bolovanje + $slava + $neradniKolektivniOdmor + $ostalo
     ];
 

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Classes\Data\CalendarColorsData;
 use App\Classes\Data\TipNeradnihDanaData;
 use App\Entity\Holiday;
+use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -282,6 +283,67 @@ class HolidayRepository extends ServiceEntityRepository {
     $company = $this->security->getUser()->getCompany();
     $year = date('Y');
     $startDate = new DateTimeImmutable("$year-01-01");
+    $endDate = new DateTimeImmutable();
+
+    $noPraznici = $this->createQueryBuilder('c')
+      ->where('c.datum BETWEEN :startDate AND :endDate')
+      ->andWhere('c.type = :praznik')
+      ->andWhere('c.company = :company')
+      ->setParameter('company', $company)
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->setParameter('praznik', TipNeradnihDanaData::PRAZNIK)
+      ->getQuery()
+      ->getResult();
+
+    $praznici = 0;
+
+    if (count($noPraznici) > 0 ) {
+      foreach ($noPraznici as $praz) {
+        if ($praz->getDatum()->format('N') < $company->getWorkWeek()) {
+          $praznici++;
+        }
+      }
+    }
+
+    return $praznici;
+  }
+
+  public function brojRadnihDanaDoJuceUser(User $user): int {
+
+    $company = $user->getCompany();
+
+    $danas = time();  // Trenutni timestamp
+
+    $danasObj = new DateTimeImmutable(date('Y-m-d', $danas));
+    $pocetakGodineObj = $user->getCreated()->setTime(0,0);
+
+    // Izračunaj razliku između današnjeg datuma i početka godine
+    $razlika = date_diff($pocetakGodineObj, $danasObj);
+
+    // Uzmi broj dana iz razlike
+    $brojDana = $razlika->days;
+
+    // Inicijalizuj broj radnih dana
+    $brojRadnihDana = 0;
+
+    // Petlja kroz svaki dan između početka godine i juče
+    for ($i = 0; $i < $brojDana; $i++) {
+      // Proveri da li je trenutni dan radni dan i nije nedelja
+      if ($pocetakGodineObj->format('N') < $company->getWorkWeek()) {
+        $brojRadnihDana++;
+      }
+      $pocetakGodineObj = $pocetakGodineObj->modify("+1 day");
+    }
+
+
+    return $brojRadnihDana - $this->brojNeradnihDanaUser($user);
+  }
+  public function brojNeradnihDanaUser(User $user): int {
+
+    $company = $user->getCompany();
+
+    $startDate = $user->getCreated()->setTime(0,0);
     $endDate = new DateTimeImmutable();
 
     $noPraznici = $this->createQueryBuilder('c')

@@ -279,11 +279,16 @@ class EmployeeController extends AbstractController {
     $args['user'] = $usr;
     $year = date('Y');
 
-    $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuce();
-    $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUser($usr, $year);
-    $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUser($usr, $year);
-    $args['overtime'] = $this->em->getRepository(Overtime::class)->getOvertimeByUser($usr);
+    if ($usr->getCreated()->format('Y') != $year) {
+      $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuce();
+      $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUser($usr, $year);
+    } else {
+      $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuceUser($usr);
+      $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUserUser($usr, $year);
+    }
 
+    $args['overtime'] = $this->em->getRepository(Overtime::class)->getOvertimeByUser($usr);
+    $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUser($usr, $year);
     $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostByUser($usr);
 
     $mobileDetect = new MobileDetect();

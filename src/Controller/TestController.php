@@ -18,6 +18,7 @@ use App\Form\TaskAddDocsType;
 use App\Form\TaskEditInfoType;
 use App\Form\TaskEditType;
 use App\Form\TaskFormType;
+use App\Service\MailService;
 use App\Service\UploadService;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
@@ -30,22 +31,20 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-#[Route('/tests')]
+#[Route('/email')]
 class TestController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
 
-  #[Route('/kill-session/', name: 'kill_session')]
+  #[Route('/send-email/', name: 'send_email')]
+  public function sendEmail(MailService $mailService): Response {
 
-    public function killSession(SessionInterface $session): Response
-    {
-      // Obrisi sve podatke iz sesije
-      $session->remove('flasher::envelopes');
+    $mailService->test('stefanmaksimovic88@hotmail.com');
+    $mailService->test('stefanmaksimovic88@gmail.com');
+    $mailService->test('sm@epars.rs');
 
-$session->clear();
-      // Odgovor koji potvrđuje da je sesija uspešno obrisana
-      return new Response('Sesija je uspešno obrisana.');
-    }
+    return $this->redirectToRoute('app_home');
+  }
 //
 //  #[Route('/form/{id}', name: 'app_task_form', defaults: ['id' => 0])]
 //  #[Entity('task', expr: 'repository.findForForm(id)')]

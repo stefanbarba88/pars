@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ZaposleniPozicijaRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueEntity(fields: ['title'], message: 'U bazi već postoji pozicija sa ovim nazivom.')]
+#[UniqueEntity(fields: ['title', 'company'], message: 'U bazi već postoji pozicija sa ovim nazivom.')]
 #[ORM\Table(name: 'positions')]
 class ZaposleniPozicija {
   #[ORM\Id]

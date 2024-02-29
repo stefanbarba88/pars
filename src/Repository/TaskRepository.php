@@ -1621,6 +1621,42 @@ class TaskRepository extends ServiceEntityRepository {
     $task1 = $this->find($data['task1']);
     $task2 = $this->find($data['task2']);
 
+
+    foreach ($task2->getAssignedUsers() as $koris) {
+      if ($task1->getAssignedUsers()->contains($koris)){
+
+        $taskLog1 = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $task1, 'user' => $koris]);
+        $taskLog2 = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $task2, 'user' => $koris]);
+
+        $sql = "UPDATE " . $em->getClassMetadata(StopwatchTime::class)->getTableName() . "
+                  SET task_log_id = :taskLog1 WHERE task_log_id = :taskLog2 ";
+
+        $result = $db->prepare($sql);
+        $result->bindValue(':taskLog1', $taskLog1->getId());
+        $result->bindValue(':taskLog2', $taskLog2->getId());
+        $result->execute();
+
+        $sqlDelete = "DELETE FROM " . $em->getClassMetadata(TaskLog::class)->getTableName() . "
+                WHERE id = :taskLog2 ";
+
+        $resultDelete = $db->prepare($sqlDelete);
+        $resultDelete->bindValue(':taskLog2', $taskLog2->getId());
+        $resultDelete->execute();
+
+        $sql2 = "DELETE FROM task_user WHERE task_id = :task2 AND user_id = :user ";
+
+        $result = $db->prepare($sql2);
+        $result->bindValue(':task2', $task2->getId());
+        $result->bindValue(':user', $koris->getId());
+        $result->execute();
+
+      }
+    }
+
+
+
+
+
     foreach ($task2->getTaskLogs() as $log) {
 
       $sql = "UPDATE " . $em->getClassMetadata(TaskLog::class)->getTableName() . "
@@ -2882,12 +2918,15 @@ class TaskRepository extends ServiceEntityRepository {
 
   public function remove(int $taskId): void {
     $task = $this->getEntityManager()->getRepository(Task::class)->find($taskId);
-    $logs = $task->getTaskLogs();
-    foreach ($logs as $log) {
-      $task->removeTaskLog($log);
+    //dodato zbog izmene plana rada
+    if (!is_null($task)) {
+      $logs = $task->getTaskLogs();
+      foreach ($logs as $log) {
+        $task->removeTaskLog($log);
+      }
+      $this->getEntityManager()->remove($task);
+      $this->getEntityManager()->flush();
     }
-    $this->getEntityManager()->remove($task);
-    $this->getEntityManager()->flush();
 
   }
 

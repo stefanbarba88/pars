@@ -164,7 +164,7 @@
                                             <h5 class="mb-0">Prisutnost od početka godine</h5>
                                         {% endif %}
                                         <div class="d-inline-flex ms-auto">
-                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{{ (noDays['dostupan'] / noRadnihDana) |number_format(2, '.', ',') }}</span>
+                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{% if noRadnihDana > 0 %} {{ (noDays['dostupan'] / noRadnihDana) |number_format(2, '.', ',') }} {% endif %}</span>
                                         </div>
                                     </div>
 

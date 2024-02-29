@@ -59,7 +59,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $neradniPraznik = 0;
     $neradnaNedelja = 0;
     $neradniKolektivniOdmor = 0;
-
+    $nemaMerenje = 0;
 
     $dan = 0;
     $odmor = 0;
@@ -545,8 +545,10 @@ class AvailabilityRepository extends ServiceEntityRepository {
         if (!$user->isInTask()) {
           $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
           if (empty($tasks)) {
-            $noUnknown++;
-            $unknown[] = $user;
+            if ($user->getProjectType() == TipProjektaData::LETECE) {
+              $noUnknown++;
+              $unknown[] = $user;
+            }
           } else {
             $noVanZadatka++;
             $vanZadatka[] = $user;

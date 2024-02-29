@@ -25,7 +25,13 @@ security:
             # by default, the feature allows 5 login attempts per minute
             login_throttling: null
             user_checker: App\Security\UserChecker
-
+            remember_me:
+                secret:   '%kernel.secret%' # required
+                lifetime: 604800 # 1 week in seconds
+                # by default, the feature is enabled by checking a
+                # checkbox in the login form (see below), uncomment the
+                # following line to always enable it.
+                #always_remember_me: true
             custom_authenticator: App\Security\LoginAuthenticator
             logout:
                 path: app_logout

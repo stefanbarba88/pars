@@ -50,7 +50,7 @@ class MailService {
     $args = [];
     $to = $user->getEmail();
     $subject = 'Registracija na ' . CompanyInfo::ORGANIZATION_TITLE;
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/registration.html.twig';
 
@@ -65,11 +65,30 @@ class MailService {
 
   }
 
+  public function test(string $email): void {
+    $args = [];
+    $to = $email;
+    $subject = 'Registracija na ' . CompanyInfo::ORGANIZATION_TITLE;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/registration.html.twig';
+
+    $args['link'] = $this->router->generate('app_login', [], UrlGeneratorInterface::ABSOLUTE_URL);
+    $args['mail'] = $email;
+    $args['password'] = $email;
+    $args['name'] = $email;
+    $args['role'] = $email;
+    $args['support'] = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
   public function plan($plan, $users, $datum): void {
 
     $args = [];
     $subject = 'Plan rada za ' .  $datum->format('d.m.Y');
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/plan.html.twig';
     $args['timetable'] = $plan;
@@ -85,7 +104,7 @@ class MailService {
 
     $args = [];
     $subject = 'Izmene na stalnim gradilištima za ' .  $datum->format('d.m.Y');
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/subs.html.twig';
     $args['subs'] = $subs;
@@ -102,7 +121,7 @@ class MailService {
 
     $args = [];
     $subject = 'Zatvoren zadatak ' .  $task->getTitle();
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/task.html.twig';
     $args['task'] = $task;
@@ -119,7 +138,7 @@ class MailService {
 
     $subject = 'Zahtev od ' . $calendar->getUser()->first()->getFullName();
 
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/zahtev.html.twig';
     $args['user'] = $calendar->getUser()->first()->getFullName();
@@ -136,7 +155,7 @@ class MailService {
 
     $subject = 'Interni zadatak od' . $checklist->getCreatedBy()->getFullName();
 
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/interni_task.html.twig';
     $args['user'] = $checklist->getUser()->getFullName();
@@ -154,7 +173,7 @@ class MailService {
 
     $subject = 'Odgovor na zahtev ' . $calendar->getUser()->first()->getFullName();
 
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/odgovor.html.twig';
     $args['user'] = $calendar->getUser()->first()->getFullName();
@@ -172,7 +191,7 @@ class MailService {
 
     $subject = 'Broj izlazaka za  ' . $client->getTitle() . ' do ' . $date->format('d.m.Y');
 
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/izlasci.html.twig';
     $args['client'] = $client;
@@ -189,7 +208,7 @@ class MailService {
     $args = [];
     $to = $user->getEmail();
     $subject = 'Izmena profila na ' . CompanyInfo::ORGANIZATION_TITLE;
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/edit_account.html.twig';
 
@@ -208,7 +227,7 @@ class MailService {
     $args = [];
     $to = $user->getEmail();
     $subject = 'Deaktivacija naloga na ' . CompanyInfo::ORGANIZATION_TITLE;
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/deactivate.html.twig';
 
@@ -223,7 +242,7 @@ class MailService {
     $args = [];
     $to = $user->getEmail();
     $subject = 'Aktivacija naloga na ' . CompanyInfo::ORGANIZATION_TITLE;
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/activate.html.twig';
 
@@ -239,7 +258,7 @@ class MailService {
     $args = [];
     $to = $user->getEmail();
     $subject = 'Reset lozinke na ' . CompanyInfo::ORGANIZATION_TITLE;
-    $from = CompanyInfo::ORGANIZATION_MAIL_ADDRESS;
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/reset_password.html.twig';
 

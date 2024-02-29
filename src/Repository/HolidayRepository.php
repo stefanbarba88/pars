@@ -6,6 +6,7 @@ use App\Classes\Data\CalendarColorsData;
 use App\Classes\Data\TipNeradnihDanaData;
 use App\Entity\Holiday;
 use App\Entity\User;
+use DateInterval;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -284,6 +285,7 @@ class HolidayRepository extends ServiceEntityRepository {
     $year = date('Y');
     $startDate = new DateTimeImmutable("$year-01-01");
     $endDate = new DateTimeImmutable();
+    $endDate = $endDate->sub(new DateInterval('P1D'));
 
     $noPraznici = $this->createQueryBuilder('c')
       ->where('c.datum BETWEEN :startDate AND :endDate')
@@ -345,6 +347,7 @@ class HolidayRepository extends ServiceEntityRepository {
 
     $startDate = $user->getCreated()->setTime(0,0);
     $endDate = new DateTimeImmutable();
+    $endDate = $endDate->sub(new DateInterval('P1D'));
 
     $noPraznici = $this->createQueryBuilder('c')
       ->where('c.datum BETWEEN :startDate AND :endDate')

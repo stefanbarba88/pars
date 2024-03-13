@@ -77,6 +77,15 @@
                                                                 <div class="fw-semibold">
                                                                     {{ key}}
                                                                 </div>
+                                                                <div>
+                                                                    {% if value[0].dan == 1 %}
+                                                                        <span class="badge bg-secondary text-primary">Praznik</span>
+                                                                    {% elseif value[0].dan  == 3 %}
+                                                                        <span class="badge bg-secondary text-primary">Nedelja</span>
+                                                                    {% elseif value[0].dan == 5 %}
+                                                                        <span class="badge bg-yellow text-white">Praznik i nedelja</span>
+                                                                    {% endif %}
+                                                                </div>
                                                             </td>
                                                         {% endif %}
 
@@ -98,7 +107,7 @@
 {#                                                            </td>#}
 {#                                                        {% endif %}#}
                                                             <td>
-                                                                <table class="table table-condensed2 table-striped table-bordered">
+                                                                <table class="table table_morecondensed table-bordered">
                                                                     <thead class="bg-light">
                                                                     <tr>
                                                                         {% if opis is defined %}
@@ -108,9 +117,9 @@
                                                                         {% if opis is defined %}
                                                                             <th>Aktivnosti</th>
                                                                         {% endif %}
-                                                                        {% if opis is defined %}
-                                                                            <th>Dodatne aktivnosti</th>
-                                                                        {% endif %}
+{#                                                                        {% if opis is defined %}#}
+{#                                                                            <th>Dodatne aktivnosti</th>#}
+{#                                                                        {% endif %}#}
                                                                         {% if start is defined %}
                                                                             <th>Start</th>
                                                                         {% endif %}
@@ -156,12 +165,20 @@
                                                                                         </td>
                                                                                         <td>
                                                                                             {% for akt in stopwatch.activity %}
-                                                                                                {{ akt.title }}{% if not loop.last %},{% endif %}
+                                                                                                {% if akt.id != 105 %}
+                                                                                                    {{ akt.title }},
+                                                                                                {% endif %}
+                                                                                            {% endfor %}
+
+                                                                                            {% set sentences = stopwatch.additionalActivity|split('. ') %}
+
+                                                                                            {% for sentence in sentences %}
+                                                                                                {{ sentence }}{% if not loop.last %},{% endif %}
                                                                                             {% endfor %}
                                                                                         </td>
-                                                                                        <td>
-                                                                                            {{ stopwatch.additionalActivity }}
-                                                                                        </td>
+{#                                                                                        <td>#}
+{#                                                                                            {{ stopwatch.additionalActivity }}#}
+{#                                                                                        </td>#}
                                                                                     {% endif %}
                                                                                     {% if start is defined %}
                                                                                         <td>

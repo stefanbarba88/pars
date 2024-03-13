@@ -38,7 +38,8 @@ class NotifyMessagesData {
 
   //Poruke za vremenske zapise
   public const STOPWATCH_ADD = 'Uspešno ste kreirali novo merenje.';
-  public const STOPWATCH_ADD_ERROR = 'Niste kreirali novo merenje. Proverite vreme koje unosite jer je moguće da se preklapaju sa već kreiranim merenjima. ';
+  public const STOPWATCH_ADD_ERROR = 'Niste kreirali novo merenje. Proverite vreme koje unosite jer je moguće da se preklapaju sa već kreiranim merenjima.';
+  public const STOPWATCH_START_ERROR = 'Nije moguće pokrenuti novo merenje. Merenje je već pokrenuto.';
   public const STOPWATCH_DELETE = 'Uspešno ste obrisali merenje.';
   public const STOPWATCH_EDIT = 'Uspešno ste izmenili merenje.';
   public const STOPWATCH_CLOSE = 'Uspešno ste zatvorili merenje.';

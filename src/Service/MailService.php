@@ -153,7 +153,7 @@ class MailService {
 
     $args = [];
 
-    $subject = 'Interni zadatak od' . $checklist->getCreatedBy()->getFullName();
+    $subject = 'Interni zadatak od ' . $checklist->getCreatedBy()->getFullName();
 
     $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
@@ -189,7 +189,7 @@ class MailService {
 
     $args = [];
 
-    $subject = 'Broj izlazaka za  ' . $client->getTitle() . ' do ' . $date->format('d.m.Y');
+    $subject = 'Broj izlazaka za ' . $client->getTitle() . ' do ' . $date->format('d.m.Y');
 
     $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;

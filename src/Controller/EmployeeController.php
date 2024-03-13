@@ -710,36 +710,35 @@ class EmployeeController extends AbstractController {
         $maxCellWidth = 50;
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
-        $sheet->getColumnDimension('C')->setAutoSize(true);
-        $sheet->getColumnDimension('D')->setWidth($maxCellWidth);
+        $sheet->getColumnDimension('C')->setWidth($maxCellWidth);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
         $sheet->getColumnDimension('E')->setAutoSize(true);
         $sheet->getColumnDimension('F')->setAutoSize(true);
         $sheet->getColumnDimension('G')->setAutoSize(true);
         $sheet->getColumnDimension('H')->setAutoSize(true);
         $sheet->getColumnDimension('I')->setAutoSize(true);
         $sheet->getColumnDimension('J')->setAutoSize(true);
-        $sheet->getColumnDimension('K')->setAutoSize(true);
-        $sheet->getColumnDimension('L')->setWidth($maxCellWidth);
-        $sheet->getColumnDimension('M')->setAutoSize(true);
+        $sheet->getColumnDimension('K')->setWidth($maxCellWidth);
+        $sheet->getColumnDimension('L')->setAutoSize(true);
 
 
-        $sheet->mergeCells('A1:M1');
+        $sheet->mergeCells('A1:L1');
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A1')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
         $sheet->setCellValue('A1', $user->getFullName() . ': ' . $datum);
-        $style = $sheet->getStyle('A1:M1');
+        $style = $sheet->getStyle('A1:L1');
         $font = $style->getFont();
         $font->setSize(18); // Postavite veličinu fonta na 14
         $font->setBold(true); // Postavite font kao boldiran
 
         $sheet->mergeCells('A2:A3');
-        $sheet->mergeCells('B2:L2');
+        $sheet->mergeCells('B2:K2');
 
-        $sheet->mergeCells('M2:M3');
+        $sheet->mergeCells('L2:L3');
 
         $sheet->setCellValue('A2', 'Datum');
         $sheet->setCellValue('B2', 'Opis izvedenog posla');
-        $sheet->setCellValue('M2', 'Izvršioci');
+        $sheet->setCellValue('L2', 'Izvršioci');
 
         $sheet->getStyle('A2:A3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A2:A3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
@@ -749,22 +748,21 @@ class EmployeeController extends AbstractController {
         $sheet->getStyle('B2:J2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
 
-        $sheet->getStyle('M2:M3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('M2:M3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('L2:L3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('L2:L3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
 
 
         $sheet->setCellValue('B3', 'Projekat / Kategorija');
         $sheet->setCellValue('C3', 'Aktivnosti');
-        $sheet->setCellValue('D3', 'Dodatne aktivnosti');
-        $sheet->setCellValue('E3', 'Klijent*');
-        $sheet->setCellValue('F3', 'Start');
-        $sheet->setCellValue('G3', 'Kraj');
-        $sheet->setCellValue('H3', 'Razlika');
-        $sheet->setCellValue('I3', 'Razlika*');
-        $sheet->setCellValue('J3', 'Ukupno');
-        $sheet->setCellValue('K3', 'Ukupno*');
-        $sheet->setCellValue('L3', 'Napomena');
+        $sheet->setCellValue('D3', 'Klijent*');
+        $sheet->setCellValue('E3', 'Start');
+        $sheet->setCellValue('F3', 'Kraj');
+        $sheet->setCellValue('G3', 'Razlika');
+        $sheet->setCellValue('H3', 'Razlika*');
+        $sheet->setCellValue('I3', 'Ukupno');
+        $sheet->setCellValue('J3', 'Ukupno*');
+        $sheet->setCellValue('K3', 'Napomena');
 
 
         $sheet->getStyle('B3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -797,9 +795,6 @@ class EmployeeController extends AbstractController {
         $sheet->getStyle('K3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('K3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-        $sheet->getStyle('L3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('L3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-
 
         $font = $sheet->getStyle('A')->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
@@ -825,8 +820,7 @@ class EmployeeController extends AbstractController {
         $font->setSize(14); // Postavite veličinu fonta na 14
         $font = $sheet->getStyle('L')->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
-        $font = $sheet->getStyle('M')->getFont();
-        $font->setSize(14); // Postavite veličinu fonta na 14
+
 
 
         $start = 4;
@@ -838,7 +832,7 @@ class EmployeeController extends AbstractController {
           if ($item != 1) {
             $offset = $item - 1;
             $sheet->mergeCells('A' . $start . ':A' . $start + $offset);
-            $sheet->mergeCells('K' . $start . ':K' . $start + $offset);
+            $sheet->mergeCells('I' . $start . ':I' . $start + $offset);
             $sheet->mergeCells('J' . $start . ':J' . $start + $offset);
 
           }
@@ -852,18 +846,38 @@ class EmployeeController extends AbstractController {
 
         foreach ($report[2] as $key => $item) {
           $start1 = $rows[$row1];
-          $sheet->setCellValue('J' . $start1, $item['vremeR']);
+          $sheet->setCellValue('I' . $start1, $item['vremeR']);
+          $sheet->getStyle('I' . $start1)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+          $sheet->getStyle('I' . $start1)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+          $sheet->setCellValue('J' . $start1, $item['vreme']);
           $sheet->getStyle('J' . $start1)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
           $sheet->getStyle('J' . $start1)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-
-          $sheet->setCellValue('K' . $start1, $item['vreme']);
-          $sheet->getStyle('K' . $start1)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-          $sheet->getStyle('K' . $start1)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
           $row1++;
         }
         foreach ($report[0] as $key => $item) {
+
+          $dan = '';
+
+          if ($item[0]['dan'] == 1) {
+            $dan = '(Praznik)';
+          }
+          if ($item[0]['dan'] == 3) {
+            $dan = '(Nedelja)';
+          }
+          if ($item[0]['dan'] == 5) {
+            $dan = '(Praznik i nedelja)';
+          }
+
           $start = $rows[$row];
-          $sheet->setCellValue('A' . $start, $key);
+
+          if (empty($dan)) {
+            $sheet->setCellValue('A' . $start, $key);
+          } else {
+            $sheet->setCellValue('A' . $start, $key . "\n" . $dan);
+          }
+
+          $sheet->getStyle('A' . $start)->getAlignment()->setWrapText(true);
           $sheet->getStyle('A' . $start)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
           $sheet->getStyle('A' . $start)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
@@ -880,41 +894,50 @@ class EmployeeController extends AbstractController {
 
           foreach ($item as $stopwatch) {
 
+
             $aktivnosti = [];
             foreach ($stopwatch['activity'] as $akt) {
-              $aktivnosti [] = $akt->getTitle();
+              if ($akt->getId() != 105) {
+                $aktivnosti [] = $akt->getTitle();
+              }
             }
-            $combinedActivities = implode("\n", $aktivnosti);
+
+            $recenice = array_map('trim', preg_split('/[.!?]+/', $stopwatch['additionalActivity'], -1, PREG_SPLIT_NO_EMPTY));
+            $sveAktivnosti = array_merge($aktivnosti, $recenice);
+
+            $combinedActivities = implode("\n", $sveAktivnosti);
+
+
             $sheet->setCellValue('C' . $startAktivnosti, $combinedActivities);
             $sheet->getStyle('C' . $startAktivnosti)->getAlignment()->setWrapText(true);
             $sheet->getStyle('C' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
             $sheet->getStyle('C' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-            $sheet->setCellValue('D' . $startAktivnosti, $stopwatch['additionalActivity']);
-            $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setWrapText(true);
-            $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-            $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+//            $sheet->setCellValue('D' . $startAktivnosti, $stopwatch['additionalActivity']);
+//            $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setWrapText(true);
+//            $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+//            $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-            $sheet->setCellValue('F' . $startAktivnosti, $stopwatch['start']->format('H:i'));
+            $sheet->setCellValue('E' . $startAktivnosti, $stopwatch['start']->format('H:i'));
+            $sheet->getStyle('E' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('E' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+            $sheet->setCellValue('F' . $startAktivnosti, $stopwatch['stop']->format('H:i'));
             $sheet->getStyle('F' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('F' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-            $sheet->setCellValue('G' . $startAktivnosti, $stopwatch['stop']->format('H:i'));
+            $sheet->setCellValue('G' . $startAktivnosti, $stopwatch['hoursReal'] . ':' . $stopwatch['minutesReal']);
             $sheet->getStyle('G' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('G' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-            $sheet->setCellValue('H' . $startAktivnosti, $stopwatch['hoursReal'] . ':' . $stopwatch['minutesReal']);
+            $sheet->setCellValue('H' . $startAktivnosti, $stopwatch['hours'] . ':' . $stopwatch['minutes']);
             $sheet->getStyle('H' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('H' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-            $sheet->setCellValue('I' . $startAktivnosti, $stopwatch['hours'] . ':' . $stopwatch['minutes']);
-            $sheet->getStyle('I' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('I' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-
-            $sheet->setCellValue('L' . $startAktivnosti, $stopwatch['description']);
-            $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setWrapText(true);
-            $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-            $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            $sheet->setCellValue('K' . $startAktivnosti, $stopwatch['description']);
+            $sheet->getStyle('K' . $startAktivnosti)->getAlignment()->setWrapText(true);
+            $sheet->getStyle('K' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle('K' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
             $users = '';
             $usersCount = count($stopwatch['users']);
@@ -928,16 +951,16 @@ class EmployeeController extends AbstractController {
               }
             }
 
-            $sheet->setCellValue('M' . $startAktivnosti, $users);
-            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setWrapText(true);
-            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            $sheet->setCellValue('L' . $startAktivnosti, $users);
+            $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setWrapText(true);
+            $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
 
             if (!is_null($stopwatch['client'])) {
-              $sheet->setCellValue('E' . $startAktivnosti, $stopwatch['client']->getTitle());
-              $sheet->getStyle('E' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-              $sheet->getStyle('E' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+              $sheet->setCellValue('D' . $startAktivnosti, $stopwatch['client']->getTitle());
+              $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+              $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
             }
             if (!is_null($stopwatch['category'])) {
               $sheet->setCellValue('B' . $startAktivnosti, $stopwatch['project']->getTitle() . ' (' .$stopwatch['category']->getTitle() . ')');
@@ -961,11 +984,11 @@ class EmployeeController extends AbstractController {
 
         $dimension = $sheet->calculateWorksheetDimension();
         $sheet->getStyle($dimension)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-        $sheet->getStyle('A1:M3')->getFill()->setFillType(Fill::FILL_SOLID);
-        $sheet->getStyle('A1:M3')->getFill()->getStartColor()->setRGB('CCCCCC');
+        $sheet->getStyle('A1:L3')->getFill()->setFillType(Fill::FILL_SOLID);
+        $sheet->getStyle('A1:L3')->getFill()->getStartColor()->setRGB('CCCCCC');
 
         // Postavite font za opseg od A1 do M2
-        $style = $sheet->getStyle('A2:M3');
+        $style = $sheet->getStyle('A2:L3');
         $font = $style->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
         $font->setBold(true); // Postavite font kao boldiran
@@ -978,7 +1001,7 @@ class EmployeeController extends AbstractController {
           $offset = $offset + $start;
 //        dd($offset);
 
-          $sheet->getStyle('A' . $start . ':M' . $offset)->applyFromArray($styleArray);
+          $sheet->getStyle('A' . $start . ':L' . $offset)->applyFromArray($styleArray);
 
           $start = $offset + 1;
 

@@ -64,6 +64,11 @@ class StopwatchTime {
   #[ORM\Column(type: Types::TEXT, nullable: true,)]
   private ?string $additionalActivity = null;
 
+  #[ORM\Column(type: Types::TEXT, nullable: true,)]
+  private ?string $additionalDesc = null;
+
+
+
   #[ORM\Column]
   private DateTimeImmutable $created;
 
@@ -448,5 +453,21 @@ class StopwatchTime {
   public function setChecked(?int $checked): void {
     $this->checked = $checked;
   }
+
+  /**
+   * @return string|null
+   */
+  public function getAdditionalDesc(): ?string {
+    return $this->additionalDesc;
+  }
+
+  /**
+   * @param string|null $additionalDesc
+   */
+  public function setAdditionalDesc(?string $additionalDesc): void {
+    $this->additionalDesc = $additionalDesc;
+  }
+
+
 
 }

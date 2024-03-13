@@ -373,6 +373,28 @@ class HolidayRepository extends ServiceEntityRepository {
     return $praznici;
   }
 
+
+  public function vrstaDana(DateTimeImmutable $datum, $company): int {
+    $tip = 0;
+
+    if ($datum->format('N') == 7) {
+      $tip = TipNeradnihDanaData::NEDELJA;
+    }
+
+    $dan = $this->findOneBy(['datum' => $datum->setTime(0,0), 'company' => $company, 'type' => TipNeradnihDanaData::PRAZNIK]);
+
+
+    if (!empty($dan)) {
+      $tip = TipNeradnihDanaData::PRAZNIK;
+    }
+    if (($datum->format('N') == 7) && (!empty($dan))) {
+      $tip = TipNeradnihDanaData::NEDELJA_PRAZNIK;
+    }
+
+    return $tip;
+
+  }
+
 //    /**
 //     * @return Holiday[] Returns an array of Holiday objects
 //     */

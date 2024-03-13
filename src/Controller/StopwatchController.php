@@ -41,6 +41,20 @@ class StopwatchController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
+    $user = $this->getUser();
+
+    if ($user->isInTask() ) {
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addError(NotifyMessagesData::STOPWATCH_START_ERROR);
+
+        return $this->redirectToRoute('app_home');
+
+    }
+
     $stopwatch = new StopwatchTime();
     $stopwatch->setTaskLog($taskLog);
     $stopwatch->setStart(new DateTimeImmutable());
@@ -49,7 +63,7 @@ class StopwatchController extends AbstractController {
     $stopwatch->setCompany($taskLog->getTask()->getCompany());
 
     $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
-    $user = $this->getUser();
+
     $user->setIsInTask(true);
     $this->em->getRepository(User::class)->save($user);
 
@@ -157,6 +171,21 @@ class StopwatchController extends AbstractController {
             $stopwatch->addImage($image);
           }
         }
+
+
+        $text = trim($stopwatch->getAdditionalActivity());
+        $sentences = preg_split('/[.,;]\s*/', $text);
+        // Iteriraj kroz svaku rečenicu
+        foreach ($sentences as &$sentence) {
+          // Učini svaku rečenicu da počinje velikim slovom
+          $sentence = ucfirst(trim($sentence));
+        }
+
+        // Spoji rečenice nazad u jedan string
+//        $processedText = implode('. ', $sentences) . '.';
+        $processedText = implode('. ', $sentences);
+
+        $stopwatch->setAdditionalActivity($processedText);
 
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 
@@ -296,6 +325,22 @@ class StopwatchController extends AbstractController {
           }
         }
 
+        $text = trim($stopwatch->getAdditionalActivity());
+        $sentences = preg_split('/[.,;]\s*/', $text);
+        // Iteriraj kroz svaku rečenicu
+        foreach ($sentences as &$sentence) {
+          // Učini svaku rečenicu da počinje velikim slovom
+          $sentence = ucfirst(trim($sentence));
+        }
+
+        // Spoji rečenice nazad u jedan string
+//        $processedText = implode('. ', $sentences) . '.';
+        $processedText = implode('. ', $sentences);
+
+        $stopwatch->setAdditionalActivity($processedText);
+
+
+
         $stopwatch->setIsEdited(true);
         $stopwatch->setEditedBy($user);
         $stopwatch->setCompany($user->getCompany());
@@ -402,6 +447,20 @@ class StopwatchController extends AbstractController {
 
         $stopwatch->setIsEdited(true);
         $stopwatch->setEditedBy($user);
+
+        $text = trim($stopwatch->getAdditionalActivity());
+        $sentences = preg_split('/[.,;]\s*/', $text);
+        // Iteriraj kroz svaku rečenicu
+        foreach ($sentences as &$sentence) {
+          // Učini svaku rečenicu da počinje velikim slovom
+          $sentence = ucfirst(trim($sentence));
+        }
+
+        // Spoji rečenice nazad u jedan string
+//        $processedText = implode('. ', $sentences) . '.';
+        $processedText = implode('. ', $sentences);
+
+        $stopwatch->setAdditionalActivity($processedText);
 
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 

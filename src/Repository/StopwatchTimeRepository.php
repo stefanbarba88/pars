@@ -13,6 +13,7 @@ use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
+use DateInterval;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -221,6 +222,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       foreach ($tasks as $task) {
         if (!is_null($task['log'])) {
           if (!empty ($this->getStopwatchesActive($task['log']))) {
+
             $projectStopwatches[] = [
               'datum' => $task['datum']->format('d.m.Y.'),
               'zaduzeni' => $task['task']->getAssignedUsers(),
@@ -230,7 +232,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
               'activity' => $this->getStopwatchesActivity($task['log']),
               'description' => $this->getStopwatchesDescription($task['log']),
               'task' => $task,
-              'category' => $task['task']->getCategory()
+              'category' => $task['task']->getCategory(),
+              'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $project->getCompany())
             ];
           }
         }
@@ -249,7 +252,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
                 'activity' => $this->getStopwatchesActivity($task['log']),
                 'description' => $this->getStopwatchesDescription($task['log']),
                 'task' => $task,
-                'category' => $task['task']->getCategory()
+                'category' => $task['task']->getCategory(),
+                'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $project->getCompany())
               ];
             }
           }
@@ -359,7 +363,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
               'description' => $this->getStopwatchesDescription($task['log']),
               'task' => $task,
               'project' => $task['task']->getProject(),
-              'category' => $task['task']->getCategory()
+              'category' => $task['task']->getCategory(),
+              'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $user->getCompany())
             ];
           }
         }
@@ -379,7 +384,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
                 'description' => $this->getStopwatchesDescription($task['log']),
                 'task' => $task,
                 'project' => $task['task']->getProject(),
-                'category' => $task['task']->getCategory()
+                'category' => $task['task']->getCategory(),
+                'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $user->getCompany())
               ];
             }
           }
@@ -489,7 +495,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
             'activity' => $this->getStopwatchesActivity($task['log']),
             'description' => $this->getStopwatchesDescription($task['log']),
             'task' => $task,
-            'category' => $task['task']->getCategory()
+            'category' => $task['task']->getCategory(),
+            'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $user->getCompany())
           ];
         }
       }
@@ -616,7 +623,8 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
             'activity' => $this->getStopwatchesActivity($task['log']),
             'description' => $this->getStopwatchesDescription($task['log']),
             'task' => $task,
-            'category' => $task['task']->getCategory()
+            'category' => $task['task']->getCategory(),
+            'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $project->getCompany())
           ];
         }
       }
@@ -1473,6 +1481,31 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
     return count($times);
 
+  }
+
+  public function getStopwatchByUserCheck(User $user): bool {
+
+    $currentTime = new DateTimeImmutable();
+
+    $startDate = $currentTime->add(new DateInterval('PT1M'))->format('Y-m-d H:i:s');
+    $endDate = $currentTime->sub(new DateInterval('PT1M'))->format('Y-m-d H:i:s');
+
+    $tasks =  $this->createQueryBuilder('t')
+      ->where('t.createdBy = :user')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.created < :startDate')
+      ->andWhere('t.created > :endDate')
+      ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
+      ->setParameter(':user', $user)
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    if (!empty($tasks)){
+      return true;
+    }
+    return false;
   }
 
 //  public function setTime(StopwatchTime $stopwatch): StopwatchTime {

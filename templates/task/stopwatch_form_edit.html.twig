@@ -50,16 +50,17 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
-                                        {{ form_label(form.activity, 'Odrađene aktivnosti:', {'label_attr': {'class': 'form-category'}}) }}
+                                        {{ form_label(form.activity, 'Odrađene aktivnosti:*', {'label_attr': {'class': 'form-category'}}) }}
                                         {{ form_widget(form.activity, {attr: { class: 'form-control select' }}) }}
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row dodAkt">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
-                                        {{ form_label(form.additionalActivity, 'Dodatne aktivnosti:', {'label_attr': {'class': 'form-category'}}) }}
+                                        {{ form_label(form.additionalActivity, 'Aktivnosti kojih nema u listi:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.additionalActivity, {attr: { class: 'form-control' }}) }}
+                                        <span class="form-text">Bitno je da odrađene aktivnosti razdvajate zarezom (,), tačkom (.), tačka i zarez (;). </span>
                                     </div>
                                 </div>
                             </div>
@@ -183,3 +184,53 @@
     <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
 
 {% endblock includeJavascript %}
+{% block footerJavascript %}
+    <script>
+        $(document).ready(function(){
+            // Funkcija koja će se izvršiti odmah po učitavanju stranice
+            updateAdditionalActivityVisibility();
+
+            // Prilikom promene izbora u selektu aktivnosti
+            $('#stopwatch_time_add_form_activity').change(function(){
+                // Pozivamo funkciju za ažuriranje vidljivosti dodatnih aktivnosti
+                updateAdditionalActivityVisibility();
+            });
+
+            // Funkcija za ažuriranje vidljivosti dodatnih aktivnosti
+            function updateAdditionalActivityVisibility() {
+                // Proveri da li je izabrana aktivnost "Obrada podataka" (vrednost 67)
+                if($('#stopwatch_time_add_form_activity').val().includes('67') || $('#stopwatch_time_add_form_activity').val().includes('66')) {
+                    // Ako je izabrana aktivnost 67 ili 66, učini polje za unos dodatnih aktivnosti obaveznim
+                    $('#stopwatch_time_add_form_description').prop('required', true);
+                    // Promeni labelu na "Napomena:*"
+                    $('label[for="stopwatch_time_add_form_description"]').text('Napomena:*');
+                } else {
+                    // Ako nije izabrana aktivnost 67 ili 66, učini polje za unos dodatnih aktivnosti neobaveznim
+                    $('#stopwatch_time_add_form_description').prop('required', false);
+                    // Ostavi labelu kakva je
+                    $('label[for="stopwatch_time_add_form_description"]').text('Napomena:');
+                }
+
+                // Proveri da li je izabrana aktivnost "Nešto drugo" (vrednost 66)
+                if ($('#stopwatch_time_add_form_activity').val().includes('105') || $('#stopwatch_time_add_form_additionalActivity').val() !== '') {
+                    // Ako jeste, učini polje za unos dodatnih aktivnosti obaveznim i vidljivim
+                    $('#stopwatch_time_add_form_additionalActivity').prop('required', true).show();
+                    $('.dodAkt').prop('required', false).show();
+                } else {
+                    // Ako nije, učini polje za unos dodatnih aktivnosti neobaveznim, nevidljivim i postavi vrijednost na prazan string
+                    $('#stopwatch_time_add_form_additionalActivity').prop('required', false).hide().val('');
+                    $('.dodAkt').prop('required', false).hide();
+                }
+
+                // if ($('#stopwatch_time_add_form_additionalActivity').val() !== '') {
+                //     $('#stopwatch_time_add_form_additionalActivity').prop('required', true).show();
+                //     $('.dodAkt').prop('required', false).show();
+                // } else {
+                //     // Ako nije, učini polje za unos dodatnih aktivnosti neobaveznim i nevidljivim
+                //     $('#stopwatch_time_add_form_additionalActivity').prop('required', false).hide();
+                //     $('.dodAkt').prop('required', false).hide();
+                // }
+            }
+        });
+    </script>
+{% endblock footerJavascript %}

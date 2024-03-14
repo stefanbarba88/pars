@@ -52,6 +52,9 @@ class StopwatchTimeFormType extends AbstractType {
       ->add('additionalActivity', TextareaType::class, [
         'required' => false
       ])
+      ->add('additionalDesc', TextareaType::class, [
+        'required' => false
+      ])
       ->add('client', EntityType::class, [
         'placeholder' => '--Izaberite klijenta--',
         'required' => false,

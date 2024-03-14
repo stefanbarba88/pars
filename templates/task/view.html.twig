@@ -431,6 +431,7 @@
                                                                 <div class="mb-3">
                                                                     {% set newActivity = [] %}
                                                                     {% for stopwatch in stopwatchesActive %}
+                                                                        {% set activityExists = false %}
                                                                         {% if stopwatch.activity is not empty %}
                                                                             {% for activity in stopwatch.activity %}
                                                                                 {% if activity.id != 105 %}
@@ -439,12 +440,21 @@
                                                                                         {% set newActivity = newActivity|merge([activity]) %}
                                                                                     {% endif %}
                                                                                 {% else %}
+                                                                                    {% set activityExists = true %}
                                                                                     {% set sentences = stopwatch.additionalActivity|split('. ') %}
                                                                                     {% for sentence in sentences %}
                                                                                         <i class="ph-checks me-2"></i>{{ sentence }}<br>
                                                                                     {% endfor %}
                                                                                 {% endif %}
                                                                             {% endfor %}
+
+                                                                            {% if not activityExists and stopwatch.additionalActivity is not empty%}
+                                                                                {% set sentences = stopwatch.additionalActivity|split('. ') %}
+                                                                                {% for sentence in sentences %}
+                                                                                    <i class="ph-checks me-2"></i>{{ sentence }}<br>
+                                                                                {% endfor %}
+                                                                            {% endif %}
+{#                                                                            {% if stopwatch.additionalActivity is not empty and  %}#}
                                                                         {% endif %}
 {#                                                                        {{ dump(stopwatch.additionalActivity) }}#}
 {#                                                                        {% set sentences = stopwatch.additionalActivity|split('. ') %}#}
@@ -457,20 +467,18 @@
                                                             </div>
                                                         </div>
 
-{#                                                        <div class="fw-bold border-bottom pb-2 mb-3">Dodatne aktivnosti</div>#}
-{#                                                        <div class="row">#}
-{#                                                            <div class="col-lg-12">#}
-{#                                                                <div class="mb-3">#}
-
-{#                                                                    {% for stopwatch in stopwatchesActive %}#}
-{#                                                                        {% if stopwatch.additionalActivity is not null %}#}
-{#                                                                            <i class="ph-check me-2"></i>{{ stopwatch.additionalActivity}}<br>#}
-{#                                                                        {% endif %}#}
-{#                                                                    {% endfor %}#}
-
-{#                                                                </div>#}
-{#                                                            </div>#}
-{#                                                        </div>#}
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Obrada podataka</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+                                                                    {% for stopwatch in stopwatchesActive %}
+                                                                        {% if stopwatch.additionalDesc is not null %}
+                                                                            <i class="ph-note-blank me-2"></i>{{ stopwatch.additionalDesc }}<br>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
 
                                                         <div class="fw-bold border-bottom pb-2 mb-3">Napomena</div>
                                                         <div class="row">

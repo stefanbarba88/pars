@@ -39,11 +39,22 @@
                         </div>
                     </div>
                 </div>
+                <div class="row obrada">
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            {{ form_label(form.additionalDesc, 'Obrada podataka detalji:*', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.additionalDesc, {attr: { class: 'form-control' }}) }}
+                            <span class="form-text">Detaljnije opišite šta je rađeno pri obradi podataka. </span>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="mb-3">
-                            {{ form_label(form.description, 'Napomena:', {'label_attr': {'class': 'form-category'}}) }}
+                            {{ form_label(form.description, 'Napomena:', {'label_attr': {'class': 'form-label'}}) }}
+                            {#                                        {{ form_widget(form.description, {attr: { class: 'form-control ckeditor_simple1' }}) }}#}
                             {{ form_widget(form.description, {attr: { class: 'form-control' }}) }}
+                            <span class="form-text nap"></span>
                         </div>
                     </div>
                 </div>

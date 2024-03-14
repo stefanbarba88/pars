@@ -126,6 +126,7 @@
                                                                 <div class="mb-3">
                                                                     {% set newActivity = [] %}
                                                                     {% for stopwatch in stopwatchesActive %}
+                                                                        {% set activityExists = false %}
                                                                         {% if stopwatch.activity is not empty %}
                                                                             {% for activity in stopwatch.activity %}
                                                                                 {% if activity.id != 105 %}
@@ -133,14 +134,42 @@
                                                                                         <i class="ph-checks me-2"></i>{{ activity.title }}<br>
                                                                                         {% set newActivity = newActivity|merge([activity]) %}
                                                                                     {% endif %}
+                                                                                {% else %}
+                                                                                    {% set activityExists = true %}
+                                                                                    {% set sentences = stopwatch.additionalActivity|split('. ') %}
+                                                                                    {% for sentence in sentences %}
+                                                                                        <i class="ph-checks me-2"></i>{{ sentence }}<br>
+                                                                                    {% endfor %}
                                                                                 {% endif %}
                                                                             {% endfor %}
-                                                                        {% endif %}
-                                                                        {% set sentences = stopwatch.additionalActivity|split('. ') %}
 
-                                                                        {% for sentence in sentences %}
-                                                                            <i class="ph-checks me-2"></i>{{ sentence }}<br>
-                                                                        {% endfor %}
+                                                                            {% if not activityExists and stopwatch.additionalActivity is not empty%}
+                                                                                {% set sentences = stopwatch.additionalActivity|split('. ') %}
+                                                                                {% for sentence in sentences %}
+                                                                                    <i class="ph-checks me-2"></i>{{ sentence }}<br>
+                                                                                {% endfor %}
+                                                                            {% endif %}
+                                                                            {#                                                                            {% if stopwatch.additionalActivity is not empty and  %}#}
+                                                                        {% endif %}
+                                                                        {#                                                                        {{ dump(stopwatch.additionalActivity) }}#}
+                                                                        {#                                                                        {% set sentences = stopwatch.additionalActivity|split('. ') %}#}
+
+                                                                        {#                                                                        {% for sentence in sentences %}#}
+                                                                        {#                                                                            <i class="ph-checks me-2"></i>{{ sentence }}<br>#}
+                                                                        {#                                                                        {% endfor %}#}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Obrada podataka</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+                                                                    {% for stopwatch in stopwatchesActive %}
+                                                                        {% if stopwatch.additionalDesc is not null %}
+                                                                            <i class="ph-note-blank me-2"></i>{{ stopwatch.additionalDesc }}<br>
+                                                                        {% endif %}
                                                                     {% endfor %}
                                                                 </div>
                                                             </div>
@@ -319,18 +348,41 @@
                                                                             <div class="row">
                                                                                 <div class="col-lg-12">
                                                                                     <div class="mb-3">
+                                                                                        {% set exists = false %}
                                                                                         {% if stopwatch.activity is not empty %}
                                                                                             {% for activity in stopwatch.activity %}
                                                                                                 {% if activity.id != 105 %}
                                                                                                     <i class="ph-checks me-2"></i>{{ activity.title }}<br>
+                                                                                                {% else %}
+                                                                                                    {% set exists = true %}
+                                                                                                    {% set sentences = stopwatch.additionalActivity|split('. ') %}
+                                                                                                    {% for sentence in sentences %}
+                                                                                                        <i class="ph-checks me-2"></i>{{ sentence }}<br>
+                                                                                                    {% endfor %}
                                                                                                 {% endif %}
                                                                                             {% endfor %}
+                                                                                            {% if not exists and stopwatch.additionalActivity is not empty%}
+                                                                                                {% set sentences = stopwatch.additionalActivity|split('. ') %}
+                                                                                                {% for sentence in sentences %}
+                                                                                                    <i class="ph-checks me-2"></i>{{ sentence }}<br>
+                                                                                                {% endfor %}
+                                                                                            {% endif %}
                                                                                         {% endif %}
-                                                                                        {% set sentences = stopwatch.additionalActivity|split('. ') %}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
 
-                                                                                        {% for sentence in sentences %}
-                                                                                            <i class="ph-checks me-2"></i>{{ sentence }}<br>
-                                                                                        {% endfor %}
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Obrada podataka</div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-12">
+                                                                                    <div class="mb-3">
+
+                                                                                            {% if stopwatch.additionalDesc is not null %}
+                                                                                                <i class="ph-note-blank me-2"></i>{{ stopwatch.additionalDesc }}<br>
+                                                                                            {% else %}
+                                                                                                Nema obrade podataka.
+                                                                                            {% endif %}
+
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -561,11 +613,21 @@
                     $('#stopwatch_time_add_form_description').prop('required', true);
                     // Promeni labelu na "Napomena:*"
                     $('label[for="stopwatch_time_add_form_description"]').text('Napomena:*');
+                    $('.nap').text('Detaljnije opišite aktivnost.');
                 } else {
                     // Ako nije izabrana aktivnost 67 ili 66, učini polje za unos dodatnih aktivnosti neobaveznim
                     $('#stopwatch_time_add_form_description').prop('required', false);
                     // Ostavi labelu kakva je
                     $('label[for="stopwatch_time_add_form_description"]').text('Napomena:');
+                    $('.nap').text('');
+                }
+
+                if($('#stopwatch_time_add_form_activity').val().includes('33')) {
+                    $('#stopwatch_time_add_form_additionalDesc').prop('required', true);
+                    $('.obrada').prop('required', false).show();
+                } else {
+                    $('#stopwatch_time_add_form_additionalDesc').prop('required', false);
+                    $('.obrada').prop('required', false).hide();
                 }
 
                 // Proveri da li je izabrana aktivnost "Nešto drugo" (vrednost 66)

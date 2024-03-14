@@ -781,6 +781,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'deletedBy' => $time->getDeletedBy(),
         'manually' => $time->isIsManuallyClosed(),
         'additionalActivity' => $time->getAdditionalActivity(),
+        'additionalDesc' => $time->getAdditionalDesc(),
         'client' => $time->getClient(),
       ];
     }
@@ -873,6 +874,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         'deletedBy' => $time->getDeletedBy(),
         'manually' => $time->isIsManuallyClosed(),
         'additionalActivity' => $time->getAdditionalActivity(),
+        'additionalDesc' => $time->getAdditionalDesc(),
         'client' => $time->getClient(),
         'category' => $time->getTaskLog()->getTask()->getCategory(),
         'users' => $time->getTaskLog()->getTask()->getAssignedUsers(),

@@ -297,7 +297,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   }
 
   public function getFullName(): string {
-    return $this->ime . ' ' . $this->prezime;
+    return $this->prezime . ' ' . $this->ime;
   }
 
   public function getInitials(): string {

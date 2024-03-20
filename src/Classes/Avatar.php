@@ -8,11 +8,17 @@ use App\Classes\DTO\UploadedFileDTO;
 class Avatar {
 
   public const URL_PATH = 'https://ui-avatars.com/api/?name=';
-  public const BACKGROUND = 'random';
+
+  public const BACKGROUND_MALE = '00233f';
+  public const BACKGROUND_FEMALE = 'c4dfea';
+
+  public const FONT_MALE = 'FFFFFF';
+  public const FONT_FEMALE = '00233F';
+
+
 
   public const SIZE = '512';
   public const ROUNDED = 'false';
-
 
   public static function getAvatar($path, $user): UploadedFileDTO {
 
@@ -27,7 +33,12 @@ class Avatar {
       mkdir($path, 0777, true);
     }
 
-    $url = self::URL_PATH . $user->getIme() . '+' . $user->getPrezime() . '&background=' . self::BACKGROUND . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
+    if ($user->getPol() == 1) {
+      $url = self::URL_PATH . $user->getIme() . '+' . $user->getPrezime() . '&background=' . self::BACKGROUND_MALE . '&color=' . self::FONT_MALE . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
+    } else {
+      $url = self::URL_PATH . $user->getIme() . '+' . $user->getPrezime() . '&background=' . self::BACKGROUND_FEMALE . '&color=' . self::FONT_FEMALE . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
+    }
+
 
     $data = file_get_contents($url);
 

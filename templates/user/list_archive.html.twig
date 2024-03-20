@@ -100,8 +100,8 @@
                                     <thead class="bg-light text-primary">
                                     <tr>
                                         <th>Slika</th>
-                                        <th>Ime</th>
                                         <th>Prezime</th>
+                                        <th>Ime</th>
                                         <th  {% if pagination.isSorted('[u.userType]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Vrsta korisnika ', ['u.userType']) }}
                                             {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.userType' %}
@@ -122,8 +122,8 @@
                                             <td>
                                                 <a href="{{ path('app_user_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="35" height="35" alt="{{ user.ime }}"></a>
                                             </td>
-                                            <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
                                             <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.prezime }}</a></div></td>
+                                            <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
                                             <td>
                                                 {{ user.getBadgeByUserType | raw }}
                                             </td>

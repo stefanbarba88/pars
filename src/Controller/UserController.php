@@ -72,6 +72,45 @@ class UserController extends AbstractController {
 
     return $this->render('user/list.html.twig', $args);
   }
+
+  #[Route('/contacts/', name: 'app_users_contacts')]
+  public function contacts(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+//    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+//      return $this->redirect($this->generateUrl('app_home'));
+//    }
+
+    $args = [];
+
+    $search = [];
+
+    $search['ime'] = $request->query->get('ime');
+    $search['prezime'] = $request->query->get('prezime');
+
+    $users = $this->em->getRepository(User::class)->getAllContactsByLoggedUserPaginator($korisnik, $search, 0);
+
+    $pagination = $paginator->paginate(
+      $users, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('user/phone/contacts.html.twig', $args);
+    }
+
+    return $this->render('user/contacts.html.twig', $args);
+  }
+
   #[Route('/archive/', name: 'app_users_archive')]
   public function archive(PaginatorInterface $paginator, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {

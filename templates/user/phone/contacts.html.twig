@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                               Lica za kontakt
+                                Korisnici
                             </h4>
                         </div>
                     </div>
@@ -28,8 +28,9 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Lista kontakt lica</h5>
+                            <h5 class="mb-0">Kontakti korisnika</h5>
                         </div>
+
                         <div class="card-body">
                             <div class="accordion" id="accordion_collapsed">
                                 <div class="accordion-item">
@@ -39,7 +40,7 @@
                                         </button>
                                     </h2>
                                     <div id="collapsed_item_filter" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
-                                        <form method="get" action="{{ path('app_users_contact') }}" class="form-validate-jquery" novalidation="novalidation">
+                                        <form method="get" action="{{ path('app_users_contacts') }}" class="form-validate-jquery" novalidation="novalidation">
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-lg-4">
@@ -67,61 +68,51 @@
                                 </div>
                             </div>
                         </div>
+
+
                         <div class="card-body">
+
                             <div class="table-responsive card">
                                 <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                     <thead class="bg-light text-primary">
                                     <tr>
-                                        <th>Prezime</th>
-                                        <th>Ime</th>
-                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                        <th>Korisnik</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-
                                     {% for user in pagination %}
                                         <tr>
-                                            <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.prezime }}</a></div></td>
-                                            <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
-                                            <td class="text-center">
-                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ user.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
-                                            </td>
-
-                                        </tr>
-
-                                        <tr id="collapsed_item{{ user.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
-                                            <td>{{ user.email }}</td>
                                             <td>
-                                                {{ user.getBadgeByStatus | raw }}
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="dropdown">
-                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
-                                                        <i class="ph-gear"></i>
+                                                <div>
+                                                    <a href="#test{{ user.id }}" class="list-group-item list-group-item-action hstack gap-3 collapsed" data-bs-toggle="collapse">
+
+                                                        <img src="{{ asset(user.image.getThumbnail100()) }}" class="w-40px h-40px rounded-pill" alt="">
+
+                                                        <div class="flex-fill">
+                                                            <div class="fw-semibold">{{ user.fullName }}</div>
+                                                            <span class="text-muted">{{ user.getBadgeByUserType() | raw}}</span>
+                                                        </div>
+
+                                                        <div class="align-self-center ms-3">
+                                                            <i class="ph-caret-down collapsible-indicator"></i>
+                                                        </div>
                                                     </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <a href="{{ path('app_user_profile_view', { id: user.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                        <a href="{{ path('app_user_edit_info_form', { id: user.id}) }}" class="dropdown-item">
-                                                            <i class="ph-note-pencil me-2"></i>
-                                                            Lični i kontakt podaci
-                                                        </a>
-                                                        <a href="{{ path('app_user_edit_account_form', { id: user.id}) }}" class="dropdown-item">
-                                                            <i class="ph-note-pencil me-2"></i>
-                                                            Login podaci
-                                                        </a>
-                                                        <a href="{{ path('app_user_edit_image_form', { id: user.id}) }}" class="dropdown-item">
-                                                            <i class="ph-image me-2"></i>
-                                                            Profilna slika/avatar
-                                                        </a>
-                                                        <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="dropdown-item">
-                                                            <i class="ph-gear me-2"></i>
-                                                            Podešavanja
-                                                        </a>
+
+                                                    <div class="collapse" id="test{{ user.id }}">
+                                                        <div class="p-3">
+                                                            <ul class="list list-unstyled mb-0">
+                                                                <li ><i class="ph-map-pin me-2"></i>{{ user.grad.title }}</li>
+                                                                <li ><a href="tel:{{ user.getTelefon1 }}"><i class="ph-phone me-2"></i>{{ user.telefon1 }}</a></li>
+                                                                {% if user.getTelefon2 is not empty %}
+                                                                    <li><a href="tel:{{ user.getTelefon2 }}"><i class="ph-phone me-2"></i>{{ user.telefon2 }}</a></li>
+                                                                {% endif %}
+                                                                <li ><a href="mailto:{{ user.getEmail }}"><i class="ph-at me-2"></i>{{ user.email }}</a></li>
+                                                            </ul>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>
                                         </tr>
-
                                     {% endfor %}
 
                                     </tbody>
@@ -164,5 +155,8 @@
     <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
 
 {% endblock includeJavascript %}

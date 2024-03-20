@@ -336,6 +336,96 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $qb;
   }
 
+  public function getAllContactsByLoggedUserPaginator(User $loggedUser, $filter, $suspended) {
+
+    $company = $loggedUser->getCompany();
+    $qb = $this->createQueryBuilder('u');
+
+    if ($loggedUser->getUserType() == UserRolesData::ROLE_SUPER_ADMIN) {
+      $qb->where('u.company = :company')
+        ->setParameter(':company', $company)
+        ->andWhere('u.isSuspended = :suspenzija')
+        ->setParameter('suspenzija', $suspended);
+
+      if (!empty($filter['ime'])) {
+      $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.ime', ':ime'),
+        ))
+          ->setParameter('ime', '%' . $filter['ime'] . '%');
+      }
+      if (!empty($filter['prezime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.prezime', ':prezime'),
+        ))
+          ->setParameter('prezime', '%' . $filter['prezime'] . '%');
+      }
+
+      $qb
+        ->addOrderBy('u.userType', 'ASC')
+        ->addOrderBy('u.prezime', 'ASC')
+        ->getQuery();
+    }
+
+    if ($loggedUser->getUserType() == UserRolesData::ROLE_ADMIN) {
+      $qb->where('u.company = :company')
+        ->setParameter(':company', $company)
+        ->andWhere('u.isSuspended = :suspenzija')
+        ->setParameter('suspenzija', $suspended)
+        ->andWhere('u.userType <> :userType')
+        ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN);
+
+      if (!empty($filter['ime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.ime', ':ime'),
+        ))
+          ->setParameter('ime', '%' . $filter['ime'] . '%');
+      }
+      if (!empty($filter['prezime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.prezime', ':prezime'),
+        ))
+          ->setParameter('prezime', '%' . $filter['prezime'] . '%');
+      }
+
+      $qb
+        ->addOrderBy('u.userType', 'ASC')
+        ->addOrderBy('u.prezime', 'ASC')
+        ->getQuery();
+    }
+
+    if ($loggedUser->getUserType() <> UserRolesData::ROLE_SUPER_ADMIN && $loggedUser->getUserType() <> UserRolesData::ROLE_ADMIN) {
+      $qb->where('u.company = :company')
+        ->setParameter(':company', $company)
+        ->andWhere('u.isSuspended = :suspenzija')
+        ->setParameter('suspenzija', $suspended)
+        ->andWhere('u.userType <> :userType')
+        ->andWhere('u.userType <> :userType1')
+        ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
+        ->setParameter(':userType1', UserRolesData::ROLE_ADMIN);
+
+      if (!empty($filter['ime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.ime', ':ime'),
+        ))
+          ->setParameter('ime', '%' . $filter['ime'] . '%');
+      }
+      if (!empty($filter['prezime'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('u.prezime', ':prezime'),
+        ))
+          ->setParameter('prezime', '%' . $filter['prezime'] . '%');
+      }
+
+      $qb
+        ->addOrderBy('u.userType', 'ASC')
+        ->addOrderBy('u.prezime', 'ASC')
+        ->getQuery();
+    }
+
+
+    return $qb;
+  }
+
   public function getAllContactsPaginator($filter) {
 
     $company = $this->security->getUser()->getCompany();

@@ -9,6 +9,7 @@
 /public/full/
 /var/
 /vendor/
+/.idea/
 ###< symfony/framework-bundle ###
 
 ###> liip/imagine-bundle ###

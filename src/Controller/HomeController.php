@@ -12,6 +12,7 @@ use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\TimeTask;
 use App\Entity\User;
+use App\Entity\VerifyActivity;
 use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
@@ -32,6 +33,8 @@ class HomeController extends AbstractController {
     }
     $args = [];
     $user = $this->getUser();
+
+    $args['sleganjeStatus'] = $this->em->getRepository(VerifyActivity::class)->getStatusByUser($user);
 
     $args['sutra'] = new DateTimeImmutable('tomorrow');
     $args['danas'] = new DateTimeImmutable();

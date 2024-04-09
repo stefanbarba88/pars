@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Classes\Data\FastTaskData;
 use App\Entity\Company;
 use App\Entity\FastTask;
+use App\Entity\User;
 use App\Service\MailService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,6 +56,11 @@ class FinishTimetableCommand extends Command {
 
         $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($fastTask);
         $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($fastTask, FastTaskData::SAVED);
+
+        if ($company->getId() == 1) {
+          $users[] = $this->em->getRepository(User::class)->find(25);
+          $usersSub[] = $this->em->getRepository(User::class)->find(25);
+        }
 
         $this->mail->plan($timetable, $users, $datum);
         $this->mail->subs($subs, $usersSub, $datum);

@@ -26,7 +26,7 @@
 
 
                 <div class="content">
-                    {% set difference = date()|date_modify('-96 hours') %}
+                    {% set difference = date()|date_modify(constant('App\\Classes\\AppConfig::TIME_DIFFERENCE')) %}
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">

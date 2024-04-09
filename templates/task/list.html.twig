@@ -25,7 +25,7 @@
 
                 <!-- Content area -->
                 <div class="content">
-                    {% set difference = date()|date_modify('-96 hours') %}
+                    {% set difference = date()|date_modify(constant('App\\Classes\\AppConfig::TIME_DIFFERENCE')) %}
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
                             <h5 class="mb-0">Aktuelni zadaci</h5>

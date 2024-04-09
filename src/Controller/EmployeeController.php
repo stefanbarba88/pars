@@ -904,7 +904,7 @@ class EmployeeController extends AbstractController {
 
             $aktivnosti = [];
             foreach ($stopwatch['activity'] as $akt) {
-              if ($akt->getId() != 105) {
+              if ($akt->getId() != 105 && $akt->getId() != 66) {
                 $aktivnosti [] = $akt->getTitle();
               }
             }

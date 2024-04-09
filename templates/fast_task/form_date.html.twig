@@ -117,32 +117,32 @@
 {% block footerJavascript %}
 
     <script>
+        // Date format
+        // izmenjen format da bi bio po srpskim standardima
+        const dpDateCustomFormatElement = document.querySelector('.datepicker-date-format-custom');
+        if(dpDateCustomFormatElement) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dpDateCustomFormat = new Datepicker(dpDateCustomFormatElement, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                minDate: tomorrow,
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                datesDisabled: [
+                    {% for date in disabledDates %}
+                    '{{ date }}',
+                    {% endfor %}
+                ],
 
-                // Date format
-                // izmenjen format da bi bio po srpskim standardima
-                const dpDateCustomFormatElement = document.querySelector('.datepicker-date-format-custom');
-                if(dpDateCustomFormatElement) {
-                    const tomorrow = new Date();
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    const dpDateCustomFormat = new Datepicker(dpDateCustomFormatElement, {
-                        container: '.content-inner',
-                        buttonClass: 'btn',
-                        prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
-                        nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
-                        format: 'dd.mm.yyyy',
-                        todayBtn: true,
-                        weekStart: 1,
-                        minDate: tomorrow,
-                        daysOfWeekHighlighted: [0,6],
-                        language: 'sr-latn',
-                        datesDisabled: [
-                            {% for date in disabledDates %}
-                                '{{ date }}',
-                            {% endfor %}
-                        ],
+            });
+        }
 
-                    });
-                }
 
     </script>
 

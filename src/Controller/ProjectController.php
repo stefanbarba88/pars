@@ -12,10 +12,12 @@ use App\Classes\Slugify;
 use App\Entity\Category;
 use App\Entity\Holiday;
 use App\Entity\Project;
+use App\Entity\ProjectFaktura;
 use App\Entity\ProjectHistory;
 use App\Entity\Task;
 use App\Entity\Team;
 use App\Entity\User;
+use App\Form\FakturaFormType;
 use App\Form\ProjectFormType;
 use App\Form\ProjectTeamListFormType;
 use App\Repository\ProjectRepository;
@@ -36,6 +38,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -975,7 +978,7 @@ class ProjectController extends AbstractController {
 
             $aktivnosti = [];
             foreach ($stopwatch['activity'] as $akt) {
-              if ($akt->getId() != 105) {
+              if ($akt->getId() != constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID') && $akt->getId() != constant('App\\Classes\\AppConfig::OSTALO_ID')) {
                 $aktivnosti [] = $akt->getTitle();
               }
             }
@@ -1237,7 +1240,7 @@ class ProjectController extends AbstractController {
 
             $aktivnosti = [];
             foreach ($stopwatch['activity'] as $akt) {
-              if ($akt->getId() != 105) {
+              if ($akt->getId() != constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID') && $akt->getId() != constant('App\\Classes\\AppConfig::OSTALO_ID')) {
                 $aktivnosti [] = $akt->getTitle();
               }
             }
@@ -1469,7 +1472,7 @@ class ProjectController extends AbstractController {
 
               $aktivnosti = [];
               foreach ($stopwatch['activity'] as $akt) {
-                if ($akt->getId() != 105) {
+                if ($akt->getId() != 105 && $akt->getId() != constant('App\\Classes\\AppConfig::OSTALO_ID')) {
                   $aktivnosti [] = $akt->getTitle();
                 }
               }
@@ -1566,5 +1569,124 @@ dd($request);
   }
 
 
+  #[Route('/list-fakture/', name: 'app_projects_fakture')]
+  public function listFakture(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
 
+    $search = [];
+    $args['mesec'] = date('m', strtotime('-1 month'));
+    $args['godina'] = date('Y', strtotime('-1 month'));
+//    $search['status'] = $request->query->all('status');
+    $search['period'] = $request->query->get('period');
+
+    if (!is_null($search['period'])) {
+      $dateParts = explode('.', $search['period']);
+      $args['mesec'] = $dateParts[0];
+      $args['godina'] = $dateParts[1];
+    }
+
+    $user = $this->getUser();
+
+
+    $projects = $this->em->getRepository(ProjectFaktura::class)->getAllFakturePaginator($search, $user);
+
+    $pagination = $paginator->paginate(
+      $projects, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+
+
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/list_paginator_fakture.html.twig', $args);
+    }
+
+    return $this->render('project/list_paginator_fakture.html.twig', $args);
+  }
+
+  #[Route('/view-faktura/{id}', name: 'app_project_faktura_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewFaktura(ProjectFaktura $faktura)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $user = $this->getUser();
+    if ($user->getCompany() != $faktura->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+    $args['faktura'] = $faktura;
+
+    return $this->render('project/view_faktura.html.twig', $args);
+  }
+
+  #[Route('/edit-faktura/{id}', name: 'app_project_faktura_edit')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function editFaktura(Request $request, ProjectFaktura $faktura)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $faktura->setEditBy($this->getUser());
+
+    $form = $this->createForm(FakturaFormType::class, $faktura, ['attr' => ['action' => $this->generateUrl('app_project_faktura_edit', ['id' => $faktura->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+        $url = $request->getSession()->get('url');
+        $this->em->getRepository(ProjectFaktura::class)->save($faktura);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return new RedirectResponse($url);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['faktura'] = $faktura;
+
+    return $this->render('project/edit_faktura.html.twig', $args);
+  }
+
+  #[Route('/check-faktura/{id}', name: 'app_project_faktura_check')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function checkFaktura(Request $request, ProjectFaktura $faktura)    : RedirectResponse {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $faktura->setEditBy($this->getUser());
+
+    $url = $request->getSession()->get('url');
+
+    if ($faktura->getStatus() == 0) {
+      $faktura->setStatus(1);
+    } else {
+      $faktura->setStatus(0);
+    }
+
+    $this->em->getRepository(ProjectFaktura::class)->save($faktura);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+    return new RedirectResponse($url);
+  }
 }
+

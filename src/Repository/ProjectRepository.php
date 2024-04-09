@@ -125,6 +125,9 @@ class ProjectRepository extends ServiceEntityRepository {
     return $qb;
   }
 
+
+
+
 //  public function getAllProjectsSuspended(): array {
 //    return $this->createQueryBuilder('p')
 //      ->andWhere('p.isSuspended = 1')
@@ -556,6 +559,17 @@ class ProjectRepository extends ServiceEntityRepository {
     });
 
     return [$reports, $category];
+
+  }
+
+  public function getAllProjectsByNoTasks(Company $company) {
+
+   return $this->createQueryBuilder('p')
+      ->andWhere('p.company = :company')
+      ->andWhere('p.noTasks > 0')
+      ->setParameter(':company', $company)
+      ->getQuery()
+      ->getResult();
 
   }
 

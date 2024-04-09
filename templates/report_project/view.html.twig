@@ -157,11 +157,14 @@
                                                                                             {% endif %}
                                                                                         </td>
                                                                                         <td>
-                                                                                            {% for akt in stopwatch.activity %}
-                                                                                                {% if akt.id != 105 %}
-                                                                                                    {{ akt.title }},
-                                                                                                {% endif %}
-                                                                                            {% endfor %}
+
+
+                                                                                                {% for akt in stopwatch.activity %}
+                                                                                                    {% if akt.id != constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID') and akt.id != constant('App\\Classes\\AppConfig::OSTALO_ID')%}
+                                                                                                        {{ akt.title }},
+                                                                                                    {% endif %}
+                                                                                                {% endfor %}
+
 
                                                                                             {% set sentences = stopwatch.additionalActivity|split('. ') %}
 

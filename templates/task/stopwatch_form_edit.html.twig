@@ -225,7 +225,7 @@
                 }
 
                 // Proveri da li je izabrana aktivnost "Nešto drugo" (vrednost 66)
-                if ($('#stopwatch_time_add_form_activity').val().includes('105') || $('#stopwatch_time_add_form_additionalActivity').val() !== '') {
+                if ($('#stopwatch_time_add_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID')}}') || $('#stopwatch_time_add_form_additionalActivity').val() !== '') {
                     // Ako jeste, učini polje za unos dodatnih aktivnosti obaveznim i vidljivim
                     $('#stopwatch_time_add_form_additionalActivity').prop('required', true).show();
                     $('.dodAkt').prop('required', false).show();

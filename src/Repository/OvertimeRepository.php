@@ -53,6 +53,8 @@ class OvertimeRepository extends ServiceEntityRepository {
   public function getOvertimePaginator() {
     $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('c')
+      ->leftJoin('c.user', 'u') // Spajanje sa entitetom korisnika
+      ->leftJoin('c.task', 't')
       ->where('c.status = :status')
       ->andWhere('c.company = :company')
       ->setParameter('company', $company)
@@ -62,9 +64,35 @@ class OvertimeRepository extends ServiceEntityRepository {
       ->getQuery();
   }
 
+//  public function getOvertimePaginator() {
+//    $company = $this->security->getUser()->getCompany();
+//    return $this->createQueryBuilder('c')
+//      ->where('c.status = :status')
+//      ->andWhere('c.company = :company')
+//      ->setParameter('company', $company)
+//      ->setParameter('status', 0)
+//      ->orderBy('c.datum', 'DESC')
+//      ->addOrderBy('c.id', 'DESC')
+//      ->getQuery();
+//  }
+
+//  public function getOvertimeArchivePaginator() {
+//    $company = $this->security->getUser()->getCompany();
+//    return $this->createQueryBuilder('c')
+//      ->where('c.status > :status')
+//      ->andWhere('c.company = :company')
+//      ->setParameter('company', $company)
+//      ->setParameter('status', 0)
+//      ->orderBy('c.datum', 'DESC')
+//      ->addOrderBy('c.id', 'DESC')
+//      ->getQuery();
+//  }
+
   public function getOvertimeArchivePaginator() {
     $company = $this->security->getUser()->getCompany();
     return $this->createQueryBuilder('c')
+      ->leftJoin('c.user', 'u') // Spajanje sa entitetom korisnika
+      ->leftJoin('c.task', 't')
       ->where('c.status > :status')
       ->andWhere('c.company = :company')
       ->setParameter('company', $company)

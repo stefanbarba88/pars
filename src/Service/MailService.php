@@ -9,6 +9,7 @@ use App\Entity\Client;
 use App\Entity\Email;
 use App\Entity\ManagerChecklist;
 use App\Entity\User;
+use App\Entity\VerifyActivity;
 use DateTimeImmutable;
 use Twig\Environment;
 use Doctrine\Persistence\ManagerRegistry;
@@ -266,6 +267,41 @@ class MailService {
     $args['name'] = $user->getFullName();
     $args['support'] = CompanyInfo::SUPPORT_MAIL_ADDRESS;
 
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function responseActivityVerify(VerifyActivity $verifyActivity): void {
+
+    $args = [];
+
+    $subject = 'Odgovor na potvrdu prijema podatka za ' . $verifyActivity->getZaduzeni()->getFullName();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/odgovor_prijem.html.twig';
+    $args['user'] = $verifyActivity->getZaduzeni()->getFullName();
+    $args['verify'] = $verifyActivity;
+
+    $to = $verifyActivity->getZaduzeni()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+  public function activityVerify(VerifyActivity $verifyActivity, string $mail): void {
+
+    $args = [];
+
+    $subject = 'Zahtev za potvrda prijema podataka od ' . $verifyActivity->getZaduzeni()->getFullName();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/potvrda_prijema.html.twig';
+    $args['user'] = $verifyActivity->getZaduzeni()->getFullName();
+    $args['verify'] = $verifyActivity;
+
+    $to = $mail;
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 

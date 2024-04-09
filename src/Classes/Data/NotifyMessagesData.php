@@ -46,6 +46,10 @@ class NotifyMessagesData {
 
   public const STOPWATCH_CHECKED = 'Uspešno ste potvrdili merenje i više se neće pojavljivati u listi.';
 
+  public const VERIFY_ACTIVITY_CHECKED = 'Uspešno ste potvrdili prijem podataka koje je poslao zaposleni.';
+  public const VERIFY_ACTIVITY_UNCHECKED = 'Promenili ste status prijema podataka koje je poslao zaposleni.';
+  public const VERIFY_ACTIVITY_DELETE = 'Uspešno ste obrisali prijem podataka.';
+
   public const TIME_TASK_CLOSE = 'Uspešno ste zatvorili merenje.';
 
   //Poruke za zadatke

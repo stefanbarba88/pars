@@ -434,7 +434,7 @@
                                                                         {% set activityExists = false %}
                                                                         {% if stopwatch.activity is not empty %}
                                                                             {% for activity in stopwatch.activity %}
-                                                                                {% if activity.id != 105 %}
+                                                                                {% if activity.id != constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID') %}
                                                                                     {% if activity not in newActivity %}
                                                                                         <i class="ph-checks me-2"></i>{{ activity.title }}<br>
                                                                                         {% set newActivity = newActivity|merge([activity]) %}

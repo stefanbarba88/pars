@@ -39,7 +39,7 @@
 
                 <!-- Content area -->
                 <div class="content">
-                    {% set difference = date()|date_modify('-96 hours') %}
+                    {% set difference = date()|date_modify(constant('App\\Classes\\AppConfig::TIME_DIFFERENCE')) %}
                     <div class="d-flex align-items-stretch align-items-lg-start flex-column flex-lg-row">
                         <!-- Left content -->
                         <div class="flex-1 order-2 order-lg-1">
@@ -57,64 +57,83 @@
                             {% endif %}
                             <div class="row">
                                 {% if not task.isDeleted and task.created > difference and not task.isClosed %}
-                                    <div class="col-sm-6 col-xl-4">
-                                        <div class="card">
-                                            <div class="card-header d-flex">
-                                                <h5 class="mb-0"><i class="ph-timer me-2"></i>Vremenski zapis</h5>
-                                                <div class="mt-1 ">
-                                                    {% if stopwatch %} <div class="live p-1 mx-2"></div> {% endif %}
+                                    {% if sleganjeStatus %}
+                                        <div class="col-sm-6 col-xl-4">
+                                            <div class="card">
+                                                <div class="card-header d-flex">
+                                                    <h5 class="mb-0"><i class="ph-timer me-2"></i>Vremenski zapis</h5>
+                                                    <div class="mt-1 ">
+                                                        {% if stopwatch %} <div class="live p-1 mx-2"></div> {% endif %}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="list-group list-group-borderless py-2">
-                                                {% if not stopwatch %}
-                                                    <div class="sidebar-section-body">
-                                                        <div class="d-flex justify-content-center text-center">
-                                                            <div>
-                                                                {% if app.user.inTask %}
-                                                                    <div class="alert alert-danger fade show">
-                                                                        <span class="fw-semibold">Imate otovoreno merenje.</span> Zaustavite predhodno merenje da bi mogli pokrenuti novo.
-                                                                    </div>
-                                                                {% endif %}
-                                                                <span class="display-5 lh-1 m-0 py-2">
+                                                <div class="list-group list-group-borderless py-2">
+                                                    {% if not stopwatch %}
+                                                        <div class="sidebar-section-body">
+                                                            <div class="d-flex justify-content-center text-center">
+                                                                <div>
+                                                                    {% if app.user.inTask %}
+                                                                        <div class="alert alert-danger fade show p-2">
+                                                                            <span class="fw-semibold">Imate otovoreno merenje.</span> Zaustavite predhodno merenje da bi mogli pokrenuti novo.
+                                                                        </div>
+                                                                    {% endif %}
+                                                                    <span class="display-5 lh-1 m-0 py-2">
                                                                     {% if app.user.inTask %}
                                                                         <a class="btn btn-light flex-column py-2 mx-2 disabled" id="link-start" href="#"><i class="ph-play ph-2x mb-1"></i></a>
                                                                            {% else %}
                                                                         <a class="btn btn-success flex-column py-2 mx-2" id="link-start" href="#"><i class="ph-play ph-2x mb-1"></i></a>
                                                                     {% endif %}
                                                                 </span>
-                                                                <span class="display-5 lh-1 m-0 fw-semibold">00</span >
-                                                                <span class="display-5 lh-1 m-0 fw-semibold">:</span>
-                                                                <span class="display-5 lh-1 m-0 fw-semibold">00</span>
+                                                                    <span class="display-5 lh-1 m-0 fw-semibold">00</span >
+                                                                    <span class="display-5 lh-1 m-0 fw-semibold">:</span>
+                                                                    <span class="display-5 lh-1 m-0 fw-semibold">00</span>
 
-                                                                <span class="display-5 lh-1 mx-1 mx-2">
+                                                                    <span class="display-5 lh-1 mx-1 mx-2">
                                                                     <a href="#" id="stopTimer" class="btn btn-light flex-column py-2 mx-2 disabled"><i class="ph-stop ph-2x mb-1"></i></a>
                                                                 </span>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                {% else %}
-                                                    <div class="sidebar-section-body">
-                                                        <div class="d-flex justify-content-center text-center">
-                                                            <div id="time-elapsed"></div>
-                                                            <div>
+                                                    {% else %}
+                                                        <div class="sidebar-section-body">
+                                                            <div class="d-flex justify-content-center text-center">
+                                                                <div id="time-elapsed"></div>
+                                                                <div>
                                                                 <span class="display-5 lh-1 m-0 py-2">
                                                                     <a class="btn btn-light flex-column py-2 mx-2 disabled" id="link-start" href="#"><i class="ph-play ph-2x mb-1"></i></a>
                                                                 </span>
-                                                                <span id="timeH" class="display-5 lh-1 m-0 fw-semibold">00</span >
-                                                                <span class="display-5 lh-1 m-0 fw-semibold">:</span>
-                                                                <span id="timeM" class="display-5 lh-1 m-0 fw-semibold">00</span>
+                                                                    <span id="timeH" class="display-5 lh-1 m-0 fw-semibold">00</span >
+                                                                    <span class="display-5 lh-1 m-0 fw-semibold">:</span>
+                                                                    <span id="timeM" class="display-5 lh-1 m-0 fw-semibold">00</span>
 
-                                                                <span class="display-5 lh-1 mx-1 mx-2">
+                                                                    <span class="display-5 lh-1 mx-1 mx-2">
                                                                     <a href="#" id="stopTimer" class="btn btn-danger flex-column py-2 mx-2" data-bs-toggle="modal" data-bs-target="#modal_form_vertical"><i class="ph-stop ph-2x mb-1"></i></a>
                                                                 </span>
-                                                            </div>
+                                                                </div>
 
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                {% endif %}
+                                                    {% endif %}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    {% else %}
+                                        <div class="col-sm-6 col-xl-4">
+                                            <div class="card">
+                                                <div class="card-header d-flex">
+                                                    <h5 class="mb-0"><i class="ph-timer me-2"></i>Vremenski zapis</h5>
+                                                </div>
+                                                <div class="list-group list-group-borderless py-2">
+                                                    <div class="sidebar-section-body">
+                                                        <div class="d-flex justify-content-center text-center">
+                                                            <div class="alert alert-danger fade show py-2">
+                                                                Nije moguće pokrenuti novo merenje dok administrator ne potvrdi <a href="{{ path('app_stopwatch_verify_activity_list') }}" class="alert-link">prijem podataka</a> koje ste mu poslali.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 {% else %}
                                     <div class="col-sm-6 col-xl-4">
                                         <div class="card">
@@ -415,7 +434,7 @@
                                                                         {% set activityExists = false %}
                                                                         {% if stopwatch.activity is not empty %}
                                                                             {% for activity in stopwatch.activity %}
-                                                                                {% if activity.id != 105 %}
+                                                                                {% if activity.id != constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID') %}
                                                                                     {% if activity not in newActivity %}
                                                                                         <i class="ph-checks me-2"></i>{{ activity.title }}<br>
                                                                                         {% set newActivity = newActivity|merge([activity]) %}

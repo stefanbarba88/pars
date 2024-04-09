@@ -104,7 +104,7 @@
 
 
                             {% set currentTime = "now"|date("H:i") %}
-                            {% if currentTime > "15:30" %}
+                            {% if currentTime > constant('App\\Classes\\AppConfig::TIME_WORK_TIME') %}
                                 <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-overtime" aria-expanded="false">Prekovremeni sati</div>
 
                                 <div class="row collapse show" id="collapse-overtime">

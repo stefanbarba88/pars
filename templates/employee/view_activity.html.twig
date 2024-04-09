@@ -28,7 +28,7 @@
 
                 <!-- Content area -->
                 <div class="content">
-                    {% set difference = date()|date_modify('-96 hours') %}
+                    {% set difference = date()|date_modify(constant('App\\Classes\\AppConfig::TIME_DIFFERENCE')) %}
 
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">

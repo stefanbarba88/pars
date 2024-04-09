@@ -1,0 +1,146 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Zadaci
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista prijema za potvrdu</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                    <thead class="bg-light text-primary">
+                                    <tr>
+                                        <th>Zaposleni</th>
+                                        <th>Status</th>
+                                        {% if not is_granted('ROLE_EMPLOYEE') %}
+                                            <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                        {% endif %}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for activity in pagination %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    <a href="{{ path('app_task_log_view', { id: activity.stopwatch.taskLog.id}) }}">{{ activity.zaduzeni.fullName }}</a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if activity.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                    <span class="badge bg-yellow text-primary">Na čekanju</span>
+                                                {% endif %}
+                                                {% if activity.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                    <span class="badge bg-primary text-white">Potvrđen</span>
+                                                {% endif %}
+                                            </td>
+                                            {% if not is_granted('ROLE_EMPLOYEE') %}
+                                                {% if activity.stopwatch.taskLog.task.isDeleted == 0 %}
+                                                    <td class="text-center">
+                                                        <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ activity.id }}" aria-expanded="false"><i class="ph-caret-down collapsible-indicator"></i></a>
+                                                    </td>
+                                                {% endif %}
+                                            {% endif %}
+                                        </tr>
+
+                                        <tr id="collapsed_item{{ activity.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
+
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    <a href="{{ path('app_task_view', { id: activity.stopwatch.taskLog.task.id}) }}">{{ activity.stopwatch.taskLog.task.title }}</a>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    {{ activity.created | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        {% if activity.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <a href="{{ path('app_stopwatch_verify_activity_check', { id: activity.id}) }}" class="dropdown-item"><i class="ph-check me-2"></i> Potvrdite</a>
+                                                        {% else %}
+                                                            <a href="{{ path('app_stopwatch_verify_activity_check', { id: activity.id}) }}" class="dropdown-item"><i class="ph-minus me-2"></i> Odbijte</a>
+                                                        {% endif %}
+                                                        <a href="{{ path('app_stopwatch_verify_activity_delete', { id: activity.id}) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fab.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/prism.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
+{% endblock includeJavascript %}

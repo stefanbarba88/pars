@@ -84,7 +84,7 @@
 
 
                     {% set currentTime = "now"|date("H:i") %}
-                    {% if currentTime < "14:30" %}
+                    {% if currentTime < constant('App\\Classes\\AppConfig::TIMETABLE_TIME') %}
                         <div class="row ">
                             <div class="col-xl-12">
                                 <!-- Marketing campaigns -->
@@ -416,13 +416,13 @@
                             <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-start py-2" data-bs-toggle="modal" data-bs-target="#modal_nedostupni">
                                 <i class="ph-house bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
                                 <h5 class="mb-0">
-                                    {% if currentTime < "14:30" %}
+                                    {% if currentTime < constant('App\\Classes\\AppConfig::TIMETABLE_TIME') %}
                                         {{ dostupnosti.noNedostupni }}
                                     {% else %}
                                         {{ dostupnostiSutra.noNedostupni }}
                                     {% endif %}
                                 </h5>
-                                <div class="fw-semibold"> {% if currentTime < "14:30" %}
+                                <div class="fw-semibold"> {% if currentTime < constant('App\\Classes\\AppConfig::TIMETABLE_TIME') %}
                                         Odsutni
                                     {% else %}
                                         Odsutni (sutra)
@@ -903,7 +903,7 @@
 
 
 
-                    {% if currentTime < "14:30" %}
+                    {% if currentTime < constant('App\\Classes\\AppConfig::TIMETABLE_TIME') %}
                         <div class="row ">
                             <div class="col-xl-12">
                                 <!-- Marketing campaigns -->
@@ -1440,7 +1440,7 @@
     {% endif %}
 
 
-    {% if currentTime < "14:30" %}
+    {% if currentTime < constant('App\\Classes\\AppConfig::TIMETABLE_TIME') %}
         {% if dostupnosti.nedostupni is not empty %}
             <div id="modal_nedostupni" class="modal fade" tabindex="-1">
                 <div class="modal-dialog">

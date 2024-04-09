@@ -165,7 +165,7 @@
                                                                                         </td>
                                                                                         <td>
                                                                                             {% for akt in stopwatch.activity %}
-                                                                                                {% if akt.id != 105 %}
+                                                                                                {% if akt.id != constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID') and akt.id != constant('App\\Classes\\AppConfig::OSTALO_ID')%}
                                                                                                     {{ akt.title }},
                                                                                                 {% endif %}
                                                                                             {% endfor %}

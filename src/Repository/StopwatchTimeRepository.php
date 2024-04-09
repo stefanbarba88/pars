@@ -13,6 +13,7 @@ use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
+use App\Entity\VerifyActivity;
 use DateInterval;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

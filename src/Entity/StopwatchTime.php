@@ -68,7 +68,6 @@ class StopwatchTime {
   private ?string $additionalDesc = null;
 
 
-
   #[ORM\Column]
   private DateTimeImmutable $created;
 
@@ -100,23 +99,21 @@ class StopwatchTime {
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
-  public function getCompany(): ?Company
-  {
+
+  public function getCompany(): ?Company {
     return $this->company;
   }
 
-  public function setCompany(?Company $company): self
-  {
+  public function setCompany(?Company $company): self {
     $this->company = $company;
 
     return $this;
   }
 
-  public function __construct()
-  {
-      $this->activity = new ArrayCollection();
-      $this->pdf = new ArrayCollection();
-      $this->image = new ArrayCollection();
+  public function __construct() {
+    $this->activity = new ArrayCollection();
+    $this->pdf = new ArrayCollection();
+    $this->image = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -294,124 +291,109 @@ class StopwatchTime {
     return $this;
   }
 
-  public function getTaskLog(): ?TaskLog
-  {
-      return $this->taskLog;
+  public function getTaskLog(): ?TaskLog {
+    return $this->taskLog;
   }
 
-  public function setTaskLog(?TaskLog $taskLog): self
-  {
-      $this->taskLog = $taskLog;
+  public function setTaskLog(?TaskLog $taskLog): self {
+    $this->taskLog = $taskLog;
 
-      return $this;
+    return $this;
   }
 
   /**
    * @return Collection<int, Activity>
    */
-  public function getActivity(): Collection
-  {
-      return $this->activity;
+  public function getActivity(): Collection {
+    return $this->activity;
   }
 
-  public function addActivity(Activity $activity): self
-  {
-      if (!$this->activity->contains($activity)) {
-          $this->activity->add($activity);
-      }
+  public function addActivity(Activity $activity): self {
+    if (!$this->activity->contains($activity)) {
+      $this->activity->add($activity);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeActivity(Activity $activity): self
-  {
-      $this->activity->removeElement($activity);
+  public function removeActivity(Activity $activity): self {
+    $this->activity->removeElement($activity);
 
-      return $this;
+    return $this;
   }
 
   /**
    * @return Collection<int, Pdf>
    */
-  public function getPdf(): Collection
-  {
-      return $this->pdf;
+  public function getPdf(): Collection {
+    return $this->pdf;
   }
 
-  public function addPdf(Pdf $pdf): self
-  {
-      if (!$this->pdf->contains($pdf)) {
-          $this->pdf->add($pdf);
-          $pdf->setStopwatchTime($this);
-      }
+  public function addPdf(Pdf $pdf): self {
+    if (!$this->pdf->contains($pdf)) {
+      $this->pdf->add($pdf);
+      $pdf->setStopwatchTime($this);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removePdf(Pdf $pdf): self
-  {
-      if ($this->pdf->removeElement($pdf)) {
-          // set the owning side to null (unless already changed)
-          if ($pdf->getStopwatchTime() === $this) {
-              $pdf->setStopwatchTime(null);
-          }
+  public function removePdf(Pdf $pdf): self {
+    if ($this->pdf->removeElement($pdf)) {
+      // set the owning side to null (unless already changed)
+      if ($pdf->getStopwatchTime() === $this) {
+        $pdf->setStopwatchTime(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
   /**
    * @return Collection<int, Image>
    */
-  public function getImage(): Collection
-  {
-      return $this->image;
+  public function getImage(): Collection {
+    return $this->image;
   }
 
-  public function addImage(Image $image): self
-  {
-      if (!$this->image->contains($image)) {
-          $this->image->add($image);
-          $image->setStopwatchTime($this);
+  public function addImage(Image $image): self {
+    if (!$this->image->contains($image)) {
+      $this->image->add($image);
+      $image->setStopwatchTime($this);
+    }
+
+    return $this;
+  }
+
+  public function removeImage(Image $image): self {
+    if ($this->image->removeElement($image)) {
+      // set the owning side to null (unless already changed)
+      if ($image->getStopwatchTime() === $this) {
+        $image->setStopwatchTime(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeImage(Image $image): self
-  {
-      if ($this->image->removeElement($image)) {
-          // set the owning side to null (unless already changed)
-          if ($image->getStopwatchTime() === $this) {
-              $image->setStopwatchTime(null);
-          }
-      }
-
-      return $this;
+  public function getDeletedBy(): ?User {
+    return $this->deletedBy;
   }
 
-  public function getDeletedBy(): ?User
-  {
-      return $this->deletedBy;
+  public function setDeletedBy(?User $deletedBy): self {
+    $this->deletedBy = $deletedBy;
+
+    return $this;
   }
 
-  public function setDeletedBy(?User $deletedBy): self
-  {
-      $this->deletedBy = $deletedBy;
-
-      return $this;
+  public function getEditedBy(): ?User {
+    return $this->editedBy;
   }
 
-  public function getEditedBy(): ?User
-  {
-      return $this->editedBy;
-  }
+  public function setEditedBy(?User $editedBy): self {
+    $this->editedBy = $editedBy;
 
-  public function setEditedBy(?User $editedBy): self
-  {
-      $this->editedBy = $editedBy;
-
-      return $this;
+    return $this;
   }
 
   /**
@@ -428,16 +410,14 @@ class StopwatchTime {
     $this->additionalActivity = $additionalActivity;
   }
 
-  public function getClient(): ?Client
-  {
-      return $this->client;
+  public function getClient(): ?Client {
+    return $this->client;
   }
 
-  public function setClient(?Client $client): self
-  {
-      $this->client = $client;
+  public function setClient(?Client $client): self {
+    $this->client = $client;
 
-      return $this;
+    return $this;
   }
 
   /**
@@ -467,7 +447,6 @@ class StopwatchTime {
   public function setAdditionalDesc(?string $additionalDesc): void {
     $this->additionalDesc = $additionalDesc;
   }
-
 
 
 }

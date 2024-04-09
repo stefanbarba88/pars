@@ -1,0 +1,212 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Projekti
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Projekti za fakturisanje - {{ mesec }}.{{ godina }}.</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="accordion" id="accordion_collapsed">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item_filter" aria-expanded="false">
+                                            Filter
+                                        </button>
+                                    </h2>
+                                    <div id="collapsed_item_filter" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
+                                        <form method="get" action="{{ path('app_projects_fakture') }}" class="form-validate-jquery" novalidation="novalidation">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="period">Period:</label>
+                                                            <div class="input-group">
+                                                                <span class="input-group-text"><i class="ph-calendar"></i></span>
+                                                                <input type="text" autocomplete="off" class="form-control datepicker-date-format-custom " id="period" name="period">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="text-end">
+                                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                    <thead class="bg-light text-primary">
+                                    <tr>
+                                        <th>Projekat</th>
+                                        <th>Status</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for project in pagination %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    <a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.project.title }}</a>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                {% if project.status == 1 %}
+                                                    <a href="{{ path('app_project_faktura_check', { id: project.id}) }}" data-bs-popup="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-original-title="Kliknite da promenite status"><span class="badge bg-primary text-white">Fakturisano</span></a>
+                                                {% else %}
+                                                    <a href="{{ path('app_project_faktura_check', { id: project.id}) }}" data-bs-popup="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-original-title="Kliknite da promenite status"><span class="badge bg-yellow text-primary">Nefakturisano</span></a>
+                                                {% endif %}
+                                            </td>
+
+                                            <td class="text-center">
+                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ project.id }}" aria-expanded="false"><i class="ph-caret-down collapsible-indicator"></i></a>
+                                            </td>
+
+                                        </tr>
+
+                                        <tr id="collapsed_item{{ project.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
+                                            <td>Broj zadataka:
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ project.noTasks }}
+                                                </span>
+                                            </td>
+                                            <td>Klijent:
+                                                {% for client in project.project.client %}
+                                                    <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title }}</a>{% if  not loop.last %},{% endif %}
+                                                {% endfor %}
+                                            </td>
+
+
+
+
+
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_project_faktura_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        <a href="{{ path('app_project_faktura_edit', { id: project.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    {#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+{% endblock includeJavascript %}
+{% block footerJavascript %}
+
+    <script>
+        // Date format
+        // izmenjen format da bi bio po srpskim standardima
+        const dpDateCustomFormatElement = document.querySelector('.datepicker-date-format-custom');
+        if(dpDateCustomFormatElement) {
+            const today = new Date();
+            const firstDayOfPreviousMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            const dpDateCustomFormat = new Datepicker(dpDateCustomFormatElement, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                pickLevel: 1,
+                startView: 1,
+                format: 'mm.yyyy',
+                weekStart: 1,
+                maxDate: firstDayOfPreviousMonth,
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                {#datesDisabled: [#}
+                {#    {% for date in disabledDates %}#}
+                {#        '{{ date }}',#}
+                {#    {% endfor %}#}
+                {#],#}
+
+            });
+        }
+
+
+    </script>
+
+{% endblock footerJavascript %}

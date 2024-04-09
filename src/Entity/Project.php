@@ -140,6 +140,9 @@ class Project implements JsonSerializable {
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
+
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectFaktura::class, orphanRemoval: true)]
+  private Collection $projectFakturas;
   public function getCompany(): ?Company
   {
     return $this->company;
@@ -159,6 +162,7 @@ class Project implements JsonSerializable {
     $this->label = new ArrayCollection();
     $this->pdfs = new ArrayCollection();
     $this->team = new ArrayCollection();
+    $this->projectFakturas = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -744,6 +748,36 @@ class Project implements JsonSerializable {
    */
   public function setNoTasks(?int $noTasks): void {
     $this->noTasks = $noTasks;
+  }
+
+  /**
+   * @return Collection<int, ProjectFaktura>
+   */
+  public function getProjectFakturas(): Collection
+  {
+      return $this->projectFakturas;
+  }
+
+  public function addProjectFaktura(ProjectFaktura $projectFaktura): self
+  {
+      if (!$this->projectFakturas->contains($projectFaktura)) {
+          $this->projectFakturas->add($projectFaktura);
+          $projectFaktura->setProject($this);
+      }
+
+      return $this;
+  }
+
+  public function removeProjectFaktura(ProjectFaktura $projectFaktura): self
+  {
+      if ($this->projectFakturas->removeElement($projectFaktura)) {
+          // set the owning side to null (unless already changed)
+          if ($projectFaktura->getProject() === $this) {
+              $projectFaktura->setProject(null);
+          }
+      }
+
+      return $this;
   }
 
 

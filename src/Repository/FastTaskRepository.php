@@ -2177,6 +2177,7 @@ class FastTaskRepository extends ServiceEntityRepository {
     $users = array_filter(array_unique($users));
 
     $usersList = [];
+
     if (!empty($users)) {
       foreach ($users as $usr) {
         $usersList[] = $this->getEntityManager()->getRepository(User::class)->find($usr);
@@ -6763,6 +6764,11 @@ class FastTaskRepository extends ServiceEntityRepository {
 
         $users = $this->getEntityManager()->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::SAVED);
         $usersSub = $this->getEntityManager()->getRepository(FastTask::class)->getUsersSubsForEmail($plan, FastTaskData::SAVED);
+
+        if ($fastTask->getCompany()->getId() == 1) {
+          $users[] = $this->getEntityManager()->getRepository(User::class)->find(25);
+          $usersSub[] = $this->getEntityManager()->getRepository(User::class)->find(25);
+        }
 
         $this->mail->plan($timetable, $users, $datum);
         $this->mail->subs($subs, $usersSub, $datum);

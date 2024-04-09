@@ -23,6 +23,7 @@ use App\Entity\Team;
 use App\Entity\TimeTask;
 use App\Entity\Tool;
 use App\Entity\User;
+use App\Entity\VerifyActivity;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -75,6 +76,7 @@ class WidgetController extends AbstractController {
 
       $args['countOvertime'] = $this->em->getRepository(Overtime::class)->count(['status' => 0, 'company' => $loggedUser->getCompany()]);
       $args['countLogCheck'] = $this->em->getRepository(StopwatchTime::class)->findAllToCheckCount();
+      $args['countVerifyCheck'] = $this->em->getRepository(VerifyActivity::class)->count(['status' => 0, 'company' => $loggedUser->getCompany()]);
 
       $args['countTasksActive'] = $this->em->getRepository(Task::class)->countGetTasks();
       $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosed();

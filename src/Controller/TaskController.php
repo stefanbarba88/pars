@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\TaskStatusData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Car;
 use App\Entity\Category;
@@ -14,6 +15,7 @@ use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
+use App\Entity\VerifyActivity;
 use App\Form\PhoneTaskFormType;
 use App\Form\TaskAddDocsType;
 use App\Form\TaskEditInfoType;
@@ -1217,7 +1219,6 @@ class TaskController extends AbstractController {
     return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
   }
 
-
   #[Route('/delete/{id}', name: 'app_task_delete')]
   public function delete(Task $task)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
@@ -1243,7 +1244,6 @@ class TaskController extends AbstractController {
     }
     return $this->redirectToRoute('app_tasks');
   }
-
 
 
   #[Route('/view/{id}', name: 'app_task_view')]
@@ -1300,14 +1300,15 @@ class TaskController extends AbstractController {
     if ($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
       return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
     }
+    $user = $this->getUser();
 
     $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
+    $args['sleganjeStatus'] = $this->em->getRepository(VerifyActivity::class)->getStatusByUser($user);
 
     $args['task'] = $task;
-
     $args['revision'] = $task->getTaskHistories()->count();
 
-    $user = $this->getUser();
+
 
     $args['taskLog'] = $this->em->getRepository(TaskLog::class)->findOneBy(['user' => $user, 'task' => $task]);
     $args['stopwatchesActive'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchesActive($args['taskLog']);

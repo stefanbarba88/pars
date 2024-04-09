@@ -38,11 +38,11 @@
                                 <table class="table table-bordered table-hover table-responsive table-sm">
                                     <thead class="bg-light text-primary">
                                     <tr>
-                                        <th  {% if pagination.isSorted('[c.user]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Zaposleni ', ['c.user']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.user' %}
+                                        <th  {% if pagination.isSorted('[u.prezime]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Zaposleni ', ['u.prezime']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.prezime' %}
                                                 &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.user' %}
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.prezime' %}
                                                 &#8593;
                                             {% else %}
                                                 &#8597;
@@ -78,11 +78,11 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th  {% if pagination.isSorted('[c.task]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Zadatak ', ['c.task']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.task' %}
+                                        <th  {% if pagination.isSorted('[t.title]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Zadatak ', ['t.title']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 't.title' %}
                                                 &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.task' %}
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 't.title' %}
                                                 &#8593;
                                             {% else %}
                                                 &#8597;

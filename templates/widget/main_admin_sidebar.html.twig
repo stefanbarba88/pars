@@ -77,6 +77,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ path('app_stopwatch_verify_activity_list') }}" class="nav-link">
+                            <i class="ph-archive-box"></i>
+                            <span>Prijemi za potvrdu</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ path('app_tasks_arhiva') }}" class="nav-link">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
@@ -495,6 +501,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ path('app_projects_fakture') }}" class="nav-link">
+                            <i class="ph-file-text"></i>
+                            <span>Projekti za fakturisanje</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ path('app_project_reports') }}" class="nav-link">
                             <i class="ph-file-text"></i>
                             <span>Izveštaji</span>
@@ -558,6 +570,16 @@
                             <span>Nezatvoreni dnevnici</span>
                             {% if countTasksUnclosedLogs > 0 %}
                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksUnclosedLogs }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ path('app_stopwatch_verify_activity_list') }}" class="nav-link">
+                            <i class="ph-archive-box"></i>
+                            <span>Prijemi za potvrdu</span>
+                            {% if countVerifyCheck > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countVerifyCheck}}</span>
                             {% endif %}
                         </a>
                     </li>

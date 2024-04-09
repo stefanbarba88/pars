@@ -5,18 +5,17 @@ namespace App\Controller;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TaskStatusData;
 use App\Classes\Data\UserRolesData;
-use App\Entity\Availability;
 use App\Entity\Image;
 use App\Entity\Overtime;
 use App\Entity\Pdf;
-use App\Entity\Project;
 use App\Entity\StopwatchTime;
-use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\TimeTask;
 use App\Entity\User;
+use App\Entity\VerifyActivity;
 use App\Form\StopwatchTimeAddFormType;
 use App\Form\StopwatchTimeFormType;
+use App\Service\MailService;
 use App\Service\UploadService;
 use DateTimeImmutable;
 use Detection\MobileDetect;
@@ -73,7 +72,7 @@ class StopwatchController extends AbstractController {
   }
 
   #[Route('/form/{id}', name: 'app_stopwatch_form')]
-  public function form(StopwatchTime $stopwatch, Request $request, UploadService $uploadService, SessionInterface $session) : Response
+  public function form(StopwatchTime $stopwatch, Request $request, UploadService $uploadService, SessionInterface $session, MailService $mailService) : Response
   { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
@@ -187,6 +186,20 @@ class StopwatchController extends AbstractController {
 
         $stopwatch->setAdditionalActivity($processedText);
 
+        //ako je neka od stavki "Sleganje" u dnevniku glavnog geodete kreiraj "VerifyActivity"
+        if ($stopwatch->getTaskLog()->getTask()->getPriorityUserLog() == $stopwatch->getTaskLog()->getUser()->getId()) {
+          foreach ($stopwatch->getActivity() as $activity) {
+            if ($activity->getId() == 42) {
+              $verify = new VerifyActivity();
+              $verify->setStopwatch($stopwatch);
+              $verify->setCompany($stopwatch->getCompany());
+              $verify->setZaduzeni($stopwatch->getTaskLog()->getUser());
+              $this->em->getRepository(VerifyActivity::class)->save($verify);
+              $mailService->activityVerify($verify, $stopwatch->getCompany()->getEmail());
+            }
+          }
+        }
+
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 
         if (!is_null($sati)) {
@@ -247,7 +260,7 @@ class StopwatchController extends AbstractController {
   #[Route('/form-add/{taskLog}/{id}', name: 'app_stopwatch_add_form', defaults: ['id' => 0])]
   #[Entity('taskLog', expr: 'repository.find(taskLog)')]
   #[Entity('stopwatch', expr: 'repository.findForForm(taskLog, id)')]
-  public function add(TaskLog $taskLog, StopwatchTime $stopwatch, Request $request, UploadService $uploadService)    : Response {
+  public function add(TaskLog $taskLog, StopwatchTime $stopwatch, Request $request, UploadService $uploadService, MailService $mailService)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
@@ -339,6 +352,19 @@ class StopwatchController extends AbstractController {
 
         $stopwatch->setAdditionalActivity($processedText);
 
+//ako je neka od stavki "Sleganje" u dnevniku glavnog geodete kreiraj "VerifyActivity"
+        if ($stopwatch->getTaskLog()->getTask()->getPriorityUserLog() == $stopwatch->getTaskLog()->getUser()->getId()) {
+          foreach ($stopwatch->getActivity() as $activity) {
+            if ($activity->getId() == 42) {
+              $verify = new VerifyActivity();
+              $verify->setStopwatch($stopwatch);
+              $verify->setCompany($stopwatch->getCompany());
+              $verify->setZaduzeni($stopwatch->getTaskLog()->getUser());
+              $this->em->getRepository(VerifyActivity::class)->save($verify);
+              $mailService->activityVerify($verify, $stopwatch->getCompany()->getEmail());
+            }
+          }
+        }
 
 
         $stopwatch->setIsEdited(true);
@@ -391,7 +417,7 @@ class StopwatchController extends AbstractController {
   }
 
   #[Route('/form-edit/{id}', name: 'app_stopwatch_edit_forma')]
-  public function edit(StopwatchTime $stopwatch, Request $request, UploadService $uploadService)    : Response {
+  public function edit(StopwatchTime $stopwatch, Request $request, UploadService $uploadService, MailService $mailService)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
@@ -461,6 +487,35 @@ class StopwatchController extends AbstractController {
         $processedText = implode('. ', $sentences);
 
         $stopwatch->setAdditionalActivity($processedText);
+
+        //ako je neka od stavki "Sleganje" u dnevniku glavnog geodete kreiraj "VerifyActivity"
+        if ($stopwatch->getTaskLog()->getTask()->getPriorityUserLog() == $stopwatch->getTaskLog()->getUser()->getId()) {
+
+          $sleganje = false;
+          $verify = $this->em->getRepository(VerifyActivity::class)->findOneBy(['zaduzeni' => $stopwatch->getTaskLog()->getUser(), 'status' => TaskStatusData::NIJE_ZAPOCETO, 'stopwatch' => $stopwatch]);
+
+          foreach ($stopwatch->getActivity() as $activity) {
+            if ($activity->getId() == 42) {
+              $sleganje = true;
+            }
+          }
+
+          if (!$sleganje) {
+            if (!is_null($verify)) {
+              $this->em->getRepository(VerifyActivity::class)->remove($verify);
+            }
+          } else {
+            if (is_null($verify)) {
+              $verify = new VerifyActivity();
+              $verify->setStopwatch($stopwatch);
+              $verify->setCompany($stopwatch->getCompany());
+              $verify->setZaduzeni($stopwatch->getTaskLog()->getUser());
+              $this->em->getRepository(VerifyActivity::class)->save($verify);
+              $mailService->activityVerify($verify, $stopwatch->getCompany()->getEmail());
+            }
+          }
+        }
+
 
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 
@@ -678,6 +733,79 @@ class StopwatchController extends AbstractController {
     }
 
     return $this->render('task/time_task_form.html.twig', $args);
+  }
+
+  #[Route('/list-verify-activity/', name: 'app_stopwatch_verify_activity_list')]
+  public function listVerifyActivity(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+    $user = $this->getUser();
+
+
+    $activities = $this->em->getRepository(VerifyActivity::class)->getAllActivitiesToVerify($user);
+
+    $pagination = $paginator->paginate(
+      $activities, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/activities_to_check.html.twig', $args);
+    }
+
+    return $this->render('task/activities_to_check.html.twig', $args);
+
+  }
+
+  #[Route('/check-verify-activity/{id}', name: 'app_stopwatch_verify_activity_check')]
+  public function checkVerifyActivity(VerifyActivity $verifyActivity, MailService $mailService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    if ($verifyActivity->getStatus() == TaskStatusData::NIJE_ZAPOCETO) {
+      $verifyActivity->setStatus(TaskStatusData::ZAVRSENO);
+      $message = NotifyMessagesData::VERIFY_ACTIVITY_CHECKED;
+    } else {
+      $verifyActivity->setStatus(TaskStatusData::NIJE_ZAPOCETO);
+      $message = NotifyMessagesData::VERIFY_ACTIVITY_UNCHECKED;
+    }
+
+    $this->em->getRepository(VerifyActivity::class)->save($verifyActivity);
+    $mailService->responseActivityVerify($verifyActivity);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess($message);
+
+    return $this->redirectToRoute('app_stopwatch_verify_activity_list');
+  }
+
+  #[Route('/delete-verify-activity/{id}', name: 'app_stopwatch_verify_activity_delete')]
+  public function deleteVerifyActivity(VerifyActivity $verifyActivity)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+
+    $this->em->getRepository(VerifyActivity::class)->remove($verifyActivity);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::VERIFY_ACTIVITY_DELETE);
+
+    return $this->redirectToRoute('app_stopwatch_verify_activity_list');
   }
 
 }

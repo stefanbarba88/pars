@@ -18,10 +18,15 @@
                             <span class="fw-semibold">Važno!</span> Imate <a href="{{ path('app_tasks_unclosed_logs') }}" class="alert-link">nezatvoren dnevnik</a> u predhodnih 7 dana. Morate prvo njega zatvoriti da bi pokrenuli današnje.
                         </div>
                     {% endif %}
+                    {% if not sleganjeStatus %}
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <span class="fw-semibold">Važno!</span> Nije moguće pokrenuti novo merenje dok administrator ne potvrdi <a href="{{ path('app_stopwatch_verify_activity_list') }}" class="alert-link">prijem podataka</a> koje ste mu poslali.
+                        </div>
+                    {% endif %}
 
-{#                    <div class="alert alert-secondary alert-dismissible fade show">#}
-{#                        <span class="fw-semibold">Uputstvo je ažurirano 13.09.2023.</span> Preuzmite i pogledajte šta je <a href="{{ asset('/assets/manual/manual.pdf') }}" class="alert-link" download>novo</a> dodato.#}
-{#                    </div>#}
+                    <div class="alert alert-secondary alert-dismissible fade show">
+                        <span class="fw-semibold">Važno!</span> Prilikom zatvaranja merenja, ukolimo izaberete stavku "Sleganje" pri zatvaranju dnevnika, potrebno je sačekati potvrdu administratora da je primio podatke koje ste mu poslali. Bez potvrde nećete moći pokrenuti novo merenje.
+                    </div>
 
                     {% if checklistActive is not empty %}
                         <div class="row ">

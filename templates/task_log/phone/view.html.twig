@@ -34,7 +34,7 @@
                             <div class="card">
                             <div class="card-header d-flex align-items-center">
                             <h5 class="mb-0">#{{ task.id }}: {{task.title }} - {{ taskLog.user.getFullName() }}</h5>
-                                    {% set difference = date()|date_modify('-96 hours') %}
+                                    {% set difference = date()|date_modify(constant('App\\Classes\\AppConfig::TIME_DIFFERENCE')) %}
                                     {% if not task.isDeleted %}
                                         {% if is_granted('ROLE_EMPLOYEE') and not task.isDeleted and task.created > difference%}
                                             <div class="my-auto ms-auto">
@@ -128,7 +128,7 @@
                                                                         {% set activityExists = false %}
                                                                         {% if stopwatch.activity is not empty %}
                                                                             {% for activity in stopwatch.activity %}
-                                                                                {% if activity.id != 105 %}
+                                                                                {% if activity.id != constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID') %}
                                                                                     {% if activity not in newActivity %}
                                                                                         <i class="ph-checks me-2"></i>{{ activity.title }}<br>
                                                                                         {% set newActivity = newActivity|merge([activity]) %}
@@ -350,7 +350,7 @@
                                                                                     {% set exists = false %}
                                                                                     {% if stopwatch.activity is not empty %}
                                                                                         {% for activity in stopwatch.activity %}
-                                                                                            {% if activity.id != 105 %}
+                                                                                            {% if activity.id != constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID') %}
                                                                                                 <i class="ph-checks me-2"></i>{{ activity.title }}<br>
                                                                                             {% else %}
                                                                                                 {% set exists = true %}
@@ -606,22 +606,22 @@
 
             // Funkcija za ažuriranje vidljivosti dodatnih aktivnosti
             function updateAdditionalActivityVisibility() {
-                // Proveri da li je izabrana aktivnost "Obrada podataka" (vrednost 67)
-                if($('#stopwatch_time_add_form_activity').val().includes('67') || $('#stopwatch_time_add_form_activity').val().includes('66')) {
-                    // Ako je izabrana aktivnost 67 ili 66, učini polje za unos dodatnih aktivnosti obaveznim
+                // Proveri da li je izabrana aktivnost "Obrada podataka" (vrednost constant('App\\Classes\\AppConfig::BEZ_OBAVEZE_ID'))
+                if($('#stopwatch_time_add_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::BEZ_OBAVEZE_ID')}}') || $('#stopwatch_time_add_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::OSTALO_ID')}}')) {
+                    // Ako je izabrana aktivnost 67 ili constant('App\\Classes\\AppConfig::OSTALO_ID'), učini polje za unos dodatnih aktivnosti obaveznim
                     $('#stopwatch_time_add_form_description').prop('required', true);
                     // Promeni labelu na "Napomena:*"
                     $('label[for="stopwatch_time_add_form_description"]').text('Napomena:*');
                     $('.nap').text('Detaljnije opišite aktivnost.');
                 } else {
-                    // Ako nije izabrana aktivnost 67 ili 66, učini polje za unos dodatnih aktivnosti neobaveznim
+                    // Ako nije izabrana aktivnost 67 ili constant('App\\Classes\\AppConfig::OSTALO_ID'), učini polje za unos dodatnih aktivnosti neobaveznim
                     $('#stopwatch_time_add_form_description').prop('required', false);
                     // Ostavi labelu kakva je
                     $('label[for="stopwatch_time_add_form_description"]').text('Napomena:');
                     $('.nap').text('');
                 }
 
-                if($('#stopwatch_time_add_form_activity').val().includes('33')) {
+                if($('#stopwatch_time_add_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::OBRADA_ID')}}')) {
                     $('#stopwatch_time_add_form_additionalDesc').prop('required', true);
                     $('.obrada').prop('required', false).show();
                 } else {
@@ -629,8 +629,8 @@
                     $('.obrada').prop('required', false).hide();
                 }
 
-                // Proveri da li je izabrana aktivnost "Nešto drugo" (vrednost 66)
-                if ($('#stopwatch_time_add_form_activity').val().includes('105')) {
+                // Proveri da li je izabrana aktivnost "Nešto drugo" (vrednost constant('App\\Classes\\AppConfig::OSTALO_ID'))
+                if ($('#stopwatch_time_add_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID')}}')) {
                     // Ako jeste, učini polje za unos dodatnih aktivnosti obaveznim i vidljivim
                     $('#stopwatch_time_add_form_additionalActivity').prop('required', true).show();
                     $('.dodAkt').prop('required', false).show();

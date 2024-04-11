@@ -72,8 +72,8 @@ class StopwatchController extends AbstractController {
   }
 
   #[Route('/form/{id}', name: 'app_stopwatch_form')]
-  public function form(StopwatchTime $stopwatch, Request $request, UploadService $uploadService, SessionInterface $session, MailService $mailService) : Response
-  { if (!$this->isGranted('ROLE_USER')) {
+  public function form(StopwatchTime $stopwatch, Request $request, UploadService $uploadService, SessionInterface $session, MailService $mailService) : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];

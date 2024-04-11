@@ -277,7 +277,7 @@
             // Funkcija za ažuriranje vidljivosti dodatnih aktivnosti
             function updateAdditionalActivityVisibility() {
                 // Proveri da li je izabrana aktivnost "Obrada podataka" (vrednost 67)
-                if($('#stopwatch_time_form_activity').val().includes('67') || $('#stopwatch_time_form_activity').val().includes('66')) {
+                if($('#stopwatch_time_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::BEZ_OBAVEZE_ID')}}') || $('#stopwatch_time_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::OSTALO_ID')}}')) {
                     // Ako je izabrana aktivnost 67 ili 66, učini polje za unos dodatnih aktivnosti obaveznim
                     $('#stopwatch_time_form_description').prop('required', true);
                     // Promeni labelu na "Napomena:*"
@@ -291,7 +291,7 @@
                     $('.nap').text('');
                 }
 
-                if($('#stopwatch_time_form_activity').val().includes('33')) {
+                if($('#stopwatch_time_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::OBRADA_ID')}}')) {
                     $('#stopwatch_time_form_additionalDesc').prop('required', true);
                     $('.obrada').prop('required', false).show();
                 } else {
@@ -300,7 +300,7 @@
                 }
 
                 // Proveri da li je izabrana aktivnost "Nešto drugo" (vrednost 66)
-                if ($('#stopwatch_time_form_activity').val().includes('105')) {
+                if ($('#stopwatch_time_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID')}}')) {
                     // Ako jeste, učini polje za unos dodatnih aktivnosti obaveznim i vidljivim
                     $('#stopwatch_time_form_additionalActivity').prop('required', true).show();
                     $('.dodAkt').prop('required', false).show();

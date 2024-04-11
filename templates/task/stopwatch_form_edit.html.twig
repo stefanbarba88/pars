@@ -210,7 +210,7 @@
             // Funkcija za ažuriranje vidljivosti dodatnih aktivnosti
             function updateAdditionalActivityVisibility() {
                 // Proveri da li je izabrana aktivnost "Obrada podataka" (vrednost 67)
-                if($('#stopwatch_time_add_form_activity').val().includes('67') || $('#stopwatch_time_add_form_activity').val().includes('66')) {
+                if($('#stopwatch_time_add_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::BEZ_OBAVEZE_ID')}}') || $('#stopwatch_time_add_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::OSTALO_ID')}}')) {
                     // Ako je izabrana aktivnost 67 ili 66, učini polje za unos dodatnih aktivnosti obaveznim
                     $('#stopwatch_time_add_form_description').prop('required', true);
                     // Promeni labelu na "Napomena:*"
@@ -235,7 +235,7 @@
                     $('.dodAkt').prop('required', false).hide();
                 }
 
-                if($('#stopwatch_time_add_form_activity').val().includes('33')) {
+                if($('#stopwatch_time_add_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::OBRADA_ID')}}')) {
                     $('#stopwatch_time_add_form_additionalDesc').prop('required', true);
                     $('.obrada').prop('required', false).show();
                 } else {

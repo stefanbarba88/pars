@@ -25,7 +25,7 @@
 
                 <!-- Content area -->
                 <div class="content">
-                    {% set difference = date()|date_modify('-96 hours') %}
+                    {% set difference = date()|date_modify(constant('App\\Classes\\AppConfig::TIME_DIFFERENCE')) %}
                     {% if project.important is not null %}
                         <div class="alert alert-info fade show">
                             <span class="fw-semibold">{{ project.important }}
@@ -110,6 +110,9 @@
                                                     <td>
                                                         <div class="fw-semibold">
                                                             <a href="{{ path('app_task_view_user', { id: task.id}) }}">{{ task.title }}</a>
+                                                            {% if task.repeating == 1 %}
+                                                                <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Ovaj zadatak se ponavlja."></i>
+                                                            {% endif %}
                                                         </div>
                                                         {% if task.label is not empty %}
                                                             <div class="d-inline-flex">
@@ -123,6 +126,9 @@
                                                     <td>
                                                         <div class="fw-semibold">
                                                             {{ task.title }}
+                                                            {% if task.repeating == 1 %}
+                                                                <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Ovaj zadatak se ponavlja."></i>
+                                                            {% endif %}
                                                         </div>
                                                         {% if task.label is not empty %}
                                                             <div class="d-inline-flex">
@@ -137,6 +143,9 @@
                                                 <td>
                                                     <div class="fw-semibold">
                                                         <a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a>
+                                                        {% if task.repeating == 1 %}
+                                                            <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Ovaj zadatak se ponavlja."></i>
+                                                        {% endif %}
                                                     </div>
                                                     {% if task.label is not empty %}
                                                         <div class="d-inline-flex">
@@ -200,14 +209,17 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
                                                     <span class="badge bg-secondary text-primary">Nije startovan</span>
                                                 {% endif %}
-                                                {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') and not task.isDeleted %}
                                                     <span class="badge bg-yellow text-primary">Otvoren</span>
                                                 {% endif %}
-                                                {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') and not task.isDeleted %}
                                                     <span class="badge bg-primary text-white">Zatvoren</span>
+                                                {% endif %}
+                                                {% if task.isDeleted %}
+                                                    <span class="badge bg-yellow text-primary">Obrisan</span>
                                                 {% endif %}
                                             </td>
 

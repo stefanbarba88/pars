@@ -77,30 +77,30 @@
                                                 {% endfor %}
                                             </div>
                                         </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Uvid u dnevnik:</div>
-                                            <div class="col-8">
-                                                {% if projectH.getIsViewLog %}
-                                                    <i class="ph-eye"></i>
-                                                {% else %}
-                                                    <i class="ph-eye-slash"></i>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Tip projekta:</div>
-                                            <div class="col-8">
-                                                {% if projectH.type == 1 %}
-                                                    Fiksni
-                                                {% endif %}
-                                                {% if projectH.type == 2 %}
-                                                    Leteći
-                                                {% endif %}
-                                                {% if projectH.type == 3 %}
-                                                    Kombinovani
-                                                {% endif %}
-                                            </div>
-                                        </div>
+{#                                        <div class="row p-2">#}
+{#                                            <div class="col-4">Uvid u dnevnik:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if projectH.getIsViewLog %}#}
+{#                                                    <i class="ph-eye"></i>#}
+{#                                                {% else %}#}
+{#                                                    <i class="ph-eye-slash"></i>#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Tip projekta:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if projectH.type == 1 %}#}
+{#                                                    Fiksni#}
+{#                                                {% endif %}#}
+{#                                                {% if projectH.type == 2 %}#}
+{#                                                    Leteći#}
+{#                                                {% endif %}#}
+{#                                                {% if projectH.type == 3 %}#}
+{#                                                    Kombinovani#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
 {#                                        <div class="row p-2 bg-light">#}
 {#                                            <div class="col-4">Tim:</div>#}
 {#                                            <div class="col-8">#}
@@ -127,21 +127,25 @@
                                         <div class="row p-2">
                                             <div class="col-4" >Klijent:</div>
                                             <div class="col-8">
-                                                {% for client in projectH.client %}
-                                                    {{ client | upper }}{% if  not loop.last %}<br>{% endif %}
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Klijent ima uvid u projekat:</div>
-                                            <div class="col-8">
-                                                {% if projectH.getIsClientView %}
-                                                    <i class="ph-eye"></i>
+                                                {% if projectH.client is empty %}
+                                                    Interni projekat
                                                 {% else %}
-                                                    <i class="ph-eye-slash"></i>
+                                                    {% for client in projectH.client %}
+                                                        {{ client | upper }}{% if  not loop.last %}<br>{% endif %}
+                                                    {% endfor %}
                                                 {% endif %}
                                             </div>
                                         </div>
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Klijent ima uvid u projekat:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if projectH.getIsClientView %}#}
+{#                                                    <i class="ph-eye"></i>#}
+{#                                                {% else %}#}
+{#                                                    <i class="ph-eye-slash"></i>#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
                                     </div>
                                 </div>
                                 <div class="card">
@@ -202,17 +206,17 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Praćenje vremena</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row p-2">
-                                            <div class="col-4">Prioritet dnevnika:</div>
-                                            <div class="col-8">
-                                                {{ projectH.timerPriority }}
-                                            </div>
-                                        </div>
+{#                                <div class="card">#}
+{#                                    <div class="card-header">#}
+{#                                        <h5 class="mb-0">Praćenje vremena</h5>#}
+{#                                    </div>#}
+{#                                    <div class="card-body">#}
+{#                                        <div class="row p-2">#}
+{#                                            <div class="col-4">Prioritet dnevnika:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {{ projectH.timerPriority }}#}
+{#                                            </div>#}
+{#                                        </div>#}
 {#                                        <div class="row p-2 bg-light">#}
 {#                                            <div class="col-4">Vremenska procena:</div>#}
 {#                                            <div class="col-8">#}
@@ -223,32 +227,32 @@
 {#                                                {% endif %}#}
 {#                                            </div>#}
 {#                                        </div>#}
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Zaokruživanje vremena:</div>
-                                            <div class="col-8">
-                                                {% if projectH.getIsTimeRoundUp %}
-                                                    <i class="ph-check-circle"></i>
-                                                {% else %}
-                                                    <i class="ph-minus-circle"></i>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        {% if projectH.getIsTimeRoundUp %}
-                                            <div class="row p-2 ">
-                                                <div class="col-4">Interval zaokruživanja:</div>
-                                                <div class="col-8">
-                                                    {{ projectH.roundingInterval }} min
-                                                </div>
-                                            </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Minimalni unos:</div>
-                                                <div class="col-8">
-                                                    {{ projectH.minEntry }} min
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Zaokruživanje vremena:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if projectH.getIsTimeRoundUp %}#}
+{#                                                    <i class="ph-check-circle"></i>#}
+{#                                                {% else %}#}
+{#                                                    <i class="ph-minus-circle"></i>#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        {% if projectH.getIsTimeRoundUp %}#}
+{#                                            <div class="row p-2 ">#}
+{#                                                <div class="col-4">Interval zaokruživanja:</div>#}
+{#                                                <div class="col-8">#}
+{#                                                    {{ projectH.roundingInterval }} min#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                            <div class="row p-2 bg-light">#}
+{#                                                <div class="col-4">Minimalni unos:</div>#}
+{#                                                <div class="col-8">#}
+{#                                                    {{ projectH.minEntry }} min#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        {% endif %}#}
+{#                                    </div>#}
+{#                                </div>#}
                                 {% if projectH.editBy is not null %}
                                     <div class="card">
                                         <div class="card-header">

@@ -3,11 +3,10 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\RepeatingIntervalData;
 use App\Classes\Data\UserRolesData;
-use App\Entity\Car;
 use App\Entity\Category;
 use App\Entity\Comment;
-use App\Entity\FastTask;
 use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
@@ -15,10 +14,11 @@ use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
 use App\Form\PhoneTaskFormType;
+use App\Form\ReassignTaskFormType;
 use App\Form\TaskAddDocsType;
 use App\Form\TaskEditInfoType;
-use App\Form\TaskEditType;
 use App\Form\TaskFormType;
+use App\Service\MailService;
 use App\Service\UploadService;
 use DateTimeImmutable;
 use Detection\MobileDetect;
@@ -67,6 +67,7 @@ class TaskController extends AbstractController {
   }
 
   #[Route('/archive/', name: 'app_tasks_arhiva')]
+
   public function arhiva(PaginatorInterface $paginator, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
@@ -108,65 +109,6 @@ class TaskController extends AbstractController {
     return $this->render('task/archive_paginator.html.twig', $args);
   }
 
-  #[Route('/unclosed/', name: 'app_tasks_unclosed')]
-  public function unclosed(PaginatorInterface $paginator, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-    $args = [];
-    $user = $this->getUser();
-
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedByUserPaginator($user);
-    } else {
-      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedPaginator();
-    }
-
-
-    $pagination = $paginator->paginate(
-      $tasks, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $args['pagination'] = $pagination;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('task/phone/unclosed.html.twig', $args);
-    }
-    return $this->render('task/unclosed.html.twig', $args);
-  }
-
-  #[Route('/unclosed-logs/', name: 'app_tasks_unclosed_logs')]
-  public function unclosedLogs(PaginatorInterface $paginator, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-    $args = [];
-    $user = $this->getUser();
-
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedLogsByUser($user);
-    } else {
-      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedLogsPaginator();
-    }
-    $pagination = $paginator->paginate(
-      $tasks, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $args['pagination'] = $pagination;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('task/phone/unclosed_logs.html.twig', $args);
-    }
-
-    return $this->render('task/unclosed_logs.html.twig', $args);
-  }
-
-
   #[Route('/form-task-date/', name: 'app_task_form_date', defaults: ['id' => 0])]
   #[Entity('task', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -181,7 +123,7 @@ class TaskController extends AbstractController {
       $args['project'] = $data;
     }
 
-    $args['disabledDates'] = $this->em->getRepository(FastTask::class)->getDisabledDates();
+//    $args['disabledDates'] = $this->em->getRepository(FastTask::class)->getDisabledDates();
     $args['task'] = $task;
 
     $mobileDetect = new MobileDetect();
@@ -198,10 +140,10 @@ class TaskController extends AbstractController {
   #[Route('/form/{id}', name: 'app_task_form', defaults: ['id' => 0])]
   #[Entity('task', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Task $task, Request $request, UploadService $uploadService, SessionInterface $session)    : Response {
+  public function form(Task $task, Request $request, UploadService $uploadService, SessionInterface $session, MailService $mailService)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $data = $request->request->all();
 
@@ -250,6 +192,8 @@ class TaskController extends AbstractController {
       $form->handleRequest($request);
       if ($form->isSubmitted() && $form->isValid()) {
 
+
+
         if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
           if ($this->em->getRepository(Task::class)->getTaskByUserCheck($user)) {
             notyf()
@@ -259,7 +203,7 @@ class TaskController extends AbstractController {
               ->dismissible(true)
               ->addError(NotifyMessagesData::TASK_ADD_ERROR);
 
-              return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_home');
 
           }
         }
@@ -267,6 +211,7 @@ class TaskController extends AbstractController {
         $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumK'])->setTime(0, 0);
         $task->setDatumKreiranja($datumKreiranja);
         if (!$mobileDetect->isMobile()) {
+
           $uploadFiles = $request->files->all()['task_form']['pdf'];
           if(!empty ($uploadFiles)) {
             foreach ($uploadFiles as $uploadFile) {
@@ -280,13 +225,13 @@ class TaskController extends AbstractController {
               $task->addPdf($pdf);
             }
           }
-          if (!empty($request->request->all('task_form')['car'])) {
-            $task->setCar($request->request->all('task_form')['car']);
-            if (!empty($request->request->all('task_form')['driver'])) {
-              $task->setDriver($request->request->all('task_form')['driver']);
-            }
-            $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
-          }
+//          if (!empty($request->request->all('task_form')['car'])) {
+//            $task->setCar($request->request->all('task_form')['car']);
+//            if (!empty($request->request->all('task_form')['driver'])) {
+//              $task->setDriver($request->request->all('task_form')['driver']);
+//            }
+//            $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
+//          }
           $date = $task->getDatumKreiranja();
           if (!empty($request->request->all('task_form')['vreme'])) {
             $time = $request->request->all('task_form')['vreme'];
@@ -296,6 +241,7 @@ class TaskController extends AbstractController {
           else {
             $task->setTime($date);
           }
+
           foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
 
             if (!empty($assignedUser)){
@@ -303,8 +249,8 @@ class TaskController extends AbstractController {
               if(!is_null($member)) {
                 $task->addAssignedUser($member);
 
-                if ($key === 0) {
-                  $task->setPriorityUserLog($assignedUser);
+                if ($member->getId() == $request->request->all('task_form')['priorityUserLog'] ) {
+                  $task->setPriorityUserLog($member->getId());
                 }
               }
             }
@@ -324,13 +270,13 @@ class TaskController extends AbstractController {
                 $task->addPdf($pdf);
               }
             }
-            if (!empty($request->request->all('task_form')['car'])) {
-              $task->setCar($request->request->all('task_form')['car']);
-              if (!empty($request->request->all('task_form')['driver'])) {
-                $task->setDriver($request->request->all('task_form')['driver']);
-              }
-              $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
-            }
+//            if (!empty($request->request->all('task_form')['car'])) {
+//              $task->setCar($request->request->all('task_form')['car']);
+//              if (!empty($request->request->all('task_form')['driver'])) {
+//                $task->setDriver($request->request->all('task_form')['driver']);
+//              }
+//              $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
+//            }
             $date = $task->getDatumKreiranja();
             if (!empty($request->request->all('task_form')['vreme'])) {
               $time = $request->request->all('task_form')['vreme'];
@@ -347,8 +293,8 @@ class TaskController extends AbstractController {
                 if(!is_null($member)) {
                   $task->addAssignedUser($member);
 
-                  if ($key === 0) {
-                    $task->setPriorityUserLog($assignedUser);
+                  if ($member->getId() == $request->request->all('task_form')['priorityUserLog'] ) {
+                    $task->setPriorityUserLog($member->getId());
                   }
                 }
               }
@@ -367,13 +313,13 @@ class TaskController extends AbstractController {
                 $task->addPdf($pdf);
               }
             }
-            if (!empty($request->request->all('phone_task_form')['car'])) {
-              $task->setCar($request->request->all('phone_task_form')['car']);
-              if (!empty($request->request->all('phone_task_form')['driver'])) {
-                $task->setDriver($request->request->all('phone_task_form')['driver']);
-              }
-              $task->setDriver($request->request->all('phone_task_form')['assignedUsers'][0]);
-            }
+//            if (!empty($request->request->all('phone_task_form')['car'])) {
+//              $task->setCar($request->request->all('phone_task_form')['car']);
+//              if (!empty($request->request->all('phone_task_form')['driver'])) {
+//                $task->setDriver($request->request->all('phone_task_form')['driver']);
+//              }
+//              $task->setDriver($request->request->all('phone_task_form')['assignedUsers'][0]);
+//            }
             $date = $task->getDatumKreiranja();
             if (!empty($request->request->all('phone_task_form')['vreme'])) {
               $time = $request->request->all('phone_task_form')['vreme'];
@@ -389,8 +335,8 @@ class TaskController extends AbstractController {
                 if(!is_null($member)) {
                   $task->addAssignedUser($member);
 
-                  if ($key === 0) {
-                    $task->setPriorityUserLog($assignedUser);
+                  if ($member->getId() == $request->request->all('phone_task_form')['priorityUserLog'] ) {
+                    $task->setPriorityUserLog($member->getId());
                   }
                 }
               }
@@ -399,8 +345,25 @@ class TaskController extends AbstractController {
 
         }
 
+        if ($task->getRepeating() == 1) {
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::DAY) {
+            $task->setDatumPonavljanja($date->modify('+1 day'));
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::WEEK) {
+            $task->setDatumPonavljanja($date->modify('+1 week'));
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::MONTH) {
+            $task->setDatumPonavljanja($date->modify('+1 month'));
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::YEAR) {
+            $task->setDatumPonavljanja($date->modify('+1 year'));
+          }
+        }
         $task->setCompany($task->getProject()->getCompany());
-        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
+
+        $task = $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
+
+        $mailService->task($task);
 
         notyf()
           ->position('x', 'right')
@@ -417,19 +380,19 @@ class TaskController extends AbstractController {
       }
     }
 
-    $projectType = 0;
+//    $projectType = 0;
 //    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
 //      $projectType = $user->getProjectType();
 //    }
 
 
     $args['form'] = $form->createView();
-    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
+//    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
     $args['korisnik'] = $user;
     $args['task'] = $task;
 
-//    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
-    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $user->getCompany()], ['id' => 'ASC']);
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+//    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $user->getCompany()], ['id' => 'ASC']);
 
     if($mobileDetect->isMobile()) {
       if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
@@ -444,10 +407,10 @@ class TaskController extends AbstractController {
   #[Entity('project', expr: 'repository.find(project)')]
   #[Entity('task', expr: 'repository.findForFormProject(project)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formByProject(Task $task, Project $project, Request $request, UploadService $uploadService)    : Response {
+  public function formByProject(Task $task, Project $project, Request $request, UploadService $uploadService, MailService $mailService)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
     $data = $request->request->all();
 
@@ -526,13 +489,13 @@ class TaskController extends AbstractController {
               $task->addPdf($pdf);
             }
           }
-          if (!empty($request->request->all('task_form')['car'])) {
-            $task->setCar($request->request->all('task_form')['car']);
-            if (!empty($request->request->all('task_form')['driver'])) {
-              $task->setDriver($request->request->all('task_form')['driver']);
-            }
-            $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
-          }
+//          if (!empty($request->request->all('task_form')['car'])) {
+//            $task->setCar($request->request->all('task_form')['car']);
+//            if (!empty($request->request->all('task_form')['driver'])) {
+//              $task->setDriver($request->request->all('task_form')['driver']);
+//            }
+//            $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
+//          }
           $date = $task->getDatumKreiranja();
           if (!empty($request->request->all('task_form')['vreme'])) {
             $time = $request->request->all('task_form')['vreme'];
@@ -548,8 +511,8 @@ class TaskController extends AbstractController {
               if(!is_null($member)) {
                 $task->addAssignedUser($member);
 
-                if ($key === 0) {
-                  $task->setPriorityUserLog($assignedUser);
+                if ($member->getId() == $request->request->all('task_form')['priorityUserLog'] ) {
+                  $task->setPriorityUserLog($member->getId());
                 }
               }
             }
@@ -598,8 +561,24 @@ class TaskController extends AbstractController {
           }
         }
 
-        $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
+        $task->setCompany($task->getProject()->getCompany());
+        if ($task->getRepeating() == 1) {
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::DAY) {
+            $task->setDatumPonavljanja($date->modify('+1 day'));
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::WEEK) {
+            $task->setDatumPonavljanja($date->modify('+1 week'));
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::MONTH) {
+            $task->setDatumPonavljanja($date->modify('+1 month'));
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::YEAR) {
+            $task->setDatumPonavljanja($date->modify('+1 year'));
+          }
+        }
 
+        $task = $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
+        $mailService->task($task);
         notyf()
           ->position('x', 'right')
           ->position('y', 'top')
@@ -615,14 +594,16 @@ class TaskController extends AbstractController {
     }
 
 //    $projectType = $project->getType();
-    $projectType = 0;
+//    $projectType = 0;
 
-    $args['form'] = $form->createView();
-    $args['task'] = $task;
     $args['project'] = $project->getId();
     $args['korisnik'] = $user;
-    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
-    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $user->getCompany()], ['id' => 'ASC']);
+    $args['task'] = $task;
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+    $args['form'] = $form->createView();
+
+//    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
+//    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $user->getCompany()], ['id' => 'ASC']);
 
     if($mobileDetect->isMobile()) {
       if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
@@ -631,6 +612,145 @@ class TaskController extends AbstractController {
       return $this->render('task/phone/mobile_form.html.twig', $args);
     }
     return $this->render('task/form.html.twig', $args);
+  }
+
+  #[Route('/edit-info/{id}', name: 'app_task_edit_info')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function editInfo(Task $task, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $history = null;
+    //ovde izvlacimo ulogovanog usera
+    $user = $this->getUser();
+
+    if ($task->getId()) {
+      $history = $this->json($task, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
+
+    $form = $this->createForm(TaskEditInfoType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_edit_info', ['id' => $task->getId()])]]);
+
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+//        $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
+//        if (!$taskIn) {
+        $date = $task->getDatumKreiranja();
+        if ($task->getRepeating() == 1) {
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::DAY) {
+            $task->setDatumPonavljanja($date->modify('+1 day'));
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::WEEK) {
+            $task->setDatumPonavljanja($date->modify('+1 week'));
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::MONTH) {
+            $task->setDatumPonavljanja($date->modify('+1 month'));
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::YEAR) {
+            $task->setDatumPonavljanja($date->modify('+1 year'));
+          }
+        }
+
+        $this->em->getRepository(Task::class)->saveTaskInfo($task, $user, $history);
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::TASK_EDIT);
+//        } else {
+//          notyf()
+//            ->position('x', 'right')
+//            ->position('y', 'top')
+//            ->duration(5000)
+//            ->dismissible(true)
+//            ->addError(NotifyMessagesData::EDIT_ERROR);
+//        }
+
+        if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+          return $this->redirectToRoute('app_home');
+        }
+        return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['task'] = $task;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('task/edit_info.html.twig', $args);
+      }
+      return $this->render('task/phone/edit_info.html.twig', $args);
+    }
+    return $this->render('task/edit_info.html.twig', $args);
+  }
+
+
+  #[Route('/unclosed/', name: 'app_tasks_unclosed')]
+  public function unclosed(PaginatorInterface $paginator, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $args = [];
+    $user = $this->getUser();
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedByUserPaginator($user);
+    } else {
+      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedPaginator();
+    }
+
+
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/unclosed.html.twig', $args);
+    }
+    return $this->render('task/unclosed.html.twig', $args);
+  }
+
+  #[Route('/unclosed-logs/', name: 'app_tasks_unclosed_logs')]
+  public function unclosedLogs(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+    $args = [];
+    $user = $this->getUser();
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedLogsByUser($user);
+    } else {
+      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedLogsPaginator();
+    }
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/unclosed_logs.html.twig', $args);
+    }
+
+    return $this->render('task/unclosed_logs.html.twig', $args);
   }
 
   public function editDate(Task $task, int $project = 0): Response {
@@ -699,126 +819,6 @@ class TaskController extends AbstractController {
 //      return $this->render('task/phone/merge.html.twig', $args);
 //    }
     return $this->render('task/merge.html.twig', $args);
-  }
-
-  #[Route('/edit-info/{id}', name: 'app_task_edit_info')]
-//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editInfo(Task $task, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-    $history = null;
-    //ovde izvlacimo ulogovanog usera
-    $user = $this->getUser();
-
-    if ($task->getId()) {
-      $history = $this->json($task, Response::HTTP_OK, [], [
-          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-            return $object->getId();
-          }
-        ]
-      );
-      $history = $history->getContent();
-    }
-
-    $form = $this->createForm(TaskEditInfoType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_edit_info', ['id' => $task->getId()])]]);
-
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
-        if (!$taskIn) {
-          $this->em->getRepository(Task::class)->saveTaskInfo($task, $user, $history);
-          notyf()
-            ->position('x', 'right')
-            ->position('y', 'top')
-            ->duration(5000)
-            ->dismissible(true)
-            ->addSuccess(NotifyMessagesData::TASK_EDIT);
-        } else {
-          notyf()
-            ->position('x', 'right')
-            ->position('y', 'top')
-            ->duration(5000)
-            ->dismissible(true)
-            ->addError(NotifyMessagesData::EDIT_ERROR);
-        }
-
-        if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-          return $this->redirectToRoute('app_home');
-        }
-        return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['task'] = $task;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/edit_info.html.twig', $args);
-      }
-      return $this->render('task/phone/edit_info.html.twig', $args);
-    }
-    return $this->render('task/edit_info.html.twig', $args);
-  }
-
-
-  //proveriti sta je
-  #[Route('/edit-task/{id}', name: 'app_task_edit')]
-//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function edit(Task $task, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-    $history = null;
-    //ovde izvlacimo ulogovanog usera
-    $user = $this->getUser();
-
-    if ($task->getId()) {
-      $history = $this->json($task, Response::HTTP_OK, [], [
-          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-            return $object->getId();
-          }
-        ]
-      );
-      $history = $history->getContent();
-    }
-
-    $form = $this->createForm(TaskEditType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_edit', ['id' => $task->getId()])]]);
-
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
-        if (!$taskIn) {
-          $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
-
-          notyf()
-            ->position('x', 'right')
-            ->position('y', 'top')
-            ->duration(5000)
-            ->dismissible(true)
-            ->addSuccess(NotifyMessagesData::TASK_EDIT);
-        } else {
-          notyf()
-            ->position('x', 'right')
-            ->position('y', 'top')
-            ->duration(5000)
-            ->dismissible(true)
-            ->addError(NotifyMessagesData::EDIT_ERROR);
-        }
-
-        return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['task'] = $task;
-    return $this->render('task/edit.html.twig', $args);
   }
 
   #[Route('/add-docs/{id}', name: 'app_task_add_docs')]
@@ -892,7 +892,6 @@ class TaskController extends AbstractController {
     return $this->render('task/add_pdf.html.twig', $args);
   }
 
-
   #[Route('/reassign/{id}', name: 'app_task_reassign')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function reassign(Task $task, Request $request)    : Response {
@@ -913,37 +912,40 @@ class TaskController extends AbstractController {
       $history = $history->getContent();
     }
 
-//    $form = $this->createForm(ReassignTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_reassign', ['id' => $task->getId()])]]);
+    $form = $this->createForm(ReassignTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_reassign', ['id' => $task->getId()])]]);
 
     if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+      if ($form->isSubmitted() && $form->isValid()) {
 
-      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
-      if (!$taskIn) {
-
-        if (!empty($request->request->all('task_form')['car'])) {
-          $task->setCar($request->request->all('task_form')['car']);
-          if (!empty($request->request->all('task_form')['driver'])) {
-            $task->setDriver($request->request->all('task_form')['driver']);
-          }
-          $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
-        }
+//      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
+//      if (!$taskIn) {
+//
+//        if (!empty($request->request->all('task_form')['car'])) {
+//          $task->setCar($request->request->all('task_form')['car']);
+//          if (!empty($request->request->all('task_form')['driver'])) {
+//            $task->setDriver($request->request->all('task_form')['driver']);
+//          }
+//          $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
+//        }
 
         foreach ($task->getAssignedUsers() as $member) {
           $task->removeAssignedUser($member);
         }
 
-        foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
-          if (!empty($assignedUser)){
+        foreach ($request->request->all('reassign_task_form')['assignedUsers'] as $key => $assignedUser) {
+          if (!empty($assignedUser)) {
             $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
-            if(!is_null($member)) {
+            if (!is_null($member)) {
               $task->addAssignedUser($member);
 
-              if ($key === 0) {
-                $task->setPriorityUserLog($assignedUser);
+              if ($member->getId() == $request->request->all('reassign_task_form')['priorityUserLog'] ) {
+                $task->setPriorityUserLog($member->getId());
               }
             }
           }
         }
+
         $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 
         notyf()
@@ -952,15 +954,15 @@ class TaskController extends AbstractController {
           ->duration(5000)
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::TASK_REASSIGN);
-      } else {
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addError(NotifyMessagesData::EDIT_ERROR);
+//      } else {
+//        notyf()
+//          ->position('x', 'right')
+//          ->position('y', 'top')
+//          ->duration(5000)
+//          ->dismissible(true)
+//          ->addError(NotifyMessagesData::EDIT_ERROR);
+//      }
       }
-
 
       if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
         return $this->redirectToRoute('app_home');
@@ -970,13 +972,16 @@ class TaskController extends AbstractController {
     }
 
 //    $projectType = $task->getProject()->getType();
-    $projectType = 0;
+//    $projectType = 0;
 
     $args['task'] = $task;
+    $args['primaryLog'] = $task->getPriorityUserLog();
     $args['assignedUsers'] = $this->em->getRepository(Task::class)->getAssignedUsersByTask($task);
-    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
+    $args['users'] = $this->em->getRepository(User::class)->findBy(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+//    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
 //    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
-    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $user->getCompany()], ['id' => 'ASC']);
+//    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $user->getCompany()], ['id' => 'ASC']);
+    $args['form'] = $form->createView();
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -1010,8 +1015,8 @@ class TaskController extends AbstractController {
 
     if ($request->isMethod('POST')) {
 
-      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
-      if (!$taskIn) {
+//      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
+//      if (!$taskIn) {
 
         $task->setPriorityUserLog($request->request->all('task_form')['primaryLog']);
         $this->em->getRepository(Task::class)->save($task);
@@ -1022,14 +1027,14 @@ class TaskController extends AbstractController {
           ->duration(5000)
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::TASK_LOG_PRIMARY);
-      } else {
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addError(NotifyMessagesData::DELETE_ERROR);
-      }
+//      } else {
+//        notyf()
+//          ->position('x', 'right')
+//          ->position('y', 'top')
+//          ->duration(5000)
+//          ->dismissible(true)
+//          ->addError(NotifyMessagesData::DELETE_ERROR);
+//      }
 
       if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
         return $this->redirectToRoute('app_home');
@@ -1060,8 +1065,8 @@ class TaskController extends AbstractController {
     $history = null;
 
 
-    $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($taskLog->getTask());
-    if (!$taskIn) {
+//    $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($taskLog->getTask());
+//    if (!$taskIn) {
 
       $user = $this->getUser();
       $task = $taskLog->getTask();
@@ -1100,14 +1105,14 @@ class TaskController extends AbstractController {
           ->addError(NotifyMessagesData::TASK_REASSIGN_REMOVE_ERROR);
       }
 
-    } else {
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addError(NotifyMessagesData::EDIT_ERROR);
-    }
+//    } else {
+//      notyf()
+//        ->position('x', 'right')
+//        ->position('y', 'top')
+//        ->duration(5000)
+//        ->dismissible(true)
+//        ->addError(NotifyMessagesData::EDIT_ERROR);
+//    }
 
     return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
@@ -1135,8 +1140,8 @@ class TaskController extends AbstractController {
 
     if ($request->isMethod('POST')) {
 
-      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
-      if (!$taskIn) {
+//      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
+//      if (!$taskIn) {
         foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
           if (!empty($assignedUser)){
             $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
@@ -1156,24 +1161,24 @@ class TaskController extends AbstractController {
           ->duration(5000)
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::TASK_REASSIGN_ADD);
-      } else {
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addError(NotifyMessagesData::EDIT_ERROR);
-      }
+//      } else {
+//        notyf()
+//          ->position('x', 'right')
+//          ->position('y', 'top')
+//          ->duration(5000)
+//          ->dismissible(true)
+//          ->addError(NotifyMessagesData::EDIT_ERROR);
+//      }
 
       return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
     }
 //    $projectType = $task->getProject()->getType();
-    $projectType = 0;
+//    $projectType = 0;
     $args['task'] = $task;
 //    $args['users'] =  $this->em->getRepository(User::class)->findBy(['isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
-    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
-
+//    $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja(), $projectType);
+    $args['users'] = $this->em->getRepository(User::class)->findBy(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
@@ -1189,9 +1194,10 @@ class TaskController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
-
   foreach ($task->getTaskLogs() as $log) {
+
     if (empty($log->getStopwatch()->toArray())) {
+
         $stopwatch = new StopwatchTime();
         $stopwatch->setStart(new DateTimeImmutable());
         $stopwatch->setStop(new DateTimeImmutable());
@@ -1217,15 +1223,14 @@ class TaskController extends AbstractController {
     return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
   }
 
-
   #[Route('/delete/{id}', name: 'app_task_delete')]
   public function delete(Task $task)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
     $user = $this->getUser();
-    $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
-    if (!$taskIn) {
+//    $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
+//    if (!$taskIn) {
       $this->em->getRepository(Task::class)->deleteTask($task, $user);
       notyf()
         ->position('x', 'right')
@@ -1233,18 +1238,16 @@ class TaskController extends AbstractController {
         ->duration(5000)
         ->dismissible(true)
         ->addSuccess(NotifyMessagesData::TASK_DELETE);
-    } else {
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addError(NotifyMessagesData::DELETE_ERROR);
-    }
+//    } else {
+//      notyf()
+//        ->position('x', 'right')
+//        ->position('y', 'top')
+//        ->duration(5000)
+//        ->dismissible(true)
+//        ->addError(NotifyMessagesData::DELETE_ERROR);
+//    }
     return $this->redirectToRoute('app_tasks');
   }
-
-
 
   #[Route('/view/{id}', name: 'app_task_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -1262,13 +1265,14 @@ class TaskController extends AbstractController {
   }
 
     $args['task'] = $task;
+
     $args['revision'] = $task->getTaskHistories()->count();
     $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
 
     $args['taskLogs'] = $this->em->getRepository(TaskLog::class)->findLogs($task);
     $args['images'] = $this->em->getRepository(Task::class)->getImagesByTask($task);
     $args['pdfs'] = $this->em->getRepository(Task::class)->getPdfsByTask($task);
-    $args['car'] = $this->em->getRepository(Car::class)->findOneBy(['id' => $task->getCar()]);
+//    $args['car'] = $this->em->getRepository(Car::class)->findOneBy(['id' => $task->getCar()]);
     $args['comments'] = $this->em->getRepository(Comment::class)->findBy(['task' => $task, 'isSuspended' => false], ['id' => 'DESC']);
     $primaryUser = $this->em->getRepository(User::class)->find($task->getPriorityUserLog());
     $args['taskLog'] = $this->em->getRepository(TaskLog::class)->findOneBy(['task' => $task, 'user' => $primaryUser]);
@@ -1318,7 +1322,7 @@ class TaskController extends AbstractController {
     $args['images'] = $this->em->getRepository(Task::class)->getImagesByTask($task);
     $args['pdfs'] = $this->em->getRepository(Task::class)->getPdfsByTask($task);
     $args['comments'] = $this->em->getRepository(Comment::class)->findBy(['task' => $task, 'isSuspended' => false], ['id' => 'DESC']);
-    $args['car'] = $this->em->getRepository(Car::class)->findOneBy(['id' => $task->getCar()]);
+//    $args['car'] = $this->em->getRepository(Car::class)->findOneBy(['id' => $task->getCar()]);
 //    $args['cars'] = [];
 //    foreach ($task->getAssignedUsers() as $driver) {
 //      if (!is_null($driver->getCar())) {

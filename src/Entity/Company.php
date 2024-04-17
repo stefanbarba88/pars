@@ -81,6 +81,9 @@ class Company {
   #[ORM\Column]
   private ?int $workWeek = 6;
 
+  #[ORM\OneToOne(mappedBy: 'company', cascade: ['persist', 'remove'])]
+  private ?Settings $settings = null;
+
   #[ORM\PrePersist]
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();
@@ -316,6 +319,23 @@ class Company {
    */
   public function setWorkWeek(?int $workWeek): void {
     $this->workWeek = $workWeek;
+  }
+
+  public function getSettings(): ?Settings
+  {
+      return $this->settings;
+  }
+
+  public function setSettings(Settings $settings): self
+  {
+      // set the owning side of the relation if necessary
+      if ($settings->getCompany() !== $this) {
+          $settings->setCompany($this);
+      }
+
+      $this->settings = $settings;
+
+      return $this;
   }
 
 

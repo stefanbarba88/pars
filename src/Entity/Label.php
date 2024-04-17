@@ -41,7 +41,7 @@ class Label {
 
   #[ORM\Column]
   private DateTimeImmutable $updated;
-
+//
   #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'label')]
   private Collection $projects;
 

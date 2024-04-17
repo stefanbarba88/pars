@@ -7,6 +7,7 @@ class TaskStatusData {
 
   public const ZAPOCETO = 1;
   public const ZAVRSENO = 2;
+  public const VRACENO = 3;
 
 
 }

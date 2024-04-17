@@ -38,6 +38,21 @@ class CompanyRepository extends ServiceEntityRepository {
     return $company;
   }
 
+  public function saveCompany(Company $company): Company {
+
+    $this->getEntityManager()->flush();
+
+    return $company;
+  }
+
+  public function register(Company $company): Company {
+
+    $this->getEntityManager()->persist($company);
+    $this->getEntityManager()->flush();
+
+    return $company;
+  }
+
   public function remove(Company $entity, bool $flush = false): void {
     $this->getEntityManager()->remove($entity);
 

@@ -41,7 +41,7 @@
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <div class="mb-1">
-                                                <label class="form-category" for="task1">Zadatak #1:*</label>
+                                                <label class="form-label" for="task1">Zadatak #1:*</label>
                                                 <select id="task1" name="task1" class="form-control select required" required>
                                                     <option value="{{ task.id }}" selected>#{{ task.id }} - {{ task.title }}</option>
                                                 </select>
@@ -52,7 +52,7 @@
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <div class="mb-1">
-                                                <label class="form-category" for="task2">Zadatak #2:*</label>
+                                                <label class="form-label" for="task2">Zadatak #2:*</label>
                                                 <select id="task2" name="task2" class="form-control select required" required>
                                                     <option value="">--Izaberite zadatak--</option>
                                                     {% for task in tasks %}

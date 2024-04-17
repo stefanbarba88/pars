@@ -34,6 +34,7 @@ class UserEditAccountFormType extends AbstractType {
 
     $plainUserType = $dataObject->getUser()->getPlainUserType();
     $company = $dataObject->getUser()->getCompany();
+    $userType = $dataObject->getUser()->getUserType();
 
     $builder
       ->add('plainPassword', TextType::class, [
@@ -49,39 +50,41 @@ class UserEditAccountFormType extends AbstractType {
         'constraints' => [
           new Regex('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', 'Email adresu morate uneti u odgovarajućem formatu'),
         ],
-      ])
-      ->add('userType', ChoiceType::class, [
+      ]);
+    if ($userType != 1 and $userType != 2) {
+      $builder->add('userType', ChoiceType::class, [
         'placeholder' => '--Izaberite tip korisnika--',
         'choices' => UserRolesData::formForFormByUserRole($plainUserType),
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('projectType', ChoiceType::class, [
-        'required' => false,
-        'placeholder' => '--Izaberite tip projekta--',
-        'choices' => TipProjektaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('pozicija', EntityType::class, [
-        'required' => false,
-        'placeholder' => '--Izaberite poziciju--',
-        'class' => ZaposleniPozicija::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.company = :company')
-            ->setParameter(':company', $company)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('vrstaZaposlenja', ChoiceType::class, [
-      'choices' => VrstaZaposlenjaData::form(),
-      'expanded' => false,
-      'multiple' => false,
-    ]);
+//      ->add('projectType', ChoiceType::class, [
+//        'required' => false,
+//        'placeholder' => '--Izaberite tip projekta--',
+//        'choices' => TipProjektaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
+        ->add('pozicija', EntityType::class, [
+          'required' => false,
+          'placeholder' => '--Izaberite poziciju--',
+          'class' => ZaposleniPozicija::class,
+          'query_builder' => function (EntityRepository $em) use ($company) {
+            return $em->createQueryBuilder('g')
+              ->andWhere('g.company = :company')
+              ->setParameter(':company', $company)
+              ->orderBy('g.id', 'ASC');
+          },
+          'choice_label' => 'title',
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('vrstaZaposlenja', ChoiceType::class, [
+          'choices' => VrstaZaposlenjaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+    }
   }
 
   public function configureOptions(OptionsResolver $resolver): void {

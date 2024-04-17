@@ -76,7 +76,7 @@
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                                        {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom' }}) }}
+                                                        {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom', autocomplete : 'off' }}) }}
                                                     </div>
                                                     <span class="form-text">Format: 31.12.1900</span>
                                                 </div>
@@ -88,6 +88,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {% if user.userType() != 1 and user.userType() != 2 %}
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
@@ -105,13 +106,13 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-6">
-                                                {{ form_label(form.telefon1, 'Službeni telefon:', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_label(form.telefon1, 'Telefon #1:', {'label_attr': {'class': 'form-label'}}) }}
                                                 {{ form_widget(form.telefon1, {attr: { class: 'form-control' }}) }}
                                                 <span class="form-text">Format: 0661111222</span>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    {{ form_label(form.telefon2, 'Privatni telefon:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}
                                                     {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
                                                     <span class="form-text">Format: 0661111222</span>
                                                 </div>
@@ -137,20 +138,20 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}
-                                                    <div class="input-group">
-											<span class="input-group-text">
-												<i class="ph-calendar"></i>
-											</span>
-                                                        {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1' }}) }}
-                                                    </div>
-                                                    <span class="form-text">Format: 31.12.1900</span>
-                                                </div>
-                                            </div>
-                                        </div>
+{#                                        <div class="row">#}
+{#                                            <div class="col-lg-6">#}
+{#                                                <div class="mb-3">#}
+{#                                                    {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                    <div class="input-group">#}
+{#											<span class="input-group-text">#}
+{#												<i class="ph-calendar"></i>#}
+{#											</span>#}
+{#                                                        {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1' }}) }}#}
+{#                                                    </div>#}
+{#                                                    <span class="form-text">Format: 31.12.1900</span>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
@@ -165,6 +166,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {% endif %}
                                         <div class="text-end">
                                             <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                                         </div>
@@ -210,7 +212,7 @@
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
-    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+{#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
     <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
 
     <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
@@ -244,90 +246,27 @@
 
 {% endblock includeJavascript %}
 
-{#{% block footerJavascript %}#}
-{#    <script type="text/javascript">#}
-{#        $(document).ready(function() {#}
-{#            var options = {#}
-{#                // target:        '#output1',   // target element(s) to be updated with server response#}
-{#                success:       editInfoResponse,  // post-submit callback#}
-{#                //         // target:        '#error',#}
-{#                //         // other available options:#}
-{#                //         //url:       url         // override for form's 'action' attribute#}
-{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#                //         //clearForm: true        // clear all form fields after successful submit#}
-{#                        resetForm: true,        // reset the form after successful submit#}
-{#                //         success:   editInfoResponse#}
-{#                //         // $.ajax options can be used here too, for example:#}
-{#                //         //timeout:   3000#}
-{#            };#}
+{% block footerJavascript %}
+    <script type="text/javascript">
+        const dpDateCustomFormatElement = document.querySelector('.datepicker-date-format-custom');
+        if(dpDateCustomFormatElement) {
+            const dpDateCustomFormat = new Datepicker(dpDateCustomFormatElement, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                maxDate: 'today',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
 
-{#            // bind form using 'ajaxForm'#}
-{#            $('#infoForma').ajaxForm(options);#}
-{#        });#}
-{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
-{#        //     // for normal html responses, the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseText property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'xml' then the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseXML property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'json' then the first argument to the success callback#}
-{#        //     // is the json data object returned by the server#}
-{#        //#}
-{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
-{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
-{#        // }#}
-{#        // $(function () {#}
-{#        //     var options = {#}
-{#        //         // target:        '#error',#}
-{#        //         // other available options:#}
-{#        //         //url:       url         // override for form's 'action' attribute#}
-{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#        //         //clearForm: true        // clear all form fields after successful submit#}
-{#        //         resetForm: true,        // reset the form after successful submit#}
-{#        //         success:   editInfoResponse#}
-{#        //         // $.ajax options can be used here too, for example:#}
-{#        //         //timeout:   3000#}
-{#        //     };#}
-{#        //     // bind form using ajaxForm#}
-{#        //     $('#infoForma').submit(function() {#}
-{#        //         // inside event callbacks 'this' is the DOM element so we first#}
-{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
-{#        //         $(this).ajaxSubmit(options);#}
-{#        //#}
-{#        //         // !!! Important !!!#}
-{#        //         // always return false to prevent standard browser submit and page navigation#}
-{#        //         return false;#}
-{#        //     });#}
-{#        // });#}
-{#        //#}
-{#        function editInfoResponse(data) {#}
-{#            // 'data' is the json object returned from the server#}
-
-{#            if (data.success === 1) {#}
-{#                swal({#}
-{#                    type: 'success',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-{#            else {#}
-{#                var error = data.error_msg.toString();#}
-{#                swal({#}
-{#                    type: 'error',#}
-{#                    title: 'Correct!',#}
-{#                    html: 'All safe! Here is the answer from the tool:'#}
-{#                })#}
-{#            }#}
-
-{#        }#}
-
-{#    </script>#}
-{#{% endblock footerJavascript %}#}
+    </script>
+{% endblock footerJavascript %}
 
 
 

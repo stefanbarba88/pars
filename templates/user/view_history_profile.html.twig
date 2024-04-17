@@ -69,7 +69,32 @@
                                                 <div class="col-8">{{ userH.telefon2 | default('/') }}</div>
                                             </div>
                                         </div>
-                                    {% else %}
+                                    {% endif %}
+                                    {% if userH.userType == 1 or userH.userType == 2 %}
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Verzija izmene:</div>
+                                                <div class="col-8">V.{{ userHistory.version }}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Ime i prezime:</div>
+                                                <div class="col-8">{{ userH.fullName() }}</div>
+                                            </div>
+                                            <div class="row p-2">
+                                                <div class="col-4">Profilna slika/avatar:</div>
+                                                <div class="col-8"><img src="{{ userH.image.thumbnail100 }}" alt="{{ userH.fullName() }}" class="img-preview rounded"></div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Pol:</div>
+                                                <div class="col-8">{{ userH.getPolData()}}</div>
+                                            </div>
+                                            <div class="row p-2">
+                                                <div class="col-4">Datum rođenja:</div>
+                                                <div class="col-8">{{ userH.datumRodjenja | date("d.m.Y")}}</div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    {% if userH.userType == 3 or userH.userType == 4 %}
                                         <div class="card-body">
                                             <div class="row p-2">
                                                 <div class="col-4">Verzija izmene:</div>
@@ -142,16 +167,6 @@
                                                 </div>
                                             </div>
                                             <div class="row p-2">
-                                                <div class="col-4">Slava:</div>
-                                                <div class="col-8">
-                                                    {% if userH.slava is not null %}
-                                                        {{ userH.slava | date("d.m")}}
-                                                    {% else %}
-                                                        /
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <div class="row p-2 bg-light">
                                                 <div class="col-4">Zaduženi uređaji:</div>
                                                 <div class="col-8">
                                                     {% if userH.mobile %}
@@ -170,7 +185,7 @@
                                     <div class="card-header">
                                         <h5 class="mb-0">Login podaci</h5>
                                     </div>
-                                    {% if userH.userType == 5 %}
+                                    {% if userH.userType == 5 or userH.userType == 1 or userH.userType == 2 %}
                                         <div class="card-body">
                                             <div class="row p-2">
                                                 <div class="col-4">Email:</div>
@@ -198,10 +213,6 @@
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Pozicija:</div>
                                                 <div class="col-8">{{ userH.pozicija.title | default('/')  }}</div>
-                                            </div>
-                                            <div class="row p-2">
-                                                <div class="col-4">Tip projekta:</div>
-                                                <div class="col-8">{{ userH.projectByType | default('/')  }}</div>
                                             </div>
                                         </div>
                                     {% endif %}

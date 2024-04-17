@@ -115,18 +115,18 @@
                                 <table class="table table-bordered table-hover table-responsive table_morecondensed ">
                                     <thead class="bg-light text-primary">
                                     <tr>
-                                        <th>Ime</th>
                                         <th>Prezime</th>
+                                        <th>Ime</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for user in pagination %}
                                         <tr>
-                                            <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
                                             <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.prezime }}</a></div></td>
+                                            <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
                                             <td class="text-center">
-                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ user.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ user.id }}" aria-expanded="false"><i class="ph-caret-down collapsible-indicator"></i></a>
                                             </td>
 
                                         </tr>

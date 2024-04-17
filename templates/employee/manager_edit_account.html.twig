@@ -92,23 +92,11 @@
                                                             {{ form_widget(form.pozicija, {attr: { class: 'form-control select zaposleni' }}) }}
                                                         </div>
                                                     </div>
-                                                    <div class="col-lg-3 hide ROLE_EMPLOYEE">
-                                                        <div class="mb-3">
-                                                            {{ form_label(form.projectType, 'Tip projekta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                            {{ form_widget(form.projectType, {attr: { class: 'form-control select zaposleni' }}) }}
-                                                        </div>
-                                                    </div>
                                                 {% else %}
                                                     <div class="col-lg-3 ROLE_EMPLOYEE">
                                                         <div class="mb-3">
                                                             {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
                                                             {{ form_widget(form.pozicija, {attr: { class: 'form-control select required zaposleni' }}) }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-3 ROLE_EMPLOYEE">
-                                                        <div class="mb-3">
-                                                            {{ form_label(form.projectType, 'Tip projekta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                            {{ form_widget(form.projectType, {attr: { class: 'form-control select required zaposleni' }}) }}
                                                         </div>
                                                     </div>
                                                 {% endif %}

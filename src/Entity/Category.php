@@ -36,9 +36,9 @@ class Category {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\OneToMany(mappedBy: 'category', targetEntity: Project::class)]
-  private Collection $projects;
-
+//  #[ORM\OneToMany(mappedBy: 'category', targetEntity: Project::class)]
+//  private Collection $projects;
+//
   #[ORM\OneToMany(mappedBy: 'category', targetEntity: Task::class)]
   private Collection $tasks;
 
@@ -57,7 +57,7 @@ class Category {
     return $this;
   }
   public function __construct() {
-    $this->projects = new ArrayCollection();
+//    $this->projects = new ArrayCollection();
     $this->tasks = new ArrayCollection();
   }
 
@@ -165,33 +165,33 @@ class Category {
     $this->isTaskCategory = $isTaskCategory;
   }
 
-  /**
-   * @return Collection<int, Project>
-   */
-  public function getProjects(): Collection {
-    return $this->projects;
-  }
-
-  public function addProject(Project $project): self {
-    if (!$this->projects->contains($project)) {
-      $this->projects->add($project);
-      $project->setCategory($this);
-    }
-
-    return $this;
-  }
-
-  public function removeProject(Project $project): self {
-    if ($this->projects->removeElement($project)) {
-      // set the owning side to null (unless already changed)
-      if ($project->getCategory() === $this) {
-        $project->setCategory(null);
-      }
-    }
-
-    return $this;
-  }
-
+//  /**
+//   * @return Collection<int, Project>
+//   */
+//  public function getProjects(): Collection {
+//    return $this->projects;
+//  }
+//
+//  public function addProject(Project $project): self {
+//    if (!$this->projects->contains($project)) {
+//      $this->projects->add($project);
+//      $project->setCategory($this);
+//    }
+//
+//    return $this;
+//  }
+//
+//  public function removeProject(Project $project): self {
+//    if ($this->projects->removeElement($project)) {
+//      // set the owning side to null (unless already changed)
+//      if ($project->getCategory() === $this) {
+//        $project->setCategory(null);
+//      }
+//    }
+//
+//    return $this;
+//  }
+//
   /**
    * @return Collection<int, Task>
    */

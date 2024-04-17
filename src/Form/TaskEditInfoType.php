@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\PrioritetData;
+use App\Classes\Data\RepeatingIntervalData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Category;
 use App\Entity\Label;
@@ -75,6 +76,33 @@ TaskEditInfoType extends AbstractType {
         'choice_label' => 'title',
         'expanded' => false,
         'multiple' => true,
+      ])
+
+      ->add('repeating', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('repeatingInterval', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'required' => false,
+        'placeholder' => '--Izaberite period--',
+        'choices' => RepeatingIntervalData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+
+      ->add('datumPonavljanja', DateType::class, [
+        'required' => false,
+        'widget' => 'single_text',
+        'format' => 'dd.MM.yyyy',
+        'html5' => false,
+        'input' => 'datetime_immutable'
       ])
 
       ->add('category', EntityType::class, [

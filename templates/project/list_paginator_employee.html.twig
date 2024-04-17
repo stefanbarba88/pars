@@ -50,17 +50,9 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
+                                        <th>Broj zadataka</th>
                                         <th>Klijent</th>
-                                        <th {% if pagination.isSorted('[p.type]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Tip ', ['p.type']) }}
-                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.type' %}
-                                                &#8593;
-                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.type' %}
-                                                &#8595;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
+
                                         <th {% if pagination.isSorted('[p.created]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Datum kreiranja ', ['p.created']) }}
                                             {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.created' %}
@@ -76,9 +68,13 @@
                                     </thead>
                                     <tbody>
                                     {% for project in pagination %}
+
+                                        {% set noTasks = getCountTasksByProject(project)  %}
                                         <tr>
                                             <td>
-                                                <div class="fw-semibold"><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></div>
+                                                <div class="fw-semibold">
+                                                    <a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a>
+                                                </div>
                                                 {% if project.label is not empty %}
                                                     <div class="d-inline-flex">
                                                         {% for label in project.label %}
@@ -86,6 +82,11 @@
                                                         {% endfor %}
                                                     </div>
                                                 {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ noTasks.total }}
+                                                </span>
                                             </td>
                                             <td>
                                                 {% if is_granted('ROLE_EMPLOYEE') %}
@@ -98,17 +99,7 @@
                                                     {% endfor %}
                                                 {% endif %}
                                             </td>
-                                            <td>
-                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::FIKSNO') %}
-                                                    <span class="badge bg-secondary text-primary">Stalno</span>
-                                                {% endif %}
-                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::LETECE') %}
-                                                    <span class="badge bg-primary text-white">Leteće</span>
-                                                {% endif %}
-                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::KOMBINOVANO') %}
-                                                    <span class="badge bg-yellow text-primary">Kombinovano</span>
-                                                {% endif %}
-                                            </td>
+
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>

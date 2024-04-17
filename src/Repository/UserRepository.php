@@ -169,6 +169,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $this->getEntityManager()->getRepository(User::class)->find($id);
   }
 
+  public function findForFormRegistration(int $id = 0): User {
+    if (empty($id)) {
+      return new User();
+    }
+    return $this->getEntityManager()->getRepository(User::class)->find($id);
+  }
+
   public function getAllByLoggedUser(User $loggedUser): array {
 
     $company = $loggedUser->getCompany();

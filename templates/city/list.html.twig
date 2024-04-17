@@ -114,16 +114,7 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th  {% if pagination.isSorted('[c.country]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Država ', ['c.country']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.country' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.country' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
+                                        <th>Država</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
@@ -142,7 +133,9 @@
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a href="{{ path('app_city_view', { id: city.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                        <a href="{{ path('app_city_form', { id: city.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                        {% if city.id > constant('App\\Classes\\AppConfig::CITY_TO_EDIT_ID') %}
+                                                            <a href="{{ path('app_city_form', { id: city.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </td>

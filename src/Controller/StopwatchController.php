@@ -189,20 +189,20 @@ class StopwatchController extends AbstractController {
 
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 
-        if (!is_null($sati)) {
-          if ($sati != 0 || $minuti != 0) {
-            $overtime = new Overtime();
-            $overtime->setUser($stopwatch->getTaskLog()->getUser());
-            $overtime->setHours($sati);
-            $overtime->setMinutes($minuti);
-            $overtime->setNote($napomena);
-            $overtime->setDatum($stopwatch->getCreated()->setTime(0, 0));
-            $overtime->setStatus(0);
-            $overtime->setTask($stopwatch->getTaskLog()->getTask());
-            $overtime->setCompany($stopwatch->getTaskLog()->getTask()->getCompany());
-            $this->em->getRepository(Overtime::class)->save($overtime);
-          }
-        }
+//        if (!is_null($sati)) {
+//          if ($sati != 0 || $minuti != 0) {
+//            $overtime = new Overtime();
+//            $overtime->setUser($stopwatch->getTaskLog()->getUser());
+//            $overtime->setHours($sati);
+//            $overtime->setMinutes($minuti);
+//            $overtime->setNote($napomena);
+//            $overtime->setDatum($stopwatch->getCreated()->setTime(0, 0));
+//            $overtime->setStatus(0);
+//            $overtime->setTask($stopwatch->getTaskLog()->getTask());
+//            $overtime->setCompany($stopwatch->getTaskLog()->getTask()->getCompany());
+//            $this->em->getRepository(Overtime::class)->save($overtime);
+//          }
+//        }
         $user = $this->getUser();
         $user->setIsInTask(false);
         $this->em->getRepository(User::class)->save($user);
@@ -628,56 +628,56 @@ class StopwatchController extends AbstractController {
   }
 
 
-  #[Route('/start-firma/{id}', name: 'app_stopwatch_start_firma',  defaults: ['id' => 0])]
-  #[Entity('task', expr: 'repository.findForForm(id)')]
-  public function startFirma(TimeTask $task, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    $user = $this->getUser();
-
-    if ($user->isInTask()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $this->em->getRepository(TimeTask::class)->save($task);
-
-    $user->setIsInTask(true);
-    $this->em->getRepository(User::class)->save($user);
-
-    return $this->redirectToRoute('app_home');
-  }
-
-  #[Route('/stop-firma', name: 'app_stopwatch_stop_firma')]
-  public function stopFirma(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args = [];
-    $user = $this->getUser();
-
-    if ($request->isMethod('POST')) {
-      $task = $this->em->getRepository(TimeTask::class)->findOneBy(['user' => $user, 'finish' => null]);
-      $task->setFinish(new DateTimeImmutable());
-      $task->setDescription($request->request->get('napomena'));
-      $this->em->getRepository(TimeTask::class)->save($task);
-
-      $user->setIsInTask(false);
-      $this->em->getRepository(User::class)->save($user);
-
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::TIME_TASK_CLOSE);
-
-//        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
-      return $this->redirectToRoute('app_home');
-
-    }
-
-    return $this->render('task/time_task_form.html.twig', $args);
-  }
+//  #[Route('/start-firma/{id}', name: 'app_stopwatch_start_firma',  defaults: ['id' => 0])]
+//  #[Entity('task', expr: 'repository.findForForm(id)')]
+//  public function startFirma(TimeTask $task, Request $request)    : Response {
+//    if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//
+//    $user = $this->getUser();
+//
+//    if ($user->isInTask()) {
+//      return $this->redirect($this->generateUrl('app_home'));
+//    }
+//    $this->em->getRepository(TimeTask::class)->save($task);
+//
+//    $user->setIsInTask(true);
+//    $this->em->getRepository(User::class)->save($user);
+//
+//    return $this->redirectToRoute('app_home');
+//  }
+//
+//  #[Route('/stop-firma', name: 'app_stopwatch_stop_firma')]
+//  public function stopFirma(Request $request)    : Response {
+//    if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $args = [];
+//    $user = $this->getUser();
+//
+//    if ($request->isMethod('POST')) {
+//      $task = $this->em->getRepository(TimeTask::class)->findOneBy(['user' => $user, 'finish' => null]);
+//      $task->setFinish(new DateTimeImmutable());
+//      $task->setDescription($request->request->get('napomena'));
+//      $this->em->getRepository(TimeTask::class)->save($task);
+//
+//      $user->setIsInTask(false);
+//      $this->em->getRepository(User::class)->save($user);
+//
+//      notyf()
+//        ->position('x', 'right')
+//        ->position('y', 'top')
+//        ->duration(5000)
+//        ->dismissible(true)
+//        ->addSuccess(NotifyMessagesData::TIME_TASK_CLOSE);
+//
+////        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
+//      return $this->redirectToRoute('app_home');
+//
+//    }
+//
+//    return $this->render('task/time_task_form.html.twig', $args);
+//  }
 
 }

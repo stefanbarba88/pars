@@ -63,7 +63,7 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ time.task.datumKreiranja | date("d.m.Y")}}
+                                                    {{ time.task.datumKreiranja | date("d.m.Y.")}}
                                                 </div>
                                             </td>
 {#                                            <td>#}
@@ -84,8 +84,8 @@
 {#                                                    {% endfor %}#}
 {#                                                </div>#}
 {#                                            </td>#}
-                                            <td>{{ time.start | date ('H:i') }}</td>
-                                            <td>{{ time.stop | date ('H:i') }}</td>
+                                            <td>{{ time.start | date ('d.m.Y. H:i') }}</td>
+                                            <td>{{ time.stop | date ('d.m.Y. H:i') }}</td>
                                             <td>{{ time.diff }}</td>
 
                                             <td class="text-center">

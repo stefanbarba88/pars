@@ -25,7 +25,7 @@
 
                 <!-- Content area -->
                 <div class="content">
-                    {% set difference = date()|date_modify('-96 hours') %}
+                    {% set difference = date()|date_modify(constant('App\\Classes\\AppConfig::TIME_DIFFERENCE')) %}
 
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
@@ -83,7 +83,7 @@
                                                             </td>
                                                         {% endif %}
                                                         <td class="text-center">
-                                                            <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ task.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                                            <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ task.id }}" aria-expanded="false"><i class="ph-caret-down collapsible-indicator"></i></a>
                                                         </td>
                                                     </tr>
 

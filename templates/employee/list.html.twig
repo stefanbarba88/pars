@@ -74,8 +74,8 @@
                                     <thead class="bg-light text-primary">
                                     <tr>
                                         <th>Slika</th>
-                                        <th>Ime</th>
                                         <th>Prezime</th>
+                                        <th>Ime</th>
                                         <th>Pozicija</th>
                                         <th>Datum rođenja</th>
                                         <th>Status</th>
@@ -88,8 +88,8 @@
                                             <td>
                                                 <a href="{{ path('app_employee_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="35" height="35" alt="{{ user.ime }}"></a>
                                             </td>
-                                            <td><div class="fw-semibold"><a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
                                             <td><div class="fw-semibold"><a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.prezime }}</a></div></td>
+                                            <td><div class="fw-semibold"><a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
                                             <td>
                                                 {{ user.pozicija.title }}
                                             </td>

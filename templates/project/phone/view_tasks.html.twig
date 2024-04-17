@@ -23,7 +23,7 @@
                 <!-- /page header -->
 
                 <div class="content">
-                    {% set difference = date()|date_modify('-96 hours') %}
+                    {% set difference = date()|date_modify(constant('App\\Classes\\AppConfig::TIME_DIFFERENCE')) %}
                     {% if project.important is not null %}
                         <div class="alert alert-info fade show">
                             <span class="fw-semibold">{{ project.important }}
@@ -117,12 +117,18 @@
                                                     <td>
                                                         <div class="fw-semibold">
                                                             <a href="{{ path('app_task_view_user', { id: task.id}) }}">{{ task.title }}</a>
+                                                            {% if task.repeating == 1 %}
+                                                                <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Ovaj zadatak se ponavlja."></i>
+                                                            {% endif %}
                                                         </div>
                                                     </td>
                                                 {% else %}
                                                     <td>
                                                         <div class="fw-semibold">
                                                             {{ task.title }}
+                                                            {% if task.repeating == 1 %}
+                                                                <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Ovaj zadatak se ponavlja."></i>
+                                                            {% endif %}
                                                         </div>
                                                     </td>
                                                 {% endif %}
@@ -130,11 +136,14 @@
                                                 <td>
                                                     <div class="fw-semibold">
                                                         <a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a>
+                                                        {% if task.repeating == 1 %}
+                                                            <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Ovaj zadatak se ponavlja."></i>
+                                                        {% endif %}
                                                     </div>
                                                 </td>
                                             {% endif %}
                                             <td class="text-center">
-                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ task.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ task.id }}" aria-expanded="false"><i class="ph-caret-down collapsible-indicator"></i></a>
                                             </td>
                                         </tr>
                                         <tr id="collapsed_item{{ task.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">

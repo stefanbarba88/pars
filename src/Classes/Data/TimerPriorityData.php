@@ -32,7 +32,10 @@ class TimerPriorityData implements DataClassInterface {
     return array_flip(self::DATA);
   }
 
-  public static function getPriorityByType(int $type): string {
+  public static function getPriorityByType(?int $type): string {
+    if (is_null($type)) {
+      return '';
+    }
     return self::DATA[$type];
   }
 

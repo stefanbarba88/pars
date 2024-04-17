@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Classes\AppConfig;
 use App\Classes\Data\AvailabilityData;
 use App\Classes\Data\CalendarColorsData;
 use App\Classes\Data\TaskStatusData;
@@ -602,6 +603,122 @@ class AvailabilityRepository extends ServiceEntityRepository {
       'kancelarija' => $kancelarija,
       'vanZadatka' => $vanZadatka,
       'unknown' => $unknown,
+    ];
+
+
+  }
+
+  public function getAllDostupnostiDanasBasic(): array {
+    $company = $this->security->getUser()->getCompany();
+
+    $danasnjiPlan = new DateTimeImmutable();
+
+    $datum = date("d.m.Y");
+    $danas = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
+    $start = $danas->setTime(0,0);
+    $stop = $danas->setTime(23,59);
+
+//    $noNedostupni = 0;
+    $noVanZadatka = 0;
+    $noKancelarija = 0;
+    $noKuca = 0;
+    $noTeren = 0;
+
+//    $nedostupni = [];
+    $vanZadatka = [];
+    $kancelarija = [];
+    $kuca = [];
+    $teren = [];
+
+//    $zamene = [];
+//    $plan = $this->getEntityManager()->getRepository(FastTask::class)->findOneBy(['company' => $company, 'datum' => $danasnjiPlan->setTime(14, 30)]);
+//    if (!is_null($plan)) {
+//      $zamene[] = $plan->getZgeo1();
+//      $zamene[] = $plan->getZgeo2();
+//      $zamene[] = $plan->getZgeo3();
+//      $zamene[] = $plan->getZgeo4();
+//      $zamene[] = $plan->getZgeo5();
+//      $zamene[] = $plan->getZgeo6();
+//      $zamene[] = $plan->getZgeo7();
+//      $zamene[] = $plan->getZgeo8();
+//      $zamene[] = $plan->getZgeo9();
+//      $zamene[] = $plan->getZgeo10();
+//    }
+//
+//    $zamene = array_filter($zamene, function($value) {
+//      return $value !== null;
+//    });
+//    $zamene = array_unique($zamene);
+//    $zamene = array_values($zamene);
+
+    $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $company], ['prezime' => 'ASC']);
+
+//    foreach ($users as $user) {
+//      if (!$this->checkDostupnost($user, $datum)) {
+//        $noNedostupni++;
+//        $nedostupni[] = $user;
+//      } else {
+//        if (!$user->isInTask()) {
+//          $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+//          if (empty($tasks)) {
+//            if ($user->getProjectType() == TipProjektaData::LETECE) {
+//              if (!in_array($user->getId(), $zamene, true)) {
+//                $noUnknown++;
+//                $unknown[] = $user;
+//              }
+//            }
+//          } else {
+//            $noVanZadatka++;
+//            $vanZadatka[] = $user;
+//          }
+//        } else {
+//          $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+//          foreach ($tasks as $tsk) {
+//            if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == 6) || $tsk['task']->getProject()->getId() == 39) {
+//              $noKancelarija++;
+//              $kancelarija[] = $user;
+//            }
+//          }
+//        }
+//
+//      }
+//    }
+    foreach ($users as $user) {
+
+        if (!$user->isInTask()) {
+          $noVanZadatka++;
+          $vanZadatka[] = $user;
+
+        } else {
+          $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+          foreach ($tasks as $tsk) {
+            if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == AppConfig::KANC_CAT_ID)) {
+              $noKancelarija++;
+              $kancelarija[] = $user;
+            }
+            if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == AppConfig::TEREN_CAT_ID)) {
+              $noTeren++;
+              $teren[] = $user;
+            }
+            if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == AppConfig::KUCA_CAT_ID)) {
+              $noKuca++;
+              $kuca[] = $user;
+            }
+          }
+        }
+
+      }
+
+
+    return [
+      'noKancelarija' => $noKancelarija,
+      'noVanZadatka' => $noVanZadatka,
+      'noTeren' => $noTeren,
+      'noKuca' => $noKuca,
+      'teren' => $teren,
+      'kancelarija' => $kancelarija,
+      'vanZadatka' => $vanZadatka,
+      'kuca' => $kuca,
     ];
 
 

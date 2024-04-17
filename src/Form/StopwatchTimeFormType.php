@@ -118,7 +118,7 @@ class StopwatchTimeFormType extends AbstractType {
         'class' => Activity::class,
         'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('a')
-            ->andWhere('a.company = :company')
+            ->andWhere('a.company = :company or a.company IS NULL')
             ->setParameter(':company', $company)
 //            ->andWhere('g.userType = :userType')
 //            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)

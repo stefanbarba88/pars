@@ -98,8 +98,8 @@
                                 <table class="table table-bordered table-hover table-responsive table-sm">
                                     <thead class="bg-light text-primary">
                                     <tr>
-                                        <th>Ime</th>
                                         <th>Prezime</th>
+                                        <th>Ime</th>
                                         <th>Firma</th>
                                         <th>E-mail</th>
                                         <th {% if pagination.isSorted('[u.isSuspended]') %} class="sorted"{% endif %}>
@@ -118,8 +118,8 @@
                                     <tbody>
                                     {% for user in pagination %}
                                         <tr>
-                                            <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
                                             <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.prezime }}</a></div></td>
+                                            <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
                                             <td>
                                                 {% if user.clients is not empty %}
                                                     {% for firma in user.clients %}

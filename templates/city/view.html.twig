@@ -34,7 +34,7 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">{{ city.getFormTitle() }} <a href="{{ path('app_city_form', {id: city.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                        <h5 class="mb-0">{{ city.getFormTitle() }} {% if city.id > constant('App\\Classes\\AppConfig::CITY_TO_EDIT_ID') %}<a href="{{ path('app_city_form', {id: city.id}) }}"><i class="ph-note-pencil"></i></a>{% endif %}</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">

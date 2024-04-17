@@ -90,7 +90,9 @@
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a href="{{ path('app_category_view', { id: category.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                        <a href="{{ path('app_category_form', { id: category.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                        {% if category.id > constant('App\\Classes\\AppConfig::KANC_CAT_ID') %}
+                                                            <a href="{{ path('app_category_form', { id: category.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </td>

@@ -233,7 +233,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
               'description' => $this->getStopwatchesDescription($task['log']),
               'task' => $task,
               'category' => $task['task']->getCategory(),
-              'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $project->getCompany())
+//              'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $project->getCompany())
             ];
           }
         }
@@ -253,7 +253,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
                 'description' => $this->getStopwatchesDescription($task['log']),
                 'task' => $task,
                 'category' => $task['task']->getCategory(),
-                'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $project->getCompany())
+//                'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $project->getCompany())
               ];
             }
           }
@@ -364,7 +364,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
               'task' => $task,
               'project' => $task['task']->getProject(),
               'category' => $task['task']->getCategory(),
-              'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $user->getCompany())
+//              'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $user->getCompany())
             ];
           }
         }
@@ -385,7 +385,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
                 'task' => $task,
                 'project' => $task['task']->getProject(),
                 'category' => $task['task']->getCategory(),
-                'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $user->getCompany())
+//                'dan' => $this->getEntityManager()->getRepository(Holiday::class)->vrstaDana($task['datum'], $user->getCompany())
               ];
             }
           }

@@ -721,10 +721,8 @@ class TaskRepository extends ServiceEntityRepository {
       ->getQuery()
       ->getResult();
 
-
     foreach ($tasks as $task) {
       $status = $this->taskStatus($task);
-
       if ($status != TaskStatusData::ZAVRSENO ) {
         $count++;
       }
@@ -1526,6 +1524,59 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
+  public function getTasksByDateAndProjectByCategory(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project): array {
+
+    $total = 0;
+    $free = 0;
+    $teren = 0;
+    $kancelarija = 0;
+    $kuca = 0;
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('t.project = :project')
+      ->andWhere('t.isDeleted <> 1')
+//      ->andWhere('t.category = :category')
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->setParameter('project', $project->getId())
+//      ->setParameter('category', $category->getId())
+      ->orderBy('t.created', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+    foreach ($taskovi as $tsk) {
+      $total++;
+      if ($tsk->getIsFree()) {
+        $free++;
+      }
+      if (!is_null($tsk->getCategory())) {
+        if ($tsk->getCategory()->getId() == 1) {
+          $teren++;
+        }
+        if ($tsk->getCategory()->getId() == 2) {
+          $kuca++;
+        }
+        if ($tsk->getCategory()->getId() == 3) {
+          $kancelarija++;
+        }
+      }
+    }
+
+    return [
+      'total' => $total,
+      'free' => $free,
+      'teren' => $teren,
+      'kuca' => $kuca,
+      'kancelarija' => $kancelarija,
+    ];
+
+  }
   public function getTasksByDateAndUserFree(DateTimeImmutable $start, DateTimeImmutable $stop, User $user): array {
 
 
@@ -1722,18 +1773,18 @@ class TaskRepository extends ServiceEntityRepository {
 
        $lista[] = [
          'task' => $tsk,
-         'sort' => $this->sortTask($tsk),
+//         'sort' => $this->sortTask($tsk),
          'status' => $this->taskStatus($tsk),
          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($tsk),
-         'car' => $this->getEntityManager()->getRepository(Car::class)->findBy(['id' => $tsk->getCar()]),
-         'driver' => $this->getEntityManager()->getRepository(User::class)->findBy(['id' => $tsk->getDriver()])
+//         'car' => $this->getEntityManager()->getRepository(Car::class)->findBy(['id' => $tsk->getCar()]),
+//         'driver' => $this->getEntityManager()->getRepository(User::class)->findBy(['id' => $tsk->getDriver()])
        ];
     }
 //    dd($lista);
 
-    usort($lista, function ($a, $b) {
-      return $a['sort'] <=> $b['sort'];
-    });
+//    usort($lista, function ($a, $b) {
+//      return $a['sort'] <=> $b['sort'];
+//    });
 
     return $lista;
   }

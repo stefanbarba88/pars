@@ -37,32 +37,35 @@ class HomeController extends AbstractController {
     $args['danas'] = new DateTimeImmutable();
 
     $args['timetable'] = $this->em->getRepository(Task::class)->getTasksByDate($args['danas']);
+    $args['tomorrowTimetable'] = $this->em->getRepository(Task::class)->getTasksByDate($args['sutra']);
+//
+//    $args['plan'] = $this->em->getRepository(FastTask::class)->getTimeTableActive();
+//    $args['subs'] = $this->em->getRepository(FastTask::class)->getTimeTableSubsActive();
 
-    $args['plan'] = $this->em->getRepository(FastTask::class)->getTimeTableActive();
-    $args['subs'] = $this->em->getRepository(FastTask::class)->getTimeTableSubsActive();
-
-    $args['tomorrowTimetable'] = $this->em->getRepository(FastTask::class)->getTimetable($args['sutra']);
-    $args['tomorrowSubs'] = $this->em->getRepository(FastTask::class)->getSubs($args['sutra']);
-    $args['tomorrowTimetableId'] = $this->em->getRepository(FastTask::class)->getTimeTableTomorrowId($args['sutra']);
-//    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostDanas();
-    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getAllDostupnostiDanas();
-    $args['dostupnostiSutra'] = $this->em->getRepository(Availability::class)->getAllDostupnostiSutra();
-
-    $args['nerasporedjenost'] = $this->em->getRepository(Availability::class)->getAllNerasporedjenost();
-    $args['tekuciPoslovi'] = $this->em->getRepository(TimeTask::class)->findBy(['company' => $user->getCompany(), 'finish' => null]);
+//    $args['tomorrowTimetable'] = $this->em->getRepository(FastTask::class)->getTimetable($args['sutra']);
+//    $args['tomorrowSubs'] = $this->em->getRepository(FastTask::class)->getSubs($args['sutra']);
+//    $args['tomorrowTimetableId'] = $this->em->getRepository(FastTask::class)->getTimeTableTomorrowId($args['sutra']);
+////    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostDanas();
+    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getAllDostupnostiDanasBasic();
+//    $args['dostupnostiSutra'] = $this->em->getRepository(Availability::class)->getAllDostupnostiSutra();
+//
+//    $args['nerasporedjenost'] = $this->em->getRepository(Availability::class)->getAllNerasporedjenost();
+//    $args['tekuciPoslovi'] = $this->em->getRepository(TimeTask::class)->findBy(['company' => $user->getCompany(), 'finish' => null]);
 
 //srediti ovaj upit, uzima puno resursa
 //    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
     $args['countTasksUnclosed'] = 0;
 
-    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $user, 'status' => 0], ['priority' => 'ASC', 'id' => 'ASC']);
-    $args['countChecklistActive'] = count($args['checklistActive']);
-
+//    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $user, 'status' => 0], ['priority' => 'ASC', 'id' => 'ASC']);
+//    $args['countChecklistActive'] = count($args['checklistActive']);
+//
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
       $args['countTasksUnclosedByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedByUser($user);
-//      $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($user);
-      $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUser($user);
+      $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($user);
+//      $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUser($user);
+      $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUserBasic($user);
       $args['countLogs'] = $this->em->getRepository(TaskLog::class)->countLogsByUser($user);
+
       $mobileDetect = new MobileDetect();
       if($mobileDetect->isMobile()) {
         return $this->render('home/phone/index_employee.html.twig', $args);

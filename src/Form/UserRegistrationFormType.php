@@ -52,13 +52,13 @@ class UserRegistrationFormType extends AbstractType {
         'html5' => false,
         'input' => 'datetime_immutable'
       ])
-      ->add('slava', DateType::class, [
-        'required' => false,
-        'widget' => 'single_text',
-        'format' => 'dd.MM.yyyy',
-        'html5' => false,
-        'input' => 'datetime_immutable'
-      ])
+//      ->add('slava', DateType::class, [
+//        'required' => false,
+//        'widget' => 'single_text',
+//        'format' => 'dd.MM.yyyy',
+//        'html5' => false,
+//        'input' => 'datetime_immutable'
+//      ])
       ->add('isPrvaPomoc', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
@@ -75,13 +75,13 @@ class UserRegistrationFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('projectType', ChoiceType::class, [
-        'required' => false,
-        'placeholder' => '--Izaberite tip projekta--',
-        'choices' => TipProjektaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('projectType', ChoiceType::class, [
+//        'required' => false,
+//        'placeholder' => '--Izaberite tip projekta--',
+//        'choices' => TipProjektaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
       ->add('vozacki', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
@@ -107,7 +107,7 @@ class UserRegistrationFormType extends AbstractType {
         'multiple' => false,
       ])
       ->add('pol', ChoiceType::class, [
-        'placeholder' => 'Izaberite pol',
+        'placeholder' => '--Izaberite pol--',
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],
@@ -127,7 +127,7 @@ class UserRegistrationFormType extends AbstractType {
 //      ])
       ->add('vrstaZaposlenja', ChoiceType::class, [
         'required' => false,
-        'placeholder' => 'Izaberite vrstu zaposlenja',
+        'placeholder' => '--Izaberite vrstu zaposlenja--',
         'choices' => VrstaZaposlenjaData::form(),
         'expanded' => false,
         'multiple' => false,
@@ -174,7 +174,7 @@ class UserRegistrationFormType extends AbstractType {
 
       ->add('grad', EntityType::class, [
         'required' => false,
-        'placeholder' => 'Izaberite grad',
+        'placeholder' => '--Izaberite grad--',
         'class' => City::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
@@ -188,7 +188,7 @@ class UserRegistrationFormType extends AbstractType {
       ])
       ->add('pozicija', EntityType::class, [
         'required' => false,
-        'placeholder' => 'Izaberite poziciju',
+        'placeholder' => '--Izaberite poziciju--',
         'class' => ZaposleniPozicija::class,
         'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')

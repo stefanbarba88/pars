@@ -25,7 +25,7 @@
 
                 <!-- Content area -->
                 <div class="content">
-                    {% set difference = date()|date_modify('-96 hours') %}
+                    {% set difference = date()|date_modify(constant('App\\Classes\\AppConfig::TIME_DIFFERENCE')) %}
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
@@ -45,7 +45,7 @@
                                     {% for task in pagination %}
                                         <tr>
                                             {% if is_granted('ROLE_EMPLOYEE')%}
-                                                {% if app.user in task.getAssignedUsers %}
+                                                {% if app.user in task.task.getAssignedUsers %}
                                                     <td>
                                                         <div class="fw-semibold">
                                                             <a href="{{ path('app_task_view_user', { id: task.task.id}) }}">{{ task.task.title }}</a>
@@ -80,7 +80,7 @@
                                                 {% endif %}
                                             </td>
                                             <td class="text-center">
-                                                {% if is_granted('ROLE_EMPLOYEE') and app.user in task.getAssignedUsers %}
+                                                {% if is_granted('ROLE_EMPLOYEE') and app.user in task.task.getAssignedUsers %}
                                                     <div class="dropdown">
                                                         <a href="#" class="text-body" data-bs-toggle="dropdown">
                                                             <i class="ph-gear"></i>

@@ -64,11 +64,11 @@
                                             <div class="col-4">Kategorija:</div>
                                             <div class="col-8">
                                                 {% if project.category is not null %}
-                                                    {% if is_granted('ROLE_EMPLOYEE') %}
+{#                                                    {% if is_granted('ROLE_EMPLOYEE') %}#}
                                                         {{ project.category.title }}
-                                                    {% else %}
-                                                        <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>
-                                                    {% endif %}
+{#                                                    {% else %}#}
+{#                                                        <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>#}
+{#                                                    {% endif %}#}
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -84,30 +84,30 @@
                                                 {% endfor %}
                                             </div>
                                         </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Uvid u dnevnik:</div>
-                                            <div class="col-8">
-                                                {% if project.isViewLog %}
-                                                    <i class="ph-eye"></i>
-                                                {% else %}
-                                                    <i class="ph-eye-slash"></i>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 ">
-                                            <div class="col-4">Tip projekta:</div>
-                                            <div class="col-8">
-                                                {% if project.type == 1 %}
-                                                    Fiksni
-                                                {% endif %}
-                                                {% if project.type == 2 %}
-                                                    Leteći
-                                                {% endif %}
-                                                {% if project.type == 3 %}
-                                                    Kombinovani
-                                                {% endif %}
-                                            </div>
-                                        </div>
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Uvid u dnevnik:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if project.isViewLog %}#}
+{#                                                    <i class="ph-eye"></i>#}
+{#                                                {% else %}#}
+{#                                                    <i class="ph-eye-slash"></i>#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2 ">#}
+{#                                            <div class="col-4">Tip projekta:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if project.type == 1 %}#}
+{#                                                    Fiksni#}
+{#                                                {% endif %}#}
+{#                                                {% if project.type == 2 %}#}
+{#                                                    Leteći#}
+{#                                                {% endif %}#}
+{#                                                {% if project.type == 3 %}#}
+{#                                                    Kombinovani#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Kreirao:</div>
                                             <div class="col-8">
@@ -130,21 +130,25 @@
                                             <div class="row p-2">
                                                 <div class="col-4" >Klijent:</div>
                                                 <div class="col-8">
-                                                    {% for client in project.client %}
-                                                        <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title | upper }}</a>{% if  not loop.last %}<br>{% endif %}
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Klijent ima uvid u projekat:</div>
-                                                <div class="col-8">
-                                                    {% if project.clientView %}
-                                                        <i class="ph-eye"></i>
+                                                    {% if project.client is empty %}
+                                                        Interni projekat
                                                     {% else %}
-                                                        <i class="ph-eye-slash"></i>
+                                                        {% for client in project.client %}
+                                                            <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title | upper }}</a>{% if  not loop.last %}<br>{% endif %}
+                                                        {% endfor %}
                                                     {% endif %}
                                                 </div>
                                             </div>
+{#                                            <div class="row p-2 bg-light">#}
+{#                                                <div class="col-4">Klijent ima uvid u projekat:</div>#}
+{#                                                <div class="col-8">#}
+{#                                                    {% if project.clientView %}#}
+{#                                                        <i class="ph-eye"></i>#}
+{#                                                    {% else %}#}
+{#                                                        <i class="ph-eye-slash"></i>#}
+{#                                                    {% endif %}#}
+{#                                                </div>#}
+{#                                            </div>#}
                                         </div>
                                     </div>
                                     <div class="card">
@@ -205,17 +209,17 @@
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5 class="mb-0">Praćenje vremena</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row p-2">
-                                                <div class="col-4">Prioritet dnevnika:</div>
-                                                <div class="col-8">
-                                                    {{ project.getTimerPriorityJson() }}
-                                                </div>
-                                            </div>
+{#                                    <div class="card">#}
+{#                                        <div class="card-header">#}
+{#                                            <h5 class="mb-0">Praćenje vremena</h5>#}
+{#                                        </div>#}
+{#                                        <div class="card-body">#}
+{#                                            <div class="row p-2">#}
+{#                                                <div class="col-4">Prioritet dnevnika:</div>#}
+{#                                                <div class="col-8">#}
+{#                                                    {{ project.getTimerPriorityJson() }}#}
+{#                                                </div>#}
+{#                                            </div>#}
 {#                                            <div class="row p-2 bg-light">#}
 {#                                                <div class="col-4">Vremenska procena:</div>#}
 {#                                                <div class="col-8">#}
@@ -226,32 +230,32 @@
 {#                                                    {% endif %}#}
 {#                                                </div>#}
 {#                                            </div>#}
-                                            <div class="row p-2 bg-light ">
-                                                <div class="col-4">Zaokruživanje vremena:</div>
-                                                <div class="col-8">
-                                                    {% if project.timeRoundUp %}
-                                                        <i class="ph-check-circle"></i>
-                                                    {% else %}
-                                                        <i class="ph-minus-circle"></i>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            {% if project.timeRoundUp %}
-                                                <div class="row p-2 ">
-                                                    <div class="col-4">Interval zaokruživanja:</div>
-                                                    <div class="col-8">
-                                                        {{ project.roundingInterval }} min
-                                                    </div>
-                                                </div>
-                                                <div class="row p-2 bg-light">
-                                                    <div class="col-4">Minimalni unos:</div>
-                                                    <div class="col-8">
-                                                        {{ project.minEntry }} min
-                                                    </div>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
+{#                                            <div class="row p-2 bg-light ">#}
+{#                                                <div class="col-4">Zaokruživanje vremena:</div>#}
+{#                                                <div class="col-8">#}
+{#                                                    {% if project.timeRoundUp %}#}
+{#                                                        <i class="ph-check-circle"></i>#}
+{#                                                    {% else %}#}
+{#                                                        <i class="ph-minus-circle"></i>#}
+{#                                                    {% endif %}#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                            {% if project.timeRoundUp %}#}
+{#                                                <div class="row p-2 ">#}
+{#                                                    <div class="col-4">Interval zaokruživanja:</div>#}
+{#                                                    <div class="col-8">#}
+{#                                                        {{ project.roundingInterval }} min#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                                <div class="row p-2 bg-light">#}
+{#                                                    <div class="col-4">Minimalni unos:</div>#}
+{#                                                    <div class="col-8">#}
+{#                                                        {{ project.minEntry }} min#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            {% endif %}#}
+{#                                        </div>#}
+{#                                    </div>#}
                                     {% if project.editBy is not null %}
                                         <div class="card">
                                             <div class="card-header">

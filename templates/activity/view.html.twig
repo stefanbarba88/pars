@@ -34,7 +34,7 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">{{ activity.title }} <a href="{{ path('app_activity_form', {id: activity.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                        <h5 class="mb-0">{{ activity.title }} {% if activity.id > constant('App\\Classes\\AppConfig::OBRADA_ACTIVITY_ID') %}<a href="{{ path('app_activity_form', {id: activity.id}) }}"><i class="ph-note-pencil"></i></a>{% endif %}</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">

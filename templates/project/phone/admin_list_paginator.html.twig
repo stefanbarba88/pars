@@ -28,9 +28,10 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Lista projekata - radni dan  <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                    {{ daysAtMoment }}/{{ daysMonth }}
-                                                </span></h5>
+{#                            <h5 class="mb-0">Lista projekata - radni dan  <span class="badge bg-yellow align-self-center rounded-pill ms-auto">#}
+{#                                                    {{ daysAtMoment }}/{{ daysMonth }}#}
+{#                                                </span></h5>#}
+                            <h5 class="mb-0">Lista projekata</h5>
                             {% if not is_granted('ROLE_EMPLOYEE') %}
                                 <div class="my-auto ms-auto">
                                     <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
@@ -56,17 +57,17 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-lg-4">
-                                                        <div class="mb-3">
-                                                            <label class="form-label required" for="tip">Tip:</label>
-                                                            <select id="tip" name="tip" class="form-control select">
-                                                                <option value="">--Izaberite tip projekta--</option>
-                                                                {% for key, value in tipovi %}
-                                                                    <option value="{{ key }}">{{ value }}</option>
-                                                                {% endfor %}
-                                                            </select>
-                                                        </div>
-                                                    </div>
+{#                                                    <div class="col-lg-4">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            <label class="form-label required" for="tip">Tip:</label>#}
+{#                                                            <select id="tip" name="tip" class="form-control select">#}
+{#                                                                <option value="">--Izaberite tip projekta--</option>#}
+{#                                                                {% for key, value in tipovi %}#}
+{#                                                                    <option value="{{ key }}">{{ value }}</option>#}
+{#                                                                {% endfor %}#}
+{#                                                            </select>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
 
 
                                                 </div>
@@ -93,13 +94,14 @@
                                     </thead>
                                     <tbody>
                                     {% for project in pagination %}
+                                        {% set noTasks = getCountTasksByProject(project)  %}
                                         <tr>
                                             <td>
                                                 <div class="fw-semibold">
                                                     <a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a>
-                                                    {% if project.client.first.id == 5 %}
-                                                        <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Za Exing projekte uzima se period od 26-og predhodnog meseca." data-bs-original-title="Napomena"></i>
-                                                    {% endif %}
+{#                                                    {% if project.client.first.id == 5 %}#}
+{#                                                        <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Za Exing projekte uzima se period od 26-og predhodnog meseca." data-bs-original-title="Napomena"></i>#}
+{#                                                    {% endif %}#}
                                                 </div>
                                             </td>
                                             <td>
@@ -115,29 +117,20 @@
                                             </td>
 
                                             <td class="text-center">
-                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ project.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
+                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ project.id }}" aria-expanded="false"><i class="ph-caret-down collapsible-indicator"></i></a>
                                             </td>
 
                                         </tr>
 
                                         <tr id="collapsed_item{{ project.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
-                                            <td>Zadaci (ter/uku):
+                                            <td>Broj zadataka:
                                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                    {% set noTasks = getCountTasksByProject(project)  %}
-                                                    {{ noTasks.teren }}/{{ noTasks.total }}
+                                                    {{ noTasks.total }}
                                                 </span>
                                             </td>
                                             <td>
-                                                Dani (ter/kanc):
-                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                    {% set noDays = getCountDaysTasksByProject(project)  %}
-                                                    {{ noDays.teren }}/{{ noDays.kancelarija }}
-                                                </span>
+                                                {{ project.created | date("d.m.Y")}}
                                             </td>
-
-
-
-
 
                                             <td class="text-center">
                                                 <div class="dropdown">

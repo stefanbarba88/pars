@@ -32,7 +32,7 @@ class ReassignTaskFormType extends AbstractType {
       public function __construct(private readonly FormBuilderInterface $builder) {
       }
 
-      public function getReservation(): ?Project {
+      public function getReservation(): ?Task {
         return $this->builder->getData();
       }
 
@@ -41,16 +41,16 @@ class ReassignTaskFormType extends AbstractType {
     $company = $dataObject->getReservation()->getCompany();
 
     $builder
-//dodati da ne moze da izabere primarnog sa tog zadatka i ako ima jos neki na tom zadatku
       ->add('assignedUsers', EntityType::class, [
         'class' => User::class,
         'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
             ->andWhere('g.userType = :userType')
             ->andWhere('g.company = :company')
+            ->andWhere('g.isSuspended = 0')
             ->setParameter(':company', $company)
             ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
-            ->orderBy('g.id', 'ASC');
+            ->orderBy('g.prezime', 'ASC');
         },
         'choice_label' => function ($user) {
           return $user->getNameForForm();
@@ -64,6 +64,7 @@ class ReassignTaskFormType extends AbstractType {
   public function configureOptions(OptionsResolver $resolver): void {
     $resolver->setDefaults([
       'data_class' => Task::class,
+      'allow_extra_fields' => true,
     ]);
   }
 }

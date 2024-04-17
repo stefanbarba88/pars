@@ -8,6 +8,7 @@ use App\Entity\Calendar;
 use App\Entity\Client;
 use App\Entity\Email;
 use App\Entity\ManagerChecklist;
+use App\Entity\Task;
 use App\Entity\User;
 use DateTimeImmutable;
 use Twig\Environment;
@@ -95,6 +96,21 @@ class MailService {
     $args['danas'] = $datum;
 
     foreach ($users as $user) {
+      $to = $user->getEmail();
+      $args['user'] = $user;
+      $this->sendMail($to, $subject, $from, $sender, $template, $args);
+    }
+  }
+
+  public function task(Task $task): void {
+    $args = [];
+    $subject = 'Kreiran je zadatak ' .  $task->getTitle();
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/zadatak.html.twig';
+    $args['task'] = $task;
+
+    foreach ($task->getAssignedUsers() as $user) {
       $to = $user->getEmail();
       $args['user'] = $user;
       $this->sendMail($to, $subject, $from, $sender, $template, $args);

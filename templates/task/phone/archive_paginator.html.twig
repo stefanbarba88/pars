@@ -26,7 +26,7 @@
 
 
                 <div class="content">
-                    {% set difference = date()|date_modify('-96 hours') %}
+                    {% set difference = date()|date_modify(constant('App\\Classes\\AppConfig::TIME_DIFFERENCE')) %}
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
@@ -138,6 +138,9 @@
                                                 <td>
                                                     <div class="fw-semibold">
                                                         <a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a>
+                                                        {% if task.repeating == 1 %}
+                                                            <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Ovaj zadatak se ponavlja."></i>
+                                                        {% endif %}
                                                     </div>
                                                 </td>
                                             {% endif %}

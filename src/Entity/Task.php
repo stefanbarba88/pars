@@ -96,16 +96,25 @@ class Task implements JsonSerializable {
   private ?bool $isTimeRoundUp = true;
 
   #[ORM\Column(nullable: true)]
-  private ?int $minEntry = 30;
+  private ?int $minEntry = null;
+
+//  #[ORM\Column(nullable: true)]
+//  private ?int $car = null;
+//
+//  #[ORM\Column(nullable: true)]
+//  private ?int $driver = null;
 
   #[ORM\Column(nullable: true)]
-  private ?int $car = null;
+  private ?int $roundingInterval = null;
 
   #[ORM\Column(nullable: true)]
-  private ?int $driver = null;
+  private ?int $repeating = 0;
 
   #[ORM\Column(nullable: true)]
-  private ?int $roundingInterval = 15;
+  private ?int $repeatingInterval = null;
+
+  #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+  private ?DateTimeImmutable $datumPonavljanja = null;
 
   #[ORM\Column]
   private ?int $status = TaskStatusData::NIJE_ZAPOCETO;
@@ -140,19 +149,18 @@ class Task implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Activity::class)]
   private Collection $activity;
 
-  #[ORM\ManyToMany(targetEntity: Tool::class, inversedBy: 'tasks')]
-  private Collection $oprema;
+//  #[ORM\ManyToMany(targetEntity: Tool::class, inversedBy: 'tasks')]
+//  private Collection $oprema;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
-  public function getCompany(): ?Company
-  {
+
+  public function getCompany(): ?Company {
     return $this->company;
   }
 
-  public function setCompany(?Company $company): self
-  {
+  public function setCompany(?Company $company): self {
     $this->company = $company;
 
     return $this;
@@ -166,7 +174,7 @@ class Task implements JsonSerializable {
     $this->taskLogs = new ArrayCollection();
     $this->comments = new ArrayCollection();
     $this->activity = new ArrayCollection();
-    $this->oprema = new ArrayCollection();
+//    $this->oprema = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -180,6 +188,12 @@ class Task implements JsonSerializable {
   public function preUpdate(): void {
     $this->updated = new DateTimeImmutable();
     $this->title = $this->getProject()->getTitle() . ' - ' . $this->datumKreiranja->format('d.m.Y');
+  }
+
+  public function __clone() {
+    if ($this->id) {
+      $this->id = null;
+    }
   }
 
   public function jsonSerialize(): array {
@@ -205,12 +219,12 @@ class Task implements JsonSerializable {
       'deadline' => $this->getDeadline(),
       'datumKreiranja' => $this->getDatumKreiranja(),
       'activity' => $this->getActivityJson(),
-      'oprema' => $this->getOpremaJson()
+//      'oprema' => $this->getOpremaJson()
     ];
   }
 
   public function getEditByJson(): string {
-    if(is_null($this->editBy)) {
+    if (is_null($this->editBy)) {
       return '';
     }
     return $this->editBy->getFullName();
@@ -261,7 +275,7 @@ class Task implements JsonSerializable {
     return $this->description;
   }
 
-  public function setDescription(string $description): self {
+  public function setDescription(?string $description): self {
     $this->description = $description;
 
     return $this;
@@ -297,7 +311,7 @@ class Task implements JsonSerializable {
     return $this->isEstimate;
   }
 
-  public function setIsEstimate(bool $isEstimate): self {
+  public function setIsEstimate(?bool $isEstimate): self {
     $this->isEstimate = $isEstimate;
 
     return $this;
@@ -337,7 +351,7 @@ class Task implements JsonSerializable {
     return $this->isClientView;
   }
 
-  public function setIsClientView(bool $isClientView): self {
+  public function setIsClientView(?bool $isClientView): self {
     $this->isClientView = $isClientView;
 
     return $this;
@@ -386,7 +400,6 @@ class Task implements JsonSerializable {
   public function setStatus(?int $status): void {
     $this->status = $status;
   }
-
 
 
   /**
@@ -479,12 +492,14 @@ class Task implements JsonSerializable {
   public function getParentTask(): ?self {
     return $this->parentTask;
   }
+
   public function getParentTaskJson(): string {
-    if(is_null($this->parentTask)) {
+    if (is_null($this->parentTask)) {
       return '';
     }
     return $this->parentTask->getTitle();
   }
+
   public function setParentTask(?self $parentTask): self {
     $this->parentTask = $parentTask;
 
@@ -544,6 +559,7 @@ class Task implements JsonSerializable {
 
     return $this;
   }
+
   public function getCategoryJson(): ?string {
     if (is_null($this->category)) {
       return null;
@@ -592,62 +608,57 @@ class Task implements JsonSerializable {
   /**
    * @return Collection<int, TaskLog>
    */
-  public function getTaskLogs(): Collection
-  {
-      return $this->taskLogs;
+  public function getTaskLogs(): Collection {
+    return $this->taskLogs;
   }
 
-  public function addTaskLog(TaskLog $taskLog): self
-  {
-      if (!$this->taskLogs->contains($taskLog)) {
-          $this->taskLogs->add($taskLog);
-          $taskLog->setTask($this);
-      }
+  public function addTaskLog(TaskLog $taskLog): self {
+    if (!$this->taskLogs->contains($taskLog)) {
+      $this->taskLogs->add($taskLog);
+      $taskLog->setTask($this);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeTaskLog(TaskLog $taskLog): self
-  {
-      if ($this->taskLogs->removeElement($taskLog)) {
-          // set the owning side to null (unless already changed)
-          if ($taskLog->getTask() === $this) {
-              $taskLog->setTask(null);
-          }
+  public function removeTaskLog(TaskLog $taskLog): self {
+    if ($this->taskLogs->removeElement($taskLog)) {
+      // set the owning side to null (unless already changed)
+      if ($taskLog->getTask() === $this) {
+        $taskLog->setTask(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
   /**
    * @return Collection<int, Comment>
    */
-  public function getComments(): Collection
-  {
-      return $this->comments;
+  public function getComments(): Collection {
+    return $this->comments;
   }
 
-  public function addComment(Comment $comment): self
-  {
-      if (!$this->comments->contains($comment)) {
-          $this->comments->add($comment);
-          $comment->setTask($this);
+  public function addComment(Comment $comment): self {
+    if (!$this->comments->contains($comment)) {
+      $this->comments->add($comment);
+      $comment->setTask($this);
+    }
+
+    return $this;
+  }
+
+  public function removeComment(Comment $comment): self {
+    if ($this->comments->removeElement($comment)) {
+      // set the owning side to null (unless already changed)
+      if ($comment->getTask() === $this) {
+        $comment->setTask(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeComment(Comment $comment): self
-  {
-      if ($this->comments->removeElement($comment)) {
-          // set the owning side to null (unless already changed)
-          if ($comment->getTask() === $this) {
-              $comment->setTask(null);
-          }
-      }
-
-      return $this;
-  }
   public function getActivityJson(): array {
     $activities = [];
     foreach ($this->activity as $act) {
@@ -657,37 +668,35 @@ class Task implements JsonSerializable {
     return $activities;
   }
 
-  public function getOpremaJson(): array {
-    $oprema = [];
-    foreach ($this->oprema as $opr) {
-      $oprema[] = $opr->getTitle();
-    }
-
-    return $oprema;
-  }
+//  public function getOpremaJson(): array {
+//    $oprema = [];
+//    foreach ($this->oprema as $opr) {
+//      $oprema[] = $opr->getTitle();
+//    }
+//
+//    return $oprema;
+//  }
   /**
    * @return Collection<int, Activity>
    */
-  public function getActivity(): Collection
-  {
-      return $this->activity;
+  public function getActivity(): Collection {
+    return $this->activity;
   }
 
-  public function addActivity(Activity $activity): self
-  {
-      if (!$this->activity->contains($activity)) {
-          $this->activity->add($activity);
-      }
+  public function addActivity(Activity $activity): self {
+    if (!$this->activity->contains($activity)) {
+      $this->activity->add($activity);
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeActivity(Activity $activity): self
-  {
-      $this->activity->removeElement($activity);
+  public function removeActivity(Activity $activity): self {
+    $this->activity->removeElement($activity);
 
-      return $this;
+    return $this;
   }
+
   public function getDatumKreiranja(): ?DateTimeImmutable {
     return $this->datumKreiranja;
   }
@@ -698,19 +707,19 @@ class Task implements JsonSerializable {
     return $this;
   }
 
-  /**
-   * @return int|null
-   */
-  public function getCar(): ?int {
-    return $this->car;
-  }
-
-  /**
-   * @param int|null $car
-   */
-  public function setCar(?int $car): void {
-    $this->car = $car;
-  }
+//  /**
+//   * @return int|null
+//   */
+//  public function getCar(): ?int {
+//    return $this->car;
+//  }
+//
+//  /**
+//   * @param int|null $car
+//   */
+//  public function setCar(?int $car): void {
+//    $this->car = $car;
+//  }
 
   /**
    * @return DateTimeImmutable|null
@@ -726,29 +735,29 @@ class Task implements JsonSerializable {
     $this->time = $time;
   }
 
-  /**
-   * @return Collection<int, Tool>
-   */
-  public function getOprema(): Collection
-  {
-      return $this->oprema;
-  }
-
-  public function addOprema(Tool $oprema): self
-  {
-      if (!$this->oprema->contains($oprema)) {
-          $this->oprema->add($oprema);
-      }
-
-      return $this;
-  }
-
-  public function removeOprema(Tool $oprema): self
-  {
-      $this->oprema->removeElement($oprema);
-
-      return $this;
-  }
+//  /**
+//   * @return Collection<int, Tool>
+//   */
+//  public function getOprema(): Collection
+//  {
+//      return $this->oprema;
+//  }
+//
+//  public function addOprema(Tool $oprema): self
+//  {
+//      if (!$this->oprema->contains($oprema)) {
+//          $this->oprema->add($oprema);
+//      }
+//
+//      return $this;
+//  }
+//
+//  public function removeOprema(Tool $oprema): self
+//  {
+//      $this->oprema->removeElement($oprema);
+//
+//      return $this;
+//  }
 
   /**
    * @return int|null
@@ -764,19 +773,19 @@ class Task implements JsonSerializable {
     $this->priorityUserLog = $priorityUserLog;
   }
 
-  /**
-   * @return int|null
-   */
-  public function getDriver(): ?int {
-    return $this->driver;
-  }
-
-  /**
-   * @param int|null $driver
-   */
-  public function setDriver(?int $driver): void {
-    $this->driver = $driver;
-  }
+//  /**
+//   * @return int|null
+//   */
+//  public function getDriver(): ?int {
+//    return $this->driver;
+//  }
+//
+//  /**
+//   * @param int|null $driver
+//   */
+//  public function setDriver(?int $driver): void {
+//    $this->driver = $driver;
+//  }
 
   /**
    * @return bool|null
@@ -790,6 +799,48 @@ class Task implements JsonSerializable {
    */
   public function setIsFree(?bool $isFree): void {
     $this->isFree = $isFree;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getRepeating(): ?int {
+    return $this->repeating;
+  }
+
+  /**
+   * @param int|null $repeating
+   */
+  public function setRepeating(?int $repeating): void {
+    $this->repeating = $repeating;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getRepeatingInterval(): ?int {
+    return $this->repeatingInterval;
+  }
+
+  /**
+   * @param int|null $repeatingInterval
+   */
+  public function setRepeatingInterval(?int $repeatingInterval): void {
+    $this->repeatingInterval = $repeatingInterval;
+  }
+
+  /**
+   * @return DateTimeImmutable|null
+   */
+  public function getDatumPonavljanja(): ?DateTimeImmutable {
+    return $this->datumPonavljanja;
+  }
+
+  /**
+   * @param DateTimeImmutable|null $datumPonavljanja
+   */
+  public function setDatumPonavljanja(?DateTimeImmutable $datumPonavljanja): void {
+    $this->datumPonavljanja = $datumPonavljanja;
   }
 
 

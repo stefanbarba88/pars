@@ -302,7 +302,11 @@
                                                     </td>
                                                     <td>
                                                         <div class="fw-semibold">
-                                                            <a href="{{ path('app_client_profile_view', { id: project.client.first.id}) }}">{{ project.client.first.title }}</a>
+                                                            {% if project.client is not empty %}
+                                                                <a href="{{ path('app_client_profile_view', { id: project.client.first.id}) }}">{{ project.client.first.title }}</a>
+                                                            {% else %}
+                                                                Interni projekat
+                                                            {% endif %}
                                                         </div>
                                                     </td>
                                                     <td>

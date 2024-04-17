@@ -50,39 +50,40 @@ class ProjectFormType extends AbstractType {
       ->add('important', TextareaType::class, [
         'required' => false,
       ])
-      ->add('label', EntityType::class, [
-        'required' => false,
-        'class' => Label::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.isTaskLabel = :isTaskLabel')
-            ->andWhere('g.company = :company')
-            ->setParameter(':company', $company)
-            ->setParameter(':isTaskLabel', 0)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => true,
-      ])
-      ->add('category', EntityType::class, [
-        'required' => false,
-        'class' => Category::class,
-        'placeholder' => '--Izaberite kategoriju--',
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.isTaskCategory = :isTaskCategory')
-            ->andWhere('g.company = :company')
-            ->setParameter(':company', $company)
-            ->setParameter(':isTaskCategory', 0)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('label', EntityType::class, [
+//        'required' => false,
+//        'class' => Label::class,
+//        'query_builder' => function (EntityRepository $em) use ($company) {
+//          return $em->createQueryBuilder('g')
+//            ->andWhere('g.isTaskLabel = :isTaskLabel')
+//            ->andWhere('g.company = :company')
+//            ->setParameter(':company', $company)
+//            ->setParameter(':isTaskLabel', 0)
+//            ->orderBy('g.id', 'ASC');
+//        },
+//        'choice_label' => 'title',
+//        'expanded' => false,
+//        'multiple' => true,
+//      ])
+//      ->add('category', EntityType::class, [
+//        'required' => false,
+//        'class' => Category::class,
+//        'placeholder' => '--Izaberite kategoriju--',
+//        'query_builder' => function (EntityRepository $em) use ($company) {
+//          return $em->createQueryBuilder('g')
+//            ->andWhere('g.isTaskCategory = :isTaskCategory')
+//            ->andWhere('g.company = :company')
+//            ->setParameter(':company', $company)
+//            ->setParameter(':isTaskCategory', 0)
+//            ->orderBy('g.id', 'ASC');
+//        },
+//        'choice_label' => 'title',
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
 
       ->add('client', EntityType::class, [
+        'required' => false,
         'class' => Client::class,
         'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
@@ -212,27 +213,27 @@ class ProjectFormType extends AbstractType {
 //        'data' => RoundingIntervalData::MIN_15,
 //      ])
 
-      ->add('timerPriority', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'required' => false,
-        'placeholder' => '--Izaberite prioritet dnevnika--',
-        'choices' => TimerPriorityData::form(),
-        'expanded' => false,
-        'multiple' => false,
-        'data' => TimerPriorityData::ROLE_GEO
-      ])
+//      ->add('timerPriority', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'required' => false,
+//        'placeholder' => '--Izaberite prioritet dnevnika--',
+//        'choices' => TimerPriorityData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//        'data' => TimerPriorityData::ROLE_GEO
+//      ])
 
-      ->add('type', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'placeholder' => '--Izaberite tip projekta--',
-        'choices' => TipProjektaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('type', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'placeholder' => '--Izaberite tip projekta--',
+//        'choices' => TipProjektaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
 
 //      ->add('isEstimate', ChoiceType::class, [
 //        'attr' => [

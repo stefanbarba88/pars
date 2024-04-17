@@ -114,7 +114,9 @@
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a href="{{ path('app_city_view', { id: city.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                        <a href="{{ path('app_city_form', { id: city.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                        {% if city.id > constant('App\\Classes\\AppConfig::CITY_TO_EDIT_ID') %}
+                                                            <a href="{{ path('app_city_form', { id: city.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </td>

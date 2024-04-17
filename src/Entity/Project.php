@@ -82,10 +82,10 @@ class Project implements JsonSerializable {
   #[ORM\Column(type: Types::SMALLINT)]
   private ?int $payment = null;
 
-  #[ORM\Column(type: Types::SMALLINT)]
+  #[ORM\Column(type: Types::SMALLINT, nullable: true)]
   private ?int $type = 1;
 
-  #[ORM\Column(type: Types::SMALLINT)]
+  #[ORM\Column(type: Types::SMALLINT, nullable: true)]
   private ?int $timerPriority = null;
 
   #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
@@ -107,13 +107,13 @@ class Project implements JsonSerializable {
   private ?Currency $currency = null;
 
   #[ORM\Column(nullable: true)]
-  private ?int $roundingInterval = 15;
+  private ?int $roundingInterval = null;
 
   #[ORM\Column(nullable: true)]
   private ?int $noTasks = null;
 
   #[ORM\Column(nullable: true)]
-  private ?int $minEntry = 30;
+  private ?int $minEntry = null;
 
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $deadline = null;
@@ -134,8 +134,8 @@ class Project implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'project', targetEntity: Pdf::class)]
   private Collection $pdfs;
 
-  #[ORM\ManyToMany(targetEntity: Team::class, inversedBy: 'projects')]
-  private Collection $team;
+//  #[ORM\ManyToMany(targetEntity: Team::class, inversedBy: 'projects')]
+//  private Collection $team;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
@@ -158,7 +158,7 @@ class Project implements JsonSerializable {
     $this->tasks = new ArrayCollection();
     $this->label = new ArrayCollection();
     $this->pdfs = new ArrayCollection();
-    $this->team = new ArrayCollection();
+//    $this->team = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -205,7 +205,7 @@ class Project implements JsonSerializable {
       'minEntry' => $this->getMinEntry(),
       'roundingInterval' => $this->getRoundingInterval(),
       'deadline' => $this->getDeadline(),
-      'team' => $this->getTeamJson()
+//      'team' => $this->getTeamJson()
     ];
   }
 
@@ -696,41 +696,41 @@ class Project implements JsonSerializable {
     return $this;
   }
 
-  /**
-   * @return Collection<int, Team>
-   */
-  public function getTeam(): Collection
-  {
-    return $this->team;
-  }
+//  /**
+//   * @return Collection<int, Team>
+//   */
+//  public function getTeam(): Collection
+//  {
+//    return $this->team;
+//  }
 
-  public function getTeamJson(): array {
-    $teams = [];
-    foreach ($this->team as $team) {
-      $members = [];
-      foreach ($team->getMember() as $member) {
-        $members[] = $member->getFullName();
-      }
-      $teams[] = [$team->getTitle(), $members];
-    }
-    return $teams;
-  }
-
-  public function addTeam(Team $team): self
-  {
-    if (!$this->team->contains($team)) {
-      $this->team->add($team);
-    }
-
-    return $this;
-  }
-
-  public function removeTeam(Team $team): self
-  {
-    $this->team->removeElement($team);
-
-    return $this;
-  }
+//  public function getTeamJson(): array {
+//    $teams = [];
+//    foreach ($this->team as $team) {
+//      $members = [];
+//      foreach ($team->getMember() as $member) {
+//        $members[] = $member->getFullName();
+//      }
+//      $teams[] = [$team->getTitle(), $members];
+//    }
+//    return $teams;
+//  }
+//
+//  public function addTeam(Team $team): self
+//  {
+//    if (!$this->team->contains($team)) {
+//      $this->team->add($team);
+//    }
+//
+//    return $this;
+//  }
+//
+//  public function removeTeam(Team $team): self
+//  {
+//    $this->team->removeElement($team);
+//
+//    return $this;
+//  }
 
   /**
    * @return int|null

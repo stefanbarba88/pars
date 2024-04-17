@@ -30,13 +30,13 @@ class Image {
   #[ORM\Column(name: 'thumbnail_1024x768', type: Types::TEXT, nullable: true)]
   private ?string $thumbnail1024 = null;
 
-//  #[ORM\ManyToOne(cascade: ['persist'])]
-//  #[ORM\JoinColumn(nullable: true)]
-//  private ?User $user = null;
-//
-//  #[ORM\ManyToOne(cascade: ['persist'])]
-//  #[ORM\JoinColumn(nullable: true)]
-//  private ?Client $client = null;
+  #[ORM\ManyToOne(cascade: ['persist'])]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?User $user = null;
+
+  #[ORM\ManyToOne(cascade: ['persist'])]
+  #[ORM\JoinColumn(nullable: true)]
+  private ?Client $client = null;
 
   #[ORM\Column]
   private DateTimeImmutable $created;
@@ -52,9 +52,9 @@ class Image {
 
   #[ORM\ManyToOne(inversedBy: 'image')]
   private ?StopwatchTime $stopwatchTime = null;
-
-  #[ORM\ManyToOne(inversedBy: 'image')]
-  private ?CarReservation $carReservation = null;
+//
+//  #[ORM\ManyToOne(inversedBy: 'image')]
+//  private ?CarReservation $carReservation = null;
 
   public function __construct() {
     $this->users = new ArrayCollection();
@@ -76,16 +76,16 @@ class Image {
     return $this->id;
   }
 
-//
-//  public function getUser(): ?User {
-//    return $this->user;
-//  }
-//
-//  public function setUser(?User $user): self {
-//    $this->user = $user;
-//
-//    return $this;
-//  }
+
+  public function getUser(): ?User {
+    return $this->user;
+  }
+
+  public function setUser(?User $user): self {
+    $this->user = $user;
+
+    return $this;
+  }
 
   /**
    * @return DateTimeImmutable
@@ -166,19 +166,19 @@ class Image {
     $this->thumbnail1024 = $thumbnail1024;
   }
 
-//  /**
-//   * @return Client|null
-//   */
-//  public function getClient(): ?Client {
-//    return $this->client;
-//  }
-//
-//  /**
-//   * @param Client|null $client
-//   */
-//  public function setClient(?Client $client): void {
-//    $this->client = $client;
-//  }
+  /**
+   * @return Client|null
+   */
+  public function getClient(): ?Client {
+    return $this->client;
+  }
+
+  /**
+   * @param Client|null $client
+   */
+  public function setClient(?Client $client): void {
+    $this->client = $client;
+  }
 
   /**
    * @return Collection<int, User>
@@ -248,18 +248,18 @@ class Image {
 
       return $this;
   }
-
-  public function getCarReservation(): ?CarReservation
-  {
-      return $this->carReservation;
-  }
-
-  public function setCarReservation(?CarReservation $carReservation): self
-  {
-      $this->carReservation = $carReservation;
-
-      return $this;
-  }
+//
+//  public function getCarReservation(): ?CarReservation
+//  {
+//      return $this->carReservation;
+//  }
+//
+//  public function setCarReservation(?CarReservation $carReservation): self
+//  {
+//      $this->carReservation = $carReservation;
+//
+//      return $this;
+//  }
 
 
 }

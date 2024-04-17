@@ -441,25 +441,25 @@ class ProjectRepository extends ServiceEntityRepository {
 
   public function getCountTasksByProject(Project $project):array {
 
-    $category = $this->getEntityManager()->getRepository(Category::class)->find(5);
+//    $category = $this->getEntityManager()->getRepository(Category::class)->find(5);
     $prethodniMesecDatum = new DateTimeImmutable('first day of this month');
 
     $datum = new DateTimeImmutable();
     $datum = $datum->setTime(23,59);
-
-    if ($project->getClient()->first()->getId() == 5) {
-      if ($datum->format('j') < 27) {
-        $prethodniMesecDatum = new DateTimeImmutable('last day of last month');
-
-      }
-      $prethodniMesecDatum = $prethodniMesecDatum->setDate($prethodniMesecDatum->format('Y'), $prethodniMesecDatum->format('m'), 26);
-    }
-
+//    if($project->getClient()->first()) {
+//      if ($project->getClient()->first()->getId() == 5) {
+//        if ($datum->format('j') < 27) {
+//          $prethodniMesecDatum = new DateTimeImmutable('last day of last month');
+//        }
+//        $prethodniMesecDatum = $prethodniMesecDatum->setDate($prethodniMesecDatum->format('Y'), $prethodniMesecDatum->format('m'), 26);
+//      }
+//    }
 
     $prethodniMesecDatum = $prethodniMesecDatum->setTime(0,0);
 
 
-    return $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectAllCategory($prethodniMesecDatum, $datum, $project, $category);
+//    return $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectAllCategory($prethodniMesecDatum, $datum, $project, $category);
+    return $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectByCategory($prethodniMesecDatum, $datum, $project);
 
   }
 

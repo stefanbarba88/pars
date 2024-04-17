@@ -2,7 +2,15 @@
 <project version="4">
   <component name="SshConfigs">
     <configs>
-      <sshConfig authType="PASSWORD" host="159.223.214.184" id="5c387b80-6341-4f38-bba7-f0fbf0f22dfc" port="22" nameFormat="DESCRIPTIVE" username="root" useOpenSSHConfig="true" />
+      <sshConfig authType="PASSWORD" host="159.223.214.184" id="5c387b80-6341-4f38-bba7-f0fbf0f22dfc" port="22" customName="epars.rs" nameFormat="CUSTOM" username="root" useOpenSSHConfig="true">
+        <option name="customName" value="epars.rs" />
+      </sshConfig>
+      <sshConfig authType="PASSWORD" host="137.184.127.75" id="9b2e36f4-6301-4f57-901d-ea9e014cb24b" port="22" customName="prikolicacentar.rs" nameFormat="CUSTOM" username="root" useOpenSSHConfig="true">
+        <option name="customName" value="prikolicacentar.rs" />
+      </sshConfig>
+      <sshConfig authType="PASSWORD" host="164.92.98.229" id="7ef8e3c8-3c3b-4db8-81e4-628a69f7d4a9" port="22" customName="app.pars" nameFormat="CUSTOM" username="root" useOpenSSHConfig="true">
+        <option name="customName" value="app.pars" />
+      </sshConfig>
     </configs>
   </component>
 </project>

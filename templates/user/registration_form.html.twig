@@ -72,12 +72,12 @@
                                         {{ form_widget(form.pozicija, {attr: { class: 'form-control select pozicija' }}) }}
                                     </div>
                                 </div>
-                                <div class="col-lg-4 hide ROLE_EMPLOYEE">
-                                    <div class="mb-3">
-                                        {{ form_label(form.projectType, 'Tip projekta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.projectType, {attr: { class: 'form-control select pozicija' }}) }}
-                                    </div>
-                                </div>
+{#                                <div class="col-lg-4 hide ROLE_EMPLOYEE">#}
+{#                                    <div class="mb-3">#}
+{#                                        {{ form_label(form.projectType, 'Tip projekta:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        {{ form_widget(form.projectType, {attr: { class: 'form-control select pozicija' }}) }}#}
+{#                                    </div>#}
+{#                                </div>#}
                             </div>
                             <div class="row">
                                 <div class="col-lg-6 KLIJENT">
@@ -87,7 +87,7 @@
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                            {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom klijentRemove' }}) }}
+                                            {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom klijentRemove', autocomplete : 'off' }}) }}
                                         </div>
                                         <span class="form-text">Format: 31.12.1900</span>
                                     </div>
@@ -188,20 +188,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row KLIJENT">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}
-                                        <div class="input-group">
-											<span class="input-group-text">
-												<i class="ph-calendar"></i>
-											</span>
-                                            {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1 ' }}) }}
-                                        </div>
-                                        <span class="form-text">Format: 31.12.1900</span>
-                                    </div>
-                                </div>
-                            </div>
+{#                            <div class="row KLIJENT">#}
+{#                                <div class="col-lg-6">#}
+{#                                    <div class="mb-3">#}
+{#                                        {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        <div class="input-group">#}
+{#											<span class="input-group-text">#}
+{#												<i class="ph-calendar"></i>#}
+{#											</span>#}
+{#                                            {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1 ' }}) }}#}
+{#                                        </div>#}
+{#                                        <span class="form-text">Format: 31.12.1900</span>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
                             <div class="fw-bold border-bottom pb-2 mb-3 KLIJENT">Zaduženi uređaji</div>
                             <div class="row KLIJENT">
                                 <div class="col-lg-6">
@@ -256,7 +256,7 @@
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
-    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+{#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
     <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
 
     <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
@@ -303,6 +303,23 @@
                 }
             });
         });
+        // izmenjen format da bi bio po srpskim standardima
+        const dpDateCustomFormatElement = document.querySelector('.datepicker-date-format-custom');
+        if(dpDateCustomFormatElement) {
+            const dpDateCustomFormat = new Datepicker(dpDateCustomFormatElement, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                maxDate: 'today',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
     </script>
 
 {% endblock footerJavascript %}

@@ -28,9 +28,10 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Lista projekata - radni dan  <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                    {{ daysAtMoment }}/{{ daysMonth }}
-                                                </span></h5>
+{#                            <h5 class="mb-0">Lista projekata - radni dan  <span class="badge bg-yellow align-self-center rounded-pill ms-auto">#}
+{#                                                    {{ daysAtMoment }}/{{ daysMonth }}#}
+{#                                                </span></h5>#}
+                            <h5 class="mb-0">Lista projekata</h5>
                             {% if not is_granted('ROLE_EMPLOYEE') %}
                                 <div class="my-auto ms-auto">
                                     <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
@@ -47,17 +48,17 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-lg-4">
-                                        <div class="mb-3">
-                                            <label class="form-label required" for="tip">Tip:</label>
-                                            <select id="tip" name="tip" class="form-control select">
-                                                <option value="">--Izaberite tip projekta--</option>
-                                                {% for key, value in tipovi %}
-                                                    <option value="{{ key }}">{{ value }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
+{#                                    <div class="col-lg-4">#}
+{#                                        <div class="mb-3">#}
+{#                                            <label class="form-label required" for="tip">Tip:</label>#}
+{#                                            <select id="tip" name="tip" class="form-control select">#}
+{#                                                <option value="">--Izaberite tip projekta--</option>#}
+{#                                                {% for key, value in tipovi %}#}
+{#                                                    <option value="{{ key }}">{{ value }}</option>#}
+{#                                                {% endfor %}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{#                                    </div>#}
 
 
                                 </div>
@@ -82,19 +83,13 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Zadaci (teren/ukupno)</th>
-                                        <th>Radni dani (teren/kanc)</th>
+                                        <th>Broj zadataka</th>
+                                        <th>Teren</th>
+                                        <th>Kancelarija</th>
+                                        <th>Rad od kuće</th>
+{#                                        <th>Radni dani (teren/kanc)</th>#}
                                         <th>Klijent</th>
-                                        <th {% if pagination.isSorted('[p.type]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Tip ', ['p.type']) }}
-                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.type' %}
-                                                &#8593;
-                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.type' %}
-                                                &#8595;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
+
                                         <th {% if pagination.isSorted('[p.created]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Datum kreiranja ', ['p.created']) }}
                                             {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.created' %}
@@ -110,13 +105,14 @@
                                     </thead>
                                     <tbody>
                                     {% for project in pagination %}
+                                        {% set noTasks = getCountTasksByProject(project)  %}
                                         <tr>
                                             <td>
                                                 <div class="fw-semibold">
                                                         <a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a>
-                                                    {% if project.client.first.id == 5 %}
-                                                        <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Za Exing projekte uzima se period od 26-og predhodnog meseca." data-bs-original-title="Napomena"></i>
-                                                    {% endif %}
+{#                                                    {% if project.client.first.id == 5 %}#}
+{#                                                        <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Za Exing projekte uzima se period od 26-og predhodnog meseca." data-bs-original-title="Napomena"></i>#}
+{#                                                    {% endif %}#}
                                                 </div>
                                                 {% if project.label is not empty %}
                                                     <div class="d-inline-flex">
@@ -128,16 +124,25 @@
                                             </td>
                                             <td class="text-center">
                                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                    {% set noTasks = getCountTasksByProject(project)  %}
-                                                    {{ noTasks.teren }}/{{ noTasks.total }}
+                                                    {{ noTasks.total }}
                                                 </span>
                                             </td>
                                             <td class="text-center">
                                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                    {% set noDays = getCountDaysTasksByProject(project)  %}
-                                                    {{ noDays.teren }}/{{ noDays.kancelarija }}
+                                                    {{ noTasks.teren }}
                                                 </span>
                                             </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ noTasks.kancelarija }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ noTasks.kuca }}
+                                                </span>
+                                            </td>
+
                                             <td>
                                                 {% if is_granted('ROLE_EMPLOYEE') %}
                                                     {% for client in project.client %}
@@ -149,17 +154,17 @@
                                                     {% endfor %}
                                                 {% endif %}
                                             </td>
-                                            <td>
-                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::FIKSNO') %}
-                                                    <span class="badge bg-secondary text-primary">Stalno</span>
-                                                {% endif %}
-                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::LETECE') %}
-                                                    <span class="badge bg-primary text-white">Leteće</span>
-                                                {% endif %}
-                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::KOMBINOVANO') %}
-                                                    <span class="badge bg-yellow text-primary">Kombinovano</span>
-                                                {% endif %}
-                                            </td>
+{#                                            <td>#}
+{#                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::FIKSNO') %}#}
+{#                                                    <span class="badge bg-secondary text-primary">Stalno</span>#}
+{#                                                {% endif %}#}
+{#                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::LETECE') %}#}
+{#                                                    <span class="badge bg-primary text-white">Leteće</span>#}
+{#                                                {% endif %}#}
+{#                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::KOMBINOVANO') %}#}
+{#                                                    <span class="badge bg-yellow text-primary">Kombinovano</span>#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>

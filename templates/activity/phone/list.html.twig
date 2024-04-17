@@ -84,7 +84,9 @@
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a href="{{ path('app_activity_view', { id: activity.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                        <a href="{{ path('app_activity_form', { id: activity.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                        {% if activity.id > constant('App\\Classes\\AppConfig::OBRADA_ACTIVITY_ID') %}
+                                                            <a href="{{ path('app_activity_form', { id: activity.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </td>

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classes\AppConfig;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
@@ -96,47 +97,47 @@ class EmployeeController extends AbstractController {
     return $this->render('employee/list.html.twig', $args);
   }
 
-  #[Route('/list-project-type/', name: 'app_employees_project_type')]
-  public function listProjectType(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    $args = [];
-
-
-//    $users = $this->em->getRepository(User::class)->getEmployeesPaginator($korisnik, $search, 0);
-    $args['users'] = $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $korisnik->getCompany()], ['prezime' => 'ASC']);
-//    $args['usersL'] = $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'ProjectType' => TipProjektaData::LETECE], ['prezime' => 'ASC']);
-    if ($request->isMethod('POST')) {
-
-      $data = $request->request->all();
-      if (isset($data['users'])) {
-        $sviZaposleni = $this->em->getRepository(User::class)->getZaposleniNotMix();
-        foreach ($sviZaposleni as $zaposleni) {
-          if (!in_array($zaposleni->getId(), $data['users'])){
-            $zaposleni->setProjectType(TipProjektaData::LETECE);
-          } else {
-            $zaposleni->setProjectType(TipProjektaData::FIKSNO);
-          }
-          $this->em->getRepository(User::class)->save($zaposleni);
-        }
-      }
-
-      return $this->render('employee/list_project_control.html.twig', $args);
-
-    }
-
-//    $mobileDetect = new MobileDetect();
-//    if($mobileDetect->isMobile()) {
-//      return $this->render('employee/phone/list.html.twig', $args);
+//  #[Route('/list-project-type/', name: 'app_employees_project_type')]
+//  public function listProjectType(PaginatorInterface $paginator, Request $request): Response {
+//    if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
 //    }
-    return $this->render('employee/list_project_control.html.twig', $args);
-  }
+//    $korisnik = $this->getUser();
+//    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+//      return $this->redirect($this->generateUrl('app_home'));
+//    }
+//
+//    $args = [];
+//
+//
+////    $users = $this->em->getRepository(User::class)->getEmployeesPaginator($korisnik, $search, 0);
+//    $args['users'] = $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $korisnik->getCompany()], ['prezime' => 'ASC']);
+////    $args['usersL'] = $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'ProjectType' => TipProjektaData::LETECE], ['prezime' => 'ASC']);
+//    if ($request->isMethod('POST')) {
+//
+//      $data = $request->request->all();
+//      if (isset($data['users'])) {
+//        $sviZaposleni = $this->em->getRepository(User::class)->getZaposleniNotMix();
+//        foreach ($sviZaposleni as $zaposleni) {
+//          if (!in_array($zaposleni->getId(), $data['users'])){
+//            $zaposleni->setProjectType(TipProjektaData::LETECE);
+//          } else {
+//            $zaposleni->setProjectType(TipProjektaData::FIKSNO);
+//          }
+//          $this->em->getRepository(User::class)->save($zaposleni);
+//        }
+//      }
+//
+//      return $this->render('employee/list_project_control.html.twig', $args);
+//
+//    }
+//
+////    $mobileDetect = new MobileDetect();
+////    if($mobileDetect->isMobile()) {
+////      return $this->render('employee/phone/list.html.twig', $args);
+////    }
+//    return $this->render('employee/list_project_control.html.twig', $args);
+//  }
 
   #[Route('/list-archive/', name: 'app_employees_archive')]
   public function archive(PaginatorInterface $paginator, Request $request): Response {
@@ -541,7 +542,6 @@ class EmployeeController extends AbstractController {
 
     if ($request->isMethod('POST')) {
       $data = $request->request->all();
-//      dd($data);
 //      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
       $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
 
@@ -904,7 +904,7 @@ class EmployeeController extends AbstractController {
 
             $aktivnosti = [];
             foreach ($stopwatch['activity'] as $akt) {
-              if ($akt->getId() != 105) {
+              if ($akt->getId() != AppConfig::NOT_IN_LIST_ACTIVITY_ID) {
                 $aktivnosti [] = $akt->getTitle();
               }
             }
@@ -1066,6 +1066,8 @@ class EmployeeController extends AbstractController {
 
     return $this->render('report_project/control.html.twig', $args);
   }
+
+
 
   #[Route('/edit-info/{id}', name: 'app_employee_edit_info_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]

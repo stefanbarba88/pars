@@ -52,6 +52,7 @@ class ActivityRepository extends ServiceEntityRepository {
     $company = $this->security->getUser()->getCompany();
     $qb = $this->createQueryBuilder('c')
       ->where('c.company = :company')
+      ->orWhere('c.company IS NULL')
       ->setParameter('company', $company);
 
     if (!empty($filter['title'])) {

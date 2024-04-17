@@ -33,20 +33,20 @@
                                 <div class="card">
                                     <div class="card-header d-flex align-items-center">
                                         <h5 class="mb-0">{{ user.fullName }}: {{ period }}</h5>
-                                        <div class="my-auto ms-auto">
-                                            {% if reports[0] is not empty %}
-                                                <div class="dropdown">
-                                                    <a href="#" class="btn btn-light" data-bs-toggle="dropdown">
-                                                        <i class="ph-file-xls"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <a href="{{ path('app_employee_report_xls', {date: period, user: user.id, type:1}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Pun prikaz</a>
-                                                        {#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:2}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Složen prikaz</a>#}
-                                                        {#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:3}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Prost prikaz</a>#}
-                                                    </div>
-                                                </div>
-                                            {% endif %}
-                                        </div>
+{#                                        <div class="my-auto ms-auto">#}
+{#                                            {% if reports[0] is not empty %}#}
+{#                                                <div class="dropdown">#}
+{#                                                    <a href="#" class="btn btn-light" data-bs-toggle="dropdown">#}
+{#                                                        <i class="ph-file-xls"></i>#}
+{#                                                    </a>#}
+{#                                                    <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                        <a href="{{ path('app_employee_report_xls', {date: period, user: user.id, type:1}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Pun prikaz</a>#}
+{#                                                        #}{#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:2}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Složen prikaz</a>#}
+{#                                                        #}{#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:3}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Prost prikaz</a>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            {% endif %}#}
+{#                                        </div>#}
                                     </div>
 
                                     <div class="card-body">
@@ -77,15 +77,15 @@
                                                                 <div class="fw-semibold">
                                                                     {{ key}}
                                                                 </div>
-                                                                <div>
-                                                                    {% if value[0].dan == 1 %}
-                                                                        <span class="badge bg-secondary text-primary">Praznik</span>
-                                                                    {% elseif value[0].dan  == 3 %}
-                                                                        <span class="badge bg-secondary text-primary">Nedelja</span>
-                                                                    {% elseif value[0].dan == 5 %}
-                                                                        <span class="badge bg-yellow text-white">Praznik i nedelja</span>
-                                                                    {% endif %}
-                                                                </div>
+{#                                                                <div>#}
+{#                                                                    {% if value[0].dan == 1 %}#}
+{#                                                                        <span class="badge bg-secondary text-primary">Praznik</span>#}
+{#                                                                    {% elseif value[0].dan  == 3 %}#}
+{#                                                                        <span class="badge bg-secondary text-primary">Nedelja</span>#}
+{#                                                                    {% elseif value[0].dan == 5 %}#}
+{#                                                                        <span class="badge bg-yellow text-white">Praznik i nedelja</span>#}
+{#                                                                    {% endif %}#}
+{#                                                                </div>#}
                                                             </td>
                                                         {% endif %}
 
@@ -165,7 +165,7 @@
                                                                                         </td>
                                                                                         <td>
                                                                                             {% for akt in stopwatch.activity %}
-                                                                                                {% if akt.id != 105 %}
+                                                                                                {% if akt.id != constant('App\\Classes\\AppConfig::NOT_IN_LIST_ACTIVITY_ID') %}
                                                                                                     {{ akt.title }},
                                                                                                 {% endif %}
                                                                                             {% endfor %}

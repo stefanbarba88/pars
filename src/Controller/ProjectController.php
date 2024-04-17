@@ -10,11 +10,11 @@ use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
 use App\Classes\Slugify;
 use App\Entity\Category;
-use App\Entity\Holiday;
+
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
 use App\Entity\Task;
-use App\Entity\Team;
+
 use App\Entity\User;
 use App\Form\ProjectFormType;
 use App\Form\ProjectTeamListFormType;
@@ -78,14 +78,14 @@ class ProjectController extends AbstractController {
       15
     );
 
-    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
-    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
+//    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
+//    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
 
     $session = new Session();
     $session->set('url', $request->getRequestUri());
 
     $args['pagination'] = $pagination;
-    $args['tipovi'] = TipProjektaData::TIP;
+//    $args['tipovi'] = TipProjektaData::TIP;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -100,99 +100,99 @@ class ProjectController extends AbstractController {
     return $this->render('project/list_paginator.html.twig', $args);
   }
 
-  #[Route('/list-change/', name: 'app_projects_change')]
-  public function listChange(PaginatorInterface $paginator, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $search = [];
-
-    $search['title'] = $request->query->get('title');
-
-    $projects = $this->em->getRepository(Project::class)->getAllProjectsTypePaginator($search, TipProjektaData::LETECE);
-
-    $pagination = $paginator->paginate(
-      $projects, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
-
-    $args['pagination'] = $pagination;
-    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
-    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('project/phone/list_paginator_change.html.twig', $args);
-    }
-    return $this->render('project/list_paginator_change.html.twig', $args);
-
-  }
-
-  #[Route('/list-permanent/', name: 'app_projects_permanent')]
-  public function listPermanent(PaginatorInterface $paginator, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $search = [];
-
-    $search['title'] = $request->query->get('title');
-
-    $projects = $this->em->getRepository(Project::class)->getAllProjectsTypePaginator($search, TipProjektaData::FIKSNO);
-
-    $pagination = $paginator->paginate(
-      $projects, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
-
-    $args['pagination'] = $pagination;
-    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
-    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('project/phone/list_paginator_permanent.html.twig', $args);
-    }
-    return $this->render('project/list_paginator_permanent.html.twig', $args);
-  }
-
-  #[Route('/list-mix/', name: 'app_projects_mix')]
-  public function listMix(PaginatorInterface $paginator, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $search = [];
-
-    $search['title'] = $request->query->get('title');
-
-    $projects = $this->em->getRepository(Project::class)->getAllProjectsTypePaginator($search, TipProjektaData::KOMBINOVANO);
-
-    $pagination = $paginator->paginate(
-      $projects, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
-
-    $args['pagination'] = $pagination;
-    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
-    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('project/phone/list_paginator_mix.html.twig', $args);
-    }
-    return $this->render('project/list_paginator_mix.html.twig', $args);
-  }
+//  #[Route('/list-change/', name: 'app_projects_change')]
+//  public function listChange(PaginatorInterface $paginator, Request $request)    : Response {
+//    if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $search = [];
+//
+//    $search['title'] = $request->query->get('title');
+//
+//    $projects = $this->em->getRepository(Project::class)->getAllProjectsTypePaginator($search, TipProjektaData::LETECE);
+//
+//    $pagination = $paginator->paginate(
+//      $projects, /* query NOT result */
+//      $request->query->getInt('page', 1), /*page number*/
+//      15
+//    );
+//
+//    $session = new Session();
+//    $session->set('url', $request->getRequestUri());
+//
+//    $args['pagination'] = $pagination;
+//    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
+//    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
+//
+//    $mobileDetect = new MobileDetect();
+//    if($mobileDetect->isMobile()) {
+//      return $this->render('project/phone/list_paginator_change.html.twig', $args);
+//    }
+//    return $this->render('project/list_paginator_change.html.twig', $args);
+//
+//  }
+//
+//  #[Route('/list-permanent/', name: 'app_projects_permanent')]
+//  public function listPermanent(PaginatorInterface $paginator, Request $request)    : Response {
+//    if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $search = [];
+//
+//    $search['title'] = $request->query->get('title');
+//
+//    $projects = $this->em->getRepository(Project::class)->getAllProjectsTypePaginator($search, TipProjektaData::FIKSNO);
+//
+//    $pagination = $paginator->paginate(
+//      $projects, /* query NOT result */
+//      $request->query->getInt('page', 1), /*page number*/
+//      15
+//    );
+//
+//    $session = new Session();
+//    $session->set('url', $request->getRequestUri());
+//
+//    $args['pagination'] = $pagination;
+//    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
+//    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
+//
+//    $mobileDetect = new MobileDetect();
+//    if($mobileDetect->isMobile()) {
+//      return $this->render('project/phone/list_paginator_permanent.html.twig', $args);
+//    }
+//    return $this->render('project/list_paginator_permanent.html.twig', $args);
+//  }
+//
+//  #[Route('/list-mix/', name: 'app_projects_mix')]
+//  public function listMix(PaginatorInterface $paginator, Request $request)    : Response {
+//    if (!$this->isGranted('ROLE_USER')) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//    $search = [];
+//
+//    $search['title'] = $request->query->get('title');
+//
+//    $projects = $this->em->getRepository(Project::class)->getAllProjectsTypePaginator($search, TipProjektaData::KOMBINOVANO);
+//
+//    $pagination = $paginator->paginate(
+//      $projects, /* query NOT result */
+//      $request->query->getInt('page', 1), /*page number*/
+//      15
+//    );
+//
+//    $session = new Session();
+//    $session->set('url', $request->getRequestUri());
+//
+//    $args['pagination'] = $pagination;
+//    $args['daysMonth'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesecu();
+//    $args['daysAtMoment'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaTrenutno();
+//
+//    $mobileDetect = new MobileDetect();
+//    if($mobileDetect->isMobile()) {
+//      return $this->render('project/phone/list_paginator_mix.html.twig', $args);
+//    }
+//    return $this->render('project/list_paginator_mix.html.twig', $args);
+//  }
 
   #[Route('/list-archive/', name: 'app_projects_archive')]
   public function listArchive(PaginatorInterface $paginator, Request $request)    : Response {
@@ -975,7 +975,7 @@ class ProjectController extends AbstractController {
 
             $aktivnosti = [];
             foreach ($stopwatch['activity'] as $akt) {
-              if ($akt->getId() != 105) {
+              if ($akt->getId() != AppConfig::NOT_IN_LIST_ACTIVITY_ID) {
                 $aktivnosti [] = $akt->getTitle();
               }
             }
@@ -1237,7 +1237,7 @@ class ProjectController extends AbstractController {
 
             $aktivnosti = [];
             foreach ($stopwatch['activity'] as $akt) {
-              if ($akt->getId() != 105) {
+              if ($akt->getId() != AppConfig::NOT_IN_LIST_ACTIVITY_ID) {
                 $aktivnosti [] = $akt->getTitle();
               }
             }
@@ -1469,7 +1469,7 @@ class ProjectController extends AbstractController {
 
               $aktivnosti = [];
               foreach ($stopwatch['activity'] as $akt) {
-                if ($akt->getId() != 105) {
+                if ($akt->getId() != AppConfig::NOT_IN_LIST_ACTIVITY_ID) {
                   $aktivnosti [] = $akt->getTitle();
                 }
               }

@@ -34,7 +34,7 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">{{ category.title }} <a href="{{ path('app_category_form', {id: category.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                        <h5 class="mb-0">{{ category.title }} {% if category.id > constant('App\\Classes\\AppConfig::KANC_CAT_ID') %}<a href="{{ path('app_category_form', {id: category.id}) }}"><i class="ph-note-pencil"></i></a>{% endif %}</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">

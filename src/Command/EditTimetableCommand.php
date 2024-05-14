@@ -57,8 +57,12 @@ class EditTimetableCommand extends Command {
         $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($plan, FastTaskData::SAVED);
 
         if ($company->getId() == 1) {
-          $users[] = $this->em->getRepository(User::class)->find(25);
-          $usersSub[] = $this->em->getRepository(User::class)->find(25);
+          if (!empty($users)) {
+            $users[] = $this->em->getRepository(User::class)->find(25);
+          }
+          if (!empty($usersSub)) {
+            $usersSub[] = $this->em->getRepository(User::class)->find(25);
+          }
         }
 
         $this->mail->plan($timetable, $users, $datum);

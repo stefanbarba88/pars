@@ -132,6 +132,34 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% if unavailableUsers is not empty %}
+                                    <div class="row">
+                                        <div class="col-sm-6 col-lg-6">
+                                            <div class="table-responsive card">
+                                                <table class="table table-bordered table-responsive table_morecondensed">
+                                                    <thead class="bg-light text-primary">
+                                                    <tr>
+                                                        <th>Odutni sa stalnih gradilišta</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for chunk in unavailableUsers %}
+                                                        <tr>
+                                                            <td>
+                                                                <div class="list-group-item hstack gap-3">
+                                                                    <div class="flex-fill">
+                                                                        <div class="fw-semibold">{{ chunk }}</div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

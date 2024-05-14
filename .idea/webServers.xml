@@ -2,8 +2,22 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="1b765e2e-8dac-4878-87db-db899dfdd02c" name="testPars">
-        <fileTransfer rootFolder="/var/www/html/" accessType="SFTP" host="159.223.214.184" port="22" sshConfigId="5c387b80-6341-4f38-bba7-f0fbf0f22dfc" sshConfig="root@159.223.214.184:22 password">
+      <webServer id="1b765e2e-8dac-4878-87db-db899dfdd02c" name="epars">
+        <fileTransfer rootFolder="/var/www/html/" accessType="SFTP" host="159.223.214.184" port="22" sshConfigId="5c387b80-6341-4f38-bba7-f0fbf0f22dfc" sshConfig="epars.rs">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="739eba12-5a61-4c98-ac50-2cf1efd63a47" name="prikolica" url="http://137.184.127.75">
+        <fileTransfer rootFolder="/var/www/html" accessType="SFTP" host="137.184.127.75" port="22" sshConfigId="9b2e36f4-6301-4f57-901d-ea9e014cb24b" sshConfig="prikolicacentar.rs">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="8a9339a6-a7f8-4e1b-93c1-9d25ffbf6784" name="pars">
+        <fileTransfer rootFolder="/var/www/html/pars/pars" accessType="SFTP" host="178.62.221.187" port="22" sshConfigId="491786a4-b374-440a-b4de-95f21bd83ed6" sshConfig="root@178.62.221.187:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

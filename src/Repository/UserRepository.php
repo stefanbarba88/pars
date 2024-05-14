@@ -569,6 +569,24 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $usersList;
   }
 
+  public function getUsersUnvailable(string $dan): array {
+
+    $company = $this->security->getUser()->getCompany();
+
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false, 'ProjectType' => TipProjektaData::FIKSNO],['prezime' => 'ASC']);
+
+    $usersList = [];
+    foreach ($users as $user) {
+      $dostupan = $this->getEntityManager()->getRepository(Availability::class)->checkDostupnost($user, $dan);
+
+      if (!$dostupan) {
+        $usersList[] = $user->getFullName();
+      }
+    }
+
+    return $usersList;
+  }
+
   public function getUsersAvailable(DateTimeImmutable $dan, int $projectType): array {
 
     $company = $this->security->getUser()->getCompany();

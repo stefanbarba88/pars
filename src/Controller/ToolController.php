@@ -601,4 +601,44 @@ class ToolController extends AbstractController {
     return $this->render('tool/view_reservation_employee.html.twig', $args);
   }
 
+  #[Route('/reports', name: 'app_tool_reports')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReport(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+
+      $args['reports'] = $this->em->getRepository(ToolReservation::class)->getReport($data['report_form']);
+      $args['tool'] = $this->em->getRepository(Tool::class)->find($data['report_form']['oprema']);
+      $args['period'] = $data['report_form']['period'];
+
+      return $this->render('report_tool/view.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['tools'] =  $this->em->getRepository(Tool::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false],['id' => 'ASC']);
+
+    return $this->render('report_tool/control.html.twig', $args);
+  }
+
+  #[Route('/reports-archive', name: 'app_tool_reports_archive')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportArchive(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $args = [];
+
+    $args['tools'] =  $this->em->getRepository(Tool::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true],['id' => 'ASC']);
+
+    return $this->render('report_tool/control.html.twig', $args);
+  }
+
 }

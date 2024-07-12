@@ -23,6 +23,9 @@ class Expense {
   #[ORM\Column(length: 2, nullable: false)]
   private ?int $type = null;
 
+  #[ORM\Column(length: 255, nullable: true)]
+  private ?string $km = null;
+
   #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
   private ?string $price = null;
 
@@ -196,6 +199,20 @@ class Expense {
    */
   public function setIsSuspended(bool $isSuspended): void {
     $this->isSuspended = $isSuspended;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getKm(): ?string {
+    return $this->km;
+  }
+
+  /**
+   * @param string|null $km
+   */
+  public function setKm(?string $km): void {
+    $this->km = $km;
   }
 
 }

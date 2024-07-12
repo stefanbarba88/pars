@@ -7,6 +7,10 @@ use App\Classes\Interfaces\DataClassInterface;
 
 class CalendarData implements DataClassInterface {
 
+  public const SLOBODAN_DAN = 1;
+  public const ODMOR = 2;
+  public const BOLOVANJE = 3;
+  public const SLAVA = 4;
   public const TIP = [
     1 => 'Slobodan dan',
     2 => 'Odmor',

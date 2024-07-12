@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TipOpremeData;
+use App\Classes\Data\TipTroskovaData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Car;
 use App\Entity\CarHistory;
@@ -976,6 +977,154 @@ class CarController extends AbstractController {
       return $this->render('car/phone/form_reservation_employee.html.twig', $args);
     }
     return $this->render('car/form_reservation_employee.html.twig', $args);
+  }
+
+  #[Route('/reports', name: 'app_car_reports')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReport(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+
+
+      $args['reports'] = $this->em->getRepository(CarReservation::class)->getReport($data['report_form']);
+      $args['car'] = $this->em->getRepository(Car::class)->find($data['report_form']['vozilo']);
+      $args['period'] = $data['report_form']['period'];
+
+
+      if (isset($data['report_form']['vozac'])){
+        $args['vozac'] = 1;
+      }
+      if (isset($data['report_form']['start'])){
+        $args['start'] = 1;
+      }
+      if (isset($data['report_form']['stop'])){
+        $args['stop'] = 1;
+      }
+      if (isset($data['report_form']['dstart'])){
+        $args['dstart'] = 1;
+      }
+      if (isset($data['report_form']['dstop'])){
+        $args['dstop'] = 1;
+      }
+
+      return $this->render('report_car/view.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false],['id' => 'ASC']);
+
+    return $this->render('report_car/control.html.twig', $args);
+  }
+
+  #[Route('/reports-archive', name: 'app_car_reports_archive')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportArchive(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+//    if ($request->isMethod('POST')) {
+//
+//      $data = $request->request->all();
+//
+//
+//      $args['reports'] = $this->em->getRepository(CarReservation::class)->getReport($data['report_form']);
+//      $args['car'] = $this->em->getRepository(Car::class)->find($data['report_form']['vozilo']);
+//      $args['period'] = $data['report_form']['period'];
+//
+//
+//      if (isset($data['report_form']['vozac'])){
+//        $args['vozac'] = 1;
+//      }
+//      if (isset($data['report_form']['start'])){
+//        $args['start'] = 1;
+//      }
+//      if (isset($data['report_form']['stop'])){
+//        $args['stop'] = 1;
+//      }
+//      if (isset($data['report_form']['dstart'])){
+//        $args['dstart'] = 1;
+//      }
+//      if (isset($data['report_form']['dstop'])){
+//        $args['dstop'] = 1;
+//      }
+//
+//      return $this->render('report_car/view.html.twig', $args);
+//
+//    }
+
+    $args = [];
+
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true],['id' => 'ASC']);
+
+    return $this->render('report_car/control.html.twig', $args);
+  }
+
+  #[Route('/reports-expense', name: 'app_car_reports_expense')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportExpense(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+
+
+      $args['reports'] = $this->em->getRepository(Expense::class)->getReport($data['report_form']);
+      $args['car'] = $this->em->getRepository(Car::class)->find($data['report_form']['vozilo']);
+      $args['period'] = $data['report_form']['period'];
+
+
+//      if (isset($data['report_form']['vozac'])){
+//        $args['vozac'] = 1;
+//      }
+//      if (isset($data['report_form']['start'])){
+//        $args['start'] = 1;
+//      }
+//      if (isset($data['report_form']['stop'])){
+//        $args['stop'] = 1;
+//      }
+//      if (isset($data['report_form']['dstart'])){
+//        $args['dstart'] = 1;
+//      }
+//      if (isset($data['report_form']['dstop'])){
+//        $args['dstop'] = 1;
+//      }
+
+      return $this->render('report_car/view_expense.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false],['id' => 'ASC']);
+    $args['types'] =  TipTroskovaData::TIP_TROSKOVA;
+
+    return $this->render('report_car/control_expense.html.twig', $args);
+  }
+
+  #[Route('/reports-expense-archive', name: 'app_car_reports_expense_archive')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportExpenseArchive(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $args = [];
+
+    $args['types'] =  TipTroskovaData::TIP_TROSKOVA;
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true],['id' => 'ASC']);
+
+    return $this->render('report_car/control_expense.html.twig', $args);
   }
 
 

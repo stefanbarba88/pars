@@ -1,0 +1,230 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ vacation.user.getFullName() }}
+                            </h4>
+                        </div>
+                    </div>
+
+
+                    {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigation', { user: vacation.user } )) }}
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Left sidebar component -->
+                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: vacation.user } )) }}
+                        <!-- /left sidebar component -->
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Izmena neradnih dana zaposlenog</h5>
+                                        <div class="my-auto ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{{ vacation.used1 + vacation.used2 }}</span>
+                                        </div>
+                                    </div>
+                                    {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
+                                    <div class="card-body">
+                                        <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="mb-3">
+                                                {{ form_label(form.old, 'Neiskorišćen stari odmor:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.old, {attr: { class: 'form-control required' }}) }}
+                                                <span class="form-text">Broj neiskorišćenih dana starog odmora na početku godine.</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 ">
+                                            <div class="mb-3">
+                                                {{ form_label(form.used1, 'Iskorišćeni dani do 30.06:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.used1, {attr: { class: 'form-control required' }}) }}
+                                                <span class="form-text">Broj iskorišćenih dana od početka godine.</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 ">
+                                            <div class="mb-3">
+                                                {{ form_label(form.used2, 'Iskorišćeni dani od 01.07:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.used2, {attr: { class: 'form-control required' }}) }}
+                                                <span class="form-text">Broj iskorišćenih dana od početka godine.</span>
+                                            </div>
+                                        </div>
+                                            <div class="col-lg-3 ">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.slava, 'Iskorišćeni dani za slavu:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.slava, {attr: { class: 'form-control required' }}) }}
+                                                </div>
+                                            </div>
+                                    </div>
+                                        <div class="fw-bold border-bottom pb-2 mb-3">Iskorišćeni dani do 30.06.{{ 'now' | date('Y.') }}</div>
+                                        <div class="row">
+                                        <div class="col-lg-2 ">
+                                            <div class="mb-3">
+                                                {{ form_label(form.vacation1, 'Odmor:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.vacation1, {attr: { class: 'form-control required' }}) }}
+                                                <span class="form-text">Broj dana na odmoru.</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 ">
+                                            <div class="mb-3">
+                                                {{ form_label(form.vacationk1, 'Kolektivni odmor:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.vacationk1, {attr: { class: 'form-control required' }}) }}
+                                                <span class="form-text">Broj dana na kolektivnom odmoru.</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 ">
+                                            <div class="mb-3">
+                                                {{ form_label(form.vacationd1, 'Slobodni dani:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.vacationd1, {attr: { class: 'form-control required' }}) }}
+                                                <span class="form-text">Broj slobodnih dana.</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="mb-3">
+                                                {{ form_label(form.stopwatch1, 'Nema merenje:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.stopwatch1, {attr: { class: 'form-control required' }}) }}
+                                                <span class="form-text">Broj dana bez zabeležemog merenja.</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="mb-3">
+                                                {{ form_label(form.other1, 'Ostalo:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.other1, {attr: { class: 'form-control required' }}) }}
+                                                <span class="form-text">Bolovanje i drugo.</span>
+                                            </div>
+                                        </div>
+                                        </div>
+                                        <div class="fw-bold border-bottom pb-2 mb-3">Iskorišćeni dani od 01.07.{{ 'now' | date('Y.') }}</div>
+                                        <div class="row">
+                                            <div class="col-lg-2 ">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.vacation2, 'Odmor:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.vacation2, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Broj dana na odmoru.</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 ">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.vacationk2, 'Kolektivni odmor:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.vacationk2, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Broj dana na kolektivnom odmoru.</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 ">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.vacationd2, 'Slobodni dani:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.vacationd2, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Broj slobodnih dana.</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.stopwatch2, 'Nema merenje:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.stopwatch2, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Broj dana bez zabeležemog merenja.</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.other2, 'Ostalo:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.other2, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Bolovanje i drugo.</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                        </div>
+                                    </div>
+                                    {{ form_end(form) }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/locales/sr.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+

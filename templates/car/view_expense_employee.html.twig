@@ -45,19 +45,27 @@
                                             <div class="col-4">Datum:</div>
                                             <div class="col-8">{{ expense.date | date("d.m.Y")}}</div>
                                         </div>
-                                        <div class="row p-2">
+                                        <div class="row p-2 ">
+                                            <div class="col-4">Kilometraža:</div>
+                                            <div class="col-8">
+                                                {% if expense.km is not null %}
+                                                {{ expense.km  }}km
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Tip troška:</div>
                                             <div class="col-8">{{ expense.getTypeData }}</div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2 ">
                                             <div class="col-4">Iznos:</div>
                                             <div class="col-8">{{ expense.price | number_format(2, '.', ',') }} RSD</div>
                                         </div>
-                                        <div class="row p-2">
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Opis:</div>
                                             <div class="col-8">{{ expense.description }}</div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2">
                                             <div class="col-4">Kreirao:</div>
                                             <div class="col-8">{{ expense.createdBy.getFullName }}</div>
                                         </div>

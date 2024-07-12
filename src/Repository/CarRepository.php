@@ -5,8 +5,10 @@ namespace App\Repository;
 use App\Entity\Car;
 use App\Entity\CarHistory;
 use App\Entity\CarReservation;
+use App\Entity\Company;
 use App\Entity\FastTask;
 use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -62,6 +64,40 @@ class CarRepository extends ServiceEntityRepository {
     }
   }
 
+  public function getCarRegistration(Company $company): array {
+
+    $datum = new DateTimeImmutable();
+    $danas = $datum->setTime(0,0);
+
+    $vozila = [
+      30 => [],
+      10 => [],
+      3 => [],
+      2 => [],
+      1 => [],
+      0 => [],
+    ];
+    $cars = $this->getEntityManager()->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $company], ['id' => 'ASC']);
+
+    foreach ($cars as $car) {
+
+      if ($danas->diff($car->getDatumNaredneRegistracije())->days == 30) {
+        $vozila[30] = [$car];
+      } elseif ($danas->diff($car->getDatumNaredneRegistracije())->days == 10) {
+        $vozila[10] = [$car];
+      } elseif ($danas->diff($car->getDatumNaredneRegistracije())->days == 3) {
+        $vozila[3] = [$car];
+      } elseif ($danas->diff($car->getDatumNaredneRegistracije())->days == 2) {
+        $vozila[2] = [$car];
+      } elseif ($danas->diff($car->getDatumNaredneRegistracije())->days == 1) {
+        $vozila[1] = [$car];
+      } elseif ($danas->diff($car->getDatumNaredneRegistracije())->days == 0) {
+        $vozila[0] = [$car];
+      }
+    }
+
+    return $vozila;
+  }
 
   public function findForForm(int $id = 0): Car {
     if (empty($id)) {

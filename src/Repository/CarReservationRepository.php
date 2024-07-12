@@ -7,6 +7,7 @@ use App\Entity\Availability;
 use App\Entity\Car;
 use App\Entity\CarReservation;
 use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\Expr\Join;
@@ -113,6 +114,31 @@ class CarReservationRepository extends ServiceEntityRepository {
       ->setParameter('car', $car)
       ->orderBy('u.id', 'DESC')
       ->getQuery();
+
+  }
+
+  public function getReport(array $data): array {
+    $dates = explode(' - ', $data['period']);
+
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+
+    $car = $this->getEntityManager()->getRepository(Car::class)->find($data['vozilo']);
+
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    return $this->createQueryBuilder('t')
+      ->where('t.created BETWEEN :startDate AND :endDate')
+      ->andWhere('t.car = :car')
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->setParameter('car', $car)
+      ->orderBy('t.created', 'DESC')
+      ->getQuery()
+      ->getResult();
 
   }
 

@@ -14,9 +14,18 @@ class AvailabilityData implements DataClassInterface {
     2 => '2 - Izašao',
     3 => '3 - Prisutan',
   ];
+  public const TIPOVI = [
+    1 => 'Nedostupan',
+    2 => 'Izašao',
+    3 => 'Prisutan',
+  ];
 
   public static function form(): array {
     return array_flip(self::DOSTUPNOST);
+  }
+
+  public static function formTipovi(): array {
+    return array_flip(self::TIPOVI);
   }
 
 }

@@ -75,17 +75,23 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4">
                                                 <div class="mb-3">
                                                     {{ form_label(form.type, 'Tip troška:*', {'label_attr': {'class': 'form-label'}}) }}
                                                     {{ form_widget(form.type, {attr: { class: 'form-control required' }}) }}
                                                 </div>
                                             </div>
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4">
                                                 <div class="mb-3">
                                                     {{ form_label(form.price, 'Iznos:*', {'label_attr': {'class': 'form-label'}}) }}
                                                     {{ form_widget(form.price, {attr: { class: 'form-control required' }}) }}
                                                     <span class="form-text">Format: 0.00</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.km, 'Kilometraža:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.km, {attr: { class: 'form-control required' }}) }}
                                                 </div>
                                             </div>
                                         </div>

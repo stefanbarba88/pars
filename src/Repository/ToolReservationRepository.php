@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Tool;
 use App\Entity\ToolReservation;
 use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -23,7 +24,30 @@ class ToolReservationRepository extends ServiceEntityRepository {
     parent::__construct($registry, ToolReservation::class);
     $this->security = $security;
   }
+  public function getReport(array $data): array {
+    $dates = explode(' - ', $data['period']);
 
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+
+    $tool = $this->getEntityManager()->getRepository(Tool::class)->find($data['oprema']);
+
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    return $this->createQueryBuilder('t')
+      ->where('t.created BETWEEN :startDate AND :endDate')
+      ->andWhere('t.tool = :tool')
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->setParameter('tool', $tool)
+      ->orderBy('t.created', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+  }
   public function save(ToolReservation $toolReservation): ToolReservation {
 
     $tool = $toolReservation->getTool();

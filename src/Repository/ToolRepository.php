@@ -7,6 +7,7 @@ use App\Entity\Tool;
 use App\Entity\ToolHistory;
 use App\Entity\ToolReservation;
 use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;

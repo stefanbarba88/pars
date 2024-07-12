@@ -42,6 +42,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     $company = $user->getCompany();
 
     $datum = new DateTimeImmutable();
+    $dayOfWeek = $datum->format('N');
 
     $startDate = $datum->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $datum->format('Y-m-d 23:59:59'); // Kraj dana
@@ -64,6 +65,12 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     foreach ($merenja as $merenje) {
       if ($merenje->getTaskLog()->getUser() == $user) {
         $merenjeUser[] = $merenje;
+      }
+    }
+
+    if (empty($merenjeUser)) {
+      if ($user->getNeradniDan() == $dayOfWeek) {
+        $merenjeUser[] = $user;
       }
     }
 

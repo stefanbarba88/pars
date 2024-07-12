@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Classes\Data\NeradniDanData;
 use App\Classes\Data\PolData;
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\UserRolesData;
@@ -26,38 +27,26 @@ use Symfony\Component\Validator\Constraints\Regex;
 
 class UserEditInfoFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
+    $dataObject = new class($builder) {
+
+      public function __construct(private readonly FormBuilderInterface $builder) {
+      }
+
+      public function getUser(): ?User {
+        return $this->builder->getData();
+      }
+
+    };
+
+    $userType = $dataObject->getUser()->getUserType();
     $builder
-      ->add('slava', DateType::class, [
-        'required' => false,
-        'widget' => 'single_text',
-        'format' => 'dd.MM.yyyy',
-        'html5' => false,
-        'input' => 'datetime_immutable'
-      ])
-      ->add('isPrvaPomoc', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('isLekarski', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('vozacki', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => VozackiData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('slava', DateType::class, [
+//        'required' => false,
+//        'widget' => 'single_text',
+//        'format' => 'dd.MM.yyyy',
+//        'html5' => false,
+//        'input' => 'datetime_immutable'
+//      ])
       ->add('ime')
       ->add('prezime')
       ->add('datumRodjenja', DateType::class, [
@@ -74,7 +63,34 @@ class UserEditInfoFormType extends AbstractType {
         'choices' => PolData::form(),
         'expanded' => false,
         'multiple' => false,
-      ])
+      ]);
+    if ($userType != 1 and $userType != 2) {
+      $builder
+        ->add('isPrvaPomoc', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => PotvrdaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('isLekarski', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => PotvrdaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('vozacki', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => VozackiData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+
 //      ->add('jmbg', TextType::class, [
 //        'constraints' => [
 //          new Regex('/^\d{13}$/', 'JMBG morate uneti u odgovarajućem formatu'),
@@ -85,53 +101,71 @@ class UserEditInfoFormType extends AbstractType {
 //          'minlength' => '13',
 //        ],
 //      ])
-      ->add('isMobile', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('isLaptop', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('grad', EntityType::class, [
-        'class' => City::class,
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => function ($grad) {
-          return $grad->getFormTitle();
-        },
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('adresa')
-      ->add('telefon1',TextType::class, [
-        'required' => false,
-        'constraints' => [
-          new Regex('/^\d{1,10}$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
-        ],
+        ->add('isMobile', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => PotvrdaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('isLaptop', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => PotvrdaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('grad', EntityType::class, [
+          'class' => City::class,
+          'query_builder' => function (EntityRepository $em) {
+            return $em->createQueryBuilder('g')
+              ->orderBy('g.id', 'ASC');
+          },
+          'choice_label' => function ($grad) {
+            return $grad->getFormTitle();
+          },
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('adresa')
+        ->add('telefon1', TextType::class, [
+          'required' => false,
+          'constraints' => [
+            new Regex('/^\d{1,10}$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
+          ],
           'attr' => [
             'maxlength' => '10'
-        ],
-      ])
-      ->add('telefon2',TextType::class, [
-        'required' => false,
-        'constraints' => [
-          new Regex('/^\d{1,10}$/', 'Broj telefona#2 morate uneti u odgovarajućem formatu'),
-        ],
-        'attr' => [
+          ],
+        ])
+        ->add('slava', DateType::class, [
+          'required' => false,
+          'widget' => 'single_text',
+          'format' => 'dd.MM.yyyy',
+          'html5' => false,
+          'input' => 'datetime_immutable'
+        ])
+        ->add('neradniDan', ChoiceType::class, [
+          'required' => false,
+          'placeholder' => '--Izaberite neradni dan--',
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => NeradniDanData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('telefon2', TextType::class, [
+          'required' => false,
+          'constraints' => [
+            new Regex('/^\d{1,10}$/', 'Broj telefona#2 morate uneti u odgovarajućem formatu'),
+          ],
+          'attr' => [
             'maxlength' => '10'
-        ],
-      ]);
+          ],
+        ]);
+    }
   }
 
   public function configureOptions(OptionsResolver $resolver): void {

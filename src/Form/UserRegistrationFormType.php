@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Classes\Data\NeradniDanData;
 use App\Classes\Data\PolData;
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\TipProjektaData;
@@ -52,6 +53,21 @@ class UserRegistrationFormType extends AbstractType {
         'html5' => false,
         'input' => 'datetime_immutable'
       ])
+//      ->add('slava', DateType::class, [
+//        'required' => false,
+//        'widget' => 'single_text',
+//        'format' => 'dd.MM.yyyy',
+//        'html5' => false,
+//        'input' => 'datetime_immutable'
+//      ])
+      ->add('isPrvaPomoc', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
       ->add('slava', DateType::class, [
         'required' => false,
         'widget' => 'single_text',
@@ -59,11 +75,13 @@ class UserRegistrationFormType extends AbstractType {
         'html5' => false,
         'input' => 'datetime_immutable'
       ])
-      ->add('isPrvaPomoc', ChoiceType::class, [
+      ->add('neradniDan', ChoiceType::class, [
+        'required' => false,
+        'placeholder' => '--Izaberite neradni dan--',
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],
-        'choices' => PotvrdaData::form(),
+        'choices' => NeradniDanData::form(),
         'expanded' => false,
         'multiple' => false,
       ])
@@ -75,13 +93,13 @@ class UserRegistrationFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('projectType', ChoiceType::class, [
-        'required' => false,
-        'placeholder' => '--Izaberite tip projekta--',
-        'choices' => TipProjektaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('projectType', ChoiceType::class, [
+//        'required' => false,
+//        'placeholder' => '--Izaberite tip projekta--',
+//        'choices' => TipProjektaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
       ->add('vozacki', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
@@ -107,7 +125,7 @@ class UserRegistrationFormType extends AbstractType {
         'multiple' => false,
       ])
       ->add('pol', ChoiceType::class, [
-        'placeholder' => 'Izaberite pol',
+        'placeholder' => '--Izaberite pol--',
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],
@@ -127,7 +145,7 @@ class UserRegistrationFormType extends AbstractType {
 //      ])
       ->add('vrstaZaposlenja', ChoiceType::class, [
         'required' => false,
-        'placeholder' => 'Izaberite vrstu zaposlenja',
+        'placeholder' => '--Izaberite vrstu zaposlenja--',
         'choices' => VrstaZaposlenjaData::form(),
         'expanded' => false,
         'multiple' => false,
@@ -174,7 +192,7 @@ class UserRegistrationFormType extends AbstractType {
 
       ->add('grad', EntityType::class, [
         'required' => false,
-        'placeholder' => 'Izaberite grad',
+        'placeholder' => '--Izaberite grad--',
         'class' => City::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
@@ -188,7 +206,7 @@ class UserRegistrationFormType extends AbstractType {
       ])
       ->add('pozicija', EntityType::class, [
         'required' => false,
-        'placeholder' => 'Izaberite poziciju',
+        'placeholder' => '--Izaberite poziciju--',
         'class' => ZaposleniPozicija::class,
         'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('g')
@@ -207,7 +225,7 @@ class UserRegistrationFormType extends AbstractType {
       ->add('telefon1',TextType::class, [
         'required' => false,
         'constraints' => [
-          new Regex('/^\d{1,10}$/', 'Broj službenog telefona morate uneti u odgovarajućem formatu'),
+          new Regex('/^\d{1,10}$/', 'Broj telefona #1 morate uneti u odgovarajućem formatu'),
         ],
           'attr' => [
             'maxlength' => '10'
@@ -216,7 +234,7 @@ class UserRegistrationFormType extends AbstractType {
       ->add('telefon2',TextType::class, [
         'required' => false,
         'constraints' => [
-          new Regex('/^\d{1,10}$/', 'Broj privatnog telefona morate uneti u odgovarajućem formatu'),
+          new Regex('/^\d{1,10}$/', 'Broj telefona #2 morate uneti u odgovarajućem formatu'),
         ],
         'attr' => [
             'maxlength' => '10'

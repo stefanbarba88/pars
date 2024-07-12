@@ -437,9 +437,15 @@
 {#                        </a>#}
 {#                    </li>#}
                     <li class="nav-item">
+                        <a href="{{ path('app_employee_availability_reports') }}" class="nav-link">
+                            <i class="ph-file-text"></i>
+                            <span>Izveštaji o dostupnosti</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ path('app_employee_reports') }}" class="nav-link">
                             <i class="ph-file-text"></i>
-                            <span>Izveštaji</span>
+                            <span>Izveštaji o aktivnostima</span>
                         </a>
                     </li>
 
@@ -701,6 +707,18 @@
 
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_car_reports') }}" class="nav-link">
+                            <i class="ph-file-text"></i>
+                            <span>Izveštaji</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_car_reports_expense') }}" class="nav-link">
+                            <i class="ph-file-text"></i>
+                            <span>Izveštaji trošak</span>
+                        </a>
+                    </li>
                     <li class="nav-item nav-item-submenu">
                         <a href="#" class="nav-link">
                             <i class="ph-archive"></i>
@@ -708,9 +726,20 @@
                         </a>
                         <ul class="nav-group-sub collapse">
                             <li class="nav-item"><a href="{{ path('app_cars_archive') }}" class="nav-link">Lista</a></li>
-                            {#                            <li class="nav-item"><a href="" class="nav-link">Izveštaji</a></li>#}
+                            <li class="nav-item"><a href="{{ path('app_car_reports_archive') }}" class="nav-link">Izveštaji</a></li>
+                            <li class="nav-item"><a href="{{ path('app_car_reports_expense_archive') }}" class="nav-link">Izveštaji trošak</a></li>
                         </ul>
                     </li>
+{#                    <li class="nav-item nav-item-submenu">#}
+{#                        <a href="#" class="nav-link">#}
+{#                            <i class="ph-archive"></i>#}
+{#                            <span>Arhiva</span>#}
+{#                        </a>#}
+{#                        <ul class="nav-group-sub collapse">#}
+{#                            <li class="nav-item"><a href="{{ path('app_cars_archive') }}" class="nav-link">Lista</a></li>#}
+{#                            #}{#                            <li class="nav-item"><a href="" class="nav-link">Izveštaji</a></li>#}
+{#                        </ul>#}
+{#                    </li>#}
 {#                    <li class="nav-item">#}
 {#                        <a href="" class="nav-link">#}
 {#                            <i class="ph-file-text"></i>#}
@@ -749,6 +778,12 @@
                             {% endif %}
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_tool_reports') }}" class="nav-link">
+                            <i class="ph-file-text"></i>
+                            <span>Izveštaji</span>
+                        </a>
+                    </li>
                     <li class="nav-item nav-item-submenu">
                         <a href="#" class="nav-link">
                             <i class="ph-archive"></i>
@@ -756,15 +791,9 @@
                         </a>
                         <ul class="nav-group-sub collapse">
                             <li class="nav-item"><a href="{{ path('app_tools_archive') }}" class="nav-link">Lista</a></li>
-{#                            <li class="nav-item"><a href="" class="nav-link">Izveštaji</a></li>#}
+                            <li class="nav-item"><a href="{{ path('app_tool_reports_archive') }}" class="nav-link">Izveštaji</a></li>
                         </ul>
                     </li>
-{#                    <li class="nav-item">#}
-{#                        <a href="" class="nav-link">#}
-{#                            <i class="ph-file-text"></i>#}
-{#                            <span>Izveštaji</span>#}
-{#                        </a>#}
-{#                    </li>#}
 
 
 

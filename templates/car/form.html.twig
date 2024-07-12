@@ -73,7 +73,7 @@
                                     <div class="mb-3">
                                         {{ form_label(form.price, 'Kupovna cena:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.price, {attr: { class: 'form-control priceValue required' }}) }}
-                                        <span class="form-text">Format: 0.00</span>
+                                        <span class="form-text">Format: 0.00. Valuta je u RSD.</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
@@ -91,7 +91,7 @@
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                            {{ form_widget(form.datumRegistracije, {attr: { class: 'form-control required datepicker-date-format-custom' }}) }}
+                                            {{ form_widget(form.datumRegistracije, {attr: { class: 'form-control required datepicker-date-format-custom', autocomplete : 'off' }}) }}
                                         </div>
                                         <span class="form-text">Format: 31.12.1900</span>
                                     </div>
@@ -103,7 +103,7 @@
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                            {{ form_widget(form.datumNaredneRegistracije, {attr: { class: 'form-control required datepicker-date-format-custom1' }}) }}
+                                            {{ form_widget(form.datumNaredneRegistracije, {attr: { class: 'form-control required datepicker-date-format-custom1', autocomplete : 'off' }}) }}
                                         </div>
                                         <span class="form-text">Format: 31.12.1900</span>
                                     </div>
@@ -120,8 +120,8 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
-                                        {{ form_label(form.opremaGeo, 'Obavezna geodetska oprema:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.opremaGeo, {attr: { class: 'form-control required' }}) }}
+                                        {{ form_label(form.opremaGeo, 'Dodatna oprema:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.opremaGeo, {attr: { class: 'form-control' }}) }}
                                     </div>
                                 </div>
                             </div>
@@ -133,7 +133,7 @@
                         </div>
                         {{ form_end(form) }}
                     </div>
-                                                <!-- /wizard with validation -->
+                    <!-- /wizard with validation -->
 
                 </div>
                 <!-- /content area -->
@@ -164,7 +164,7 @@
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
-    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    {#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
     <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
 
     <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
@@ -190,3 +190,69 @@
 
 
 {% endblock includeJavascript %}
+
+{% block footerJavascript %}
+
+    <script>
+        $('#car_form_datumRegistracije').on('changeDate', function(e) {
+            console.log("Promjena datuma");
+            var selectedDate = $(this).val();
+            var dateParts = selectedDate.split('.');
+            var day = dateParts[0];
+            var month = dateParts[1];
+            var year = parseInt(dateParts[2]);
+            var nextYear = year + 1;
+
+            var formattedNextDate = ('0' + day).slice(-2) + '.' + ('0' + month).slice(-2) + '.' + nextYear;
+            $('#car_form_datumNaredneRegistracije').val(formattedNextDate);
+        });
+        // $('#car_form_datumRegistracije').on('change.datepicker', function() {
+        //         console.log("Promjena datuma");
+        //         var selectedDate = $(this).val();
+        //         var dateParts = selectedDate.split('.');
+        //         var day = parseInt(dateParts[0]);
+        //         var month = parseInt(dateParts[1]);
+        //         var year = parseInt(dateParts[2]);
+        //         var nextYear = year + 1;
+        //
+        //         var formattedNextDate = day + '.' + month + '.' + nextYear;
+        //         $('#car_form_datumNaredneRegistracije').val(formattedNextDate);
+        //     });
+
+
+        // izmenjen format da bi bio po srpskim standardima
+        const dpDateCustomFormatElement = document.querySelector('.datepicker-date-format-custom');
+        if(dpDateCustomFormatElement) {
+            const dpDateCustomFormat = new Datepicker(dpDateCustomFormatElement, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                maxDate: 'today',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
+        const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom1');
+        if(dpDateCustomFormatElement1) {
+            const dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                minDate: 'today',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
+    </script>
+
+{% endblock footerJavascript %}

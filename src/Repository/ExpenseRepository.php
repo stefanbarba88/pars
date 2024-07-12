@@ -106,7 +106,40 @@ class ExpenseRepository extends ServiceEntityRepository {
       ->getQuery();
 
   }
+  public function getReport(array $data): array {
+    $dates = explode(' - ', $data['period']);
 
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+
+
+    $car = $this->getEntityManager()->getRepository(Car::class)->find($data['vozilo']);
+
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+
+    $qb
+      ->where('t.date BETWEEN :startDate AND :endDate')
+      ->andWhere('t.car = :car')
+      ->andWhere('t.isSuspended = 0')
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->setParameter('car', $car);
+
+    if (isset($data['category'])) {
+      $qb->andWhere($qb->expr()->in('t.type', ':categories'))
+        ->setParameter('categories', $data['category']);
+    }
+
+    $rezultat = $qb->orderBy('t.date', 'DESC')
+      ->getQuery();
+
+    return $rezultat->getResult();
+  }
 //    /**
 //     * @return Expense[] Returns an array of Expense objects
 //     */

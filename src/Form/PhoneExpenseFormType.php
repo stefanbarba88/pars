@@ -89,7 +89,10 @@ class PhoneExpenseFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-
+      ->add('km', NumberType::class, [
+        'required' => true,
+        'html5' => true,
+      ])
       ->add('price', NumberType::class, [
         'required' => false,
         'html5' => true,

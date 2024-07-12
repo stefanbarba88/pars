@@ -72,12 +72,12 @@
                                         {{ form_widget(form.pozicija, {attr: { class: 'form-control select pozicija' }}) }}
                                     </div>
                                 </div>
-                                <div class="col-lg-4 hide ROLE_EMPLOYEE">
-                                    <div class="mb-3">
-                                        {{ form_label(form.projectType, 'Tip projekta:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.projectType, {attr: { class: 'form-control select pozicija' }}) }}
-                                    </div>
-                                </div>
+{#                                <div class="col-lg-4 hide ROLE_EMPLOYEE">#}
+{#                                    <div class="mb-3">#}
+{#                                        {{ form_label(form.projectType, 'Tip projekta:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        {{ form_widget(form.projectType, {attr: { class: 'form-control select pozicija' }}) }}#}
+{#                                    </div>#}
+{#                                </div>#}
                             </div>
                             <div class="row">
                                 <div class="col-lg-6 KLIJENT">
@@ -87,7 +87,7 @@
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                            {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom klijentRemove' }}) }}
+                                            {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom klijentRemove', autocomplete : 'off' }}) }}
                                         </div>
                                         <span class="form-text">Format: 31.12.1900</span>
                                     </div>
@@ -154,14 +154,14 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.telefon1, 'Službeni telefon:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.telefon1, 'Telefon #1:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.telefon1, {attr: { class: 'form-control' }}) }}
                                         <span class="form-text">Format: 0661111222</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.telefon2, 'Privatni telefon:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
                                         <span class="form-text">Format: 0661111222</span>
                                     </div>
@@ -189,6 +189,15 @@
                                 </div>
                             </div>
                             <div class="row KLIJENT">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.neradniDan, 'Neradni dan:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.neradniDan, {attr: { class: 'form-control select' }}) }}
+                                            <span class="form-text">Ukoliko zaposleni ne radi određenog dana u sedmici. Potrebno je uneti i dan vikenda ako firma radi vikendom.</span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}
@@ -196,7 +205,7 @@
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                            {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1 ' }}) }}
+                                            {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1', autocomplete : 'off' }}) }}
                                         </div>
                                         <span class="form-text">Format: 31.12.1900</span>
                                     </div>
@@ -256,7 +265,7 @@
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
-    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+{#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
     <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
 
     <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
@@ -303,6 +312,41 @@
                 }
             });
         });
-    </script>
+        // izmenjen format da bi bio po srpskim standardima
+        const dpDateCustomFormatElement = document.querySelector('.datepicker-date-format-custom');
+        if(dpDateCustomFormatElement) {
+            const dpDateCustomFormat = new Datepicker(dpDateCustomFormatElement, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                maxDate: 'today',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
+        const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom1');
+        if(dpDateCustomFormatElement1) {
+            const dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                minDate: 'today',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
 
+    </script>
 {% endblock footerJavascript %}
+
+

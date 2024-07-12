@@ -61,15 +61,40 @@
                                                 <div class="col-8">{{ userH.getPolData()}}</div>
                                             </div>
                                             <div class="row p-2 ">
-                                                <div class="col-4">Službeni telefon:</div>
+                                                <div class="col-4">Telefon #1:</div>
                                                 <div class="col-8">{{ userH.telefon1 }}</div>
                                             </div>
                                             <div class="row p-2 bg-light">
-                                                <div class="col-4">Privatni telefon:</div>
+                                                <div class="col-4">Telefon #2:</div>
                                                 <div class="col-8">{{ userH.telefon2 | default('/') }}</div>
                                             </div>
                                         </div>
-                                    {% else %}
+                                    {% endif %}
+                                    {% if userH.userType == 1 or userH.userType == 2 %}
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Verzija izmene:</div>
+                                                <div class="col-8">V.{{ userHistory.version }}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Ime i prezime:</div>
+                                                <div class="col-8">{{ userH.fullName() }}</div>
+                                            </div>
+                                            <div class="row p-2">
+                                                <div class="col-4">Profilna slika/avatar:</div>
+                                                <div class="col-8"><img src="{{ userH.image.thumbnail100 }}" alt="{{ userH.fullName() }}" class="img-preview rounded"></div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Pol:</div>
+                                                <div class="col-8">{{ userH.getPolData()}}</div>
+                                            </div>
+                                            <div class="row p-2">
+                                                <div class="col-4">Datum rođenja:</div>
+                                                <div class="col-8">{{ userH.datumRodjenja | date("d.m.Y")}}</div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    {% if userH.userType == 3 or userH.userType == 4 %}
                                         <div class="card-body">
                                             <div class="row p-2">
                                                 <div class="col-4">Verzija izmene:</div>
@@ -100,11 +125,11 @@
                                                 <div class="col-8">{{ userH.adresa }}</div>
                                             </div>
                                             <div class="row p-2 bg-light">
-                                                <div class="col-4">Službeni telefon:</div>
+                                                <div class="col-4">Telefon #1:</div>
                                                 <div class="col-8">{{ userH.telefon1 }}</div>
                                             </div>
                                             <div class="row p-2">
-                                                <div class="col-4">Privatni telefon:</div>
+                                                <div class="col-4">Telefon #2:</div>
                                                 <div class="col-8">{{ userH.telefon2 | default('/') }}</div>
                                             </div>
                                             <div class="row p-2 bg-light">
@@ -141,13 +166,25 @@
                                                     {% endif %}
                                                 </div>
                                             </div>
-                                            <div class="row p-2">
-                                                <div class="col-4">Slava:</div>
+                                            <div class="row p-2 ">
+                                                <div class="col-4">Neradni dan:</div>
                                                 <div class="col-8">
-                                                    {% if userH.slava is not null %}
-                                                        {{ userH.slava | date("d.m")}}
-                                                    {% else %}
-                                                        /
+                                                    {% if userH.neradniDan is not null %}
+                                                        {% if userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::PONEDELJAK')%}
+                                                            Ponedeljak
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::UTORAK')%}
+                                                            Utorak
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::SREDA')%}
+                                                            Sreda
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::CETVRTAK')%}
+                                                            Četvrtak
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::PETAK')%}
+                                                            Petak
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::SUBOTA')%}
+                                                            Subota
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::NEDELJA')%}
+                                                            Nedelja
+                                                        {% endif %}
                                                     {% endif %}
                                                 </div>
                                             </div>
@@ -162,6 +199,14 @@
                                                     {% endif %}
                                                 </div>
                                             </div>
+                                            <div class="row p-2">
+                                                <div class="col-4">Slava:</div>
+                                                <div class="col-8">
+                                                    {% if userH.slava is not null %}
+                                                        {{ userH.slava | date("d.m.Y")}}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
                                         </div>
                                     {% endif %}
 
@@ -170,7 +215,7 @@
                                     <div class="card-header">
                                         <h5 class="mb-0">Login podaci</h5>
                                     </div>
-                                    {% if userH.userType == 5 %}
+                                    {% if userH.userType == 5 or userH.userType == 1 or userH.userType == 2 %}
                                         <div class="card-body">
                                             <div class="row p-2">
                                                 <div class="col-4">Email:</div>
@@ -198,10 +243,6 @@
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Pozicija:</div>
                                                 <div class="col-8">{{ userH.pozicija.title | default('/')  }}</div>
-                                            </div>
-                                            <div class="row p-2">
-                                                <div class="col-4">Tip projekta:</div>
-                                                <div class="col-8">{{ userH.projectByType | default('/')  }}</div>
                                             </div>
                                         </div>
                                     {% endif %}

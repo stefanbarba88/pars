@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classes\Data\AvailabilityData;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
@@ -1262,6 +1263,73 @@ class EmployeeController extends AbstractController {
     }
     return $this->render('employee/edit_image.html.twig', $args);
 
+  }
+
+  #[Route('/reports-availability', name: 'app_employee_availability_reports')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportAvailability(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+      $data = $request->request->all();
+
+//      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
+      $args['reports'] = $this->em->getRepository(Availability::class)->getReport($data['report_form'], $this->getUser()->getCompany());
+//      $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
+      $args['period'] = $data['report_form']['period'];
+      $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
+
+      return $this->render('report_employee/view_availability.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $this->getUser()->getCompany(), 'userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
+    $args['categories'] = AvailabilityData::TIPOVI;
+    return $this->render('report_employee/control_availability.html.twig', $args);
+  }
+
+  #[Route('/view-calendar-days/{id}', name: 'app_employee_calendar_days')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function daysCalendar(User $usr, PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    $args = [];
+    $search = [];
+    $search['tip'] = $request->query->get('tip');
+    $search['period'] = $request->query->get('period');
+
+    $days = $this->em->getRepository(Availability::class)->getDays($search, $usr);
+
+    $pagination = $paginator->paginate(
+      $days, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+    $args['search'] = $search;
+    $args['user'] = $usr;
+    $args['tipovi'] = AvailabilityData::TIPOVI;
+
+
+    return $this->render('employee/days_calendar.html.twig', $args);
   }
 
 //  #[Route('/settings/{id}', name: 'app_employee_settings_form')]

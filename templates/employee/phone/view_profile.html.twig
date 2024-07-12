@@ -64,11 +64,11 @@
                                                             <div class="col-8">{{ user.adresa }}</div>
                                                         </div>
                                                         <div class="row p-2 bg-light">
-                                                            <div class="col-4">Službeni telefon:</div>
-                                                            <div class="col-8">{{ user.telefon1 }}</div>
+                                                            <div class="col-4">Telefon #1:</div>
+                                                            <div class="col-8">{{ user.telefon1 | default('/') }}</div>
                                                         </div>
                                                         <div class="row p-2">
-                                                            <div class="col-4">Privatni telefon:</div>
+                                                            <div class="col-4">Telefon #2:</div>
                                                             <div class="col-8">{{ user.telefon2 | default('/') }}</div>
                                                         </div>
                                                         <div class="row p-2 bg-light">
@@ -95,7 +95,7 @@
                                                                 {% endif %}
                                                             </div>
                                                         </div>
-                                                        <div class="row p-2">
+                                                        <div class="row p-2 bg-light">
                                                             <div class="col-4">Prva pomoć:</div>
                                                             <div class="col-8">
                                                                 {% if user.prvaPomoc %}
@@ -105,11 +105,29 @@
                                                                 {% endif %}
                                                             </div>
                                                         </div>
-                                                        <div class="row p-2 bg-light">
-                                                            <div class="col-4">Slava:</div>
-                                                            <div class="col-8">{{ user.slava | date('d.m.') }}</div>
+                                                        <div class="row p-2 ">
+                                                            <div class="col-4">Neradni dan:</div>
+                                                            <div class="col-8">
+                                                                {% if user.neradniDan is not null %}
+                                                                    {% if user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::PONEDELJAK')%}
+                                                                        Ponedeljak
+                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::UTORAK')%}
+                                                                        Utorak
+                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::SREDA')%}
+                                                                        Sreda
+                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::CETVRTAK')%}
+                                                                        Četvrtak
+                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::PETAK')%}
+                                                                        Petak
+                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::SUBOTA')%}
+                                                                        Subota
+                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::NEDELJA')%}
+                                                                        Nedelja
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            </div>
                                                         </div>
-                                                        <div class="row p-2">
+                                                        <div class="row p-2 bg-light">
                                                             <div class="col-4">Zaduženi uređaji:</div>
                                                             <div class="col-8">
                                                                 {% if user.mobile %}
@@ -117,6 +135,14 @@
                                                                 {% endif %}
                                                                 {% if user.laptop %}
                                                                     <i class="ph-laptop"></i>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row p-2">
+                                                            <div class="col-4">Slava:</div>
+                                                            <div class="col-8">
+                                                                {% if user.slava is not null %}
+                                                                    {{ user.slava | date("d.m.Y")}}
                                                                 {% endif %}
                                                             </div>
                                                         </div>
@@ -143,10 +169,10 @@
                                                             <div class="col-4">Pozicija:</div>
                                                             <div class="col-8">{{ user.pozicija.title | default('/')  }}</div>
                                                         </div>
-                                                        <div class="row p-2">
-                                                            <div class="col-4">Tip projekta:</div>
-                                                            <div class="col-8">{{ user.projectByType | default('/')  }}</div>
-                                                        </div>
+{#                                                        <div class="row p-2">#}
+{#                                                            <div class="col-4">Tip projekta:</div>#}
+{#                                                            <div class="col-8">{{ user.projectByType | default('/')  }}</div>#}
+{#                                                        </div>#}
                                                     </div>
                                                 </div>
                                                 {% if user.editBy is not null %}

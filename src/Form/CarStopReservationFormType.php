@@ -24,15 +24,20 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Regex;
-
+use Symfony\Component\Security\Core\Security;
 class CarStopReservationFormType extends AbstractType {
+  private $security;
+
+  public function __construct(Security $security) {
+    $this->security = $security;
+  }
   public function buildForm(FormBuilderInterface $builder, array $options): void {
 
     $dataObject = new class($builder) {
 
       public function __construct(private readonly FormBuilderInterface $builder) {
       }
-
+    
       public function getReservation(): ?CarReservation {
         return $this->builder->getData();
       }
@@ -40,6 +45,29 @@ class CarStopReservationFormType extends AbstractType {
     };
 
     $minKm = $dataObject->getReservation()->getKmStart();
+    $user = $this->security->getUser();
+
+    if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+      $builder
+        ->add('kmStop', NumberType::class, [
+          'attr' => [
+            'min' => $minKm
+          ],
+          'required' => true,
+          'html5' => true,
+        ]);
+    } else {
+      $builder
+        ->add('kmStop', NumberType::class, [
+          'attr' => [
+            'min' => $minKm,
+            'max' => $minKm + 500,
+          ],
+          'required' => true,
+          'html5' => true,
+        ]);
+    }
+
 
 
     $builder
@@ -56,15 +84,7 @@ class CarStopReservationFormType extends AbstractType {
           'expanded' => false,
           'multiple' => false,
         ])
-        ->add('descStop')
-        ->add('kmStop', NumberType::class, [
-          'attr' => [
-            'min' => $minKm,
-            'max' => $minKm + 500,
-          ],
-          'required' => true,
-          'html5' => true,
-        ]);
+        ->add('descStop');
   }
 
   public function configureOptions(OptionsResolver $resolver): void {

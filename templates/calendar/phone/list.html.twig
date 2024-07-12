@@ -98,26 +98,28 @@
                                                             <i class="ph-eye me-2"></i>
                                                             Vidite
                                                         </a>
-                                                        {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
-                                                            {% if calendar.status != 2  %}
-                                                                <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
-                                                                    <i class="ph-check me-2"></i>
-                                                                    Dozvolite
-                                                                </a>
+                                                        {% if calendar.start | date("Y-m-d") >= "now" | date("Y-m-d") %}
+                                                            {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
+                                                                {% if calendar.status != 2  %}
+                                                                    <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
+                                                                        <i class="ph-check me-2"></i>
+                                                                        Dozvolite
+                                                                    </a>
+                                                                {% endif %}
+                                                                {% if calendar.status != 3  %}
+                                                                    <a href="{{ path('app_calendar_decline', {id: calendar.id}) }}" class="dropdown-item">
+                                                                        <i class="ph-minus me-2"></i>
+                                                                        Odbijte
+                                                                    </a>
+                                                                {% endif %}
                                                             {% endif %}
-                                                            {% if calendar.status != 3  %}
-                                                                <a href="{{ path('app_calendar_decline', {id: calendar.id}) }}" class="dropdown-item">
-                                                                    <i class="ph-minus me-2"></i>
-                                                                    Odbijte
+                                                            {% if calendar.status != 0 %}
+                                                                <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-trash me-2"></i>
+                                                                    Obrišite
                                                                 </a>
-                                                            {% endif %}
+                                                            {% endif  %}
                                                         {% endif %}
-                                                        {% if calendar.status != 0 %}
-                                                            <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
-                                                                <i class="ph-trash me-2"></i>
-                                                                Obrišite
-                                                            </a>
-                                                        {% endif  %}
                                                     </div>
                                                 </div>
                                             </td>

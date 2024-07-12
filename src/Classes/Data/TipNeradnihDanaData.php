@@ -6,6 +6,7 @@ use App\Classes\Interfaces\DataClassInterface;
 
 class TipNeradnihDanaData implements DataClassInterface {
 
+  public const RADNI_DAN = 0;
   public const PRAZNIK = 1;
   public const KOLEKTIVNI_ODMOR = 2;
   public const NEDELJA = 3;

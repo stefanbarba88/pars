@@ -85,6 +85,37 @@ class MailService {
 
   }
 
+  public function carStatus($rezervacije, $company): void {
+
+    $args = [];
+    $danas = new DateTimeImmutable();
+    $subject = 'Status vozila na dan ' .  $danas->format('d.m.Y');
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/car_status.html.twig';
+    $args['rezervacije'] = $rezervacije;
+    $args['danas'] = $danas;
+    $args['company'] = $company;
+
+    $this->sendMail($company->getEmail(), $subject, $from, $sender, $template, $args);
+
+  }
+  public function carCheck($cars, $company): void {
+
+    $args = [];
+    $danas = new DateTimeImmutable();
+    $subject = 'Isticanje registracije kod vozila ' .  $danas->format('d.m.Y');
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/car_check.html.twig';
+    $args['cars'] = $cars;
+    $args['danas'] = $danas;
+    $args['company'] = $company;
+
+    $this->sendMail($company->getEmail(), $subject, $from, $sender, $template, $args);
+
+  }
+
   public function plan($plan, $users, $datum): void {
 
     $args = [];

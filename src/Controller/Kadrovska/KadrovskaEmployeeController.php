@@ -193,7 +193,7 @@ class KadrovskaEmployeeController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        if ($usr->getTrack() == 0) {
+        if ($usr->getTrack() != 1) {
           $usr->setPlainPassword(AppConfig::DEFAULT_PASS);
         }
 

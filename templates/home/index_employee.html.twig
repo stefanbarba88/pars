@@ -94,49 +94,271 @@
 {#                        </div>#}
 {#                    {% endif %}#}
 
-                    <div class="row ">
-                        <div class="col-xl-12">
 
-                            <!-- Marketing campaigns -->
-                            <div class="card">
-                            <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">{{ app.user.fullName }}, {{ danas | date('d.m.Y') }}</h5>
-{#                                    <div class="my-auto ms-auto">#}
-{#                                        <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>#}
-{#                                    </div>#}
+                    {% if settings.isWidgete %}
+                        <div class="row">
+                            <div class="col-sm-6 col-xl-4">
+
+                                <!-- Basic sparklines -->
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ph-folders ph-2x text-primary me-3"></i>
+
+                                            <div class="flex-fill text-end">
+                                                <h4 class="mb-0"></h4>
+                                                <span class="text-muted">Projekti</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer d-flex justify-content-around text-center p-0">
+                                        <a href="{{ path('app_projects') }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Lista" data-bs-original-title="Lista">
+                                            <i class="ph-list"></i>
+                                        </a>
+{#                                        <a href="#" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Twitter" data-bs-original-title="Twitter">#}
+{#                                            <i class="ph-twitter-logo"></i>#}
+{#                                        </a>#}
+{#                                        <a href="#" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Github" data-bs-original-title="Github">#}
+{#                                            <i class="ph-github-logo"></i>#}
+{#                                        </a>#}
+{#                                        <a href="#" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Dribbble" data-bs-original-title="Dribbble">#}
+{#                                            <i class="ph-dribbble-logo"></i>#}
+{#                                        </a>#}
+                                    </div>
                                 </div>
-                                <div class="table-responsive card">
-                                    <table class="table table-hover table-bordered table-sm">
-                                        <thead class="bg-light">
-                                        <tr class="table-light">
-                                            <th colspan="3">Lista zadataka za danas</th>
-                                            <th class="text-center">
-                                                <span class="badge bg-yellow rounded-pill">{{ countLogs }}</span>
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th>Vreme</th>
-                                            <th>Projekat</th>
-                                            <th>Kolege</th>
-{#                                            <th>Vozilo</th>#}
-                                            <th class="text-center" style="width: 20px;">
-                                                <i class="ph-dots-three"></i>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
+                                <!-- /basic sparklines -->
 
-                                        {% if logs is not empty %}
-                                            {% for log in logs  %}
-                                                {% if log[2] == 1 %}
-                                                    <tr>
+                            </div>
+                            <div class="col-sm-6 col-xl-4">
+
+                                <!-- Basic sparklines -->
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ph-list-bullets ph-2x text-primary me-3"></i>
+
+                                            <div class="flex-fill text-end">
+                                                <h4 class="mb-0">{{ countTasksActiveByUser }}</h4>
+                                                <span class="text-muted">Zadaci</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer d-flex justify-content-around text-center p-0">
+                                        <a href="{{ path('app_task_form_date') }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Kreirajte" data-bs-original-title="Kreirajte">
+                                            <i class="ph-plus"></i>
+                                        </a>
+                                        <a href="{{ path('app_tasks') }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Lista" data-bs-original-title="Lista">
+                                            <i class="ph-list"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- /basic sparklines -->
+
+                            </div>
+                            <div class="col-sm-6 col-xl-4">
+
+                                <!-- Basic sparklines -->
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ph-list ph-2x text-primary me-3"></i>
+
+                                            <div class="flex-fill text-end">
+                                                <h4 class="mb-0">{{ checklistActive }}</h4>
+                                                <span class="text-muted">Interni zadaci</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer d-flex justify-content-around text-center p-0">
+                                        <a href="{{ path('app_checklist_form') }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Kreirajte" data-bs-original-title="Kreirajte">
+                                            <i class="ph-plus"></i>
+                                        </a>
+                                        <a href="{{ path('app_checklist_to_do') }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Lista" data-bs-original-title="Lista">
+                                            <i class="ph-list"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- /basic sparklines -->
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% if calendar %}
+                                <div class="col-sm-6 col-xl-4">
+
+                                    <!-- Basic sparklines -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <i class="ph-calendar ph-2x text-primary me-3"></i>
+
+                                                <div class="flex-fill text-end">
+                                                    <h4 class="mb-0"></h4>
+                                                    <span class="text-muted">Kalendar</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer d-flex justify-content-around text-center p-0">
+                                            <a href="{{ path('app_employee_calendar_view', {id:user.id}) }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Kalendar" data-bs-original-title="Kalendar">
+                                                <i class="ph-calendar"></i>
+                                            </a>
+                                            <a href="{{ path('app_overtime_employee_form') }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Prekovremeni sati" data-bs-original-title="Prekovremeni sati">
+                                                <i class="ph-hourglass-simple-high"></i>
+                                            </a>
+                                            {#                                        <a href="#" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Github" data-bs-original-title="Github">#}
+                                            {#                                            <i class="ph-github-logo"></i>#}
+                                            {#                                        </a>#}
+                                            {#                                        <a href="#" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Dribbble" data-bs-original-title="Dribbble">#}
+                                            {#                                            <i class="ph-dribbble-logo"></i>#}
+                                            {#                                        </a>#}
+                                        </div>
+                                    </div>
+                                    <!-- /basic sparklines -->
+
+                                </div>
+                            {% endif %}
+                            {% if car %}
+                                <div class="col-sm-6 col-xl-4">
+
+                                    <!-- Basic sparklines -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <i class="ph-car ph-2x text-primary me-3"></i>
+
+                                                <div class="flex-fill text-end">
+                                                    <h4 class="mb-0"></h4>
+                                                    <span class="text-muted">Vozila</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer d-flex justify-content-around text-center p-0">
+                                            <a href="{{ path('app_employee_car_view', {id:user.id}) }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Vozila" data-bs-original-title="Vozila">
+                                                <i class="ph-car"></i>
+                                            </a>
+                                            {% if user.car is not null %}
+                                                <a href="{{ path('app_car_employee_reservation_stop', {id:lastReservation.id}) }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Razdužite" data-bs-original-title="Razdužite">
+                                                    <i class="ph-car"></i>
+                                                </a>
+                                                <a href="{{ path('app_car_employee_expense_form', {id:user.car}) }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Trošak" data-bs-original-title="Trošak">
+                                                    <i class="ph-money"></i>
+                                                </a>
+                                                <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Slike" data-bs-original-title="Slike">
+                                                    <i class="ph-image"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <!-- /basic sparklines -->
+
+                                </div>
+                            {% endif %}
+                            {% if tool %}
+                                <div class="col-sm-6 col-xl-4">
+
+                                    <!-- Basic sparklines -->
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <i class="ph-wrench ph-2x text-primary me-3"></i>
+
+                                                <div class="flex-fill text-end">
+                                                    <h4 class="mb-0"></h4>
+                                                    <span class="text-muted">Oprema</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer d-flex justify-content-around text-center p-0">
+                                            <a href="{{ path('app_employee_tools_view', {id:user.id}) }}" class="text-body flex-fill p-2" data-bs-popup="tooltip" aria-label="Oprema" data-bs-original-title="Oprema">
+                                                <i class="ph-wrench"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <!-- /basic sparklines -->
+
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+
+                    {% if settings.isPlanToday %}
+                        <div class="row ">
+                            <div class="col-xl-12">
+
+                                <!-- Marketing campaigns -->
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zadaci kreirani za {{ danas | date('d.m.Y') }}</h5>
+                                        {#                                    <div class="my-auto ms-auto">#}
+                                        {#                                        <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>#}
+                                        {#                                    </div>#}
+                                    </div>
+                                    <div class="table-responsive card">
+                                        <table class="table table-hover table-bordered table-sm">
+                                            <thead class="bg-light">
+                                            <tr class="table-light">
+                                                {% if car %}
+                                                    <th colspan="5">Lista zadataka za danas</th>
+                                                {% else %}
+                                                    <th colspan="4">Lista zadataka za danas</th>
                                                 {% endif %}
-                                                {% if log[2] == 0 %}
-                                                    <tr>
+
+{#                                                <th class="text-center">#}
+{#                                                    <span class="badge bg-yellow rounded-pill">{{ countLogs }}</span>#}
+{#                                                </th>#}
+                                            </tr>
+                                            <tr>
+
+                                                <th>Projekat</th>
+                                                <th>Kolege</th>
+                                                {% if car %}
+                                                    <th>Vozilo</th>
                                                 {% endif %}
-                                                {% if log[2] == 2 %}
-                                                    <tr class="bg-secondary">
-                                                {% endif %}
+                                                <th>Vreme</th>
+                                                <th class="text-center" style="width: 20px;">
+                                                    <i class="ph-dots-three"></i>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            {% if logs is not empty %}
+                                                {% for log in logs  %}
+                                                    {% if log[3] == 1 %}
+                                                        <tr>
+                                                    {% endif %}
+                                                    {% if log[3] == 0 %}
+                                                        <tr>
+                                                    {% endif %}
+                                                    {% if log[3] == 2 %}
+                                                        <tr class="bg-secondary">
+                                                    {% endif %}
+
+                                                    <td>
+                                                        <div class="fw-semibold">
+                                                            <div class="btn-group">
+                                                                <a href="#" class="d-inline-flex align-items-center ">
+                                                                    <a href="{{ path('app_project_tasks_view', { id: log[0].task.project.id }) }}">{{ log[0].task.project.title }}</a>
+                                                                    {% if log[3] == 0 %}<div class="live p-1 mx-2"></div>{% endif %}
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {% for user in log[0].task.assignedUsers %}
+                                                            <div class="fw-semibold">{{ user.fullName }}</div>
+                                                        {% endfor %}
+                                                    </td>
+                                                    {% if car %}
+
+                                                        <td>
+                                                            {% if log[1] is not null %}
+                                                                <div class="fw-semibold">
+                                                                    {{ log[1].plate }}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                    {% endif %}
                                                     <td>
                                                         {% if log[0].task.time is not null %}
                                                             <div class="fw-semibold">
@@ -148,95 +370,168 @@
                                                             </div>
                                                         {% endif %}
                                                     </td>
-                                                    <td>
-                                                        <div class="fw-semibold">
-                                                            <div class="btn-group">
-                                                                <a href="#" class="d-inline-flex align-items-center ">
-                                                                    <a href="{{ path('app_project_tasks_view', { id: log[0].task.project.id }) }}">{{ log[0].task.project.title }}</a>
-                                                                    {% if log[2] == 0 %}<div class="live p-1 mx-2"></div>{% endif %}
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        {% for user in log[0].task.assignedUsers %}
-                                                            <div class="fw-semibold">{{ user.fullName }}</div>
-                                                        {% endfor %}
-                                                    </td>
-{#                                                    <td>#}
-{#                                                        {% if log[1] is not empty %}#}
-{#                                                            <div class="fw-semibold">#}
-{#                                                                {{ log[1].plate }}#}
-{#                                                            </div>#}
-{#                                                        {% endif %}#}
-{#                                                    </td>#}
+
                                                     <td>
                                                         <a href="{{ path('app_task_view_user', { id: log[0].task.id}) }}" class="btn btn-primary"><i class="ph-clipboard me-2"></i> Dnevnik</a>
                                                     </td>
-                                                </tr>
-                                            {% endfor %}
-                                        {% endif %}
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %}
 
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
+                                <!-- /marketing campaigns -->
                             </div>
-                            <!-- /marketing campaigns -->
                         </div>
-                    </div>
+                        <div class="row ">
+                            <div class="col-xl-12">
 
-                    <div class="row ">
-                        <div class="col-xl-12">
-                            <!-- Marketing campaigns -->
-                            <div class="card">
+                                <!-- Marketing campaigns -->
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Interni zadaci kreirani za {{ danas | date('d.m.Y') }}</h5>
+                                        {#                                    <div class="my-auto ms-auto">#}
+                                        {#                                        <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>#}
+                                        {#                                    </div>#}
+                                    </div>
+                                    <div class="table-responsive card">
+                                        <table class="table table-hover table-bordered table-sm">
+                                            <thead class="bg-light">
+                                            <tr class="table-light">
+                                                    <th colspan="5">Lista internih zadataka za danas</th>
+{#                                                <th class="text-center">#}
+{#                                                    <span class="badge bg-yellow rounded-pill">{{ countLogs }}</span>#}
+{#                                                </th>#}
+                                            </tr>
+                                            <tr>
 
-                            <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>
+                                                <th>Projekat</th>
+                                                <th>Kategorija</th>
+                                                <th>Zaposleni</th>
+                                                <th>Opis</th>
+                                                <th class="text-center" style="width: 20px;">
+                                                    <i class="ph-dots-three"></i>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% if checklistToday is not empty %}
+                                                {% for task in checklistToday %}
+                                                    {% if task.project is not null %}
+                                                            {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                                <tr>
+                                                            {% endif %}
+                                                            {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                                <tr>
+                                                            {% endif %}
+                                                            {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                                <tr class="bg-secondary">
+                                                            {% endif %}
+                                                                <td>
+                                                                    <div class="fw-semibold">
+                                                                        <a href="{{ path('app_project_tasks_view', { id: task.project.id }) }}">{{ task.project.title }}</a>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="fw-semibold">
+                                                                        {{ task.category.title }}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="fw-semibold">
+                                                                        <div class="btn-group">
+                                                                            <a href="{{ path('app_employee_checklist_view', { id: task.user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                {{ task.user.fullName }}
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="text-body">
+                                                                        {{ task.task }}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="text-body">
+                                                                        <a href="{{ path('app_checklist_view', {id:task.id}) }}" class="btn btn-primary"><i class="ph-clipboard me-2"></i> Dnevnik</a>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <div class="fw-semibold">
+                                                            Nema kreiranih zadataka za danas
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                                <div class="table-responsive card">
-                                    <table class="table table-hover table-bordered table-sm">
-                                        <thead class="bg-light">
-                                        <tr class="table-light">
-                                            <th colspan="6">Raspored</th>
-                                        </tr>
-                                        <tr>
-                                            <th>Projekat</th>
-                                            <th>Zaposleni</th>
+                                <!-- /marketing campaigns -->
+                            </div>
+                        </div>
+                    {% endif %}
+
+{#                    <div class="row ">#}
+{#                        <div class="col-xl-12">#}
+{#                            <!-- Marketing campaigns -->#}
+{#                            <div class="card">#}
+
+{#                            <div class="card-header d-flex align-items-center">#}
+{#                            <h5 class="mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>#}
+{#                                </div>#}
+{#                                <div class="table-responsive card">#}
+{#                                    <table class="table table-hover table-bordered table-sm">#}
+{#                                        <thead class="bg-light">#}
+{#                                        <tr class="table-light">#}
+{#                                            <th colspan="6">Raspored</th>#}
+{#                                        </tr>#}
+{#                                        <tr>#}
+{#                                            <th>Projekat</th>#}
+{#                                            <th>Zaposleni</th>#}
 {#                                            <th>Oprema</th>#}
 {#                                            <th>Vozilo</th>#}
-                                            <th>Vreme</th>
-                                            <th>Napomena</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
+{#                                            <th>Vreme</th>#}
+{#                                            <th>Napomena</th>#}
+{#                                        </tr>#}
+{#                                        </thead>#}
+{#                                        <tbody>#}
 
-                                        {% if timetable is not empty %}
-                                            {% for task in timetable %}
-                                                {% if task.task.project is not null %}
-                                                    {% for user in task.task.assignedUsers %}
-                                                        {% if app.user.id == user.id %}
-                                                            <tr class="table-active">
-                                                        {% else %}
-                                                            <tr>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% if app.user in task.task.assignedUsers %}
-                                                    <tr class="table-active">
-                                                {% else %}
-                                                    <tr>
-                                                {% endif %}
-                                                    <td>
-                                                        <div class="fw-semibold">
-                                                            {{ task.task.project.title }}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="fw-semibold">
-                                                            {% for user in task.task.assignedUsers %}
-                                                                {{ user.fullName }} <br>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </td>
+{#                                        {% if timetable is not empty %}#}
+{#                                            {% for task in timetable %}#}
+{#                                                {% if task.task.project is not null %}#}
+{#                                                    {% for user in task.task.assignedUsers %}#}
+{#                                                        {% if app.user.id == user.id %}#}
+{#                                                            <tr class="table-active">#}
+{#                                                        {% else %}#}
+{#                                                            <tr>#}
+{#                                                        {% endif %}#}
+{#                                                    {% endfor %}#}
+{#                                                {% if app.user in task.task.assignedUsers %}#}
+{#                                                    <tr class="table-active">#}
+{#                                                {% else %}#}
+{#                                                    <tr>#}
+{#                                                {% endif %}#}
+{#                                                    <td>#}
+{#                                                        <div class="fw-semibold">#}
+{#                                                            {{ task.task.project.title }}#}
+{#                                                        </div>#}
+{#                                                    </td>#}
+{#                                                    <td>#}
+{#                                                        <div class="fw-semibold">#}
+{#                                                            {% for user in task.task.assignedUsers %}#}
+{#                                                                {{ user.fullName }} <br>#}
+{#                                                            {% endfor %}#}
+{#                                                        </div>#}
+{#                                                    </td>#}
 {#                                                    <td>#}
 {#                                                        <div class="fw-semibold">#}
 {#                                                            {% for opt in task.task.oprema %}#}
@@ -251,74 +546,74 @@
 {#                                                            </div>#}
 {#                                                        {% endif %}#}
 {#                                                    </td>#}
-                                                    <td>
-                                                        {% if task.task.time is not null %}
-                                                            <div class="fw-semibold">
-                                                                {% if task.task.time|date('H:i') != '00:00' %}
-                                                                    {{ task.task.time|date('H:i') }}
-                                                                {% else %}
-                                                                    Vreme nije zadato
-                                                                {% endif %}
-                                                            </div>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {{ task.task.description }}
-                                                        </div>
-                                                    </td>
-                                                    </tr>
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <!-- /marketing campaigns -->
-                        </div>
-                    </div>
+{#                                                    <td>#}
+{#                                                        {% if task.task.time is not null %}#}
+{#                                                            <div class="fw-semibold">#}
+{#                                                                {% if task.task.time|date('H:i') != '00:00' %}#}
+{#                                                                    {{ task.task.time|date('H:i') }}#}
+{#                                                                {% else %}#}
+{#                                                                    Vreme nije zadato#}
+{#                                                                {% endif %}#}
+{#                                                            </div>#}
+{#                                                        {% endif %}#}
+{#                                                    </td>#}
+{#                                                    <td>#}
+{#                                                        <div class="text-body">#}
+{#                                                            {{ task.task.description }}#}
+{#                                                        </div>#}
+{#                                                    </td>#}
+{#                                                    </tr>#}
+{#                                                {% endif %}#}
+{#                                            {% endfor %}#}
+{#                                        {% endif %}#}
+{#                                        </tbody>#}
+{#                                    </table>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <!-- /marketing campaigns -->#}
+{#                        </div>#}
+{#                    </div>#}
 
-                    <div class="row ">
-                        <div class="col-xl-12">
-                            <!-- Marketing campaigns -->
-                            <div class="card">
+{#                    <div class="row ">#}
+{#                        <div class="col-xl-12">#}
+{#                            <!-- Marketing campaigns -->#}
+{#                            <div class="card">#}
 
-                            <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
-                                </div>
-                                <div class="table-responsive card">
-                                    <table class="table table-hover table-bordered table-sm">
-                                        <thead class="bg-light">
-                                        <tr class="table-light">
-                                            <th colspan="6">Raspored</th>
-                                        </tr>
-                                        <tr>
-                                            <th>Projekat</th>
-                                            <th>Zaposleni</th>
+{#                            <div class="card-header d-flex align-items-center">#}
+{#                            <h5 class="mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>#}
+{#                                </div>#}
+{#                                <div class="table-responsive card">#}
+{#                                    <table class="table table-hover table-bordered table-sm">#}
+{#                                        <thead class="bg-light">#}
+{#                                        <tr class="table-light">#}
+{#                                            <th colspan="6">Raspored</th>#}
+{#                                        </tr>#}
+{#                                        <tr>#}
+{#                                            <th>Projekat</th>#}
+{#                                            <th>Zaposleni</th>#}
 {#                                            <th>Oprema</th>#}
 {#                                            <th>Vozilo</th>#}
-                                            <th>Vreme</th>
-                                            <th>Napomena</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% if tomorrowTimetable is not empty %}
-                                            {% for task in tomorrowTimetable %}
-                                                {% if task.task.project is not null %}
-                                                    <tr>
-                                                        <td>
-                                                            <div class="fw-semibold">
-                                                                {{ task.task.project.title }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="fw-semibold">
-                                                                {% for user in task.task.assignedUsers %}
-                                                                    {{ user.fullName }} <br>
-                                                                {% endfor %}
-                                                            </div>
-                                                        </td>
+{#                                            <th>Vreme</th>#}
+{#                                            <th>Napomena</th>#}
+{#                                        </tr>#}
+{#                                        </thead>#}
+{#                                        <tbody>#}
+{#                                        {% if tomorrowTimetable is not empty %}#}
+{#                                            {% for task in tomorrowTimetable %}#}
+{#                                                {% if task.task.project is not null %}#}
+{#                                                    <tr>#}
+{#                                                        <td>#}
+{#                                                            <div class="fw-semibold">#}
+{#                                                                {{ task.task.project.title }}#}
+{#                                                            </div>#}
+{#                                                        </td>#}
+{#                                                        <td>#}
+{#                                                            <div class="fw-semibold">#}
+{#                                                                {% for user in task.task.assignedUsers %}#}
+{#                                                                    {{ user.fullName }} <br>#}
+{#                                                                {% endfor %}#}
+{#                                                            </div>#}
+{#                                                        </td>#}
 {#                                                        <td>#}
 {#                                                            <div class="fw-semibold">#}
 {#                                                                {% for opr in task['oprema'] %}#}
@@ -333,33 +628,33 @@
 {#                                                                </div>#}
 {#                                                            {% endif %}#}
 {#                                                        </td>#}
-                                                        <td>
-                                                            {% if task.task.time is not null %}
-                                                                <div class="fw-semibold">
-                                                                    {% if task.task.time|date('H:i') != '00:00' %}
-                                                                        {{ task.task.time|date('H:i') }}
-                                                                    {% else %}
-                                                                        Vreme nije zadato
-                                                                    {% endif %}
-                                                                </div>
-                                                            {% endif %}
-                                                        </td>
-                                                        <td>
-                                                            <div class="text-body">
-                                                                {{ task.task.description }}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <!-- /marketing campaigns -->
-                        </div>
-                    </div>
+{#                                                        <td>#}
+{#                                                            {% if task.task.time is not null %}#}
+{#                                                                <div class="fw-semibold">#}
+{#                                                                    {% if task.task.time|date('H:i') != '00:00' %}#}
+{#                                                                        {{ task.task.time|date('H:i') }}#}
+{#                                                                    {% else %}#}
+{#                                                                        Vreme nije zadato#}
+{#                                                                    {% endif %}#}
+{#                                                                </div>#}
+{#                                                            {% endif %}#}
+{#                                                        </td>#}
+{#                                                        <td>#}
+{#                                                            <div class="text-body">#}
+{#                                                                {{ task.task.description }}#}
+{#                                                            </div>#}
+{#                                                        </td>#}
+{#                                                    </tr>#}
+{#                                                {% endif %}#}
+{#                                            {% endfor %}#}
+{#                                        {% endif %}#}
+{#                                        </tbody>#}
+{#                                    </table>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <!-- /marketing campaigns -->#}
+{#                        </div>#}
+{#                    </div>#}
 
                 </div>
                 <!-- /content area -->

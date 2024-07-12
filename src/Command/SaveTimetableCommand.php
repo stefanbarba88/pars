@@ -7,6 +7,7 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
 use App\Entity\Company;
 use App\Entity\FastTask;
+use App\Entity\Plan;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Service\ImportService;
@@ -42,32 +43,46 @@ class SaveTimetableCommand extends Command {
 
     $start = microtime(true);
     $danas = new DateTimeImmutable();
-    $sledeciDan = $danas->modify('+1 day')->setTime(14, 30);
+    $sledeciDan = $danas->modify('+1 day')->setTime(7,0);
     $companies = $this->em->getRepository(Company::class)->findBy(['isSuspended' => false]);
 
     foreach ($companies as $company) {
-
-      $plan = $this->em->getRepository(FastTask::class)->findOneBy(['status' => FastTaskData::OPEN, 'company' => $company, 'datum' => $sledeciDan], ['datum' => 'ASC']);
-
+      $plan = $this->em->getRepository(Plan::class)->findOneBy(['status' => FastTaskData::OPEN, 'company' => $company, 'datumKreiranja' => $sledeciDan], ['datumKreiranja' => 'ASC']);
       if (!is_null($plan)) {
+        $trenutnoVreme = new DateTimeImmutable('now');
+        $workTime = $company->getSettings()->getRadnoVreme();
+        $vremeSatiMinuti = $workTime->format('H:i');
+        $trenutnoVremeSatiMinuti = $trenutnoVreme->format('H:i');
 
-        $superadmin = $this->em->getRepository(User::class)->findOneBy(['company' => $company, 'userType' => UserRolesData::ROLE_ADMIN, 'isSuspended' => false], ['id' => 'ASC']);
-        if (is_null($superadmin)) {
-          $superadmin = $this->em->getRepository(User::class)->findOneBy(['company' => $company, 'userType' => UserRolesData::ROLE_SUPER_ADMIN, 'isSuspended' => false], ['id' => 'ASC']);
+        if ($vremeSatiMinuti === $trenutnoVremeSatiMinuti) {
+          $plan->setStatus(FastTaskData::SAVED);
+          $this->em->getRepository(Plan::class)->save($plan);
+          $users = $this->em->getRepository(Plan::class)->getUsersForEmail($plan, FastTaskData::SAVED);
+          $this->mail->plan($plan, $users);
         }
-
-        $datum = $plan->getDatum();
-        $this->em->getRepository(Task::class)->createTasksFromList($plan, $superadmin);
-
-        $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
-        $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($plan);
-
-        $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::SAVED);
-        $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($plan, FastTaskData::SAVED);
-
-        $this->mail->plan($timetable, $users, $datum);
-        $this->mail->subs($subs, $usersSub, $datum);
       }
+//
+//
+//
+//      if (!is_null($plan)) {
+//
+//        $superadmin = $this->em->getRepository(User::class)->findOneBy(['company' => $company, 'userType' => UserRolesData::ROLE_ADMIN, 'isSuspended' => false], ['id' => 'ASC']);
+//        if (is_null($superadmin)) {
+//          $superadmin = $this->em->getRepository(User::class)->findOneBy(['company' => $company, 'userType' => UserRolesData::ROLE_SUPER_ADMIN, 'isSuspended' => false], ['id' => 'ASC']);
+//        }
+//
+//        $datum = $plan->getDatum();
+//
+//
+//        $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
+//        $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($plan);
+//
+//        $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::SAVED);
+//        $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($plan, FastTaskData::SAVED);
+//
+//        $this->mail->plan($timetable, $users, $datum);
+//        $this->mail->subs($subs, $usersSub, $datum);
+//      }
     }
 
 

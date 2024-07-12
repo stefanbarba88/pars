@@ -11,6 +11,7 @@ use App\Entity\Car;
 use App\Entity\City;
 use App\Entity\Client;
 use App\Entity\Tool;
+use App\Entity\ToolType;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -31,14 +32,25 @@ class ToolFormType extends AbstractType {
     $builder
       ->add('title')
       ->add('serial')
-      ->add('sertifikat', NumberType::class, [
-        'required' => false,
-        'html5' => true,
+      ->add('sertifikat',ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
       ])
       ->add('model')
-      ->add('type', ChoiceType::class, [
+      ->add('type', EntityType::class, [
         'placeholder' => '--Izaberite tip opreme--',
-        'choices' => TipOpremeData::form(),
+        'class' => ToolType::class,
+        'query_builder' => function (EntityRepository $em) {
+          return $em->createQueryBuilder('g')
+            ->orderBy('g.title', 'ASC');
+        },
+        'choice_label' => function ($tool) {
+          return $tool->getTitle();
+        },
         'expanded' => false,
         'multiple' => false,
       ])
@@ -49,14 +61,7 @@ class ToolFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('duzina', NumberType::class, [
-        'required' => false,
-        'html5' => true,
-        'attr' => [
-          'min' => '0.01',
-          'step' => '0.01'
-        ],
-      ])
+      ->add('description')
       ->add('datumSertifikata', DateType::class, [
         'required' => false,
         'widget' => 'single_text',

@@ -1,0 +1,240 @@
+<!-- Left sidebar component -->
+<div class="sidebar sidebar-component sidebar-expand-lg sidebar-expand-sm sidebar-expand-md sidebar-expand-xl sidebar-expand-xxl bg-transparent shadow-none me-lg-3">
+
+    <!-- Sidebar content -->
+    <div class="sidebar-content">
+
+        <!-- Navigation -->
+        <div class="card">
+            <div class="sidebar-section-body text-center">
+                <div class="card-img-actions d-inline-block mb-3">
+                    <img class="img-fluid rounded-circle" src="{{ asset(user.image.thumbnail500) }}" width="150" height="150" alt="{{ user.fullName }}">
+                    <div class="card-img-actions-overlay card-img rounded-circle">
+                        <a href="{{ path('app_employee_edit_image_form_kadrovska', {id:user.id}) }}" class="btn btn-outline-white btn-icon rounded-pill">
+                            <i class="ph-note-pencil"></i>
+                        </a>
+                    </div>
+                </div>
+                <h6 class="mb-0">{{ user.fullName }}</h6>
+                <span class="text-muted">{{ user.badgeByUserType | raw }}</span>
+            </div>
+            <ul class="nav nav-sidebar">
+                <li class="nav-item">
+                    <a href="{{ path('app_employee_profile_view_kadrovska', { id: user.id}) }}" class="nav-link" >
+                        <i class="ph-user me-2"></i>
+                        Profil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path('app_employee_addon_list_kadrovska', { id: user.id}) }}" class="nav-link">
+                        <i class="ph-activity me-2"></i>
+                        Aktivnosti
+                    </a>
+                </li>
+{#                <li class="nav-item">#}
+{#                    <a href="{{ path('app_employee_calendar_view', { id: user.id}) }}" class="nav-link">#}
+{#                        <i class="ph-calendar me-2"></i>Kalendar#}
+{#                    </a>#}
+{#                </li>#}
+                <li class="nav-item-divider"></li>
+                <li class="nav-item">
+                    {% if user == app.user %}
+                        <a href="{{ path('app_logout') }}" class="nav-link" data-bs-toggle="tab">
+                            <i class="ph-sign-out me-2"></i>Odjavite se
+                        </a>
+                    {% endif %}
+                    {% if is_granted('ROLE_SUPERADMIN') %}
+                        <a href="{{ path('app_employee_settings_form_kadrovska', {id:user.id}) }}" class="nav-link">
+                            <i class="ph-lightbulb me-2"></i>Status
+                            <span class="ms-auto">{{ user.badgeByStatus | raw }}</span>
+                        </a>
+                    {% else %}
+                        <a href="" class="nav-link">
+                            <i class="ph-lightbulb me-2"></i>Status
+                            <span class="ms-auto">{{ user.badgeByStatus | raw }}</span>
+                        </a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+        <!-- /navigation -->
+
+{#        <div class="card">#}
+{#            <div class="sidebar-section-header d-flex border-bottom">#}
+{#                <span class="fw-semibold">Online users</span>#}
+{#                <div class="ms-auto">#}
+{#                    <span class="badge bg-success rounded-pill">49</span>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <div class="sidebar-section-body">#}
+{#                <div class="hstack gap-3 mb-3">#}
+{#                    <img src="../../../assets/images/demo/users/face1.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <a href="#" class="fw-semibold">James Alexander</a>#}
+{#                        <div class="fs-sm text-muted">Santa Ana, CA.</div>#}
+{#                    </div>#}
+
+{#                    <div class="bg-success border-success rounded-pill p-1"></div>#}
+{#                </div>#}
+
+{#                <div class="hstack gap-3 mb-3">#}
+{#                    <img src="../../../assets/images/demo/users/face2.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <a href="#" class="fw-semibold">Jeremy Victorino</a>#}
+{#                        <div class="fs-sm text-muted">Dowagiac, MI.</div>#}
+{#                    </div>#}
+
+{#                    <div class="bg-danger border-danger rounded-pill p-1"></div>#}
+{#                </div>#}
+
+{#                <div class="hstack gap-3 mb-3">#}
+{#                    <img src="../../../assets/images/demo/users/face3.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <a href="#" class="fw-semibold">Margo Baker</a>#}
+{#                        <div class="fs-sm text-muted">Kasaan, AK.</div>#}
+{#                    </div>#}
+
+{#                    <div class="bg-success border-success rounded-pill p-1"></div>#}
+{#                </div>#}
+
+{#                <div class="hstack gap-3 mb-3">#}
+{#                    <img src="../../../assets/images/demo/users/face4.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <a href="#" class="fw-semibold">Beatrix Diaz</a>#}
+{#                        <div class="fs-sm text-muted">Neenah, WI.</div>#}
+{#                    </div>#}
+
+{#                    <div class="bg-warning border-warning rounded-pill p-1"></div>#}
+{#                </div>#}
+
+{#                <div class="hstack gap-3">#}
+{#                    <img src="../../../assets/images/demo/users/face5.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <a href="#" class="fw-semibold">Richard Vango</a>#}
+{#                        <div class="fs-sm text-muted">Grapevine, TX.</div>#}
+{#                    </div>#}
+
+{#                    <div class="bg-secondary border-secondary rounded-pill p-1"></div>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <div class="card-footer d-flex justify-content-between align-items-center py-2">#}
+{#                <a href="#" class="text-body">All users</a>#}
+
+{#                <div>#}
+{#                    <a href="#" class="text-body" data-bs-popup="tooltip" title="Conference room">#}
+{#                        <i class="ph-chats"></i>#}
+{#                    </a>#}
+{#                    <a href="#" class="text-body ms-2" data-bs-popup="tooltip" title="Settings">#}
+{#                        <i class="ph-gear"></i>#}
+{#                    </a>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="card">#}
+{#            <div class="sidebar-section-header d-flex border-bottom">#}
+{#                <span class="fw-semibold">Latest connections</span>#}
+{#                <div class="ms-auto">#}
+{#                    <span class="badge bg-success rounded-pill">+32</span>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <div class="list-group list-group-borderless py-2">#}
+{#                <div class="list-group-item text-muted">Office staff</div>#}
+
+{#                <a href="#" class="list-group-item list-group-item-action hstack gap-3">#}
+{#                    <img src="../../../assets/images/demo/users/face1.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <div class="fw-semibold">James Alexander</div>#}
+{#                        <span class="text-muted">UI/UX expert</span>#}
+{#                    </div>#}
+
+{#                    <div class="bg-success rounded-pill p-1"></div>#}
+{#                </a>#}
+
+{#                <a href="#" class="list-group-item list-group-item-action hstack gap-3">#}
+{#                    <img src="../../../assets/images/demo/users/face2.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <div class="fw-semibold">Jeremy Victorino</div>#}
+{#                        <span class="text-muted">Senior designer</span>#}
+{#                    </div>#}
+
+{#                    <div class="bg-danger rounded-pill p-1"></div>#}
+{#                </a>#}
+
+{#                <a href="#" class="list-group-item list-group-item-action hstack gap-3">#}
+{#                    <img src="../../../assets/images/demo/users/face6.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <div class="fw-semibold">Jordana Mills</div>#}
+{#                        <span class="text-muted">Sales consultant</span>#}
+{#                    </div>#}
+
+{#                    <div class="bg-secondary rounded-pill p-1"></div>#}
+{#                </a>#}
+
+{#                <a href="#" class="list-group-item list-group-item-action hstack gap-3">#}
+{#                    <img src="../../../assets/images/demo/users/face9.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <div class="fw-semibold">William Miles</div>#}
+{#                        <span class="text-muted">SEO expert</span>#}
+{#                    </div>#}
+
+{#                    <div class="bg-success rounded-pill p-1"></div>#}
+{#                </a>#}
+
+{#                <div class="list-group-item text-muted">Partners</div>#}
+
+{#                <a href="#" class="list-group-item list-group-item-action hstack gap-3">#}
+{#                    <img src="../../../assets/images/demo/users/face3.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <div class="fw-semibold">Margo Baker</div>#}
+{#                        <span class="text-muted">Google</span>#}
+{#                    </div>#}
+
+{#                    <div class="bg-success rounded-pill p-1"></div>#}
+{#                </a>#}
+
+{#                <a href="#" class="list-group-item list-group-item-action hstack gap-3">#}
+{#                    <img src="../../../assets/images/demo/users/face4.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <div class="fw-semibold">Beatrix Diaz</div>#}
+{#                        <span class="text-muted">Facebook</span>#}
+{#                    </div>#}
+
+{#                    <div class="bg-warning rounded-pill p-1"></div>#}
+{#                </a>#}
+
+{#                <a href="#" class="list-group-item list-group-item-action hstack gap-3">#}
+{#                    <img src="../../../assets/images/demo/users/face5.jpg" class="rounded-circle" width="40" height="40" alt="">#}
+
+{#                    <div class="flex-fill">#}
+{#                        <div class="fw-semibold">Richard Vango</div>#}
+{#                        <span class="text-muted">Microsoft</span>#}
+{#                    </div>#}
+
+{#                    <div class="bg-secondary rounded-pill p-1"></div>#}
+{#                </a>#}
+{#            </div>#}
+{#        </div>#}
+
+    </div>
+    <!-- /sidebar content -->
+
+</div>
+
+
+
+
+

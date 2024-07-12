@@ -7,6 +7,7 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Client;
 use App\Entity\ClientHistory;
 use App\Entity\Image;
+use App\Entity\Ticket;
 use App\Entity\User;
 use App\Entity\ZaposleniPozicija;
 use App\Form\ClientFormType;
@@ -143,6 +144,7 @@ class ClientController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['client'] = $client;
+    $args['clientContact'] = $client->getCompany()->getSettings()->getIsClientView();
 
     return $this->render('client/form.html.twig', $args);
   }
@@ -158,15 +160,27 @@ class ClientController extends AbstractController {
     return $this->render('client/view_profile.html.twig', $args);
   }
 
-//  #[Route('/view-activity/{id}', name: 'app_client_activity_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewActivity(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
-//      return $this->redirect($this->generateUrl('app_login'));
-//    }
-//    $args['client'] = $client;
-//
-//    return $this->render('client/view_activity.html.twig', $args);
-//  }
+  #[Route('/view-tickets/{id}', name: 'app_client_tickets_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewActivity(Client $client, PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->getIsClientView()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    $args = [];
+    $args['client'] = $client;
+//    $tasks = $this->em->getRepository(Task::class)->getTasksArchiveByUser($usr);
+    $tasks = $this->em->getRepository(Ticket::class)->getTicketsPaginatorByClient($client);
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      10
+    );
+
+    $args['pagination'] = $pagination;
+
+    return $this->render('client/view_tickets.html.twig', $args);
+  }
 //
 //  #[Route('/view-calendar/{id}', name: 'app_client_calendar_view')]
 ////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]

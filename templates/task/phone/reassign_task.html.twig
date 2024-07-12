@@ -40,16 +40,12 @@
                                 <div class="col-lg-4">
                                     <div class="mb-3">
                                         <div class="mb-1">
-                                            <label class="form-category" for="task_form_geo1">Novi zaduženi:*</label>
+                                            <label class="form-label" for="task_form_geo1">Novi zaduženi:*</label>
                                             <select id="task_form_geo1" name="task_form[assignedUsers][]" class="form-control select required" required>
-                                                <option value="">--Izaberite geodetu--</option>
+                                                <option value="">--Izaberite novog zaduženog--</option>
                                                 {% for user in users %}
-                                                    {% if user.id == task.priorityUserLog %}
-                                                        <option value="{{ user.id }}" disabled>{{ user.ime }}</option>
-                                                    {% elseif user in task.assignedUsers %}
-                                                        <option value="{{ user.id }}" disabled>{{ user.ime }}</option>
-                                                    {% else %}
-                                                        <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                    {% if user.id != task.priorityUserLog and user not in task.assignedUsers %}
+                                                        <option value="{{ user.id }}">{{ user.getNameForForm }}</option>
                                                     {% endif %}
                                                 {% endfor %}
                                             </select>

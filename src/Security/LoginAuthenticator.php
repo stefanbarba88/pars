@@ -88,6 +88,10 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator {
 //        return new RedirectResponse($this->urlGenerator->generate('app_admin' ));
     $user = $token->getUser();
 
+    if ($user->isKadrovska()) {
+      return new RedirectResponse($this->urlGenerator->generate('app_kadrovska_home'));
+    }
+
     if (in_array('ROLE_SUPER_ADMIN', $user->getRoles(), true)) {
       return new RedirectResponse($this->urlGenerator->generate('app_home'));
     }

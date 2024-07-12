@@ -2,15 +2,21 @@
 
 namespace App\Controller;
 
+use App\Classes\Data\InternTaskStatusData;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\PrioritetData;
+use App\Classes\Data\RepeatingIntervalData;
 use App\Classes\Data\UserRolesData;
-use App\Entity\City;
+use App\Entity\Category;
 use App\Entity\ManagerChecklist;
+use App\Entity\Pdf;
+use App\Entity\Project;
+use App\Entity\Task;
 use App\Entity\User;
-use App\Form\CityFormType;
 use App\Form\ManagerChecklistFormType;
 use App\Service\MailService;
+use App\Service\UploadService;
+use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
@@ -31,9 +37,8 @@ class CheckListController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
-    $user = $this->getUser();
 
-    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator($user, 0);
+    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator(InternTaskStatusData::NIJE_ZAPOCETO);
 
     $pagination = $paginator->paginate(
       $dostupnosti, /* query NOT result */
@@ -55,9 +60,8 @@ class CheckListController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
-    $user = $this->getUser();
 
-    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator($user, 1);
+    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator(InternTaskStatusData::ZAVRSENO);
 
     $pagination = $paginator->paginate(
       $dostupnosti, /* query NOT result */
@@ -71,6 +75,29 @@ class CheckListController extends AbstractController {
       return $this->render('check_list/phone/archive.html.twig', $args);
     }
     return $this->render('check_list/archive.html.twig', $args);
+  }
+
+  #[Route('/list-active/', name: 'app_checklist_active')]
+  public function active(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator(InternTaskStatusData::ZAPOCETO);
+
+    $pagination = $paginator->paginate(
+      $dostupnosti, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $args['pagination'] = $pagination;
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('check_list/phone/active.html.twig', $args);
+    }
+    return $this->render('check_list/active.html.twig', $args);
   }
 
   #[Route('/to-do/', name: 'app_checklist_to_do')]
@@ -100,83 +127,295 @@ class CheckListController extends AbstractController {
   #[Route('/form/{id}', name: 'app_checklist_form', defaults: ['id' => 0])]
   #[Entity('checklist', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, ManagerChecklist $checklist, MailService $mailService)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function form(Request $request, ManagerChecklist $checklist, MailService $mailService, UploadService $uploadService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
-    if (!is_null($request->get('user'))) {
-      $korisnik = $this->em->getRepository(User::class)->find($request->get('user'));
-      $args['korisnik'] = $korisnik;
+    $mobileDetect = new MobileDetect();
+
+    $company = $this->getUser()->getCompany();
+
+    $datum = new DateTimeImmutable();
+    $datum->setTime(0,0);
+
+
+    if (!is_null($request->get('project'))) {
+      $args['project'] = $this->em->getRepository(Project::class)->find($request->get('project'));
     }
 
-    if ($this->getUser()->getUserType() != UserRolesData::ROLE_SUPER_ADMIN
-      && $this->getUser()->getUserType() != UserRolesData::ROLE_ADMIN
-      && $this->getUser()->getUserType() != UserRolesData::ROLE_MANAGER) {
-      return $this->redirect($this->generateUrl('app_home'));
+    if (!is_null($request->get('datumCheck'))) {
+      $args['noviDatum'] = DateTimeImmutable::createFromFormat('d.m.Y', $request->get('datumCheck'));
+      $datum = $args['noviDatum'];
+    }
+
+    if (!is_null($request->get('phoneDatumCheck'))) {
+      $args['noviDatum'] = DateTimeImmutable::createFromFormat('Y-m-d', $request->get('phoneDatumCheck'));
+      $datum = $args['noviDatum'];
+    }
+
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $args['korisnik'] = $this->getUser();
     }
 
     if ($request->isMethod('POST')) {
 
       $data = $request->request->all();
 
-      foreach ($data['checklist']['zaduzeni'] as $zaduzeni) {
-        $task = new ManagerChecklist();
-        $task->setTask($data['checklist']['zadatak']);
-        $task->setPriority($data['checklist']['prioritet']);
-        $task->setCreatedBy($this->getUser());
-        $task->setUser($this->em->getRepository(User::class)->find($zaduzeni));
-        $task->setCompany($this->getUser()->getCompany());
-        $this->em->getRepository(ManagerChecklist::class)->save($task);
+      $files = [];
+
+      if (isset($data['checklist']['datum'])) {
+        $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['checklist']['datum'])->setTime(0, 0);
+        $uploadFiles = $request->files->all()['checklist']['pdf'];
+        $repeating = $data['checklist']['repeating'];
+        $repeatingInterval = $data['checklist']['repeatingInterval'];
+
+        if(!empty ($uploadFiles)) {
+          foreach ($uploadFiles as $uploadFile) {
+            $pdf = new Pdf();
+            $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+            $files[] = $file;
+          }
+        }
+
+        foreach ($data['checklist']['zaduzeni'] as $zaduzeni) {
+          $task = new ManagerChecklist();
+          $task->setTask($data['checklist']['zadatak']);
+          $task->setPriority($data['checklist']['prioritet']);
+          $task->setCreatedBy($this->getUser());
+          $task->setUser($this->em->getRepository(User::class)->find($zaduzeni));
+          $task->setProject($this->em->getRepository(Project::class)->find($data['checklist']['project']));
+          $task->setCategory($this->em->getRepository(Category::class)->find($data['checklist']['category']));
+          $task->setDatumKreiranja($datumKreiranja);
+          $task->setCompany($this->getUser()->getCompany());
+          $task->setRepeating($repeating);
+
+
+          if ($repeating == 1) {
+
+            $task->setRepeatingInterval($repeatingInterval);
+
+            if ($task->getRepeatingInterval() == RepeatingIntervalData::DAY) {
+              $task->setDatumPonavljanja($datumKreiranja->modify('+1 day'));
+            }
+            if ($task->getRepeatingInterval() == RepeatingIntervalData::WEEK) {
+              $task->setDatumPonavljanja($datumKreiranja->modify('+1 week'));
+            }
+            if ($task->getRepeatingInterval() == RepeatingIntervalData::MONTH) {
+              $task->setDatumPonavljanja($datumKreiranja->modify('+1 month'));
+            }
+            if ($task->getRepeatingInterval() == RepeatingIntervalData::YEAR) {
+              $task->setDatumPonavljanja($datumKreiranja->modify('+1 year'));
+            }
+            if ($task->getRepeatingInterval() == RepeatingIntervalData::TACAN_DATUM) {
+              $task->setDatumPonavljanja(DateTimeImmutable::createFromFormat('d.m.Y', $data['checklist']['datumPonavljanja'])->setTime(0, 0));
+            }
+          }
+
+          if (!empty($files)) {
+            foreach ($files as $file) {
+              $pdf = new Pdf();
+              $pdf->setTitle($file->getFileName());
+              $pdf->setPath($file->getAssetPath());
+              if (!is_null($task->getProject())) {
+                $pdf->setProject($task->getProject());
+              }
+              $task->addPdf($pdf);
+            }
+          }
+
+          $this->em->getRepository(ManagerChecklist::class)->save($task);
 
         $mailService->checklistTask($task);
 
+        }
       }
 
+      if (isset($data['phone_checklist']['datum'])) {
+        $datumKreiranja = DateTimeImmutable::createFromFormat('m/d/Y', $data['phone_checklist']['datum'])->setTime(0, 0);
+        $uploadFiles = $request->files->all()['phone_checklist']['pdf'];
+        $repeating = $data['phone_checklist']['repeating'];
+        $repeatingInterval = $data['phone_checklist']['repeatingInterval'];
 
+        if(!empty ($uploadFiles)) {
+          foreach ($uploadFiles as $uploadFile) {
+            $pdf = new Pdf();
+            $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+            $files[] = $file;
+          }
+        }
+
+        foreach ($data['phone_checklist']['zaduzeni'] as $zaduzeni) {
+          $task = new ManagerChecklist();
+          $task->setTask($data['phone_checklist']['zadatak']);
+          $task->setPriority($data['phone_checklist']['prioritet']);
+          $task->setCreatedBy($this->getUser());
+          $task->setUser($this->em->getRepository(User::class)->find($zaduzeni));
+          $task->setProject($this->em->getRepository(Project::class)->find($data['phone_checklist']['project']));
+          $task->setCategory($this->em->getRepository(Category::class)->find($data['phone_checklist']['category']));
+          $task->setDatumKreiranja($datumKreiranja);
+          $task->setCompany($this->getUser()->getCompany());
+          $task->setRepeating($repeating);
+
+
+          if ($repeating == 1) {
+
+            $task->setRepeatingInterval($repeatingInterval);
+
+            if ($task->getRepeatingInterval() == RepeatingIntervalData::DAY) {
+              $task->setDatumPonavljanja($datumKreiranja->modify('+1 day'));
+            }
+            if ($task->getRepeatingInterval() == RepeatingIntervalData::WEEK) {
+              $task->setDatumPonavljanja($datumKreiranja->modify('+1 week'));
+            }
+            if ($task->getRepeatingInterval() == RepeatingIntervalData::MONTH) {
+              $task->setDatumPonavljanja($datumKreiranja->modify('+1 month'));
+            }
+            if ($task->getRepeatingInterval() == RepeatingIntervalData::YEAR) {
+              $task->setDatumPonavljanja($datumKreiranja->modify('+1 year'));
+            }
+            if ($task->getRepeatingInterval() == RepeatingIntervalData::TACAN_DATUM) {
+              $datumPonavljanja = DateTimeImmutable::createFromFormat('Y-m-d', $data['phone_checklist']['datumPonavljanja']);
+              $task->setDatumPonavljanja($datumPonavljanja->setTime(0, 0));
+            }
+          }
+
+
+          if (!empty($files)) {
+            foreach ($files as $file) {
+              $pdf = new Pdf();
+              $pdf->setTitle($file->getFileName());
+              $pdf->setPath($file->getAssetPath());
+              if (!is_null($task->getProject())) {
+                $pdf->setProject($task->getProject());
+              }
+              $task->addPdf($pdf);
+            }
+          }
+
+          $this->em->getRepository(ManagerChecklist::class)->save($task);
+
+        $mailService->checklistTask($task);
+
+        }
+      }
 
       notyf()
         ->position('x', 'right')
         ->position('y', 'top')
         ->duration(5000)
         ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+        ->addSuccess(NotifyMessagesData::CHECKLIST_ADD);
+
+      if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+        return $this->redirectToRoute('app_home');
+      }
 
       return $this->redirectToRoute('app_checklist_list');
 
     }
 
-    $args['users'] = $this->em->getRepository(User::class)->getUsersForChecklist();
-    $args['priority'] = PrioritetData::form();
 
+    if ($company->getSettings()->isCalendar()) {
+      $args['users'] = $this->em->getRepository(User::class)->getUsersAvailableChecklist($datum);
+    } else {
+      $args['users'] = $this->em->getRepository(User::class)->getUsersForChecklist();
+    }
+
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $checklist->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
+    $args['priority'] = PrioritetData::form();
+    $args['repeatingInterval'] = RepeatingIntervalData::form();
+
+    if($mobileDetect->isMobile()) {
+      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('check_list/form.html.twig', $args);
+      }
+      return $this->render('check_list/phone/form.html.twig', $args);
+    }
     return $this->render('check_list/form.html.twig', $args);
+
   }
 
 
   #[Route('/edit/{id}', name: 'app_checklist_edit', defaults: ['id' => 0])]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function edit(Request $request, ManagerChecklist $checklist)    : Response {
+  public function edit(Request $request, ManagerChecklist $checklist, MailService $mailService, UploadService $uploadService)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
-    if ($this->getUser()->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $this->getUser()->getUserType() != UserRolesData::ROLE_ADMIN) {
-      return $this->redirect($this->generateUrl('app_home'));
+    if ($this->getUser()->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $this->getUser()->getUserType() != UserRolesData::ROLE_ADMIN && $this->getUser()->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($this->getUser() != $checklist->getCreatedBy() || $this->getUser() != $checklist->getUser()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
 
-    $form = $this->createForm(ManagerChecklistFormType::class, $checklist, ['attr' => ['action' => $this->generateUrl('app_checklist_form', ['id' => $checklist->getId()])]]);
+    if ($checklist->getStatus() != InternTaskStatusData::NIJE_ZAPOCETO) {
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addError(NotifyMessagesData::CHECKLIST_EDIT_ERROR);
+
+      if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+        return $this->redirectToRoute('app_home');
+      }
+
+      return $this->redirectToRoute('app_checklist_list');
+    }
+
+
+    $form = $this->createForm(ManagerChecklistFormType::class, $checklist, ['attr' => ['action' => $this->generateUrl('app_checklist_edit', ['id' => $checklist->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
 
+        $uploadFiles = $request->files->all()['checklist']['pdf'];
+        if (!empty ($uploadFiles)) {
+          foreach ($uploadFiles as $uploadFile) {
+            $pdf = new Pdf();
+            $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+            $pdf->setTitle($file->getFileName());
+            $pdf->setPath($file->getAssetPath());
+            if (!is_null($checklist->getProject())) {
+              $pdf->setProject($checklist->getProject());
+            }
+            $checklist->addPdf($pdf);
+          }
+        }
+
+        if ($checklist->getRepeating() == 1) {
+          if ($checklist->getRepeatingInterval() == RepeatingIntervalData::DAY) {
+            $checklist->setDatumPonavljanja($checklist->getDatumKreiranja()->modify('+1 day'));
+          }
+          if ($checklist->getRepeatingInterval() == RepeatingIntervalData::WEEK) {
+            $checklist->setDatumPonavljanja($checklist->getDatumKreiranja()->modify('+1 week'));
+          }
+          if ($checklist->getRepeatingInterval() == RepeatingIntervalData::MONTH) {
+            $checklist->setDatumPonavljanja($checklist->getDatumKreiranja()->modify('+1 month'));
+          }
+          if ($checklist->getRepeatingInterval() == RepeatingIntervalData::YEAR) {
+            $checklist->setDatumPonavljanja($checklist->getDatumKreiranja()->modify('+1 year'));
+          }
+        }
+
         $this->em->getRepository(ManagerChecklist::class)->save($checklist);
+
+        $mailService->checklistEditTask($checklist);
 
         notyf()
           ->position('x', 'right')
           ->position('y', 'top')
           ->duration(5000)
           ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+          ->addSuccess(NotifyMessagesData::CHECKLIST_EDIT);
+
+        if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+          return $this->redirectToRoute('app_home');
+        }
 
         return $this->redirectToRoute('app_checklist_list');
       }
@@ -190,7 +429,8 @@ class CheckListController extends AbstractController {
 
   #[Route('/view/{id}', name: 'app_checklist_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(ManagerChecklist $checklist)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function view(ManagerChecklist $checklist)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['checklist'] = $checklist;
@@ -199,46 +439,164 @@ class CheckListController extends AbstractController {
 
   #[Route('/finish/{id}', name: 'app_checklist_finish')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function finish(ManagerChecklist $checklist)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function finish(ManagerChecklist $checklist, Request $request, MailService $mailService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $args = [];
 
-    $this->em->getRepository(ManagerChecklist::class)->finish($checklist);
+    if ($request->isMethod('POST')) {
 
-    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirectToRoute('app_home');
+      $data = $request->request->all();
+      $checklist->setFinishDesc($data['checklist']['desc']);
+      $checklist->setEditBy($this->getUser());
+      $checklist->setStatus(InternTaskStatusData::ZAVRSENO);
+
+      $this->em->getRepository(ManagerChecklist::class)->finish($checklist);
+
+      $mailService->checklistStatusTask($checklist);
+
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::CHECKLIST_CLOSE);
+
+      if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+        return $this->redirectToRoute('app_home');
+      }
+
+      return $this->redirectToRoute('app_checklist_archive');
+
     }
 
-    return $this->redirectToRoute('app_checklist_to_do');
+    $args['checklist'] = $checklist;
+    return $this->render('check_list/finish.html.twig', $args);
   }
 
   #[Route('/start/{id}', name: 'app_checklist_start')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function start(ManagerChecklist $checklist)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function start(ManagerChecklist $checklist, MailService $mailService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
+    $koris = $this->getUser();
+    $this->em->getRepository(ManagerChecklist::class)->start($checklist, $koris);
 
-    $this->em->getRepository(ManagerChecklist::class)->start($checklist);
-
-    return $this->redirectToRoute('app_checklist_list');
-  }
-
-  #[Route('/delete/{id}', name: 'app_checklist_delete')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function delete(ManagerChecklist $checklist)    : Response { if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    $this->em->getRepository(ManagerChecklist::class)->delete($checklist);
+    $mailService->checklistStatusTask($checklist);
 
     notyf()
       ->position('x', 'right')
       ->position('y', 'top')
       ->duration(5000)
       ->dismissible(true)
-      ->addSuccess(NotifyMessagesData::DELETE_SUCCESS);
+      ->addSuccess(NotifyMessagesData::CHECKLIST_START);
+
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirectToRoute('app_home');
+    }
+
+    return $this->redirectToRoute('app_checklist_active');
+  }
+
+  #[Route('/replay/{id}', name: 'app_checklist_replay')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function replay(ManagerChecklist $checklist, MailService $mailService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $koris = $this->getUser();
+
+    $this->em->getRepository(ManagerChecklist::class)->replay($checklist, $koris);
+
+    $mailService->checklistStatusTask($checklist);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::CHECKLIST_REPLAY);
+
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirectToRoute('app_home');
+    }
 
     return $this->redirectToRoute('app_checklist_list');
   }
+
+  #[Route('/convert/{id}', name: 'app_checklist_convert')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function convert(ManagerChecklist $checklist, MailService $mailService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($this->getUser()->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $this->getUser()->getUserType() != UserRolesData::ROLE_ADMIN && $this->getUser()->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($this->getUser() != $checklist->getCreatedBy() || $this->getUser() != $checklist->getUser()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
+    if ($checklist->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    if ($checklist->getStatus() != InternTaskStatusData::NIJE_ZAPOCETO) {
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addError(NotifyMessagesData::CHECKLIST_CONVERT_ERROR);
+        return $this->redirectToRoute('app_checklist_list');
+    }
+
+    $koris = $this->getUser();
+
+    $task = $this->em->getRepository(Task::class)->createTaskFromChecklist($checklist);
+    $checklist->setStatus(InternTaskStatusData::KONVERTOVANO);
+    $this->em->getRepository(ManagerChecklist::class)->save($checklist);
+
+    $mailService->checklistConvertTask($checklist, $task);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::CHECKLIST_CONVERT);
+
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirectToRoute('app_home');
+    }
+
+    return $this->redirectToRoute('app_checklist_list');
+  }
+
+  #[Route('/delete/{id}', name: 'app_checklist_delete')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function delete(ManagerChecklist $checklist)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $this->em->getRepository(ManagerChecklist::class)->remove($checklist);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::CHECKLIST_DELETE);
+
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirectToRoute('app_home');
+    }
+
+    return $this->redirectToRoute('app_checklist_list');
+  }
+
 
 }

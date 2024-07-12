@@ -52,6 +52,7 @@ class CarReservationFormType extends AbstractType {
     if (is_null($car)) {
       $builder
       ->add('car', EntityType::class, [
+        'placeholder' => '--Izaberite vozilo--',
         'class' => Car::class,
         'query_builder' => function (EntityRepository $em) use ($company) {
           return $em->createQueryBuilder('c')
@@ -92,6 +93,7 @@ class CarReservationFormType extends AbstractType {
     } else {
       $builder
         ->add('car', EntityType::class, [
+          'placeholder' => '--Izaberite vozilo--',
           'class' => Car::class,
           'query_builder' => function (EntityRepository $em) use ($company) {
             return $em->createQueryBuilder('c')
@@ -135,6 +137,7 @@ class CarReservationFormType extends AbstractType {
     if (is_null($driver)) {
       $builder
         ->add('driver', EntityType::class, [
+          'placeholder' => '--Izaberite vozača--',
           'class' => User::class,
           'query_builder' => function (EntityRepository $em) use ($company) {
             return $em->createQueryBuilder('d')

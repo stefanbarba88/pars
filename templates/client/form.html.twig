@@ -68,22 +68,62 @@
                                                         <span id="formatPib" class="form-text">Format: Uneti tačno 9 cifara.</span>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row">
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">
                                                         {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-label'}}) }}
                                                         {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-6">
-                                                    <div class="mb-3">
-                                                        {{ form_label(form.contact, 'Lica za kontakt:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                        {{ form_widget(form.contact, {attr: { class: 'form-control required select' }}) }}
-                                                    </div>
-                                                </div>
                                             </div>
                                             <div class="fw-bold border-bottom pb-2 mb-3">Kontakt podaci</div>
+                                            {% if clientContact %}
+                                                {% set value = client.contactPlain is not null ? 0 : 1 %}
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="client_form[contactTrue]">Profil kontakt lica:*</label>
+                                                            <div class="input-group">
+                                                                <label class="form-check mb-2">
+                                                                    <input type="checkbox" class="form-check-input contact" name="client_form[contactTrue]" {% if client.contactPlain is null %}checked{% endif%} id="contact">
+                                                                    <span class="form-check-label">Dozvolite da kontakt lica kompanije pristupaju aplikaciji i kreiraju tikete. Ako želite da dozvolite, predhodno morate imati kreirane korisnike sa ulogom "KLIJENT" kojima će te dodeliti pristup.</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row none lice1">
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            {{ form_label(form.contact, 'Lica za kontakt:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                            {{ form_widget(form.contact, {attr: { class: 'form-control select lice11' }}) }}
+                                                            <span class="form-text">Možete izabrati više lica za kontakt.</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row lice2">
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            {{ form_label(form.contactPlain, 'Lice za kontakt:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                            {{ form_widget(form.contactPlain, {attr: { class: 'form-control required lice22' }}) }}
+                                                            <span class="form-text">Unesite ime i prezime kontakt lica.</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            {{ form_label(form.contactPlain, 'Lice za kontakt:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                            {{ form_widget(form.contactPlain, {attr: { class: 'form-control required' }}) }}
+                                                            <span class="form-text">Unesite ime i prezime kontakt lica.</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
+
+
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">
@@ -214,7 +254,34 @@
                     $("#formatPib").text('Format: Uneti cifre u skladu sa formatom države u kojoj se kompanija nalazi.');
                 }
             }
+
+            {% if clientContact %}
+                function toggleContactFields() {
+                    if ($('#contact').is(':checked')) {
+                        $('.lice1').show();
+                        $('.lice11').addClass('required');
+                        $('.lice2').hide();
+                        $('.lice22').val('').removeClass('required');
+                    } else {
+                        $('.lice1').hide();
+                        $('.lice11').val(null).trigger('change').removeClass('required');
+                        $('.lice2').show();
+                        $('.lice22').addClass('required');
+                    }
+                }
+
+                // Initial call to set the correct state
+                toggleContactFields();
+
+                // Event listener for checkbox change
+                $('#contact').change(function() {
+                    toggleContactFields();
+                });
+            {% endif %}
         });
+
+
+
         // $(function () {
         //     $("#client_form_isSerbian").change(function() {
         //         if ($(this).val() === 1) {

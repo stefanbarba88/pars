@@ -12,7 +12,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Table(name: 'companies')]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueEntity(fields: ['pib'], message: 'U bazi već postoji klijent sa ovim pib-om.')]
+#[UniqueEntity(fields: ['pib', 'firma'], message: 'U bazi već postoji klijent sa ovim pib-om.')]
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company {
   #[ORM\Id]
@@ -50,8 +50,12 @@ class Company {
 
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $telefon2 = null;
+
   #[ORM\Column]
   private ?string $pib = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?string $firma = null;
 
 
   #[ORM\ManyToOne]
@@ -337,6 +341,21 @@ class Company {
 
       return $this;
   }
+
+  /**
+   * @return string|null
+   */
+  public function getFirma(): ?string {
+    return $this->firma;
+  }
+
+  /**
+   * @param string|null $firma
+   */
+  public function setFirma(?string $firma): void {
+    $this->firma = $firma;
+  }
+
 
 
 }

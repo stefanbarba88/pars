@@ -125,11 +125,11 @@
                                                 <div class="col-8">{{ userH.adresa }}</div>
                                             </div>
                                             <div class="row p-2 bg-light">
-                                                <div class="col-4">Službeni telefon:</div>
+                                                <div class="col-4">Telefon #1:</div>
                                                 <div class="col-8">{{ userH.telefon1 }}</div>
                                             </div>
                                             <div class="row p-2">
-                                                <div class="col-4">Privatni telefon:</div>
+                                                <div class="col-4">Telefon #2:</div>
                                                 <div class="col-8">{{ userH.telefon2 | default('/') }}</div>
                                             </div>
                                             <div class="row p-2 bg-light">
@@ -166,7 +166,29 @@
                                                     {% endif %}
                                                 </div>
                                             </div>
-                                            <div class="row p-2">
+                                            <div class="row p-2 ">
+                                                <div class="col-4">Neradni dan:</div>
+                                                <div class="col-8">
+                                                    {% if userH.neradniDan is not null %}
+                                                        {% if userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::PONEDELJAK')%}
+                                                            Ponedeljak
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::UTORAK')%}
+                                                            Utorak
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::SREDA')%}
+                                                            Sreda
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::CETVRTAK')%}
+                                                            Četvrtak
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::PETAK')%}
+                                                            Petak
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::SUBOTA')%}
+                                                            Subota
+                                                        {% elseif userH.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::NEDELJA')%}
+                                                            Nedelja
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
                                                 <div class="col-4">Zaduženi uređaji:</div>
                                                 <div class="col-8">
                                                     {% if userH.mobile %}

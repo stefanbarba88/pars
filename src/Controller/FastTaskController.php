@@ -8,7 +8,10 @@ use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
 use App\Entity\Car;
+use App\Entity\Category;
 use App\Entity\FastTask;
+use App\Entity\Plan;
+use App\Entity\PripremaZadatak;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\Tool;
@@ -24,6 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 #[Route('/quick-tasks')]
 class
@@ -32,13 +36,13 @@ FastTaskController extends AbstractController {
   }
   #[Route('/list', name: 'app_quick_tasks')]
   public function list(PaginatorInterface $paginator, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isPlan()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
     $args = [];
 
-    $fastTasks = $this->em->getRepository(FastTask::class)->getAllPlansPaginator();
+    $fastTasks = $this->em->getRepository(Plan::class)->getAllPlansPaginator();
 
     $pagination = $paginator->paginate(
       $fastTasks, /* query NOT result */
@@ -59,7 +63,7 @@ FastTaskController extends AbstractController {
   #[Route('/form-quick-date/', name: 'app_quick_tasks_form_date')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function formDate(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isPlan()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -75,7 +79,7 @@ FastTaskController extends AbstractController {
 
     $args = [];
 
-    $args['disabledDates'] = $this->em->getRepository(FastTask::class)->getDisabledDates();
+    $args['disabledDates'] = $this->em->getRepository(Plan::class)->getDisabledDates();
 
 
     return $this->render('fast_task/form_date.html.twig', $args);
@@ -83,10 +87,10 @@ FastTaskController extends AbstractController {
   }
 
   #[Route('/form-quick/{id}', name: 'app_quick_tasks_form', defaults: ['id' => 0])]
-  #[Entity('fastTask', expr: 'repository.findForForm(id)')]
+  #[Entity('plan', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(FastTask $fastTask, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
+  public function form(Plan $plan, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isPlan()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -97,11 +101,16 @@ FastTaskController extends AbstractController {
 
     if ($request->isMethod('POST')) {
 
-      $data = $request->request->all();
+      $data = $request->request->all('zadatak');
+      $dataInterni = $request->request->all('zadatakI');
 
-      $fastTask = $this->em->getRepository(FastTask::class)->saveFastTask($fastTask, $data);
+      $datePlan = $request->request->get('task_quick_form_datum');
+      $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $datePlan);
+      $plan->setDatumKreiranja($datumKreiranja->setTime(7,0));
 
-      if (is_null($fastTask)) {
+      $plan = $this->em->getRepository(Plan::class)->savePlan($plan, $data, $dataInterni);
+
+      if (is_null($plan)) {
         notyf()
           ->position('x', 'right')
           ->position('y', 'top')
@@ -122,19 +131,18 @@ FastTaskController extends AbstractController {
     }
 
     $args = [];
+    $datumCheck = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
 
-    $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
-    $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
-    $projects = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
-    $projectsS = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO]);
-    $projectsM = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::KOMBINOVANO]);
 
-    $args['projects'] = array_merge($projects, $projectsM);
-    $args['projectsS'] = array_merge($projectsS, $projectsM);
+//    $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
+//    $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
+    $args['users'] = $this->em->getRepository(User::class)->getUsersCarAvailable($datumCheck);
+    $args['activities'] = $this->em->getRepository(Activity::class)->getActivities();
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()], ['title' => 'ASC']);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
     $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
-    $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
     $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
-    $args['disabledDates'] = $this->em->getRepository(FastTask::class)->getDisabledDates();
+    $args['disabledDates'] = $this->em->getRepository(Plan::class)->getDisabledDates();
     $args['datum'] = $datum;
 
     $mobileDetect = new MobileDetect();
@@ -147,14 +155,17 @@ FastTaskController extends AbstractController {
 
   #[Route('/edit-quick/{id}', name: 'app_quick_task_edit')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function edit(FastTask $fastTask, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function edit(Plan $plan, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isPlan()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
     if ($request->isMethod('POST')) {
 
-      $data = $request->request->all();
-      $fastTask = $this->em->getRepository(FastTask::class)->saveFastTask($fastTask, $data);
+      $data = $request->request->all('zadatak');
+      $dataInterni = $request->request->all('zadatakI');
+
+      $plan = $this->em->getRepository(Plan::class)->editPlan($plan, $data, $dataInterni);
 
       notyf()
         ->position('x', 'right')
@@ -169,20 +180,17 @@ FastTaskController extends AbstractController {
 
     $args = [];
 
-    $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($fastTask->getDatum()->format('d.m.Y'));
-    $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($fastTask->getDatum()->format('d.m.Y'));
-    $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
-    $projects = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
-    $projectsS = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO]);
-    $projectsM = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::KOMBINOVANO]);
+    $args['users'] = $this->em->getRepository(User::class)->getUsersCarAvailable($plan->getDatumKreiranja());
+    $args['activities'] = $this->em->getRepository(Activity::class)->getActivities();
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()], ['title' => 'ASC']);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
+    $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
+    $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
 
-    $args['projects'] = array_merge($projects, $projectsM);
-    $args['projectsS'] = array_merge($projectsS, $projectsM);
 
-    $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $fastTask->getCompany()]);
-    $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isSuspended' => false, 'company' => $fastTask->getCompany()]);
-    $args['fastTask'] = $fastTask;
-    $args['tasks'] = $this->em->getRepository(Task::class)->getTasksByFastTask($fastTask);
+    $args['plan'] = $plan;
+    $args['tasks'] = $this->em->getRepository(PripremaZadatak::class)->findBy(['plan' => $plan, 'taskType' => 1]);
+    $args['tasksI'] = $this->em->getRepository(PripremaZadatak::class)->findBy(['plan' => $plan, 'taskType' => 2]);
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -194,56 +202,55 @@ FastTaskController extends AbstractController {
   }
 
   #[Route('/view/{id}', name: 'app_quick_tasks_view')]
-  public function view(FastTask $fastTask)    : Response {
+  public function view(Plan $plan)    : Response {
 
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isPlan()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
     $args = [];
-    $args['fastTaskView'] = $this->em->getRepository(FastTask::class)->makeView($fastTask);
-    $args['fastTask'] = $fastTask;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('fast_task/phone/view.html.twig', $args);
-    }
+    $args['plan'] = $plan;
 
     return $this->render('fast_task/view.html.twig', $args);
   }
 
   #[Route('/create-tasks/{id}', name: 'app_create_tasks')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function createTasks(FastTask $fastTask, MailService $mail, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
+  public function createTasks(Plan $plan, MailService $mail, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')|| !$this->getUser()->getCompany()->getSettings()->isPlan()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
     $user = $this->getUser();
-    $this->em->getRepository(Task::class)->createTasksFromList($fastTask, $user);
+    $this->em->getRepository(Task::class)->createTasksFromPlan($plan);
 
-    $args['timetable'] = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
-    $args['datum']= $fastTask->getDatum();
-    $args['users']= $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask);
-    $mail->plan($args['timetable'], $args['users'], $args['datum']);
+//    $args['timetable'] = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
+//    $args['datum']= $fastTask->getDatum();
+//    $args['users']= $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask);
+//    $mail->plan($args['timetable'], $args['users'], $args['datum']);
 
     return $this->redirectToRoute('app_tasks');
 
   }
 
   #[Route('/delete/{id}', name: 'app_quick_tasks_delete')]
-  public function delete(FastTask $fastTask)    : Response {
+  public function delete(Plan $plan)    : Response {
 
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isPlan()) {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
-    $datum = $fastTask->getDatum();
-    $currentTime = new DateTimeImmutable();
-    $editTime = $datum->sub(new DateInterval('PT25H'));
+    if ($plan->getStatus() == FastTaskData::FINAL) {
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addError(NotifyMessagesData::PLAN_ERROR_DELETE);
+      return $this->redirectToRoute('app_quick_tasks');
 
-    if ($currentTime < $editTime) {
-      $this->em->getRepository(FastTask::class)->delete($fastTask);
+    } else {
+      $this->em->getRepository(Plan::class)->remove($plan);
       notyf()
         ->position('x', 'right')
         ->position('y', 'top')
@@ -251,6 +258,9 @@ FastTaskController extends AbstractController {
         ->dismissible(true)
         ->addSuccess(NotifyMessagesData::PLAN_DELETE);
     }
+
+
+
 
     return $this->redirectToRoute('app_quick_tasks');
   }

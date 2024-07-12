@@ -26,7 +26,7 @@ class HolidayController extends AbstractController {
 
   #[Route('/list/', name: 'app_holidays')]
   public function list(PaginatorInterface $paginator, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -45,15 +45,13 @@ class HolidayController extends AbstractController {
     if($mobileDetect->isMobile()) {
       return $this->render('holiday/phone/list.html.twig', $args);
     }
-
-
     return $this->render('holiday/list.html.twig', $args);
   }
 
   #[Route('/form/{id}', name: 'app_holiday_form', defaults: ['id' => 0])]
   #[Entity('holiday', expr: 'repository.findForForm(id)')]
   public function form(Request $request, Holiday $holiday): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -84,11 +82,13 @@ class HolidayController extends AbstractController {
   #[Route('/vacation/{id}', name: 'app_holiday_vacation_form', defaults: ['id' => 0])]
   public function vacation(Request $request): Response {
 
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
     $args = [];
+
+    $company = $this->getUser()->getCompany();
 
     if ($request->isMethod('POST')) {
       $start = $request->request->get('datum_start');
@@ -106,14 +106,15 @@ class HolidayController extends AbstractController {
       }
 
       foreach ($datumi as $datum) {
-        if ($datum->format('N') != 7) {
-          $check = $this->em->getRepository(Holiday::class)->findBy( ['datum' => $datum, 'company' => $this->getUser()->getCompany()]);
+        //ako je datum manji od radne nedelje, tj ako je workweek sest dana, datum mora biti manji od nedelje
+        if ($datum->format('N') < $company->getSettings()->getWorkWeek()) {
+          $check = $this->em->getRepository(Holiday::class)->findBy( ['datum' => $datum, 'company' => $company]);
           if (empty($check)) {
             $odmor = new Holiday();
             $odmor->setDatum($datum);
             $odmor->setTitle('Kolektivni odmor');
             $odmor->setType(TipNeradnihDanaData::KOLEKTIVNI_ODMOR);
-            $odmor->setCompany($this->getUser()->getCompany());
+            $odmor->setCompany($company);
             $this->em->getRepository(Holiday::class)->save($odmor);
           }
         }
@@ -135,12 +136,30 @@ class HolidayController extends AbstractController {
 
   #[Route('/view/{id}', name: 'app_holiday_view')]
   public function view(Holiday $holiday): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['holiday'] = $holiday;
 
     return $this->render('holiday/view.html.twig', $args);
+  }
+
+  #[Route('/delete/{id}', name: 'app_holiday_delete')]
+  public function delete(Holiday $holiday): Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $this->em->getRepository(Holiday::class)->remove($holiday);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::DELETE_SUCCESS);
+
+    return $this->redirectToRoute('app_holidays');
   }
 
 }

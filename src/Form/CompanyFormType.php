@@ -40,11 +40,13 @@ class CompanyFormType extends AbstractType {
       ->add('title')
       ->add('adresa')
       ->add('email', EmailType::class, [
+        'required' => false,
         'constraints' => [
           new Regex('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', 'Email adresu morate uneti u odgovarajućem formatu'),
         ],
       ])
       ->add('telefon1',TextType::class, [
+        'required' => false,
         'constraints' => [
           new Regex('/^\d{1,10}$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
         ],

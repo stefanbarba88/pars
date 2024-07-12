@@ -34,9 +34,9 @@ class Avatar {
     }
 
     if ($user->getPol() == 1) {
-      $url = self::URL_PATH . $user->getIme() . '+' . $user->getPrezime() . '&background=' . self::BACKGROUND_MALE . '&color=' . self::FONT_MALE . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
+      $url = self::URL_PATH . $user->getPrezime() . '+' . $user->getIme() . '&background=' . self::BACKGROUND_MALE . '&color=' . self::FONT_MALE . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
     } else {
-      $url = self::URL_PATH . $user->getIme() . '+' . $user->getPrezime() . '&background=' . self::BACKGROUND_FEMALE . '&color=' . self::FONT_FEMALE . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
+      $url = self::URL_PATH . $user->getPrezime() . '+' . $user->getIme() . '&background=' . self::BACKGROUND_FEMALE . '&color=' . self::FONT_FEMALE . '&size=' . self::SIZE . '&rounded=' . self::ROUNDED;
     }
 
 

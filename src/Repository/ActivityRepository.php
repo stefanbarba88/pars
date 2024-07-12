@@ -70,6 +70,21 @@ class ActivityRepository extends ServiceEntityRepository {
 
   }
 
+  public function getActivities() {
+    $company = $this->security->getUser()->getCompany();
+    return $this->createQueryBuilder('c')
+      ->where('c.company = :company')
+      ->orWhere('c.company is NULL')
+      ->andWhere('c.isSuspended <> 1')
+      ->setParameter('company', $company)
+      ->orderBy('c.title', 'ASC')
+      ->addOrderBy('c.id', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+
+  }
+
 //    /**
 //     * @return Activity[] Returns an array of Activity objects
 //     */

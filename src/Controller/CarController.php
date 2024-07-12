@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TipOpremeData;
+use App\Classes\Data\TipTroskovaData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Car;
 use App\Entity\CarHistory;
@@ -45,7 +46,7 @@ class CarController extends AbstractController {
 
   #[Route('/list/', name: 'app_cars')]
   public function list(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $search = [];
@@ -76,7 +77,7 @@ class CarController extends AbstractController {
 
   #[Route('/list-reserved/', name: 'app_cars_reserved')]
   public function reserved(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $search = [];
@@ -107,7 +108,7 @@ class CarController extends AbstractController {
 
   #[Route('/list-available/', name: 'app_cars_available')]
   public function available(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $search = [];
@@ -138,7 +139,7 @@ class CarController extends AbstractController {
 
   #[Route('/list-archive/', name: 'app_cars_archive')]
   public function archive(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $search = [];
@@ -171,7 +172,7 @@ class CarController extends AbstractController {
   #[Entity('car', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, Car $car): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $type = $request->query->getInt('type');
@@ -215,9 +216,10 @@ class CarController extends AbstractController {
   #[Route('/view/{id}', name: 'app_car_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function view(Car $car): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+
     $args['car'] = $car;
     $args['lastReservation'] = $car->getCarReservations()->last();
 
@@ -226,7 +228,9 @@ class CarController extends AbstractController {
 
   #[Route('/activate/{id}', name: 'app_car_activate')]
   public function delete(Car $car, Request $request): Response {
-
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $type = $request->query->getInt('type');
 
     $history = null;
@@ -280,7 +284,7 @@ class CarController extends AbstractController {
   #[Route('/history-car-list/{id}', name: 'app_car_history_list')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function listCarHistory(Car $car, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -307,7 +311,7 @@ class CarController extends AbstractController {
   #[Route('/history-car-view/{id}', name: 'app_car_profile_history_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewCarHistory(CarHistory $carHistory, SerializerInterface $serializer): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -319,7 +323,7 @@ class CarController extends AbstractController {
 
   #[Route('/list-reservations/{id}', name: 'app_cars_reservations')]
   public function listReservations(Car $car, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -347,13 +351,12 @@ class CarController extends AbstractController {
     return $this->render('car/list_reservations.html.twig', $args);
   }
 
-
   #[Route('/form-reservation/{id}', name: 'app_car_reservation_form')]
   #[Entity('car', expr: 'repository.find(id)')]
   #[Entity('reservation', expr: 'repository.findForFormCar(car)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function formReservation(CarReservation $reservation, Car $car, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $type = $request->query->getInt('type');
@@ -380,9 +383,9 @@ class CarController extends AbstractController {
         if ($type == 1) {
           return $this->redirectToRoute('app_cars');
         }
-        if ($type == 2) {
-          return $this->redirectToRoute('app_car_tools_details_view');
-        }
+//        if ($type == 2) {
+//          return $this->redirectToRoute('app_car_tools_details_view');
+//        }
         return $this->redirectToRoute('app_cars_reservations', ['id' => $car->getId()]);
       }
     }
@@ -396,7 +399,7 @@ class CarController extends AbstractController {
   #[Route('/view-images/{id}', name: 'app_car_images_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewImages(Car $car): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -416,7 +419,7 @@ class CarController extends AbstractController {
   #[Route('/add-image-car/{id}', name: 'app_car_image_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function addImage(CarReservation $reservation, UploadService $uploadService, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $user = $this->getUser();
@@ -439,12 +442,12 @@ class CarController extends AbstractController {
             $pathThumb = $reservation->getCar()->getThumbUploadPath();
 
             $file = $uploadService->upload($uploadFile, $path);
+
             $image = $this->em->getRepository(Image::class)->add($file, $pathThumb, $this->getParameter('kernel.project_dir'));
+
             $reservation->addImage($image);
           }
         }
-
-
         $this->em->getRepository(CarReservation::class)->save($reservation);
 
 
@@ -477,7 +480,7 @@ class CarController extends AbstractController {
 
   #[Route('/stop-reservation/{id}', name: 'app_car_reservation_stop')]
   public function stopReservation(CarReservation $reservation, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -507,7 +510,7 @@ class CarController extends AbstractController {
   #[Route('/view-reservation/{id}', name: 'app_car_reservation_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewReservation(CarReservation $reservation): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['reservation'] = $reservation;
@@ -515,11 +518,12 @@ class CarController extends AbstractController {
     return $this->render('car/view_reservation.html.twig', $args);
   }
 
-
   #[Route('/list-expenses/{id}', name: 'app_cars_expenses')]
   public function listExpenses(Car $car, PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
-
     $cars = $this->em->getRepository(Expense::class)->getExpensesByCarPaginator($car);
 
     $pagination = $paginator->paginate(
@@ -545,7 +549,7 @@ class CarController extends AbstractController {
   #[Entity('expense', expr: 'repository.findForFormCar(car)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function formExpense(Expense $expense, Car $car, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $type = $request->query->getInt('type');
@@ -580,7 +584,7 @@ class CarController extends AbstractController {
   #[Route('/edit-expense/{id}', name: 'app_car_expense_edit')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editExpense(Expense $expense, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -612,7 +616,7 @@ class CarController extends AbstractController {
   #[Route('/view-expense/{id}', name: 'app_car_expense_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewExpense(Expense $expense): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['expense'] = $expense;
@@ -626,7 +630,7 @@ class CarController extends AbstractController {
   #[Entity('reservation', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function formEmployeeReservation(CarReservation $reservation, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -677,7 +681,7 @@ class CarController extends AbstractController {
 
   #[Route('/stop-employee-reservation/{id}', name: 'app_car_employee_reservation_stop')]
   public function stopEmployeeReservation(CarReservation $reservation, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -713,7 +717,7 @@ class CarController extends AbstractController {
   #[Route('/view-employee-reservation/{id}', name: 'app_car_employee_reservation_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewEmployeeReservation(CarReservation $reservation): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['reservation'] = $reservation;
@@ -735,7 +739,7 @@ class CarController extends AbstractController {
   #[Entity('expense', expr: 'repository.findForFormCar(car)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function formEmployeeExpense(Expense $expense, Car $car, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $user = $this->getUser();
@@ -782,7 +786,7 @@ class CarController extends AbstractController {
   #[Route('/edit-employee-expense/{id}', name: 'app_car_employee_expense_edit')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editEmployeeExpense(Expense $expense, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $user = $this->getUser();
@@ -829,7 +833,7 @@ class CarController extends AbstractController {
   #[Route('/view-employee-expense/{id}', name: 'app_car_employee_expense_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewEmployeeExpense(Expense $expense): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['expense'] = $expense;
@@ -845,7 +849,7 @@ class CarController extends AbstractController {
   #[Route('/delete-expense/{id}', name: 'app_car_expense_delete')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function deleteExpense(Expense $expense, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $user = $this->getUser();
@@ -870,6 +874,7 @@ class CarController extends AbstractController {
 
   }
 
+//ovo dodajemo kada budemo kreirali plan
 
   #[Route('/view-details-car-tools/', name: 'app_car_tools_details_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -978,5 +983,152 @@ class CarController extends AbstractController {
     return $this->render('car/form_reservation_employee.html.twig', $args);
   }
 
+  #[Route('/reports', name: 'app_car_reports')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReport(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+
+
+      $args['reports'] = $this->em->getRepository(CarReservation::class)->getReport($data['report_form']);
+      $args['car'] = $this->em->getRepository(Car::class)->find($data['report_form']['vozilo']);
+      $args['period'] = $data['report_form']['period'];
+
+
+      if (isset($data['report_form']['vozac'])){
+        $args['vozac'] = 1;
+      }
+      if (isset($data['report_form']['start'])){
+        $args['start'] = 1;
+      }
+      if (isset($data['report_form']['stop'])){
+        $args['stop'] = 1;
+      }
+      if (isset($data['report_form']['dstart'])){
+        $args['dstart'] = 1;
+      }
+      if (isset($data['report_form']['dstop'])){
+        $args['dstop'] = 1;
+      }
+
+      return $this->render('report_car/view.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false],['id' => 'ASC']);
+
+    return $this->render('report_car/control.html.twig', $args);
+  }
+
+  #[Route('/reports-archive', name: 'app_car_reports_archive')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportArchive(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+//    if ($request->isMethod('POST')) {
+//
+//      $data = $request->request->all();
+//
+//
+//      $args['reports'] = $this->em->getRepository(CarReservation::class)->getReport($data['report_form']);
+//      $args['car'] = $this->em->getRepository(Car::class)->find($data['report_form']['vozilo']);
+//      $args['period'] = $data['report_form']['period'];
+//
+//
+//      if (isset($data['report_form']['vozac'])){
+//        $args['vozac'] = 1;
+//      }
+//      if (isset($data['report_form']['start'])){
+//        $args['start'] = 1;
+//      }
+//      if (isset($data['report_form']['stop'])){
+//        $args['stop'] = 1;
+//      }
+//      if (isset($data['report_form']['dstart'])){
+//        $args['dstart'] = 1;
+//      }
+//      if (isset($data['report_form']['dstop'])){
+//        $args['dstop'] = 1;
+//      }
+//
+//      return $this->render('report_car/view.html.twig', $args);
+//
+//    }
+
+    $args = [];
+
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true],['id' => 'ASC']);
+
+    return $this->render('report_car/control.html.twig', $args);
+  }
+
+  #[Route('/reports-expense', name: 'app_car_reports_expense')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportExpense(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+
+
+      $args['reports'] = $this->em->getRepository(Expense::class)->getReport($data['report_form']);
+      $args['car'] = $this->em->getRepository(Car::class)->find($data['report_form']['vozilo']);
+      $args['period'] = $data['report_form']['period'];
+
+
+//      if (isset($data['report_form']['vozac'])){
+//        $args['vozac'] = 1;
+//      }
+//      if (isset($data['report_form']['start'])){
+//        $args['start'] = 1;
+//      }
+//      if (isset($data['report_form']['stop'])){
+//        $args['stop'] = 1;
+//      }
+//      if (isset($data['report_form']['dstart'])){
+//        $args['dstart'] = 1;
+//      }
+//      if (isset($data['report_form']['dstop'])){
+//        $args['dstop'] = 1;
+//      }
+
+      return $this->render('report_car/view_expense.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false],['id' => 'ASC']);
+    $args['types'] =  TipTroskovaData::TIP_TROSKOVA;
+
+    return $this->render('report_car/control_expense.html.twig', $args);
+  }
+
+  #[Route('/reports-expense-archive', name: 'app_car_reports_expense_archive')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportExpenseArchive(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $args = [];
+
+    $args['types'] =  TipTroskovaData::TIP_TROSKOVA;
+    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true],['id' => 'ASC']);
+
+    return $this->render('report_car/control_expense.html.twig', $args);
+  }
 
 }

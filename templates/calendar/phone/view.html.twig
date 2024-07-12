@@ -1,0 +1,293 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Kalendar
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zahtev</h5>
+                                        {% if calendar.start | date("Y-m-d") >= "now" | date("Y-m-d") %}
+                                            {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
+
+                                                <div class="my-auto ms-auto">
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-gear"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            {% if calendar.status != 2  %}
+                                                                <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-check me-2"></i>
+                                                                    Dozvolite
+                                                                </a>
+                                                            {% endif %}
+                                                            {% if calendar.status != 3  %}
+                                                                <a href="{{ path('app_calendar_decline', {id: calendar.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-minus me-2"></i>
+                                                                    Odbijte
+                                                                </a>
+                                                            {% endif %}
+
+                                                            {% if calendar.status != 0 %}
+                                                                <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-trash me-2"></i>
+                                                                    Obrišite
+                                                                </a>
+                                                            {% endif  %}
+
+                                                            {#                                                    {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}#}
+                                                            {#                                                        <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">#}
+                                                            {#                                                            <i class="ph-check me-2"></i>#}
+                                                            {#                                                            Dozvolite#}
+                                                            {#                                                        </a>#}
+                                                            {#                                                        <a href="{{ path('app_calendar_decline', {id: calendar.id}) }}" class="dropdown-item">#}
+                                                            {#                                                            <i class="ph-minus me-2"></i>#}
+                                                            {#                                                            Odbijte#}
+                                                            {#                                                        </a>#}
+                                                            {#                                                    {% endif %}#}
+                                                            {#                                                        <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">#}
+                                                            {#                                                            <i class="ph-trash me-2"></i>#}
+                                                            {#                                                            Obrišite#}
+                                                            {#                                                        </a>#}
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Tip:</div>
+                                            <div class="col-8">
+                                                {% if calendar.type == 1 %}
+                                                    <span class="badge bg-secondary text-primary">Slobodan dan</span>
+                                                {% elseif calendar.type == 2 %}
+                                                    <span class="badge bg-yellow text-primary">Odmor</span>
+                                                {% elseif calendar.type == 3 %}
+                                                    <span class="badge bg-purple text-white">Bolovanje</span>
+                                                {% elseif calendar.type == 4 %}
+                                                    <span class="badge bg-primary text-white">Slava</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Početak:</div>
+                                            <div class="col-8">
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ calendar.start | date("d.m.Y")}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Kraj:</div>
+                                            <div class="col-8">
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ calendar.finish | date("d.m.Y")}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Status:</div>
+                                            <div class="col-8">
+                                                {% if calendar.status == 0 %}
+                                                    <span class="badge bg-danger text-white">Obrisan</span>
+                                                {% elseif calendar.status == 1 %}
+                                                    <span class="badge bg-secondary text-primary">Na čekanju</span>
+                                                {% elseif calendar.status == 2 %}
+                                                    <span class="badge bg-primary text-white">Odobren</span>
+                                                {% elseif calendar.status == 3 %}
+                                                    <span class="badge bg-yellow text-primary">Odbijen</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+
+{#{% block footerJavascript %}#}
+{#    <script type="text/javascript">#}
+{#        $(document).ready(function() {#}
+{#            var options = {#}
+{#                // target:        '#output1',   // target element(s) to be updated with server response#}
+{#                success:       editInfoResponse,  // post-submit callback#}
+{#                //         // target:        '#error',#}
+{#                //         // other available options:#}
+{#                //         //url:       url         // override for form's 'action' attribute#}
+{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#                //         //clearForm: true        // clear all form fields after successful submit#}
+{#                        resetForm: true,        // reset the form after successful submit#}
+{#                //         success:   editInfoResponse#}
+{#                //         // $.ajax options can be used here too, for example:#}
+{#                //         //timeout:   3000#}
+{#            };#}
+
+{#            // bind form using 'ajaxForm'#}
+{#            $('#infoForma').ajaxForm(options);#}
+{#        });#}
+{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
+{#        //     // for normal html responses, the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseText property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'xml' then the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseXML property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'json' then the first argument to the success callback#}
+{#        //     // is the json data object returned by the server#}
+{#        //#}
+{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
+{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
+{#        // }#}
+{#        // $(function () {#}
+{#        //     var options = {#}
+{#        //         // target:        '#error',#}
+{#        //         // other available options:#}
+{#        //         //url:       url         // override for form's 'action' attribute#}
+{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#        //         //clearForm: true        // clear all form fields after successful submit#}
+{#        //         resetForm: true,        // reset the form after successful submit#}
+{#        //         success:   editInfoResponse#}
+{#        //         // $.ajax options can be used here too, for example:#}
+{#        //         //timeout:   3000#}
+{#        //     };#}
+{#        //     // bind form using ajaxForm#}
+{#        //     $('#infoForma').submit(function() {#}
+{#        //         // inside event callbacks 'this' is the DOM element so we first#}
+{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
+{#        //         $(this).ajaxSubmit(options);#}
+{#        //#}
+{#        //         // !!! Important !!!#}
+{#        //         // always return false to prevent standard browser submit and page navigation#}
+{#        //         return false;#}
+{#        //     });#}
+{#        // });#}
+{#        //#}
+{#        function editInfoResponse(data) {#}
+{#            // 'data' is the json object returned from the server#}
+
+{#            if (data.success === 1) {#}
+{#                swal({#}
+{#                    type: 'success',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+{#            else {#}
+{#                var error = data.error_msg.toString();#}
+{#                swal({#}
+{#                    type: 'error',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+
+{#        }#}
+
+{#    </script>#}
+{#{% endblock footerJavascript %}#}

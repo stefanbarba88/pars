@@ -40,6 +40,7 @@ class CarStopReservationFormType extends AbstractType {
     };
 
     $minKm = $dataObject->getReservation()->getKmStart();
+    $maxKm = $dataObject->getReservation()->getCar()->getCompany()->getSettings()->getMinKm();
 
 
     $builder
@@ -60,7 +61,7 @@ class CarStopReservationFormType extends AbstractType {
         ->add('kmStop', NumberType::class, [
           'attr' => [
             'min' => $minKm,
-            'max' => $minKm + 500,
+            'max' => $minKm + $maxKm,
           ],
           'required' => true,
           'html5' => true,

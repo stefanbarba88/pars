@@ -47,6 +47,26 @@
                                             {% if app.user == user%}
                                                 <a href="{{ path('app_calendar_form', {user:user.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                             {% endif %}
+
+                                            {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+
+                                                        <a href="{{ path('app_vacation_form', {id : user.vacation.id}) }}" class="dropdown-item">
+                                                            <i class="ph-note-pencil me-2"></i>
+                                                            Izmenite
+                                                        </a>
+                                                        <a href="{{ path('app_employee_calendar_days', {id : user.id}) }}" class="dropdown-item">
+                                                            <i class="ph-calendar me-2"></i>
+                                                            Lista dana
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
                                         </div>
                                     </div>
                                     <div class="card-body">
@@ -119,26 +139,28 @@
                                                                         <i class="ph-eye me-2"></i>
                                                                         Vidite
                                                                     </a>
-                                                                    {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
-                                                                        {% if calendar.status != 2  %}
-                                                                            <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
-                                                                                <i class="ph-check me-2"></i>
-                                                                                Dozvolite
-                                                                            </a>
+                                                                    {% if calendar.start | date('d.m.Y') <= 'now' | date('d.m.Y') %}
+                                                                        {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
+                                                                            {% if calendar.status != 2  %}
+                                                                                <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
+                                                                                    <i class="ph-check me-2"></i>
+                                                                                    Dozvolite
+                                                                                </a>
+                                                                            {% endif %}
+                                                                            {% if calendar.status != 3  %}
+                                                                                <a href="{{ path('app_calendar_decline', {id: calendar.id}) }}" class="dropdown-item">
+                                                                                    <i class="ph-minus me-2"></i>
+                                                                                    Odbijte
+                                                                                </a>
+                                                                            {% endif %}
                                                                         {% endif %}
-                                                                        {% if calendar.status != 3  %}
-                                                                            <a href="{{ path('app_calendar_decline', {id: calendar.id}) }}" class="dropdown-item">
-                                                                                <i class="ph-minus me-2"></i>
-                                                                                Odbijte
+                                                                        {% if calendar.status != 0 %}
+                                                                            <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
+                                                                                <i class="ph-trash me-2"></i>
+                                                                                Obrišite
                                                                             </a>
-                                                                        {% endif %}
+                                                                        {% endif  %}
                                                                     {% endif %}
-                                                                    {% if calendar.status != 0 %}
-                                                                        <a href="{{ path('app_calendar_delete', {id: calendar.id}) }}" class="dropdown-item">
-                                                                            <i class="ph-trash me-2"></i>
-                                                                            Obrišite
-                                                                        </a>
-                                                                    {% endif  %}
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -160,9 +182,9 @@
 
                                     <div class="card-header d-flex align-items-center">
                                         {% if userCreatedYear == currentYear %}
-                                            <h5 class="mb-0">Prisutnost od {{ user.created | date('d.m.Y') }}</h5>
+                                            <h5 class="mb-0">Prisutnost od {{ user.created | date('d.m.Y.') }}</h5>
                                         {% else %}
-                                            <h5 class="mb-0">Prisutnost od početka godine</h5>
+                                            <h5 class="mb-0">Prisutnost od početka {{ 'now' | date('Y') }}. godine</h5>
                                         {% endif %}
                                         <div class="d-inline-flex ms-auto">
                                             <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{{ (noDays['dostupan'] / noRadnihDana) |number_format(2, '.', ',') }}</span>
@@ -216,7 +238,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-fill">
                                                             <h4 class="mb-0">{{ noDays['nedelja'] }}</h4>
-                                                            Nedelja
+                                                            Neradni dan
                                                         </div>
 
                                                         <i class="ph-calendar-x ph-2x opacity-75 ms-3"></i>
@@ -259,9 +281,9 @@
                                 <div class="card">
                                     <div class="card-header">
                                         {% if userCreatedYear == currentYear %}
-                                            <h5 class="mb-0">Odsutnost od {{ user.created | date('d.m.Y') }}</h5>
+                                            <h5 class="mb-0">Odsutnost od {{ user.created | date('d.m.Y.') }}</h5>
                                         {% else %}
-                                            <h5 class="mb-0">Odsutnost od početka godine</h5>
+                                            <h5 class="mb-0">Odsutnost od početka {{ 'now' | date('Y') }}. godine</h5>
                                         {% endif %}
                                     </div>
                                     <div class="card-body">
@@ -270,7 +292,7 @@
                                                 <div class="card card-body bg-primary text-white">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-fill">
-                                                            <h4 class="mb-0">{{ noDays['nedostupanBezNedelje'] }}/{{ noRadnihDana }}</h4>
+                                                            <h4 class="mb-0">{{ noDays['nedostupanProfil'] }}/{{ noRadnihDana }}</h4>
                                                             Broj dana odsustva
                                                         </div>
 

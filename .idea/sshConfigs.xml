@@ -8,8 +8,8 @@
       <sshConfig authType="PASSWORD" host="137.184.127.75" id="9b2e36f4-6301-4f57-901d-ea9e014cb24b" port="22" customName="prikolicacentar.rs" nameFormat="CUSTOM" username="root" useOpenSSHConfig="true">
         <option name="customName" value="prikolicacentar.rs" />
       </sshConfig>
-      <sshConfig authType="PASSWORD" host="164.92.98.229" id="7ef8e3c8-3c3b-4db8-81e4-628a69f7d4a9" port="22" customName="app.pars" nameFormat="CUSTOM" username="root" useOpenSSHConfig="true">
-        <option name="customName" value="app.pars" />
+      <sshConfig authType="PASSWORD" host="178.62.221.187" id="4e3234e0-8ee6-4fe1-ad95-9cacb158524c" port="22" customName="epars aplikacija" nameFormat="CUSTOM" username="root" useOpenSSHConfig="true">
+        <option name="customName" value="epars aplikacija" />
       </sshConfig>
     </configs>
   </component>

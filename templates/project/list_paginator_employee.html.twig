@@ -51,6 +51,7 @@
                                             {% endif %}
                                         </th>
                                         <th>Broj zadataka</th>
+                                        <th>Interni zadaci</th>
                                         <th>Klijent</th>
 
                                         <th {% if pagination.isSorted('[p.created]') %} class="sorted"{% endif %}>
@@ -68,7 +69,7 @@
                                     </thead>
                                     <tbody>
                                     {% for project in pagination %}
-
+                                        {% set noTasksIntern = getCountTasksByProjectIntern(project) | length  %}
                                         {% set noTasks = getCountTasksByProject(project)  %}
                                         <tr>
                                             <td>
@@ -86,6 +87,11 @@
                                             <td class="text-center">
                                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
                                                     {{ noTasks.total }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ noTasksIntern }}
                                                 </span>
                                             </td>
                                             <td>

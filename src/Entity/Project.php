@@ -80,7 +80,7 @@ class Project implements JsonSerializable {
   private Collection $client;
 
   #[ORM\Column(type: Types::SMALLINT)]
-  private ?int $payment = null;
+  private ?int $payment = 1;
 
   #[ORM\Column(type: Types::SMALLINT, nullable: true)]
   private ?int $type = 1;
@@ -140,6 +140,10 @@ class Project implements JsonSerializable {
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
+
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: ManagerChecklist::class)]
+  private Collection $managerChecklists;
+
   public function getCompany(): ?Company
   {
     return $this->company;
@@ -159,6 +163,8 @@ class Project implements JsonSerializable {
     $this->label = new ArrayCollection();
     $this->pdfs = new ArrayCollection();
 //    $this->team = new ArrayCollection();
+$this->managerChecklists = new ArrayCollection();
+
   }
 
   #[ORM\PrePersist]
@@ -746,5 +752,34 @@ class Project implements JsonSerializable {
     $this->noTasks = $noTasks;
   }
 
+  /**
+   * @return Collection<int, ManagerChecklist>
+   */
+  public function getManagerChecklists(): Collection
+  {
+      return $this->managerChecklists;
+  }
+
+  public function addManagerChecklist(ManagerChecklist $managerChecklist): self
+  {
+      if (!$this->managerChecklists->contains($managerChecklist)) {
+          $this->managerChecklists->add($managerChecklist);
+          $managerChecklist->setProject($this);
+      }
+
+      return $this;
+  }
+
+  public function removeManagerChecklist(ManagerChecklist $managerChecklist): self
+  {
+      if ($this->managerChecklists->removeElement($managerChecklist)) {
+          // set the owning side to null (unless already changed)
+          if ($managerChecklist->getProject() === $this) {
+              $managerChecklist->setProject(null);
+          }
+      }
+
+      return $this;
+  }
 
 }

@@ -32,7 +32,7 @@ class FinishedTasksCommand extends Command {
   protected function configure() {
     $this
       ->setName('app:finish:task')
-      ->setDescription('Na 10 minuta proverava da li ima zavrsenih zadataka!')
+      ->setDescription('Na 5 minuta proverava da li ima zavrsenih zadataka!')
       ->setHelp('');
   }
 

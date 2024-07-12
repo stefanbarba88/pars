@@ -154,14 +154,14 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.telefon1, 'Službeni telefon:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.telefon1, 'Telefon #1:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.telefon1, {attr: { class: 'form-control' }}) }}
                                         <span class="form-text">Format: 0661111222</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.telefon2, 'Privatni telefon:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
                                         <span class="form-text">Format: 0661111222</span>
                                     </div>
@@ -188,20 +188,17 @@
                                     </div>
                                 </div>
                             </div>
-{#                            <div class="row KLIJENT">#}
-{#                                <div class="col-lg-6">#}
-{#                                    <div class="mb-3">#}
-{#                                        {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}#}
-{#                                        <div class="input-group">#}
-{#											<span class="input-group-text">#}
-{#												<i class="ph-calendar"></i>#}
-{#											</span>#}
-{#                                            {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1 ' }}) }}#}
-{#                                        </div>#}
-{#                                        <span class="form-text">Format: 31.12.1900</span>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
+                            <div class="row KLIJENT">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.neradniDan, 'Neradni dan:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.neradniDan, {attr: { class: 'form-control select' }}) }}
+                                            <span class="form-text">Ukoliko zaposleni ne radi određenog dana u sedmici. Potrebno je uneti i dan vikenda ako firma radi vikendom.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="fw-bold border-bottom pb-2 mb-3 KLIJENT">Zaduženi uređaji</div>
                             <div class="row KLIJENT">
                                 <div class="col-lg-6">

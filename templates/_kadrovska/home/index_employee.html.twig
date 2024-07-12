@@ -1,0 +1,256 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerKadrovska' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebarKadrovska')) }}
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+
+
+
+                <!-- Inner content -->
+                <div class="content-inner">
+
+                    <div class="content">
+{#                        <div class="row">#}
+{#                            <div class="col-sm-6 col-xl-4">#}
+
+{#                                <!-- Basic sparklines -->#}
+{#                                <div class="card">#}
+{#                                    <div class="card-body">#}
+{#                                        <div class="d-flex align-items-center mb-3">#}
+{#                                            <i class="ph-factory ph-2x text-primary me-3"></i>#}
+
+{#                                            <div class="flex-fill">#}
+{#                                                <h6 class="mb-0">{{ countCompanies }}</h6>#}
+{#                                            </div>#}
+{#                                            <div class="d-inline-flex dropdown ms-auto">#}
+{#                                                <a href="#" class="text-body d-inline-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">#}
+{#                                                    <i class="ph-gear"></i>#}
+{#                                                </a>#}
+{#                                                <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                    <a href="{{ path('app_kadrovska_company_pib') }}" class="dropdown-item">#}
+{#                                                        <i class="ph-plus me-2"></i>#}
+{#                                                        Dodajte#}
+{#                                                    </a>#}
+{#                                                    <a href="{{ path('app_kadrovska_companies') }}" class="dropdown-item">#}
+{#                                                        <i class="ph-list me-2"></i>#}
+{#                                                        Lista#}
+{#                                                    </a>#}
+{#                                                    <a href="{{ path('app_kadrovska_companies_archive') }}" class="dropdown-item">#}
+{#                                                        <i class="ph-archive me-2"></i>#}
+{#                                                        Arhiva#}
+{#                                                    </a>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
+
+
+{#                                        <div>#}
+{#                                            Kompanije#}
+{#                                        </div>#}
+{#                                    </div>#}
+
+{#                                    <div class="rounded-bottom" id="sparklines_basic"></div>#}
+{#                                </div>#}
+{#                                <!-- /basic sparklines -->#}
+
+{#                            </div>#}
+{#                            <div class="col-sm-6 col-xl-4">#}
+
+{#                                <!-- Basic sparklines -->#}
+{#                                <div class="card">#}
+{#                                    <div class="card-body">#}
+{#                                        <div class="d-flex align-items-center mb-3">#}
+{#                                            <i class="ph-users ph-2x text-primary me-3"></i>#}
+
+{#                                            <div class="flex-fill">#}
+{#                                                <h6 class="mb-0">{{ countUsers }}</h6>#}
+{#                                            </div>#}
+{#                                            <div class="d-inline-flex dropdown ms-auto">#}
+{#                                                <a href="#" class="text-body d-inline-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">#}
+{#                                                    <i class="ph-gear"></i>#}
+{#                                                </a>#}
+{#                                                <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                    <a href="{{ path('app_kadrovska_user_form', {'type' : 1}) }}" class="dropdown-item">#}
+{#                                                        <i class="ph-plus me-2"></i>#}
+{#                                                        Dodajte#}
+{#                                                    </a>#}
+{#                                                    <a href="{{ path('app_kadrovska_users') }}" class="dropdown-item">#}
+{#                                                        <i class="ph-users me-2"></i>#}
+{#                                                        Lista#}
+{#                                                    </a>#}
+{#                                                    <a href="{{ path('app_kadrovska_users_archive') }}" class="dropdown-item">#}
+{#                                                        <i class="ph-file-text me-2"></i>#}
+{#                                                        Izveštaji#}
+{#                                                    </a>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
+
+
+{#                                        <div>#}
+{#                                            Korisnici sitema#}
+{#                                        </div>#}
+{#                                    </div>#}
+
+{#                                    <div class="rounded-bottom" id="sparklines_basic"></div>#}
+{#                                </div>#}
+{#                                <!-- /basic sparklines -->#}
+
+{#                            </div>#}
+{#                            <div class="col-sm-6 col-xl-4">#}
+
+{#                                <!-- Basic sparklines -->#}
+{#                                <div class="card">#}
+{#                                    <div class="card-body">#}
+{#                                        <div class="d-flex align-items-center mb-3">#}
+{#                                            <i class="ph-users ph-2x text-primary me-3"></i>#}
+
+{#                                            <div class="flex-fill">#}
+{#                                                <h6 class="mb-0">{{ countEmployees }}</h6>#}
+{#                                            </div>#}
+{#                                            <div class="d-inline-flex dropdown ms-auto">#}
+{#                                                <a href="#" class="text-body d-inline-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">#}
+{#                                                    <i class="ph-gear"></i>#}
+{#                                                </a>#}
+{#                                                <div class="dropdown-menu dropdown-menu-end">#}
+
+{#                                                    <a href="{{ path('app_employees_kadrovska') }}" class="dropdown-item">#}
+{#                                                        <i class="ph-users me-2"></i>#}
+{#                                                        Lista#}
+{#                                                    </a>#}
+{#                                                    <a href="{{ path('app_employees_archive_kadrovska') }}" class="dropdown-item">#}
+{#                                                        <i class="ph-archive me-2"></i>#}
+{#                                                        Arhiva#}
+{#                                                    </a>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
+
+
+{#                                        <div>#}
+{#                                            Zaposleni#}
+{#                                        </div>#}
+{#                                    </div>#}
+
+{#                                    <div class="rounded-bottom" id="sparklines_basic"></div>#}
+{#                                </div>#}
+{#                                <!-- /basic sparklines -->#}
+
+{#                            </div>#}
+
+{#                            #}{#                        <div class="col-sm-6 col-xl-3">#}
+
+{#                            #}{#                                <!-- Basic sparklines -->#}
+{#                            #}{#                                <div class="card">#}
+{#                            #}{#                                    <div class="card-body">#}
+{#                            #}{#                                        <div class="d-flex align-items-center mb-3">#}
+{#                            #}{#                                            <i class="ph-list-bullets ph-2x text-primary me-3"></i>#}
+
+{#                            #}{#                                            <div class="flex-fill">#}
+{#                            #}{#                                                <h6 class="mb-0">{{ noTasks }}</h6>#}
+{#                            #}{#                                            </div>#}
+{#                            #}{#                                            <div class="d-inline-flex dropdown ms-auto">#}
+{#                            #}{#                                                <a href="#" class="text-body d-inline-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">#}
+{#                            #}{#                                                    <i class="ph-gear"></i>#}
+{#                            #}{#                                                </a>#}
+{#                            #}{#                                                <div class="dropdown-menu dropdown-menu-end">#}
+{#                            #}{#                                                    <a href="{{ path('app_task_form_date') }}" class="dropdown-item">#}
+{#                            #}{#                                                        <i class="ph-folder-plus me-2"></i>#}
+{#                            #}{#                                                        Dodajte#}
+{#                            #}{#                                                    </a>#}
+{#                            #}{#                                                    <a href="{{ path('app_tasks') }}" class="dropdown-item">#}
+{#                            #}{#                                                        <i class="ph-list-bullets me-2"></i>#}
+{#                            #}{#                                                        Lista#}
+{#                            #}{#                                                    </a>#}
+{#                            #}{#                                                    <a href="{{ path('app_stopwatch_list') }}" class="dropdown-item">#}
+{#                            #}{#                                                        <i class="ph-list-checks me-2"></i>#}
+{#                            #}{#                                                        Zapisi za proveru#}
+{#                            #}{#                                                    </a>#}
+{#                            #}{#                                                </div>#}
+{#                            #}{#                                            </div>#}
+{#                            #}{#                                        </div>#}
+
+
+{#                            #}{#                                        <div>#}
+{#                            #}{#                                            Broj zadataka#}
+{#                            #}{#                                        </div>#}
+{#                            #}{#                                    </div>#}
+
+{#                            #}{#                                    <div class="rounded-bottom" id="sparklines_basic"></div>#}
+{#                            #}{#                                </div>#}
+{#                            #}{#                                <!-- /basic sparklines -->#}
+
+{#                            #}{#                            </div>#}
+{#                            #}{#                        <div class="col-sm-6 col-xl-3">#}
+
+{#                            #}{#                                <!-- Basic sparklines -->#}
+{#                            #}{#                                <div class="card">#}
+{#                            #}{#                                    <div class="card-body">#}
+{#                            #}{#                                        <div class="d-flex align-items-center mb-3">#}
+{#                            #}{#                                            <i class="ph-list-bullets ph-2x text-primary me-3"></i>#}
+
+{#                            #}{#                                            <div class="flex-fill">#}
+{#                            #}{#                                                <h6 class="mb-0">{{ noInternTasks }}</h6>#}
+{#                            #}{#                                            </div>#}
+{#                            #}{#                                            <div class="d-inline-flex dropdown ms-auto">#}
+{#                            #}{#                                                <a href="#" class="text-body d-inline-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">#}
+{#                            #}{#                                                    <i class="ph-gear"></i>#}
+{#                            #}{#                                                </a>#}
+{#                            #}{#                                                <div class="dropdown-menu dropdown-menu-end">#}
+{#                            #}{#                                                    <a href="{{ path('app_checklist_form') }}" class="dropdown-item">#}
+{#                            #}{#                                                        <i class="ph-folder-plus me-2"></i>#}
+{#                            #}{#                                                        Dodajte#}
+{#                            #}{#                                                    </a>#}
+{#                            #}{#                                                    <a href="{{ path('app_checklist_list') }}" class="dropdown-item">#}
+{#                            #}{#                                                        <i class="ph-list-bullets me-2"></i>#}
+{#                            #}{#                                                        Lista#}
+{#                            #}{#                                                    </a>#}
+{#                            #}{#                                                    <a href="{{ path('app_checklist_to_do') }}" class="dropdown-item">#}
+{#                            #}{#                                                        <i class="ph-list-plus me-2"></i>#}
+{#                            #}{#                                                        Moji zadaci#}
+{#                            #}{#                                                    </a>#}
+{#                            #}{#                                                </div>#}
+{#                            #}{#                                            </div>#}
+{#                            #}{#                                        </div>#}
+
+
+{#                            #}{#                                        <div>#}
+{#                            #}{#                                            Broj internih zadataka#}
+{#                            #}{#                                        </div>#}
+{#                            #}{#                                    </div>#}
+
+{#                            #}{#                                    <div class="rounded-bottom" id="sparklines_basic"></div>#}
+{#                            #}{#                                </div>#}
+{#                            #}{#                                <!-- /basic sparklines -->#}
+
+{#                            #}{#                            </div>#}
+{#                        </div>#}
+                    </div>
+                    <!-- /content area -->
+
+                    <!-- Footer -->
+                    {% include 'includes/footer.html.twig' %}
+                    <!-- /footer -->
+
+                </div>
+                <!-- /inner content -->
+
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+    <script src="{{ asset('assets/demo/pages/dashboard.js') }}"></script>
+{% endblock includeJavascript %}

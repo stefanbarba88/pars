@@ -1,0 +1,429 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUserKadrovska' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebarKadrovska')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ vacation.user.getFullName() }}
+                            </h4>
+                        </div>
+                    </div>
+
+
+                    {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigationKadrovska', { user: user } )) }}
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Left sidebar component -->
+                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebarKadrovska', { user: user } )) }}
+                        <!-- /left sidebar component -->
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Kalendar rada zaposlenog</h5>
+
+                                    </div>
+                                    {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
+                                    <div class="card-body">
+                                        <div class="fw-bold border-bottom pb-2 mb-3">Odmor</div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <div class="mb-3">
+                                                    <input type="checkbox" class="form-check-input" id="stariOdmor" checked>
+                                                    {{ form_label(form.old, 'Stari odmor:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.old, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Broj neiskorišćenih dana starog odmora na početku godine.</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.oldUsed, 'Iskorišćen stari odmor:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.oldUsed, {attr: { class: 'form-control required disable-input' }}) }}
+                                                    <span class="form-text">Broj iskorišćenih dana od starog odmora.</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="mb-3">
+                                                    <div class="my-auto ms-auto">
+                                                        <label class="form-label" for="vacation_kadrovska_form_oldPreostalo">Preostalo:</label>
+                                                        <input type="number" id="vacation_kadrovska_form_oldPreostalo" value="{{ vacation.old - vacation.oldUsed}}" min="0" class="form-control disable-input" />
+                                                        <span class="form-text">Broj preostalih dana starog odmora.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4 ">
+                                                <div class="mb-3">
+                                                    <input type="checkbox" class="form-check-input" id="noviOdmor" checked>
+                                                    {{ form_label(form.new, 'Novi odmor:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.new, {attr: { class: 'form-control required ' }}) }}
+                                                    <span class="form-text">Broj dana novog odmora na koje zaposleni ima pravo.</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4 ">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.used1, 'Iskorišćen novi odmor:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.used1, {attr: { class: 'form-control disable-input' }}) }}
+                                                    <span class="form-text">Broj iskorišćenih dana novog odmora.</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="mb-3">
+                                                    <div class="my-auto ms-auto">
+                                                        <label class="form-label" for="vacation_kadrovska_form_newPreostalo">Preostalo:</label>
+                                                        <input type="number" id="vacation_kadrovska_form_newPreostalo" value="{{ vacation.new - vacation.newUkupno}}" min="0" class="form-control disable-input" />
+                                                        <span class="form-text">Broj preostalih dana novog odmora.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="fw-bold border-bottom pb-2 mb-3">Ostalo</div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.other1, 'Ostali iskorišćeni dani:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.other1, {attr: { class: 'form-control disable-input'}}) }}
+                                                    <span class="form-text">Broj iskorišćenih dana na ostale aktivnosti u tekućoj godini (bolovanje, slobodan dan, itd.).</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4 ">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.slava, 'Iskorišćeni dani za slavu:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.slava, {attr: { class: 'form-control disable-input'}}) }}
+                                                    <span class="form-text">Broj iskorišćenih dana za slavu u tekućoj godini.</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                        </div>
+                                    </div>
+                                    {{ form_end(form) }}
+                                </div>
+                                <!-- State saving -->
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Lista zapisa</h5>
+                                        <div class="my-auto ms-auto">
+                                            <a href="{{ path('app_employee_calendar_create_kadrovska', {user:user.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                        </div>
+                                    </div>
+                                    <form method="get" action="{{ path('app_employee_calendar_view_kadrovska', {id: vacation.id}) }}" class="form-validate-jquery" novalidation="novalidation">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="aneks">Aneks:</label>
+                                                        <input id="aneks" name="aneks" class="form-control" type="text">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="text-end">
+                                                <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th  {% if pagination.isSorted('[c.type]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Tip ', ['c.type']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.type' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.type' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th {% if pagination.isSorted('[c.start]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Početak ', ['c.start']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.start' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.start' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th {% if pagination.isSorted('[c.finish]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Kraj ', ['c.finish']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.finish' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.finish' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th>Napomena</th>
+                                                    <th>Aneks</th>
+                                                    <th {% if pagination.isSorted('[c.status]') %} class="sorted"{% endif %}>
+                                                        {{ knp_pagination_sortable(pagination, 'Status ', ['c.status']) }}
+                                                        {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.status' %}
+                                                            &#8595;
+                                                        {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.status' %}
+                                                            &#8593;
+                                                        {% else %}
+                                                            &#8597;
+                                                        {% endif %}
+                                                    </th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for calendar in pagination %}
+                                                    <tr>
+                                                        <td>
+                                                            {% if calendar.type == 1 %}
+                                                                <span class="badge bg-secondary text-primary">Slobodan dan</span>
+                                                            {% elseif calendar.type == 2 %}
+                                                                <span class="badge bg-yellow text-primary">Odmor</span>
+                                                            {% elseif calendar.type == 3 %}
+                                                                <span class="badge bg-purple text-white">Bolovanje</span>
+                                                            {% elseif calendar.type == 4 %}
+                                                                <span class="badge bg-primary text-white">Slava</span>
+                                                            {% elseif calendar.type == 5 %}
+                                                                <span class="badge bg-primary text-white">Stari odmor</span>
+                                                            {% elseif calendar.type == 6 %}
+                                                                <span class="badge bg-primary text-white">Ostalo</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if calendar.start is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ calendar.start | date("d.m.Y")}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if calendar.finish is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ calendar.finish | date("d.m.Y")}}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {{ calendar.note }}
+                                                        </td>
+                                                        <td>
+                                                            {{ calendar.aneks }}
+                                                        </td>
+                                                        <td>
+                                                            {% if calendar.status == 1 %}
+                                                                <span class="badge bg-primary text-white">Aktivan</span>
+                                                            {% else %}
+                                                                <span class="badge bg-yellow text-primary">Obrisan</span>
+                                                            {% endif %}
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                    <i class="ph-gear"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-end">
+                                                                    <a href="{{ path('app_employee_calendarkadr_view_kadrovska', {id: calendar.id}) }}" class="dropdown-item">
+                                                                        <i class="ph-eye me-2"></i>
+                                                                        Vidite
+                                                                    </a>
+                                                                    <a href="{{ path('app_employee_calendar_create_kadrovska', {user:user.id, id:calendar.id}) }}" class="dropdown-item">
+                                                                        <i class="ph-note-pencil me-2"></i>
+                                                                        Izmenite
+                                                                    </a>
+                                                                    {% if calendar.status == 1 %}
+                                                                        <a href="{{ path('app_employee_calendarkadr_delete_kadrovska', {id: calendar.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-trash me-2"></i>
+                                                                            Obrišite
+                                                                        </a>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /state saving -->
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/locales/sr.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+
+{% block footerJavascript %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var initialOldVacationDays = $('#vacation_kadrovska_form_old').val();
+            var initialNewVacationDays = $('#vacation_kadrovska_form_new').val();
+
+            function checkVacationCheckboxes() {
+                if ($('#stariOdmor').is(':checked')) {
+                    $('#vacation_kadrovska_form_old').addClass('disable-input');
+                } else {
+                    $('#vacation_kadrovska_form_old').removeClass('disable-input');
+                }
+
+                if ($('#noviOdmor').is(':checked')) {
+                    $('#vacation_kadrovska_form_new').addClass('disable-input');
+                } else {
+                    $('#vacation_kadrovska_form_new').removeClass('disable-input');
+                }
+            }
+
+            // Proveri stanje pri učitavanju strane
+            checkVacationCheckboxes();
+
+            // Proveri stanje pri svakoj promeni
+            $('#stariOdmor, #noviOdmor').change(function() {
+                checkVacationCheckboxes();
+            });
+
+            // Praćenje promene u polju za stari odmor
+            $('#vacation_kadrovska_form_old').on('input', function() {
+                if ($(this).val() === '') {
+                    $(this).val(initialOldVacationDays);
+                }
+                updateOldVacationDays();
+            });
+
+            // Praćenje promene u polju za iskorišćen stari odmor
+            $('#vacation_kadrovska_form_oldUsed').on('input', function() {
+                updateOldVacationDays();
+            });
+
+            // Funkcija za ažuriranje preostalih dana starog odmora
+            function updateOldVacationDays() {
+                var oldVacationDays = parseInt($('#vacation_kadrovska_form_old').val()) || 0;
+                var oldVacationUsed = parseInt($('#vacation_kadrovska_form_oldUsed').val()) || 0;
+                var oldVacationRemaining = oldVacationDays - oldVacationUsed;
+                $('#vacation_kadrovska_form_oldPreostalo').val(oldVacationRemaining);
+            }
+
+            // Praćenje promene u polju za novi odmor
+            $('#vacation_kadrovska_form_new').on('input', function() {
+                if ($(this).val() === '') {
+                    $(this).val(initialNewVacationDays);
+                }
+                updateNewVacationDays();
+            });
+
+            // Praćenje promene u polju za iskorišćen novi odmor
+            $('#vacation_kadrovska_form_used1').on('input', function() {
+                updateNewVacationDays();
+            });
+
+            // Funkcija za ažuriranje preostalih dana novog odmora
+            function updateNewVacationDays() {
+                var newVacationDays = parseInt($('#vacation_kadrovska_form_new').val()) || 0;
+                var newVacationUsed = parseInt($('#vacation_kadrovska_form_used1').val()) || 0;
+                var newVacationRemaining = newVacationDays - newVacationUsed;
+                $('#vacation_kadrovska_form_newPreostalo').val(newVacationRemaining);
+            }
+
+            // Inicijalno ažuriranje preostalih dana na osnovu početnih vrednosti
+            updateOldVacationDays();
+            updateNewVacationDays();
+        });
+
+
+    </script>
+{% endblock footerJavascript %}

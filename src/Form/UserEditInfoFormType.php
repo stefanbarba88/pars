@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Classes\Data\NeradniDanData;
 use App\Classes\Data\PolData;
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\UserRolesData;
@@ -137,6 +138,16 @@ class UserEditInfoFormType extends AbstractType {
           'attr' => [
             'maxlength' => '10'
           ],
+        ])
+        ->add('neradniDan', ChoiceType::class, [
+          'required' => false,
+          'placeholder' => '--Izaberite neradni dan--',
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => NeradniDanData::form(),
+          'expanded' => false,
+          'multiple' => false,
         ])
         ->add('telefon2', TextType::class, [
           'required' => false,

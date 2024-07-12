@@ -1,0 +1,186 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerKadrovska' )) }}
+<div class="page-content">
+    {{ render(controller('App\\Controller\\WidgetController::adminMainSidebarKadrovska')) }}
+
+    <!-- Main content -->
+    <div class="content-wrapper">
+
+        <!-- Inner content -->
+        <!-- Inner content -->
+        <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Radna mesta
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">{{ position.title }} <a href="{{ path('app_position_kadrovska_form', {id: position.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Naziv:</div>
+                                            <div class="col-8">{{ position.title() }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Kratak naziv:</div>
+                                            <div class="col-8">{{ position.titleShort }}</div>
+                                        </div>
+                                        <div class="row p-2 bg">
+                                            <div class="col-4">Status:</div>
+                                            <div class="col-8">{{ position.badgeByStatus() | raw}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if position.editBy is not null %}
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Poslednja verizja:</h5>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Izmenio:</div>
+                                                <div class="col-8">{{ position.editBy.getFullName() | default('/') }}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Vreme:</div>
+                                                <div class="col-8">{{ position.updated | date("d.m.Y") }} u {{ position.updated | date("H:i:s") }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+
+{% endblock includeJavascript %}
+
+{#{% block footerJavascript %}#}
+{#    <script type="text/javascript">#}
+{#        $(document).ready(function() {#}
+{#            var options = {#}
+{#                // target:        '#output1',   // target element(s) to be updated with server response#}
+{#                success:       editInfoResponse,  // post-submit callback#}
+{#                //         // target:        '#error',#}
+{#                //         // other available options:#}
+{#                //         //url:       url         // override for form's 'action' attribute#}
+{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#                //         //clearForm: true        // clear all form fields after successful submit#}
+{#                        resetForm: true,        // reset the form after successful submit#}
+{#                //         success:   editInfoResponse#}
+{#                //         // $.ajax options can be used here too, for example:#}
+{#                //         //timeout:   3000#}
+{#            };#}
+
+{#            // bind form using 'ajaxForm'#}
+{#            $('#infoForma').ajaxForm(options);#}
+{#        });#}
+{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
+{#        //     // for normal html responses, the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseText property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'xml' then the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseXML property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'json' then the first argument to the success callback#}
+{#        //     // is the json data object returned by the server#}
+{#        //#}
+{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
+{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
+{#        // }#}
+{#        // $(function () {#}
+{#        //     var options = {#}
+{#        //         // target:        '#error',#}
+{#        //         // other available options:#}
+{#        //         //url:       url         // override for form's 'action' attribute#}
+{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#        //         //clearForm: true        // clear all form fields after successful submit#}
+{#        //         resetForm: true,        // reset the form after successful submit#}
+{#        //         success:   editInfoResponse#}
+{#        //         // $.ajax options can be used here too, for example:#}
+{#        //         //timeout:   3000#}
+{#        //     };#}
+{#        //     // bind form using ajaxForm#}
+{#        //     $('#infoForma').submit(function() {#}
+{#        //         // inside event callbacks 'this' is the DOM element so we first#}
+{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
+{#        //         $(this).ajaxSubmit(options);#}
+{#        //#}
+{#        //         // !!! Important !!!#}
+{#        //         // always return false to prevent standard browser submit and page navigation#}
+{#        //         return false;#}
+{#        //     });#}
+{#        // });#}
+{#        //#}
+{#        function editInfoResponse(data) {#}
+{#            // 'data' is the json object returned from the server#}
+
+{#            if (data.success === 1) {#}
+{#                swal({#}
+{#                    type: 'success',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+{#            else {#}
+{#                var error = data.error_msg.toString();#}
+{#                swal({#}
+{#                    type: 'error',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+
+{#        }#}
+
+{#    </script>#}
+{#{% endblock footerJavascript %}#}

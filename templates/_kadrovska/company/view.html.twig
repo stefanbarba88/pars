@@ -1,0 +1,225 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUserKadrovska' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebarKadrovska')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ company.title }}
+                            </h4>
+                        </div>
+                    </div>
+                    {{ render(controller('App\\Controller\\WidgetController::companyProfilNavigationKadrovska', { company: company } )) }}
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <div class="sidebar sidebar-component sidebar-expand-lg sidebar-expand-sm sidebar-expand-md sidebar-expand-xl sidebar-expand-xxl sidebar-mobile-expanded bg-transparent shadow-none me-lg-3">
+
+                            <!-- Sidebar content -->
+                            <div class="sidebar-content">
+                                <!-- Navigation -->
+                                <div class="card">
+                                    <div class="sidebar-section-body text-center">
+                                        <div class="card-img-actions d-inline-block mb-3">
+                                            <img class="img-fluid rounded-circle" src="{{ asset(company.image.thumbnail500) }}" width="150" height="150" alt="{{ company.title }}">
+                                        </div>
+                                    </div>
+                                    <ul class="nav nav-sidebar">
+{#                                        <li class="nav-item">#}
+{#                                            <a href="{{ path('app_company_view', { id: company.id}) }}" class="nav-link" >#}
+{#                                                <i class="ph-user me-2"></i>#}
+{#                                                Profil#}
+{#                                            </a>#}
+{#                                        </li>#}
+{#                                        <li class="nav-item">#}
+{#                                            <a href="{{ path('app_client_activity_view', { id: client.id}) }}" class="nav-link">#}
+{#                                                <i class="ph-activity me-2"></i>#}
+{#                                                Aktivnosti#}
+{#                                                <span class="badge bg-secondary rounded-pill ms-auto">29</span>#}
+{#                                            </a>#}
+{#                                        </li>#}
+{#                                        <li class="nav-item">#}
+{#                                            <a href="{{ path('app_client_calendar_view', { id: client.id}) }}" class="nav-link">#}
+{#                                                <i class="ph-calendar me-2"></i>Raspored#}
+{#                                                <span class="fs-sm fw-normal text-muted ms-auto">02:56pm</span>#}
+{#                                            </a>#}
+{#                                        </li>#}
+                                        <li class="nav-item-divider"></li>
+                                        <li class="nav-item">
+{#                                                                <a href="{{ path('app_logout') }}" class="nav-link" data-bs-toggle="tab">#}
+{#                                                                    <i class="ph-sign-out me-2"></i>Odjavite se#}
+{#                                                                </a>#}
+                                            <a href="{{ path('app_kadrovska_company_form', { id: company.id}) }}" class="nav-link">
+                                                <i class="ph-lightbulb me-2"></i>Status
+                                                <span class="ms-auto">{{ company.badgeByStatus | raw }}</span>
+                                            </a>
+
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- /navigation -->
+                            </div>
+                            <!-- /sidebar content -->
+                        </div>
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Osnovni podaci <a href="{{ path('app_kadrovska_company_form', {id: company.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Naziv:</div>
+                                            <div class="col-8">{{ company.title }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">PIB/VAT:</div>
+                                            <div class="col-8">{{ company.pib }}</div>
+                                        </div>
+{#                                        <div class="row p-2 bg">#}
+{#                                            <div class="col-4">Lica za kontakt:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% for contact in company.contact %}#}
+{#                                                    <a href="{{ path('app_user_profile_view', {id: contact.id}) }}">{{ contact.fullName }}</a>{% if  not loop.last %}<br>{% endif %}#}
+{#                                                {% endfor %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+                                        <div class="row p-2">
+                                            <div class="col-4">Kreirao:</div>
+                                            <div class="col-8">{{ company.createdBy.getFullName() }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Vreme:</div>
+                                            <div class="col-8">{{ company.created | date("d.m.Y") }} u {{ company.created | date("H:i:s") }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Kontakt podaci</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Država:</div>
+                                            <div class="col-8">{{ company.grad.drzava.title }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Grad:</div>
+                                            <div class="col-8">{{ company.grad.getFormTitle() }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Adresa:</div>
+                                            <div class="col-8">{{ company.adresa }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Telefon #1:</div>
+                                            <div class="col-8">{{ company.telefon1 | default('/') }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Telefon #2:</div>
+                                            <div class="col-8">{{ company.telefon2 | default('/') }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Email:</div>
+                                            <div class="col-8">{{ company.email | default('/') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if company.editBy is not null %}
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Poslednja verzija</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Izmenio:</div>
+                                                <div class="col-8">{{ company.editBy.getFullName() | default('/') }}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Vreme:</div>
+                                                <div class="col-8">{{ company.updated | date("d.m.Y") }} u {{ company.updated | date("H:i:s") }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include '_kadrovska/includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+
+    </div>
+    {% include '_kadrovska/includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}

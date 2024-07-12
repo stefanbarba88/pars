@@ -50,14 +50,14 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.category, 'Kategorija:', {'label_attr': {'class': 'form-category'}}) }}
-                                        {{ form_widget(form.category, {attr: { class: 'form-control select' }}) }}
+                                        {{ form_label(form.category, 'Kategorija:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.category, {attr: { class: 'form-control' }}) }}
                                         <span class="form-text">Kategorizacija pomaže u organizaciji.</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.project, 'Projekat:*', {'label_attr': {'class': 'form-category'}}) }}
+                                        {{ form_label(form.project, 'Projekat:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.project, {attr: { class: 'form-control required' }}) }}
                                     </div>
                                 </div>
@@ -65,7 +65,7 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
-                                        {{ form_label(form.description, 'Opis:', {'label_attr': {'class': 'form-category'}}) }}
+                                        {{ form_label(form.description, 'Opis:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.description, {attr: { class: 'form-control' }}) }}
                                     </div>
                                 </div>
@@ -73,12 +73,56 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.label, 'Oznaka:', {'label_attr': {'class': 'form-category'}}) }}
+                                        {{ form_label(form.label, 'Oznaka:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.label, {attr: { class: 'form-control' }}) }}
                                         <span class="form-text">Oznaka bliže opisuje projekat. Projekat može imati više oznaka.</span>
                                     </div>
                                 </div>
                             </div>
+                            <div class="row" >
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.repeating, 'Zadatak se ponavlja:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.repeating, {attr: { class: 'form-control required repeat' }}) }}
+                                        <span class="form-text">Definišete da li se zadatak ponavlja u određenem vremenskom intervalu.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if task.repeating == 1 %}
+                                <div class="row repeating">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.repeatingInterval, 'Interval ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.repeatingInterval, {attr: { class: 'form-control intrep required' }}) }}
+                                            <span class="form-text">Definišete interval na kada se zadatak ponovo kreira.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 tacanDatum">
+                                        <div class="mb-3">
+                                            {{ form_label(form.datumPonavljanja, 'Tačan datum ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep required datepicker-date-format-custom-2', autocomplete: 'off' }}) }}
+                                            <span class="form-text">Tačan datum kada će se zadatak ponovo kreirati.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="row hide repeating">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.repeatingInterval, 'Interval ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.repeatingInterval, {attr: { class: 'form-control intrep' }}) }}
+                                            <span class="form-text">Definišete interval na kada se zadatak ponovo kreira.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 hide tacanDatum">
+                                        <div class="mb-3">
+                                            {{ form_label(form.datumPonavljanja, 'Tačan datum ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep datepicker-date-format-custom-2', autocomplete: 'off' }}) }}
+                                            <span class="form-text">Tačan datum kada će se zadatak ponovo kreirati.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
 
                             <div class="text-end">
                                 <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
@@ -149,19 +193,60 @@
 
     <script>
         $(function () {
-            $(".round").change(function(e) {
+            $(".repeat").change(function(e) {
                 e.preventDefault();
                 if ($(this).val() == "1") {
 
-                    $('.timeRound').removeClass('hide');
-                    $('.interval').addClass('required');
-                    $('.minent').addClass('required');
+                    $('.repeating').removeClass('hide');
+                    $('.intrep').addClass('required');
+                    // $('.datrep').addClass('required');
                 }
                 else {
-                    $('.timeRound').addClass('hide');
-                    $('.interval').val('').removeClass('required');
-                    $('.minent').val('').removeClass('required');
+                    $('.repeating').addClass('hide');
+                    $('.intrep').val('').removeClass('required');
+                    $('.datrep').val('').removeClass('required');
                 }
+            });
+
+            {% set minDate = task.datumKreiranja | date_modify('+1 day')|date('d.m.Y') %}
+
+            const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom-2');
+            if(dpDateCustomFormatElement2) {
+                const dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
+                    container: '.content-inner',
+                    buttonClass: 'btn',
+                    prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                    nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                    format: 'dd.mm.yyyy',
+                    todayBtn: true,
+                    weekStart: 1,
+                    minDate: '{{ minDate }}',
+                    daysOfWeekHighlighted: [0,6],
+                    language: 'sr-latn',
+                    // daysOfWeekDisabled: [0]
+                });
+            }
+
+            function handleRepeatingIntervalChange() {
+                if ($("#task_edit_info_repeatingInterval").val() == "5") {
+                    // Ako je izabrana opcija "5", prikaži polje za tačan datum i postavi required
+                    $('.tacanDatum').removeClass('hide');
+                    $('.datrep').addClass('required');
+                } else {
+                    // Ako nije, sakrij polje za tačan datum i ukloni required
+                    $('.tacanDatum').addClass('hide');
+                    $('.datrep').val('').removeClass('required');
+                }
+            }
+
+            // Poziv funkcije pri učitavanju stranice
+            handleRepeatingIntervalChange();
+
+            // Postavljanje promene select elementa
+            $("#task_edit_info_repeatingInterval").change(function(e) {
+                e.preventDefault();
+                // Poziv funkcije prilikom promene select elementa
+                handleRepeatingIntervalChange();
             });
         });
     </script>

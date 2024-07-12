@@ -23,7 +23,7 @@ class OvertimeController extends AbstractController {
 
   #[Route('/list/', name: 'app_overtimes')]
   public function list(PaginatorInterface $paginator, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
@@ -50,7 +50,7 @@ class OvertimeController extends AbstractController {
 
   #[Route('/archive/', name: 'app_overtime_archive')]
   public function archive(PaginatorInterface $paginator, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
@@ -77,7 +77,7 @@ class OvertimeController extends AbstractController {
   #[Route('/form/{id}', name: 'app_overtime_form', defaults: ['id' => 0])]
   #[Entity('overtime', expr: 'repository.findForForm(id)')]
   public function form(Request $request, Overtime $overtime): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
@@ -113,7 +113,7 @@ class OvertimeController extends AbstractController {
     }
 
     $args['overtime'] = $overtime;
-    $args['users'] = $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
+    $args['users'] = $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $this->getUser()->getCompany()], ['prezime' => 'ASC']);
 
     return $this->render('overtime/form.html.twig', $args);
   }
@@ -121,7 +121,7 @@ class OvertimeController extends AbstractController {
   #[Route('/form-employee/{id}', name: 'app_overtime_employee_form', defaults: ['id' => 0])]
   #[Entity('overtime', expr: 'repository.findForForm(id)')]
   public function formEmployee(Request $request, Overtime $overtime): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -163,7 +163,7 @@ class OvertimeController extends AbstractController {
 
   #[Route('/view/{id}', name: 'app_overtime_view')]
   public function view(Overtime $overtime): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
@@ -177,7 +177,7 @@ class OvertimeController extends AbstractController {
   #[Route('/allow/{id}', name: 'app_overtime_allow')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function allow(Overtime $overtime): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
@@ -192,7 +192,7 @@ class OvertimeController extends AbstractController {
   #[Route('/decline/{id}', name: 'app_overtime_decline')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function decline(Overtime $overtime): Response {
-    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $overtime->setStatus(2);

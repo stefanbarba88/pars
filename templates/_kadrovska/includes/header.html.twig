@@ -1,0 +1,286 @@
+<!-- Main navbar -->
+<div class="navbar navbar-dark navbar-expand-lg navbar-static border-bottom border-bottom-white border-opacity-10">
+    <div class="container-fluid">
+        <div class="d-flex d-lg-none">
+            <button type="button" class="navbar-toggler sidebar-mobile-main-toggle rounded-pill">
+                <i class="ph-list"></i>
+            </button>
+            <button type="button" class="navbar-toggler sidebar-mobile-end-toggle rounded-pill">
+                <i class="ph-arrow-right"></i>
+            </button>
+        </div>
+
+        <div class="navbar-brand  flex-1 flex-lg-0">
+            <a href="{{ path('app_kadrovska_home') }}" class="d-inline-flex align-items-center">
+{#                <img src="{{ asset('assets/images/logo/logo_admin.png') }}" alt="">#}
+                <img src="{{ asset('assets/images/logo/epars_new.png') }}" class="h-25px" alt="">
+            </a>
+        </div>
+
+
+
+
+            <ul class="nav flex-row">
+                <li class="nav-item d-lg-none">
+                    <a href="#navbar_search" class="navbar-nav-link navbar-nav-link-icon rounded-pill" data-bs-toggle="collapse">
+                        <i class="ph-magnifying-glass"></i>
+                    </a>
+                </li>
+            </ul>
+            {% if is_granted('ROLE_EMPLOYEE') %}
+                <div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse" id="navbar_search">
+                    <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
+                        <form method="get" id="searchForm" action="{{ path('app_search_employee_kadrovska') }}">
+                            <div class="form-control-feedback form-control-feedback-start flex-grow-1" data-color-theme="dark">
+                                <input type="text" name="tekst" class="form-control bg-transparent rounded-pill" placeholder="Pretraga" data-bs-toggle="dropdown">
+                                <div class="form-control-feedback-icon">
+                                    <i class="ph-magnifying-glass"></i>
+                                </div>
+                            </div>
+
+                            {#                    <a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">#}
+                            {#                        <i class="ph-faders-horizontal"></i>#}
+                            {#                    </a>#}
+                            <a href="#" onclick="document.getElementById('searchForm').submit();" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 mx-1">
+                                <i class="ph-magnifying-glass"></i>
+                            </a>
+{#                            <div class="dropdown-menu w-100 p-3">#}
+{#                                <div class="d-flex align-items-center mb-3">#}
+{#                                    <h6 class="mb-0">Opcije pretrage</h6>#}
+{#                                    #}{#                        <a href="#" class="text-body rounded-pill ms-auto">#}
+{#                                    #}{#                            <i class="ph-clock-counter-clockwise"></i>#}
+{#                                    #}{#                        </a>#}
+{#                                </div>#}
+
+{#                                <div class="mb-3">#}
+{#                                    <label class="d-block form-label">Kategorije</label>#}
+{#                                    <label class="form-check form-check-inline">#}
+{#                                        <input type="checkbox" name="projekat" class="form-check-input" checked>#}
+{#                                        <span class="form-check-label">Projekti</span>#}
+{#                                    </label>#}
+{#                                    <label class="form-check form-check-inline">#}
+{#                                        <input type="checkbox" name="zadatak" class="form-check-input">#}
+{#                                        <span class="form-check-label">Zadaci</span>#}
+{#                                    </label>#}
+{#                                    <label class="form-check form-check-inline">#}
+{#                                        <input type="checkbox" name="zaposleni" class="form-check-input">#}
+{#                                        <span class="form-check-label">Zaposleni</span>#}
+{#                                    </label>#}
+{#                                </div>#}
+
+{#                                <div class="mb-3">#}
+{#                                    <label class="form-label">Status</label>#}
+{#                                    <div class="input-group">#}
+{#                                        <select class="form-select w-auto flex-grow-0" name="status">#}
+{#                                            <option value="1">je</option>#}
+{#                                            <option value="2">nije</option>#}
+{#                                        </select>#}
+{#                                        <select class="form-select" name="statusStanje">#}
+{#                                            <option value="0">aktivan</option>#}
+{#                                            <option value="1">neaktivan</option>#}
+{#                                            #}{#                                <option value="3">New</option>#}
+{#                                            #}{#                                <option value="4">Expired</option>#}
+{#                                            #}{#                                <option value="5">Pending</option>#}
+{#                                        </select>#}
+{#                                    </div>#}
+{#                                </div>#}
+
+{#                                <div class="d-flex">#}
+{#                                    #}{#                            <button type="reset" class="btn btn-light">Resetujte</button>#}
+
+{#                                    <div class="ms-auto">#}
+{#                                        #}{#                                <button type="button" class="btn btn-light">Odustanite</button>#}
+{#                                        <button type="submit" class="btn btn-primary ms-2"><i class="ph-magnifying-glass me-2"></i>Pretražite</button>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+
+
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse" id="navbar_search">
+                    <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
+                        <form method="get" id="searchForm" action="{{ path('app_search_kadrovska') }}">
+                            <div class="form-control-feedback form-control-feedback-start flex-grow-1" data-color-theme="dark">
+                                <input type="text" name="tekst" class="form-control bg-transparent rounded-pill" placeholder="Pretraga" data-bs-toggle="dropdown">
+                                {#                        <div class="form-control-feedback-icon">#}
+                                {#                            <i class="ph-magnifying-glass"></i>#}
+                                {#                        </div>#}
+                            </div>
+
+                            <a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                                <i class="ph-faders-horizontal"></i>
+                            </a>
+                            <a href="#" onclick="document.getElementById('searchForm').submit();" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-1 top-50 translate-middle-y p-0 mx-1">
+                                <i class="ph-magnifying-glass"></i>
+                            </a>
+                            <div class="dropdown-menu w-100 p-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <h6 class="mb-0">Opcije pretrage</h6>
+                                    {#                        <a href="#" class="text-body rounded-pill ms-auto">#}
+                                    {#                            <i class="ph-clock-counter-clockwise"></i>#}
+                                    {#                        </a>#}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="d-block form-label">Kategorije</label>
+                                    <label class="form-check form-check-inline">
+                                        <input type="checkbox" name="firma" class="form-check-input" checked>
+                                        <span class="form-check-label">Firme</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input type="checkbox" name="zaposleni" class="form-check-input" checked>
+                                        <span class="form-check-label">Zaposleni</span>
+                                    </label>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <div class="input-group">
+                                        <select class="form-select w-auto flex-grow-0" name="status">
+                                            <option value="1">je</option>
+                                            <option value="2">nije</option>
+                                        </select>
+                                        <select class="form-select" name="statusStanje">
+                                            <option value="0">aktivan</option>
+                                            <option value="1">neaktivan</option>
+                                            {#                                <option value="3">New</option>#}
+                                            {#                                <option value="4">Expired</option>#}
+                                            {#                                <option value="5">Pending</option>#}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex">
+                                    {#                            <button type="reset" class="btn btn-light">Resetujte</button>#}
+
+                                    <div class="ms-auto">
+                                        {#                                <button type="button" class="btn btn-light">Odustanite</button>#}
+                                        <button type="submit" class="btn btn-primary ms-2"><i class="ph-magnifying-glass me-2"></i>Pretražite</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {#                    <div class="d-lg-none">#}
+                            {#                        <a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-1 top-50 translate-middle-y p-0 mx-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">#}
+                            {#                            <i class="ph-faders-horizontal"></i>#}
+                            {#                        </a>#}
+                            {#                        <a href="#" onclick="document.getElementById('searchForm').submit();" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1">#}
+                            {#                            <i class="ph-magnifying-glass"></i>#}
+                            {#                        </a>#}
+                            {#                        <div class="dropdown-menu w-100 p-3">#}
+                            {#                            <div class="d-flex align-items-center mb-3">#}
+                            {#                                <h6 class="mb-0">Opcije pretrage</h6>#}
+                            {#                                #}{#                        <a href="#" class="text-body rounded-pill ms-auto">#}
+                            {#                                #}{#                            <i class="ph-clock-counter-clockwise"></i>#}
+                            {#                                #}{#                        </a>#}
+                            {#                            </div>#}
+
+                            {#                            <div class="mb-3">#}
+                            {#                                <label class="d-block form-label">Kategorije</label>#}
+                            {#                                <label class="form-check form-check-inline">#}
+                            {#                                    <input type="checkbox" name="projekat" class="form-check-input">#}
+                            {#                                    <span class="form-check-label">Projekti</span>#}
+                            {#                                </label>#}
+                            {#                                <label class="form-check form-check-inline">#}
+                            {#                                    <input type="checkbox" name="zadatak" class="form-check-input">#}
+                            {#                                    <span class="form-check-label">Zadaci</span>#}
+                            {#                                </label>#}
+                            {#                                <label class="form-check form-check-inline">#}
+                            {#                                    <input type="checkbox" name="zaposleni" class="form-check-input">#}
+                            {#                                    <span class="form-check-label">Zaposleni</span>#}
+                            {#                                </label>#}
+                            {#                            </div>#}
+
+                            {#                            <div class="mb-3">#}
+                            {#                                <label class="form-label">Status</label>#}
+                            {#                                <div class="input-group">#}
+                            {#                                    <select class="form-select w-auto flex-grow-0" name="status">#}
+                            {#                                        <option value="1">je</option>#}
+                            {#                                        <option value="2">nije</option>#}
+                            {#                                    </select>#}
+                            {#                                    <select class="form-select" name="statusStanje">#}
+                            {#                                        <option value="0">aktivan</option>#}
+                            {#                                        <option value="1">neaktivan</option>#}
+                            {#                                        #}{#                                <option value="3">New</option>#}
+                            {#                                        #}{#                                <option value="4">Expired</option>#}
+                            {#                                        #}{#                                <option value="5">Pending</option>#}
+                            {#                                    </select>#}
+                            {#                                </div>#}
+                            {#                            </div>#}
+
+                            {#                            <div class="d-flex">#}
+                            {#                                #}{#                            <button type="reset" class="btn btn-light">Resetujte</button>#}
+
+                            {#                                <div class="ms-auto">#}
+                            {#                                    #}{#                                <button type="button" class="btn btn-light">Odustanite</button>#}
+                            {#                                    <button type="submit" class="btn btn-primary ms-2"><i class="ph-magnifying-glass me-2"></i>Pretražite</button>#}
+                            {#                                </div>#}
+                            {#                            </div>#}
+                            {#                        </div>#}
+                            {#                    </div>#}
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+        <ul class="nav flex-row justify-content-end order-1 order-lg-2">
+{#            <li class="nav-item ms-lg-2">#}
+{#                <a href="#" class="navbar-nav-link navbar-nav-link-icon rounded-pill" data-bs-toggle="offcanvas" data-bs-target="#notifications">#}
+{#                    <i class="ph-bell"></i>#}
+{#                    <span class="badge bg-yellow text-black position-absolute top-0 end-0 translate-middle-top zindex-1 rounded-pill mt-1 me-1">2</span>#}
+{#                </a>#}
+{#            </li>#}
+            {% if is_granted('ROLE_USER') %}
+            <li class="nav-item nav-item-dropdown-lg dropdown ms-lg-2">
+                <a href="#" class="navbar-nav-link align-items-center rounded-pill p-1" data-bs-toggle="dropdown">
+                    <div class="status-indicator-container">
+                        <img src="{{ asset(logged.image.thumbnail100) }}" class="w-32px h-32px rounded-pill" alt="">
+                        <span class="status-indicator bg-success"></span>
+                    </div>
+                    <span class="d-none d-lg-inline-block mx-lg-2">{{ logged.ime }}</span>
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end">
+                    {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE')  %}
+                        <a href="{{ path('app_employee_profile_view_kadrovska', {id: logged.id}) }}" class="dropdown-item">
+                            <i class="ph-user-circle me-2"></i>
+                            Profil
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_kadrovska_user_profile_view', {id: logged.id}) }}" class="dropdown-item">
+                            <i class="ph-user-circle me-2"></i>
+                            Profil
+                        </a>
+                    {% endif %}
+                    {#                    <a href="#" class="dropdown-item">#}
+                    {#                        <i class="ph-currency-circle-dollar me-2"></i>#}
+                    {#                        My subscription#}
+                    {#                    </a>#}
+                    {#                    <a href="#" class="dropdown-item">#}
+                    {#                        <i class="ph-shopping-cart me-2"></i>#}
+                    {#                        My orders#}
+                    {#                    </a>#}
+                    {#                    <a href="#" class="dropdown-item">#}
+                    {#                        <i class="ph-envelope-open me-2"></i>#}
+                    {#                        My inbox#}
+                    {#                        <span class="badge bg-primary rounded-pill ms-auto">26</span>#}
+                    {#                    </a>#}
+                    <div class="dropdown-divider"></div>
+                    {#                        <a href="#" class="dropdown-item">#}
+                    {#                            <i class="ph-gear me-2"></i>#}
+                    {#                            Podešavanja#}
+                    {#                        </a>#}
+                    <a href="{{ path('app_logout') }}" class="dropdown-item">
+                        <i class="ph-sign-out me-2"></i>
+                        Odjavite se
+                    </a>
+                </div>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+<!-- /main navbar -->

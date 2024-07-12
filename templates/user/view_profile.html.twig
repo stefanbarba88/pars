@@ -142,17 +142,29 @@
                                                         {% endif %}
                                                     </div>
                                                 </div>
-{#                                                <div class="row p-2 ">#}
-{#                                                    <div class="col-4">Slava:</div>#}
-{#                                                    <div class="col-8">#}
-{#                                                        {% if user.slava is not null %}#}
-{#                                                            {{ user.slava | date("d.m")}}#}
-{#                                                        {% else %}#}
-{#                                                            /#}
-{#                                                        {% endif %}#}
-{#                                                    </div>#}
-{#                                                </div>#}
-                                                <div class="row p-2">
+                                                <div class="row p-2 ">
+                                                    <div class="col-4">Neradni dan:</div>
+                                                    <div class="col-8">
+                                                        {% if user.neradniDan is not null %}
+                                                            {% if user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::PONEDELJAK')%}
+                                                                Ponedeljak
+                                                            {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::UTORAK')%}
+                                                                Utorak
+                                                            {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::SREDA')%}
+                                                                Sreda
+                                                            {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::CETVRTAK')%}
+                                                                Četvrtak
+                                                            {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::PETAK')%}
+                                                                Petak
+                                                            {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::SUBOTA')%}
+                                                                Subota
+                                                            {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::NEDELJA')%}
+                                                                 Nedelja
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
                                                     <div class="col-4">Zaduženi uređaji:</div>
                                                     <div class="col-8">
                                                         {% if user.mobile %}

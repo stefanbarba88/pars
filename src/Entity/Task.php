@@ -98,11 +98,11 @@ class Task implements JsonSerializable {
   #[ORM\Column(nullable: true)]
   private ?int $minEntry = null;
 
-//  #[ORM\Column(nullable: true)]
-//  private ?int $car = null;
-//
-//  #[ORM\Column(nullable: true)]
-//  private ?int $driver = null;
+  #[ORM\Column(nullable: true)]
+  private ?int $car = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $driver = null;
 
   #[ORM\Column(nullable: true)]
   private ?int $roundingInterval = null;
@@ -149,8 +149,8 @@ class Task implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Activity::class)]
   private Collection $activity;
 
-//  #[ORM\ManyToMany(targetEntity: Tool::class, inversedBy: 'tasks')]
-//  private Collection $oprema;
+  #[ORM\ManyToMany(targetEntity: Tool::class, inversedBy: 'tasks')]
+  private Collection $oprema;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
@@ -174,7 +174,7 @@ class Task implements JsonSerializable {
     $this->taskLogs = new ArrayCollection();
     $this->comments = new ArrayCollection();
     $this->activity = new ArrayCollection();
-//    $this->oprema = new ArrayCollection();
+    $this->oprema = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -219,7 +219,7 @@ class Task implements JsonSerializable {
       'deadline' => $this->getDeadline(),
       'datumKreiranja' => $this->getDatumKreiranja(),
       'activity' => $this->getActivityJson(),
-//      'oprema' => $this->getOpremaJson()
+      'oprema' => $this->getOpremaJson()
     ];
   }
 
@@ -668,14 +668,14 @@ class Task implements JsonSerializable {
     return $activities;
   }
 
-//  public function getOpremaJson(): array {
-//    $oprema = [];
-//    foreach ($this->oprema as $opr) {
-//      $oprema[] = $opr->getTitle();
-//    }
-//
-//    return $oprema;
-//  }
+  public function getOpremaJson(): array {
+    $oprema = [];
+    foreach ($this->oprema as $opr) {
+      $oprema[] = $opr->getTitle();
+    }
+
+    return $oprema;
+  }
   /**
    * @return Collection<int, Activity>
    */
@@ -707,19 +707,19 @@ class Task implements JsonSerializable {
     return $this;
   }
 
-//  /**
-//   * @return int|null
-//   */
-//  public function getCar(): ?int {
-//    return $this->car;
-//  }
-//
-//  /**
-//   * @param int|null $car
-//   */
-//  public function setCar(?int $car): void {
-//    $this->car = $car;
-//  }
+  /**
+   * @return int|null
+   */
+  public function getCar(): ?int {
+    return $this->car;
+  }
+
+  /**
+   * @param int|null $car
+   */
+  public function setCar(?int $car): void {
+    $this->car = $car;
+  }
 
   /**
    * @return DateTimeImmutable|null
@@ -735,29 +735,29 @@ class Task implements JsonSerializable {
     $this->time = $time;
   }
 
-//  /**
-//   * @return Collection<int, Tool>
-//   */
-//  public function getOprema(): Collection
-//  {
-//      return $this->oprema;
-//  }
-//
-//  public function addOprema(Tool $oprema): self
-//  {
-//      if (!$this->oprema->contains($oprema)) {
-//          $this->oprema->add($oprema);
-//      }
-//
-//      return $this;
-//  }
-//
-//  public function removeOprema(Tool $oprema): self
-//  {
-//      $this->oprema->removeElement($oprema);
-//
-//      return $this;
-//  }
+  /**
+   * @return Collection<int, Tool>
+   */
+  public function getOprema(): Collection
+  {
+      return $this->oprema;
+  }
+
+  public function addOprema(Tool $oprema): self
+  {
+      if (!$this->oprema->contains($oprema)) {
+          $this->oprema->add($oprema);
+      }
+
+      return $this;
+  }
+
+  public function removeOprema(Tool $oprema): self
+  {
+      $this->oprema->removeElement($oprema);
+
+      return $this;
+  }
 
   /**
    * @return int|null
@@ -773,19 +773,19 @@ class Task implements JsonSerializable {
     $this->priorityUserLog = $priorityUserLog;
   }
 
-//  /**
-//   * @return int|null
-//   */
-//  public function getDriver(): ?int {
-//    return $this->driver;
-//  }
-//
-//  /**
-//   * @param int|null $driver
-//   */
-//  public function setDriver(?int $driver): void {
-//    $this->driver = $driver;
-//  }
+  /**
+   * @return int|null
+   */
+  public function getDriver(): ?int {
+    return $this->driver;
+  }
+
+  /**
+   * @param int|null $driver
+   */
+  public function setDriver(?int $driver): void {
+    $this->driver = $driver;
+  }
 
   /**
    * @return bool|null

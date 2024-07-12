@@ -108,14 +108,16 @@
                                         </div>
                                     </div>
                                 </div>
-{#                                <div class="row">#}
-{#                                    <div class="col-lg-12">#}
-{#                                        <div class="mb-3">#}
-{#                                            {{ form_label(form.oprema, 'Oprema:', {'label_attr': {'class': 'form-label'}}) }}#}
-{#                                            {{ form_widget(form.oprema, {attr: { class: 'form-control select' }}) }}#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
+                                {% if isTool %}
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="mb-3">
+                                                {{ form_label(form.oprema, 'Oprema:', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.oprema, {attr: { class: 'form-control select' }}) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
@@ -209,34 +211,36 @@
                                         </div>
                                     </div>
                                 </div>
-{#                                <div class="row">#}
-{#                                    <div class="col-lg-6">#}
-{#                                        <div class="mb-3">#}
-{#                                            <div class="mb-1">#}
-{#                                                <label class="form-label" for="task_form_car">Vozilo:</label>#}
-{#                                                <select id="task_form_car" name="task_form[car]" class="form-control select">#}
-{#                                                    <option value="">--Izaberite vozilo--</option>#}
-{#                                                    {% for car in cars %}#}
-{#                                                        <option value="{{ car.id }}">{{ car.carName }}</option>#}
-{#                                                    {% endfor %}#}
-{#                                                </select>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                    <div class="col-lg-6">#}
-{#                                        <div class="mb-3">#}
-{#                                            <div class="mb-1">#}
-{#                                                <label class="form-label" for="task_form_driver">Vozač:</label>#}
-{#                                                <select id="task_form_driver" name="task_form[driver]" class="form-control select" >#}
-{#                                                    <option value="">--Izaberite vozača--</option>#}
-{#                                                    {% for user in users %}#}
-{#                                                        <option value="{{ user.id }}">{{ user.ime }}</option>#}
-{#                                                    {% endfor %}#}
-{#                                                </select>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
+                                {% if isCar %}
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <div class="mb-1">
+                                                    <label class="form-label" for="task_form_car">Vozilo:</label>
+                                                    <select id="task_form_car" name="task_form[car]" class="form-control select">
+                                                        <option value="">--Izaberite vozilo--</option>
+                                                        {% for car in cars %}
+                                                            <option value="{{ car.id }}">{{ car.carName }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <div class="mb-1">
+                                                    <label class="form-label" for="task_form_driver">Vozač:</label>
+                                                    <select id="task_form_driver" name="task_form[driver]" class="form-control select" >
+                                                        <option value="">--Izaberite vozača--</option>
+                                                        {% for user in users %}
+                                                            <option disabled value="{{ user.id }}">{{ user.getNameForForm() }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                                 <div class="row">
 {#                                    <div class="col-lg-6">#}
 {#                                        <div class="mb-3">#}
@@ -342,7 +346,7 @@
                                         <div class="col-lg-6 tacanDatum">
                                             <div class="mb-3">
                                                 {{ form_label(form.datumPonavljanja, 'Tačan datum ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep required datepicker-date-format-custom-2' }}) }}
+                                                {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep required datepicker-date-format-custom-2', autocomplete: 'off' }}) }}
                                                 <span class="form-text">Tačan datum kada će se zadatak ponovo kreirati.</span>
                                             </div>
                                         </div>
@@ -359,7 +363,7 @@
                                         <div class="col-lg-6 hide tacanDatum">
                                             <div class="mb-3">
                                                 {{ form_label(form.datumPonavljanja, 'Tačan datum ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep datepicker-date-format-custom-2' }}) }}
+                                                {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep datepicker-date-format-custom-2', autocomplete: 'off' }}) }}
                                                 <span class="form-text">Tačan datum kada će se zadatak ponovo kreirati.</span>
                                             </div>
                                         </div>
@@ -503,10 +507,12 @@
             // Pratimo promene u prvom select elementu
             $("#task_form_assignedUsers").change(function () {
                 updatePrimarySelectOptions();
+                updateDriverSelectOptions();
             });
 
             // Pokrećemo funkciju za ažuriranje opcija pri učitavanju stranice
             updatePrimarySelectOptions();
+            updateDriverSelectOptions();
 
             function updatePrimarySelectOptions() {
                 // Dobijamo selektovane opcije iz prvog select elementa
@@ -529,7 +535,38 @@
                     $("#task_form_primary").prop("disabled", false);
                 }
             }
-        });
+
+            function updateDriverSelectOptions() {
+                // Dobijamo selektovane opcije iz prvog select elementa
+                var selectedAssignedUsers = $("#task_form_assignedUsers option:selected");
+                var selectedCar = $("#task_form_car option:selected");
+
+                // Resetujemo opcije u drugom select elementu
+                $("#task_form_driver").empty();
+
+                // Proveravamo da li su izabrani zaduženi korisnici i vozilo
+                if (selectedAssignedUsers.length > 0 && selectedCar.val() !== "") {
+                    // Ako su izabrani zaduženi korisnici i vozilo, omogućujemo drugi select element i dodajemo opcije za vozače
+                    selectedAssignedUsers.each(function () {
+                        var optionValue = $(this).val();
+                        var optionText = $(this).text();
+                        $("#task_form_driver").append('<option value="' + optionValue + '">' + optionText + '</option>');
+                    });
+                    $("#task_form_driver").prop("disabled", false);
+
+                    // Postavljamo vozača kao obavezno polje i menjamo labelu
+                    $('#task_form_driver').prop('required', true);
+                    $('label[for="task_form_driver"]').text('Vozač:*');
+                } else {
+                    // Ako nisu izabrani zaduženi korisnici ili vozilo, onemogućujemo drugi select element, postavljamo opciju "--Izaberite vozača--" i vraćamo polje na neobavezno
+                    $("#task_form_driver").append('<option value="">--Izaberite vozača--</option>');
+                    $("#task_form_driver").prop("disabled", true);
+                    $('#task_form_driver').prop('required', false);
+                    $('label[for="task_form_driver"]').text('Vozač:');
+                }
+            }
+
+
 
         //
         //     function updateDriversOptions1() {
@@ -588,23 +625,7 @@
                 // daysOfWeekDisabled: [0]
             });
         }
-
-        const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom-z');
-        if(dpDateCustomFormatElement1) {
-            const dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
-                container: '.content-inner',
-                buttonClass: 'btn',
-                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
-                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
-                format: 'dd.mm.yyyy',
-                todayBtn: true,
-                weekStart: 1,
-                minDate: 'today',
-                daysOfWeekHighlighted: [0,6],
-                language: 'sr-latn',
-                // daysOfWeekDisabled: [0]
-            });
-        }
+            {% set minDate = task.datumKreiranja|date_modify('+1 day')|date('d.m.Y') %}
 
         const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom-2');
         if(dpDateCustomFormatElement2) {
@@ -616,7 +637,7 @@
                 format: 'dd.mm.yyyy',
                 todayBtn: true,
                 weekStart: 1,
-                minDate: 'today',
+                minDate: '{{ minDate }}',
                 daysOfWeekHighlighted: [0,6],
                 language: 'sr-latn',
                 // daysOfWeekDisabled: [0]
@@ -667,6 +688,34 @@
             }
         });
 
+
+        // Na promenu u polju za vozilo
+        $('#task_form_car').change(function(){
+            if($(this).val() !== '') {
+                $('#task_form_driver').prop('required', true).prop('disabled', false); // Ako je vozilo izabrano, postavi vozača kao obavezno polje i omogući ga
+                updateDriverSelectOptions();
+                $('label[for="task_form_driver"]').text('Vozač:*'); // Promeni labelu za vozača
+            } else {
+                $('#task_form_driver').prop('required', false).prop('disabled', true); // Ako nije izabrano vozilo, vozač nije obavezno polje i onemogući ga
+                updateDriverSelectOptions();
+                $('label[for="task_form_driver"]').text('Vozač:'); // Vrati labelu na osnovnu vrednost
+            }
+        });
+
+
+
+        // var inicijalnaVrednost = $('#datumCheck').val();
+        //
+        // $('#datumCheck').on('change', function () {
+        //     if ($(this).val() !== inicijalnaVrednost) {
+        //         $('#sacuvajDugme').removeClass('disabled');
+        //     } else {
+        //         $('#sacuvajDugme').addClass('disabled');
+        //     }
+        // });
+
+
+        });
         function submitForm(formId) {
             const drugeForme = document.querySelectorAll('form:not(#' + formId + ')');
 
@@ -682,19 +731,6 @@
                 formaZaSubmit.submit(); // Ručno izvršite submit za izabranu formu
             }
         }
-// $(document).ready(function () {
-//         var inicijalnaVrednost = $('#datumCheck').val();
-//
-//         $('#datumCheck').on('change', function () {
-//             if ($(this).val() !== inicijalnaVrednost) {
-//                 $('#sacuvajDugme').removeClass('disabled');
-//             } else {
-//                 $('#sacuvajDugme').addClass('disabled');
-//             }
-//         });
-//     });
-
-
     </script>
 
 {% endblock footerJavascript %}

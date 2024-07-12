@@ -169,7 +169,7 @@
 
                     // Add legend
                     legend: {
-                        data: ['Teren', 'Zadaci'],
+                        data: ['Zadaci ukupno', 'Teren', 'Kancelarija', 'Rad od kuće'],
                         itemHeight: 8,
                         itemGap: 30,
                         textStyle: {
@@ -245,6 +245,36 @@
                     // Add series
                     series: [
                         {
+                            name: 'Zadaci ukupno',
+                            type: 'bar',
+                            data: [
+                                {% for zadatak in zadaci %}
+                                {{ zadatak }},
+                                {% endfor %}
+                            ],
+                            itemStyle: {
+                                normal: {
+                                    barBorderRadius: [4, 4, 0, 0],
+                                    label: {
+                                        show: true,
+                                        position: 'top',
+                                        fontWeight: 500,
+                                        fontSize: 12,
+                                        color: 'var(--body-color)'
+                                    }
+                                }
+                            },
+                            markLine: {
+                                data: [{
+                                    type: 'average',
+                                    name: 'Average'
+                                }],
+                                label: {
+                                    color: 'var(--body-color)'
+                                }
+                            }
+                        },
+                        {
                             name: 'Teren',
                             type: 'bar',
                             data: [
@@ -275,10 +305,40 @@
                             }
                         },
                         {
-                            name: 'Zadaci',
+                            name: 'Kancelarija',
                             type: 'bar',
                             data: [
-                                {% for zadatak in zadaci %}
+                                {% for zadatak in kancelarija %}
+                                {{ zadatak }},
+                                {% endfor %}
+                            ],
+                            itemStyle: {
+                                normal: {
+                                    barBorderRadius: [4, 4, 0, 0],
+                                    label: {
+                                        show: true,
+                                        position: 'top',
+                                        fontWeight: 500,
+                                        fontSize: 12,
+                                        color: 'var(--body-color)'
+                                    }
+                                }
+                            },
+                            markLine: {
+                                data: [{
+                                    type: 'average',
+                                    name: 'Average'
+                                }],
+                                label: {
+                                    color: 'var(--body-color)'
+                                }
+                            }
+                        },
+                        {
+                            name: 'Rad od kuće',
+                            type: 'bar',
+                            data: [
+                                {% for zadatak in kuca %}
                                 {{ zadatak }},
                                 {% endfor %}
                             ],

@@ -48,12 +48,13 @@ class AvailabilityCheckCommand extends Command {
     $companies = $this->em->getRepository(Company::class)->findBy(['isSuspended' => false]);
 
     foreach ($companies as $company) {
-    $users = $this->em->getRepository(User::class)->getZaposleniCommand($company);
-
-      foreach ($users as $user) {
-        $dostupnost = $this->em->getRepository(Availability::class)->findOneBy(['datum' => $danas->setTime(0,0), 'User' => $user]);
-        if (is_null($dostupnost)) {
-          $this->em->getRepository(StopwatchTime::class)->addDostupnost($user);
+      if($company->getSettings()->isCalendar()) {
+        $users = $this->em->getRepository(User::class)->getZaposleniCommand($company);
+        foreach ($users as $user) {
+          $dostupnost = $this->em->getRepository(Availability::class)->findOneBy(['datum' => $danas->setTime(0,0), 'User' => $user]);
+          if (is_null($dostupnost)) {
+            $this->em->getRepository(StopwatchTime::class)->addDostupnost($user);
+          }
         }
       }
     }

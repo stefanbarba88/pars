@@ -78,6 +78,8 @@ class StopwatchController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
+    $args['isCalendar'] = $stopwatch->getCompany()->getSettings()->isCalendar();
+    $args['workTime'] = $stopwatch->getCompany()->getSettings()->getRadnoVreme();
 
 
   if (is_null($stopwatch->getStop())) {
@@ -189,20 +191,23 @@ class StopwatchController extends AbstractController {
 
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
 
-//        if (!is_null($sati)) {
-//          if ($sati != 0 || $minuti != 0) {
-//            $overtime = new Overtime();
-//            $overtime->setUser($stopwatch->getTaskLog()->getUser());
-//            $overtime->setHours($sati);
-//            $overtime->setMinutes($minuti);
-//            $overtime->setNote($napomena);
-//            $overtime->setDatum($stopwatch->getCreated()->setTime(0, 0));
-//            $overtime->setStatus(0);
-//            $overtime->setTask($stopwatch->getTaskLog()->getTask());
-//            $overtime->setCompany($stopwatch->getTaskLog()->getTask()->getCompany());
-//            $this->em->getRepository(Overtime::class)->save($overtime);
-//          }
-//        }
+        if ($args['isCalendar']) {
+          if (!is_null($sati)) {
+            if ($sati != 0 || $minuti != 0) {
+              $overtime = new Overtime();
+              $overtime->setUser($stopwatch->getTaskLog()->getUser());
+              $overtime->setHours($sati);
+              $overtime->setMinutes($minuti);
+              $overtime->setNote($napomena);
+              $overtime->setDatum($stopwatch->getCreated()->setTime(0, 0));
+              $overtime->setStatus(0);
+              $overtime->setTask($stopwatch->getTaskLog()->getTask());
+              $overtime->setCompany($stopwatch->getTaskLog()->getTask()->getCompany());
+              $this->em->getRepository(Overtime::class)->save($overtime);
+            }
+          }
+        }
+
         $user = $this->getUser();
         $user->setIsInTask(false);
         $this->em->getRepository(User::class)->save($user);
@@ -227,6 +232,7 @@ class StopwatchController extends AbstractController {
     $args['hours'] = intdiv($stopwatch->getDiffRounded(), 60);
     $args['minutes'] = $stopwatch->getDiffRounded() % 60;
     $args['task'] = $stopwatch->getTaskLog()->getTask();
+
 
     if ($args['hours'] < 10) {
       $args['hours'] = '0' . $args['hours'];

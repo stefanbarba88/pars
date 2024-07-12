@@ -10,6 +10,7 @@ namespace App\Twig;
 
 use App\Classes\Data\UserRolesData;
 use App\Entity\Availability;
+use App\Entity\Car;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\TaskLog;
@@ -49,8 +50,11 @@ class AppExtension extends AbstractExtension {
       new TwigFunction('getDostupnostByUserSutra', [$this, 'getDostupnostByUserSutra']),
       new TwigFunction('getDostupnostByUser', [$this, 'getDostupnostByUser']),
       new TwigFunction('getCountTasksByProject', [$this, 'getCountTasksByProject']),
+      new TwigFunction('getCountTasksByProjectIntern', [$this, 'getCountTasksByProjectIntern']),
       new TwigFunction('getCountDaysTasksByProject', [$this, 'getCountDaysTasksByProject']),
       new TwigFunction('getTekuciPoslovi', [$this, 'getTekuciPoslovi']),
+      new TwigFunction('getCarById', [$this, 'getCarById']),
+      new TwigFunction('getUserById', [$this, 'getUserById']),
     ];
   }
 
@@ -98,8 +102,23 @@ class AppExtension extends AbstractExtension {
     return $this->entityManager->getRepository(Project::class)->getCountTasksByProject($project);
   }
 
+  public function getCountTasksByProjectIntern(Project $project):array {
+    return $this->entityManager->getRepository(Project::class)->getCountTasksByProjectIntern($project);
+  }
+
   public function getCountDaysTasksByProject(Project $project):array {
     return $this->entityManager->getRepository(Project::class)->getCountDaysTasksByProject($project);
   }
+
+  public function getCarById(int $id): string {
+    $car = $this->entityManager->getRepository(Car::class)->find($id);
+    return $car->getCarName();
+  }
+
+  public function getUserById(int $id): string {
+    $user = $this->entityManager->getRepository(User::class)->find($id);
+    return $user->getFullName();
+  }
+
 
 }

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\ZaposleniPozicija;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -58,6 +59,29 @@ class ZaposleniPozicijaRepository extends ServiceEntityRepository {
       ->orderBy('c.title', 'ASC')
       ->addOrderBy('c.id', 'ASC')
       ->getQuery();
+  }
+
+  public function getPositionsKadrovskaPaginator($filter): Query {
+    $company = $this->security->getUser()->getCompany();
+
+
+      $qb = $this->createQueryBuilder('c')
+        ->where('c.company = :company')
+        ->setParameter('company', $company);
+
+      if (!empty($filter['naziv'])) {
+        $qb->andWhere($qb->expr()->orX(
+          $qb->expr()->like('c.title', ':naziv'),
+        ))
+          ->setParameter('naziv', '%' . $filter['naziv'] . '%');
+      }
+
+      return $qb
+        ->orderBy('c.isSuspended', 'ASC')
+        ->addOrderBy('c.title', 'ASC')
+        ->addOrderBy('c.id', 'ASC')
+        ->getQuery();
+
   }
 
 //    /**

@@ -94,6 +94,7 @@
                                     </thead>
                                     <tbody>
                                     {% for project in pagination %}
+                                        {% set noTasksIntern = getCountTasksByProjectIntern(project) | length  %}
                                         {% set noTasks = getCountTasksByProject(project)  %}
                                         <tr>
                                             <td>
@@ -123,13 +124,15 @@
                                         </tr>
 
                                         <tr id="collapsed_item{{ project.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
-                                            <td>Broj zadataka:
+                                            <td>Zadaci:
                                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
                                                     {{ noTasks.total }}
                                                 </span>
                                             </td>
-                                            <td>
-                                                {{ project.created | date("d.m.Y")}}
+                                            <td>Interni:
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ noTasksIntern }}
+                                                </span>
                                             </td>
 
                                             <td class="text-center">

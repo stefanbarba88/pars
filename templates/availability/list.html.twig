@@ -1,0 +1,251 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Dostupnost
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Dostupnost</h5>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="mb-3">
+                                        <h6>Legenda</h6>
+                                        <div class="bg-light border rounded p-2 mb-3">
+                                            <div class="mb-2">
+                                                <span class="badge bg-secondary bg-opacity-75 text-primary d-block">Slobodan dan</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="badge bg-secondary text-primary d-block">Odmor</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="badge bg-primary bg-opacity-75 text-white d-block">Bolovanje</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="badge bg-primary bg-opacity text-white d-block">Slava</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="badge bg-yellow text-primary d-block">Ostalo</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6>Neradni dani</h6>
+                                        <div class="bg-light border rounded p-2 mb-3">
+                                            <div class="mb-2">
+                                                <span class="badge bg-secondary bg-opacity-50 text-primary d-block">Državni/Verski praznik</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="badge bg-primary bg-opacity-50 text-white d-block">Kolektivni odmor</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="fullcalendar-event-colors "></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista dostupnosti</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light text-primary">
+                                    <tr>
+                                        <th>Zaposleni</th>
+                                        <th  {% if pagination.isSorted('[c.type]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Tip ', ['c.type']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.type' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.type' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th>Datum</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for dost in pagination %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    <a href="{{ path('app_employee_profile_view', { id: dost.user.id}) }}">{{ dost.user.getFullName() }}</a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if dost.zahtev == 1 %}
+                                                    <span class="badge bg-secondary bg-opacity-75 text-primary">Slobodan dan</span>
+                                                {% elseif dost.zahtev == 2 %}
+                                                    <span class="badge bg-secondary text-primary">Odmor</span>
+                                                {% elseif dost.zahtev == 3 %}
+                                                    <span class="badge bg-primary bg-opacity-75 text-white">Bolovanje</span>
+                                                {% elseif dost.zahtev == 4 %}
+                                                    <span class="badge bg-primary bg-opacity text-white">Slava</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ dost.datum | date("d.m.Y")}}
+                                                </div>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_availability_delete', {id: dost.id}) }}" class="dropdown-item">
+                                                            <i class="ph-trash me-2"></i>
+                                                            Obrišite
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/locales/sr.js') }}"></script>
+
+{% endblock includeJavascript %}
+{% block footerJavascript %}
+    <script type="text/javascript">
+        const eventColors =
+            [
+                {% for event in dostupnosti %}
+                    {% if event.id == '' %}
+                        {
+                            {#title: '{{ event.title }}',#}
+                            start: '{{ event.start }}',
+                            backgroundColor: '{{ event.color }}',
+                            text: '{{ event.text }}',
+                            display: 'background',
+                        },
+                    {% else %}
+                        {
+                            title: '{{ event.title }}',
+                            start: '{{ event.start }}',
+                            color: '{{ event.color }}',
+                            textColor: '{{ event.text }}',
+                        },
+                    {% endif %}
+                {% endfor %}
+            ]
+        const initialLocaleCode = 'sr';
+        // Define element
+        const calendarEventColorsElement = document.querySelector('.fullcalendar-event-colors');
+
+        // Initialize
+        if(calendarEventColorsElement) {
+            const calendarEventColorsInit = new FullCalendar.Calendar(calendarEventColorsElement, {
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,timeGridDay'
+                },
+                validRange: {
+                    start: '{{ "now"|date("Y") }}-{{ "now"|date("m") }}-01'
+                },
+                initialView: 'dayGridMonth',
+                locale: initialLocaleCode,
+                initialDate: new Date(),
+                navLinks: true, // can click day/week names to navigate views
+                businessHours: true, // display business hours
+                // editable: true,
+                // selectable: true,
+                // editable: true,
+                direction: document.dir == 'rtl' ? 'rtl' : 'ltr',
+                events: eventColors,
+                dayMaxEvents: true
+                // height: 500
+            });
+
+            // Init
+            calendarEventColorsInit.render();
+
+            // Resize calendar when sidebar toggler is clicked
+            document.querySelectorAll('.sidebar-control').forEach(function(sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    calendarEventColorsInit.updateSize();
+                })
+            });
+        }
+        $(".fc-daygrid-day-bg .fc-event-title").addClass("pozadinkiEvent");
+
+    </script>
+{% endblock footerJavascript %}

@@ -10,6 +10,7 @@ use App\Entity\CarReservation;
 use App\Entity\Tool;
 use App\Entity\ToolHistory;
 use App\Entity\ToolReservation;
+use App\Entity\ToolType;
 use App\Form\CarFormType;
 use App\Form\CarReservationFormType;
 use App\Form\CarStopReservationFormType;
@@ -18,6 +19,7 @@ use App\Form\ToolReservationFormDetailsType;
 use App\Form\ToolReservationFormType;
 use App\Form\ToolStopReservationFormDetailsType;
 use App\Form\ToolStopReservationFormType;
+use App\Form\ToolTypeFormType;
 use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
@@ -36,9 +38,112 @@ class ToolController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
 
+  //tipovi opreme
+  #[Route('/list-type/', name: 'app_tools_type')]
+  public function listType(PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $args = [];
+
+    $search = [];
+
+    $search['naziv'] = $request->query->get('naziv');
+    $search['tip'] = $request->query->get('tip');
+
+    $cars = $this->em->getRepository(ToolType::class)->getToolsTypePaginator($search);
+
+    $pagination = $paginator->paginate(
+      $cars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+//    $args['tipovi'] = $this->em->getRepository(ToolType::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/list_type.html.twig', $args);
+    }
+
+    return $this->render('tool/list_type.html.twig', $args);
+  }
+
+  #[Route('/form-type/{id}', name: 'app_tool_type_form', defaults: ['id' => 0])]
+  #[Entity('tool', expr: 'repository.findForForm(id)')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formType(Request $request, ToolType $tool): Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $form = $this->createForm(ToolTypeFormType::class, $tool, ['attr' => ['action' => $this->generateUrl('app_tool_type_form', ['id' => $tool->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(ToolType::class)->save($tool);
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::TOOL_TYPE_ADD);
+
+        return $this->redirectToRoute('app_tools_type');
+
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['tool'] = $tool;
+
+    return $this->render('tool/form_type.html.twig', $args);
+  }
+
+  #[Route('/activate-type/{id}', name: 'app_tool_type_activate')]
+  public function deleteType(ToolType $tool, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+
+    if ($tool->isSuspended()) {
+      $tool->setIsSuspended(false);
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::TOOL_TYPE_ACTIVATE);
+    } else {
+      $tool->setIsSuspended(true);
+
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::TOOL_TYPE_DEACTIVATE);
+    }
+
+
+    $this->em->getRepository(ToolType::class)->save($tool);
+
+    return $this->redirectToRoute('app_tools_type');
+
+  }
+
+  //oprema
+
   #[Route('/list/', name: 'app_tools')]
   public function list(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -60,7 +165,7 @@ class ToolController extends AbstractController {
     $session->set('url', $request->getRequestUri());
 
     $args['pagination'] = $pagination;
-    $args['tip'] = TipOpremeData::TIP;
+//    $args['tipovi'] = $this->em->getRepository(ToolType::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -72,7 +177,7 @@ class ToolController extends AbstractController {
 
   #[Route('/list-reserved/', name: 'app_tools_reserved')]
   public function reserved(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -106,7 +211,7 @@ class ToolController extends AbstractController {
 
   #[Route('/list-available/', name: 'app_tools_available')]
   public function available(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -140,7 +245,7 @@ class ToolController extends AbstractController {
 
   #[Route('/list-archive/', name: 'app_tools_archive')]
   public function archive(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -176,7 +281,7 @@ class ToolController extends AbstractController {
   #[Entity('tool', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, Tool $tool): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $type = $request->query->getInt('type');
@@ -221,7 +326,7 @@ class ToolController extends AbstractController {
   #[Route('/view/{id}', name: 'app_tool_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function view(Tool $tool): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['tool'] = $tool;
@@ -231,7 +336,9 @@ class ToolController extends AbstractController {
 
   #[Route('/activate/{id}', name: 'app_tool_activate')]
   public function delete(Tool $tool, Request $request): Response {
-
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $type = $request->query->getInt('type');
 
     $history = null;
@@ -274,10 +381,11 @@ class ToolController extends AbstractController {
     return $this->redirectToRoute('app_tool_view', ['id' => $tool->getId()]);
   }
 
+
   #[Route('/history-tool-list/{id}', name: 'app_tool_history_list')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function listToolHistory(Tool $tool, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -305,7 +413,7 @@ class ToolController extends AbstractController {
   #[Route('/history-tool-view/{id}', name: 'app_tool_profile_history_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewToolHistory(ToolHistory $toolHistory, SerializerInterface $serializer): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -317,7 +425,7 @@ class ToolController extends AbstractController {
 
   #[Route('/list-reservations/{id}', name: 'app_tools_reservations')]
   public function listReservations(Tool $tool, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
@@ -347,7 +455,7 @@ class ToolController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
 
   public function formReservation(ToolReservation $reservation, Tool $tool, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $type = $request->query->getInt('type');
@@ -374,9 +482,9 @@ class ToolController extends AbstractController {
         if ($type == 1) {
           return $this->redirectToRoute('app_tools');
         }
-        if ($type == 2) {
-          return $this->redirectToRoute('app_car_tools_details_view');
-        }
+//        if ($type == 2) {
+//          return $this->redirectToRoute('app_car_tools_details_view');
+//        }
         return $this->redirectToRoute('app_tools_reservations', ['id' => $tool->getId()]);
       }
     }
@@ -391,7 +499,7 @@ class ToolController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
 
   public function formReservationUser(Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $type = $request->query->getInt('type');
@@ -434,7 +542,7 @@ class ToolController extends AbstractController {
 
   #[Route('/stop-reservation/{id}', name: 'app_tool_reservation_stop')]
   public function stopReservation(ToolReservation $reservation, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -465,7 +573,7 @@ class ToolController extends AbstractController {
   #[Route('/view-reservation/{id}', name: 'app_tool_reservation_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewReservation(ToolReservation $reservation): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['reservation'] = $reservation;
@@ -473,90 +581,90 @@ class ToolController extends AbstractController {
     return $this->render('tool/view_reservation.html.twig', $args);
   }
 
-  #[Route('/stop-employee-reservation-details-tool/{id}', name: 'app_tool_employee_reservation_stop_details')]
-  public function stopEmployeeReservationDetails(ToolReservation $reservation, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    $user = $this->getUser();
-    $form = $this->createForm(ToolStopReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_tool_employee_reservation_stop_details', ['id' => $reservation->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $reservation->setFinished(new DateTimeImmutable());
-        $this->em->getRepository(ToolReservation::class)->save($reservation);
-
-        return $this->redirectToRoute('app_car_tools_details_view');
-      }
-    }
-
-    $args['form'] = $form->createView();
-    $args['reservation'] = $reservation;
-    $args['tool'] = $reservation->getTool();
-    $args['user'] = $user;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('tool/phone/form_reservation_stop_employee.html.twig', $args);
-    }
-    return $this->render('tool/form_reservation_stop_employee.html.twig', $args);
-  }
-
-  #[Route('/form-employee-reservation-details-tool/{id}', name: 'app_employee_reservation_details_tool_form', defaults: ['id' => 0])]
-  #[Entity('tool', expr: 'repository.find(id)')]
-  #[Entity('reservation', expr: 'repository.findForFormTool(tool)')]
-//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-
-  public function formEmployeeReservationDetailsTool(ToolReservation $reservation, Tool $tool, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    $user = $this->getUser();
-
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $reservation->setUser($user);
-    }
-
-
-
-    $form = $this->createForm(ToolReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_employee_reservation_details_tool_form', ['id' => $tool->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $this->em->getRepository(ToolReservation::class)->save($reservation);
-
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::TOOL_RESERVE);
-
-        return $this->redirectToRoute('app_car_tools_details_view');
-
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['tool'] = $tool;
-    $args['reservation'] = $reservation;
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('tool/phone/form_reservation_employee_details_form_user.html.twig', $args);
-    }
-    return $this->render('tool/form_reservation_employee_details_form_user.html.twig', $args);
-  }
+//  #[Route('/stop-employee-reservation-details-tool/{id}', name: 'app_tool_employee_reservation_stop_details')]
+//  public function stopEmployeeReservationDetails(ToolReservation $reservation, Request $request): Response {
+//    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//
+//    $user = $this->getUser();
+//    $form = $this->createForm(ToolStopReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_tool_employee_reservation_stop_details', ['id' => $reservation->getId()])]]);
+//    if ($request->isMethod('POST')) {
+//      $form->handleRequest($request);
+//
+//      if ($form->isSubmitted() && $form->isValid()) {
+//
+//        $reservation->setFinished(new DateTimeImmutable());
+//        $this->em->getRepository(ToolReservation::class)->save($reservation);
+//
+//        return $this->redirectToRoute('app_car_tools_details_view');
+//      }
+//    }
+//
+//    $args['form'] = $form->createView();
+//    $args['reservation'] = $reservation;
+//    $args['tool'] = $reservation->getTool();
+//    $args['user'] = $user;
+//
+//    $mobileDetect = new MobileDetect();
+//    if($mobileDetect->isMobile()) {
+//      return $this->render('tool/phone/form_reservation_stop_employee.html.twig', $args);
+//    }
+//    return $this->render('tool/form_reservation_stop_employee.html.twig', $args);
+//  }
+//
+//  #[Route('/form-employee-reservation-details-tool/{id}', name: 'app_employee_reservation_details_tool_form', defaults: ['id' => 0])]
+//  #[Entity('tool', expr: 'repository.find(id)')]
+//  #[Entity('reservation', expr: 'repository.findForFormTool(tool)')]
+////  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+//
+//  public function formEmployeeReservationDetailsTool(ToolReservation $reservation, Tool $tool, Request $request): Response {
+//    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+//      return $this->redirect($this->generateUrl('app_login'));
+//    }
+//
+//    $user = $this->getUser();
+//
+//    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+//      $reservation->setUser($user);
+//    }
+//
+//
+//
+//    $form = $this->createForm(ToolReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_employee_reservation_details_tool_form', ['id' => $tool->getId()])]]);
+//    if ($request->isMethod('POST')) {
+//      $form->handleRequest($request);
+//
+//      if ($form->isSubmitted() && $form->isValid()) {
+//
+//        $this->em->getRepository(ToolReservation::class)->save($reservation);
+//
+//
+//        notyf()
+//          ->position('x', 'right')
+//          ->position('y', 'top')
+//          ->duration(5000)
+//          ->dismissible(true)
+//          ->addSuccess(NotifyMessagesData::TOOL_RESERVE);
+//
+//        return $this->redirectToRoute('app_car_tools_details_view');
+//
+//      }
+//    }
+//    $args['form'] = $form->createView();
+//    $args['tool'] = $tool;
+//    $args['reservation'] = $reservation;
+//    $mobileDetect = new MobileDetect();
+//    if($mobileDetect->isMobile()) {
+//      return $this->render('tool/phone/form_reservation_employee_details_form_user.html.twig', $args);
+//    }
+//    return $this->render('tool/form_reservation_employee_details_form_user.html.twig', $args);
+//  }
 
 
   #[Route('/stop-employee-reservation-tool/{id}', name: 'app_tool_employee_reservation_stop')]
   public function stopEmployeeReservationTool(ToolReservation $reservation, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
@@ -589,7 +697,7 @@ class ToolController extends AbstractController {
   #[Route('/view-employee-reservation-tool/{id}', name: 'app_tool_employee_reservation_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewEmployeeReservationTool(ToolReservation $reservation): Response {
-    if (!$this->isGranted('ROLE_USER')) {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['reservation'] = $reservation;
@@ -599,6 +707,47 @@ class ToolController extends AbstractController {
       return $this->render('tool/phone/view_reservation_employee.html.twig', $args);
     }
     return $this->render('tool/view_reservation_employee.html.twig', $args);
+  }
+
+
+  #[Route('/reports', name: 'app_tool_reports')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReport(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+
+      $args['reports'] = $this->em->getRepository(ToolReservation::class)->getReport($data['report_form']);
+      $args['tool'] = $this->em->getRepository(Tool::class)->find($data['report_form']['oprema']);
+      $args['period'] = $data['report_form']['period'];
+
+      return $this->render('report_tool/view.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['tools'] =  $this->em->getRepository(Tool::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false],['id' => 'ASC']);
+
+    return $this->render('report_tool/control.html.twig', $args);
+  }
+
+  #[Route('/reports-archive', name: 'app_tool_reports_archive')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportArchive(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $args = [];
+
+    $args['tools'] =  $this->em->getRepository(Tool::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true],['id' => 'ASC']);
+
+    return $this->render('report_tool/control.html.twig', $args);
   }
 
 }

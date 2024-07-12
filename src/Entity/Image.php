@@ -52,9 +52,9 @@ class Image {
 
   #[ORM\ManyToOne(inversedBy: 'image')]
   private ?StopwatchTime $stopwatchTime = null;
-//
-//  #[ORM\ManyToOne(inversedBy: 'image')]
-//  private ?CarReservation $carReservation = null;
+
+  #[ORM\ManyToOne(inversedBy: 'image')]
+  private ?CarReservation $carReservation = null;
 
   public function __construct() {
     $this->users = new ArrayCollection();
@@ -210,56 +210,49 @@ class Image {
   /**
    * @return Collection<int, Client>
    */
-  public function getClients(): Collection
-  {
-      return $this->clients;
+  public function getClients(): Collection {
+    return $this->clients;
   }
 
-  public function addClient(Client $client): self
-  {
-      if (!$this->clients->contains($client)) {
-          $this->clients->add($client);
-          $client->setImage($this);
+  public function addClient(Client $client): self {
+    if (!$this->clients->contains($client)) {
+      $this->clients->add($client);
+      $client->setImage($this);
+    }
+
+    return $this;
+  }
+
+  public function removeClient(Client $client): self {
+    if ($this->clients->removeElement($client)) {
+      // set the owning side to null (unless already changed)
+      if ($client->getImage() === $this) {
+        $client->setImage(null);
       }
+    }
 
-      return $this;
+    return $this;
   }
 
-  public function removeClient(Client $client): self
-  {
-      if ($this->clients->removeElement($client)) {
-          // set the owning side to null (unless already changed)
-          if ($client->getImage() === $this) {
-              $client->setImage(null);
-          }
-      }
-
-      return $this;
+  public function getStopwatchTime(): ?StopwatchTime {
+    return $this->stopwatchTime;
   }
 
-  public function getStopwatchTime(): ?StopwatchTime
-  {
-      return $this->stopwatchTime;
+  public function setStopwatchTime(?StopwatchTime $stopwatchTime): self {
+    $this->stopwatchTime = $stopwatchTime;
+
+    return $this;
   }
 
-  public function setStopwatchTime(?StopwatchTime $stopwatchTime): self
-  {
-      $this->stopwatchTime = $stopwatchTime;
-
-      return $this;
+  public function getCarReservation(): ?CarReservation {
+    return $this->carReservation;
   }
-//
-//  public function getCarReservation(): ?CarReservation
-//  {
-//      return $this->carReservation;
-//  }
-//
-//  public function setCarReservation(?CarReservation $carReservation): self
-//  {
-//      $this->carReservation = $carReservation;
-//
-//      return $this;
-//  }
+
+  public function setCarReservation(?CarReservation $carReservation): self {
+    $this->carReservation = $carReservation;
+
+    return $this;
+  }
 
 
 }

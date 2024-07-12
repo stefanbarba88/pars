@@ -1,0 +1,311 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ car.carName }}
+                            </h4>
+                        </div>
+                    </div>
+
+                    {{ render(controller('App\\Controller\\WidgetController::carProfilNavigation', { car: car } )) }}
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+                        {% set currentDate = date()|date("Y-m-d") %}
+                        {% set nextRegistrationDate = car.datumNaredneRegistracije|date("Y-m-d") %}
+                        {% set difference = nextRegistrationDate|date_modify('-30 days') %}
+                        {% set difference = difference|date("Y-m-d") %}
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            {% if currentDate <= nextRegistrationDate and currentDate >= difference %}
+                                <div class="alert alert-danger fade show">
+                                    <span class="fw-semibold">Registracija na vozilu ističe za manje od 30 dana.</span> Datum naredne registracije je {{ car.datumNaredneRegistracije | date("d.m.Y")}}. Kada izvršite registraciju izmenite podatke o vozilu.
+                                </div>
+                            {% endif %}
+                            {% if lastReservation %}
+                                {% if lastReservation.fuelStop is not null %}
+                                    {% if lastReservation.fuelStop <= constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                        <div class="alert alert-warning fade show">
+                                            <span class="fw-semibold">Nivo goriva u vozilu {{ car.getCarName()}} je na manje od 1/2 rezervoara.</span> Proverite nivo goriva u vozilu.
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    {% if lastReservation.fuelStart <= constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                        <div class="alert alert-warning fade show">
+                                            <span class="fw-semibold">Nivo goriva u vozilu {{ car.getCarName()}} je na manje od 1/2 rezervoara.</span> Proverite nivo goriva u vozilu.
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">{{ car.getCarName() }} <a href="{{ path('app_car_form', {id: car.id}) }}"><i class="ph-note-pencil"></i></a></h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Proizvođač:</div>
+                                            <div class="col-8">{{ car.brand }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Model:</div>
+                                            <div class="col-8">{{ car.model }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Registracioni broj:</div>
+                                            <div class="col-8">{{ car.plate }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Datum registracije:</div>
+                                            <div class="col-8">{{ car.datumRegistracije | date("d.m.Y")}}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Datum naredne registracije:</div>
+                                            <div class="col-8">
+                                                {{ car.datumNaredneRegistracije | date("d.m.Y")}}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Status:</div>
+                                            <div class="col-8">
+                                                {% if car.isSuspended %}
+                                                    <span class="badge bg-yellow text-primary">Deaktivirano</span>
+                                                {% else %}
+                                                    <span class="badge bg-primary text-white">Aktivno</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Kupovna cena:</div>
+                                            <div class="col-8">{{ car.price | number_format(2, '.', ',') }} RSD
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Rezervacija:</div>
+                                            <div class="col-8">
+                                                {% if car.isSuspended == false %}
+                                                    {% if car.isReserved %}
+                                                        <span class="badge bg-primary text-white">Zaduženo</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary text-primary">Slobodno</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Kilometraža:</div>
+                                            <div class="col-8">{{ car.km }} km
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Oprema u vozilu</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Obavezna zakonska oprema:</div>
+                                            <div class="col-8">{{ car.opremaZakonska }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Dodatna oprema:</div>
+                                            <div class="col-8">{{ car.opremaGeo }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if car.editBy is not null %}
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Poslednja verzija</h5>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Izmenio:</div>
+                                            <div class="col-8">{{ car.editBy.getFullName() | default('/') }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Vreme:</div>
+                                            <div class="col-8">{{ car.updated | date("d.m.Y") }} u {{ car.updated | date("H:i:s") }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+
+{#{% block footerJavascript %}#}
+{#    <script type="text/javascript">#}
+{#        $(document).ready(function() {#}
+{#            var options = {#}
+{#                // target:        '#output1',   // target element(s) to be updated with server response#}
+{#                success:       editInfoResponse,  // post-submit callback#}
+{#                //         // target:        '#error',#}
+{#                //         // other available options:#}
+{#                //         //url:       url         // override for form's 'action' attribute#}
+{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#                //         //clearForm: true        // clear all form fields after successful submit#}
+{#                        resetForm: true,        // reset the form after successful submit#}
+{#                //         success:   editInfoResponse#}
+{#                //         // $.ajax options can be used here too, for example:#}
+{#                //         //timeout:   3000#}
+{#            };#}
+
+{#            // bind form using 'ajaxForm'#}
+{#            $('#infoForma').ajaxForm(options);#}
+{#        });#}
+{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
+{#        //     // for normal html responses, the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseText property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'xml' then the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseXML property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'json' then the first argument to the success callback#}
+{#        //     // is the json data object returned by the server#}
+{#        //#}
+{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
+{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
+{#        // }#}
+{#        // $(function () {#}
+{#        //     var options = {#}
+{#        //         // target:        '#error',#}
+{#        //         // other available options:#}
+{#        //         //url:       url         // override for form's 'action' attribute#}
+{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#        //         //clearForm: true        // clear all form fields after successful submit#}
+{#        //         resetForm: true,        // reset the form after successful submit#}
+{#        //         success:   editInfoResponse#}
+{#        //         // $.ajax options can be used here too, for example:#}
+{#        //         //timeout:   3000#}
+{#        //     };#}
+{#        //     // bind form using ajaxForm#}
+{#        //     $('#infoForma').submit(function() {#}
+{#        //         // inside event callbacks 'this' is the DOM element so we first#}
+{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
+{#        //         $(this).ajaxSubmit(options);#}
+{#        //#}
+{#        //         // !!! Important !!!#}
+{#        //         // always return false to prevent standard browser submit and page navigation#}
+{#        //         return false;#}
+{#        //     });#}
+{#        // });#}
+{#        //#}
+{#        function editInfoResponse(data) {#}
+{#            // 'data' is the json object returned from the server#}
+
+{#            if (data.success === 1) {#}
+{#                swal({#}
+{#                    type: 'success',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+{#            else {#}
+{#                var error = data.error_msg.toString();#}
+{#                swal({#}
+{#                    type: 'error',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+
+{#        }#}
+
+{#    </script>#}
+{#{% endblock footerJavascript %}#}

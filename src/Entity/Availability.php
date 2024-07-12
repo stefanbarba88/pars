@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Classes\Data\AvailabilityData;
+use App\Classes\Data\TipNeradnihDanaData;
 use App\Repository\AvailabilityRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -19,10 +21,10 @@ class Availability {
   private ?DateTimeImmutable $datum = null;
 
   #[ORM\Column]
-  private ?int $type = 1;
+  private ?int $type = AvailabilityData::NEDOSTUPAN;
 
   #[ORM\Column]
-  private ?int $typeDay = 0;
+  private ?int $typeDay = TipNeradnihDanaData::RADNI_DAN;
 
   #[ORM\Column(nullable: true)]
   private ?int $zahtev = null;

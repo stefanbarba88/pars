@@ -17,39 +17,52 @@
                     </div>
                 </a>
             </li>
-{#            <li class="nav-item me-1">#}
-{#                <a href="{{ path('app_employee_calendar_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
-{#                    <div class="d-flex align-items-center mx-lg-1">#}
-{#                        <i class="ph-calendar"></i>#}
-{#                        <span class="d-none d-lg-inline-block ms-2">Kalendar</span>#}
-{#                    </div>#}
-{#                </a>#}
-{#            </li>#}
-{#            <li class="nav-item me-1">#}
-{#                <a href="{{ path('app_employee_car_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
-{#                    <div class="d-flex align-items-center mx-lg-1">#}
-{#                        <i class="ph-car"></i>#}
-{#                        <span class="d-none d-lg-inline-block ms-2">#}
-{#                            Vozila#}
-{#                        </span>#}
-{#                        {% if user.car is not null %}#}
-{#                            <span class="bg-yellow rounded-circle p-1 mx-2"></span>#}
-{#                        {% endif %}#}
-{#                    </div>#}
-{#                </a>#}
-{#            </li>#}
-{#            <li class="nav-item me-1">#}
-{#                <a href="{{ path('app_employee_tools_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
-{#                    <div class="d-flex align-items-center mx-lg-1">#}
-{#                        <i class="ph-wrench"></i>#}
-{#                        <span class="d-none d-lg-inline-block ms-2">#}
-{#                            Oprema#}
-{#                            <span class="badge bg-yellow rounded-pill ms-auto ms-lg-2">{{ noTools }}</span>#}
-{#                        </span>#}
-{#                    </div>#}
-{#                </a>#}
-{#            </li>#}
-
+            <li class="nav-item me-1">
+                <a href="{{ path('app_employee_checklist_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                    <div class="d-flex align-items-center mx-lg-1">
+                        <i class="ph-list-bullets"></i>
+                        <span class="d-none d-lg-inline-block ms-2">Interni zadaci</span>
+                    </div>
+                </a>
+            </li>
+            {% if user.company.settings.isCalendar %}
+                <li class="nav-item me-1">
+                    <a href="{{ path('app_employee_calendar_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                        <div class="d-flex align-items-center mx-lg-1">
+                            <i class="ph-calendar"></i>
+                            <span class="d-none d-lg-inline-block ms-2">Kalendar</span>
+                        </div>
+                    </a>
+                </li>
+            {% endif %}
+            {% if user.company.settings.isCar %}
+                <li class="nav-item me-1">
+                    <a href="{{ path('app_employee_car_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                        <div class="d-flex align-items-center mx-lg-1">
+                            <i class="ph-car"></i>
+                            <span class="d-none d-lg-inline-block ms-2">
+                                Vozila
+                            </span>
+                            {% if user.car is not null %}
+                                <span class="bg-yellow rounded-circle p-1 mx-2"></span>
+                            {% endif %}
+                        </div>
+                    </a>
+                </li>
+            {% endif %}
+            {% if user.company.settings.isTool %}
+                <li class="nav-item me-1">
+                    <a href="{{ path('app_employee_tools_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                        <div class="d-flex align-items-center mx-lg-1">
+                            <i class="ph-wrench"></i>
+                            <span class="d-none d-lg-inline-block ms-2">
+                                Oprema
+                                <span class="badge bg-yellow rounded-pill ms-auto ms-lg-2">{{ noTools }}</span>
+                            </span>
+                        </div>
+                    </a>
+                </li>
+            {% endif %}
             <li class="nav-item d-lg-none ms-auto">
                 <a href="#profile_nav" class="navbar-nav-link navbar-nav-link-icon collapsed rounded" data-bs-toggle="collapse">
                     <i class="ph-caret-down collapsible-indicator"></i>

@@ -107,7 +107,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-6">
-                                                {{ form_label(form.telefon1, 'Telefon #1:', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_label(form.telefon1, 'Telefon #1:*', {'label_attr': {'class': 'form-label'}}) }}
                                                 {{ form_widget(form.telefon1, {attr: { class: 'form-control required' }}) }}
                                                 <span class="form-text">Format: 0661111222</span>
                                             </div>
@@ -138,21 +138,17 @@
                                                     {{ form_widget(form.isPrvaPomoc, {attr: { class: 'form-control select required' }}) }}
                                                 </div>
                                             </div>
+
                                         </div>
-{#                                        <div class="row">#}
-{#                                            <div class="col-lg-6">#}
-{#                                                <div class="mb-3">#}
-{#                                                    {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}#}
-{#                                                    <div class="input-group">#}
-{#											<span class="input-group-text">#}
-{#												<i class="ph-calendar"></i>#}
-{#											</span>#}
-{#                                                        {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1' }}) }}#}
-{#                                                    </div>#}
-{#                                                    <span class="form-text">Format: 31.12.1900</span>#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                        </div>#}
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.neradniDan, 'Neradni dan:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.neradniDan, {attr: { class: 'form-control select' }}) }}
+                                                    <span class="form-text">Ukoliko zaposleni ne radi određenog dana u sedmici. Potrebno je uneti i dan vikenda ako firma radi vikendom.</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="mb-3">

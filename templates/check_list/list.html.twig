@@ -38,9 +38,10 @@
                                 <table class="table table-bordered table-hover table-responsive table-sm">
                                     <thead class="bg-light test-primary">
                                     <tr>
+                                        <th>#</th>
                                         <th>Zadatak</th>
                                         <th>Zaposleni</th>
-                                        <th  {% if pagination.isSorted('[c.priority]') %} class="sorted"{% endif %}>
+                                        <th {% if pagination.isSorted('[c.priority]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Prioritet ', ['c.priority']) }}
                                             {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.priority' %}
                                                 &#8595;
@@ -50,24 +51,24 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Kreiran</th>
-                                        <th>Završen</th>
-                                        <th {% if pagination.isSorted('[c.status]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Status ', ['c.status']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.status' %}
+                                        <th {% if pagination.isSorted('[c.datumKreiranja]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Datum zadatka ', ['c.datumKreiranja']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.datumKreiranja' %}
                                                 &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.status' %}
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.datumKreiranja' %}
                                                 &#8593;
                                             {% else %}
                                                 &#8597;
                                             {% endif %}
                                         </th>
+                                        <th>Kreirao</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for task in pagination %}
                                         <tr>
+                                            <td>{{ task.id }}</td>
                                             <td>
                                                 <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
                                                     {{ task.task }}
@@ -75,10 +76,10 @@
                                             </td>
                                             <td>
                                                 <div class="fw-semibold">
-                                                    <a href="{{ path('app_employee_profile_view', { id: task.user.id}) }}">{{ task.user.getFullName() }}</a>
+                                                    {{ task.user.getFullName() }}
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td class="text-center">
                                                 {% if task.priority == 1 %}
                                                     <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
                                                 {% elseif task.priority == 2 %}
@@ -90,29 +91,16 @@
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                {% if task.created is not null %}
+                                                {% if task.datumKreiranja is not null %}
                                                     <div class="d-inline-flex align-items-center">
                                                         <i class="ph-calendar me-2"></i>
-                                                        {{ task.created | date("d.m.Y")}}
+                                                        {{ task.datumKreiranja | date("d.m.Y")}}
                                                     </div>
                                                 {% endif %}
                                             </td>
+
                                             <td>
-                                                {% if task.finish is not null %}
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ task.finish | date("d.m.Y")}}
-                                                    </div>
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                {% if task.status == 0 %}
-                                                    <span class="badge bg-secondary text-primary">Kreiran</span>
-                                                {% elseif task.status == 1 %}
-                                                    <span class="badge bg-primary text-white">Završen</span>
-                                                {% elseif task.status == 2 %}
-                                                    <span class="badge bg-yellow text-primary">Obrisan</span>
-                                                {% endif %}
+                                                {{ task.createdBy.getFullName() }}
                                             </td>
 
                                             <td class="text-center">
@@ -125,17 +113,29 @@
                                                             <i class="ph-eye me-2"></i>
                                                             Vidite
                                                         </a>
-                                                        {% if task.status == 1 %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
                                                             <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-arrows-counter-clockwise me-2"></i>
-                                                                Ponovite
+                                                                <i class="ph-play me-2"></i>
+                                                                Pokrenite
                                                             </a>
-                                                        {% endif %}
-                                                        {% if task.status != 2 %}
+                                                            <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-check me-2"></i>
+                                                                Završite
+                                                            </a>
+                                                            <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-note-pencil me-2"></i>
+                                                                Izmenite
+                                                            </a>
                                                             <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-minus me-2"></i>
+                                                                <i class="ph-trash me-2"></i>
                                                                 Obrišite
                                                             </a>
+                                                            {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
+                                                                <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-magic-wand me-2"></i>
+                                                                    Konvertuj u zadatak sa merenjem
+                                                                </a>
+                                                            {% endif %}
                                                         {% endif %}
                                                     </div>
                                                 </div>

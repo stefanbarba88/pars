@@ -12,7 +12,8 @@ class VrstaZaposlenjaData implements DataClassInterface {
     2 => 'Određeno',
     3 => 'Privremeni i povremeni poslovi',
     4 => 'Agencija',
-    5 => 'Omladinska zadruga'
+    5 => 'Omladinska zadruga',
+    6 => 'Korisnik penzije'
   ];
 
   public static function form(): array {

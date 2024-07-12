@@ -17,272 +17,275 @@
             </a>
         </div>
 
-        <ul class="nav flex-row">
-            <li class="nav-item d-lg-none">
-                <a href="#navbar_search" class="navbar-nav-link navbar-nav-link-icon rounded-pill" data-bs-toggle="collapse">
-                    <i class="ph-magnifying-glass"></i>
-                </a>
-            </li>
-        </ul>
 
-        {% if is_granted('ROLE_EMPLOYEE') %}
-            <div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse" id="navbar_search">
-                <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
-                    <form method="get" id="searchForm" action="{{ path('app_search_employee') }}">
-                        <div class="form-control-feedback form-control-feedback-start flex-grow-1" data-color-theme="dark">
-                            <input type="text" name="tekst" class="form-control bg-transparent rounded-pill" placeholder="Pretraga" data-bs-toggle="dropdown">
-                            <div class="form-control-feedback-icon">
+
+        {% if not is_granted('ROLE_CLIENT') %}
+            <ul class="nav flex-row">
+                <li class="nav-item d-lg-none">
+                    <a href="#navbar_search" class="navbar-nav-link navbar-nav-link-icon rounded-pill" data-bs-toggle="collapse">
+                        <i class="ph-magnifying-glass"></i>
+                    </a>
+                </li>
+            </ul>
+            {% if is_granted('ROLE_EMPLOYEE') %}
+                <div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse" id="navbar_search">
+                    <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
+                        <form method="get" id="searchForm" action="{{ path('app_search_employee') }}">
+                            <div class="form-control-feedback form-control-feedback-start flex-grow-1" data-color-theme="dark">
+                                <input type="text" name="tekst" class="form-control bg-transparent rounded-pill" placeholder="Pretraga" data-bs-toggle="dropdown">
+                                <div class="form-control-feedback-icon">
+                                    <i class="ph-magnifying-glass"></i>
+                                </div>
+                            </div>
+
+                            {#                    <a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">#}
+                            {#                        <i class="ph-faders-horizontal"></i>#}
+                            {#                    </a>#}
+                            <a href="#" onclick="document.getElementById('searchForm').submit();" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 mx-1">
                                 <i class="ph-magnifying-glass"></i>
-                            </div>
-                        </div>
+                            </a>
+                            <div class="dropdown-menu w-100 p-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <h6 class="mb-0">Opcije pretrage</h6>
+                                    {#                        <a href="#" class="text-body rounded-pill ms-auto">#}
+                                    {#                            <i class="ph-clock-counter-clockwise"></i>#}
+                                    {#                        </a>#}
+                                </div>
 
-                        {#                    <a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">#}
-                        {#                        <i class="ph-faders-horizontal"></i>#}
-                        {#                    </a>#}
-                        <a href="#" onclick="document.getElementById('searchForm').submit();" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 mx-1">
-                            <i class="ph-magnifying-glass"></i>
-                        </a>
-                        <div class="dropdown-menu w-100 p-3">
-                            <div class="d-flex align-items-center mb-3">
-                                <h6 class="mb-0">Opcije pretrage</h6>
-                                {#                        <a href="#" class="text-body rounded-pill ms-auto">#}
-                                {#                            <i class="ph-clock-counter-clockwise"></i>#}
-                                {#                        </a>#}
-                            </div>
+                                <div class="mb-3">
+                                    <label class="d-block form-label">Kategorije</label>
+                                    <label class="form-check form-check-inline">
+                                        <input type="checkbox" name="projekat" class="form-check-input" checked>
+                                        <span class="form-check-label">Projekti</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input type="checkbox" name="zadatak" class="form-check-input">
+                                        <span class="form-check-label">Zadaci</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input type="checkbox" name="zaposleni" class="form-check-input">
+                                        <span class="form-check-label">Zaposleni</span>
+                                    </label>
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="d-block form-label">Kategorije</label>
-                                <label class="form-check form-check-inline">
-                                    <input type="checkbox" name="projekat" class="form-check-input" checked>
-                                    <span class="form-check-label">Projekti</span>
-                                </label>
-                                <label class="form-check form-check-inline">
-                                    <input type="checkbox" name="zadatak" class="form-check-input">
-                                    <span class="form-check-label">Zadaci</span>
-                                </label>
-                                <label class="form-check form-check-inline">
-                                    <input type="checkbox" name="zaposleni" class="form-check-input">
-                                    <span class="form-check-label">Zaposleni</span>
-                                </label>
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <div class="input-group">
+                                        <select class="form-select w-auto flex-grow-0" name="status">
+                                            <option value="1">je</option>
+                                            <option value="2">nije</option>
+                                        </select>
+                                        <select class="form-select" name="statusStanje">
+                                            <option value="0">aktivan</option>
+                                            <option value="1">neaktivan</option>
+                                            {#                                <option value="3">New</option>#}
+                                            {#                                <option value="4">Expired</option>#}
+                                            {#                                <option value="5">Pending</option>#}
+                                        </select>
+                                    </div>
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Status</label>
-                                <div class="input-group">
-                                    <select class="form-select w-auto flex-grow-0" name="status">
-                                        <option value="1">je</option>
-                                        <option value="2">nije</option>
-                                    </select>
-                                    <select class="form-select" name="statusStanje">
-                                        <option value="0">aktivan</option>
-                                        <option value="1">neaktivan</option>
-                                        {#                                <option value="3">New</option>#}
-                                        {#                                <option value="4">Expired</option>#}
-                                        {#                                <option value="5">Pending</option>#}
-                                    </select>
+                                <div class="d-flex">
+                                    {#                            <button type="reset" class="btn btn-light">Resetujte</button>#}
+
+                                    <div class="ms-auto">
+                                        {#                                <button type="button" class="btn btn-light">Odustanite</button>#}
+                                        <button type="submit" class="btn btn-primary ms-2"><i class="ph-magnifying-glass me-2"></i>Pretražite</button>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="d-flex">
-                                {#                            <button type="reset" class="btn btn-light">Resetujte</button>#}
-
-                                <div class="ms-auto">
-                                    {#                                <button type="button" class="btn btn-light">Odustanite</button>#}
-                                    <button type="submit" class="btn btn-primary ms-2"><i class="ph-magnifying-glass me-2"></i>Pretražite</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {#                    <div class="d-lg-none">#}
-                        {#                        <a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-1 top-50 translate-middle-y p-0 mx-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">#}
-                        {#                            <i class="ph-faders-horizontal"></i>#}
-                        {#                        </a>#}
-                        {#                        <a href="#" onclick="document.getElementById('searchForm').submit();" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1">#}
-                        {#                            <i class="ph-magnifying-glass"></i>#}
-                        {#                        </a>#}
-                        {#                        <div class="dropdown-menu w-100 p-3">#}
-                        {#                            <div class="d-flex align-items-center mb-3">#}
-                        {#                                <h6 class="mb-0">Opcije pretrage</h6>#}
-                        {#                                #}{#                        <a href="#" class="text-body rounded-pill ms-auto">#}
-                        {#                                #}{#                            <i class="ph-clock-counter-clockwise"></i>#}
-                        {#                                #}{#                        </a>#}
-                        {#                            </div>#}
-
-                        {#                            <div class="mb-3">#}
-                        {#                                <label class="d-block form-label">Kategorije</label>#}
-                        {#                                <label class="form-check form-check-inline">#}
-                        {#                                    <input type="checkbox" name="projekat" class="form-check-input">#}
-                        {#                                    <span class="form-check-label">Projekti</span>#}
-                        {#                                </label>#}
-                        {#                                <label class="form-check form-check-inline">#}
-                        {#                                    <input type="checkbox" name="zadatak" class="form-check-input">#}
-                        {#                                    <span class="form-check-label">Zadaci</span>#}
-                        {#                                </label>#}
-                        {#                                <label class="form-check form-check-inline">#}
-                        {#                                    <input type="checkbox" name="zaposleni" class="form-check-input">#}
-                        {#                                    <span class="form-check-label">Zaposleni</span>#}
-                        {#                                </label>#}
-                        {#                            </div>#}
-
-                        {#                            <div class="mb-3">#}
-                        {#                                <label class="form-label">Status</label>#}
-                        {#                                <div class="input-group">#}
-                        {#                                    <select class="form-select w-auto flex-grow-0" name="status">#}
-                        {#                                        <option value="1">je</option>#}
-                        {#                                        <option value="2">nije</option>#}
-                        {#                                    </select>#}
-                        {#                                    <select class="form-select" name="statusStanje">#}
-                        {#                                        <option value="0">aktivan</option>#}
-                        {#                                        <option value="1">neaktivan</option>#}
-                        {#                                        #}{#                                <option value="3">New</option>#}
-                        {#                                        #}{#                                <option value="4">Expired</option>#}
-                        {#                                        #}{#                                <option value="5">Pending</option>#}
-                        {#                                    </select>#}
-                        {#                                </div>#}
-                        {#                            </div>#}
-
-                        {#                            <div class="d-flex">#}
-                        {#                                #}{#                            <button type="reset" class="btn btn-light">Resetujte</button>#}
-
-                        {#                                <div class="ms-auto">#}
-                        {#                                    #}{#                                <button type="button" class="btn btn-light">Odustanite</button>#}
-                        {#                                    <button type="submit" class="btn btn-primary ms-2"><i class="ph-magnifying-glass me-2"></i>Pretražite</button>#}
-                        {#                                </div>#}
-                        {#                            </div>#}
-                        {#                        </div>#}
-                        {#                    </div>#}
-                    </form>
-                </div>
-            </div>
-        {% else %}
-            <div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse" id="navbar_search">
-                <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
-                    <form method="get" id="searchForm" action="{{ path('app_search') }}">
-                        <div class="form-control-feedback form-control-feedback-start flex-grow-1" data-color-theme="dark">
-                            <input type="text" name="tekst" class="form-control bg-transparent rounded-pill" placeholder="Pretraga" data-bs-toggle="dropdown">
-                            {#                        <div class="form-control-feedback-icon">#}
+                            {#                    <div class="d-lg-none">#}
+                            {#                        <a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-1 top-50 translate-middle-y p-0 mx-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">#}
+                            {#                            <i class="ph-faders-horizontal"></i>#}
+                            {#                        </a>#}
+                            {#                        <a href="#" onclick="document.getElementById('searchForm').submit();" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1">#}
                             {#                            <i class="ph-magnifying-glass"></i>#}
+                            {#                        </a>#}
+                            {#                        <div class="dropdown-menu w-100 p-3">#}
+                            {#                            <div class="d-flex align-items-center mb-3">#}
+                            {#                                <h6 class="mb-0">Opcije pretrage</h6>#}
+                            {#                                #}{#                        <a href="#" class="text-body rounded-pill ms-auto">#}
+                            {#                                #}{#                            <i class="ph-clock-counter-clockwise"></i>#}
+                            {#                                #}{#                        </a>#}
+                            {#                            </div>#}
+
+                            {#                            <div class="mb-3">#}
+                            {#                                <label class="d-block form-label">Kategorije</label>#}
+                            {#                                <label class="form-check form-check-inline">#}
+                            {#                                    <input type="checkbox" name="projekat" class="form-check-input">#}
+                            {#                                    <span class="form-check-label">Projekti</span>#}
+                            {#                                </label>#}
+                            {#                                <label class="form-check form-check-inline">#}
+                            {#                                    <input type="checkbox" name="zadatak" class="form-check-input">#}
+                            {#                                    <span class="form-check-label">Zadaci</span>#}
+                            {#                                </label>#}
+                            {#                                <label class="form-check form-check-inline">#}
+                            {#                                    <input type="checkbox" name="zaposleni" class="form-check-input">#}
+                            {#                                    <span class="form-check-label">Zaposleni</span>#}
+                            {#                                </label>#}
+                            {#                            </div>#}
+
+                            {#                            <div class="mb-3">#}
+                            {#                                <label class="form-label">Status</label>#}
+                            {#                                <div class="input-group">#}
+                            {#                                    <select class="form-select w-auto flex-grow-0" name="status">#}
+                            {#                                        <option value="1">je</option>#}
+                            {#                                        <option value="2">nije</option>#}
+                            {#                                    </select>#}
+                            {#                                    <select class="form-select" name="statusStanje">#}
+                            {#                                        <option value="0">aktivan</option>#}
+                            {#                                        <option value="1">neaktivan</option>#}
+                            {#                                        #}{#                                <option value="3">New</option>#}
+                            {#                                        #}{#                                <option value="4">Expired</option>#}
+                            {#                                        #}{#                                <option value="5">Pending</option>#}
+                            {#                                    </select>#}
+                            {#                                </div>#}
+                            {#                            </div>#}
+
+                            {#                            <div class="d-flex">#}
+                            {#                                #}{#                            <button type="reset" class="btn btn-light">Resetujte</button>#}
+
+                            {#                                <div class="ms-auto">#}
+                            {#                                    #}{#                                <button type="button" class="btn btn-light">Odustanite</button>#}
+                            {#                                    <button type="submit" class="btn btn-primary ms-2"><i class="ph-magnifying-glass me-2"></i>Pretražite</button>#}
+                            {#                                </div>#}
+                            {#                            </div>#}
                             {#                        </div>#}
-                        </div>
-
-                        <a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                            <i class="ph-faders-horizontal"></i>
-                        </a>
-                        <a href="#" onclick="document.getElementById('searchForm').submit();" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-1 top-50 translate-middle-y p-0 mx-1">
-                            <i class="ph-magnifying-glass"></i>
-                        </a>
-                        <div class="dropdown-menu w-100 p-3">
-                            <div class="d-flex align-items-center mb-3">
-                                <h6 class="mb-0">Opcije pretrage</h6>
-                                {#                        <a href="#" class="text-body rounded-pill ms-auto">#}
-                                {#                            <i class="ph-clock-counter-clockwise"></i>#}
-                                {#                        </a>#}
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="d-block form-label">Kategorije</label>
-                                <label class="form-check form-check-inline">
-                                    <input type="checkbox" name="projekat" class="form-check-input" checked>
-                                    <span class="form-check-label">Projekti</span>
-                                </label>
-                                <label class="form-check form-check-inline">
-                                    <input type="checkbox" name="zadatak" class="form-check-input" checked>
-                                    <span class="form-check-label">Zadaci</span>
-                                </label>
-                                <label class="form-check form-check-inline">
-                                    <input type="checkbox" name="zaposleni" class="form-check-input" checked>
-                                    <span class="form-check-label">Zaposleni</span>
-                                </label>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Status</label>
-                                <div class="input-group">
-                                    <select class="form-select w-auto flex-grow-0" name="status">
-                                        <option value="1">je</option>
-                                        <option value="2">nije</option>
-                                    </select>
-                                    <select class="form-select" name="statusStanje">
-                                        <option value="0">aktivan</option>
-                                        <option value="1">neaktivan</option>
-                                        {#                                <option value="3">New</option>#}
-                                        {#                                <option value="4">Expired</option>#}
-                                        {#                                <option value="5">Pending</option>#}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="d-flex">
-                                {#                            <button type="reset" class="btn btn-light">Resetujte</button>#}
-
-                                <div class="ms-auto">
-                                    {#                                <button type="button" class="btn btn-light">Odustanite</button>#}
-                                    <button type="submit" class="btn btn-primary ms-2"><i class="ph-magnifying-glass me-2"></i>Pretražite</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {#                    <div class="d-lg-none">#}
-                        {#                        <a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-1 top-50 translate-middle-y p-0 mx-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">#}
-                        {#                            <i class="ph-faders-horizontal"></i>#}
-                        {#                        </a>#}
-                        {#                        <a href="#" onclick="document.getElementById('searchForm').submit();" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1">#}
-                        {#                            <i class="ph-magnifying-glass"></i>#}
-                        {#                        </a>#}
-                        {#                        <div class="dropdown-menu w-100 p-3">#}
-                        {#                            <div class="d-flex align-items-center mb-3">#}
-                        {#                                <h6 class="mb-0">Opcije pretrage</h6>#}
-                        {#                                #}{#                        <a href="#" class="text-body rounded-pill ms-auto">#}
-                        {#                                #}{#                            <i class="ph-clock-counter-clockwise"></i>#}
-                        {#                                #}{#                        </a>#}
-                        {#                            </div>#}
-
-                        {#                            <div class="mb-3">#}
-                        {#                                <label class="d-block form-label">Kategorije</label>#}
-                        {#                                <label class="form-check form-check-inline">#}
-                        {#                                    <input type="checkbox" name="projekat" class="form-check-input">#}
-                        {#                                    <span class="form-check-label">Projekti</span>#}
-                        {#                                </label>#}
-                        {#                                <label class="form-check form-check-inline">#}
-                        {#                                    <input type="checkbox" name="zadatak" class="form-check-input">#}
-                        {#                                    <span class="form-check-label">Zadaci</span>#}
-                        {#                                </label>#}
-                        {#                                <label class="form-check form-check-inline">#}
-                        {#                                    <input type="checkbox" name="zaposleni" class="form-check-input">#}
-                        {#                                    <span class="form-check-label">Zaposleni</span>#}
-                        {#                                </label>#}
-                        {#                            </div>#}
-
-                        {#                            <div class="mb-3">#}
-                        {#                                <label class="form-label">Status</label>#}
-                        {#                                <div class="input-group">#}
-                        {#                                    <select class="form-select w-auto flex-grow-0" name="status">#}
-                        {#                                        <option value="1">je</option>#}
-                        {#                                        <option value="2">nije</option>#}
-                        {#                                    </select>#}
-                        {#                                    <select class="form-select" name="statusStanje">#}
-                        {#                                        <option value="0">aktivan</option>#}
-                        {#                                        <option value="1">neaktivan</option>#}
-                        {#                                        #}{#                                <option value="3">New</option>#}
-                        {#                                        #}{#                                <option value="4">Expired</option>#}
-                        {#                                        #}{#                                <option value="5">Pending</option>#}
-                        {#                                    </select>#}
-                        {#                                </div>#}
-                        {#                            </div>#}
-
-                        {#                            <div class="d-flex">#}
-                        {#                                #}{#                            <button type="reset" class="btn btn-light">Resetujte</button>#}
-
-                        {#                                <div class="ms-auto">#}
-                        {#                                    #}{#                                <button type="button" class="btn btn-light">Odustanite</button>#}
-                        {#                                    <button type="submit" class="btn btn-primary ms-2"><i class="ph-magnifying-glass me-2"></i>Pretražite</button>#}
-                        {#                                </div>#}
-                        {#                            </div>#}
-                        {#                        </div>#}
-                        {#                    </div>#}
-                    </form>
+                            {#                    </div>#}
+                        </form>
+                    </div>
                 </div>
-            </div>
+            {% else %}
+                <div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse" id="navbar_search">
+                    <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
+                        <form method="get" id="searchForm" action="{{ path('app_search') }}">
+                            <div class="form-control-feedback form-control-feedback-start flex-grow-1" data-color-theme="dark">
+                                <input type="text" name="tekst" class="form-control bg-transparent rounded-pill" placeholder="Pretraga" data-bs-toggle="dropdown">
+                                {#                        <div class="form-control-feedback-icon">#}
+                                {#                            <i class="ph-magnifying-glass"></i>#}
+                                {#                        </div>#}
+                            </div>
+
+                            <a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                                <i class="ph-faders-horizontal"></i>
+                            </a>
+                            <a href="#" onclick="document.getElementById('searchForm').submit();" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-1 top-50 translate-middle-y p-0 mx-1">
+                                <i class="ph-magnifying-glass"></i>
+                            </a>
+                            <div class="dropdown-menu w-100 p-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <h6 class="mb-0">Opcije pretrage</h6>
+                                    {#                        <a href="#" class="text-body rounded-pill ms-auto">#}
+                                    {#                            <i class="ph-clock-counter-clockwise"></i>#}
+                                    {#                        </a>#}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="d-block form-label">Kategorije</label>
+                                    <label class="form-check form-check-inline">
+                                        <input type="checkbox" name="projekat" class="form-check-input" checked>
+                                        <span class="form-check-label">Projekti</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input type="checkbox" name="zadatak" class="form-check-input" checked>
+                                        <span class="form-check-label">Zadaci</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input type="checkbox" name="zaposleni" class="form-check-input" checked>
+                                        <span class="form-check-label">Zaposleni</span>
+                                    </label>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <div class="input-group">
+                                        <select class="form-select w-auto flex-grow-0" name="status">
+                                            <option value="1">je</option>
+                                            <option value="2">nije</option>
+                                        </select>
+                                        <select class="form-select" name="statusStanje">
+                                            <option value="0">aktivan</option>
+                                            <option value="1">neaktivan</option>
+                                            {#                                <option value="3">New</option>#}
+                                            {#                                <option value="4">Expired</option>#}
+                                            {#                                <option value="5">Pending</option>#}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex">
+                                    {#                            <button type="reset" class="btn btn-light">Resetujte</button>#}
+
+                                    <div class="ms-auto">
+                                        {#                                <button type="button" class="btn btn-light">Odustanite</button>#}
+                                        <button type="submit" class="btn btn-primary ms-2"><i class="ph-magnifying-glass me-2"></i>Pretražite</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {#                    <div class="d-lg-none">#}
+                            {#                        <a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-1 top-50 translate-middle-y p-0 mx-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">#}
+                            {#                            <i class="ph-faders-horizontal"></i>#}
+                            {#                        </a>#}
+                            {#                        <a href="#" onclick="document.getElementById('searchForm').submit();" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1">#}
+                            {#                            <i class="ph-magnifying-glass"></i>#}
+                            {#                        </a>#}
+                            {#                        <div class="dropdown-menu w-100 p-3">#}
+                            {#                            <div class="d-flex align-items-center mb-3">#}
+                            {#                                <h6 class="mb-0">Opcije pretrage</h6>#}
+                            {#                                #}{#                        <a href="#" class="text-body rounded-pill ms-auto">#}
+                            {#                                #}{#                            <i class="ph-clock-counter-clockwise"></i>#}
+                            {#                                #}{#                        </a>#}
+                            {#                            </div>#}
+
+                            {#                            <div class="mb-3">#}
+                            {#                                <label class="d-block form-label">Kategorije</label>#}
+                            {#                                <label class="form-check form-check-inline">#}
+                            {#                                    <input type="checkbox" name="projekat" class="form-check-input">#}
+                            {#                                    <span class="form-check-label">Projekti</span>#}
+                            {#                                </label>#}
+                            {#                                <label class="form-check form-check-inline">#}
+                            {#                                    <input type="checkbox" name="zadatak" class="form-check-input">#}
+                            {#                                    <span class="form-check-label">Zadaci</span>#}
+                            {#                                </label>#}
+                            {#                                <label class="form-check form-check-inline">#}
+                            {#                                    <input type="checkbox" name="zaposleni" class="form-check-input">#}
+                            {#                                    <span class="form-check-label">Zaposleni</span>#}
+                            {#                                </label>#}
+                            {#                            </div>#}
+
+                            {#                            <div class="mb-3">#}
+                            {#                                <label class="form-label">Status</label>#}
+                            {#                                <div class="input-group">#}
+                            {#                                    <select class="form-select w-auto flex-grow-0" name="status">#}
+                            {#                                        <option value="1">je</option>#}
+                            {#                                        <option value="2">nije</option>#}
+                            {#                                    </select>#}
+                            {#                                    <select class="form-select" name="statusStanje">#}
+                            {#                                        <option value="0">aktivan</option>#}
+                            {#                                        <option value="1">neaktivan</option>#}
+                            {#                                        #}{#                                <option value="3">New</option>#}
+                            {#                                        #}{#                                <option value="4">Expired</option>#}
+                            {#                                        #}{#                                <option value="5">Pending</option>#}
+                            {#                                    </select>#}
+                            {#                                </div>#}
+                            {#                            </div>#}
+
+                            {#                            <div class="d-flex">#}
+                            {#                                #}{#                            <button type="reset" class="btn btn-light">Resetujte</button>#}
+
+                            {#                                <div class="ms-auto">#}
+                            {#                                    #}{#                                <button type="button" class="btn btn-light">Odustanite</button>#}
+                            {#                                    <button type="submit" class="btn btn-primary ms-2"><i class="ph-magnifying-glass me-2"></i>Pretražite</button>#}
+                            {#                                </div>#}
+                            {#                            </div>#}
+                            {#                        </div>#}
+                            {#                    </div>#}
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
         {% endif %}
         <ul class="nav flex-row justify-content-end order-1 order-lg-2">
 {#            <li class="nav-item ms-lg-2">#}

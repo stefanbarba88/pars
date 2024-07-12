@@ -1,0 +1,118 @@
+<div class="navbar navbar-expand-lg border-top py-2">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav flex-row flex-fill">
+            <li class="nav-item me-1">
+                <a href="{{ path('app_car_view', { id: car.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                    <div class="d-flex align-items-center mx-lg-1">
+                        <i class="ph-car"></i>
+                        <span class="d-none d-lg-inline-block ms-2">Profil</span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item me-1">
+                <a href="{{ path('app_cars_reservations', { id: car.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                    <div class="d-flex align-items-center mx-lg-1">
+                        <i class="ph-user"></i>
+                        <span class="d-none d-lg-inline-block ms-2">Zaduženost<span class="badge bg-yellow rounded-pill ms-auto ms-lg-2">{{ countReservations }}</span></span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item me-1">
+                <a href="{{ path('app_cars_expenses', { id: car.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                    <div class="d-flex align-items-center mx-lg-1">
+                        <i class="ph-money"></i>
+                        <span class="d-none d-lg-inline-block ms-2">Troškovi<span class="badge bg-yellow rounded-pill ms-auto ms-lg-2">{{ countExpenses }}</span></span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item me-1">
+                <a href="{{ path('app_car_images_view', {id:car.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                    <div class="d-flex align-items-center mx-lg-1">
+                        <i class="ph-image"></i>
+                        <span class="d-none d-lg-inline-block ms-2">Slike</span>
+                    </div>
+                </a>
+            </li>
+{#            <li class="nav-item me-1">#}
+{#                <a href="{{ path('app_employee_car_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
+{#                    <div class="d-flex align-items-center mx-lg-1">#}
+{#                        <i class="ph-car"></i>#}
+{#                        <span class="d-none d-lg-inline-block ms-2">#}
+{#												Vozila#}
+{#												<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span>#}
+{#											</span>#}
+{#                    </div>#}
+{#                </a>#}
+{#            </li>#}
+{#            <li class="nav-item me-1">#}
+{#                <a href="{{ path('app_employee_tools_view', { id: user.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
+{#                    <div class="d-flex align-items-center mx-lg-1">#}
+{#                        <i class="ph-wrench"></i>#}
+{#                        <span class="d-none d-lg-inline-block ms-2">#}
+{#												Oprema#}
+{#												<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span>#}
+{#											</span>#}
+{#                    </div>#}
+{#                </a>#}
+{#            </li>#}
+
+            <li class="nav-item d-lg-none ms-auto">
+                <a href="#profile_nav" class="navbar-nav-link navbar-nav-link-icon collapsed rounded" data-bs-toggle="collapse">
+                    <i class="ph-caret-down collapsible-indicator"></i>
+                </a>
+            </li>
+        </ul>
+
+        <div class="navbar-collapse collapse" id="profile_nav">
+            <ul class="navbar-nav ms-lg-auto mt-2 mt-lg-0">
+{#                <li class="nav-item ms-lg-1">#}
+{#                    <a href="{{ path('app_employee_notes_view', { id: user.id}) }}" class="navbar-nav-link rounded">#}
+{#                        <i class="ph-clipboard-text me-2"></i>#}
+{#                        Beleške#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="nav-item ms-lg-1">#}
+{#                    <a href="{{ path('app_employee_docs_view', { id: user.id}) }}" class="navbar-nav-link rounded">#}
+{#                        <i class="ph-file me-2"></i>#}
+{#                        Dokumenta#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="nav-item ms-lg-1">#}
+{#                    <a href="{{ path('app_employee_images_view', { id: user.id}) }}" class="navbar-nav-link rounded">#}
+{#                        <i class="ph-image me-2"></i>#}
+{#                        Slike#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="nav-item ms-lg-1">#}
+{#                    <a href="{{ path('app_employee_comments_view', { id: user.id}) }}" class="navbar-nav-link rounded">#}
+{#                        <i class="ph-chats-circle me-2"></i>#}
+{#                        Komentari#}
+{#                    </a>#}
+{#                </li>#}
+                <li class="nav-item dropdown ms-lg-1">
+                    <a href="#" class="navbar-nav-link rounded dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="ph-gear"></i>
+                        <span class="d-lg-none ms-2">Više</span>
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a href="{{ path('app_car_form', { id: car.id}) }}" class="dropdown-item">
+                            <i class="ph-note-pencil me-2"></i>
+                            Izmenite
+                        </a>
+                        <a href="{{ path('app_car_history_list', { id: car.id}) }}" class="dropdown-item">
+                            <i class="ph-clock-counter-clockwise me-2"></i>
+                            Istorija izmena
+                        </a>
+                        {% if car.isSuspended %}
+                            <a href="{{ path('app_car_activate', { id: car.id}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>
+                        {% else %}
+                            <a href="{{ path('app_car_activate', { id: car.id}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>
+                        {% endif %}
+
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -49,8 +49,39 @@ class UserRolesData implements DataClassInterface {
 
   ];
 
+  public const DATA_KADROVSKA = [
+    'ROLE_SUPER_ADMIN' => [
+      'id' => self::ROLE_SUPER_ADMIN,
+      'title' => 'Super Admin',
+      'role' => 'ROLE_SUPER_ADMIN',
+      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-danger">Super Admin</span>',
+    ],
+    'ROLE_ADMIN' => [
+      'id' => self::ROLE_ADMIN,
+      'title' => 'Administrator',
+      'role' => 'ROLE_ADMIN',
+      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-success">Administrator</span>',
+    ],
+    'ROLE_MANAGER' => [
+      'id' => self::ROLE_MANAGER,
+      'title' => 'Menadžment',
+      'role' => 'ROLE_MANAGER',
+      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Menadžment</span>',
+    ],
+    'ROLE_EMPLOYEE' => [
+      'id' => self::ROLE_EMPLOYEE,
+      'title' => 'Zaposleni',
+      'role' => 'ROLE_EMPLOYEE',
+      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-info">Zaposleni</span>',
+    ],
+  ];
+
   public static function form(): array {
     return self::DATA;
+  }
+
+  public static function formKadrovska(): array {
+    return self::DATA_KADROVSKA;
   }
 
   public static function formForForm(): array {
@@ -80,6 +111,45 @@ class UserRolesData implements DataClassInterface {
           if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_MANAGER ) {
             $data[$v['title']] = $v['id'];
           }
+      }
+    }
+
+    return $data;
+  }
+
+  public static function formForFormByUserRoleKadrovska(int $userType): array {
+    $data = [];
+    foreach (self::DATA as $v) {
+      switch ($userType) {
+        case UserRolesData::ROLE_SUPER_ADMIN:
+          $data[$v['title']] = $v['id'];
+          break;
+        case UserRolesData::ROLE_ADMIN:
+          if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_CLIENT ) {
+            $data[$v['title']] = $v['id'];
+          }
+          break;
+        case UserRolesData::ROLE_EMPLOYEE:
+          if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_MANAGER && $v['id'] != self::ROLE_CLIENT ) {
+            $data[$v['title']] = $v['id'];
+          }
+          break;
+        default:
+        case UserRolesData::ROLE_MANAGER:
+          if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_MANAGER && $v['id'] != self::ROLE_CLIENT ) {
+            $data[$v['title']] = $v['id'];
+          }
+      }
+    }
+
+    return $data;
+  }
+
+  public static function formForFormByUserRoleKadrovskaEmployee(int $userType): array {
+    $data = [];
+    foreach (self::DATA as $v) {
+      if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_MANAGER && $v['id'] != self::ROLE_CLIENT ) {
+        $data[$v['title']] = $v['id'];
       }
     }
 

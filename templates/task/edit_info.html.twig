@@ -102,7 +102,7 @@
                                     <div class="col-lg-6 tacanDatum">
                                         <div class="mb-3">
                                             {{ form_label(form.datumPonavljanja, 'Tačan datum ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep required datepicker-date-format-custom-2' }}) }}
+                                            {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep required datepicker-date-format-custom-2', autocomplete: 'off' }}) }}
                                             <span class="form-text">Tačan datum kada će se zadatak ponovo kreirati.</span>
                                         </div>
                                     </div>
@@ -119,7 +119,7 @@
                                     <div class="col-lg-6 hide tacanDatum">
                                         <div class="mb-3">
                                             {{ form_label(form.datumPonavljanja, 'Tačan datum ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep datepicker-date-format-custom-2' }}) }}
+                                            {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep datepicker-date-format-custom-2', autocomplete: 'off' }}) }}
                                             <span class="form-text">Tačan datum kada će se zadatak ponovo kreirati.</span>
                                         </div>
                                     </div>
@@ -209,6 +209,8 @@
                 }
             });
 
+            {% set minDate = task.datumKreiranja | date_modify('+1 day')|date('d.m.Y') %}
+
             const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom-2');
             if(dpDateCustomFormatElement2) {
                 const dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
@@ -219,7 +221,7 @@
                     format: 'dd.mm.yyyy',
                     todayBtn: true,
                     weekStart: 1,
-                    minDate: 'today',
+                    minDate: '{{ minDate }}',
                     daysOfWeekHighlighted: [0,6],
                     language: 'sr-latn',
                     // daysOfWeekDisabled: [0]

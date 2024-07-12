@@ -1,0 +1,371 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerKadrovska' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebarKadrovska')) }}
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Rezultati pretrage
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+                <!-- Content area -->
+                <div class="content">
+
+                    {% set zap = app.request.query.get('zaposleni') %}
+                    {% set fir = app.request.query.get('firma') %}
+
+                    {% if fir is null and  zap is null %}
+                            {% if pagination.totalItemCount > 0 %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Firme</h5>
+                                        <div class="d-inline-flex ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination.totalItemCount }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th>Firma</th>
+                                                    <th>Država</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for firma in pagination %}
+                                                    <tr>
+
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_kadrovska_company_view', { id: firma.id}) }}">{{ firma.title }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                {{ firma.country.title }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {% if firma.isSuspended%}
+                                                                <span class="badge bg-yellow text-primary">Deaktivirana</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary text-primary">Aktivana</span>
+                                                            {% endif %}
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <a href="{{ path('app_kadrovska_company_view', { id: firma.id}) }}" class="btn btn-primary">
+                                                                <i class="ph-eye me-2"></i>
+                                                                Vidite
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Firme</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info fade show">
+                                            <span class="fw-semibold">Nije pronađen nijedan rezultat među firmama.</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if pagination2.totalItemCount > 0 %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zaposleni</h5>
+                                        <div class="ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination2.totalItemCount }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th>Zaposleni</th>
+                                                    <th>Firma</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for user in pagination2 %}
+                                                    <tr>
+
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_employee_profile_view_kadrovska', { id: user.id}) }}">{{ user.fullName }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_kadrovska_company_view', { id: user.company.id}) }}">{{ user.company.title }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {% if user.isSuspended%}
+                                                                <span class="badge bg-yellow text-primary">Deaktiviran</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary text-primary">Aktivan</span>
+                                                            {% endif %}
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <a href="{{ path('app_employee_profile_view_kadrovska', {id: user.id}) }}" class="btn btn-primary">
+                                                                <i class="ph-eye me-2"></i>
+                                                                Vidite
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination1) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zaposleni</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info fade show">
+                                            <span class="fw-semibold">Nije pronađen nijedan rezultat među zaposlenima.</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                    {% else %}
+
+                        {% if fir is not null %}
+                            {% if pagination.totalItemCount > 0 %}
+                            <div class="card">
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Firme</h5>
+                                    <div class="d-inline-flex ms-auto">
+                                        <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination.totalItemCount }}</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive card">
+                                        <table class="table table-bordered table-hover table-responsive table-sm">
+                                            <thead class="bg-light text-primary">
+                                            <tr>
+                                                <th>Firma</th>
+                                                <th>Država</th>
+                                                <th>Status</th>
+                                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for firma in pagination %}
+                                                <tr>
+
+                                                    <td>
+                                                        <div class="fw-semibold">
+                                                            <a href="{{ path('app_kadrovska_company_view', { id: firma.id}) }}">{{ firma.title }}</a>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="fw-semibold">
+                                                            {{ firma.country.title }}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {% if firma.isSuspended%}
+                                                            <span class="badge bg-yellow text-primary">Deaktivirana</span>
+                                                        {% else %}
+                                                            <span class="badge bg-secondary text-primary">Aktivana</span>
+                                                        {% endif %}
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <a href="{{ path('app_kadrovska_company_view', { id: firma.id}) }}" class="btn btn-primary">
+                                                            <i class="ph-eye me-2"></i>
+                                                            Vidite
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="navigation float-end">
+                                        {{ knp_pagination_render(pagination) }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="card">
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Firme</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-info fade show">
+                                        <span class="fw-semibold">Nije pronađen nijedan rezultat među firmama.</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="navigation float-end">
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% endif %}
+                        {% if zap is not null %}
+                            {% if pagination2.totalItemCount > 0 %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zaposleni</h5>
+                                        <div class="ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill accordion-button fw-semibold">{{ pagination2.totalItemCount }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th>Zaposleni</th>
+                                                    <th>Firma</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for user in pagination2 %}
+                                                    <tr>
+
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_employee_profile_view_kadrovska', { id: user.id}) }}">{{ user.fullName }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_kadrovska_company_view', { id: user.company.id}) }}">{{ user.company.title }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {% if user.isSuspended%}
+                                                                <span class="badge bg-yellow text-primary">Deaktiviran</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary text-primary">Aktivan</span>
+                                                            {% endif %}
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <a href="{{ path('app_employee_profile_view_kadrovska', {id: user.id}) }}" class="btn btn-primary">
+                                                                <i class="ph-eye me-2"></i>
+                                                                Vidite
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                            {{ knp_pagination_render(pagination2) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zaposleni</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info fade show">
+                                            <span class="fw-semibold">Nije pronađen nijedan rezultat među zaposlenima.</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="navigation float-end">
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                    {% endif %}
+                </div>
+                <!-- /content area -->
+
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

@@ -4,13 +4,13 @@ namespace App\Command;
 
 use App\Classes\Data\FastTaskData;
 use App\Entity\Activity;
-use App\Entity\FastTask;
 use App\Entity\Task;
 use App\Entity\TaskEmail;
 use App\Entity\User;
 use App\Service\MailService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;

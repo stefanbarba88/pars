@@ -84,71 +84,71 @@
                                     </div>
                                 </div>
                             </div>
-{#                            <div class="row obrada">#}
-{#                                <div class="col-lg-12">#}
-{#                                    <div class="mb-3">#}
-{#                                        {{ form_label(form.additionalDesc, 'Obrada podataka detalji:*', {'label_attr': {'class': 'form-label'}}) }}#}
-{#                                        {{ form_widget(form.additionalDesc, {attr: { class: 'form-control' }}) }}#}
-{#                                        <span class="form-text">Detaljnije opišite šta je rađeno pri obradi podataka. </span>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
+                            <div class="row obrada">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        {{ form_label(form.additionalDesc, 'Obrada podataka detalji:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.additionalDesc, {attr: { class: 'form-control' }}) }}
+                                        <span class="form-text">Detaljnije opišite šta je rađeno pri obradi podataka. </span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         {{ form_label(form.description, 'Napomena:', {'label_attr': {'class': 'form-label'}}) }}
-{#                                        {{ form_widget(form.description, {attr: { class: 'form-control ckeditor_simple1' }}) }}#}
                                         {{ form_widget(form.description, {attr: { class: 'form-control' }}) }}
                                         <span class="form-text nap"></span>
                                     </div>
                                 </div>
                             </div>
 
-{#                            {% set currentTime = "now"|date("H:i") %}#}
-{#                            {% if currentTime > constant('App\\Classes\\AppConfig::TIME_WORK_TIME') %}#}
-{#                                <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-overtime" aria-expanded="false">Prekovremeni sati</div>#}
+                            {% if isCalendar %}
+                                {% if "now"|date("H:i") > workTime | date ("H:i") %}
+                                    <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-overtime" aria-expanded="false">Prekovremeni sati</div>
+                                    <div class="row collapse show" id="collapse-overtime">
+                                                    <div class="col-lg-12">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="overtime_vreme">Sati i minuti:</label>
+                                                            <div class="row gy-3">
+                                                                <div class="col">
+                                                                    <div class="input-group">
+                                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                                                            <i class="ph-minus ph-sm"></i>
+                                                                        </button>
+                                                                        <input class="form-control form-control-number text-center" type="number" min="0" max="23" name="overtime_vreme_sati" value="0">
+                                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                                                            <i class="ph-plus ph-sm"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col">
+                                                                    <div class="input-group">
+                                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                                                            <i class="ph-minus ph-sm"></i>
+                                                                        </button>
+                                                                        <input class="form-control form-control-number text-center" type="number" min="0" max="59" step="5" name="overtime_vreme_minuti" value="0">
+                                                                        <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                                                            <i class="ph-plus ph-sm"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                    <div class="row collapse show" id="collapse-overtime">
+                                                    <div class="col-lg-12">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="overtime_napomena">Napomena:</label>
+                                                            <textarea id="overtime_napomena" name="overtime_napomena" class="form-control"  rows="1"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                {% endif %}
+                            {% endif %}
 
-{#                                <div class="row collapse show" id="collapse-overtime">#}
-{#                                                <div class="col-lg-12">#}
-{#                                                    <div class="mb-3">#}
-{#                                                        <label class="form-label" for="overtime_vreme">Sati i minuti:</label>#}
-{#                                                        <div class="row gy-3">#}
-{#                                                            <div class="col">#}
-{#                                                                <div class="input-group">#}
-{#                                                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">#}
-{#                                                                        <i class="ph-minus ph-sm"></i>#}
-{#                                                                    </button>#}
-{#                                                                    <input class="form-control form-control-number text-center" type="number" min="0" max="23" name="overtime_vreme_sati" value="0">#}
-{#                                                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">#}
-{#                                                                        <i class="ph-plus ph-sm"></i>#}
-{#                                                                    </button>#}
-{#                                                                </div>#}
-{#                                                            </div>#}
-{#                                                            <div class="col">#}
-{#                                                                <div class="input-group">#}
-{#                                                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">#}
-{#                                                                        <i class="ph-minus ph-sm"></i>#}
-{#                                                                    </button>#}
-{#                                                                    <input class="form-control form-control-number text-center" type="number" min="0" max="59" step="5" name="overtime_vreme_minuti" value="0">#}
-{#                                                                    <button type="button" class="btn btn-light btn-icon" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">#}
-{#                                                                        <i class="ph-plus ph-sm"></i>#}
-{#                                                                    </button>#}
-{#                                                                </div>#}
-{#                                                            </div>#}
-{#                                                        </div>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                <div class="row collapse show" id="collapse-overtime">#}
-{#                                                <div class="col-lg-12">#}
-{#                                                    <div class="mb-3">#}
-{#                                                        <label class="form-label" for="overtime_napomena">Napomena:</label>#}
-{#                                                        <textarea id="overtime_napomena" name="overtime_napomena" class="form-control"  rows="1"></textarea>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
 
-{#                            {% endif %}#}
 
                             <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-client" aria-expanded="false">Klijent</div>
                             <div class="row collapse" id="collapse-client">
@@ -280,67 +280,17 @@
 
             // Funkcija za ažuriranje vidljivosti dodatnih aktivnosti
             function updateAdditionalActivityVisibility() {
-                // Proveri da li je izabrana aktivnost "Obrada podataka" (vrednost 67)
-                // if($('#stopwatch_time_form_activity').val().includes('67') || $('#stopwatch_time_form_activity').val().includes('66')) {
-                //     // Ako je izabrana aktivnost 67 ili 66, učini polje za unos dodatnih aktivnosti obaveznim
-                //     $('#stopwatch_time_form_description').prop('required', true);
-                //     // Promeni labelu na "Napomena:*"
-                //     $('label[for="stopwatch_time_form_description"]').text('Napomena:*');
-                //     $('.nap').text('Detaljnije opišite aktivnost.');
-                // } else {
-                //     // Ako nije izabrana aktivnost 67 ili 66, učini polje za unos dodatnih aktivnosti neobaveznim
-                //     $('#stopwatch_time_form_description').prop('required', false);
-                //     // Ostavi labelu kakva je
-                //     $('label[for="stopwatch_time_form_description"]').text('Napomena:');
-                //     $('.nap').text('');
-                // }
-                //
-                // if($('#stopwatch_time_form_activity').val().includes('33')) {
-                //     $('#stopwatch_time_form_additionalDesc').prop('required', true);
-                //     $('.obrada').prop('required', false).show();
-                // } else {
-                //     $('#stopwatch_time_form_additionalDesc').prop('required', false);
-                //     $('.obrada').prop('required', false).hide();
-                // }
 
-                // Proveri da li je izabrana aktivnost "Nešto drugo" (vrednost 66)
-                if ($('#stopwatch_time_form_activity').val().includes('{{ constant('App\\Classes\\AppConfig::NOT_IN_LIST_ACTIVITY_ID') }}')) {
-                    // Ako jeste, učini polje za unos dodatnih aktivnosti obaveznim i vidljivim
-                    $('#stopwatch_time_form_additionalActivity').prop('required', true).show();
-                    $('.dodAkt').prop('required', false).show();
-                } else {
-                    // Ako nije, učini polje za unos dodatnih aktivnosti neobaveznim i nevidljivim
-                    $('#stopwatch_time_form_additionalActivity').prop('required', false).hide();
-                    $('.dodAkt').prop('required', false).hide();
-                }
-            }
-        });
-    </script>
-    <script>
-        $(document).ready(function(){
-            // Funkcija koja će se izvršiti odmah po učitavanju stranice
-            updateAdditionalActivityVisibility();
-
-            // Prilikom promene izbora u selektu aktivnosti
-            $('#stopwatch_time_form_activity').change(function(){
-                // Pozivamo funkciju za ažuriranje vidljivosti dodatnih aktivnosti
-                updateAdditionalActivityVisibility();
-            });
-
-            // Funkcija za ažuriranje vidljivosti dodatnih aktivnosti
-            function updateAdditionalActivityVisibility() {
-                // Proveri da li je izabrana aktivnost "Obrada podataka" (vrednost 67)
                 if($('#stopwatch_time_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::OSTALO_ACTIVITY_ID')}}')) {
-                    // Ako je izabrana aktivnost 67 ili constant('App\\Classes\\AppConfig::OSTALO_ID'), učini polje za unos dodatnih aktivnosti obaveznim
+
                     $('#stopwatch_time_form_description').prop('required', true);
-                    // Promeni labelu na "Napomena:*"
-                    $('label[for="stopwatch_time_add_form_description"]').text('Napomena:*');
+                    $('label[for="stopwatch_time_form_description"]').text('Napomena:*');
                     $('.nap').text('Detaljnije opišite aktivnost.');
                 } else {
                     // Ako nije izabrana aktivnost 67 ili constant('App\\Classes\\AppConfig::OSTALO_ID'), učini polje za unos dodatnih aktivnosti neobaveznim
                     $('#stopwatch_time_form_description').prop('required', false);
                     // Ostavi labelu kakva je
-                    $('label[for="stopwatch_time_add_form_description"]').text('Napomena:');
+                    $('label[for="stopwatch_time_form_description"]').text('Napomena:');
                     $('.nap').text('');
                 }
 

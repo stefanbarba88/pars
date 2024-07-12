@@ -4,12 +4,14 @@ namespace App\Form;
 
 use App\Classes\Data\CalendarData;
 use App\Entity\Calendar;
+use DateTimeImmutable;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 
 
 class PhoneCalendarFormType extends AbstractType {
@@ -24,12 +26,14 @@ class PhoneCalendarFormType extends AbstractType {
       ->add('start', DateType::class, [
         'required' => false,
         'widget' => 'single_text',
-        'input' => 'datetime_immutable'
+        'input' => 'datetime_immutable',
+
       ])
       ->add('finish', DateType::class, [
         'required' => false,
         'widget' => 'single_text',
-        'input' => 'datetime_immutable'
+        'input' => 'datetime_immutable',
+
       ])
       ->add('type', ChoiceType::class, [
         'attr' => [

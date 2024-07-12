@@ -1,0 +1,2167 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <div class="content">
+{#                    {% if checklistActive is not empty %}#}
+{#                        <div class="col-xl-12">#}
+{#                            <div class="card">#}
+{#                                <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_item1" aria-expanded="false" type="button">#}
+{#                                    <h5 class="mb-0">Interni zadaci</h5>#}
+{#                                    <div class="d-inline-flex ms-auto">#}
+{#                                        <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{{ countChecklistActive }}</span>#}
+{#                                    </div>#}
+{#                                </div>#}
+
+{#                                <div id="collapsed_item1" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">#}
+{#                                    <div class="table-responsive">#}
+{#                                        <table class="table table-hover table-bordered table_morecondensed">#}
+{#                                            <tbody>#}
+{#                                            <tr class="table-light fw-semibold">#}
+{#                                                <td colspan="3">Aktivni</td>#}
+{#                                            </tr>#}
+{#                                            {% for task in checklistActive | slice(0,5)%}#}
+{#                                                <tr>#}
+{#                                                    <td>#}
+{#                                                        <div class="d-inline-flex align-items-center">#}
+{#                                                            <i class="ph-calendar me-2"></i>#}
+{#                                                            {{ task.created | date("d.m.Y")}}#}
+{#                                                        </div>#}
+{#                                                    </td>#}
+{#                                                    <td class="text-center">#}
+{#                                                        {% if task.priority == 1 %}#}
+{#                                                            <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>#}
+{#                                                        {% elseif task.priority == 2 %}#}
+{#                                                            <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>#}
+{#                                                        {% elseif task.priority == 4 %}#}
+{#                                                            <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>#}
+{#                                                        {% elseif task.priority == 5 %}#}
+{#                                                            <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>#}
+{#                                                        {% else %}#}
+{#                                                            <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>#}
+{#                                                        {% endif %}#}
+{#                                                    </td>#}
+
+{#                                                    <td class="text-center">#}
+{#                                                        <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ task.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>#}
+{#                                                    </td>#}
+
+{#                                                </tr>#}
+
+{#                                                <tr id="collapsed_item{{ task.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">#}
+
+{#                                                    <td colspan="2">#}
+{#                                                        <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">#}
+{#                                                            {{ task.task | slice(0, 30) ~ (task.task | length > 30 ? '...' : '') }}#}
+{#                                                        </a>#}
+{#                                                    </td>#}
+{#                                                    <td class="text-center">#}
+{#                                                        {% if task.status == 0 %}#}
+{#                                                            <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="btn btn-primary">#}
+{#                                                                <i class="ph-check"></i>#}
+{#                                                            </a>#}
+{#                                                        {% endif %}#}
+{#                                                    </td>#}
+{#                                                </tr>#}
+{#                                            {% endfor %}#}
+{#                                            <tr class="table-light fw-semibold">#}
+{#                                                <td colspan="2"></td>#}
+{#                                                <td class="text-center">#}
+{#                                                    <div class="d-inline-flex mb-0">#}
+{#                                                        <a href="{{ path('app_checklist_to_do') }}" class="btn-sm btn-primary"> Vidi sve</a>#}
+{#                                                    </div>#}
+{#                                                </td>#}
+{#                                            </tr>#}
+
+{#                                            </tbody>#}
+{#                                        </table>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    {% endif %}#}
+
+                    {% if settings.isWidgete %}
+                        <div class="mb-3">
+                            <div class="row row-tile g-0">
+                                <div class="col">
+                                    <a type="button" href="{{ path('app_employees') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-top-start py-2">
+                                        <i class="ph-users bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <h5 class="mb-0">
+                                            {{ noZaposleni }}
+                                        </h5>
+                                        <div class="fw-semibold">
+                                            Broj zaposlenih
+                                        </div>
+                                    </a>
+                                    <a type="button" href="{{ path('app_projects') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2">
+                                        <i class="ph-folders bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <h5 class="mb-0">{{ noProjekata }}</h5>
+                                        <div class="fw-semibold">
+                                            Broj projekata
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col">
+                                    <a type="button" href="{{ path('app_tasks') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-top-end py-2">
+                                        <i class="ph-list-bullets bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <h5 class="mb-0">{{ noTasks }}</h5>
+                                        <div class="fw-semibold">
+                                            Broj zadataka
+                                        </div>
+                                    </a>
+                                    <a type="button" href="{{ path('app_checklist_list') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-end py-2">
+                                        <i class="ph-list-bullets bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <h5 class="mb-0">{{ noInternTasks }}</h5>
+                                        <div class="fw-semibold">
+                                            Broj internih zadataka
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="row row-tile g-0">
+                                <div class="col">
+                                    {% if calendar %}
+                                        <a type="button" href="{{ path('app_calendar_list') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-top-start py-2">
+                                            <i class="ph-calendar bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <h5 class="mb-0">
+                                                {{ noCalendar }}
+                                            </h5>
+                                            <div class="fw-semibold">
+                                                Broj zahteva
+                                            </div>
+                                        </a>
+                                    {% endif %}
+                                    {% if car %}
+                                        <a type="button" href="{{ path('app_cars') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2">
+                                            <i class="ph-car bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <h5 class="mb-0">{{ noCars }}</h5>
+                                            <div class="fw-semibold">
+                                                Broj vozila
+                                            </div>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                <div class="col">
+                                    {% if tool %}
+                                        <a type="button" href="{{ path('app_tools') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-top-end py-2">
+                                            <i class="ph-wrench bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <h5 class="mb-0">{{ noTools }}</h5>
+                                            <div class="fw-semibold">
+                                                Broj opreme
+                                            </div>
+                                        </a>
+                                    {% endif %}
+                                    {% if client %}
+                                        <a type="button" href="{{ path('app_ticket_list') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-end py-2">
+                                            <i class="ph-ticket bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <h5 class="mb-0">{{ noTickets }}</h5>
+                                            <div class="fw-semibold">
+                                                Broj tiketa
+                                            </div>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if settings.isPlanToday %}
+                        <div class="row">
+                        <div class="col-xl-12">
+                            <!-- Marketing campaigns -->
+                            <div class="card">
+
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Zadaci kreirani za {{ danas | date('d.m.Y') }}</h5>
+                                    <div class="my-auto ms-auto">
+                                        <a href="{{ path('app_task_form_date') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                    </div>
+                                </div>
+                                <div class="table-responsive card">
+                                    <table class="table table-hover table-bordered table_morecondensed">
+                                        <thead class="bg-light">
+                                        <tr>
+                                            <th>Projekat</th>
+                                            <th>Zaposleni</th>
+                                            <th class="text-center" style="width: 10px;">
+                                                <i class="ph-dots-three"></i>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if timetable is not empty %}
+                                            <tr class="table-light">
+                                                <td colspan="3" class="fw-semibold">Teren</td>
+                                            </tr>
+                                            {% for task in timetable %}
+                                                {% if task.task.project is not null %}
+                                                    {% if task.task.category.id == constant('App\\Classes\\AppConfig::TEREN_CAT_ID') %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                            <tr class="bg-secondary">
+                                                        {% endif %}
+
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_task_view', {id:task.task.id}) }}">{{ task.task.project.title }} {% if task.task.time|date('H:i') != '00:00' %}
+                                                                        ({{ task.task.time|date('H:i') }})
+                                                                    {% endif %}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                {% for user in task.task.assignedUsers %}
+                                                                    {% for userId, userStatus in task.logStatus %}
+                                                                        {% if userId == user.id and userStatus.otvoren == 1 %}
+                                                                            <div class="btn-group">
+                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                    {{ user.getNameWithFirstLetter }}
+                                                                                    <div class="live p-1 mx-2"></div>
+                                                                                </a>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.zatvoren == 1 %}
+                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                {{ user.getNameWithFirstLetter }}
+                                                                            </a>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.nije_zapocet == 1 %}
+                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                {{ user.getNameWithFirstLetter }}
+                                                                            </a>
+                                                                        {% endif %}
+                                                                    {% endfor %}<br>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
+                                                        <td class="test-center text-primary">
+                                                            <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details_task{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                        </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <tr class="table-light">
+                                                <td colspan="3" class="fw-semibold">Kancelarija</td>
+                                            </tr>
+                                            {% for task in timetable %}
+                                                {% if task.task.project is not null %}
+                                                    {% if task.task.category.id == constant('App\\Classes\\AppConfig::KANC_CAT_ID') %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                            <tr class="bg-secondary">
+                                                        {% endif %}
+
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_task_view', {id:task.task.id}) }}">{{ task.task.project.title }} {% if task.task.time|date('H:i') != '00:00' %}
+                                                                        ({{ task.task.time|date('H:i') }})
+                                                                    {% endif %}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                {% for user in task.task.assignedUsers %}
+                                                                    {% for userId, userStatus in task.logStatus %}
+                                                                        {% if userId == user.id and userStatus.otvoren == 1 %}
+                                                                            <div class="btn-group">
+                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                    {{ user.getNameWithFirstLetter }}
+                                                                                    <div class="live p-1 mx-2"></div>
+                                                                                </a>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.zatvoren == 1 %}
+                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                {{ user.getNameWithFirstLetter }}
+                                                                            </a>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.nije_zapocet == 1 %}
+                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                {{ user.getNameWithFirstLetter }}
+                                                                            </a>
+                                                                        {% endif %}
+                                                                    {% endfor %}<br>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
+                                                        <td class="test-center text-primary">
+                                                            <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details_task{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                        </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <tr class="table-light">
+                                                <td colspan="3" class="fw-semibold">Rad od kuće</td>
+                                            </tr>
+                                            {% for task in timetable %}
+                                                {% if task.task.project is not null %}
+                                                    {% if task.task.category.id == constant('App\\Classes\\AppConfig::KUCA_CAT_ID') %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                            <tr class="bg-secondary">
+                                                        {% endif %}
+
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_task_view', {id:task.task.id}) }}">{{ task.task.project.title }} {% if task.task.time|date('H:i') != '00:00' %}
+                                                                        ({{ task.task.time|date('H:i') }})
+                                                                    {% endif %}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                {% for user in task.task.assignedUsers %}
+                                                                    {% for userId, userStatus in task.logStatus %}
+                                                                        {% if userId == user.id and userStatus.otvoren == 1 %}
+                                                                            <div class="btn-group">
+                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                    {{ user.getNameWithFirstLetter }}
+                                                                                    <div class="live p-1 mx-2"></div>
+                                                                                </a>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.zatvoren == 1 %}
+                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                {{ user.getNameWithFirstLetter }}
+                                                                            </a>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.nije_zapocet == 1 %}
+                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                {{ user.getNameWithFirstLetter }}
+                                                                            </a>
+                                                                        {% endif %}
+                                                                    {% endfor %}<br>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
+                                                        <td class="test-center text-primary">
+                                                            <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details_task{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                        </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <tr class="table-light">
+                                                <td colspan="3" class="fw-semibold">Ostalo</td>
+                                            </tr>
+                                            {% for task in timetable %}
+                                                {% if task.task.project is not null %}
+                                                    {% if task.task.category.id != constant('App\\Classes\\AppConfig::KUCA_CAT_ID') and task.task.category.id != constant('App\\Classes\\AppConfig::KANC_CAT_ID') and task.task.category.id != constant('App\\Classes\\AppConfig::TEREN_CAT_ID') %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                            <tr class="bg-secondary">
+                                                        {% endif %}
+
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_task_view', {id:task.task.id}) }}">{{ task.task.project.title }} {% if task.task.time|date('H:i') != '00:00' %}
+                                                                        ({{ task.task.time|date('H:i') }})
+                                                                    {% endif %}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                {% for user in task.task.assignedUsers %}
+                                                                    {% for userId, userStatus in task.logStatus %}
+                                                                        {% if userId == user.id and userStatus.otvoren == 1 %}
+                                                                            <div class="btn-group">
+                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                    {{ user.getNameWithFirstLetter }}
+                                                                                    <div class="live p-1 mx-2"></div>
+                                                                                </a>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.zatvoren == 1 %}
+                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                {{ user.getNameWithFirstLetter }}
+                                                                            </a>
+                                                                        {% endif %}
+                                                                        {% if userId == user.id and userStatus.nije_zapocet == 1 %}
+                                                                            <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                {{ user.getNameWithFirstLetter }}
+                                                                            </a>
+                                                                        {% endif %}
+                                                                    {% endfor %}<br>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
+                                                        <td class="test-center text-primary">
+                                                            <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details_task{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                        </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="3">
+                                                    <div class="fw-semibold">
+                                                        Nema kreiranih zadataka za danas
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /marketing campaigns -->
+                        </div>
+                    </div>
+                        <div class="row">
+                        <div class="col-xl-12">
+                            <!-- Marketing campaigns -->
+                            <div class="card">
+
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Interni zadaci kreirani za {{ danas | date('d.m.Y') }}</h5>
+                                    <div class="my-auto ms-auto">
+                                        <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                    </div>
+                                </div>
+                                <div class="table-responsive card">
+                                    <table class="table table-hover table-bordered table_morecondensed">
+                                        <thead class="bg-light">
+                                        <tr>
+                                            <th>Projekat</th>
+                                            <th>Zaposleni</th>
+                                            <th class="text-center" style="width: 10px;">
+                                                <i class="ph-dots-three"></i>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if timetableIntern is not empty %}
+                                            <tr class="table-light">
+                                                <td colspan="3" class="fw-semibold">Teren</td>
+                                            </tr>
+                                            {% for task in timetableIntern %}
+                                                {% if task.project is not null %}
+                                                    {% if task.category.id == constant('App\\Classes\\AppConfig::TEREN_CAT_ID') %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                            <tr class="bg-secondary">
+                                                        {% endif %}
+
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.project.title }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <div class="btn-group">
+                                                                    {{ task.user.getNameWithFirstLetter }}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="test-center text-primary">
+                                                            <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details_intern{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                        </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <tr class="table-light">
+                                                <td colspan="3" class="fw-semibold">Kancelarija</td>
+                                            </tr>
+                                            {% for task in timetableIntern %}
+                                                {% if task.project is not null %}
+                                                    {% if task.category.id == constant('App\\Classes\\AppConfig::KANC_CAT_ID') %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                            <tr class="bg-secondary">
+                                                        {% endif %}
+
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.project.title }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <div class="btn-group">
+                                                                    {{ task.user.getNameWithFirstLetter }}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="test-center text-primary">
+                                                            <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details_intern{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                        </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <tr class="table-light">
+                                                <td colspan="3" class="fw-semibold">Rad od kuće</td>
+                                            </tr>
+                                            {% for task in timetableIntern %}
+                                                {% if task.project is not null %}
+                                                    {% if task.category.id == constant('App\\Classes\\AppConfig::KUCA_CAT_ID') %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                            <tr class="bg-secondary">
+                                                        {% endif %}
+
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.project.title }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <div class="btn-group">
+                                                                    {{ task.user.getNameWithFirstLetter }}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="test-center text-primary">
+                                                            <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details_intern{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                        </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <tr class="table-light">
+                                                <td colspan="3" class="fw-semibold">Ostalo</td>
+                                            </tr>
+                                            {% for task in timetableIntern %}
+                                                {% if task.project is not null %}
+                                                    {% if task.category.id != constant('App\\Classes\\AppConfig::KUCA_CAT_ID') and task.category.id != constant('App\\Classes\\AppConfig::KANC_CAT_ID') and task.category.id != constant('App\\Classes\\AppConfig::TEREN_CAT_ID') %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                            <tr class="bg-secondary">
+                                                        {% endif %}
+
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.project.title }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                <div class="btn-group">
+                                                                    {{ task.user.getNameWithFirstLetter }}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="test-center text-primary">
+                                                            <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details_intern{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                        </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="3">
+                                                    <div class="fw-semibold">
+                                                        Nema kreiranih zadataka za danas
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /marketing campaigns -->
+                        </div>
+                    </div>
+                    {% endif %}
+
+
+                    {% if settings.isPlanEmployee %}
+                        <div class="mb-3 ">
+                            <div class="row row-tile g-0">
+                                <div class="col">
+                                    <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-top-start py-2" data-bs-toggle="modal" data-bs-target="#modal_vanzadatka">
+                                        <i class="ph-coffee bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <h5 class="mb-0">
+                                            {{ dostupnosti.noVanZadatka }}
+                                        </h5>
+                                        <div class="fw-semibold">
+                                            Bez obaveze
+                                        </div>
+                                    </button>
+                                    {% if calendar %}
+                                        <button type="button" class="btn btn-light w-100 flex-column rounded-0 py-2" data-bs-toggle="modal" data-bs-target="#modal_nedostupni">
+                                            <i class="ph-armchair bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <h5 class="mb-0">{{ dostupnosti.noNedostupni }}</h5>
+                                            <div class="fw-semibold">
+                                                Nedostupni
+                                            </div>
+                                        </button>
+                                    {% endif %}
+                                    <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2" data-bs-toggle="modal" data-bs-target="#modal_teren">
+                                        <i class="ph-tree bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <h5 class="mb-0">{{ dostupnosti.noTeren }}</h5>
+                                        <div class="fw-semibold">
+                                            Teren
+                                        </div>
+                                    </button>
+                                </div>
+                                <div class="col">
+                                    <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-top-end py-2" data-bs-toggle="modal" data-bs-target="#modal_kancelarija">
+                                        <i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <h5 class="mb-0">{{ dostupnosti.noKancelarija }}</h5>
+                                        <div class="fw-semibold">
+                                            Kancelarija</div>
+                                    </button>
+                                    <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-end py-2" data-bs-toggle="modal" data-bs-target="#modal_kuca"><i class="ph-house bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <h5 class="mb-0">{{ dostupnosti.noKuca }}</h5>
+                                        <div class="fw-semibold">
+                                            Rad od kuće
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if settings.isPlanTomorrow %}
+                        {% if "now"|date("H:i") < settings.radnoVreme | date ("H:i") %}
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <div class="card">
+
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zadaci kreirani za {{ sutra | date('d.m.Y') }}</h5>
+                                    </div>
+                                    <div class="table-responsive card">
+                                        <table class="table table-hover table-bordered table_morecondensed">
+                                            <thead class="bg-light">
+                                            <tr>
+                                                <th>Projekat</th>
+                                                <th>Zaposleni</th>
+                                                <th class="text-center" style="width: 10px;">
+                                                    <i class="ph-dots-three"></i>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% if tomorrowTimetable is not empty %}
+                                                {% for task in tomorrowTimetable %}
+                                                    {% if task.task.project is not null %}
+                                                        <tr>
+                                                            <td style="width: 45%;">
+                                                                <div class="fw-semibold">
+                                                                    <a href="{{ path('app_project_tasks_view', { id: task.task.project.id }) }}">{{ task.task.project.title }} {% if task.task.time is not null %} ({{ task.task.time|date('H:i') }}) {% endif %}</a>
+                                                                </div>
+                                                            </td>
+                                                            <td style="width: 45%;">
+                                                                <div class="fw-semibold">
+                                                                    {% for user in task.task.assignedUsers %}
+                                                                        <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                            {{ user.getNameWithFirstLetter }}
+                                                                        </a><br>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </td>
+                                                            <td class="test-center text-primary">
+                                                                <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details1_task{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="3">
+                                                        <div class="fw-semibold">
+                                                            Nema kreiranih zadataka za sutra
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <!-- Marketing campaigns -->
+                                    <div class="card">
+
+                                        <div class="card-header d-flex align-items-center">
+                                            <h5 class="mb-0">Interni zadaci kreirani za {{ sutra | date('d.m.Y') }}</h5>
+                                        </div>
+                                        <div class="table-responsive card">
+                                            <table class="table table-hover table-bordered table_morecondensed">
+                                                <thead class="bg-light">
+                                                <tr>
+                                                    <th>Projekat</th>
+                                                    <th>Zaposleni</th>
+                                                    <th class="text-center" style="width: 10px;">
+                                                        <i class="ph-dots-three"></i>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% if tomorrowTimetableIntern is not empty %}
+                                                    {% for task in tomorrowTimetableIntern %}
+                                                        {% if task.project is not null %}
+                                                            <tr>
+                                                                <td style="width: 45%;">
+                                                                    <div class="fw-semibold">
+                                                                        <a href="{{ path('app_project_tasks_view', { id: task.project.id }) }}">{{ task.project.title }}</a>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="width: 45%;">
+                                                                    <div class="fw-semibold">
+                                                                        {{ task.user.getNameWithFirstLetter }}
+                                                                    </div>
+                                                                </td>
+                                                                <td class="test-center text-primary">
+                                                                    <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details1_intern{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                                </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="3">
+                                                            <div class="fw-semibold">
+                                                                Nema kreiranih zadataka za danas
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <!-- /marketing campaigns -->
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
+
+{#                    {% set currentTime = "now"|date("H:i") %}#}
+{#                    {% if currentTime < "14:30" %}#}
+{#                        <div class="col-xl-12">#}
+{#                            <!-- Marketing campaigns -->#}
+{#                            <div class="card">#}
+
+{#                                <div class="card-header d-flex align-items-center">#}
+{#                                    <h5 class="mb-0">Plan rada za {{ danas | date('d.m.Y') }}</h5>#}
+{#                                                                        <div class="my-auto ms-auto">#}
+{#                                                                            <a href="{{ path('app_quick_tasks') }}" class="btn btn-light">#}
+{#                                                                                <i class="ph-clock-afternoon me-2"></i>#}
+{#                                                                                Raspored#}
+{#                                                                            </a>#}
+{#                                                                        </div>#}
+{#                                </div>#}
+{#                                <div class="table-responsive card">#}
+{#                                    <table class="table table-hover table-bordered table_morecondensed">#}
+{#                                        <thead class="bg-light">#}
+{#                                        <tr>#}
+{#                                            <th>Projekat</th>#}
+{#                                            <th>Geodete</th>#}
+{#                                            <th class="text-center" style="width: 10px;">#}
+{#                                                <i class="ph-dots-three"></i>#}
+{#                                            </th>#}
+{#                                        </tr>#}
+{#                                        </thead>#}
+{#                                        <tbody>#}
+{#                                        {% if plan is not empty %}#}
+{#                                            {% for task in plan %}#}
+{#                                                {% if task['projekat'] is not null %}#}
+{#                                                    <tr>#}
+{#                                                        <td style="width: 45%;">#}
+{#                                                            <div class="fw-semibold">#}
+{#                                                                <a href="{{ path('app_project_tasks_view', { id: task['projekat'].id }) }}">{{ task['projekat'].title }} {% if task.vreme is not null %} ({{ task.vreme}}) {% endif %}</a>#}
+{#                                                            </div>#}
+{#                                                        </td>#}
+{#                                                        <td style="width: 45%;">#}
+{#                                                            <div class="fw-semibold">#}
+{#                                                                {% if task['geo1'] is not null %}#}
+{#                                                                    <a href="{{ path('app_employee_activity_view', { id: task['geo1'].id }) }}">{{ task['geo1'].getNameWithFirstLetter }}</a> <br>#}
+{#                                                                {% endif %}#}
+{#                                                                {% if task['geo2'] is not null %}#}
+{#                                                                    <a href="{{ path('app_employee_activity_view', { id: task['geo2'].id }) }}">{{ task['geo2'].getNameWithFirstLetter }}</a> <br>#}
+{#                                                                {% endif %}#}
+{#                                                                {% if task['geo3'] is not null %}#}
+{#                                                                    <a href="{{ path('app_employee_activity_view', { id: task['geo3'].id }) }}">{{ task['geo3'].getNameWithFirstLetter }}</a> <br>#}
+{#                                                                {% endif %}#}
+{#                                                            </div>#}
+{#                                                        </td>#}
+{#                                                        <td class="test-center text-primary">#}
+{#                                                            <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details1_task_plan{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>#}
+{#                                                        </td>#}
+{#                                                    </tr>#}
+{#                                                {% endif %}#}
+{#                                            {% endfor %}#}
+{#                                        {% else %}#}
+{#                                            <tr>#}
+{#                                                <td colspan="3">#}
+{#                                                    <div class="fw-semibold">#}
+{#                                                        Nema kreiranih zadataka za danas#}
+{#                                                    </div>#}
+{#                                                </td>#}
+{#                                            </tr>#}
+{#                                        {% endif %}#}
+{#                                        </tbody>#}
+{#                                    </table>#}
+{#                                </div>#}
+{#                                <div class="table-responsive card">#}
+{#                                    <table class="table table-hover table-bordered table_morecondensed">#}
+{#                                        <thead>#}
+{#                                        <tr class="table-light">#}
+{#                                            <th colspan="3">PARS zamene na stalnim gradilištima</th>#}
+{#                                        </tr>#}
+{#                                        <tr class="table-light">#}
+{#                                            <th>Projekat</th>#}
+{#                                            <th>Geodete</th>#}
+{#                                            <th class="text-center" style="width: 10px;">#}
+{#                                                <i class="ph-dots-three"></i>#}
+{#                                            </th>#}
+{#                                        </tr>#}
+{#                                        </thead>#}
+{#                                        <tbody>#}
+{#                                        {% if subs is not empty %}#}
+{#                                            {% for task in subs %}#}
+{#                                                {% if task['projekat'] is not null %}#}
+{#                                                    <tr>#}
+{#                                                        <td style="width: 45%;">#}
+{#                                                            <div class="fw-semibold">#}
+{#                                                                <a href="{{ path('app_project_tasks_view', { id: task['projekat'].id }) }}">{{ task['projekat'].title }} {% if task.vreme is not null %} ({{ task.vreme}}) {% endif %}</a>#}
+{#                                                            </div>#}
+{#                                                        </td>#}
+{#                                                        <td style="width: 45%;">#}
+{#                                                            <div class="fw-semibold">#}
+{#                                                                {% if task['geo'] is not null %}#}
+{#                                                                    <a href="{{ path('app_employee_activity_view', { id: task['geo'].id }) }}">{{ task['geo'].getNameWithFirstLetter }}</a>#}
+{#                                                                {% endif %}#}
+{#                                                            </div>#}
+{#                                                        </td>#}
+{#                                                        <td class="test-center text-primary">#}
+{#                                                            <a type="button"  data-bs-toggle="modal" data-bs-target="#modal_details_subs_task_subs{{ loop.index }} " class="fw-semibold"><i class="ph-info"></i></a>#}
+{#                                                        </td>#}
+{#                                                    </tr>#}
+{#                                                {% endif %}#}
+{#                                            {% endfor %}#}
+{#                                        {% else %}#}
+{#                                            <tr>#}
+{#                                                <td colspan="3">#}
+{#                                                    <div class="fw-semibold">#}
+{#                                                        Nema kreiranih zamena za danas#}
+{#                                                    </div>#}
+{#                                                </td>#}
+{#                                            </tr>#}
+{#                                        {% endif %}#}
+{#                                        </tbody>#}
+{#                                    </table>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <!-- /marketing campaigns -->#}
+{#                        </div>#}
+{#                    {% else %}#}
+{#                        <div class="row ">#}
+{#                            <div class="col-xl-12">#}
+
+{#                                <div class="card">#}
+
+{#                                    <div class="card-header d-flex align-items-center">#}
+{#                                        <h5 class="mb-0">Plan rada za {{ sutra | date('d.m.Y') }}</h5>#}
+{#                                        {% if tomorrowTimetableId != 0 %}#}
+{#                                            <div class="my-auto ms-auto">#}
+{#                                                <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-clipboard me-2"></i> Plan rada </a>#}
+{#                                            </div>#}
+{#                                        {% endif %}#}
+{#                                    </div>#}
+{#                                    <div class="table-responsive card">#}
+{#                                        <table class="table table-hover table-bordered table_morecondensed">#}
+{#                                            <thead class="bg-light">#}
+{#                                            <tr>#}
+{#                                                <th>Projekat</th>#}
+{#                                                <th>Geodete</th>#}
+{#                                                <th class="text-center" style="width: 10px;">#}
+{#                                                    <i class="ph-dots-three"></i>#}
+{#                                                </th>#}
+{#                                            </tr>#}
+{#                                            </thead>#}
+{#                                            <tbody>#}
+{#                                            {% if tomorrowTimetable is not empty %}#}
+{#                                                {% for task in tomorrowTimetable %}#}
+{#                                                    {% if task['projekat'] is not null %}#}
+{#                                                        <tr>#}
+{#                                                            <td style="width: 45%;">#}
+{#                                                                <div class="fw-semibold">#}
+{#                                                                    <a href="{{ path('app_project_tasks_view', { id: task['projekat'].id }) }}">{{ task['projekat'].title }} {% if task.vreme is not null %} ({{ task.vreme}}) {% endif %}</a>#}
+{#                                                                </div>#}
+{#                                                            </td>#}
+{#                                                            <td style="width: 45%;">#}
+{#                                                                <div class="fw-semibold">#}
+{#                                                                    {% if task['geo1'] is not null %}#}
+{#                                                                        <a href="{{ path('app_employee_activity_view', { id: task['geo1'].id }) }}">{{ task['geo1'].getNameWithFirstLetter }}</a> <br>#}
+{#                                                                    {% endif %}#}
+{#                                                                    {% if task['geo2'] is not null %}#}
+{#                                                                        <a href="{{ path('app_employee_activity_view', { id: task['geo2'].id }) }}">{{ task['geo2'].getNameWithFirstLetter }}</a> <br>#}
+{#                                                                    {% endif %}#}
+{#                                                                    {% if task['geo3'] is not null %}#}
+{#                                                                        <a href="{{ path('app_employee_activity_view', { id: task['geo3'].id }) }}">{{ task['geo3'].getNameWithFirstLetter }}</a>#}
+{#                                                                    {% endif %}#}
+{#                                                                </div>#}
+{#                                                            </td>#}
+{#                                                            <td class="test-center text-primary">#}
+{#                                                                <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details1_task{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>#}
+{#                                                            </td>#}
+{#                                                        </tr>#}
+{#                                                    {% endif %}#}
+{#                                                {% endfor %}#}
+{#                                            {% else %}#}
+{#                                                <tr>#}
+{#                                                    <td colspan="3">#}
+{#                                                        <div class="fw-semibold">#}
+{#                                                            Nema kreiranih zadataka za sutra#}
+{#                                                        </div>#}
+{#                                                    </td>#}
+{#                                                </tr>#}
+{#                                            {% endif %}#}
+{#                                            </tbody>#}
+{#                                        </table>#}
+{#                                    </div>#}
+{#                                    <div class="table-responsive card">#}
+{#                                        <table class="table table-hover table-bordered table_morecondensed">#}
+{#                                            <thead>#}
+{#                                            <tr class="table-light">#}
+{#                                                <th colspan="3">PARS zamene na stalnim gradilištima</th>#}
+{#                                            </tr>#}
+{#                                            <tr class="table-light">#}
+{#                                                <th>Projekat</th>#}
+{#                                                <th>Geodete</th>#}
+{#                                                <th class="text-center" style="width: 10px;">#}
+{#                                                    <i class="ph-dots-three"></i>#}
+{#                                                </th>#}
+{#                                            </tr>#}
+{#                                            </thead>#}
+{#                                            <tbody>#}
+{#                                            {% if tomorrowSubs is not empty %}#}
+{#                                                {% for task in tomorrowSubs %}#}
+{#                                                    {% if task['projekat'] is not null %}#}
+{#                                                        <tr>#}
+{#                                                            <td style="width: 45%;">#}
+{#                                                                <div class="fw-semibold">#}
+{#                                                                    <a href="{{ path('app_project_tasks_view', { id: task['projekat'].id }) }}">{{ task['projekat'].title }} {% if task.vreme is not null %} ({{ task.vreme}}) {% endif %}</a>#}
+{#                                                                </div>#}
+{#                                                            </td>#}
+{#                                                            <td style="width: 45%;">#}
+{#                                                                <div class="fw-semibold">#}
+{#                                                                    {% if task['geo'] is not null %}#}
+{#                                                                        <a href="{{ path('app_employee_activity_view', { id: task['geo'].id }) }}">{{ task['geo'].getNameWithFirstLetter }}</a>#}
+{#                                                                    {% endif %}#}
+{#                                                                </div>#}
+{#                                                            </td>#}
+{#                                                            <td class="text-center text-primary">#}
+{#                                                                <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details_subs_task{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>#}
+{#                                                            </td>#}
+{#                                                        </tr>#}
+{#                                                    {% endif %}#}
+{#                                                {% endfor %}#}
+{#                                            {% else %}#}
+{#                                                <tr>#}
+{#                                                    <td colspan="3">#}
+{#                                                        <div class="fw-semibold">#}
+{#                                                            Nema kreiranih zamena za sutra#}
+{#                                                        </div>#}
+{#                                                    </td>#}
+{#                                                </tr>#}
+{#                                            {% endif %}#}
+{#                                            </tbody>#}
+{#                                        </table>#}
+{#                                    </div>#}
+{#                                </div>#}
+
+{#                            </div>#}
+{#                        </div>#}
+{#                    {% endif %}#}
+
+
+
+{#                    <div class="mb-3 ">#}
+{#                        <div class="row row-tile g-0">#}
+{#                            <div class="col">#}
+{#                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-top-start py-2" data-bs-toggle="modal" data-bs-target="#modal_nedostupni">#}
+{#                                    <i class="ph-house bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>#}
+{#                                    <h5 class="mb-0">#}
+{#                                        {% if currentTime < "14:30" %}#}
+{#                                            {{ dostupnosti.noNedostupni }}#}
+{#                                        {% else %}#}
+{#                                            {{ dostupnostiSutra.noNedostupni }}#}
+{#                                        {% endif %}#}
+{#                                    </h5>#}
+{#                                    <div class="fw-semibold"> {% if currentTime < "14:30" %}#}
+{#                                            Odsutni#}
+{#                                        {% else %}#}
+{#                                            Odsutni (sutra)#}
+{#                                        {% endif %}#}
+{#                                    </div>#}
+{#                                </button>#}
+
+{#                                {% if nerasporedjenost is not empty %}#}
+{#                                    <button type="button" class="btn btn-light w-100 flex-column rounded-0 py-2" data-bs-toggle="modal" data-bs-target="#modal_kancelarija">#}
+{#                                        <i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>#}
+{#                                        <h5 class="mb-0">{{ dostupnosti.noKancelarija }}</h5>#}
+{#                                        <div class="fw-semibold">#}
+{#                                            Kancelarija#}
+{#                                        </div>#}
+{#                                    </button>#}
+{#                                    <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2" data-bs-toggle="modal" data-bs-target="#modal_unknown_sutra">#}
+{#                                        <i class="ph-warning-circle bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>#}
+{#                                        <h5 class="mb-0">{{ nerasporedjenost.brojNerasporedjenih }}/{{ nerasporedjenost.brojDostupnih }}</h5>#}
+{#                                        <div class="fw-semibold">#}
+{#                                            Neraspoređeni (sutra)#}
+{#                                        </div>#}
+{#                                    </button>#}
+{#                                {% else %}#}
+{#                                    <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2" data-bs-toggle="modal" data-bs-target="#modal_kancelarija">#}
+{#                                        <i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>#}
+{#                                        <h5 class="mb-0">{{ dostupnosti.noKancelarija }}</h5>#}
+{#                                        <div class="fw-semibold">#}
+{#                                            Kancelarija#}
+{#                                        </div>#}
+{#                                    </button>#}
+{#                                {% endif %}#}
+{#                            </div>#}
+{#                            <div class="col">#}
+{#                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-top-end py-2" data-bs-toggle="modal" data-bs-target="#modal_vanzadatka">#}
+{#                                    <i class="ph-coffee bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>#}
+{#                                    <h5 class="mb-0">{{ dostupnosti.noVanZadatka }}</h5>#}
+{#                                    <div class="fw-semibold">#}
+{#                                        Bez obaveze#}
+{#                                    </div>#}
+{#                                </button>#}
+{#                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 py-2" data-bs-toggle="modal" data-bs-target="#modal_tekuci">#}
+{#                                    <i class="ph-paint-brush-household bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>#}
+{#                                    <h5 class="mb-0">{{ tekuciPoslovi | length }}</h5>#}
+{#                                    <div class="fw-semibold">#}
+{#                                        Tekuće obaveze#}
+{#                                    </div>#}
+{#                                </button>#}
+{#                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-end py-2" data-bs-toggle="modal" data-bs-target="#modal_unknown">#}
+{#                                    <i class="ph-warning-circle bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>#}
+{#                                    <h5 class="mb-0">{{ dostupnosti.noUnknown }}</h5>#}
+{#                                    <div class="fw-semibold">#}
+{#                                        Neraspoređeni#}
+{#                                    </div>#}
+{#                                </button>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+
+
+
+
+
+
+
+
+{#                    <div class="mb-3 ">#}
+{#                        <div class="row row-tile g-0">#}
+{#                            <div class="col">#}
+{#                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-top-start py-2" data-bs-toggle="modal" data-bs-target="#modal_vanzadatka">#}
+{#                                    <i class="ph-coffee bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>#}
+{#                                    <h5 class="mb-0">#}
+{#                                        {{ dostupnosti.noVanZadatka }}#}
+{#                                    </h5>#}
+{#                                    <div class="fw-semibold">#}
+{#                                        Bez obaveze#}
+{#                                    </div>#}
+{#                                </button>#}
+{#                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2" data-bs-toggle="modal" data-bs-target="#modal_teren">#}
+{#                                    <i class="ph-tree bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>#}
+{#                                    <h5 class="mb-0">{{ dostupnosti.noTeren }}</h5>#}
+{#                                    <div class="fw-semibold">#}
+{#                                        Teren#}
+{#                                    </div>#}
+{#                                </button>#}
+{#                            </div>#}
+{#                            <div class="col">#}
+{#                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-top-end py-2" data-bs-toggle="modal" data-bs-target="#modal_kancelarija">#}
+{#                                    <i class="ph-monitor bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>#}
+{#                                    <h5 class="mb-0">{{ dostupnosti.noKancelarija }}</h5>#}
+{#                                    <div class="fw-semibold">#}
+{#                                        Kancelarija#}
+{#                                    </div>#}
+{#                                </button>#}
+{#                                <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-end py-2" data-bs-toggle="modal" data-bs-target="#modal_kuca">#}
+{#                                    <i class="ph-house bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>#}
+{#                                    <h5 class="mb-0">{{ dostupnosti.noKuca }}</h5>#}
+{#                                    <div class="fw-semibold">#}
+{#                                        Rad od kuće#}
+{#                                    </div>#}
+{#                                </button>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+
+
+
+
+{#                    {% if currentTime < constant('App\\Classes\\AppConfig::TIME_WORK_TIME') %}#}
+{#                        <div class="row ">#}
+{#                            <div class="col-xl-12">#}
+
+{#                                <div class="card">#}
+
+{#                                    <div class="card-header d-flex align-items-center">#}
+{#                                        <h5 class="mb-0">Zadaci kreirani za {{ sutra | date('d.m.Y') }}</h5>#}
+{#                                        {% if tomorrowTimetableId != 0 %}#}
+{#                                            <div class="my-auto ms-auto">#}
+{#                                                <a href="{{ path('app_quick_task_edit', { id: tomorrowTimetableId}) }}" class="btn btn-primary"><i class="ph-clipboard me-2"></i> Plan rada </a>#}
+{#                                            </div>#}
+{#                                        {% endif %}#}
+{#                                    </div>#}
+{#                                    <div class="table-responsive card">#}
+{#                                        <table class="table table-hover table-bordered table_morecondensed">#}
+{#                                            <thead class="bg-light">#}
+{#                                            <tr>#}
+{#                                                <th>Projekat</th>#}
+{#                                                <th>Zaposleni</th>#}
+{#                                                <th class="text-center" style="width: 10px;">#}
+{#                                                    <i class="ph-dots-three"></i>#}
+{#                                                </th>#}
+{#                                            </tr>#}
+{#                                            </thead>#}
+{#                                            <tbody>#}
+{#                                            {% if tomorrowTimetable is not empty %}#}
+{#                                                {% for task in tomorrowTimetable %}#}
+{#                                                    {% if task.task.project is not null %}#}
+{#                                                        <tr>#}
+{#                                                            <td style="width: 45%;">#}
+{#                                                                <div class="fw-semibold">#}
+{#                                                                    <a href="{{ path('app_project_tasks_view', { id: task.task.project.id }) }}">{{ task.task.project.title }} {% if task.task.time is not null %} ({{ task.task.time|date('H:i') }}) {% endif %}</a>#}
+{#                                                                </div>#}
+{#                                                            </td>#}
+{#                                                            <td style="width: 45%;">#}
+{#                                                                <div class="fw-semibold">#}
+{#                                                                    {% for user in task.task.assignedUsers %}#}
+{#                                                                        <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="d-inline-flex align-items-center ">#}
+{#                                                                            {{ user.getNameWithFirstLetter }}#}
+{#                                                                        </a><br>#}
+{#                                                                    {% endfor %}#}
+{#                                                                </div>#}
+{#                                                            </td>#}
+{#                                                            <td class="test-center text-primary">#}
+{#                                                                <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details1_task{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>#}
+{#                                                            </td>#}
+{#                                                        </tr>#}
+{#                                                    {% endif %}#}
+{#                                                {% endfor %}#}
+{#                                            {% else %}#}
+{#                                                <tr>#}
+{#                                                    <td colspan="3">#}
+{#                                                        <div class="fw-semibold">#}
+{#                                                            Nema kreiranih zadataka za sutra#}
+{#                                                        </div>#}
+{#                                                    </td>#}
+{#                                                </tr>#}
+{#                                            {% endif %}#}
+{#                                            </tbody>#}
+{#                                        </table>#}
+{#                                    </div>#}
+{#                                </div>#}
+
+{#                            </div>#}
+{#                        </div>#}
+{#                    {% endif %}#}
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+
+{#    {% if tomorrowSubs is not empty %}#}
+{#        {% for task in tomorrowSubs %}#}
+{#            {% if task['projekat'] is not null %}#}
+{#                <div id="modal_details_subs_task{{ loop.index }}" class="modal fade" tabindex="-1">#}
+{#                    <div class="modal-dialog">#}
+{#                        <div class="modal-content">#}
+{#                            <div class="modal-header bg-primary text-white border-0">#}
+{#                                <h6 class="modal-title">Detalji zamene</h6>#}
+{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                            </div>#}
+
+{#                            <div class="modal-body">#}
+{#                                <div class="card">#}
+{#                                    <div class="card-body">#}
+{#                                        <div class="row p-2">#}
+{#                                            <div class="col-4">Projekat:</div>#}
+{#                                            <div class="col-8">{{ task['projekat'].title }}</div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Geodeta:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if task['geo'] is not null %}#}
+{#                                                    {{ task['geo'].getNameWithFirstLetter }}#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2">#}
+{#                                            <div class="col-4">Vreme:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if task.vreme is not null %}#}
+{#                                                    {{ task.vreme}}#}
+{#                                                {% else %}#}
+{#                                                    Vreme nije zadato#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Napomena:</div>#}
+{#                                            <div class="col-8">{{ task.napomena }}</div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+
+{#                            <div class="modal-footer">#}
+{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#        {% endfor %}#}
+{#    {% endif %}#}
+
+{#    {% if plan is not empty %}#}
+{#        {% for task in plan %}#}
+{#            {% if task['projekat'] is not null %}#}
+{#                <div id="modal_details1_task_plan{{ loop.index }}" class="modal fade" tabindex="-1">#}
+{#                    <div class="modal-dialog">#}
+{#                        <div class="modal-content">#}
+{#                            <div class="modal-header bg-primary text-white border-0">#}
+{#                                <h6 class="modal-title">Detalji zadatka</h6>#}
+{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                            </div>#}
+
+{#                            <div class="modal-body">#}
+{#                                <div class="card">#}
+{#                                    <div class="card-body">#}
+{#                                        <div class="row p-2">#}
+{#                                            <div class="col-4">Projekat:</div>#}
+{#                                            <div class="col-8">{{ task['projekat'].title }}</div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Geodete:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if task['geo1'] is not null %}#}
+{#                                                    {{ task['geo1'].getNameWithFirstLetter }} <br>#}
+{#                                                {% endif %}#}
+{#                                                {% if task['geo2'] is not null %}#}
+{#                                                    {{ task['geo2'].getNameWithFirstLetter }} <br>#}
+{#                                                {% endif %}#}
+{#                                                {% if task['geo3'] is not null %}#}
+{#                                                    {{ task['geo3'].getNameWithFirstLetter }}#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2">#}
+{#                                            <div class="col-4">Aktivnosti:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% for akt in task['aktivnosti'] %}#}
+{#                                                    {{ akt.title }} <br>#}
+{#                                                {% endfor %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Oprema:</div>#}
+{#                                            <div class="col-8">#}
+
+{#                                                {% for opr in task['oprema'] %}#}
+{#                                                    {{ opr.title }} <br>#}
+{#                                                {% endfor %}#}
+
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2">#}
+{#                                            <div class="col-4">Vozilo:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if task.vozilo is not null %}#}
+{#                                                    {{ task.vozilo.getCarName }}#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Vreme:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if task.vreme is not null %}#}
+{#                                                    {{ task.vreme}}#}
+{#                                                {% else %}#}
+{#                                                    Vreme nije zadato#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2">#}
+{#                                            <div class="col-4">Napomena:</div>#}
+{#                                            <div class="col-8">{{ task.napomena }}</div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+
+{#                            <div class="modal-footer">#}
+{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#        {% endfor %}#}
+{#    {% endif %}#}
+{#    {% if subs is not empty %}#}
+{#        {% for task in subs %}#}
+{#            {% if task['projekat'] is not null %}#}
+{#                <div id="modal_details_subs_task_subs{{ loop.index }}" class="modal fade" tabindex="-1">#}
+{#                    <div class="modal-dialog">#}
+{#                        <div class="modal-content">#}
+{#                            <div class="modal-header bg-primary text-white border-0">#}
+{#                                <h6 class="modal-title">Detalji zamene</h6>#}
+{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                            </div>#}
+
+{#                            <div class="modal-body">#}
+{#                                <div class="card">#}
+{#                                    <div class="card-body">#}
+{#                                        <div class="row p-2">#}
+{#                                            <div class="col-4">Projekat:</div>#}
+{#                                            <div class="col-8">{{ task['projekat'].title }}</div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Geodeta:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if task['geo'] is not null %}#}
+{#                                                    {{ task['geo'].getNameWithFirstLetter }}#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2">#}
+{#                                            <div class="col-4">Vreme:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if task.vreme is not null %}#}
+{#                                                    {{ task.vreme}}#}
+{#                                                {% else %}#}
+{#                                                    Vreme nije zadato#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Napomena:</div>#}
+{#                                            <div class="col-8">{{ task.napomena }}</div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+
+{#                            <div class="modal-footer">#}
+{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#        {% endfor %}#}
+{#    {% endif %}#}
+
+{#    {% if currentTime < "14:30" %}#}
+{#        {% if dostupnosti.nedostupni is not empty %}#}
+{#            <div id="modal_nedostupni" class="modal fade" tabindex="-1">#}
+{#                <div class="modal-dialog">#}
+{#                    <div class="modal-content">#}
+{#                        <div class="modal-header bg-primary text-white border-0">#}
+{#                            <h6 class="modal-title">Odsutni zaposleni</h6>#}
+{#                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                        </div>#}
+{#                        <div class="modal-body">#}
+{#                            <div class="card">#}
+{#                                <div class="card-body">#}
+{#                                    {% set bg_class = '' %}#}
+{#                                    {% for user in dostupnosti.nedostupni %}#}
+{#                                        {% set dost = getDostupnostByUser(user) %}#}
+{#                                        {% if loop.index is even %}#}
+{#                                            {% set bg_class = 'bg-light' %}#}
+{#                                        {% else %}#}
+{#                                            {% set bg_class = '' %}#}
+{#                                        {% endif %}#}
+{#                                        <div class="row p-2 {{ bg_class }} fw-semibold">#}
+{#                                            <div class="col-6"><a href="{{ path('app_employee_calendar_view', {id: user.id}) }}">{{ user.fullName }}</a></div>#}
+{#                                            <div class="col-6">#}
+{#                                                {% if dost == 0 %}#}
+{#                                                    Izašao#}
+{#                                                {% elseif dost == 1 %}#}
+{#                                                    Slobodan dan#}
+{#                                                {% elseif dost == 2 %}#}
+{#                                                    Odmor#}
+{#                                                {% elseif dost == 3 %}#}
+{#                                                    Bolovanje#}
+{#                                                {% elseif dost == 4 %}#}
+{#                                                    Slava#}
+{#                                                {% else %}#}
+{#                                                    Ostalo#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% endfor %}#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+
+{#                        <div class="modal-footer">#}
+{#                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        {% endif %}#}
+{#    {% else %}#}
+{#        {% if dostupnostiSutra.nedostupni is not empty %}#}
+{#            <div id="modal_nedostupni" class="modal fade" tabindex="-1">#}
+{#                <div class="modal-dialog">#}
+{#                    <div class="modal-content">#}
+{#                        <div class="modal-header bg-primary text-white border-0">#}
+{#                            <h6 class="modal-title">Odsutni zaposleni</h6>#}
+{#                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                        </div>#}
+{#                        <div class="modal-body">#}
+{#                            <div class="card">#}
+{#                                <div class="card-body">#}
+{#                                    {% set bg_class_sutra = '' %}#}
+{#                                    {% for user in dostupnostiSutra.nedostupni %}#}
+{#                                        {% set dost = getDostupnostByUserSutra(user) %}#}
+{#                                        {% if loop.index is even %}#}
+{#                                            {% set bg_class_sutra = 'bg-light' %}#}
+{#                                        {% else %}#}
+{#                                            {% set bg_class_sutra = '' %}#}
+{#                                        {% endif %}#}
+{#                                        <div class="row p-2 fw-semibold{{ bg_class_sutra }}">#}
+{#                                            <div class="col-6"><a href="{{ path('app_employee_calendar_view', {id: user.id}) }}">{{ user.fullName }}</a></div>#}
+{#                                            <div class="col-6">#}
+{#                                                {% if dost == 0 %}#}
+{#                                                    Izašao#}
+{#                                                {% elseif dost == 1 %}#}
+{#                                                    Slobodan dan#}
+{#                                                {% elseif dost == 2 %}#}
+{#                                                    Odmor#}
+{#                                                {% elseif dost == 3 %}#}
+{#                                                    Bolovanje#}
+{#                                                {% elseif dost == 4 %}#}
+{#                                                    Slava#}
+{#                                                {% else %}#}
+{#                                                    Ostalo#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% endfor %}#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+
+{#                        <div class="modal-footer">#}
+{#                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        {% endif %}#}
+{#    {% endif %}#}
+{#    {% if dostupnosti.vanZadatka is not empty %}#}
+{#        <div id="modal_vanzadatka" class="modal fade" tabindex="-1">#}
+{#            <div class="modal-dialog">#}
+{#                <div class="modal-content">#}
+{#                    <div class="modal-header bg-primary text-white border-0">#}
+{#                        <h6 class="modal-title">Slobodni zaposleni bez obaveze</h6>#}
+{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                    </div>#}
+{#                    <div class="modal-body">#}
+{#                        <div class="card">#}
+{#                            <div class="card-body">#}
+{#                                {% set bg_class_van_zadatka = '' %}#}
+{#                                {% for user in dostupnosti.vanZadatka %}#}
+{#                                    {% if loop.index is even %}#}
+{#                                        {% set bg_class_van_zadatka = 'bg-light' %}#}
+{#                                    {% else %}#}
+{#                                        {% set bg_class_van_zadatka = '' %}#}
+{#                                    {% endif %}#}
+{#                                    <div class="row p-2 fw-semibold {{ bg_class_van_zadatka }}">#}
+{#                                        <div class="col-12">{{ user.fullName }}</div>#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="modal-footer">#}
+{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    {% endif %}#}
+
+
+{#    {% if dostupnosti.kancelarija is not empty %}#}
+{#        <div id="modal_kancelarija" class="modal fade" tabindex="-1">#}
+{#            <div class="modal-dialog">#}
+{#                <div class="modal-content">#}
+{#                    <div class="modal-header bg-primary text-white border-0">#}
+{#                        <h6 class="modal-title">Zaposleni u kancelariji</h6>#}
+{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                    </div>#}
+{#                    <div class="modal-body">#}
+{#                        <div class="card">#}
+{#                            <div class="card-body">#}
+{#                                {% set bg_class_kancelarija = '' %}#}
+{#                                {% for user in dostupnosti.kancelarija %}#}
+{#                                    {% if loop.index is even %}#}
+{#                                        {% set bg_class_kancelarija = 'bg-light' %}#}
+{#                                    {% else %}#}
+{#                                        {% set bg_class_kancelarija = '' %}#}
+{#                                    {% endif %}#}
+{#                                    <div class="row p-2 fw-semibold {{ bg_class_kancelarija }}">#}
+{#                                        <div class="col-12">{{ user.fullName }}</div>#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="modal-footer">#}
+{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    {% endif %}#}
+{#    {% if dostupnosti.unknown is not empty %}#}
+{#        <div id="modal_unknown" class="modal fade" tabindex="-1">#}
+{#            <div class="modal-dialog">#}
+{#                <div class="modal-content">#}
+{#                    <div class="modal-header bg-primary text-white border-0">#}
+{#                        <h6 class="modal-title">Neraspoređeni zaposleni</h6>#}
+{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                    </div>#}
+{#                    <div class="modal-body">#}
+{#                        <div class="card">#}
+{#                            <div class="card-body">#}
+{#                                {% set bg_class_unknown = '' %}#}
+{#                                {% for user in dostupnosti.unknown %}#}
+{#                                    {% if loop.index is even %}#}
+{#                                        {% set bg_class_unknown = 'bg-light' %}#}
+{#                                    {% else %}#}
+{#                                        {% set bg_class_unknown = '' %}#}
+{#                                    {% endif %}#}
+{#                                    <div class="row p-2 fw-semibold {{ bg_class_unknown }}">#}
+{#                                        <div class="col-12">{{ user.fullName }}</div>#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="modal-footer">#}
+{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    {% endif %}#}
+{#    {% if nerasporedjenost is not empty %}#}
+{#        <div id="modal_unknown_sutra" class="modal fade" tabindex="-1">#}
+{#            <div class="modal-dialog">#}
+{#                <div class="modal-content">#}
+{#                    <div class="modal-header bg-primary text-white border-0">#}
+{#                        <h6 class="modal-title">Neraspoređeni zaposleni za sutra</h6>#}
+{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                    </div>#}
+{#                    <div class="modal-body">#}
+{#                        <div class="card">#}
+{#                            <div class="card-body">#}
+{#                                {% set bg_class_unknown = '' %}#}
+{#                                {% for user in nerasporedjenost.nerasporedjeniSutra %}#}
+{#                                    {% if loop.index is even %}#}
+{#                                        {% set bg_class_unknown = 'bg-light' %}#}
+{#                                    {% else %}#}
+{#                                        {% set bg_class_unknown = '' %}#}
+{#                                    {% endif %}#}
+{#                                    <div class="row p-2 fw-semibold {{ bg_class_unknown }}">#}
+{#                                        <div class="col-12">{{ user.fullName }}</div>#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="modal-footer">#}
+{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    {% endif %}#}
+
+{#    {% if tekuciPoslovi is not empty %}#}
+{#        <div id="modal_tekuci" class="modal fade" tabindex="-1">#}
+{#            <div class="modal-dialog">#}
+{#                <div class="modal-content">#}
+{#                    <div class="modal-header bg-primary text-white border-0">#}
+{#                        <h6 class="modal-title">Zaposleni na tekućim obavezama</h6>#}
+{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
+{#                    </div>#}
+{#                    <div class="modal-body">#}
+{#                        <div class="card">#}
+{#                            <div class="card-body">#}
+{#                                {% set bg_class_unknown = '' %}#}
+{#                                {% for task in tekuciPoslovi %}#}
+{#                                    {% if loop.index is even %}#}
+{#                                        {% set bg_class_unknown = 'bg-light' %}#}
+{#                                    {% else %}#}
+{#                                        {% set bg_class_unknown = '' %}#}
+{#                                    {% endif %}#}
+{#                                    <div class="row p-2 fw-semibold {{ bg_class_unknown }}">#}
+{#                                        <div class="col-12">{{ task.user.fullName }}</div>#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="modal-footer">#}
+{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    {% endif %}#}
+    <!-- /vertical form modal -->
+    {% if settings.isPlanTomorrow %}
+        {% if "now"|date("H:i") < settings.radnoVreme | date ("H:i") %}
+            {% if tomorrowTimetable is not empty %}
+                {% for task in tomorrowTimetable %}
+                    {% if task.task.project is not null %}
+                        <div id="modal_details1_task{{ loop.index }}" class="modal fade" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white border-0">
+                                        <h6 class="modal-title">Detalji zadatka</h6>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row p-2">
+                                                    <div class="col-4">Projekat:</div>
+                                                    <div class="col-8">{{ task.task.title }}</div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Zaposleni:</div>
+                                                    <div class="col-8">
+                                                        {% for user in task.task.assignedUsers %}
+                                                            {{ user.getNameWithFirstLetter }} <br>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2">
+                                                    <div class="col-4">Aktivnosti:</div>
+                                                    <div class="col-8">
+                                                        {% for akt in task.task.activity %}
+                                                            {{ akt.title }} <br>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                {% if tool %}
+                                                    <div class="row p-2 bg-light">
+                                                        <div class="col-4">Oprema:</div>
+                                                        <div class="col-8">
+                                                            {% for opt in task.task.oprema %}
+                                                                {{ opt.title }} <br>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                                {% if car %}
+                                                    <div class="row p-2">
+                                                        <div class="col-4">Vozilo:</div>
+                                                        <div class="col-8">
+                                                            {% if task.car is not empty %}
+                                                                {{ task.car[0].plate }}
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Vreme:</div>
+                                                    <div class="col-8">
+                                                        {% if task.task.time is not null %}
+                                                            {% if task.task.time|date('H:i') != '00:00' %}
+                                                                {{ task.task.time|date('H:i') }}
+                                                            {% else %}
+                                                                Vreme nije zadato
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2">
+                                                    <div class="col-4">Napomena:</div>
+                                                    <div class="col-8">{{ task.task.description }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% if tomorrowTimetableIntern is not empty %}
+                {% for task in tomorrowTimetableIntern %}
+                    <div id="modal_details1_intern{{ loop.index }}" class="modal fade" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-primary text-white border-0">
+                                    <h6 class="modal-title">Detalji zadatka</h6>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Projekat:</div>
+                                                <div class="col-8">{{ task.project.title }}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Zaposleni:</div>
+                                                <div class="col-8">{{ task.user.getNameWithFirstLetter }}</div>
+                                            </div>
+                                            <div class="row p-2">
+                                                <div class="col-4">Zadatak:</div>
+                                                <div class="col-8">{{ task.task }}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Prioritet:</div>
+                                                <div class="col-8">{% if task.priority == 1 %}
+                                                        <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                    {% elseif task.priority == 2 %}
+                                                        <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                    {% elseif task.priority == 4 %}
+                                                        <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                    {% elseif task.priority == 5 %}
+                                                        <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                    {% endif %}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+    {% if settings.isPlanToday %}
+        {% if timetable is not empty %}
+            {% for task in timetable %}
+                <div id="modal_details_task{{ loop.index }}" class="modal fade" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary text-white border-0">
+                                <h6 class="modal-title">Detalji zadatka</h6>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Projekat:</div>
+                                            <div class="col-8">{{ task.task.title }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Zaposleni:</div>
+                                            <div class="col-8">
+                                                {% for user in task.task.assignedUsers %}
+                                                    {{ user.getNameWithFirstLetter }} <br>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Aktivnosti:</div>
+                                            <div class="col-8">
+                                                {% for akt in task.task.activity %}
+                                                    {{ akt.title }} <br>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% if tool %}
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Oprema:</div>
+                                                <div class="col-8">
+                                                    {% for opt in task.task.oprema %}
+                                                        {{ opt.title }} <br>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        {% if car %}
+                                            <div class="row p-2">
+                                                <div class="col-4">Vozilo:</div>
+                                                <div class="col-8">
+                                                    {% if task.car is not empty %}
+                                                        {{ task.car[0].plate }}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Vreme:</div>
+                                            <div class="col-8">
+                                                {% if task.task.time is not null %}
+                                                    {% if task.task.time|date('H:i') != '00:00' %}
+                                                        {{ task.task.time|date('H:i') }}
+                                                    {% else %}
+                                                        Vreme nije zadato
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Napomena:</div>
+                                            <div class="col-8">{{ task.task.description }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if timetableIntern is not empty %}
+            {% for task in timetableIntern %}
+                <div id="modal_details_intern{{ loop.index }}" class="modal fade" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary text-white border-0">
+                                <h6 class="modal-title">Detalji zadatka</h6>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Projekat:</div>
+                                            <div class="col-8">{{ task.project.title }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Zaposleni:</div>
+                                            <div class="col-8">{{ task.user.getNameWithFirstLetter }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Zadatak:</div>
+                                            <div class="col-8">{{ task.task }}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Prioritet:</div>
+                                            <div class="col-8">{% if task.priority == 1 %}
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                {% elseif task.priority == 2 %}
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                {% elseif task.priority == 4 %}
+                                                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                {% elseif task.priority == 5 %}
+                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                {% endif %}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+
+    {% if settings.isPlanEmployee %}
+        {% if dostupnosti.kancelarija is not empty %}
+            <div id="modal_kancelarija" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white border-0">
+                            <h6 class="modal-title">Zaposleni u kancelariji</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card">
+                                <div class="card-body">
+                                    {% set bg_class_kancelarija = '' %}
+                                    {% for user in dostupnosti.kancelarija %}
+                                        {% if loop.index is even %}
+                                            {% set bg_class_kancelarija = 'bg-light' %}
+                                        {% else %}
+                                            {% set bg_class_kancelarija = '' %}
+                                        {% endif %}
+                                        <div class="row p-2 fw-semibold {{ bg_class_kancelarija }}">
+                                            <div class="col-12">{{ user.fullName }}</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if dostupnosti.vanZadatka is not empty %}
+            <div id="modal_vanzadatka" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white border-0">
+                            <h6 class="modal-title">Zaposleni trenutno van zadatka</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card">
+                                <div class="card-body">
+                                    {% set bg_class_vanzadatka = '' %}
+                                    {% for user in dostupnosti.vanZadatka %}
+                                        {% if loop.index is even %}
+                                            {% set bg_class_vanzadatka = 'bg-light' %}
+                                        {% else %}
+                                            {% set bg_class_vanzadatka = '' %}
+                                        {% endif %}
+                                        <div class="row p-2 fw-semibold {{ bg_class_vanzadatka }}">
+                                            <div class="col-12">{{ user.fullName }}</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if dostupnosti.teren is not empty %}
+            <div id="modal_teren" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white border-0">
+                            <h6 class="modal-title">Zaposleni na terenu</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card">
+                                <div class="card-body">
+                                    {% set bg_class_teren = '' %}
+                                    {% for user in dostupnosti.teren %}
+                                        {% if loop.index is even %}
+                                            {% set bg_class_teren = 'bg-light' %}
+                                        {% else %}
+                                            {% set bg_class_teren = '' %}
+                                        {% endif %}
+                                        <div class="row p-2 fw-semibold {{ bg_class_teren }}">
+                                            <div class="col-12">{{ user.fullName }}</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if dostupnosti.kuca is not empty %}
+            <div id="modal_kuca" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white border-0">
+                            <h6 class="modal-title">Zaposleni na radu od kuće</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card">
+                                <div class="card-body">
+                                    {% set bg_class_kuca = '' %}
+                                    {% for user in dostupnosti.kuca %}
+                                        {% if loop.index is even %}
+                                            {% set bg_class_kuca = 'bg-light' %}
+                                        {% else %}
+                                            {% set bg_class_kuca = '' %}
+                                        {% endif %}
+                                        <div class="row p-2 fw-semibold {{ bg_class_kuca }}">
+                                            <div class="col-12">{{ user.fullName }}</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if calendar %}
+            {% if dostupnosti.nedostupni is not empty %}
+                <div id="modal_nedostupni" class="modal fade" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary text-white border-0">
+                                <h6 class="modal-title">Odsutni zaposleni</h6>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="card">
+                                    <div class="card-body">
+                                        {% set bg_class = '' %}
+                                        {% for user in dostupnosti.nedostupni %}
+                                            {% set dost = getDostupnostByUser(user) %}
+                                            {% if loop.index is even %}
+                                                {% set bg_class = 'bg-light' %}
+                                            {% else %}
+                                                {% set bg_class = '' %}
+                                            {% endif %}
+                                            <div class="row p-2 {{ bg_class }} fw-semibold">
+                                                <div class="col-6"><a href="{{ path('app_employee_calendar_view', {id: user.id}) }}">{{ user.fullName }}</a></div>
+                                                <div class="col-6">
+                                                    {% if dost == 0 %}
+                                                        Izašao
+                                                    {% elseif dost == 1 %}
+                                                        Slobodan dan
+                                                    {% elseif dost == 2 %}
+                                                        Odmor
+                                                    {% elseif dost == 3 %}
+                                                        Bolovanje
+                                                    {% elseif dost == 4 %}
+                                                        Slava
+                                                    {% else %}
+                                                        Ostalo
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+    <script src="{{ asset('assets/demo/pages/dashboard.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
+
+{% endblock includeJavascript %}

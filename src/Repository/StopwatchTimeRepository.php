@@ -8,11 +8,13 @@ use App\Entity\Availability;
 use App\Entity\Category;
 use App\Entity\Client;
 use App\Entity\Holiday;
+use App\Entity\ManagerChecklist;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\User;
+use App\Entity\Vacation;
 use DateInterval;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -41,6 +43,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     $company = $user->getCompany();
 
     $datum = new DateTimeImmutable();
+    $dayOfWeek = $datum->format('N');
 
     $startDate = $datum->format('Y-m-d 00:00:00'); // Početak dana
     $endDate = $datum->format('Y-m-d 23:59:59'); // Kraj dana
@@ -57,12 +60,23 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       ->getQuery()
       ->getResult();
 
-
-
     $merenjeUser = [];
     foreach ($merenja as $merenje) {
       if ($merenje->getTaskLog()->getUser() == $user) {
         $merenjeUser[] = $merenje;
+      }
+    }
+
+    if (empty($merenjeUser)) {
+      $intern = $this->getEntityManager()->getRepository(ManagerChecklist::class)->getChecklist($user, $datum);
+      if (!empty($intern)) {
+        $merenjeUser[] = $intern;
+      }
+    }
+
+    if (empty($merenjeUser)) {
+      if ($user->getNeradniDan() == $dayOfWeek) {
+        $merenjeUser[] = $user;
       }
     }
 
@@ -72,11 +86,12 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     } else {
       $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
     }
+
     $dostupnost->setDatum($datum->setTime(0, 0));
     $dostupnost->setUser($user);
     $dostupnost->setCompany($company);
 
-    $dostupnost->setTypeDay(0);
+    $dostupnost->setTypeDay(TipNeradnihDanaData::RADNI_DAN);
 
     $praznik = $this->getEntityManager()->getRepository(Holiday::class)->findOneBy(['datum' => $datumCheck, 'company' => $company, 'isSuspended' => false]);
 

@@ -3,12 +3,16 @@
 namespace App\Service;
 
 use App\Classes\CompanyInfo;
+use App\Classes\Data\InternTaskStatusData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Calendar;
+use App\Entity\Car;
 use App\Entity\Client;
 use App\Entity\Email;
 use App\Entity\ManagerChecklist;
+use App\Entity\Plan;
 use App\Entity\Task;
+use App\Entity\Ticket;
 use App\Entity\User;
 use DateTimeImmutable;
 use Twig\Environment;
@@ -85,21 +89,51 @@ class MailService {
 
   }
 
-  public function plan($plan, $users, $datum): void {
+  public function plan(Plan $plan, $users): void {
 
     $args = [];
-    $subject = 'Plan rada za ' .  $datum->format('d.m.Y');
+    $subject = 'Plan rada za ' .  $plan->getDatumKreiranja()->format('d.m.Y');
     $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/plan.html.twig';
     $args['timetable'] = $plan;
-    $args['danas'] = $datum;
-
+    $args['danas'] = $plan->getDatumKreiranja();
     foreach ($users as $user) {
       $to = $user->getEmail();
       $args['user'] = $user;
       $this->sendMail($to, $subject, $from, $sender, $template, $args);
     }
+  }
+
+  public function carStatus($rezervacije, $company): void {
+
+    $args = [];
+    $danas = new DateTimeImmutable();
+    $subject = 'Status vozila na dan ' .  $danas->format('d.m.Y');
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/car_status.html.twig';
+    $args['rezervacije'] = $rezervacije;
+    $args['danas'] = $danas;
+    $args['company'] = $company;
+
+    $this->sendMail($company->getEmail(), $subject, $from, $sender, $template, $args);
+
+  }
+  public function carCheck($cars, $company): void {
+
+    $args = [];
+    $danas = new DateTimeImmutable();
+    $subject = 'Isticanje registracije kod vozila ' .  $danas->format('d.m.Y');
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/car_check.html.twig';
+    $args['cars'] = $cars;
+    $args['danas'] = $danas;
+    $args['company'] = $company;
+
+    $this->sendMail($company->getEmail(), $subject, $from, $sender, $template, $args);
+
   }
 
   public function task(Task $task): void {
@@ -109,6 +143,17 @@ class MailService {
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/zadatak.html.twig';
     $args['task'] = $task;
+    if ($task->getCompany()->getSettings()->isCar()) {
+      if (!is_null($task->getCar())) {
+        $args['car'] = $this->em->getRepository(Car::class)->find($task->getCar());
+        $args['driver'] = $this->em->getRepository(User::class)->find($task->getDriver());
+      }
+    }
+    if ($task->getCompany()->getSettings()->isTool()) {
+      $args['tools'] = $task->getOprema();
+    }
+
+    $args['link'] = $this->router->generate('app_task_view_user', ['id' => $task->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
 
     foreach ($task->getAssignedUsers() as $user) {
       $to = $user->getEmail();
@@ -176,8 +221,109 @@ class MailService {
     $template = 'email/interni_task.html.twig';
     $args['user'] = $checklist->getUser()->getFullName();
     $args['checklist'] = $checklist;
+    $args['link'] = $this->router->generate('app_checklist_view', ['id' => $checklist->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
     $to = $checklist->getUser()->getEmail();
 
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function checklistEditTask(ManagerChecklist $checklist): void {
+
+    $args = [];
+
+    $subject = 'Interni zadatak izmena od ' . $checklist->getCreatedBy()->getFullName();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/interni_task_edit.html.twig';
+    $args['user'] = $checklist->getUser()->getFullName();
+    $args['checklist'] = $checklist;
+    $args['link'] = $this->router->generate('app_checklist_view', ['id' => $checklist->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+    $to = $checklist->getUser()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function checklistStatusTask(ManagerChecklist $checklist): void {
+
+    $args = [];
+    $subject = 'Promena statusa za interni zadatak #' . $checklist->getId() . ' od ' . $checklist->getUser()->getFullName();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/interni_task_status.html.twig';
+    $args['user'] = $checklist->getUser()->getFullName();
+    $args['checklist'] = $checklist;
+    $args['link'] = $this->router->generate('app_checklist_view', ['id' => $checklist->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+    $to = $checklist->getUser()->getCompany()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function checklistConvertTask(ManagerChecklist $checklist, Task $task): void {
+
+    $args = [];
+    $subject = 'Interni zadatak #' . $checklist->getId() . ' je konvertovan';
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/interni_task_convert.html.twig';
+    $args['user'] = $checklist->getUser()->getFullName();
+    $args['checklist'] = $checklist;
+    $args['task'] = $task;
+    $args['link'] = $this->router->generate('app_task_view_user', ['id' => $task->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+    $to = $checklist->getUser()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function editTicket(Ticket $ticket): void {
+
+    $args = [];
+
+    $subject = 'Izmenjen je tiket od ' . $ticket->getCompany()->getTitle();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/edit_ticket.html.twig';
+    $args['tiket'] = $ticket;
+    $to = $ticket->getCompany()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function createTicket(Ticket $ticket): void {
+
+    $args = [];
+
+    $subject = 'Kreiran je tiket od ' . $ticket->getCompany()->getTitle();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/create_ticket.html.twig';
+    $args['tiket'] = $ticket;
+    $to = $ticket->getCompany()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function finishTicket(Ticket $ticket): void {
+
+    $args = [];
+
+    $subject = 'Rešen je tiket od ' . $ticket->getCompany()->getTitle();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/finish_ticket.html.twig';
+    $args['tiket'] = $ticket;
+    $to = $ticket->getCompany()->getEmail();
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 

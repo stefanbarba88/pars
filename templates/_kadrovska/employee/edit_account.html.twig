@@ -1,0 +1,347 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUserKadrovska' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebarKadrovska')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ user.getFullName() }}
+                            </h4>
+                        </div>
+                    </div>
+
+                    {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigationKadrovska', { user: user } )) }}
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    {% if not form.vars.valid %}
+                        {% for child in form.children %}
+                            {%for error in child.vars.errors%}
+                                <div class="alert alert-danger alert-dismissible fade show">
+                                    <span class="fw-semibold">{{error.message}}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {%endfor%}
+                        {%endfor%}
+                    {%endif%}
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Left sidebar component -->
+                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebarKadrovska', { user: user } )) }}
+                        <!-- /left sidebar component -->
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Izmena login podataka</h5>
+                                    </div>
+                                    {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.track, 'Login:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.track, {attr: { class: 'form-control select pozicija' }}) }}
+                                                    <span class="form-text">Ukoliko kreirate korisnika koji pristupa aplikaciji (npr. HR služba) izaberite "Da".</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4 hide">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.plainPassword, 'Lozinka:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.plainPassword, {attr: { class: 'form-control' }}) }}
+                                                    <span class="form-text">Format: Minimum 8 karaktera (obavezno jedno veliko slovo, jedno malo slovo, jedan specijalan karakter i jednu cifru) </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.email, 'Email:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.email, {attr: { class: 'form-control' }}) }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                            <div class="row ">
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.vrstaZaposlenja, 'Vrsta zaposlenja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required vrstaUgovora' }}) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.pocetakUgovora, 'Početak ugovora:', {'label_attr': {'class': 'form-label'}}) }}
+                                                        <div class="input-group">
+                                                                <span class="input-group-text">
+                                                                    <i class="ph-calendar"></i>
+                                                                </span>
+                                                            {{ form_widget(form.pocetakUgovora, {attr: { class: 'form-control datepicker-date-format-custom1 ugovor1', autocomplete : 'off' }}) }}
+                                                        </div>
+                                                        <span class="form-text">Format: 31.12.1900. Unesite datum početka radnog odnosa.</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.krajUgovora, 'Kraj ugovora:', {'label_attr': {'class': 'form-label'}}) }}
+                                                        <div class="input-group">
+                                                                <span class="input-group-text">
+                                                                    <i class="ph-calendar"></i>
+                                                                </span>
+                                                            {{ form_widget(form.krajUgovora, {attr: { class: 'form-control datepicker-date-format-custom2 ugovor1 ugovor2', autocomplete : 'off' }}) }}
+                                                        </div>
+                                                        <span class="form-text">Format: 31.12.1900. Unesite datum kraja radnog odnosa ukoliko se ne radi o ugovoru na neodređeno.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row ">
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.nivoObrazovanja, 'Nivo obrazovanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.nivoObrazovanja, {attr: { class: 'form-control select required ' }}) }}
+                                                    </div>
+                                                </div>
+
+                                            <div class="col-lg-4">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.zvanje, 'Zvanje:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.zvanje, {attr: { class: 'form-control required select' }}) }}
+                                                </div>
+                                            </div>
+
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.pozicija, 'Radno mesto:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.pozicija, {attr: { class: 'form-control required select' }}) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <div class="row ">
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.mestoRada, 'Mesto rada:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.mestoRada, {attr: { class: 'form-control required' }}) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isLekarski, 'Lekarski pregled:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isLekarski, {attr: { class: 'form-control select required ' }}) }}
+                                                        <span class="form-text">Ukoliko je potrebno da se za korisnika prate podaci o izvršenim lekarskim pregledima obaveznim za pojedine kategorije zaposlenih (npr. vozači).</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                        </div>
+                                    </div>
+                                    {{ form_end(form) }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                </div>
+                <!-- /content area -->
+
+
+            </div>
+            <!-- /inner content -->
+{% include 'includes/footer.html.twig' %}
+        </div>
+        </div>
+        <!-- /main content -->
+
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+
+{% block footerJavascript %}
+
+    <script>
+        $(function () {
+            function updateLabels() {
+                $(".vrstaUgovora").change(function() {
+                    updateLabelState($(this).val());
+                });
+
+                // Call the function initially to handle the case when the page loads
+                updateLabelState($(".vrstaUgovora").val());
+            }
+
+            function updateLabelState(value) {
+                if (value == "0") {
+                    $('.ugovor1').removeClass('required');
+                    $('.ugovor2').removeClass('required');
+                    $('label[for="employee_kadrovska_edit_account_form_pocetakUgovora"]').text(function(index, text) {
+                        return text.replace(' *', '');
+                    });
+                    $('label[for="employee_kadrovska_edit_account_form_krajUgovora"]').text(function(index, text) {
+                        return text.replace(' *', '');
+                    });
+                } else if (value == "6") {
+                    $('.ugovor1').removeClass('required');
+                    $('.ugovor2').removeClass('required');
+                    $('label[for="employee_kadrovska_edit_account_form_pocetakUgovora"]').text(function(index, text) {
+                        return text.replace(' *', '');
+                    });
+                    $('label[for="employee_kadrovska_edit_account_form_krajUgovora"]').text(function(index, text) {
+                        return text.replace(' *', '');
+                    });
+                } else if (value == "1") {
+                    $('.ugovor1').addClass('required');
+                    $('.ugovor2').removeClass('required');
+                    $('label[for="employee_kadrovska_edit_account_form_pocetakUgovora"]').text(function(index, text) {
+                        if (!text.includes('*')) {
+                            return text + ' *';
+                        }
+                        return text;
+                    });
+                    $('label[for="employee_kadrovska_edit_account_form_krajUgovora"]').text(function(index, text) {
+                        return text.replace(' *', '');
+                    });
+                } else {
+                    $('.ugovor1').addClass('required');
+                    $('.ugovor2').addClass('required');
+                    $('label[for="employee_kadrovska_edit_account_form_pocetakUgovora"]').text(function(index, text) {
+                        if (!text.includes('*')) {
+                            return text + ' *';
+                        }
+                        return text;
+                    });
+                    $('label[for="employee_kadrovska_edit_account_form_krajUgovora"]').text(function(index, text) {
+                        if (!text.includes('*')) {
+                            return text + ' *';
+                        }
+                        return text;
+                    });
+                }
+            }
+
+            updateLabels();
+            $(".role").change(function() {
+                if ($(this).val() == "4") {
+                    $('.ROLE_EMPLOYEE').removeClass('hide');
+                    $('.ROLE_EMPLOYEE [input]').addClass('required');
+                    $('.zaposleni').removeClass('hide');
+                    $('.zaposleni').addClass('required');
+                } else {
+                    $('.ROLE_EMPLOYEE').addClass('hide');
+                    $('.ROLE_EMPLOYEE [input]').removeClass('required');
+                    $('.zaposleni').addClass('hide');
+                    $('.zaposleni').removeClass('required');
+                }
+            });
+            const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom1');
+            if(dpDateCustomFormatElement1) {
+                const dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
+                    container: '.content-inner',
+                    buttonClass: 'btn',
+                    prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                    nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                    format: 'dd.mm.yyyy',
+                    todayBtn: true,
+                    weekStart: 1,
+                    maxDate: 'today',
+                    daysOfWeekHighlighted: [0,6],
+                    language: 'sr-latn',
+                    // daysOfWeekDisabled: [0]
+                });
+            }
+            const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom2');
+            if(dpDateCustomFormatElement2) {
+                const dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement2, {
+                    container: '.content-inner',
+                    buttonClass: 'btn',
+                    prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                    nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                    format: 'dd.mm.yyyy',
+                    todayBtn: true,
+                    weekStart: 1,
+                    minDate: 'today',
+                    daysOfWeekHighlighted: [0,6],
+                    language: 'sr-latn',
+                    // daysOfWeekDisabled: [0]
+                });
+            }
+            function checkTrackAndUserTypeValues() {
+                var trackValue = $('#employee_kadrovska_edit_account_form_track').val();
+                    if (trackValue == "1") {
+                        $('#employee_kadrovska_edit_account_form_plainPassword').attr('required', 'required').parent().parent().removeClass('hide');
+                        $('#employee_kadrovska_edit_account_form_email').attr('required', 'required').parent().parent().removeClass('hide');
+                    } else {
+                        $('#employee_kadrovska_edit_account_form_plainPassword').removeAttr('required').parent().parent().addClass('hide');
+                        $('#employee_kadrovska_edit_account_form_email').removeAttr('required').parent().parent().addClass('hide');
+                    }
+            }
+
+            // Proveri vrednosti pri učitavanju strane
+            checkTrackAndUserTypeValues();
+
+            // Proveri vrednosti pri svakoj promeni
+            $('#employee_kadrovska_edit_account_form_track, #employee_kadrovska_edit_account_form_employeeType').change(function() {
+                checkTrackAndUserTypeValues();
+            });
+        });
+    </script>
+
+{% endblock footerJavascript %}

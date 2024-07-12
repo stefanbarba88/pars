@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
+use App\Classes\Data\VrstaZaposlenjaData;
 use App\Classes\DTO\UploadedFileDTO;
 use App\Entity\Availability;
 use App\Entity\Car;
@@ -13,10 +14,12 @@ use App\Entity\Image;
 use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
+use App\Entity\Settings;
 use App\Entity\StopwatchTime;
 use App\Entity\TaskLog;
 use App\Entity\User;
 use App\Entity\UserHistory;
+use App\Entity\Vacation;
 use App\Service\MailService;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -58,6 +61,39 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     $image = $this->getEntityManager()->getRepository(Image::class)->addImage($file, $user->getThumbUploadPath(), $kernelPath);
     $user->setImage($image);
 
+
+    if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+      $user->setPozicija(null);
+    }
+
+
+    if (!empty($user->getPlainPassword())) {
+      $this->hashPlainPassword($user);
+    }
+
+    if (is_null($user->getId())) {
+      $this->getEntityManager()->persist($user);
+    }
+
+    $this->getEntityManager()->flush();
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $vacation = new Vacation();
+      $vacation->setCompany($user->getCompany());
+      $vacation->setUser($user);
+      $this->getEntityManager()->getRepository(Vacation::class)->save($vacation);
+//      $user->setVacation($vacation);
+
+    }
+
+    return $user;
+  }
+
+  public function registerNew(User $user, Settings $settings, UploadedFileDTO $file, string $kernelPath): User {
+
+    $image = $this->getEntityManager()->getRepository(Image::class)->addImage($file, $user->getThumbUploadPath(), $kernelPath);
+    $user->setImage($image);
+
     if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
       $user->setPozicija(null);
     }
@@ -71,10 +107,25 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     $this->getEntityManager()->flush();
-    if ($user->getUserType() != UserRolesData::ROLE_CLIENT) {
+
+
+
+    if($settings->getIsClientView()) {
       $this->mail->registration($user);
+    } else {
+      if ($user->getUserType() != UserRolesData::ROLE_CLIENT) {
+        $this->mail->registration($user);
+      }
     }
 
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $vacation = new Vacation();
+      $vacation->setCompany($user->getCompany());
+      $vacation->setUser($user);
+      $this->getEntityManager()->getRepository(Vacation::class)->save($vacation);
+//      $user->setVacation($vacation);
+
+    }
 
     return $user;
   }
@@ -146,6 +197,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $user;
 
   }
+  public function suspendKadrovksa(User $user): User {
+    if ($user->isSuspended()) {
+      $this->mail->deactivate($user);
+    } else {
+      $this->mail->activate($user);
+    }
+    $this->save($user);
+
+    return $user;
+
+  }
     /**
    * Used to upgrade (rehash) the user's password automatically over time.
    */
@@ -164,6 +226,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       $user = new User();
       $user->setCreatedBy($this->security->getUser());
       $user->setCompany($this->security->getUser()->getCompany());
+      if($this->security->getUser()->isKadrovska()) {
+        $user->setIsKadrovska(true);
+        $user->setUserType(UserRolesData::ROLE_MANAGER);
+      }
+      return $user;
+    }
+    return $this->getEntityManager()->getRepository(User::class)->find($id);
+  }
+
+  public function findForFormEmployee(int $id = 0): User {
+    if (empty($id)) {
+      $user = new User();
+      $user->setCreatedBy($this->security->getUser());
+      if($this->security->getUser()->isKadrovska()) {
+        $user->setIsKadrovska(true);
+        $user->setUserType(UserRolesData::ROLE_EMPLOYEE);
+      }
       return $user;
     }
     return $this->getEntityManager()->getRepository(User::class)->find($id);
@@ -343,6 +422,54 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $qb;
   }
 
+  public function getEmployeesCompanyPaginator(Company $company, $filter, $suspended) {
+
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->where('u.company = :company')
+      ->setParameter(':company', $company)
+      ->andWhere('u.isSuspended = :suspenzija')
+      ->setParameter('suspenzija', $suspended)
+      ->andWhere('u.userType = :userType')
+      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE);
+
+    if (!empty($filter['ime'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.ime', ':ime'),
+      ))
+        ->setParameter('ime', '%' . $filter['ime'] . '%');
+    }
+    if (!empty($filter['prezime'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.prezime', ':prezime'),
+      ))
+        ->setParameter('prezime', '%' . $filter['prezime'] . '%');
+    }
+    if (!empty($filter['obrazovanje'])) {
+      $qb->andWhere('u.nivoObrazovanja = :obrazovanje');
+      $qb->setParameter('obrazovanje', $filter['obrazovanje']);
+    }
+      if (!empty($filter['vrsta'])) {
+        $qb->andWhere('u.vrstaZaposlenja = :vrsta');
+        $qb->setParameter('vrsta', $filter['vrsta']);
+      }
+    if (!empty($filter['pozicija'])) {
+      $qb->andWhere('u.pozicija = :pozicija');
+      $qb->setParameter('pozicija', $filter['pozicija']);
+    }
+    if (!empty($filter['zvanje'])) {
+      $qb->andWhere('u.zvanje = :zvanje');
+      $qb->setParameter('zvanje', $filter['zvanje']);
+    }
+
+    $qb
+      ->addOrderBy('u.krajUgovora', 'ASC')
+      ->getQuery();
+
+
+    return $qb;
+  }
+
   public function getAllContactsPaginator($filter) {
 
     $company = $this->security->getUser()->getCompany();
@@ -419,6 +546,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUser($start, $stop, $user, $kategorija);
+
+
   }
 
   public function getReportXls(string $datum, User $user): array {
@@ -455,12 +584,49 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $usersList;
   }
 
-  public function getUsersCarsAvailable(string $dan): array {
+//  public function getUsersCarsAvailable(string $dan): array {
+//
+//    $company = $this->security->getUser()->getCompany();
+//
+//    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false, 'ProjectType' => TipProjektaData::LETECE],['prezime' => 'ASC']);
+//
+//    $usersList = [];
+//    foreach ($users as $user) {
+//      $dostupan = $this->getEntityManager()->getRepository(Availability::class)->checkDostupnost($user, $dan);
+//
+//      if ($dostupan) {
+//        $ime = $user->getFullName();
+//        $car = $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $user->getCar()]);
+//        if (!is_null($car)) {
+//          $ime = $ime . ' (' . $car->getPlate() . ')';
+//        }
+//
+//        $usersList [] = [
+//          'id' => $user->getId(),
+//          'ime' => $ime,
+//          'car' => $car,
+//          'user' => $user,
+//          'slika' => $user->getImage()->getThumbnail100(),
+//          'pozicija' => $user->getPozicija()->getTitle()
+//        ];
+//      }
+//    }
+//
+//    return $usersList;
+//  }
+
+  public function getUsersCarAvailable(DateTimeImmutable $dan): array {
 
     $company = $this->security->getUser()->getCompany();
 
-    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false, 'ProjectType' => TipProjektaData::LETECE],['prezime' => 'ASC']);
+//    if ($projectType == 0) {
+//      $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false],['prezime' => 'ASC']);
+//    } else {
+//      $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false, 'ProjectType' => $projectType],['prezime' => 'ASC']);
+//    }
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false],['prezime' => 'ASC']);
 
+    $dan = $dan->format('d.m.Y');
     $usersList = [];
     foreach ($users as $user) {
       $dostupan = $this->getEntityManager()->getRepository(Availability::class)->checkDostupnost($user, $dan);
@@ -477,7 +643,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
           'ime' => $ime,
           'car' => $car,
           'user' => $user,
-          'slika' => $user->getImage()->getThumbnail100(),
           'pozicija' => $user->getPozicija()->getTitle()
         ];
       }
@@ -485,16 +650,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     return $usersList;
   }
-
-  public function getUsersAvailable(DateTimeImmutable $dan, int $projectType): array {
+  public function getUsersAvailable(DateTimeImmutable $dan): array {
 
     $company = $this->security->getUser()->getCompany();
 
-    if ($projectType == 0) {
-      $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false],['prezime' => 'ASC']);
-    } else {
-      $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false, 'ProjectType' => $projectType],['prezime' => 'ASC']);
-    }
+//    if ($projectType == 0) {
+//      $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false],['prezime' => 'ASC']);
+//    } else {
+//      $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false, 'ProjectType' => $projectType],['prezime' => 'ASC']);
+//    }
+    $users =  $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $company, 'isSuspended' => false],['prezime' => 'ASC']);
 
     $dan = $dan->format('d.m.Y');
     $usersList = [];
@@ -502,12 +667,32 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       $dostupan = $this->getEntityManager()->getRepository(Availability::class)->checkDostupnost($user, $dan);
 
       if ($dostupan) {
-        $ime = $user->getFullName();
+        $usersList[] = $user;
+//        $ime = $user->getFullName();
+//
+//        $usersList [] = [
+//          'id' => $user->getId(),
+//          'ime' => $ime
+//        ];
+      }
+    }
 
-        $usersList [] = [
-          'id' => $user->getId(),
-          'ime' => $ime
-        ];
+    return $usersList;
+  }
+
+  public function getUsersAvailableChecklist(DateTimeImmutable $dan): array {
+
+    $company = $this->security->getUser()->getCompany();
+
+    $users = $this->getUsersForChecklist();
+
+    $dan = $dan->format('d.m.Y');
+    $usersList = [];
+    foreach ($users as $user) {
+      $dostupan = $this->getEntityManager()->getRepository(Availability::class)->checkDostupnost($user, $dan);
+
+      if ($dostupan) {
+        $usersList[] = $user;
       }
     }
 
@@ -830,6 +1015,21 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       ->getResult();
   }
 
+  public function getUsersForChecklistArchive(): array {
+    $company = $this->security->getUser()->getCompany();
+    return $this->createQueryBuilder('u')
+      ->andWhere('u.userType <> :userType')
+      ->andWhere('u.isSuspended = :isSuspended')
+      ->andWhere('u.company = :company')
+      ->setParameter(':company', $company)
+      ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
+      ->setParameter(':isSuspended', 1)
+      ->orderBy('u.userType', 'ASC')
+      ->addOrderBy('u.prezime', 'ASC')
+      ->getQuery()
+      ->getResult();
+  }
+
   public function getUsersForQuickChecklist(): array {
 
     $user = $this->security->getUser();
@@ -837,17 +1037,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     $company = $user->getCompany();
 
     return $this->createQueryBuilder('u')
-      ->where('u.userType = :userType')
-      ->orWhere('u.userType = :userType1')
-      ->orWhere('u.userType = :userType2')
+      ->where('u.userType <> :userType')
+      ->orWhere('u.userType <> :userType1')
       ->andWhere('u.isSuspended = :isSuspended')
       ->andWhere('u.company = :company')
       ->andWhere('u.id <> :id')
       ->setParameter(':id', $userId)
       ->setParameter(':company', $company)
       ->setParameter(':userType', UserRolesData::ROLE_SUPER_ADMIN)
-      ->setParameter(':userType1', UserRolesData::ROLE_ADMIN)
-      ->setParameter(':userType2', UserRolesData::ROLE_MANAGER)
+      ->setParameter(':userType1', UserRolesData::ROLE_CLIENT)
       ->setParameter(':isSuspended', 0)
       ->orderBy('u.userType', 'ASC')
       ->addOrderBy('u.prezime', 'ASC')
@@ -1022,6 +1220,40 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $qb;
   }
 
+  public function getEmployeesPaginatorKadrovska(User $loggedUser, $filter, $suspended) {
+
+    $qb = $this->createQueryBuilder('u');
+    $qb->where('u.isKadrovska = 1')
+      ->andWhere('u.isSuspended = :suspenzija')
+      ->setParameter('suspenzija', $suspended)
+      ->andWhere('u.userType = :userType')
+      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE);
+
+    if (!empty($filter['ime'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.ime', ':ime'),
+      ))
+        ->setParameter('ime', '%' . $filter['ime'] . '%');
+    }
+    if (!empty($filter['prezime'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.prezime', ':prezime'),
+      ))
+        ->setParameter('prezime', '%' . $filter['prezime'] . '%');
+    }
+    if (!empty($filter['companija'])) {
+      $qb->andWhere('u.company = :company');
+      $qb->setParameter('company', $filter['kompanija']);
+    }
+
+    $qb
+      ->orderBy('u.krajUgovora', 'ASC')
+      ->getQuery();
+
+
+    return $qb;
+  }
+
   public function getRazlikaUsers(Company $company, array $users): array {
 
     $qb = $this->createQueryBuilder('u');
@@ -1104,6 +1336,90 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $qb->andWhere('t.isSuspended <> :status');
         $qb->setParameter('status', $filterBy['statusStanje']);
+
+    }
+
+
+    $keywords = explode(" ", $filterBy['tekst']);
+
+
+    foreach ($keywords as $key => $keyword) {
+      $qb
+        ->andWhere($qb->expr()->orX(
+          $qb->expr()->like('t.ime', ':keyword'.$key),
+          $qb->expr()->like('t.prezime', ':keyword'.$key)
+        ))
+        ->setParameter('keyword'.$key, '%' . $keyword . '%');
+    }
+    $qb
+      ->addOrderBy('t.prezime', 'ASC')
+      ->getQuery();
+
+
+    return $qb;
+  }
+
+  public function getUsersSearchPaginatorKadrovskaEmployee($filterBy, $company){
+
+    $qb = $this->createQueryBuilder('t');
+
+    $qb->where('t.isKadrovska = 1');
+    $qb->andWhere('t.company = :company');
+    $qb->setParameter(':company', $company);
+    $qb->andWhere('t.userType = :type');
+    $qb->setParameter(':type', UserRolesData::ROLE_EMPLOYEE);
+
+
+//    if ($filterBy['status'] == 1) {
+//
+//      $qb->andWhere('t.isSuspended = :status');
+//      $qb->setParameter('status', $filterBy['statusStanje']);
+//
+//    } else {
+//
+//      $qb->andWhere('t.isSuspended <> :status');
+//      $qb->setParameter('status', $filterBy['statusStanje']);
+//
+//    }
+
+
+    $keywords = explode(" ", $filterBy['tekst']);
+
+
+    foreach ($keywords as $key => $keyword) {
+      $qb
+        ->andWhere($qb->expr()->orX(
+          $qb->expr()->like('t.ime', ':keyword'.$key),
+          $qb->expr()->like('t.prezime', ':keyword'.$key)
+        ))
+        ->setParameter('keyword'.$key, '%' . $keyword . '%');
+    }
+    $qb
+      ->addOrderBy('t.prezime', 'ASC')
+      ->getQuery();
+
+
+    return $qb;
+  }
+  public function getUsersSearchPaginatorKadrovska($filterBy){
+
+    $qb = $this->createQueryBuilder('t');
+
+    $qb->where('t.isKadrovska = 1');
+
+    $qb->andWhere('t.userType = :type');
+    $qb->setParameter(':type', UserRolesData::ROLE_EMPLOYEE);
+
+
+    if ($filterBy['status'] == 1) {
+
+      $qb->andWhere('t.isSuspended = :status');
+      $qb->setParameter('status', $filterBy['statusStanje']);
+
+    } else {
+
+      $qb->andWhere('t.isSuspended <> :status');
+      $qb->setParameter('status', $filterBy['statusStanje']);
 
     }
 

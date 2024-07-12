@@ -1,0 +1,168 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerKadrovska' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebarKadrovska')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ company.title }}
+                            </h4>
+                        </div>
+                    </div>
+                    {{ render(controller('App\\Controller\\WidgetController::companyProfilNavigationKadrovska', { company: company } )) }}
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Izveštaj o neradnim danima zaposlenih</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-hover table-bordered table_morecondensed">
+                                                <thead class="bg-light">
+                                                <tr>
+                                                    <th></th>
+                                                    <th colspan="3" class="text-center">Stari odmor </th>
+                                                    <th colspan="3" class="text-center">Novi odmor</th>
+                                                    <th colspan="2" class="text-center">Ostalo</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                                </tr>
+                                                <tr>
+                                                    <th>Zaposleni</th>
+                                                    <th>Broj dana <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Broj neiskorišćenih dana starog odmora na dan 01.01. tekuće godine." data-bs-original-title="Napomena"></i></th>
+                                                    <th>Iskorišćeno</th>
+                                                    <th>Preostalo</th>
+                                                    <th>Broj dana</th>
+                                                    <th>Iskorišćeno</th>
+                                                    <th>Preostalo</th>
+                                                    <th>Slava</th>
+                                                    <th>Ostalo</th>
+                                                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for user in users %}
+                                                        <tr>
+                                                            <td>
+                                                                <div class="fw-semibold">
+                                                                    {{ user.fullName }}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                {{ user.vacation.old }}
+                                                            </td>
+                                                            <td>
+                                                                {{ user.vacation.oldUsed }}
+                                                            </td>
+                                                            <td>
+                                                                <div class="fw-semibold">
+                                                                    {{ user.vacation.old - user.vacation.oldUsed }}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                {{ user.vacation.new }}
+                                                            </td>
+                                                            <td>
+                                                                {{ user.vacation.used1 }}
+                                                            </td>
+                                                            <td>
+                                                                <div class="fw-semibold">
+                                                                    {{ user.vacation.new - user.vacation.used1 }}
+                                                                </div>
+                                                            </td>
+                                                            <td class="bg-light">{{ user.vacation.slava }}</td>
+                                                            <td class="bg-light">{{ user.vacation.other1 }}</td>
+                                                            <td>
+                                                                <a href="{{ path('app_employee_calendar_view_kadrovska', {id: user.vacation.id}) }}"><i class="ph-note-pencil"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include '_kadrovska/includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+    </div>
+    {% include '_kadrovska/includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}

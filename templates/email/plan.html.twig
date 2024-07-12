@@ -122,65 +122,35 @@ a[x-apple-data-detectors] {
                                  <thead>
                                  <tr>
                                      <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Projekat</th>
-                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Geodete</th>
-                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Oprema</th>
-                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Vozilo</th>
+                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Kategorija</th>
+                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Zaposleni</th>
+                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Napomena</th>
                                      <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Vreme</th>
                                  </tr>
                                  </thead>
                                  <tbody>
                                  {% if timetable is not empty %}
-                                     {% for task in timetable %}
-                                         {% if task['projekat'] is not null %}
+                                     {% for task in timetable.pripremaZadataks %}
+                                         {% if task.project is not null %}
                                              <tr>
                                                  <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">
-                                                     {{ task['projekat'].title }}
+                                                     {{ task.project.title }}
                                                  </td>
                                                  <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">
-                                                     {% if task['geo1'] is not null %}
-                                                         {% if user.id != task['geo1'].id %}
-                                                             {{ task['geo1'].getNameWithFirstLetter }}<br>
-                                                         {% else %}
-                                                             <b style="color: red;">{{ task['geo1'].getNameWithFirstLetter }}</b><br>
-                                                         {% endif %}
-                                                     {% endif %}
-                                                     {% if task['geo2'] is not null %}
-                                                         {% if user.id != task['geo2'].id %}
-                                                             {{ task['geo2'].getNameWithFirstLetter }}<br>
-                                                         {% else %}
-                                                             <b style="color: red;">{{ task['geo2'].getNameWithFirstLetter }}</b><br>
-                                                         {% endif %}
-                                                     {% endif %}
-                                                     {% if task['geo3'] is not null %}
-                                                         {% if user.id != task['geo3'].id %}
-                                                             {{ task['geo3'].getNameWithFirstLetter }}<br>
-                                                         {% else %}
-                                                             <b style="color: red;">{{ task['geo3'].getNameWithFirstLetter }}</b><br>
-                                                         {% endif %}
-                                                     {% endif %}
+                                                     {{ task.category.title }}
                                                  </td>
-{#                                                 <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">#}
-{#                                                     {% for akt in task['aktivnosti'] %}#}
-{#                                                         {{ akt.title }} <br>#}
-{#                                                     {% endfor %}#}
-{#                                                 </td>#}
                                                  <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">
-                                                     {% for opr in task['oprema'] %}
-                                                         {{ opr.title }} <br>
+                                                     {% for user in task.assignedUsers %}
+                                                         {{ user.fullName }}
                                                      {% endfor %}
                                                  </td>
                                                  <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">
-                                                     {% if task.vozilo is not null %}
-                                                         {{ task.vozilo.getPlate }}
-                                                     {% endif %}
+                                                     {{ task.description }}
                                                  </td>
                                                  <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">
-                                                     {% if task.vreme is not null %}
-                                                         {{ task.vreme}}
-                                                     {% endif %}</td>
-{#                                                 <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">#}
-{#                                                     {{ task['napomena'] }}#}
-{#                                                 </td>#}
+                                                     <i class="ph-clock me-2"></i>
+                                                     {{ task.vreme | date("H:i")}}
+                                                 </td>
                                              </tr>
                                          {% endif %}
                                      {% endfor %}
@@ -189,7 +159,7 @@ a[x-apple-data-detectors] {
 
                                  </tbody>
                              </table>
-                 </tr>
+                     </tr>
                </table></td>
              </tr>
 

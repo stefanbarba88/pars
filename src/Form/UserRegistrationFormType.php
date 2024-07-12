@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Classes\Data\NeradniDanData;
 use App\Classes\Data\PolData;
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\TipProjektaData;
@@ -64,6 +65,16 @@ class UserRegistrationFormType extends AbstractType {
           'data-minimum-results-for-search' => 'Infinity',
         ],
         'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('neradniDan', ChoiceType::class, [
+        'required' => false,
+        'placeholder' => '--Izaberite neradni dan--',
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => NeradniDanData::form(),
         'expanded' => false,
         'multiple' => false,
       ])

@@ -1,0 +1,266 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Oprema
+                            </h4>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">
+                                Lista tipova opreme
+                            </h5>
+                            <div class="my-auto ms-auto">
+                                <a href="{{ path('app_tool_type_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="accordion" id="accordion_collapsed">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item_filter" aria-expanded="false">
+                                            Filter
+                                        </button>
+                                    </h2>
+                                    <div id="collapsed_item_filter" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
+                                        <form method="get" action="{{ path('app_tools') }}" class="form-validate-jquery" novalidation="novalidation">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" for="naziv">Naziv:</label>
+                                                            <input id="naziv" name="naziv" class="form-control" type="text">
+                                                        </div>
+                                                    </div>
+{#                                                    <div class="col-lg-4">#}
+{#                                                        <div class="mb-3">#}
+{#                                                            <label class="form-label" for="tip">Tip opreme:</label>#}
+{#                                                            <select id="tip" name="tip" class="form-control select">#}
+{#                                                                <option value="">--Izaberite tip opreme--</option>#}
+{#                                                                {% for tip in tipovi  %}#}
+{#                                                                    <option value="{{ tip.id }}">{{ tip.title }}</option>#}
+{#                                                                {% endfor %}#}
+{#                                                            </select>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+
+                                                </div>
+
+                                                <div class="text-end">
+                                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="table-responsive card">
+                                <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                    <thead class="bg-light text-primary">
+                                    <tr>
+                                        <th>Naziv</th>
+                                        <th>Status</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for tool in pagination %}
+                                        <tr>
+                                            <td><a href="{{ path('app_tool_view', { id: tool.id}) }}" class="fw-semibold">{{ tool.title }}</td>
+                                            <td>
+                                                {% if tool.isSuspended %}
+                                                    <span class="badge bg-yellow text-primary">Deaktivirano</span>
+                                                {% else %}
+                                                    <span class="badge bg-primary text-white">Aktivno</span>
+                                                {% endif %}
+                                            </td>
+{#                                            <td class="text-center">#}
+{#                                                <div class="dropdown">#}
+{#                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">#}
+{#                                                        <i class="ph-gear"></i>#}
+{#                                                    </a>#}
+{#                                                    <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                        <a href="{{ path('app_tool_view', { id: tool.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>#}
+{#                                                        {% if tool.isSuspended %}#}
+{#                                                            <a href="{{ path('app_tool_activate', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>#}
+{#                                                        {% else %}#}
+{#                                                            {% if tool.isReserved %}#}
+{#                                                                {% for res in tool.toolReservations %}#}
+{#                                                                    {% if res.finished is null%}#}
+{#                                                                        <a href="{{ path('app_tool_reservation_stop', { id: res.id, type:1}) }}" class="dropdown-item"><i class="ph-wrench me-2"></i> Razdužite</a>#}
+{#                                                                    {% endif %}#}
+{#                                                                {% endfor %}#}
+{#                                                            {% else %}#}
+{#                                                                <a href="{{ path('app_tool_reservation_form', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-wrench me-2"></i> Zadužite</a>#}
+{#                                                            {% endif %}#}
+{#                                                            <a href="{{ path('app_tool_form', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>#}
+{#                                                            <a href="{{ path('app_tool_activate', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>#}
+{#                                                        {% endif %}#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </td>#}
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+{#                        <table class="table datatable-colvis-state-pars">#}
+{#                            <thead>#}
+{#                            <tr>#}
+{#                                <th>#</th>#}
+{#                                <th>Naziv</th>#}
+{#                                <th>Tip</th>#}
+{#                                <th>Dostupnost</th>#}
+{#                                <th>Zaduženi</th>#}
+{#                                <th>Status</th>#}
+{#                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>#}
+{#                            </tr>#}
+{#                            </thead>#}
+{#                            <tbody>#}
+{#                            {% for tool in tools %}#}
+{#                                <tr>#}
+{#                                    <td>{{ tool.id }}</td>#}
+{#                                    <td><div class="fw-semibold"><a href="{{ path('app_tool_view', { id: tool.id}) }}">{{ tool.title }}</a></div></td>#}
+{#                                    <td>#}
+{#                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::LAPTOP') %}#}
+{#                                            Laptop#}
+{#                                        {% endif %}#}
+{#                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::TELEFON') %}#}
+{#                                            Mobilni telefon#}
+{#                                        {% endif %}#}
+{#                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::TS') %}#}
+{#                                            TS#}
+{#                                        {% endif %}#}
+{#                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::LS') %}#}
+{#                                            LS#}
+{#                                        {% endif %}#}
+{#                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::GPS') %}#}
+{#                                            GPS#}
+{#                                        {% endif %}#}
+{#                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::DRON') %}#}
+{#                                            Dron#}
+{#                                        {% endif %}#}
+{#                                        {% if tool.type == constant('App\\Classes\\Data\\TipOpremeData::SKENER') %}#}
+{#                                            Skener#}
+{#                                        {% endif %}#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        {% if tool.isSuspended == false %}#}
+{#                                            {% if tool.isReserved %}#}
+{#                                                <span class="badge bg-warning">Zadužen</span>#}
+{#                                            {% else %}#}
+{#                                                <span class="badge bg-success">Slobodan</span>#}
+{#                                            {% endif %}#}
+{#                                        {% endif %}#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        {% for res in tool.toolReservations %}#}
+{#                                            {% if res.finished is null %}#}
+{#                                                {{ res.user.fullName }}#}
+{#                                            {% endif %}#}
+{#                                        {% endfor %}#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        {% if tool.isSuspended %}#}
+{#                                            <span class="badge bg-danger">Obrisan</span>#}
+{#                                        {% else %}#}
+{#                                            <span class="badge bg-success">Aktivan</span>#}
+{#                                        {% endif %}#}
+{#                                    </td>#}
+{#                                    <td class="text-center">#}
+{#                                        <div class="dropdown">#}
+{#                                            <a href="#" class="text-body" data-bs-toggle="dropdown">#}
+{#                                                <i class="ph-gear"></i>#}
+{#                                            </a>#}
+{#                                            <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                <a href="{{ path('app_tool_view', { id: tool.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>#}
+{#                                                {% if tool.isSuspended %}#}
+{#                                                    <a href="{{ path('app_tool_activate', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>#}
+{#                                                {% else %}#}
+{#                                                    {% if tool.isReserved %}#}
+{#                                                        {% for res in tool.toolReservations %}#}
+{#                                                            {% if res.finished is null%}#}
+{#                                                                <a href="{{ path('app_tool_reservation_stop', { id: res.id, type:1}) }}" class="dropdown-item"><i class="ph-wrench me-2"></i> Razdužite</a>#}
+{#                                                            {% endif %}#}
+{#                                                        {% endfor %}#}
+{#                                                    {% else %}#}
+{#                                                        <a href="{{ path('app_tool_reservation_form', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-wrench me-2"></i> Zadužite</a>#}
+{#                                                    {% endif %}#}
+{#                                                    <a href="{{ path('app_tool_form', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>#}
+{#                                                    <a href="{{ path('app_tool_activate', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </td>#}
+{#                                </tr>#}
+{#                            {% endfor %}#}
+{#                            </tbody>#}
+{#                        </table>#}
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+{% endblock includeJavascript %}

@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="1b765e2e-8dac-4878-87db-db899dfdd02c" name="epars">
-        <fileTransfer rootFolder="/var/www/html/" accessType="SFTP" host="159.223.214.184" port="22" sshConfigId="5c387b80-6341-4f38-bba7-f0fbf0f22dfc" sshConfig="epars.rs">
+        <fileTransfer rootFolder="/var/www/html/pars/pars" accessType="SFTP" host="159.223.214.184" port="22" sshConfigId="5c387b80-6341-4f38-bba7-f0fbf0f22dfc" sshConfig="epars.rs">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
@@ -16,8 +16,8 @@
           </advancedOptions>
         </fileTransfer>
       </webServer>
-      <webServer id="5a74f8b7-55c9-4326-b434-57ccc7b0e3e8" name="pars">
-        <fileTransfer rootFolder="/var/www/pars" accessType="SFTP" host="164.92.98.229" port="22" sshConfigId="7ef8e3c8-3c3b-4db8-81e4-628a69f7d4a9" sshConfig="app.pars">
+      <webServer id="4eebe4f2-2e7e-4f76-a425-cbf3a0b22268" name="pars.epars.rs">
+        <fileTransfer rootFolder="/var/www/html/pars/pars" accessType="SFTP" host="178.62.221.187" port="22" sshConfigId="4e3234e0-8ee6-4fe1-ad95-9cacb158524c" sshConfig="epars aplikacija">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

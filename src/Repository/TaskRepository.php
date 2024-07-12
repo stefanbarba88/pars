@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Classes\AppConfig;
 use App\Classes\Data\FastTaskData;
+use App\Classes\Data\PrioritetData;
 use App\Classes\Data\TaskStatusData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
@@ -11,7 +13,10 @@ use App\Entity\Category;
 use App\Entity\Company;
 use App\Entity\FastTask;
 use App\Entity\Image;
+use App\Entity\ManagerChecklist;
 use App\Entity\Pdf;
+use App\Entity\Plan;
+use App\Entity\PripremaZadatak;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -20,6 +25,7 @@ use App\Entity\TaskHistory;
 use App\Entity\TaskLog;
 use App\Entity\Tool;
 use App\Entity\User;
+use App\Service\MailService;
 use DateInterval;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -37,9 +43,11 @@ use Symfony\Bundle\SecurityBundle\Security;
  * @method Task[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class TaskRepository extends ServiceEntityRepository {
-  private Security $security;
-  public function __construct(ManagerRegistry $registry, Security $security) {
+  private $mail;
+  private $security;
+  public function __construct(ManagerRegistry $registry, MailService $mail, Security $security) {
     parent::__construct($registry, Task::class);
+    $this->mail = $mail;
     $this->security = $security;
   }
 
@@ -1480,7 +1488,7 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
-  public function getTasksByDateAndProjectAllCategory(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project, Category $category): array {
+  public function getTasksByDateAndProjectAllCategory(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project): array {
 
     $total = 0;
     $free = 0;
@@ -1510,7 +1518,7 @@ class TaskRepository extends ServiceEntityRepository {
         $free++;
       }
       if (!is_null($tsk->getCategory())) {
-        if ($tsk->getCategory() == $category) {
+        if ($tsk->getCategory() == AppConfig::TEREN_CAT_ID) {
           $teren++;
         }
       }
@@ -1776,8 +1784,8 @@ class TaskRepository extends ServiceEntityRepository {
 //         'sort' => $this->sortTask($tsk),
          'status' => $this->taskStatus($tsk),
          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($tsk),
-//         'car' => $this->getEntityManager()->getRepository(Car::class)->findBy(['id' => $tsk->getCar()]),
-//         'driver' => $this->getEntityManager()->getRepository(User::class)->findBy(['id' => $tsk->getDriver()])
+         'car' => $this->getEntityManager()->getRepository(Car::class)->findBy(['id' => $tsk->getCar()]),
+         'driver' => $this->getEntityManager()->getRepository(User::class)->findBy(['id' => $tsk->getDriver()])
        ];
     }
 //    dd($lista);
@@ -1882,6 +1890,111 @@ class TaskRepository extends ServiceEntityRepository {
 
     return $taskovi;
   }
+
+  public function createTaskFromChecklist(ManagerChecklist $checklist): Task {
+    $format = "H:i";
+    $task = new Task();
+    $task->setCreatedBy($checklist->getCreatedBy());
+    $task->setCompany($checklist->getCompany());
+    $task->setProject($checklist->getProject());
+    $task->setCategory($checklist->getCategory());
+    $task->setDatumKreiranja($checklist->getDatumKreiranja());
+    $task->setTitle($checklist->getProject()->getTitle() . ' - ' . $checklist->getDatumKreiranja()->format('d.m.Y'));
+    $task->setDescription($checklist->getTask());
+
+    $task->addAssignedUser($checklist->getUser());
+    $taskLog = new TaskLog();
+    $taskLog->setUser($checklist->getUser());
+    $task->addTaskLog($taskLog);
+    $task->setPriorityUserLog($checklist->getUser()->getId());
+
+    $task->setIsTimeRoundUp($checklist->getCompany()->getSettings()->getIsTimeRoundUp());
+    $task->setRoundingInterval($checklist->getCompany()->getSettings()->getRoundingInterval());
+    $task->setMinEntry($checklist->getCompany()->getSettings()->getMinEntry());
+
+    $task->setRepeating($checklist->getRepeating());
+    $task->setRepeatingInterval($checklist->getRepeatingInterval());
+    $task->setDatumPonavljanja($checklist->getDatumPonavljanja());
+
+    foreach ($checklist->getPdfs() as $pdf) {
+      $task->addPdf($pdf);
+    };
+
+    $this->save($task);
+
+    return $task;
+  }
+
+  public function createTasksFromPlan(Plan $plan): Plan  {
+
+    foreach ($plan->getPripremaZadataks() as $priprema) {
+      if ($priprema->getTaskType() == 1) {
+        $task = new Task();
+        $task->setCompany($plan->getCompany());
+        $task->setProject($priprema->getProject());
+        $task->setCategory($priprema->getCategory());
+        $task->setTitle($priprema->getProject()->getTitle() . ' - ' . $priprema->getVreme()->format('d.m.Y'));
+        $task->setPriorityUserLog($priprema->getPriorityUserLog());
+        $task->setDatumKreiranja($plan->getDatumKreiranja()->setTime(0,0));
+        $task->setTime($priprema->getVreme());
+        $task->setDescription($priprema->getDescription());
+
+        $task->setMinEntry($plan->getCompany()->getSettings()->getMinEntry());
+        $task->setIsTimeRoundUp($plan->getCompany()->getSettings()->getIsTimeRoundUp());
+        $task->setRoundingInterval($plan->getCompany()->getSettings()->getRoundingInterval());
+
+        foreach ($priprema->getAssignedUsers() as $user) {
+          $task->addAssignedUser($user);
+        }
+
+        if (!$priprema->getActivity()->isEmpty()) {
+          foreach ($priprema->getActivity() as $act) {
+            $task->addActivity($act);
+          }
+        }
+
+        if (!$priprema->getOprema()->isEmpty()) {
+          foreach ($priprema->getOprema() as $tool) {
+            $task->addOprema($tool);
+          }
+        }
+
+        $task->setCar($priprema->getCar());
+        $task->setDriver($priprema->getDriver());
+
+        $task = $this->saveTask($task, $plan->getCreatedBy(), null);
+
+        $this->mail->task($task);
+
+        $priprema->setTask($task->getId());
+
+        $this->getEntityManager()->getRepository(PripremaZadatak::class)->save($priprema);
+
+      } else {
+        foreach ($priprema->getAssignedUsers() as $user) {
+          $task = new ManagerChecklist();
+
+          $task->setCompany($plan->getCompany());
+          $task->setProject($priprema->getProject());
+          $task->setCategory($priprema->getCategory());
+          $task->setCreatedBy($plan->getCreatedBy());
+          $task->setTask($priprema->getDescription());
+          $task->setDatumKreiranja($priprema->getVreme());
+          $task->setUser($user);
+
+          $task = $this->getEntityManager()->getRepository(ManagerChecklist::class)->save($task);
+
+          $this->mail->checklistTask($task);
+        }
+      }
+    }
+
+    $plan->setStatus(FastTaskData::FINAL);
+    $this->getEntityManager()->getRepository(Plan::class)->save($plan);
+
+    return $plan;
+  }
+
 
   public function createTasksFromList(FastTask $fastTask, User $user): FastTask  {
     $format = "H:i";

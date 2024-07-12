@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Client;
 use App\Entity\Company;
 use App\Entity\Image;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -86,6 +87,102 @@ class CompanyRepository extends ServiceEntityRepository {
       ->orderBy('u.isSuspended', 'ASC')
       ->getQuery();
 
+  }
+
+  public function findForFormKadrovska(int $id = 0): Company {
+    if (empty($id)) {
+      $company = new Company();
+      $company->setCreatedBy($this->security->getUser());
+      $company->setFirma($this->security->getUser()->getCompany()->getId());
+      return $company;
+    }
+    return $this->getEntityManager()->getRepository(Company::class)->find($id);
+  }
+  public function getAllCompaniesPaginatorKadrovska($filter, int $firma) {
+
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->where('u.firma = :firma')
+      ->andWhere('u.isSuspended = 0')
+      ->setParameter(':firma', $firma);
+
+    if (!empty($filter['title'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.title', ':title'),
+      ))
+        ->setParameter('title', '%' . $filter['title'] . '%');
+    }
+    if (!empty($filter['pib'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.pib', ':pib'),
+      ))
+        ->setParameter('pib', '%' . $filter['pib'] . '%');
+    }
+
+    $qb
+      ->orderBy('u.title', 'ASC')
+      ->getQuery();
+    return $qb;
+  }
+  public function getAllCompaniesPaginatorKadrovskaArchive($filter, int $firma) {
+
+    $qb = $this->createQueryBuilder('u');
+
+    $qb->where('u.firma = :firma')
+      ->andWhere('u.isSuspended = 1')
+      ->setParameter(':firma', $firma);
+
+    if (!empty($filter['title'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.title', ':title'),
+      ))
+        ->setParameter('title', '%' . $filter['title'] . '%');
+    }
+    if (!empty($filter['pib'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.pib', ':pib'),
+      ))
+        ->setParameter('pib', '%' . $filter['pib'] . '%');
+    }
+
+    $qb
+      ->orderBy('u.title', 'ASC')
+      ->getQuery();
+    return $qb;
+  }
+
+  public function getCompaniesSearchPaginatorKadrovska($filterBy, User $user){
+
+    $qb = $this->createQueryBuilder('t');
+
+    $qb->where('t.firma = :firma');
+    $qb->setParameter(':firma', $user->getCompany()->getId());
+
+
+    if ($filterBy['status'] == 1) {
+      $qb->andWhere('t.isSuspended = :status');
+      $qb->setParameter('status', $filterBy['statusStanje']);
+    } else {
+      $qb->andWhere('t.isSuspended <> :status');
+      $qb->setParameter('status', $filterBy['statusStanje']);
+    }
+
+    $keywords = explode(" ", $filterBy['tekst']);
+
+    foreach ($keywords as $key => $keyword) {
+      $qb
+        ->andWhere($qb->expr()->orX(
+          $qb->expr()->like('t.title', ':keyword'.$key),
+        ))
+        ->setParameter('keyword'.$key, '%' . $keyword . '%');
+    }
+
+    $qb
+      ->addOrderBy('t.title', 'ASC')
+      ->getQuery();
+
+
+    return $qb;
   }
 
 //    /**

@@ -38,6 +38,9 @@ class Client implements JsonSerializable {
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $adresa = null;
 
+  #[ORM\Column(length: 255, nullable: true)]
+  private ?string $contactPlain = null;
+
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?City $grad = null;
@@ -86,6 +89,9 @@ class Client implements JsonSerializable {
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
+
+  #[ORM\OneToMany(mappedBy: 'client', targetEntity: Ticket::class)]
+  private Collection $tickets;
   public function getCompany(): ?Company
   {
     return $this->company;
@@ -102,6 +108,7 @@ class Client implements JsonSerializable {
     $this->clientHistories = new ArrayCollection();
     $this->contact = new ArrayCollection();
     $this->stopwatchTimes = new ArrayCollection();
+    $this->tickets = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -126,6 +133,7 @@ class Client implements JsonSerializable {
       'telefon2' => $this->getTelefon2(),
       'pib' => $this->getPib(),
       'contact' => $this->getContact(),
+      'contactPlain' => $this->getContactPlain(),
       'editBy' => $this->editBy,
       'isSuspended' => $this->isSuspended(),
       'isSerbian' => $this->isSerbian(),
@@ -292,7 +300,7 @@ class Client implements JsonSerializable {
   public function setUpdated(DateTimeImmutable $updated): void {
     $this->updated = $updated;
   }
-  
+
   public function getBadgeByStatus(): string {
     if ($this->isSuspended) {
       return '<span class="badge bg-yellow text-primary">Deaktiviran</span>';
@@ -390,6 +398,50 @@ class Client implements JsonSerializable {
       }
 
       return $this;
+  }
+
+  /**
+   * @return Collection<int, Ticket>
+   */
+  public function getTickets(): Collection
+  {
+      return $this->tickets;
+  }
+
+  public function addTicket(Ticket $ticket): self
+  {
+      if (!$this->tickets->contains($ticket)) {
+          $this->tickets->add($ticket);
+          $ticket->setClient($this);
+      }
+
+      return $this;
+  }
+
+  public function removeTicket(Ticket $ticket): self
+  {
+      if ($this->tickets->removeElement($ticket)) {
+          // set the owning side to null (unless already changed)
+          if ($ticket->getClient() === $this) {
+              $ticket->setClient(null);
+          }
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getContactPlain(): ?string {
+    return $this->contactPlain;
+  }
+
+  /**
+   * @param string|null $contactPlain
+   */
+  public function setContactPlain(?string $contactPlain): void {
+    $this->contactPlain = $contactPlain;
   }
 
 }

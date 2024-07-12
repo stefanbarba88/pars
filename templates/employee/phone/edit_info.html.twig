@@ -137,12 +137,21 @@
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.slava, {attr: { class: 'form-control' }}) }}
-                                                    <span class="form-text">Format: Sveti Nikola, 19.12.</span>
+                                                    {{ form_label(form.neradniDan, 'Neradni dan:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.neradniDan, {attr: { class: 'form-control select' }}) }}
+                                                    <span class="form-text">Ukoliko zaposleni ne radi određenog dana u sedmici. Potrebno je uneti i dan vikenda ako firma radi vikendom.</span>
                                                 </div>
                                             </div>
                                         </div>
+{#                                        <div class="row">#}
+{#                                            <div class="col-lg-6">#}
+{#                                                <div class="mb-3">#}
+{#                                                    {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                    {{ form_widget(form.slava, {attr: { class: 'form-control' }}) }}#}
+{#                                                    <span class="form-text">Format: Sveti Nikola, 19.12.</span>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="mb-3">

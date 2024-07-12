@@ -19,6 +19,9 @@
                             </h4>
                         </div>
                     </div>
+                    {% if app.user.userType != constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
+                        {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: project } )) }}
+                    {% endif %}
                 </div>
                 <!-- /page header -->
 

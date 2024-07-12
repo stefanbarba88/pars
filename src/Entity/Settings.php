@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Classes\Data\ExportData;
 use App\Repository\SettingsRepository;
 use DateTimeImmutable;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SettingsRepository::class)]
@@ -29,7 +30,12 @@ class Settings {
   private ?int $roundingInterval = 15;
 
   #[ORM\Column(nullable: true)]
+  private ?int $minKm = 500;
+
+  #[ORM\Column(nullable: true)]
   private ?int $workWeek = 6;
+
+
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
@@ -39,10 +45,28 @@ class Settings {
   private bool $isSuspended = false;
 
   #[ORM\Column]
+  private bool $isClientView = false;
+
+  #[ORM\Column]
   private bool $isBasic = true;
 
   #[ORM\Column]
   private bool $isCar = false;
+
+  #[ORM\Column]
+  private bool $isPlan = false;
+
+  #[ORM\Column]
+  private bool $isWidgete = true;
+
+  #[ORM\Column]
+  private bool $isPlanToday = true;
+
+  #[ORM\Column]
+  private bool $isPlanTomorrow = false;
+
+  #[ORM\Column]
+  private bool $isPlanEmployee = true;
 
   #[ORM\Column]
   private bool $isTool = false;
@@ -52,6 +76,9 @@ class Settings {
 
   #[ORM\Column(nullable: true)]
   private ?int $export = ExportData::BASIC;
+
+  #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+  private ?DateTimeImmutable $radnoVreme = null;
 
   #[ORM\Column]
   private DateTimeImmutable $created;
@@ -284,6 +311,120 @@ class Settings {
   public function setExport(?int $export): void {
     $this->export = $export;
   }
+
+  /**
+   * @return int|null
+   */
+  public function getMinKm(): ?int {
+    return $this->minKm;
+  }
+
+  /**
+   * @param int|null $minKm
+   */
+  public function setMinKm(?int $minKm): void {
+    $this->minKm = $minKm;
+  }
+
+  /**
+   * @return DateTimeImmutable|null
+   */
+  public function getRadnoVreme(): ?DateTimeImmutable {
+    return $this->radnoVreme;
+  }
+
+  /**
+   * @param DateTimeImmutable|null $radnoVreme
+   */
+  public function setRadnoVreme(?DateTimeImmutable $radnoVreme): void {
+    $this->radnoVreme = $radnoVreme;
+  }
+
+  /**
+   * @return bool
+   */
+  public function getIsClientView(): bool {
+    return $this->isClientView;
+  }
+
+  /**
+   * @param bool $isClientView
+   */
+  public function setIsClientView(bool $isClientView): void {
+    $this->isClientView = $isClientView;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isWidgete(): bool {
+    return $this->isWidgete;
+  }
+
+  /**
+   * @param bool $isWidgete
+   */
+  public function setIsWidgete(bool $isWidgete): void {
+    $this->isWidgete = $isWidgete;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isPlanToday(): bool {
+    return $this->isPlanToday;
+  }
+
+  /**
+   * @param bool $isPlanToday
+   */
+  public function setIsPlanToday(bool $isPlanToday): void {
+    $this->isPlanToday = $isPlanToday;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isPlanTomorrow(): bool {
+    return $this->isPlanTomorrow;
+  }
+
+  /**
+   * @param bool $isPlanTomorrow
+   */
+  public function setIsPlanTomorrow(bool $isPlanTomorrow): void {
+    $this->isPlanTomorrow = $isPlanTomorrow;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isPlanEmployee(): bool {
+    return $this->isPlanEmployee;
+  }
+
+  /**
+   * @param bool $isPlanEmployee
+   */
+  public function setIsPlanEmployee(bool $isPlanEmployee): void {
+    $this->isPlanEmployee = $isPlanEmployee;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isPlan(): bool {
+    return $this->isPlan;
+  }
+
+  /**
+   * @param bool $isPlan
+   */
+  public function setIsPlan(bool $isPlan): void {
+    $this->isPlan = $isPlan;
+  }
+
+
 
 
 }

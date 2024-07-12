@@ -1,0 +1,256 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUserKadrovska' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebarKadrovska')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ user.getFullName() }}
+                            </h4>
+                        </div>
+                    </div>
+
+
+                    {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigationKadrovska', { user: user } )) }}
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Left sidebar component -->
+                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebarKadrovska', { user: user } )) }}
+                        <!-- /left sidebar component -->
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h6 class="mb-0">
+                                            {% if addon.id is not null %}
+                                                Izmena aktivnosti
+                                            {% else %}
+                                                Dodavanje aktivnosti
+                                            {% endif %}
+                                        </h6>
+                                    </div>
+                                    {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.type, 'Tip:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.type, {attr: { class: 'form-control select required' }}) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.datum, 'Datum:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    <div class="input-group">
+                                                    <span class="input-group-text">
+                                                        <i class="ph-calendar"></i>
+                                                    </span>
+                                                        {{ form_widget(form.datum, {attr: { class: 'form-control datepicker-date-format-custom1 ', autocomplete: 'off' }}) }}
+                                                    </div>
+                                                    <span class="form-text">Format: 31.12.1900. Datum aktivnosti.</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.start, 'Početak:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    <div class="input-group">
+                                                    <span class="input-group-text">
+                                                        <i class="ph-calendar"></i>
+                                                    </span>
+                                                        {{ form_widget(form.start, {attr: { class: 'form-control datepicker-date-format-custom2 ', autocomplete: 'off' }}) }}
+                                                    </div>
+                                                    <span class="form-text">Format: 31.12.1900. Prvi dan perioda.</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.finish, 'Kraj:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    <div class="input-group">
+                                                    <span class="input-group-text">
+                                                        <i class="ph-calendar"></i>
+                                                    </span>
+                                                        {{ form_widget(form.finish, {attr: { class: 'form-control datepicker-date-format-custom3 ', autocomplete: 'off' }}) }}
+                                                    </div>
+                                                    <span class="form-text">Format: 31.12.1900. Zaključni dan perioda.</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.description, 'Detalji aktivnosti:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.description, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Uneti detalje o izabranoj aktivnosti.</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                        </div>
+                                    </div>
+                                    {{ form_end(form) }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/locales/sr.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+
+{% block footerJavascript %}
+
+    <script>
+
+        $(document).ready(function() {
+        // Date format
+        // izmenjen format da bi bio po srpskim standardima
+        const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom1');
+        const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom2');
+        const dpDateCustomFormatElement3 = document.querySelector('.datepicker-date-format-custom3');
+        if (dpDateCustomFormatElement1) {
+            const today = new Date(); // Trenutni datum
+            const dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                minDate: today, // Postavljamo minimalni datum na trenutni datum
+                daysOfWeekHighlighted: [0, 6],
+                language: 'sr-latn',
+                {#datesDisabled: [#}
+                {#    {% for date in disabledDates %}#}
+                {#    '{{ date }}',#}
+                {#    {% endfor %}#}
+                {#],#}
+            });
+        }
+        if (dpDateCustomFormatElement2) {
+            const today = new Date(); // Trenutni datum
+            const dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                maxDate: today, // Postavljamo minimalni datum na trenutni datum
+                daysOfWeekHighlighted: [0, 6],
+                language: 'sr-latn',
+                {#datesDisabled: [#}
+                {#    {% for date in disabledDates %}#}
+                {#    '{{ date }}',#}
+                {#    {% endfor %}#}
+                {#],#}
+            });
+        }
+        if (dpDateCustomFormatElement3) {
+            const today = new Date(); // Trenutni datum
+            const dpDateCustomFormat3 = new Datepicker(dpDateCustomFormatElement3, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                minDate: today, // Postavljamo minimalni datum na trenutni datum
+                daysOfWeekHighlighted: [0, 6],
+                language: 'sr-latn',
+                {#datesDisabled: [#}
+                {#    {% for date in disabledDates %}#}
+                {#    '{{ date }}',#}
+                {#    {% endfor %}#}
+                {#],#}
+            });
+        }
+        });
+    </script>
+
+{% endblock footerJavascript %}

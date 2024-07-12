@@ -38,6 +38,9 @@ class ClientFormType extends AbstractType {
     $builder
       ->add('title')
       ->add('adresa')
+      ->add('contactPlain',TextType::class, [
+        'required' => false,
+      ])
       ->add('telefon1',TextType::class, [
         'constraints' => [
           new Regex('/^\d{1,10}$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
@@ -82,6 +85,7 @@ class ClientFormType extends AbstractType {
       ])
       ->add('contact', EntityType::class, [
         'placeholder' => 'Izaberite lice za kontakt',
+        'required' => false,
         'class' => User::class,
         'query_builder' => function (EntityRepository $em) use ($company, $clientId) {
           return $em->createQueryBuilder('g')
@@ -102,6 +106,7 @@ class ClientFormType extends AbstractType {
   public function configureOptions(OptionsResolver $resolver): void {
     $resolver->setDefaults([
       'data_class' => Client::class,
+      'allow_extra_fields' => true,
     ]);
   }
 }

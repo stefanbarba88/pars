@@ -2,12 +2,14 @@
 
 namespace App\Repository;
 
+use App\Classes\AppConfig;
 use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VrstaPlacanjaData;
 use App\Entity\Category;
 use App\Entity\Client;
 use App\Entity\Company;
 use App\Entity\Image;
+use App\Entity\ManagerChecklist;
 use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
@@ -462,6 +464,21 @@ class ProjectRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectByCategory($prethodniMesecDatum, $datum, $project);
 
   }
+  public function getCountTasksByProjectIntern(Project $project):array {
+
+//    $category = $this->getEntityManager()->getRepository(Category::class)->find(5);
+    $prethodniMesecDatum = new DateTimeImmutable('first day of this month');
+
+    $datum = new DateTimeImmutable();
+    $datum = $datum->setTime(23,59);
+
+    $prethodniMesecDatum = $prethodniMesecDatum->setTime(0,0);
+
+
+//    return $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectAllCategory($prethodniMesecDatum, $datum, $project, $category);
+    return $this->getEntityManager()->getRepository(ManagerChecklist::class)->countInternTasksProject($prethodniMesecDatum, $datum, $project);
+
+  }
 
   // A/B/C/D
   // A - broj terenskih dana
@@ -562,14 +579,13 @@ class ProjectRepository extends ServiceEntityRepository {
   public function processMonthlyTasks(Project $project): array {
 
     $zadaci = [];
-    $category = $this->getEntityManager()->getRepository(Category::class)->find(5);
     $currentYear = date('Y');
     $currentMonth = date('m');
 
     for ($month = 1; $month <= $currentMonth; $month++) {
       $startOfMonth = new DateTimeImmutable("$currentYear-$month-01");
       $endOfMonth = new DateTimeImmutable("$currentYear-$month-" . date('t', strtotime("$currentYear-$month-01")));
-      $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectAllCategory($startOfMonth, $endOfMonth, $project, $category);
+      $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectByCategory($startOfMonth, $endOfMonth, $project);
       $zadaci[] = $tasks;
     }
 
@@ -579,9 +595,11 @@ class ProjectRepository extends ServiceEntityRepository {
     foreach ($zadaci as $zadatak) {
       $sviZadaci[] = $zadatak['total'];
       $teren[] = $zadatak['teren'];
+      $kuca[] = $zadatak['kuca'];
+      $kancelarija[] = $zadatak['kancelarija'];
     }
 
-    return [$sviZadaci, $teren];
+    return [$sviZadaci, $teren, $kuca, $kancelarija];
 
   }
 

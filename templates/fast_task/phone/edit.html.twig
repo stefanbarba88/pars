@@ -1,0 +1,932 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Plan rada za {{ plan.datumKreiranja | date("d.m.Y") }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_item_filter" aria-expanded="false" type="button">
+                            <h6 class="collapsed mb-0">
+                                Dostupnost
+                            </h6>
+                            <div class="d-inline-flex ms-auto">
+                                <span id="brojac" class="badge bg-yellow text-primary rounded-pill fw-semibold">0/{{ users | length }} </span>
+                            </div>
+                        </div>
+                        <div id="collapsed_item_filter" class="accordion-collapse collapse show" data-bs-parent="#accordion_collapsed" style="">
+                            <div class="card-body">
+                                {% set noUsers = 2 %}
+                                {% if users|length <= noUsers %}
+                                    {% set noUsers = users|length %}
+                                {% endif %}
+                                {% set noCars = 2 %}
+                                {% if cars|length <= noCars %}
+                                    {% set noCars = cars|length %}
+                                {% endif %}
+                                {% set noTools = 2 %}
+                                {% if tools|length <= noTools %}
+                                    {% set noTools = tools|length %}
+                                {% endif %}
+                                <div class="row">
+                                    <div class="col-sm-6 col-lg-12">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th colspan="{{ noUsers }}">Zaposleni <i class="ph-info me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Nakon odabira u planu, zaposleni u listi će promeniti boju." data-bs-original-title="Dostupni zaposleni"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for chunk in users|batch(noUsers, '') %}
+                                                    <tr>
+                                                        {% for member in chunk %}
+                                                            <td class="zaposleni1">
+                                                                {% if member is iterable %}
+                                                                    <div class="list-group-item hstack gap-3 zaposleni">
+                                                                        <div class="flex-fill">
+                                                                            <div class="fw-semibold">{{ member.user.fullName }}
+                                                                                {% if member.car is not null %}
+                                                                                    <i class="ph-car me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{ member.car.plate }}" data-bs-original-title="Zaduženo vozilo"></i>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                            <span class="sakriveno d-none">{{ member.id }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                {% endif %}
+                                                            </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6 col-lg-8">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th colspan="{{ noTools }}">Oprema <i class="ph-info me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Nakon odabira u planu, oprema u listi će promeniti boju." data-bs-original-title="Dostupna oprema"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for chunk in tools|batch(noTools, '') %}
+                                                    <tr>
+                                                        {% for tool in chunk %}
+                                                            <td class="tool1">
+                                                                {% if tool != '' %}
+                                                                    <div class="list-group-item hstack gap-3 tool">
+                                                                        <div class="flex-fill">
+                                                                            <div class="fw-semibold">{{ tool.title }}</div>
+                                                                            <span class="sakrivenoTool d-none">{{ tool.id }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                {% endif %}
+                                                            </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-lg-4">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-responsive table_morecondensed">
+                                                <thead class="bg-light text-primary">
+                                                <tr>
+                                                    <th colspan="{{ noCars }}">Vozila <i class="ph-info me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Nakon odabira u planu, vozilo u listi će promeniti boju." data-bs-original-title="Dostupna vozila"></i></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for chunk in cars|batch(noCars, '') %}
+                                                    <tr>
+                                                        {% for car in chunk %}
+                                                            <td class="car1">
+                                                                {% if car != '' %}
+                                                                    <div class="list-group-item hstack gap-3 car">
+                                                                        <div class="flex-fill">
+                                                                            <div class="fw-semibold">{{ car.plate }}</div>
+                                                                            <span class="sakrivenoCar d-none">{{ car.id }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                {% endif %}
+                                                            </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                Izmena plana
+                            </h6>
+                        </div>
+                        <form name="task_quick_form" method="post" action="{{ path('app_quick_task_edit', {id:plan.id}) }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="task_quick_form">
+                            <div class="card-body">
+                                {#                                <div class="row">#}
+                                {#                                    <div class="col-lg-3">#}
+                                {#                                        <div class="mb-1">#}
+                                {#                                            <label class="form-label" for="task_form_datum_edit">Datum:</label>#}
+                                {#                                            <div class="input-group">#}
+                                {#											<span class="input-group-text">#}
+                                {#												<i class="ph-calendar"></i>#}
+                                {#											</span>#}
+                                {#                                                <input type="text" id="task_form_datum_edit" name="task_quick_form_datum" class="form-control datepicker-date-format-custom required" value="{{ plan.datumKreiranja | date("d.m.Y") }}"/>#}
+                                {#                                            </div>#}
+                                {#                                            <span class="form-text">Format: 31.12.1900.</span>#}
+                                {#                                        </div>#}
+                                {#                                    </div>#}
+                                {#                                </div>#}
+
+                                <div class="card">
+                                    <ul class="nav nav-tabs nav-tabs-underline nav-justified mb-0" role="tablist">
+                                        <li class="nav-item" role="presentation"><a href="#tab-desc" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">Zadaci</a></li>
+                                        <li class="nav-item" role="presentation"><a href="#tab-spec" class="nav-link" data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">Interni zadaci</a></li>
+                                    </ul>
+
+                                    <div class="tab-content card-body">
+                                        <div class="tab-pane fade active show" id="tab-desc" role="tabpanel">
+                                            <div class="table-responsive card">
+                                                <table class="table table-hover table-bordered table_morecondensed">
+                                                    <tbody id="tbody">
+                                                    {% if tasks is defined %}
+                                                        {% for task in tasks %}
+                                                            <tr id="zadatak_{{ loop.index }}" {% if task.status == 2 %} class="bg-dark bg-opacity-25" {% endif %}>
+                                                                <td>
+                                                                    <div class="row">
+                                                                        <input hidden="hidden" id="task_form_projekatId_{{ loop.index }}" type="text" name="zadatak[{{ loop.index }}][id]"  value="{{ task.id }}">
+                                                                        <div class="col-lg-2 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_projekat_{{ loop.index }}">Projekat:*</label>
+                                                                                <select id="task_form_projekat_{{ loop.index }}" name="zadatak[{{ loop.index }}][projekat]" class="form-control select small-input required">
+                                                                                    <option value=''>---</option>
+                                                                                    {% for project in projects %}
+                                                                                        {% if project.id == task.project.id %}
+                                                                                            <option selected value="{{ project.id }}">{{ project.title }}</option>
+                                                                                        {% else %}
+                                                                                            <option value="{{ project.id }}">{{ project.title }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-2 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_kategorija_{{ loop.index }}">Kategorija:*</label>
+                                                                                <select id="task_form_kategorija_{{ loop.index }}" name="zadatak[{{ loop.index }}][category]" class="form-control select small-input required">
+                                                                                    <option value=''>---</option>
+
+                                                                                    {% for cat in categories %}
+                                                                                        {% if cat.id == task.category.id %}
+                                                                                            <option selected value="{{ cat.id }}">{{ cat.title }}</option>
+                                                                                        {% else %}
+                                                                                            <option value="{{ cat.id }}">{{ cat.title }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-3 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_users_{{ loop.index }}">Zaposleni:*</label>
+                                                                                <select id="task_form_users_{{ loop.index }}" name="zadatak[{{ loop.index }}][users][]" class="form-control select small-input" multiple required>
+                                                                                    {% for user in users %}
+                                                                                        {% if user.id in task.getAssignedUsersIds %}
+                                                                                            <option selected value="{{ user.id }}">{{ user.ime }}</option>
+                                                                                        {% else %}
+                                                                                            <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-2 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_primarni_{{ loop.index }}">Primarni dnevnik:*</label>
+                                                                                <select id="task_form_primarni_{{ loop.index }}" name="zadatak[{{ loop.index }}][primary]" class="form-control small-input select" required>
+                                                                                    <option value=''>---</option>
+                                                                                    {% for user in task.AssignedUsers %}
+                                                                                        {% if user.id == task.priorityUserLog %}
+                                                                                            <option selected value="{{ user.id }}">{{ user.FullName }}</option>
+                                                                                        {% else %}
+                                                                                            <option value="{{ user.id }}">{{ user.FullName }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-3 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_aktivnosti_{{ loop.index }}">Aktivnosti:</label>
+                                                                                <select id="task_form_aktivnosti_{{ loop.index }}" name="zadatak[{{ loop.index }}][activity][]" class="form-control select small-input" multiple>
+                                                                                    {% for act in activities %}
+                                                                                        {% if act in task.activity%}
+                                                                                            <option selected value="{{ act.id }}">{{ act.title }}</option>
+                                                                                        {% else %}
+                                                                                            <option value="{{ act.id }}">{{ act.title }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-3 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_oprema_{{ loop.index }}">Oprema:</label>
+                                                                                <select id="task_form_oprema_{{ loop.index }}" name="zadatak[{{ loop.index }}][tools][]" class="form-control select small-input" multiple>
+                                                                                    {% for tool in tools %}
+                                                                                        {% if tool in task.oprema %}
+                                                                                            <option selected value="{{ tool.id }}">{{ tool.title }}</option>
+                                                                                        {% else %}
+                                                                                            <option value="{{ tool.id }}">{{ tool.title }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-2 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_vozilo_{{ loop.index }}">Vozilo:</label>
+                                                                                <select id="task_form_vozilo_{{ loop.index }}" name="zadatak[{{ loop.index }}][car]" class="form-control select small-input">
+                                                                                    <option value=''>---</option>
+                                                                                    {% for car in cars %}
+                                                                                        {% if car.id == task.car %}
+                                                                                            <option selected value="{{ car.id }}">{{ car.carName }}</option>
+                                                                                        {% else %}
+                                                                                            <option value="{{ car.id }}">{{ car.carName }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-2 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_vozac_{{ loop.index }}">Vozač:</label>
+                                                                                <select id="task_form_vozac_{{ loop.index }}" name="zadatak[{{ loop.index }}][driver]" class="form-control select small-input">
+                                                                                    <option value=''>---</option>
+                                                                                    {% for user in task.AssignedUsers %}
+                                                                                        {% if user.id == task.driver %}
+                                                                                            <option selected value="{{ user.id }}">{{ user.FullName }}</option>
+                                                                                        {% else %}
+                                                                                            <option value="{{ user.id }}">{{ user.FullName }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-3 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_desc_{{ loop.index }}">Napomena:</label>
+                                                                                <textarea id="task_form_desc_{{ loop.index }}" name="zadatak[{{ loop.index }}][desc]" class="form-control small-input" rows="1">{{ task.description }}</textarea>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-1 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_vreme_{{ loop.index }}">Vreme:</label>
+                                                                                <input id="task_form_vreme_{{ loop.index }}" name="zadatak[{{ loop.index }}][vreme]" class="form-control form-control-sm project1" type="time" value="{{ task.vreme | date('H:i') }}">
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-1 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_naplativ_{{ loop.index }}">Naplativost:</label>
+                                                                                <div class="input-group">
+                                                                                    <label class="form-check mb-2">
+                                                                                        <input type="checkbox" class="form-check-input" id="task_form_naplativ_{{ loop.index }}" name="zadatak[{{ loop.index }}][naplativ]" {% if task.isFree %}value="0"{% else %}checked value="1"{% endif %}">
+                                                                                        <span class="form-check-label">Naplativ</span>
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td><a class="btn btn-danger remove mt-2" id="removeBtn"><i class="ph-trash"></i></a></td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                    </tbody>
+                                                </table>
+
+                                                <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+                                                    <div class="d-flex align-items-center"><a class="btn btn-primary" id="addBtn"><i class="ph-plus me-2"></i> Dodajte</a></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="tab-spec" role="tabpanel">
+                                            <div class="table-responsive card">
+                                                <table class="table table-hover table-bordered table_morecondensed">
+                                                    <tbody id="tbodyI">
+                                                    {% if tasksI is defined %}
+                                                        {% for task in tasksI %}
+                                                            <tr id="zadatakI_{{ loop.index }}" {% if task.status == 2 %} class="bg-dark bg-opacity-25" {% endif %}>
+                                                                <td>
+                                                                    <div class="row">
+                                                                        <input hidden="hidden" id="task_form_projekatIdI_{{ loop.index }}" type="text" name="zadatakI[{{ loop.index }}][id]"  value="{{ task.id }}">
+                                                                        <div class="col-lg-2 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_projekatI_{{ loop.index }}">Projekat:*</label>
+                                                                                <select id="task_form_projekatI_{{ loop.index }}" name="zadatakI[{{ loop.index }}][projekat]" class="form-control select small-input required">
+                                                                                    <option value=''>---</option>
+                                                                                    {% for project in projects %}
+                                                                                        {% if project.id == task.project.id %}
+                                                                                            <option selected value="{{ project.id }}">{{ project.title }}</option>
+                                                                                        {% else %}
+                                                                                            <option value="{{ project.id }}">{{ project.title }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-2 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_kategorijaI_{{ loop.index }}">Kategorija:*</label>
+                                                                                <select id="task_form_kategorijaI_{{ loop.index }}" name="zadatakI[{{ loop.index }}][category]" class="form-control select small-input required">
+                                                                                    <option value=''>---</option>
+                                                                                    {% for cat in categories %}
+                                                                                        {% if cat.id == task.category.id %}
+                                                                                            <option selected value="{{ cat.id }}">{{ cat.title }}</option>
+                                                                                        {% else %}
+                                                                                            <option value="{{ cat.id }}">{{ cat.title }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-3 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_usersI_{{ loop.index }}">Zaposleni:*</label>
+                                                                                <select id="task_form_usersI_{{ loop.index }}" name="zadatakI[{{ loop.index }}][users][]" class="form-control select small-input" multiple required>
+                                                                                    {% for user in users %}
+                                                                                        {% if user.id in task.getAssignedUsersIds %}
+                                                                                            <option selected value="{{ user.id }}">{{ user.ime }}</option>
+                                                                                        {% else %}
+                                                                                            <option value="{{ user.id }}">{{ user.ime }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-3 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_descI_{{ loop.index }}">Zadatak:*</label>
+                                                                                <textarea id="task_form_descI_{{ loop.index }}" name="zadatakI[{{ loop.index }}][desc]" class="form-control small-input required" rows="1">{{ task.description }}</textarea>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-lg-2 quick-form-media">
+                                                                            <div class="mb-1">
+                                                                                <label class="form-label" for="task_form_vremeI_{{ loop.index }}">Vreme:</label>
+                                                                                <input id="task_form_vremeI_{{ loop.index }}" name="zadatakI[{{ loop.index }}][vreme]" class="form-control form-control-sm project1" type="time" value="{{ task.vreme | date('H:i') }}">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td><a class="btn btn-danger removeI mt-2" id="removeBtn"><i class="ph-trash"></i></a></td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                    </tbody>
+                                                </table>
+                                                <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+                                                    <div class="d-flex align-items-center"><a class="btn btn-primary" id="addBtnI"><i class="ph-plus me-2"></i> Dodajte</a></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                                {% if plan.status != 4 %}
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /wizard with validation -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+{% endblock includeJavascript %}
+
+{% block footerJavascript %}
+    <script>
+        $(document).ready(function() {
+
+            function updateUniqueUserIds() {
+
+                $('.zaposleni').removeClass('disabled-div');
+                $('.zaposleni1').removeClass('bg-dark bg-opacity-25');
+
+                var uniqueUserIds = {}; // Objekat za praćenje jedinstvenih korisničkih ID-jeva
+
+                // Iteriramo kroz sva polja za korisnike i dodajemo ID-jeve u objekat
+                $('[id^=task_form_users]').each(function() {
+                    var selectedUserIds = $(this).val();
+                    if (selectedUserIds) {
+                        selectedUserIds.forEach(function(selectedUserId) {
+                            if (selectedUserId) { // Proveravamo da li je vrednost različita od '---'
+                                uniqueUserIds[selectedUserId] = true;
+
+                                $('.sakriveno').each(function() {
+                                    if ($(this).text() === selectedUserId) {
+                                        $(this).closest('.zaposleni').addClass('disabled-div');
+                                        $(this).closest('.zaposleni1').addClass('bg-dark bg-opacity-25');
+                                    }
+                                });
+
+                            }
+                        });
+                    }
+                });
+
+                // Pretvaramo objekat u niz jedinstvenih ID-jeva
+                var uniqueIdsArray = Object.keys(uniqueUserIds);
+
+                var uniqueCount = Object.keys(uniqueUserIds).length;
+                var ratio = uniqueCount + "/" + {{ users | length }};
+                $('#brojac').text(ratio); // Ažuriramo tekst u elementu sa id="brojac"
+
+            }
+            $(document).on('change', '[id^=task_form_users]', function() {
+                updateUniqueUserIds();
+            });
+
+            function updateSelectedTools() {
+
+                $('.tool').removeClass('disabled-div');
+                $('.tool1').removeClass('bg-dark bg-opacity-25');
+
+                var uniqueToolsIds = {};
+
+                $('[id^=task_form_oprema]').each(function() {
+                    var selectedToolIds = $(this).val();
+                    if (selectedToolIds) {
+                        selectedToolIds.forEach(function(selectedToolId) {
+                            if (selectedToolId) { // Proveravamo da li je vrednost različita od '---'
+                                uniqueToolsIds[selectedToolId] = true;
+
+                                $('.sakrivenoTool').each(function() {
+                                    if ($(this).text() === selectedToolId) {
+                                        $(this).closest('.tool').addClass('disabled-div');
+                                        $(this).closest('.tool1').addClass('bg-dark bg-opacity-25');
+                                    }
+                                });
+
+                            }
+                        });
+                    }
+                });
+            }
+            $(document).on('change', '[id^=task_form_oprema]', function() {
+                updateSelectedTools();
+            });
+
+            function updateSelectedCars() {
+                var selectedCarsIds = {};
+                // Uklanjamo klasu "live" sa svih korisnika
+                $('.car').removeClass('disabled-div');
+                $('.car1').removeClass('bg-dark bg-opacity-25');
+
+                // Iteriramo kroz sve select elemente za "geo" i dodajemo klasu "live" korisnicima sa odabranim ID-jem
+                $('[id^=task_form_vozilo]').each(function() {
+                    var selectedCarId = $(this).val();
+                    if (selectedCarId) {
+                        $('.sakrivenoCar').each(function() {
+                            if ($(this).text() === selectedCarId) {
+                                $(this).closest('.car').addClass('disabled-div');
+                                $(this).closest('.car1').addClass('bg-dark bg-opacity-25');
+                            }
+                        });
+                    }
+                });
+            }
+            $(document).on('change', '[id^=task_form_vozilo]', function() {
+                updateSelectedCars();
+            });
+
+            var rowIdx = {{ tasks | length }};
+            var rowIdxI = {{ tasksI | length }};
+
+            $('#addBtn').on('click', function (e) {
+                e.preventDefault();
+                let currentRowIdx = ++rowIdx; // Čuvamo trenutnu vrednost rowIdx
+                $('#tbody').append(`
+                <tr id="zadatak_${currentRowIdx}">
+                    <td>
+                    <div class="row">
+                        <div class="col-lg-2 quick-form-media">
+                            <div class="mb-1">
+                                <label class="form-label" for="task_form_projekat_${currentRowIdx}">Projekat:*</label>
+                                <select id="task_form_projekat_${currentRowIdx}" name="zadatak[${currentRowIdx}][projekat]" class="form-control select small-input required">
+                                <option value=''>---</option>
+                                    {% for project in projects %}
+                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-2 quick-form-media">
+                            <div class="mb-1">
+                                   <label class="form-label" for="task_form_kategorija_${currentRowIdx}">Kategorija:*</label>
+                                   <select id="task_form_kategorija_${currentRowIdx}" name="zadatak[${currentRowIdx}][category]" class="form-control select small-input required">
+                                        <option value=''>---</option>
+                                        {% for cat in categories %}
+                                            <option value="{{ cat.id }}">{{ cat.title }}</option>
+                                        {% endfor %}
+                                    </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_users_${currentRowIdx}">Zaposleni:*</label>
+                        <select id="task_form_users_${currentRowIdx}" name="zadatak[${currentRowIdx}][users][]" class="form-control select small-input" multiple required>
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.ime }}</option>
+                        {% endfor %}
+                        </select>
+                        </div>
+                        </div>
+
+                        <div class="col-lg-2 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_primarni_${currentRowIdx}">Primarni dnevnik:*</label>
+                        <select id="task_form_primarni_${currentRowIdx}" name="zadatak[${currentRowIdx}][primary]" class="form-control small-input" required>
+                        <option value=''>---</option>
+                        </select>
+                        </div>
+                        </div>
+
+                        <div class="col-lg-3 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_aktivnosti_${currentRowIdx}">Aktivnosti:</label>
+                        <select id="task_form_aktivnosti_${currentRowIdx}" name="zadatak[${currentRowIdx}][activity][]" class="form-control select small-input" multiple>
+                        {% for act in activities %}
+                        <option value="{{ act.id }}">{{ act.title }}</option>
+                        {% endfor %}
+                        </select>
+                        </div>
+                        </div>
+
+                        <div class="col-lg-3 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_oprema_${currentRowIdx}">Oprema:</label>
+                        <select id="task_form_oprema_${currentRowIdx}" name="zadatak[${currentRowIdx}][tools][]" class="form-control select small-input" multiple>
+                        {% for tool in tools %}
+                        <option value="{{ tool.id }}">{{ tool.title }}</option>
+                        {% endfor %}
+                        </select>
+                        </div>
+                        </div>
+
+                        <div class="col-lg-2 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_vozilo_${currentRowIdx}">Vozilo:</label>
+                        <select id="task_form_vozilo_${currentRowIdx}" name="zadatak[${currentRowIdx}][car]" class="form-control select small-input">
+                        <option value=''>---</option>
+                        {% for car in cars %}
+                        <option value="{{ car.id }}">{{ car.carName }}</option>
+                        {% endfor %}
+                        </select>
+                        </div>
+                        </div>
+
+                        <div class="col-lg-2 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_vozac_${currentRowIdx}">Vozač:</label>
+                        <select id="task_form_vozac_${currentRowIdx}" name="zadatak[${currentRowIdx}][driver]" class="form-control select small-input">
+                        <option value=''>---</option>
+                        </select>
+                        </div>
+                        </div>
+
+                        <div class="col-lg-3 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_desc_${currentRowIdx}">Napomena:</label>
+                        <textarea id="task_form_desc_${currentRowIdx}" name="zadatak[${currentRowIdx}][desc]" class="form-control small-input" rows="1"></textarea>
+                        </div>
+                        </div>
+
+                        <div class="col-lg-1 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_vreme_${currentRowIdx}">Vreme:</label>
+                        <input id="task_form_vreme_${currentRowIdx}" name="zadatak[${currentRowIdx}][vreme]" class="form-control form-control-sm project1" type="time">
+                        </div>
+                        </div>
+
+                        <div class="col-lg-1 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_naplativ_${currentRowIdx}">Naplativost:</label>
+                        <div class="input-group">
+                            <label class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" id="task_form_naplativ_${currentRowIdx}" name="zadatak[${currentRowIdx}][naplativ]" checked value="1">
+                                <span class="form-check-label">Naplativ</span>
+                            </label>
+                        </div>
+                        </div>
+                        </div>
+                    </div>
+                    </td>
+                    <td><a class="btn btn-danger remove mt-2" id="removeBtn"><i class="ph-trash"></i></a></td>
+                </tr>
+            `);
+
+                // Inicijalizacija Select2 za novi element sa prilagođenom širinom
+                $(`#task_form_projekat_${currentRowIdx},
+                #task_form_kategorija_${currentRowIdx},
+                #task_form_users_${currentRowIdx},
+                #task_form_primarni_${currentRowIdx},
+                #task_form_aktivnosti_${currentRowIdx},
+                #task_form_oprema_${currentRowIdx},
+                #task_form_vozilo_${currentRowIdx},
+                #task_form_vozac_${currentRowIdx}`).select2({
+                    width: '100%'
+                });
+
+                function updatePrimarySelect(currentRowIdx) {
+                    $(`#task_form_users_${currentRowIdx}`).on('change', function () {
+                        var selectedUsers = $(this).val();
+                        var primarySelect = $(`#task_form_primarni_${currentRowIdx}`);
+                        primarySelect.empty();
+                        primarySelect.append(`<option value=''>---</option>`);
+                        selectedUsers.forEach(function (userId) {
+                            var userOption = $(`#task_form_users_${currentRowIdx} option[value="${userId}"]`).text();
+                            primarySelect.append(`<option value="${userId}">${userOption}</option>`);
+                        });
+                    });
+                }
+
+                function updateVozacSelect(currentRowIdx) {
+                    $(`#task_form_users_${currentRowIdx}, #task_form_vozilo_${currentRowIdx}`).on('change', function () {
+                        var selectedVozilo = $(`#task_form_vozilo_${currentRowIdx}`).val();
+                        var primarySelect = $(`#task_form_vozac_${currentRowIdx}`);
+                        primarySelect.empty();
+                        primarySelect.append(`<option value=''>---</option>`);
+                        if (selectedVozilo) {
+                            primarySelect.addClass('required');
+                            var selectedUsers = $(`#task_form_users_${currentRowIdx}`).val();
+                            selectedUsers.forEach(function (userId) {
+                                var userOption = $(`#task_form_users_${currentRowIdx} option[value="${userId}"]`).text();
+                                primarySelect.append(`<option value="${userId}">${userOption}</option>`);
+                            });
+                            // Postavi labelu sa zvezdicom
+                            $(`label[for="task_form_vozac_${currentRowIdx}"]`).text('Vozač:*');
+                        } else {
+                            primarySelect.removeClass('required');
+                            // Postavi labelu bez zvezdice
+                            $(`label[for="task_form_vozac_${currentRowIdx}"]`).text('Vozač:');
+                        }
+                    });
+                }
+
+                updatePrimarySelect(currentRowIdx);
+                updateVozacSelect(currentRowIdx);
+
+            });
+
+            $('#tbody').on('click', '.remove', function (e) {
+                e.preventDefault();
+                $(this).closest('tr').remove();
+                // rowIdx--;
+                updateUniqueUserIds();
+                updateSelectedTools();
+                updateSelectedCars();
+            });
+
+            $('#addBtnI').on('click', function (e) {
+                e.preventDefault();
+                let currentRowIdxI = ++rowIdxI; // Čuvamo trenutnu vrednost rowIdx
+                $('#tbodyI').append(`
+                <tr id="zadatakI_${currentRowIdxI}">
+                    <td>
+                    <div class="row">
+                        <div class="col-lg-2 quick-form-media">
+                            <div class="mb-1">
+                                <label class="form-label" for="task_form_projekat_${currentRowIdxI}">Projekat:*</label>
+                                <select id="task_form_projekatI_${currentRowIdxI}" name="zadatakI[${currentRowIdxI}][projekat]" class="form-control select small-input required">
+                                <option value=''>---</option>
+                                    {% for project in projects %}
+                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-2 quick-form-media">
+                            <div class="mb-1">
+                                   <label class="form-label" for="task_form_kategorija_${currentRowIdxI}">Kategorija:*</label>
+                                   <select id="task_form_kategorijaI_${currentRowIdxI}" name="zadatakI[${currentRowIdxI}][category]" class="form-control select small-input required">
+                                        <option value=''>---</option>
+                                        {% for cat in categories %}
+                                            <option value="{{ cat.id }}">{{ cat.title }}</option>
+                                        {% endfor %}
+                                    </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_users_${currentRowIdxI}">Zaposleni:*</label>
+                        <select id="task_form_usersI_${currentRowIdxI}" name="zadatakI[${currentRowIdxI}][users][]" class="form-control select small-input" multiple required>
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.ime }}</option>
+                        {% endfor %}
+                        </select>
+                        </div>
+                        </div>
+
+
+                        <div class="col-lg-3 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_desc_${currentRowIdxI}">Zadatak:*</label>
+                        <textarea id="task_form_descI_${currentRowIdxI}" name="zadatakI[${currentRowIdxI}][desc]" class="form-control small-input required" rows="1"></textarea>
+                        </div>
+                        </div>
+
+                        <div class="col-lg-2 quick-form-media">
+                        <div class="mb-1">
+                        <label class="form-label" for="task_form_vreme_${currentRowIdxI}">Vreme:</label>
+                        <input id="task_form_vremeI_${currentRowIdxI}" name="zadatakI[${currentRowIdxI}][vreme]" class="form-control form-control-sm project1" type="time">
+                        </div>
+                        </div>
+                    </div>
+                    </td>
+                    <td class="text-center"><a class="btn btn-danger removeI mt-2" id="removeBtn"><i class="ph-trash"></i></a></td>
+                </tr>
+            `);
+
+                // Inicijalizacija Select2 za novi element sa prilagođenom širinom
+                $(`#task_form_projekatI_${currentRowIdxI},
+                #task_form_kategorijaI_${currentRowIdxI},
+                #task_form_usersI_${currentRowIdxI}`).select2({
+                    width: '100%'
+                });
+            });
+
+            $('#tbodyI').on('click', '.removeI', function (e) {
+                e.preventDefault();
+                $(this).closest('tr').remove();
+                // rowIdxI--;
+                updateUniqueUserIds();
+                updateSelectedTools();
+                updateSelectedCars();
+            });
+
+
+            function updatePrimarySelect(currentRowIdx) {
+                var selectedUsers = $(`#task_form_users_${currentRowIdx}`).val();
+                var primarySelect = $(`#task_form_primarni_${currentRowIdx}`);
+                primarySelect.empty();
+                primarySelect.append(`<option value=''>---</option>`);
+                if (selectedUsers) {
+                    selectedUsers.forEach(function(userId) {
+                        var userOption = $(`#task_form_users_${currentRowIdx} option[value="${userId}"]`).text();
+                        primarySelect.append(`<option value="${userId}">${userOption}</option>`);
+                    });
+                }
+            }
+            function updateVozacSelect(currentRowIdx) {
+                var selectedVozilo = $(`#task_form_vozilo_${currentRowIdx}`).val();
+                var primarySelect = $(`#task_form_vozac_${currentRowIdx}`);
+                primarySelect.empty();
+                primarySelect.append(`<option value=''>---</option>`);
+                if (selectedVozilo) {
+                    primarySelect.addClass('required');
+                    var selectedUsers = $(`#task_form_users_${currentRowIdx}`).val();
+                    selectedUsers.forEach(function (userId) {
+                        var userOption = $(`#task_form_users_${currentRowIdx} option[value="${userId}"]`).text();
+                        primarySelect.append(`<option value="${userId}">${userOption}</option>`);
+
+                    });
+                    // Postavi labelu sa zvezdicom
+                    $(`label[for="task_form_vozac_${currentRowIdx}"]`).text('Vozač:*');
+                } else {
+                    primarySelect.removeClass('required');
+                    // Postavi labelu bez zvezdice
+                    $(`label[for="task_form_vozac_${currentRowIdx}"]`).text('Vozač:');
+                }
+            }
+
+
+            $('select[id^="task_form_users_"]').on('change', function() {
+                var currentRowIdx = $(this).attr('id').match(/\d+/)[0];
+                updatePrimarySelect(currentRowIdx);
+                updateVozacSelect(currentRowIdx);
+            });
+            $('select[id^="task_form_vozilo_"]').on('change', function() {
+                var currentRowIdx = $(this).attr('id').match(/\d+/)[0];
+                updatePrimarySelect(currentRowIdx);
+                updateVozacSelect(currentRowIdx);
+            });
+
+            updateUniqueUserIds();
+            updateSelectedTools();
+            updateSelectedCars();
+
+        });
+    </script>
+{% endblock footerJavascript %}
+
+

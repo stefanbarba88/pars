@@ -48,10 +48,6 @@
                                                 <option value="">--Izaberite novog zaduženog--</option>
                                                 {% for user in users %}
                                                     {% if user.id != task.priorityUserLog and user not in task.assignedUsers %}
-{#                                                        <option value="{{ user.id }}" disabled>{{ user.getNameForForm }}</option>#}
-{#                                                    {% elseif user in task.assignedUsers %}#}
-{#                                                        <option value="{{ user.id }}" disabled>{{ user.getNameForForm }}</option>#}
-{#                                                    {% else %}#}
                                                         <option value="{{ user.id }}">{{ user.getNameForForm }}</option>
                                                     {% endif %}
                                                 {% endfor %}

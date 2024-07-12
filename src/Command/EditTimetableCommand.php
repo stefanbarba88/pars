@@ -6,6 +6,7 @@ use App\Classes\Data\FastTaskData;
 use App\Entity\Activity;
 use App\Entity\Company;
 use App\Entity\FastTask;
+use App\Entity\Plan;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Service\ImportService;
@@ -32,7 +33,7 @@ class EditTimetableCommand extends Command {
   protected function configure() {
     $this
       ->setName('app:edit:timetable')
-      ->setDescription('U 20h salje ako je bilo promene posle 14:30 u odredjeno vreme!')
+      ->setDescription('U 20h salje ako je bilo promene posle kraja radnog vremena!')
       ->setHelp('');
   }
 
@@ -45,20 +46,11 @@ class EditTimetableCommand extends Command {
 
     foreach ($companies as $company) {
 
-      $plan = $this->em->getRepository(FastTask::class)->findOneBy(['status' => FastTaskData::EDIT, 'company' => $company], ['datum' => 'ASC']);
+      $plan = $this->em->getRepository(Plan::class)->findOneBy(['status' => FastTaskData::EDIT, 'company' => $company]);
 
       if (!is_null($plan)) {
-
-        $datum = $plan->getDatum();
-        $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($plan);
-        $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($plan);
-
-        $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($plan, FastTaskData::SAVED);
-        $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($plan, FastTaskData::SAVED);
-
-        $this->mail->plan($timetable, $users, $datum);
-        $this->mail->subs($subs, $usersSub, $datum);
-
+        $users = $this->em->getRepository(Plan::class)->getUsersForEmail($plan, FastTaskData::EDIT);
+        $this->mail->plan($plan, $users);
       }
     }
 

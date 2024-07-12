@@ -8,9 +8,8 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Image;
 use App\Entity\User;
 use App\Entity\UserHistory;
-use App\Form\UserEditImageFormType;
-use App\Form\UserEditInfoFormType;
 use App\Form\UserEditAccountFormType;
+use App\Form\UserEditImageFormType;
 use App\Form\UserRegistrationFormType;
 use App\Form\UserSuspendedFormType;
 use App\Service\UploadService;
@@ -183,7 +182,7 @@ class UserController extends AbstractController {
           $file = $uploadService->upload($file, $usr->getImageUploadPath());
         }
 
-        $this->em->getRepository(User::class)->register($usr, $file, $this->getParameter('kernel.project_dir'));
+        $this->em->getRepository(User::class)->registerNew($usr, $korisnik->getCompany()->getSettings(), $file, $this->getParameter('kernel.project_dir'));
 
         notyf()
           ->position('x', 'right')

@@ -97,9 +97,13 @@
                                             <td>{{ user.grad.title }}</td>
                                             <td>{{ user.grad.drzava.title }}</td>
                                             <td>
-                                                {% for contact in user.contact %}
-                                                    <a href="{{ path('app_user_profile_view', { id: contact.id}) }}">{{ contact.fullName }}</a>
-                                                {% endfor %}
+                                                {% if user.contact is not empty %}
+                                                    {% for contact in user.contact %}
+                                                        <a href="{{ path('app_user_profile_view', { id: contact.id}) }}">{{ contact.fullName }}</a>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {{ user.contactPlain }}
+                                                {% endif %}
                                             </td>
                                             <td>
                                                 {{ user.getBadgeByStatus | raw }}

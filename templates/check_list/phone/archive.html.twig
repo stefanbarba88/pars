@@ -37,7 +37,7 @@
                                     <tr>
 
                                         <th>Zaposleni</th>
-                                        <th>Prioritet</th>
+                                        <th>Završen</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
@@ -46,18 +46,15 @@
                                         <tr>
                                             <td>
                                                 <div class="fw-semibold">
-                                                    <a href="{{ path('app_employee_profile_view', { id: task.user.id}) }}">{{ task.user.getFullName() }}</a>
+                                                    {{ task.user.getFullName() }}
                                                 </div>
                                             </td>
                                             <td>
-                                                {% if task.priority == 1 %}
-                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
-                                                {% elseif task.priority == 2 %}
-                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
-                                                {% elseif task.priority == 4 %}
-                                                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
-                                                {% elseif task.priority == 5 %}
-                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                {% if task.finish is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ task.finish | date("d.m.Y")}}
+                                                    </div>
                                                 {% endif %}
                                             </td>
                                             <td class="text-center">
@@ -66,19 +63,17 @@
                                         </tr>
                                         <tr id="collapsed_item{{ task.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
                                             <td>
-                                                {% if task.created is not null %}
+                                                {% if task.datumKreiranja is not null %}
                                                     <div class="d-inline-flex align-items-center">
                                                         <i class="ph-calendar me-2"></i>
-                                                        {{ task.created | date("d.m.Y")}}
+                                                        {{ task.datumKreiranja | date("d.m.Y")}}
                                                     </div>
                                                 {% endif %}
                                             </td>
+
                                             <td>
-                                                {% if task.finish is not null %}
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ task.finish | date("d.m.Y")}}
-                                                    </div>
+                                                {% if task.editBy is not null %}
+                                                    Završio: {{ task.editBy.getNameWithFirstLetter }}
                                                 {% endif %}
                                             </td>
                                             
@@ -92,16 +87,10 @@
                                                             <i class="ph-eye me-2"></i>
                                                             Vidite
                                                         </a>
-                                                        {% if task.status == 1 %}
-                                                            <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="dropdown-item">
+                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                            <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
                                                                 <i class="ph-arrows-counter-clockwise me-2"></i>
                                                                 Ponovite
-                                                            </a>
-                                                        {% endif %}
-                                                        {% if task.status != 2 %}
-                                                            <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-minus me-2"></i>
-                                                                Obrišite
                                                             </a>
                                                         {% endif %}
                                                     </div>

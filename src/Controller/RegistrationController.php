@@ -3,14 +3,15 @@
 namespace App\Controller;
 
 use App\Classes\Avatar;
-use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Company;
+use App\Entity\Project;
 use App\Entity\Settings;
 use App\Entity\User;
+use App\Entity\ZaposleniPozicija;
 use App\Form\RegistrationFormType;
-use App\Form\UserRegistrationFormType;
 use App\Service\UploadService;
+use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -52,6 +53,7 @@ class RegistrationController extends AbstractController {
         $firma = new Company();
         $firma->setPib($request->request->all('firma')['pib']);
         $firma->setTitle($request->request->all('firma')['title']);
+        $firma->setEmail($usr->getEmail());
         $firma = $this->em->getRepository(Company::class)->register($firma);
         $usr->setCompany($firma);
         $usr->setUserType(UserRolesData::ROLE_ADMIN);
@@ -59,15 +61,30 @@ class RegistrationController extends AbstractController {
         $settings = new Settings();
         $settings->setCompany($firma);
         $settings->setTitle($firma->getTitle());
+        $settings->setRadnoVreme(new DateTimeImmutable('16:00'));
         $this->em->getRepository(Settings::class)->save($settings);
+
 
         $file = Avatar::getAvatar($this->getParameter('kernel.project_dir') . $usr->getAvatarUploadPath(), $usr);
 //
 //        dd($usr, $request->request->all('firma'), $file);
 
-        $user = $this->em->getRepository(User::class)->register($usr, $file, $this->getParameter('kernel.project_dir'));
+        $user = $this->em->getRepository(User::class)->registerNew($usr, $settings,  $file, $this->getParameter('kernel.project_dir'));
         $firma->setCreatedBy($user);
         $this->em->getRepository(Company::class)->saveCompany($firma);
+
+
+        $project = new Project();
+        $project->setCompany($firma);
+        $project->setCreatedBy($user);
+        $project->setTitle('Osnovni projekat');
+        $this->em->getRepository(Project::class)->saveProject($project, $user, null);
+
+        $position = new ZaposleniPozicija();
+        $position->setCompany($firma);
+        $position->setTitle('Radnik');
+        $position->setTitleShort('RDN');
+        $this->em->getRepository(ZaposleniPozicija::class)->save($position);
 
 //        notyf()
 //          ->position('x', 'right')

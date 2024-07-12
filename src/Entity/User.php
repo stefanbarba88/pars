@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Classes\Data\NivoObrazovanjaData;
 use App\Classes\Data\PolData;
 use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
@@ -39,7 +40,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     return $_ENV['USER_THUMB_PATH'] . $this->getCompany()->getId() . '/'. date('Y/m/d/');
   }
 
-  #[ORM\Column(length: 180, unique: true)]
+  #[ORM\Column(length: 180, unique: true, nullable: true)]
   private ?string $email = null;
 
   #[ORM\Column(length: 255)]
@@ -48,11 +49,17 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\Column(length: 255)]
   private ?string $prezime = null;
 
-//  #[ORM\Column(length: 13, nullable: true)]
-//  private ?string $jmbg = null;
+  #[ORM\Column(length: 13, unique: true, nullable: true)]
+  private ?string $jmbg = null;
 
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $adresa = null;
+
+  #[ORM\Column(length: 255, nullable: true)]
+  private ?string $radnoMesto = null;
+
+  #[ORM\Column(length: 255, nullable: true)]
+  private ?string $mestoRada = null;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
@@ -79,8 +86,14 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\Column]
   private bool $isInTask = false;
 
-//  #[ORM\Column(name: 'slava', type: Types::DATETIME_IMMUTABLE, nullable: true)]
-//  private ?DateTimeImmutable $slava = null;
+  #[ORM\Column(name: 'slava', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+  private ?DateTimeImmutable $slava = null;
+
+  #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+  private ?DateTimeImmutable $pocetakUgovora = null;
+
+  #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+  private ?DateTimeImmutable $krajUgovora = null;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
@@ -89,8 +102,17 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\Column(name: 'vrsta_zaposlenja', length: 2, nullable: true)]
   private ?int $vrstaZaposlenja = null;
 
+  #[ORM\Column(name: 'nivo_obrazovanja', length: 2, nullable: true)]
+  private ?int $nivoObrazovanja = null;
+
+  #[ORM\Column(length: 1, nullable: true)]
+  private ?int $neradniDan = null;
+
   #[ORM\Column(name: 'car', length: 3, nullable: true)]
   private ?int $car = null;
+
+  #[ORM\Column(length: 1, nullable: true)]
+  private ?int $track = null;
 
   #[ORM\Column(name: 'datum_rodjenja', type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $datumRodjenja = null;
@@ -103,6 +125,9 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
   #[ORM\Column]
   private bool $isSuspended = false;
+
+  #[ORM\Column]
+  private bool $isKadrovska = false;
 
   #[ORM\Column]
   private bool $isMobile = false;
@@ -163,25 +188,37 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
 
 
-//  #[ORM\OneToMany(mappedBy: 'driver', targetEntity: CarReservation::class)]
-//  private Collection $carReservations;
+  #[ORM\OneToMany(mappedBy: 'driver', targetEntity: CarReservation::class)]
+  private Collection $carReservations;
 //
 //
-//  #[ORM\ManyToMany(targetEntity: Calendar::class, mappedBy: 'user')]
-//  private Collection $calendars;
+  #[ORM\ManyToMany(targetEntity: Calendar::class, mappedBy: 'user')]
+  private Collection $calendars;
 //
-//  #[ORM\OneToMany(mappedBy: 'user', targetEntity: ToolReservation::class)]
-//  private Collection $toolReservations;
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: ToolReservation::class)]
+  private Collection $toolReservations;
 //
 //  #[ORM\Column(nullable: true)]
 //  private ?int $ProjectType = null;
 //
-//  #[ORM\OneToMany(mappedBy: 'user', targetEntity: Overtime::class, orphanRemoval: true)]
-//  private Collection $overtimes;
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: Overtime::class, orphanRemoval: true)]
+  private Collection $overtimes;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
+
+  #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+  private ?Vacation $vacation = null;
+
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: Addon::class, orphanRemoval: true)]
+  private Collection $addons;
+
+  #[ORM\ManyToOne(inversedBy: 'users')]
+  private ?Titula $zvanje = null;
+
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: Calendarkadr::class, orphanRemoval: true)]
+  private Collection $calendarkadrs;
 
 
 //  #[ORM\OneToMany(mappedBy: 'user', targetEntity: TimeTask::class)]
@@ -206,11 +243,13 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 //    $this->notes = new ArrayCollection();
     $this->clients = new ArrayCollection();
 //    $this->teams = new ArrayCollection();
-//    $this->carReservations = new ArrayCollection();
-//    $this->calendars = new ArrayCollection();
-//    $this->toolReservations = new ArrayCollection();
-//    $this->overtimes = new ArrayCollection();
+    $this->carReservations = new ArrayCollection();
+    $this->calendars = new ArrayCollection();
+    $this->toolReservations = new ArrayCollection();
+    $this->overtimes = new ArrayCollection();
 //    $this->timeTasks = new ArrayCollection();
+$this->addons = new ArrayCollection();
+$this->calendarkadrs = new ArrayCollection();
 
   }
 
@@ -318,19 +357,19 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     return UserRolesData::getTitleByType($this->userType);
   }
 
-//  /**
-//   * @return string|null
-//   */
-//  public function getJmbg(): ?string {
-//    return $this->jmbg;
-//  }
-//
-//  /**
-//   * @param string|null $jmbg
-//   */
-//  public function setJmbg(?string $jmbg): void {
-//    $this->jmbg = $jmbg;
-//  }
+  /**
+   * @return string|null
+   */
+  public function getJmbg(): ?string {
+    return $this->jmbg;
+  }
+
+  /**
+   * @param string|null $jmbg
+   */
+  public function setJmbg(?string $jmbg): void {
+    $this->jmbg = $jmbg;
+  }
 
   /**
    * @return string|null
@@ -511,6 +550,10 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     return UserRolesData::getBadgeByType($this->userType);
   }
 
+  public function getObrazovanje(): string {
+    return NivoObrazovanjaData::getEducationLevel($this->nivoObrazovanja);
+  }
+
 //  public function projectByType(): string {
 //    if (!is_null($this->getProjectType())) {
 //      $projekat = TipProjektaData::TIP[$this->getProjectType()];
@@ -681,6 +724,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
       'vozacki' => $this->getVozacki(),
 //      'slava' => $this->getSlava(),
       'isSuspended' => $this->isSuspended(),
+      'neradniDan' => $this->getNeradniDan(),
       'email' => $this->getEmail(),
       'image' => $this->getImage(),
 //      'projectType' => $this->getProjectType()
@@ -775,32 +819,32 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     return $this;
   }
 
-  /**
-   * @return Collection<int, Notes>
-   */
-  public function getNotes(): Collection {
-    return $this->notes;
-  }
-
-  public function addNote(Notes $note): self {
-    if (!$this->notes->contains($note)) {
-      $this->notes->add($note);
-      $note->setUser($this);
-    }
-
-    return $this;
-  }
-
-  public function removeNote(Notes $note): self {
-    if ($this->notes->removeElement($note)) {
-      // set the owning side to null (unless already changed)
-      if ($note->getUser() === $this) {
-        $note->setUser(null);
-      }
-    }
-
-    return $this;
-  }
+//  /**
+//   * @return Collection<int, Notes>
+//   */
+//  public function getNotes(): Collection {
+//    return $this->notes;
+//  }
+//
+//  public function addNote(Notes $note): self {
+//    if (!$this->notes->contains($note)) {
+//      $this->notes->add($note);
+//      $note->setUser($this);
+//    }
+//
+//    return $this;
+//  }
+//
+//  public function removeNote(Notes $note): self {
+//    if ($this->notes->removeElement($note)) {
+//      // set the owning side to null (unless already changed)
+//      if ($note->getUser() === $this) {
+//        $note->setUser(null);
+//      }
+//    }
+//
+//    return $this;
+//  }
 
   /**
    * @return Collection<int, Client>
@@ -850,60 +894,60 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 //    return $this;
 //  }
 //
-//  /**
-//   * @return Collection<int, CarReservation>
-//   */
-//  public function getCarReservations(): Collection {
-//    return $this->carReservations;
-//  }
-//
-//  public function addCarReservation(CarReservation $carReservation): self {
-//    if (!$this->carReservations->contains($carReservation)) {
-//      $this->carReservations->add($carReservation);
-//      $carReservation->setDriver($this);
-//    }
-//
-//    return $this;
-//  }
-//
-//  public function removeCarReservation(CarReservation $carReservation): self {
-//    if ($this->carReservations->removeElement($carReservation)) {
-//      // set the owning side to null (unless already changed)
-//      if ($carReservation->getDriver() === $this) {
-//        $carReservation->setDriver(null);
-//      }
-//    }
-//
-//    return $this;
-//  }
-//
-//
-//  /**
-//   * @return Collection<int, Calendar>
-//   */
-//  public function getCalendars(): Collection
-//  {
-//      return $this->calendars;
-//  }
-//
-//  public function addCalendar(Calendar $calendar): self
-//  {
-//      if (!$this->calendars->contains($calendar)) {
-//          $this->calendars->add($calendar);
-//          $calendar->addUser($this);
-//      }
-//
-//      return $this;
-//  }
-//
-//  public function removeCalendar(Calendar $calendar): self
-//  {
-//      if ($this->calendars->removeElement($calendar)) {
-//          $calendar->removeUser($this);
-//      }
-//
-//      return $this;
-//  }
+  /**
+   * @return Collection<int, CarReservation>
+   */
+  public function getCarReservations(): Collection {
+    return $this->carReservations;
+  }
+
+  public function addCarReservation(CarReservation $carReservation): self {
+    if (!$this->carReservations->contains($carReservation)) {
+      $this->carReservations->add($carReservation);
+      $carReservation->setDriver($this);
+    }
+
+    return $this;
+  }
+
+  public function removeCarReservation(CarReservation $carReservation): self {
+    if ($this->carReservations->removeElement($carReservation)) {
+      // set the owning side to null (unless already changed)
+      if ($carReservation->getDriver() === $this) {
+        $carReservation->setDriver(null);
+      }
+    }
+
+    return $this;
+  }
+
+
+  /**
+   * @return Collection<int, Calendar>
+   */
+  public function getCalendars(): Collection
+  {
+      return $this->calendars;
+  }
+
+  public function addCalendar(Calendar $calendar): self
+  {
+      if (!$this->calendars->contains($calendar)) {
+          $this->calendars->add($calendar);
+          $calendar->addUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeCalendar(Calendar $calendar): self
+  {
+      if ($this->calendars->removeElement($calendar)) {
+          $calendar->removeUser($this);
+      }
+
+      return $this;
+  }
 
   /**
    * @return int|null
@@ -947,19 +991,19 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     $this->isPrvaPomoc = $isPrvaPomoc;
   }
 
-//  /**
-//   * @return DateTimeImmutable|null
-//   */
-//  public function getSlava(): ?DateTimeImmutable {
-//    return $this->slava;
-//  }
-//
-//  /**
-//   * @param DateTimeImmutable|null $slava
-//   */
-//  public function setSlava(?DateTimeImmutable $slava): void {
-//    $this->slava = $slava;
-//  }
+  /**
+   * @return DateTimeImmutable|null
+   */
+  public function getSlava(): ?DateTimeImmutable {
+    return $this->slava;
+  }
+
+  /**
+   * @param DateTimeImmutable|null $slava
+   */
+  public function setSlava(?DateTimeImmutable $slava): void {
+    $this->slava = $slava;
+  }
 
 
 
@@ -977,35 +1021,35 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     $this->isInTask = $isInTask;
   }
 
-//  /**
-//   * @return Collection<int, ToolReservation>
-//   */
-//  public function getToolReservations(): Collection
-//  {
-//      return $this->toolReservations;
-//  }
-//
-//  public function addToolReservation(ToolReservation $toolReservation): self
-//  {
-//      if (!$this->toolReservations->contains($toolReservation)) {
-//          $this->toolReservations->add($toolReservation);
-//          $toolReservation->setUser($this);
-//      }
-//
-//      return $this;
-//  }
-//
-//  public function removeToolReservation(ToolReservation $toolReservation): self
-//  {
-//      if ($this->toolReservations->removeElement($toolReservation)) {
-//          // set the owning side to null (unless already changed)
-//          if ($toolReservation->getUser() === $this) {
-//              $toolReservation->setUser(null);
-//          }
-//      }
-//
-//      return $this;
-//  }
+  /**
+   * @return Collection<int, ToolReservation>
+   */
+  public function getToolReservations(): Collection
+  {
+      return $this->toolReservations;
+  }
+
+  public function addToolReservation(ToolReservation $toolReservation): self
+  {
+      if (!$this->toolReservations->contains($toolReservation)) {
+          $this->toolReservations->add($toolReservation);
+          $toolReservation->setUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeToolReservation(ToolReservation $toolReservation): self
+  {
+      if ($this->toolReservations->removeElement($toolReservation)) {
+          // set the owning side to null (unless already changed)
+          if ($toolReservation->getUser() === $this) {
+              $toolReservation->setUser(null);
+          }
+      }
+
+      return $this;
+  }
 
 //  public function getProjectType(): ?int
 //  {
@@ -1019,35 +1063,35 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 //      return $this;
 //  }
 
-//  /**
-//   * @return Collection<int, Overtime>
-//   */
-//  public function getOvertimes(): Collection
-//  {
-//      return $this->overtimes;
-//  }
-//
-//  public function addOvertime(Overtime $overtime): self
-//  {
-//      if (!$this->overtimes->contains($overtime)) {
-//          $this->overtimes->add($overtime);
-//          $overtime->setUser($this);
-//      }
-//
-//      return $this;
-//  }
-//
-//  public function removeOvertime(Overtime $overtime): self
-//  {
-//      if ($this->overtimes->removeElement($overtime)) {
-//          // set the owning side to null (unless already changed)
-//          if ($overtime->getUser() === $this) {
-//              $overtime->setUser(null);
-//          }
-//      }
-//
-//      return $this;
-//  }
+  /**
+   * @return Collection<int, Overtime>
+   */
+  public function getOvertimes(): Collection
+  {
+      return $this->overtimes;
+  }
+
+  public function addOvertime(Overtime $overtime): self
+  {
+      if (!$this->overtimes->contains($overtime)) {
+          $this->overtimes->add($overtime);
+          $overtime->setUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeOvertime(Overtime $overtime): self
+  {
+      if ($this->overtimes->removeElement($overtime)) {
+          // set the owning side to null (unless already changed)
+          if ($overtime->getUser() === $this) {
+              $overtime->setUser(null);
+          }
+      }
+
+      return $this;
+  }
 //
 //  /**
 //   * @return Collection<int, TimeTask>
@@ -1078,6 +1122,209 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 //
 //      return $this;
 //  }
+
+public function getVacation(): ?Vacation
+{
+    return $this->vacation;
+}
+
+public function setVacation(Vacation $vacation): self
+{
+    // set the owning side of the relation if necessary
+    if ($vacation->getUser() !== $this) {
+        $vacation->setUser($this);
+    }
+
+    $this->vacation = $vacation;
+
+    return $this;
+}
+
+  /**
+   * @return int|null
+   */
+  public function getNeradniDan(): ?int {
+    return $this->neradniDan;
+  }
+
+  /**
+   * @param int|null $neradniDan
+   */
+  public function setNeradniDan(?int $neradniDan): void {
+    $this->neradniDan = $neradniDan;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isKadrovska(): bool {
+    return $this->isKadrovska;
+  }
+
+  /**
+   * @param bool $isKadrovska
+   */
+  public function setIsKadrovska(bool $isKadrovska): void {
+    $this->isKadrovska = $isKadrovska;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getRadnoMesto(): ?string {
+    return $this->radnoMesto;
+  }
+
+  /**
+   * @param string|null $radnoMesto
+   */
+  public function setRadnoMesto(?string $radnoMesto): void {
+    $this->radnoMesto = $radnoMesto;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getMestoRada(): ?string {
+    return $this->mestoRada;
+  }
+
+  /**
+   * @param string|null $mestoRada
+   */
+  public function setMestoRada(?string $mestoRada): void {
+    $this->mestoRada = $mestoRada;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getNivoObrazovanja(): ?int {
+    return $this->nivoObrazovanja;
+  }
+
+  /**
+   * @param int|null $nivoObrazovanja
+   */
+  public function setNivoObrazovanja(?int $nivoObrazovanja): void {
+    $this->nivoObrazovanja = $nivoObrazovanja;
+  }
+
+  /**
+   * @return DateTimeImmutable|null
+   */
+  public function getPocetakUgovora(): ?DateTimeImmutable {
+    return $this->pocetakUgovora;
+  }
+
+  /**
+   * @param DateTimeImmutable|null $pocetakUgovora
+   */
+  public function setPocetakUgovora(?DateTimeImmutable $pocetakUgovora): void {
+    $this->pocetakUgovora = $pocetakUgovora;
+  }
+
+  /**
+   * @return DateTimeImmutable|null
+   */
+  public function getKrajUgovora(): ?DateTimeImmutable {
+    return $this->krajUgovora;
+  }
+
+  /**
+   * @param DateTimeImmutable|null $krajUgovora
+   */
+  public function setKrajUgovora(?DateTimeImmutable $krajUgovora): void {
+    $this->krajUgovora = $krajUgovora;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getTrack(): ?int {
+    return $this->track;
+  }
+
+  /**
+   * @param int|null $track
+   */
+  public function setTrack(?int $track): void {
+    $this->track = $track;
+  }
+
+  /**
+   * @return Collection<int, Addon>
+   */
+  public function getAddons(): Collection
+  {
+      return $this->addons;
+  }
+
+  public function addAddon(Addon $addon): self
+  {
+      if (!$this->addons->contains($addon)) {
+          $this->addons->add($addon);
+          $addon->setUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeAddon(Addon $addon): self
+  {
+      if ($this->addons->removeElement($addon)) {
+          // set the owning side to null (unless already changed)
+          if ($addon->getUser() === $this) {
+              $addon->setUser(null);
+          }
+      }
+
+      return $this;
+  }
+
+  public function getZvanje(): ?Titula
+  {
+      return $this->zvanje;
+  }
+
+  public function setZvanje(?Titula $zvanje): self
+  {
+      $this->zvanje = $zvanje;
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Calendarkadr>
+   */
+  public function getCalendarkadrs(): Collection
+  {
+      return $this->calendarkadrs;
+  }
+
+  public function addCalendarkadr(Calendarkadr $calendarkadr): self
+  {
+      if (!$this->calendarkadrs->contains($calendarkadr)) {
+          $this->calendarkadrs->add($calendarkadr);
+          $calendarkadr->setUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeCalendarkadr(Calendarkadr $calendarkadr): self
+  {
+      if ($this->calendarkadrs->removeElement($calendarkadr)) {
+          // set the owning side to null (unless already changed)
+          if ($calendarkadr->getUser() === $this) {
+              $calendarkadr->setUser(null);
+          }
+      }
+
+      return $this;
+  }
+
+
 
 
 

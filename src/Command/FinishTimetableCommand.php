@@ -5,6 +5,8 @@ namespace App\Command;
 use App\Classes\Data\FastTaskData;
 use App\Entity\Company;
 use App\Entity\FastTask;
+use App\Entity\Plan;
+use App\Entity\Task;
 use App\Service\MailService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,7 +29,7 @@ class FinishTimetableCommand extends Command {
   protected function configure() {
     $this
       ->setName('app:finish:timetable')
-      ->setDescription('U 6:45h salje plan za taj dan!')
+      ->setDescription('U 00:01h kreira zadatke za taj dan na osnovu plana!')
       ->setHelp('');
   }
 
@@ -42,22 +44,11 @@ class FinishTimetableCommand extends Command {
 
     foreach ($companies as $company) {
 
-      $plan = $this->em->getRepository(FastTask::class)->getTimeTableFinishCommand($danas, $company);
+      $plan = $this->em->getRepository(Plan::class)->getTimeTableFinishCommand($danas, $company);
 
       if (!empty($plan)) {
         $fastTask = $plan[0];
-        $fastTask->setStatus(FastTaskData::FINAL);
-        $fastTask = $this->em->getRepository(FastTask::class)->save($fastTask);
-
-        $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
-        $datum = $fastTask->getDatum();
-        $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask, FastTaskData::FINAL);
-
-        $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($fastTask);
-        $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($fastTask, FastTaskData::SAVED);
-
-        $this->mail->plan($timetable, $users, $datum);
-        $this->mail->subs($subs, $usersSub, $datum);
+        $this->em->getRepository(Task::class)->createTasksFromPlan($fastTask);
       }
     }
 

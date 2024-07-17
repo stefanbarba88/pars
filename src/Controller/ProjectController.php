@@ -11,6 +11,7 @@ use App\Classes\ResponseMessages;
 use App\Classes\Slugify;
 use App\Entity\Category;
 use App\Entity\Holiday;
+use App\Entity\ManagerChecklist;
 use App\Entity\Project;
 use App\Entity\ProjectFaktura;
 use App\Entity\ProjectHistory;
@@ -593,7 +594,7 @@ class ProjectController extends AbstractController {
         $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
         $args['project'] = $this->em->getRepository(Project::class)->find($data['report_form']['project']);
       }
-
+      $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksProject($data['report_form'], $args['project']);
       $args['period'] = $data['report_form']['period'];
 
       if (isset($data['report_form']['datum'])){
@@ -628,6 +629,9 @@ class ProjectController extends AbstractController {
       }
       if (isset($data['report_form']['napomena'])){
         $args['napomena'] = 1;
+      }
+      if (isset($data['report_form']['checklist'])){
+        $args['checklist'] = 1;
       }
 
       if (empty($data['report_form']['project'])) {
@@ -664,6 +668,8 @@ class ProjectController extends AbstractController {
         $args['project'] = $this->em->getRepository(Project::class)->find($data['report_form']['project']);
       }
 
+      $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksProject($data['report_form'], $args['project']);
+
       $args['period'] = $data['report_form']['period'];
 
       if (isset($data['report_form']['datum'])){
@@ -698,6 +704,9 @@ class ProjectController extends AbstractController {
       }
       if (isset($data['report_form']['napomena'])){
         $args['napomena'] = 1;
+      }
+      if (isset($data['report_form']['checklist'])){
+        $args['checklist'] = 1;
       }
 
       if (empty($data['report_form']['project'])) {
@@ -1659,6 +1668,48 @@ dd($request);
     $args['faktura'] = $faktura;
 
     return $this->render('project/edit_faktura.html.twig', $args);
+  }
+
+  #[Route('/view-checklist/{id}', name: 'app_project_checklist_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewChecklist(Project $project, PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $user = $this->getUser();
+    if ($user->getCompany() != $project->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+    $args = [];
+    $search = [];
+
+    $search['kategorija'] = $request->query->get('kategorija');
+    $search['period'] = $request->query->get('period');
+    $search['zaposleni'] = $request->query->get('zaposleni');
+    $args['project'] = $project;
+
+    $tasks = $this->em->getRepository(ManagerChecklist::class)->getTasksByProjectPaginator($search, $user, $project);
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+    $args['search'] = $search;
+
+    $args['kategorije'] = $this->em->getRepository(Category::class)->getCategoriesTask();
+    $args['users'] = $this->em->getRepository(User::class)->getUsersForChecklist();
+
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/view_checklist.html.twig', $args);
+    }
+    return $this->render('project/view_checklist.html.twig', $args);
   }
 
   #[Route('/check-faktura/{id}', name: 'app_project_faktura_check')]

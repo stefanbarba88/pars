@@ -28,57 +28,40 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Lista zadataka</h5>
-                            <div class="my-auto ms-auto">
-                                <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
-                            </div>
+                            <h5 class="mb-0">Lista zadataka koji su u toku</h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive card">
-                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                     <thead class="bg-light test-primary">
                                     <tr>
-                                        <th>#</th>
-                                        <th>Zadatak</th>
+
                                         <th>Zaposleni</th>
-                                        <th {% if pagination.isSorted('[c.priority]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Prioritet ', ['c.priority']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.priority' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.priority' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
-                                        <th {% if pagination.isSorted('[c.datumKreiranja]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Datum zadatka ', ['c.datumKreiranja']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.datumKreiranja' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.datumKreiranja' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
-                                        <th>Kreirao</th>
+                                        <th>Poslednja izmena</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for task in pagination %}
                                         <tr>
-                                            <td>{{ task.id }}</td>
-                                            <td>
-                                                <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
-                                                    {{ task.task }}
-                                                </a>
-                                            </td>
                                             <td>
                                                 <div class="fw-semibold">
                                                     {{ task.user.getFullName() }}
                                                 </div>
                                             </td>
+                                            <td class="text-center">
+                                                {% if task.updated is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ task.updated | date("d.m.Y H:i")}}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ task.id }}" aria-expanded="false"><i class="ph-caret-down collapsible-indicator"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr id="collapsed_item{{ task.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
                                             <td class="text-center">
                                                 {% if task.priority == 1 %}
                                                     <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
@@ -90,17 +73,11 @@
                                                     <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
                                                 {% endif %}
                                             </td>
-                                            <td>
-                                                {% if task.datumKreiranja is not null %}
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ task.datumKreiranja | date("d.m.Y")}}
-                                                    </div>
-                                                {% endif %}
-                                            </td>
 
                                             <td>
-                                                {{ task.createdBy.getFullName() }}
+                                                {% if task.editBy is not null %}
+                                                    Izmenio: {{ task.editBy.getNameWithFirstLetter }}
+                                                {% endif %}
                                             </td>
 
                                             <td class="text-center">
@@ -113,29 +90,15 @@
                                                             <i class="ph-eye me-2"></i>
                                                             Vidite
                                                         </a>
-                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
-                                                            <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-play me-2"></i>
-                                                                Pokrenite
-                                                            </a>
+                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
                                                             <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
                                                                 <i class="ph-check me-2"></i>
-                                                                Završite
+                                                                Zatvorite
                                                             </a>
-                                                            <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-note-pencil me-2"></i>
-                                                                Izmenite
+                                                            <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-arrows-counter-clockwise me-2"></i>
+                                                                Ponovite
                                                             </a>
-                                                            <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-trash me-2"></i>
-                                                                Obrišite
-                                                            </a>
-                                                            {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
-                                                                <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="dropdown-item">
-                                                                    <i class="ph-magic-wand me-2"></i>
-                                                                    Konvertuj u zadatak sa merenjem
-                                                                </a>
-                                                            {% endif %}
                                                         {% endif %}
                                                     </div>
                                                 </div>

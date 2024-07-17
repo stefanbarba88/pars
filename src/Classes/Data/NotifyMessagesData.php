@@ -46,10 +46,6 @@ class NotifyMessagesData {
 
   public const STOPWATCH_CHECKED = 'Uspešno ste potvrdili merenje i više se neće pojavljivati u listi.';
 
-  public const VERIFY_ACTIVITY_CHECKED = 'Uspešno ste potvrdili prijem podataka koje je poslao zaposleni.';
-  public const VERIFY_ACTIVITY_UNCHECKED = 'Promenili ste status prijema podataka koje je poslao zaposleni.';
-  public const VERIFY_ACTIVITY_DELETE = 'Uspešno ste obrisali prijem podataka.';
-
   public const TIME_TASK_CLOSE = 'Uspešno ste zatvorili merenje.';
 
   //Poruke za zadatke
@@ -62,7 +58,7 @@ class NotifyMessagesData {
   public const TASK_REASSIGN = 'Uspešno ste izmenili zadužene na zadatku.';
   public const TASK_REASSIGN_ADD = 'Uspešno ste dodali novog zaduženog na zadatku.';
   public const TASK_REASSIGN_REMOVE = 'Uspešno ste uklonili zaduženog sa zadatka.';
-  public const TASK_REASSIGN_REMOVE_ERROR = 'Nije moguće ukloniti zaposlenog jer ima meranje.';
+  public const TASK_REASSIGN_REMOVE_ERROR = 'Nije moguće ukloniti zaposlenog jer ima meranje ili je vozilo za zadatak njemu dodeljeno.';
   public const TASK_LOG_PRIMARY = 'Uspešno ste izmenili primarni dnevnik.';
 
   //Poruke za vozila
@@ -80,8 +76,13 @@ class NotifyMessagesData {
   public const TOOL_DEACTIVATE = 'Uspešno ste dekativirali opremu.';
   public const TOOL_ACTIVATE = 'Uspešno ste aktivirali opremu.';
 
+  public const TOOL_TYPE_ADD = 'Uspešno ste kreirali/izmenili tip opreme.';
+  public const TOOL_TYPE_DEACTIVATE = 'Uspešno ste dekativirali tip opreme.';
+  public const TOOL_TYPE_ACTIVATE = 'Uspešno ste aktivirali tip opreme.';
+
   //Poruke za planove
   public const PLAN_ERROR = 'Nije moguće kreirati plan za ovaj datum. Verovatno je već kreiran.';
+  public const PLAN_ERROR_DELETE = 'Nije moguće obrisati plan za ovaj datum. Zadaci su već kreirani.';
   public const PLAN_ADD = 'Uspešno ste kreirali/izmenili plan.';
   public const PLAN_DELETE = 'Uspešno ste obrisali plan.';
 
@@ -96,6 +97,23 @@ class NotifyMessagesData {
 
   public const DELETE_ERROR = 'Nije moguće obrisati zadatak jer je kreiran kroz plan. Izmenite plan.';
   public const EDIT_ERROR = 'Nije moguće izmeniti zadatak jer je kreiran kroz plan. Izmenite plan.';
+
+
+  //Poruke za interne zadatke
+  public const CHECKLIST_ADD = 'Uspešno ste kreirali interni zadatak.';
+  public const CHECKLIST_CONVERT = 'Uspešno ste konvertovali interni zadatak u zadatak sa merenjem vremena.';
+  public const CHECKLIST_DELETE = 'Uspešno ste obrisali interni zadatak.';
+  public const CHECKLIST_EDIT = 'Uspešno ste izmenili interni zadatak.';
+  public const CHECKLIST_CLOSE = 'Uspešno ste završili interni zadatak.';
+  public const CHECKLIST_START = 'Uspešno ste započeli interni zadatak.';
+  public const CHECKLIST_REPLAY = 'Uspešno ste vratili status internog zadatka na početni.';
+  public const CHECKLIST_EDIT_ERROR = 'Niste izmenili interni zadatak jer je zadatak u toku.';
+  public const CHECKLIST_CONVERT_ERROR = 'Niste konvertovali interni zadatak jer je zadatak u toku.';
+
+  public const TICKET_ADD = 'Uspešno ste kreirali/izmenili tiket.';
+  public const TICKET_CONVERT = 'Uspešno ste konvertovali tiket u zadatak.';
+  public const TICKET_FINISH = 'Uspešno ste rešili tiket.';
+  public const TICKET_DELETE = 'Uspešno ste obrisali tiket.';
 
 
 }

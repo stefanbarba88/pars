@@ -40,6 +40,9 @@ class Pdf {
   #[ORM\ManyToOne(inversedBy: 'pdf')]
   private ?StopwatchTime $stopwatchTime = null;
 
+  #[ORM\ManyToOne(inversedBy: 'pdfs')]
+  private ?ManagerChecklist $managerChecklist = null;
+
   #[ORM\PrePersist]
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();
@@ -130,5 +133,16 @@ class Pdf {
       $this->stopwatchTime = $stopwatchTime;
 
       return $this;
+  }
+  public function getManagerChecklist(): ?ManagerChecklist
+  {
+    return $this->managerChecklist;
+  }
+
+  public function setManagerChecklist(?ManagerChecklist $managerChecklist): self
+  {
+    $this->managerChecklist = $managerChecklist;
+
+    return $this;
   }
 }

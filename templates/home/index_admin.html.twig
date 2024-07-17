@@ -56,11 +56,34 @@
                                                             {% endif %}
                                                         </td>
                                                         <td class="text-center">
-                                                            {% if task.status == 0 %}
-                                                                <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="btn btn-primary">
-                                                                    <i class="ph-check me-2"></i>Završite
-                                                                </a>
-                                                            {% endif %}
+                                                            <div class="d-inline-flex">
+                                                                <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Vidi" data-bs-original-title="Vidi">
+                                                                    <i class="ph-eye"></i></a>
+                                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                                    <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Start" data-bs-original-title="Start">
+                                                                        <i class="ph-play "></i></a>
+                                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Stop" data-bs-original-title="Stop">
+                                                                        <i class="ph-check "></i></a>
+                                                                    <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Izmeni" data-bs-original-title="Izmeni">
+                                                                        <i class="ph-note-pencil"></i></a>
+                                                                    <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Obriši" data-bs-original-title="Obriši">
+                                                                        <i class="ph-trash "></i></a>
+                                                                    {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
+                                                                        <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Konvertuj u zadatak sa merenjem" data-bs-original-title="Konvertuj u zadatak sa merenjem">
+                                                                            <i class="ph-magic-wand "></i></a>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Stop" data-bs-original-title="Stop">
+                                                                        <i class="ph-check"></i></a>
+                                                                    <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Ponovi" data-bs-original-title="Ponovi">
+                                                                        <i class="ph-arrows-counter-clockwise"></i></a>
+                                                                {% endif %}
+                                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                                    <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Ponovi" data-bs-original-title="Ponovi">
+                                                                        <i class="ph-arrows-counter-clockwise"></i></a>
+                                                                {% endif %}
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
@@ -103,15 +126,15 @@
                                         <table class="table table-hover table-bordered table-sm">
                                             <thead class="bg-light">
                                             <tr class="table-light">
-                                                <th colspan="6">PARS raspored</th>
+                                                <th colspan="6">Raspored</th>
                                             </tr>
                                             <tr>
-                                                <th>Projekat</th>
-                                                <th>Geodete</th>
-                                                <th>Oprema</th>
-                                                <th>Vozilo</th>
-                                                <th>Vreme</th>
-                                                <th>Napomena</th>
+                                                <th>PROJEKAT</th>
+                                                <th>GEODETE</th>
+                                                <th>OPREMA</th>
+                                                <th>VOZILO</th>
+                                                <th>VREME</th>
+                                                <th>NAPOMENA</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -119,13 +142,13 @@
                                                 {% for task in plan %}
                                                     {% if task['projekat'] is not null %}
                                                         <tr>
-                                                            <td>
+                                                            <td class="bg-light">
                                                                 <div class="fw-semibold">
                                                                     <a href="{{ path('app_project_tasks_view', { id: task['projekat'].id }) }}">{{ task['projekat'].title }}</a>
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% if task['geo1'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo1'].id }) }}">{{ task['geo1'].fullName}}</a> <br>
                                                                     {% endif %}
@@ -138,7 +161,7 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% for opr in task['oprema'] %}
                                                                         <a href="{{ path('app_tool_view', { id: opr.id }) }}">{{ opr.title }}</a> <br>
                                                                     {% endfor %}
@@ -146,18 +169,18 @@
                                                             </td>
                                                             <td>
                                                                 {% if task.vozilo is not null %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         <a href="{{ path('app_car_view', { id: task.vozilo.id }) }}">{{ task.vozilo.plate }}</a>
                                                                     </div>
                                                                 {% endif %}
                                                             </td>
                                                             <td>
                                                                 {% if task.vreme is not null %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         {{ task.vreme}}
                                                                     </div>
                                                                 {% else %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         Vreme nije zadato
                                                                     </div>
                                                                 {% endif %}
@@ -186,13 +209,13 @@
                                         <table class="table table-hover table-bordered table-sm">
                                             <thead class="bg-light">
                                             <tr class="table-light">
-                                                <th colspan="4">PARS zamene na stalnim gradilištima</th>
+                                                <th colspan="4">Zamene na stalnim gradilištima</th>
                                             </tr>
                                             <tr>
-                                                <th>Projekat</th>
-                                                <th>Geodete</th>
-                                                <th>Vreme</th>
-                                                <th>Napomena</th>
+                                                <th class="bg-light">PROJEKAT</th>
+                                                <th>GEODETE</th>
+                                                <th>VREME</th>
+                                                <th>NAPOMENA</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -200,13 +223,13 @@
                                                 {% for task in subs %}
                                                     {% if task['projekat'] is not null %}
                                                         <tr>
-                                                            <td>
+                                                            <td class="bg-light">
                                                                 <div class="fw-semibold">
                                                                     <a href="{{ path('app_project_tasks_view', { id: task['projekat'].id }) }}">{{ task['projekat'].title }}</a>
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% if task['geo'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo'].id }) }}">{{ task['geo'].fullName}}</a>
                                                                     {% endif %}
@@ -214,11 +237,11 @@
                                                             </td>
                                                             <td>
                                                                 {% if task.vreme is not null %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         {{ task.vreme}}
                                                                     </div>
                                                                 {% else %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         Vreme nije zadato
                                                                     </div>
                                                                 {% endif %}
@@ -264,15 +287,15 @@
                                         <table class="table table-hover table-bordered table-sm">
                                             <thead class="bg-light">
                                             <tr class="table-light">
-                                                <th colspan="6">PARS raspored</th>
+                                                <th colspan="6">Raspored</th>
                                             </tr>
                                             <tr>
-                                                <th>Projekat</th>
-                                                <th>Geodete</th>
-                                                <th>Oprema</th>
-                                                <th>Vozilo</th>
-                                                <th>Vreme</th>
-                                                <th>Napomena</th>
+                                                <th class="bg-light">PROJEKAT</th>
+                                                <th>GEODETE</th>
+                                                <th>OPREMA</th>
+                                                <th>VOZILO</th>
+                                                <th>VREME</th>
+                                                <th>NAPOMENA</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -281,13 +304,13 @@
                                                 {% for task in tomorrowTimetable %}
                                                     {% if task['projekat'] is not null %}
                                                         <tr>
-                                                            <td>
+                                                            <td class="bg-light">
                                                                 <div class="fw-semibold">
                                                                     <a href="{{ path('app_project_tasks_view', { id: task['projekat'].id }) }}">{{ task['projekat'].title }}</a>
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% if task['geo1'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo1'].id }) }}">{{ task['geo1'].fullName }}</a> <br>
                                                                     {% endif %}
@@ -300,7 +323,7 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% for opr in task['oprema'] %}
                                                                         <a href="{{ path('app_tool_view', { id: opr.id }) }}">{{ opr.title }}</a> <br>
                                                                     {% endfor %}
@@ -308,18 +331,18 @@
                                                             </td>
                                                             <td>
                                                                 {% if task.vozilo is not null %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         <a href="{{ path('app_car_view', { id: task.vozilo.id }) }}">{{ task.vozilo.plate }}</a>
                                                                     </div>
                                                                 {% endif %}
                                                             </td>
                                                             <td>
                                                                 {% if task.vreme is not null %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         {{ task.vreme}}
                                                                     </div>
                                                                 {% else %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         Vreme nije zadato
                                                                     </div>
                                                                 {% endif %}
@@ -348,13 +371,13 @@
                                         <table class="table table-hover table-bordered table-sm">
                                             <thead class="bg-light">
                                             <tr class="table-light">
-                                                <th colspan="4">PARS zamene na stalnim gradilištima</th>
+                                                <th colspan="4">Zamene na stalnim gradilištima</th>
                                             </tr>
                                             <tr>
-                                                <th>Projekat</th>
-                                                <th>Geodete</th>
-                                                <th>Vreme</th>
-                                                <th>Napomena</th>
+                                                <th class="bg-light">PROJEKAT</th>
+                                                <th>GEODETE</th>
+                                                <th>VREME</th>
+                                                <th>NAPOMENA</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -362,13 +385,13 @@
                                                 {% for task in tomorrowSubs %}
                                                     {% if task['projekat'] is not null %}
                                                         <tr>
-                                                            <td>
+                                                            <td class="bg-light">
                                                                 <div class="fw-semibold">
                                                                     <a href="{{ path('app_project_tasks_view', { id: task['projekat'].id }) }}">{{ task['projekat'].title }}</a>
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% if task['geo'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo'].id }) }}">{{ task['geo'].fullName }}</a>
                                                                     {% endif %}
@@ -376,11 +399,11 @@
                                                             </td>
                                                             <td>
                                                                 {% if task.vreme is not null %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         {{ task.vreme}}
                                                                     </div>
                                                                 {% else %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         Vreme nije zadato
                                                                     </div>
                                                                 {% endif %}
@@ -495,17 +518,14 @@
                                 <div class="table-responsive card">
                                     <table class="table table-hover table-bordered table-sm">
                                         <thead class="bg-light">
-                                        <tr class="table-light">
-                                            <th colspan="8">PARS raspored</th>
-                                        </tr>
                                         <tr>
-                                            <th>Projekat</th>
-                                            <th>Geodete</th>
-                                            <th>Aktivnosti</th>
-                                            <th>Oprema</th>
-                                            <th>Vozilo</th>
-                                            <th>Vreme</th>
-                                            <th>Napomena</th>
+                                            <th>PROJEKAT</th>
+                                            <th>GEODETE</th>
+                                            <th>AKTIVNOSTI</th>
+                                            <th>OPREMA</th>
+                                            <th>VOZILO</th>
+                                            <th>VREME</th>
+                                            <th>NAPOMENA</th>
                                             <th class="text-center" style="width: 20px;">
                                                 <i class="ph-dots-three"></i>
                                             </th>
@@ -514,7 +534,7 @@
                                         <tbody>
                                         {% if timetable is not empty %}
                                                 <tr class="table-light">
-                                                    <td colspan="8" class="fw-semibold">Teren</td>
+                                                    <td colspan="8" class="fw-semibold">TEREN</td>
                                                 </tr>
                                             {% for task in timetable %}
                                                 {% if task.task.project is not null %}
@@ -534,7 +554,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                        <div class="fw-semibold">
+                                                        <div>
                                                             {% for user in task.task.assignedUsers %}
                                                                 {% for userId, userStatus in task.logStatus %}
                                                                     {% if userId == user.id and userStatus.otvoren == 1 %}
@@ -546,7 +566,7 @@
                                                                         </div>
                                                                     {% endif %}
                                                                     {% if userId == user.id and userStatus.zatvoren == 1 %}
-                                                                        <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                        <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="d-inline-flex align-items-center fw-semibold">
                                                                             {{ user.fullName }}
                                                                         </a>
                                                                     {% endif %}
@@ -561,14 +581,14 @@
                                                     </td>
 
                                                         <td>
-                                                            <div class="fw-semibold">
+                                                            <div>
                                                                 {% for akt in task.task.activity %}
                                                                     {{ akt.title }} <br>
                                                                 {% endfor %}
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="fw-semibold">
+                                                            <div>
                                                                 {% for opr in task.task.oprema %}
                                                                     <a href="{{ path('app_tool_view', { id: opr.id }) }}">{{ opr.title }}</a> <br>
                                                                 {% endfor %}
@@ -576,14 +596,14 @@
                                                         </td>
                                                         <td>
                                                             {% if task.car is not empty %}
-                                                                <div class="d-inline-flex align-items-center fw-semibold">
+                                                                <div class="d-inline-flex align-items-center">
                                                                     <a href="{{ path('app_car_view', { id: task.car[0].id }) }}">{{ task.car[0].plate }}</a>
                                                                 </div>
                                                             {% endif %}
                                                         </td>
                                                         <td>
                                                             {% if task.task.time is not null %}
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% if task.task.time|date('H:i') != '00:00' %}
                                                                         {{ task.task.time|date('H:i') }}
                                                                     {% else %}
@@ -607,7 +627,7 @@
                                                 {% endif %}
                                             {% endfor %}
                                                 <tr class="table-light">
-                                                    <td colspan="8" class="fw-semibold">Kancelarija</td>
+                                                    <td colspan="8" class="fw-semibold">KANCELARIJA</td>
                                                 </tr>
                                             {% for task in timetable %}
                                                 {% if task.task.project is not null %}
@@ -627,19 +647,19 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="fw-semibold">
+                                                            <div>
                                                                 {% for user in task.task.assignedUsers %}
                                                                     {% for userId, userStatus in task.logStatus %}
                                                                         {% if userId == user.id and userStatus.otvoren == 1 %}
                                                                             <div class="btn-group">
-                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center">
                                                                                     {{ user.fullName }}
                                                                                     <div class="live p-1 mx-2"></div>
                                                                                 </a>
                                                                             </div>
                                                                         {% endif %}
                                                                         {% if userId == user.id and userStatus.zatvoren == 1 %}
-                                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="d-inline-flex align-items-center fw-semibold">
                                                                                 {{ user.fullName }}
                                                                             </a>
                                                                         {% endif %}
@@ -653,14 +673,14 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="fw-semibold">
+                                                            <div>
                                                                 {% for akt in task.task.activity %}
                                                                     {{ akt.title }} <br>
                                                                 {% endfor %}
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="fw-semibold">
+                                                            <div>
                                                                 {% for opr in task.task.oprema %}
                                                                     <a href="{{ path('app_tool_view', { id: opr.id }) }}">{{ opr.title }}</a> <br>
                                                                 {% endfor %}
@@ -668,14 +688,14 @@
                                                         </td>
                                                         <td>
                                                             {% if task.car is not empty %}
-                                                                <div class="d-inline-flex align-items-center fw-semibold">
+                                                                <div class="d-inline-flex align-items-center">
                                                                     <a href="{{ path('app_car_view', { id: task.car[0].id }) }}">{{ task.car[0].plate }}</a>
                                                                 </div>
                                                             {% endif %}
                                                         </td>
                                                         <td>
                                                             {% if task.task.time is not null %}
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% if task.task.time|date('H:i') != '00:00' %}
                                                                         {{ task.task.time|date('H:i') }}
                                                                     {% else %}
@@ -699,7 +719,7 @@
                                                 {% endif %}
                                             {% endfor %}
                                                 <tr class="table-light">
-                                                    <td colspan="8" class="fw-semibold">Rad od kuće</td>
+                                                    <td colspan="8" class="fw-semibold">RAD OD KUĆE</td>
                                                 </tr>
                                             {% for task in timetable %}
                                                 {% if task.task.project is not null %}
@@ -719,19 +739,19 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="fw-semibold">
+                                                            <div>
                                                                 {% for user in task.task.assignedUsers %}
                                                                     {% for userId, userStatus in task.logStatus %}
                                                                         {% if userId == user.id and userStatus.otvoren == 1 %}
                                                                             <div class="btn-group">
-                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center">
                                                                                     {{ user.fullName }}
                                                                                     <div class="live p-1 mx-2"></div>
                                                                                 </a>
                                                                             </div>
                                                                         {% endif %}
                                                                         {% if userId == user.id and userStatus.zatvoren == 1 %}
-                                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="d-inline-flex align-items-center fw-semibold">
                                                                                 {{ user.fullName }}
                                                                             </a>
                                                                         {% endif %}
@@ -745,14 +765,14 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="fw-semibold">
+                                                            <div>
                                                                 {% for akt in task.task.activity %}
                                                                     {{ akt.title }} <br>
                                                                 {% endfor %}
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="fw-semibold">
+                                                            <div>
                                                                 {% for opr in task.task.oprema %}
                                                                     <a href="{{ path('app_tool_view', { id: opr.id }) }}">{{ opr.title }}</a> <br>
                                                                 {% endfor %}
@@ -760,14 +780,14 @@
                                                         </td>
                                                         <td>
                                                             {% if task.car is not empty %}
-                                                                <div class="d-inline-flex align-items-center fw-semibold">
+                                                                <div class="d-inline-flex align-items-center">
                                                                     <a href="{{ path('app_car_view', { id: task.car[0].id }) }}">{{ task.car[0].plate }}</a>
                                                                 </div>
                                                             {% endif %}
                                                         </td>
                                                         <td>
                                                             {% if task.task.time is not null %}
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% if task.task.time|date('H:i') != '00:00' %}
                                                                         {{ task.task.time|date('H:i') }}
                                                                     {% else %}
@@ -791,7 +811,7 @@
                                                 {% endif %}
                                             {% endfor %}
                                                 <tr class="table-light">
-                                                    <td colspan="8" class="fw-semibold">Stalna gradilišta</td>
+                                                    <td colspan="8" class="fw-semibold">STALNA GRADILIŠTA</td>
                                                 </tr>
                                             {% for task in timetable %}
                                                 {% if task.task.project is not null %}
@@ -811,19 +831,19 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="fw-semibold">
+                                                            <div>
                                                                 {% for user in task.task.assignedUsers %}
                                                                     {% for userId, userStatus in task.logStatus %}
                                                                         {% if userId == user.id and userStatus.otvoren == 1 %}
                                                                             <div class="btn-group">
-                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                                <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="d-inline-flex align-items-center">
                                                                                     {{ user.fullName }}
                                                                                     <div class="live p-1 mx-2"></div>
                                                                                 </a>
                                                                             </div>
                                                                         {% endif %}
                                                                         {% if userId == user.id and userStatus.zatvoren == 1 %}
-                                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="d-inline-flex align-items-center ">
+                                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="d-inline-flex align-items-center fw-semibold">
                                                                                 {{ user.fullName }}
                                                                             </a>
                                                                         {% endif %}
@@ -837,14 +857,14 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="fw-semibold">
+                                                            <div>
                                                                 {% for akt in task.task.activity %}
                                                                     {{ akt.title }} <br>
                                                                 {% endfor %}
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="fw-semibold">
+                                                            <div>
                                                                 {% for opr in task.task.oprema %}
                                                                     <a href="{{ path('app_tool_view', { id: opr.id }) }}">{{ opr.title }}</a> <br>
                                                                 {% endfor %}
@@ -852,14 +872,14 @@
                                                         </td>
                                                         <td>
                                                             {% if task.car is not empty %}
-                                                                <div class="d-inline-flex align-items-center fw-semibold">
+                                                                <div class="d-inline-flex align-items-center">
                                                                     <a href="{{ path('app_car_view', { id: task.car[0].id }) }}">{{ task.car[0].plate }}</a>
                                                                 </div>
                                                             {% endif %}
                                                         </td>
                                                         <td>
                                                             {% if task.task.time is not null %}
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% if task.task.time|date('H:i') != '00:00' %}
                                                                         {{ task.task.time|date('H:i') }}
                                                                     {% else %}
@@ -920,15 +940,15 @@
                                         <table class="table table-hover table-bordered table-sm">
                                             <thead class="bg-light">
                                             <tr class="table-light">
-                                                <th colspan="6">PARS raspored</th>
+                                                <th colspan="6">Raspored</th>
                                             </tr>
                                             <tr>
-                                                <th>Projekat</th>
-                                                <th>Geodete</th>
-                                                <th>Oprema</th>
-                                                <th>Vozilo</th>
-                                                <th>Vreme</th>
-                                                <th>Napomena</th>
+                                                <th>PROJEKAT</th>
+                                                <th>GEODETE</th>
+                                                <th>OPREMA</th>
+                                                <th>VOZILO</th>
+                                                <th>VREME</th>
+                                                <th>NAPOMENA</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -936,13 +956,13 @@
                                                 {% for task in tomorrowTimetable %}
                                                     {% if task['projekat'] is not null %}
                                                         <tr>
-                                                            <td>
+                                                            <td class="bg-light">
                                                                 <div class="fw-semibold">
                                                                     <a href="{{ path('app_project_tasks_view', { id: task['projekat'].id }) }}">{{ task['projekat'].title }}</a>
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% if task['geo1'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo1'].id }) }}">{{ task['geo1'].fullName }}</a> <br>
                                                                     {% endif %}
@@ -955,7 +975,7 @@
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="fw-semibold">
+                                                                <div>
 
                                                                     {% for opr in task['oprema'] %}
                                                                         <a href="{{ path('app_tool_view', { id: opr.id }) }}">{{ opr.title }}</a> <br>
@@ -965,18 +985,18 @@
                                                             </td>
                                                             <td>
                                                                 {% if task.vozilo is not null %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         <a href="{{ path('app_car_view', { id: task.vozilo.id }) }}">{{ task.vozilo.plate }}</a>
                                                                     </div>
                                                                 {% endif %}
                                                             </td>
                                                             <td>
                                                                 {% if task.vreme is not null %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         {{ task.vreme}}
                                                                     </div>
                                                                 {% else %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         Vreme nije zadato
                                                                     </div>
                                                                 {% endif %}
@@ -1005,13 +1025,13 @@
                                         <table class="table table-hover table-bordered table-sm">
                                             <thead class="bg-light">
                                             <tr class="table-light">
-                                                <th colspan="4">PARS zamene na stalnim gradilištima</th>
+                                                <th colspan="4">Zamene na stalnim gradilištima</th>
                                             </tr>
                                             <tr>
-                                                <th>Projekat</th>
-                                                <th>Geodete</th>
-                                                <th>Vreme</th>
-                                                <th>Napomena</th>
+                                                <th>PROJEKAT</th>
+                                                <th>GEODETE</th>
+                                                <th>VREME</th>
+                                                <th>NAPOMENA</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -1019,13 +1039,13 @@
                                                 {% for task in tomorrowSubs %}
                                                     {% if task['projekat'] is not null %}
                                                         <tr>
-                                                            <td>
+                                                            <td class="bg-light">
                                                                 <div class="fw-semibold">
                                                                     <a href="{{ path('app_project_tasks_view', { id: task['projekat'].id }) }}">{{ task['projekat'].title }}</a>
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="fw-semibold">
+                                                                <div>
                                                                     {% if task['geo'] is not null %}
                                                                         <a href="{{ path('app_employee_activity_view', { id: task['geo'].id }) }}">{{ task['geo'].fullName }}</a>
                                                                     {% endif %}
@@ -1033,11 +1053,11 @@
                                                             </td>
                                                             <td>
                                                                 {% if task.vreme is not null %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         {{ task.vreme}}
                                                                     </div>
                                                                 {% else %}
-                                                                    <div class="d-inline-flex align-items-center fw-semibold">
+                                                                    <div class="d-inline-flex align-items-center">
                                                                         Vreme nije zadato
                                                                     </div>
                                                                 {% endif %}

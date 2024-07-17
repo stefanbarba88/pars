@@ -11,6 +11,7 @@ use App\Entity\Category;
 use App\Entity\Company;
 use App\Entity\FastTask;
 use App\Entity\Image;
+use App\Entity\ManagerChecklist;
 use App\Entity\Pdf;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
@@ -116,6 +117,39 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
+  public function createTaskFromChecklist(ManagerChecklist $checklist): Task {
+    $format = "H:i";
+    $task = new Task();
+    $task->setCreatedBy($checklist->getCreatedBy());
+    $task->setCompany($checklist->getCompany());
+    $task->setProject($checklist->getProject());
+    $task->setCategory($checklist->getCategory());
+    $task->setDatumKreiranja($checklist->getDatumKreiranja());
+    $task->setTitle($checklist->getProject()->getTitle() . ' - ' . $checklist->getDatumKreiranja()->format('d.m.Y'));
+    $task->setDescription($checklist->getTask());
+
+    $task->addAssignedUser($checklist->getUser());
+    $taskLog = new TaskLog();
+    $taskLog->setUser($checklist->getUser());
+    $task->addTaskLog($taskLog);
+    $task->setPriorityUserLog($checklist->getUser()->getId());
+
+//    $task->setIsTimeRoundUp($checklist->getCompany()->getSettings()->getIsTimeRoundUp());
+//    $task->setRoundingInterval($checklist->getCompany()->getSettings()->getRoundingInterval());
+//    $task->setMinEntry($checklist->getCompany()->getSettings()->getMinEntry());
+
+//    $task->setRepeating($checklist->getRepeating());
+//    $task->setRepeatingInterval($checklist->getRepeatingInterval());
+//    $task->setDatumPonavljanja($checklist->getDatumPonavljanja());
+
+    foreach ($checklist->getPdfs() as $pdf) {
+      $task->addPdf($pdf);
+    }
+
+    $this->save($task);
+
+    return $task;
+  }
   public function getPdfsByTask(Task $task): array {
 
     $pdfs = $this->createQueryBuilder('t')

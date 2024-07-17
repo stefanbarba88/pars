@@ -24,7 +24,6 @@ class Comment {
   private ?User $user = null;
 
   #[ORM\ManyToOne(inversedBy: 'comments')]
-  #[ORM\JoinColumn(nullable: false)]
   private ?Task $task = null;
 
   #[ORM\Column]
@@ -39,6 +38,9 @@ class Comment {
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
+
+  #[ORM\ManyToOne(inversedBy: 'comment')]
+  private ?ManagerChecklist $managerChecklist = null;
   public function getCompany(): ?Company
   {
     return $this->company;
@@ -128,5 +130,17 @@ class Comment {
    */
   public function setIsSuspended(bool $isSuspended): void {
     $this->isSuspended = $isSuspended;
+  }
+
+  public function getManagerChecklist(): ?ManagerChecklist
+  {
+      return $this->managerChecklist;
+  }
+
+  public function setManagerChecklist(?ManagerChecklist $managerChecklist): self
+  {
+      $this->managerChecklist = $managerChecklist;
+
+      return $this;
   }
 }

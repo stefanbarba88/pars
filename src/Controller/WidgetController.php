@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classes\Data\InternTaskStatusData;
 use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Availability;
@@ -94,9 +95,14 @@ class WidgetController extends AbstractController {
       $args['countCarsInactive'] = $this->em->getRepository(Car::class)->count(['isReserved' => false, 'isSuspended' => false, 'company' => $loggedUser->getCompany()]);
     }
 
+    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $this->getUser(), 'status' => InternTaskStatusData::NIJE_ZAPOCETO]);
+    $args['checklistCreated'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['status' => InternTaskStatusData::NIJE_ZAPOCETO, 'company' => $loggedUser->getCompany()]);
+    $args['checklistOnline'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['status' => InternTaskStatusData::ZAPOCETO, 'company' => $loggedUser->getCompany()]);
 
-    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $this->getUser(), 'status' => 0]);
     $args['countChecklistActive'] = count($args['checklistActive']);
+    $args['countChecklistCreated'] = count($args['checklistCreated']);
+    $args['countChecklistOnline'] = count($args['checklistOnline']);
+
 
     $args['user'] = $loggedUser;
     $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $loggedUser, 'finished' => null], ['id' => 'desc']);

@@ -34,31 +34,82 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Zadatak</h5>
+                                        <h5 class="mb-0">Zadatak</h5>
                                         <div class="my-auto ms-auto">
-
-                                            {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') %}
-                                                {% if checklist.status == 1 %}
-                                                    <a href="{{ path('app_checklist_start', {id: checklist.id}) }}" class="btn btn-primary"><i class="ph-arrows-counter-clockwise me-2"></i> Ponovite</a>
-                                               {% endif%}
-                                                {% if checklist.status != 2 %}
-                                                    <a href="{{ path('app_checklist_delete', {id: checklist.id}) }}" class="btn btn-primary"><i class="ph-trash me-2"></i> Obrišite</a>
-                                                {% endif%}
+                                            {% if checklist.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_checklist_start', {id: checklist.id}) }}" class="dropdown-item">
+                                                            <i class="ph-play me-2"></i>
+                                                            Pokrenite
+                                                        </a>
+                                                        <a href="{{ path('app_checklist_finish', {id: checklist.id}) }}" class="dropdown-item">
+                                                            <i class="ph-check me-2"></i>
+                                                            Završite
+                                                        </a>
+                                                        <a href="{{ path('app_checklist_edit', {id: checklist.id}) }}" class="dropdown-item">
+                                                            <i class="ph-note-pencil me-2"></i>
+                                                            Izmenite
+                                                        </a>
+                                                        <a href="{{ path('app_checklist_delete', {id: checklist.id}) }}" class="dropdown-item">
+                                                            <i class="ph-trash me-2"></i>
+                                                            Obrišite
+                                                        </a>
+                                                        {% if checklist.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
+                                                            <a href="{{ path('app_checklist_convert', {id: checklist.id}) }}" class="dropdown-item">
+                                                                <i class="ph-magic-wand me-2"></i>
+                                                                Konvertuj u zadatak sa merenjem
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
                                             {% endif %}
-                                            {% if checklist.status == 0 %}
-                                                <a href="{{ path('app_checklist_finish', {id: checklist.id}) }}" class="btn btn-primary"><i class="ph-check me-2"></i> Završite</a>
-                                            {% endif%}
+                                            {% if checklist.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_checklist_finish', {id: checklist.id}) }}" class="dropdown-item">
+                                                            <i class="ph-check me-2"></i>
+                                                            Zatvorite
+                                                        </a>
+                                                        <a href="{{ path('app_checklist_replay', {id: checklist.id}) }}" class="dropdown-item">
+                                                            <i class="ph-arrows-counter-clockwise me-2"></i>
+                                                            Ponovite
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                            {% endif %}
+                                            {% if checklist.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_checklist_replay', {id: checklist.id}) }}" class="dropdown-item">
+                                                            <i class="ph-arrows-counter-clockwise me-2"></i>
+                                                            Ponovite
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">
                                             <div class="col-4">Zadatak:</div>
-                                            <div class="col-8">{{ checklist.task | raw }}</div>
+                                            <div class="col-8">{{ checklist.task }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Zaduženi:</div>
                                             <div class="col-8">
-                                               {{ checklist.user.fullName }}
+                                                {{ checklist.user.fullName }}
                                             </div>
                                         </div>
                                         <div class="row p-2">
@@ -76,33 +127,184 @@
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Kreiran:</div>
+                                            <div class="col-4">Datum zadatka:</div>
                                             <div class="col-8">
-                                                {{ checklist.created | date('d.m.Y') }}
+                                                {{ checklist.datumKreiranja | date('d.m.Y') }}
                                             </div>
                                         </div>
                                         <div class="row p-2">
-                                            <div class="col-4">Završen:</div>
-                                            <div class="col-8">
-                                                {% if checklist.finish is not null %}
-                                                {{ checklist.finish | date('d.m.Y') }}
-                                                {% endif %}
-                                            </div>
+                                            <div class="col-4">Projekat:</div>
+                                            <div class="col-8">{{ checklist.project.title }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
+                                            <div class="col-4">Kategorija:</div>
+                                            <div class="col-8">{{ checklist.category.title }}</div>
+                                        </div>
+                                        <div class="row p-2 ">
                                             <div class="col-4">Status:</div>
                                             <div class="col-8">
-                                                {% if checklist.status == 0 %}
+                                                {% if checklist.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
                                                     <span class="badge bg-secondary text-primary">Kreiran</span>
-                                                {% elseif checklist.status == 1 %}
+                                                {% elseif checklist.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                    <span class="badge bg-yellow text-primary">U toku</span>
+                                                {% elseif checklist.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
                                                     <span class="badge bg-primary text-white">Završen</span>
-                                                {% elseif checklist.status == 2 %}
-                                                    <span class="badge bg-yellow text-primary">Obrisan</span>
+                                                {% elseif checklist.status == constant('App\\Classes\\Data\\InternTaskStatusData::KONVERTOVANO') %}
+                                                    <span class="badge bg-yellow text-primary">Konvertovan</span>
                                                 {% endif %}
                                             </div>
                                         </div>
+
+                                        {% if checklist.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Početak:</div>
+                                                <div class="col-8">
+                                                    {{ checklist.updated | date('d.m.Y H:i') }}
+                                                </div>
+                                            </div>
+                                            <div class="row p-2">
+                                                <div class="col-4">Započeo:</div>
+                                                <div class="col-8">
+                                                    {{ checklist.editBy.fullName }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        {% if checklist.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Kraj:</div>
+                                                <div class="col-8">
+                                                    {{ checklist.finish | date('d.m.Y H:i') }}
+                                                </div>
+                                            </div>
+                                            <div class="row p-2">
+                                                <div class="col-4">Završio:</div>
+                                                <div class="col-8">
+                                                    {{ checklist.editBy.fullName }}
+                                                </div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Napomena:</div>
+                                                <div class="col-8">
+                                                    {{ checklist.finishDesc }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        {% if checklist.repeating == 1 %}
+                                            <div class="row p-2">
+                                                <div class="col-4">Zadatak se ponavlja:</div>
+                                                <div class="col-8">
+                                                    Zadatak se ponavlja
+                                                    {% if checklist.repeatingInterval == 1 %}
+                                                        svakog dana, sledeći zadatak će biti dostupan
+                                                    {% elseif  checklist.repeatingInterval == 2 %}
+                                                        svake sedmice, sledeći zadatak će biti dostupan
+                                                    {% elseif  checklist.repeatingInterval == 3 %}
+                                                        svakog meseca, sledeći zadatak će biti dostupan
+                                                    {% elseif  checklist.repeatingInterval == 4 %}
+                                                        svake godine, sledeći zadatak će biti dostupan
+                                                    {% endif %}
+                                                    {{ checklist.datumPonavljanja | date("d.m.Y.")}}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+
                                     </div>
                                 </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Dokumenta</h5>
+                                    </div>
+
+                                    <div class="list-group list-group-borderless py-2">
+                                        {% if checklist.pdfs is empty %}
+                                            <div class="d-flex align-items-start mb-3">
+                                                <div class="list-group-item">
+                                                    <div class="fw-semibold text-truncate">Nema dokumenata</div>
+                                                </div>
+
+                                            </div>
+                                        {% else %}
+                                            {% for pdf in checklist.pdfs %}
+                                                <div class="d-flex list-group-item align-items-start">
+                                                    <div class="me-2">
+                                                        <i class="ph-file-pdf"></i>
+                                                    </div>
+                                                    <div class="flex-fill overflow-hidden">
+                                                        <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+                                                    </div>
+                                                    <div class="ms-3">
+                                                        <a href="{{ asset(pdf.path) }}" download class="fw-semibold">
+                                                            <i class="ph-download-simple"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Komentari</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if comments is empty %}
+                                            <div class="d-flex flex-column flex-lg-row mb-3">
+                                                <div class="me-lg-3 mb-2 mb-lg-0">
+                                                    Nema komentara
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            {% for comment in comments %}
+                                                <div class="d-flex flex-column flex-lg-row mb-3">
+                                                    <div class="me-lg-3 mb-2 mb-lg-0">
+                                                        {% if not is_granted('ROLE_EMPLOYEE') or app.user == comment.user%}
+                                                            <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}"><img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt="{{ comment.user.fullName }}" title="{{ comment.user.fullName }}"></a>
+                                                        {% else %}
+                                                            <img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt="{{ comment.user.fullName }}" title="{{ comment.user.fullName }}">
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <div class="flex-fill">
+                                                        {% if not is_granted('ROLE_EMPLOYEE') or app.user == comment.user%}
+                                                            <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}" class="fw-semibold">{{ comment.user.getFullName() }}</a>
+                                                        {% else %}
+                                                            <a href="#"  class="fw-semibold text-body">{{ comment.user.getFullName() }}</a>
+                                                        {% endif %}
+
+                                                        <span class="fs-sm text-muted ms-3">{{ comment.created | date("d.m.Y H:i:s")}}</span>
+
+                                                        <p>{{ comment.comment }}</p>
+                                                        {% if comment.user == app.user %}
+                                                            <ul class="list-inline mb-0">
+                                                                <li class="list-inline-item">
+                                                                    <a href="{{ path('app_comment_edit_int', { id: comment.id}) }}">Izmenite</a>
+                                                                </li>
+                                                                <li class="list-inline-item">
+                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}">Obrišite</a>
+                                                                </li>
+                                                            </ul>
+
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="card-footer d-flex justify-content-between align-items-center">
+                                        {% if not is_granted('ROLE_EMPLOYEE') or app.user == checklist.user%}
+                                            <div class="d-flex align-items-center"></div>
+                                            <div class="d-inline-flex mb-0">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_comment"><i class="ph-plus me-2"></i> Dodajte</button>
+                                            </div>
+                                            {{ render(controller('App\\Controller\\CommentController::formInt', { task: checklist.id } )) }}
+                                        {% endif %}
+                                    </div>
+
+
+                                </div>
+
                             </div>
                         </div>
                         <!-- /right content -->
@@ -126,18 +328,37 @@
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
     {% include 'includes/notification.html.twig' %}
+    {% if comments is not empty %}
+        {% for comment in comments %}
+            <!-- delete note modal -->
+            <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white border-0">
+                            <h6 class="modal-title">Potvrda</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <p>Da li ste sigurni da želite da obrišete ovaj komentar?</p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                            <a href="{{ path('app_comment_delete', {id: comment.id} ) }}" class="btn btn-danger"><i class="ph-trash me-2"></i>Obrišite</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /delete note modal -->
+        {% endfor %}
+    {% endif %}
 {% endblock content %}
 
 {% block includeJavascript %}
     {{ parent() }}
 
     <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
 
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
@@ -163,6 +384,8 @@
     <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
     <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
     <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/media/glightbox.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
 
     <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
@@ -170,10 +393,11 @@
     <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
 
+
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
     {% endif %}
-
+    <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
 {% endblock includeJavascript %}
 
 {#{% block footerJavascript %}#}
@@ -259,4 +483,3 @@
 {#        }#}
 
 {#    </script>#}
-{#{% endblock footerJavascript %}#}

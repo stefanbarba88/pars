@@ -15,6 +15,7 @@ use App\Entity\Comment;
 use App\Entity\Expense;
 use App\Entity\Holiday;
 use App\Entity\Image;
+use App\Entity\ManagerChecklist;
 use App\Entity\Notes;
 use App\Entity\Overtime;
 use App\Entity\Pdf;
@@ -244,6 +245,45 @@ class EmployeeController extends AbstractController {
       return $this->render('employee/phone/view_activity.html.twig', $args);
     }
     return $this->render('employee/view_activity.html.twig', $args);
+  }
+
+  #[Route('/view-checklist/{id}', name: 'app_employee_checklist_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewChecklist(User $usr, PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    $args = [];
+    $args['user'] = $usr;
+//    $tasks = $this->em->getRepository(Task::class)->getTasksArchiveByUser($usr);
+    $tasks = $this->em->getRepository(ManagerChecklist::class)->getChecklistToDoPaginator($usr);
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      10
+    );
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/phone/admin_view_checklist.html.twig', $args);
+      }
+      return $this->render('employee/phone/view_checklist.html.twig', $args);
+    }
+    return $this->render('employee/view_checklist.html.twig', $args);
   }
 
   #[Route('/view-calendar/{id}', name: 'app_employee_calendar_view')]
@@ -546,6 +586,8 @@ class EmployeeController extends AbstractController {
 //      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
       $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
 
+      $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($data['report_form']);
+
       $args['period'] = $data['report_form']['period'];
       $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
 
@@ -581,6 +623,9 @@ class EmployeeController extends AbstractController {
       }
       if (isset($data['report_form']['napomena'])){
         $args['napomena'] = 1;
+      }
+      if (isset($data['report_form']['checklist'])){
+        $args['checklist'] = 1;
       }
 
 
@@ -607,6 +652,7 @@ class EmployeeController extends AbstractController {
 //      dd($data);
 //      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
       $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
+      $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($data['report_form']);
 
       $args['period'] = $data['report_form']['period'];
       $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
@@ -643,6 +689,9 @@ class EmployeeController extends AbstractController {
       }
       if (isset($data['report_form']['napomena'])){
         $args['napomena'] = 1;
+      }
+      if (isset($data['report_form']['checklist'])){
+        $args['checklist'] = 1;
       }
 
 

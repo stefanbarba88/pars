@@ -49,14 +49,25 @@
                                                 <div class="col-4">Postavio:</div>
                                                 <div class="col-8">{{ comment.user.fullName }}</div>
                                             </div>
-                                            <div class="row p-2 bg-light">
-                                                <div class="col-4">Zadatak:</div>
-                                                <div class="col-8">
-                                                    <a href="{{ path('app_task_view', {id:comment.task.id}) }}">
-                                                        {{ comment.task.title }}
-                                                    </a>
+                                            {% if comment.task is null %}
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Interni zadatak:</div>
+                                                    <div class="col-8">
+                                                        <a href="{{ path('app_checklist_view', {id:comment.managerChecklist.id}) }}">
+                                                            Interni ({{ comment.managerChecklist.user.fullName }})
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            {% else %}
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Zadatak:</div>
+                                                    <div class="col-8">
+                                                        <a href="{{ path('app_task_view', {id:comment.task.id}) }}">
+                                                            {{ comment.task.title }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>

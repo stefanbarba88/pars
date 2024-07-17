@@ -94,12 +94,19 @@
                                                                 <span>{{ comment.comment | slice(0, 20) ~ (comment.comment | length > 20 ? '...' : '') }}</span>
                                                             </a>
                                                         </td>
+                                                        {% if comment.task is null %}
                                                         <td>
-                                                            <a href="{{ path('app_task_view', {id:comment.task.id}) }}" class="text-body">
+                                                            <a href="{{ path('app_checklist_view', {id:comment.managerChecklist.id}) }}" class="fw-semibold">
+                                                                Interni ({{ comment.managerChecklist.user.fullName }})
+                                                            </a>
+                                                        </td>
+                                                        {% else %}
+                                                        <td>
+                                                            <a href="{{ path('app_task_view', {id:comment.task.id}) }}" class="fw-semibold">
                                                                 {{ comment.task.title }}
                                                             </a>
                                                         </td>
-
+                                                        {% endif %}
                                                         <td>
                                                             {% if comment.created is not null %}
                                                                 <div class="d-inline-flex align-items-center">
@@ -123,6 +130,8 @@
                                                                 <span class="badge bg-primary text-white">Objavljen</span>
                                                             {% endif %}
                                                         </td>
+
+                                                    {% if comment.task is null %}
                                                         <td class="text-center">
                                                             <div class="dropdown">
                                                                 <a href="#" class="text-body" data-bs-toggle="dropdown">
@@ -133,9 +142,7 @@
                                                                         <i class="ph-eye me-2"></i>
                                                                         Vidite
                                                                     </a>
-                                                                    {% if app.user == user %}
-
-                                                                    <a href="{{ path('app_comment_edit', {id:comment.id}) }}" class="dropdown-item">
+                                                                    <a href="{{ path('app_comment_edit_int', {id:comment.id}) }}" class="dropdown-item">
                                                                         <i class="ph-note-pencil me-2"></i>
                                                                         Izmenite
                                                                     </a>
@@ -146,7 +153,6 @@
                                                                             Obrišite
                                                                         </a>
                                                                     {% endif  %}
-                                                                    {% endif %}
                                                                 </div>
                                                             </div>
                                                             <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
@@ -169,7 +175,51 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                    {% else %}
+                                                        <td class="text-center">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                    <i class="ph-gear"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-end">
+                                                                    <a href="{{ path('app_comment_view', {id:comment.id}) }}" class="dropdown-item">
+                                                                        <i class="ph-eye me-2"></i>
+                                                                        Vidite
+                                                                    </a>
+                                                                    <a href="{{ path('app_comment_edit', {id:comment.id}) }}" class="dropdown-item">
+                                                                        <i class="ph-note-pencil me-2"></i>
+                                                                        Izmenite
+                                                                    </a>
 
+                                                                    {% if comment.isSuspended == 0 %}
+                                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}" class="dropdown-item">
+                                                                            <i class="ph-trash me-2"></i>
+                                                                            Obrišite
+                                                                        </a>
+                                                                    {% endif  %}
+                                                                </div>
+                                                            </div>
+                                                            <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content text-start">
+                                                                        <div class="modal-header bg-danger text-white border-0">
+                                                                            <h6 class="modal-title">Potvrda</h6>
+                                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                        </div>
+
+                                                                        <div class="modal-body">
+                                                                            <p>Da li ste sigurni da želite da obrišete ovaj komentar?</p>
+                                                                        </div>
+
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                                                                            <a href="{{ path('app_comment_admin_delete', {id: comment.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    {% endif %}
                                                     </tr>
                                                 {% endfor %}
 

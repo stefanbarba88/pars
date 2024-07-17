@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classes\Data\InternTaskStatusData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\JMBGcheck\JMBGcheck;
 use App\Entity\Availability;
@@ -49,6 +50,7 @@ class HomeController extends AbstractController {
     $args['tomorrowTimetableId'] = $this->em->getRepository(FastTask::class)->getTimeTableTomorrowId($args['sutra']);
 //    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostDanas();
     $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getAllDostupnostiDanas();
+
     $args['dostupnostiSutra'] = $this->em->getRepository(Availability::class)->getAllDostupnostiSutra();
 
     $args['nerasporedjenost'] = $this->em->getRepository(Availability::class)->getAllNerasporedjenost();
@@ -58,7 +60,7 @@ class HomeController extends AbstractController {
 //    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
     $args['countTasksUnclosed'] = 0;
 
-    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $user, 'status' => 0], ['priority' => 'ASC', 'id' => 'ASC']);
+    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->getChecklistUser($user);
     $args['countChecklistActive'] = count($args['checklistActive']);
 
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {

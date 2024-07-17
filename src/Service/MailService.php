@@ -8,6 +8,7 @@ use App\Entity\Calendar;
 use App\Entity\Client;
 use App\Entity\Email;
 use App\Entity\ManagerChecklist;
+use App\Entity\Task;
 use App\Entity\User;
 use App\Entity\VerifyActivity;
 use DateTimeImmutable;
@@ -61,6 +62,79 @@ class MailService {
     $args['name'] = $user->getFullName();
     $args['role'] = UserRolesData::userRoleTitle($user);
     $args['support'] = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function checklistTask(ManagerChecklist $checklist): void {
+
+    $args = [];
+
+    $subject = 'Interni zadatak od ' . $checklist->getCreatedBy()->getFullName();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/interni_task.html.twig';
+    $args['user'] = $checklist->getUser()->getFullName();
+    $args['checklist'] = $checklist;
+    $args['link'] = $this->router->generate('app_checklist_view', ['id' => $checklist->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+    $to = $checklist->getUser()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function checklistEditTask(ManagerChecklist $checklist): void {
+
+    $args = [];
+
+    $subject = 'Interni zadatak izmena od ' . $checklist->getCreatedBy()->getFullName();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/interni_task_edit.html.twig';
+    $args['user'] = $checklist->getUser()->getFullName();
+    $args['checklist'] = $checklist;
+    $args['link'] = $this->router->generate('app_checklist_view', ['id' => $checklist->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+    $to = $checklist->getUser()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function checklistStatusTask(ManagerChecklist $checklist): void {
+
+    $args = [];
+    $subject = 'Promena statusa za interni zadatak #' . $checklist->getId() . ' od ' . $checklist->getUser()->getFullName();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/interni_task_status.html.twig';
+    $args['user'] = $checklist->getUser()->getFullName();
+    $args['checklist'] = $checklist;
+    $args['link'] = $this->router->generate('app_checklist_view', ['id' => $checklist->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+    $to = $checklist->getUser()->getCompany()->getEmail();
+    $too = $checklist->getCreatedBy()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+    $this->sendMail($too, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function checklistConvertTask(ManagerChecklist $checklist, Task $task): void {
+
+    $args = [];
+    $subject = 'Interni zadatak #' . $checklist->getId() . ' je konvertovan';
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/interni_task_convert.html.twig';
+    $args['user'] = $checklist->getUser()->getFullName();
+    $args['checklist'] = $checklist;
+    $args['task'] = $task;
+    $args['link'] = $this->router->generate('app_task_view_user', ['id' => $task->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+    $to = $checklist->getUser()->getEmail();
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 
@@ -181,23 +255,23 @@ class MailService {
 
   }
 
-  public function checklistTask(ManagerChecklist $checklist): void {
-
-    $args = [];
-
-    $subject = 'Interni zadatak od ' . $checklist->getCreatedBy()->getFullName();
-
-    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
-    $sender = CompanyInfo::ORGANIZATION_TITLE;
-    $template = 'email/interni_task.html.twig';
-    $args['user'] = $checklist->getUser()->getFullName();
-    $args['checklist'] = $checklist;
-    $to = $checklist->getUser()->getEmail();
-
-
-    $this->sendMail($to, $subject, $from, $sender, $template, $args);
-
-  }
+//  public function checklistTask(ManagerChecklist $checklist): void {
+//
+//    $args = [];
+//
+//    $subject = 'Interni zadatak od ' . $checklist->getCreatedBy()->getFullName();
+//
+//    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+//    $sender = CompanyInfo::ORGANIZATION_TITLE;
+//    $template = 'email/interni_task.html.twig';
+//    $args['user'] = $checklist->getUser()->getFullName();
+//    $args['checklist'] = $checklist;
+//    $to = $checklist->getUser()->getEmail();
+//
+//
+//    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+//
+//  }
 
   public function responseCalendar(Calendar $calendar): void {
 

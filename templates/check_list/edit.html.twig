@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                 Zadatak
+                                 Interni zadatak
                             </h4>
                         </div>
                     </div>
@@ -59,16 +59,24 @@
                     {%endif%}
                     <div class="card">
                         <div class="card-header">
-                            <h6 class="mb-0">
-                                 {% if checklist.id is not null %}
-                                        Izmena zadatka
-                                    {% else %}
-                                        Dodavanje zadatka
-                                    {% endif %}
-                                    </h6>
+                            <h6 class="mb-0">Izmena zadatka</h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
                         <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="checklist_datum">Datum zadatka:*</label>
+                                        <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="ph-calendar"></i>
+                                                </span>
+                                            <input id="task" class="form-control" type="text" disabled value="{{ checklist.datumKreiranja | date('d.m.Y') }}">
+                                        </div>
+                                        <span class="form-text">Ukoliko je potrebna izmena datuma zadatka, obrišite ga i ponovo kreirajte zbog ponovnog učitavanja dostupnosti zaposlenih.</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
@@ -78,10 +86,88 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-12">
+                                <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.user, 'Zaduženi:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.user, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.priority, 'Prioritet:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.priority, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fw-bold border-bottom pb-2 mb-3" data-bs-toggle="collapse" data-bs-target="#collapse-cat" aria-expanded="false">Podešavanje projekta i kategorije</div>
+                            <div class="row collapse" id="collapse-cat">
+                                <div class="col-lg-6 ">
+                                    <div class="mb-3">
+                                        {{ form_label(form.project, 'Projekat:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.project, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 ">
+                                    <div class="mb-3">
+                                        {{ form_label(form.category, 'Kategorija:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.category, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="fw-bold border-bottom pb-2 mb-3" data-bs-toggle="collapse" data-bs-target="#collapse-repeat" aria-expanded="false">Podešavanje ponavljanja zadatka</div>
+                            <div class="row collapse" id="collapse-repeat">
+                                <div class="col-lg-6 ">
+                                    <div class="mb-3">
+                                        {{ form_label(form.repeating, 'Zadatak se ponavlja:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.repeating, {attr: { class: 'form-control required select repeat' }}) }}
+                                        <span class="form-text">Definišete da li se zadatak ponavlja u određenem vremenskom intervalu.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if checklist.repeating == 1 %}
+                                <div class="row repeating collapse" id="collapse-repeat">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.repeatingInterval, 'Interval ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.repeatingInterval, {attr: { class: 'form-control intrep required select' }}) }}
+                                            <span class="form-text">Definišete interval na kada se zadatak ponovo kreira.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 tacanDatum">
+                                        <div class="mb-3">
+                                            {{ form_label(form.datumPonavljanja, 'Tačan datum ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep required datepicker-date-format-custom-2', autocomplete: 'off' }}) }}
+                                            <span class="form-text">Tačan datum kada će se zadatak ponovo kreirati.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="row hide repeating collapse" id="collapse-repeat">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.repeatingInterval, 'Interval ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.repeatingInterval, {attr: { class: 'form-control intrep select' }}) }}
+                                            <span class="form-text">Definišete interval na kada se zadatak ponovo kreira.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 hide tacanDatum">
+                                        <div class="mb-3">
+                                            {{ form_label(form.datumPonavljanja, 'Tačan datum ponavljanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.datumPonavljanja, {attr: { class: 'form-control datrep datepicker-date-format-custom-2', autocomplete: 'off' }}) }}
+                                            <span class="form-text">Tačan datum kada će se zadatak ponovo kreirati.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="fw-bold border-bottom pb-2 mb-3" data-bs-toggle="collapse" data-bs-target="#collapse-pdf" aria-expanded="false">Dokumentacija</div>
+                            <div class="row collapse" id="collapse-pdf">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="checklist_pdf">Dokumenta:</label>
+                                        <input type="file" id="checklist_pdf" name="checklist[pdf][]" accept=".pdf" data-show-upload="false" multiple="multiple" class="form-control file-input" />
+                                        <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
                                     </div>
                                 </div>
                             </div>
@@ -92,7 +178,7 @@
                         </div>
                         {{ form_end(form) }}
                     </div>
-                                                <!-- /wizard with validation -->
+                    <!-- /wizard with validation -->
 
                 </div>
                 <!-- /content area -->
@@ -152,14 +238,55 @@
 {% endblock includeJavascript %}
 {% block footerJavascript %}
 
-<script>
-    $(function () {
+    <script>
+        $(document).ready(function () {
+            {% set minDate = checklist.datumKreiranja|date_modify('+1 day')|date('d.m.Y') %}
 
-        ClassicEditor.create(document.querySelector('.ckeditor'), {
-            toolbar: [ 'heading', 'bold', 'italic', 'bulletedList', 'numberedList', 'blockQuote' , 'link', 'undo', 'redo' ]
-        }).catch(error => {
-            console.error(error);
+            const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom-2');
+            if(dpDateCustomFormatElement2) {
+                const dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
+                    container: '.content-inner',
+                    buttonClass: 'btn',
+                    prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                    nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                    format: 'dd.mm.yyyy',
+                    todayBtn: true,
+                    weekStart: 1,
+                    minDate: '{{ minDate }}',
+                    daysOfWeekHighlighted: [0,6],
+                    language: 'sr-latn',
+                    // daysOfWeekDisabled: [0]
+                });
+            }
+            $(".repeat").change(function(e) {
+                e.preventDefault();
+                if ($(this).val() == "1") {
+
+                    $('.repeating').removeClass('hide');
+                    $('.intrep').addClass('required');
+                    // $('.datrep').addClass('required');
+                }
+                else {
+                    $('.repeating').addClass('hide');
+                    $('.intrep').val('').removeClass('required');
+                    $('.datrep').val('').removeClass('required');
+                }
+            });
+
+            $("#manager_checklist_form_repeatingInterval").change(function(e) {
+                e.preventDefault();
+                if ($(this).val() == "5") {
+
+                    $('.tacanDatum').removeClass('hide');
+                    $('.datrep').addClass('required');
+                }
+                else {
+                    $('.tacanDatum').addClass('hide');
+                    $('.datrep').val('').removeClass('required');
+                }
+            });
+
         });
-    });
-</script>
+    </script>
+
 {% endblock footerJavascript %}

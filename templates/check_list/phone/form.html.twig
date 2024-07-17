@@ -4,8 +4,8 @@
     {{ render(controller('App\\Controller\\WidgetController::header' )) }}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
-        <!-- Main content -->
 
+        <!-- Main content -->
         <div class="content-wrapper">
 
             <!-- Inner content -->
@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                 Interni zadaci
+                                Interni zadaci
                             </h4>
                         </div>
                     </div>
@@ -34,33 +34,33 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="checklist_datum">Datum zadatka:*</label>
+                                            <label class="form-label" for="phone_checklist_datum">Datum zadatka:*</label>
                                             <div class="input-group">
                                                 <span class="input-group-text">
                                                     <i class="ph-calendar"></i>
                                                 </span>
-                                                <input hidden="hidden" type="text" name="checklist[datum]" value="{{ noviDatum | default('now') | date('d.m.Y') }}">
+                                                <input hidden="hidden" type="text" name="phone_checklist[datum]" value="{{ noviDatum | default('now') | date('m/d/Y') }}">
                                                 <input id="task" class="form-control" type="text" disabled value="{{ noviDatum | default('now') | date('d.m.Y') }}">
                                                 <button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#modal_date_task"><i class="ph-note-pencil"></i></button>
 
                                             </div>
-                                            <span class="form-text">Format: 31.12.1900. Definišete kada zadatak treba da se izvrši.</span>
+                                            <span class="form-text">Definišete kada zadatak treba da se izvrši.</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="mb-3">
-                                            <label class="form-label" for="checklist_zadatak">Zadatak:*</label>
-                                            <textarea id="checklist_zadatak" name="checklist[zadatak]" class="form-control required"  rows="2" required></textarea>
+                                            <label class="form-label" for="phone_checklist_zadatak">Zadatak:*</label>
+                                            <textarea id="phone_checklist_zadatak" name="phone_checklist[zadatak]" class="form-control required"  rows="2" required></textarea>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="checklist_zaduzeni">Zaduženi:*</label>
-                                            <select id="checklist_zaduzeni" name="checklist[zaduzeni][]" class="form-control required select" required multiple>
+                                            <label class="form-label" for="phone_checklist_zaduzeni">Zaduženi:*</label>
+                                            <select id="phone_checklist_zaduzeni" name="phone_checklist[zaduzeni][]" class="form-control required" required multiple>
                                                 {% for user in users %}
                                                     {% if korisnik is defined %}
                                                         {% if user.id == korisnik.id %}
@@ -77,8 +77,8 @@
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="checklist_priority">Prioritet:*</label>
-                                            <select id="checklist_priority" name="checklist[prioritet]" class="form-control required select" required>
+                                            <label class="form-label" for="phone_checklist_priority">Prioritet:*</label>
+                                            <select id="phone_checklist_priority" name="phone_checklist[prioritet]" class="form-control required" required>
                                                 {% for key, value in priority %}
                                                     {% if value == 3 %}
                                                         <option value="{{ value }}" selected>{{ key }}</option>
@@ -94,8 +94,8 @@
                                 <div class="row collapse" id="collapse-cat">
                                     <div class="col-lg-6 ">
                                         <div class="mb-3">
-                                            <label class="form-label" for="checklist_project">Projekat:*</label>
-                                            <select id="checklist_project" name="checklist[project]" class="form-control required select" required>
+                                            <label class="form-label" for="phone_checklist_project">Projekat:*</label>
+                                            <select id="phone_checklist_project" name="phone_checklist[project]" class="form-control required" required>
                                                 {% if project is defined %}
                                                     <option value="{{ project.id }}">{{ project.title }}</option>
                                                 {% else %}
@@ -108,8 +108,8 @@
                                     </div>
                                     <div class="col-lg-6 ">
                                         <div class="mb-3">
-                                            <label class="form-label" for="checklist_category">Kategorija:*</label>
-                                            <select id="checklist_category" name="checklist[category]" class="form-control required select" required>
+                                            <label class="form-label" for="phone_checklist_category">Kategorija:*</label>
+                                            <select id="phone_checklist_category" name="phone_checklist[category]" class="form-control required" required>
                                                 {% for category in categories %}
                                                     <option value="{{ category.id }}">{{ category.title }}</option>
                                                 {% endfor %}
@@ -122,8 +122,8 @@
                                 <div class="row collapse" id="collapse-repeat">
                                     <div class="col-lg-6 ">
                                         <div class="mb-3">
-                                            <label class="form-label required" for="checklist_repeating">Zadatak se ponavlja:</label>
-                                            <select id="checklist_repeating" name="checklist[repeating]" data-minimum-results-for-search="Infinity" class="form-control required select repeat">
+                                            <label class="form-label required" for="phone_checklist_repeating">Zadatak se ponavlja:</label>
+                                            <select id="phone_checklist_repeating" name="phone_checklist[repeating]" class="form-control required repeat">
                                                 <option value="1">Da</option>
                                                 <option value="0" selected="selected">Ne</option>
                                             </select>
@@ -134,8 +134,8 @@
                                 <div class="row hide repeating collapse" id="collapse-repeat">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="checklist_repeatingInterval">Interval ponavljanja:*</label>
-                                            <select id="checklist_repeatingInterval" name="checklist[repeatingInterval]" data-minimum-results-for-search="Infinity" class="form-control intrep select">
+                                            <label class="form-label" for="phone_checklist_repeatingInterval">Interval ponavljanja:*</label>
+                                            <select id="phone_checklist_repeatingInterval" name="phone_checklist[repeatingInterval]" class="form-control intrep">
                                                 <option value="">--Izaberite period--</option>
                                                 {% for key, value in repeatingInterval %}
                                                     <option value="{{ value }}">{{ key }}</option>
@@ -146,8 +146,9 @@
                                     </div>
                                     <div class="col-lg-6 hide tacanDatum">
                                         <div class="mb-3">
-                                            <label class="form-label" for="checklist_datumPonavljanja">Tačan datum ponavljanja:*</label>
-                                            <input type="text" id="checklist_datumPonavljanja" name="checklist[datumPonavljanja]" class="form-control datrep datepicker-date-format-custom-2" autocomplete="off"/>
+                                            <label class="form-label" for="phone_checklist_datumPonavljanja">Tačan datum ponavljanja:*</label>
+                                            {% set minDate = noviDatum is defined ? noviDatum|date_modify('+1 day')|date('Y-m-d') : 'now'|date('Y-m-d') %}
+                                            <input type="date" id="phone_checklist_datumPonavljanja" name="phone_checklist[datumPonavljanja]" class="form-control datrep" min="{{ minDate }}">
                                             <span class="form-text">Tačan datum kada će se zadatak ponovo kreirati.</span>
                                         </div>
                                     </div>
@@ -157,8 +158,8 @@
                                 <div class="row collapse" id="collapse-pdf">
                                     <div class="col-lg-12">
                                         <div class="mb-3">
-                                            <label class="form-label" for="checklist_pdf">Dokumenta:</label>
-                                            <input type="file" id="checklist_pdf" name="checklist[pdf][]" accept=".pdf" data-show-upload="false" multiple="multiple" class="form-control file-input" />
+                                            <label class="form-label" for="phone_checklist_pdf">Dokumenta:</label>
+                                            <input type="file" id="phone_checklist_pdf" name="phone_checklist[pdf][]" accept=".pdf" data-show-upload="false" multiple="multiple" class="form-control file-input" />
                                             <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
                                         </div>
                                     </div>
@@ -184,6 +185,7 @@
             <!-- /inner content -->
 
         </div>
+        <!-- /main content -->
 
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
@@ -195,7 +197,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form name="datumCheckForm" method="get" action="{{ path('app_checklist_form') }}"  id="check_datum_form">
+                    <form name="datumCheckForm" method="get" action="{{ path('app_checklist_form')}}"  id="check_datum_form">
                         <div class="row">
                             <div class="mb-3">
                                 <label class="form-label" for="datumCheck">Datum zadatka:*</label>
@@ -203,10 +205,11 @@
                                                 <span class="input-group-text">
                                                     <i class="ph-calendar"></i>
                                                 </span>
-                                    <input type="text" id="datumCheck" name="datumCheck" class="form-control datepicker-date-format-custom required" autocomplete="off" aria-invalid="false">
+
+                                    <input type="date" id="datumCheck" name="phoneDatumCheck" class="form-control required" autocomplete="off" aria-invalid="false" min="{{ 'now'|date('Y-m-d') }}">
 
                                 </div>
-                                <span class="form-text">Format: 31.12.1900. Definišete kada zadatak treba da se izvrši.</span>
+                                <span class="form-text">Definišete kada zadatak treba da se izvrši.</span>
                             </div>
                         </div>
                         {% if project is defined %}
@@ -262,48 +265,10 @@
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
     {% endif %}
 
-
 {% endblock includeJavascript %}
 {% block footerJavascript %}
 
     <script>
-
-        const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom');
-        if(dpDateCustomFormatElement1) {
-            const dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
-                container: '.content-inner',
-                buttonClass: 'btn',
-                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
-                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
-                format: 'dd.mm.yyyy',
-                todayBtn: true,
-                weekStart: 1,
-                minDate: 'today',
-                daysOfWeekHighlighted: [0,6],
-                language: 'sr-latn',
-                // daysOfWeekDisabled: [0]
-            });
-        }
-
-        {#    {% set minDate = noviDatum is defined ? noviDatum.modify('+1 day').format('d.m.Y') : (date_modify(date(), '+1 day')).format('d.m.Y') %}#}
-        {% set minDate = noviDatum is defined ? noviDatum|date_modify('+1 day')|date('d.m.Y') : 'tomorrow'|date('d.m.Y') %}
-        const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom-2');
-        if(dpDateCustomFormatElement2) {
-            const dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
-                container: '.content-inner',
-                buttonClass: 'btn',
-                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
-                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
-                format: 'dd.mm.yyyy',
-                todayBtn: true,
-                weekStart: 1,
-                minDate: '{{ minDate }}',
-                daysOfWeekHighlighted: [0,6],
-                language: 'sr-latn',
-                // daysOfWeekDisabled: [0]
-            });
-        }
-
 
         $(".repeat").change(function(e) {
             e.preventDefault();
@@ -320,7 +285,7 @@
             }
         });
 
-        $("#checklist_repeatingInterval").change(function(e) {
+        $("#phone_checklist_repeatingInterval").change(function(e) {
             e.preventDefault();
             if ($(this).val() == "5") {
 

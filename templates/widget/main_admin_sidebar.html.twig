@@ -102,8 +102,8 @@
 
                     <li class="nav-item">
                         <a href="{{ path('app_checklist_to_do') }}" class="nav-link">
-                            <i class="ph-list-checks"></i>
-                            <span>Moji zadaci</span>
+                            <i class="ph-list-plus"></i>
+                            <span>Interni zadaci</span>
                             {% if countChecklistActive > 0 %}
                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistActive }}</span>
                             {% endif %}
@@ -654,21 +654,30 @@
                             {% if countChecklistActive > 0 %}
                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistActive }}</span>
                             {% endif %}
-
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_checklist_list') }}" class="nav-link">
                             <i class="ph-list-bullets"></i>
                             <span>Lista</span>
-{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistCreatedActive }}</span>#}
+                            {% if countChecklistCreated > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistCreated }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_checklist_active') }}" class="nav-link">
+                            <i class="ph-list-bullets"></i>
+                            <span>U toku</span>
+                            {% if countChecklistOnline > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistOnline }}</span>
+                            {% endif %}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_checklist_archive') }}" class="nav-link">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
-                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistCreatedActive }}</span>#}
                         </a>
                     </li>
 

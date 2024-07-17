@@ -716,7 +716,7 @@
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
     {% include 'includes/notification.html.twig' %}
-    {% if comments is empty %}
+    {% if comments is not empty %}
         {% for comment in comments %}
             <!-- delete note modal -->
             <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">

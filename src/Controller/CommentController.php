@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Comment;
+use App\Entity\ManagerChecklist;
 use App\Entity\Task;
 use App\Form\CommentFormType;
 use App\Form\PhoneTaskFormType;
@@ -175,7 +176,7 @@ class CommentController extends AbstractController {
       ->dismissible(true)
       ->addSuccess(NotifyMessagesData::COMMENT_DELETE);
 
-    if ($comment->getTask()->getAssignedUsers()->contains($this->getUser())) {
+    if ($this->getUser() == UserRolesData::ROLE_EMPLOYEE) {
       return $this->redirectToRoute('app_task_view_user', ['id' => $comment->getTask()->getId()]);
     } else {
       return $this->redirectToRoute('app_task_view', ['id' => $comment->getTask()->getId()]);
@@ -214,4 +215,137 @@ class CommentController extends AbstractController {
 
     return $this->render('comment/view.html.twig', $args);
   }
+
+
+  #[Route('/form-intern/{task}', name: 'app_comment_form_int')]
+  #[Entity('task', expr: 'repository.find(task)')]
+  #[Entity('comment', expr: 'repository.findForFormTaskInt(task)')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formInt(Request $request, Comment $comment, ManagerChecklist $task)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+
+    $comment->setUser($this->getUser());
+    $form = $this->createForm(CommentFormType::class, $comment, ['attr' => ['action' => $this->generateUrl('app_comment_form_int', ['task' => $task->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(Comment::class)->save($comment);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::COMMENT_ADD);
+
+        return $this->redirectToRoute('app_checklist_view', ['id' => $task->getId()]);
+
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['comment'] = $comment;
+
+    return $this->render('comment/modal_form.html.twig', $args);
+  }
+
+  #[Route('/employee-form-intern/{task}', name: 'app_comment_employee_form_int')]
+  #[Entity('task', expr: 'repository.find(task)')]
+  #[Entity('comment', expr: 'repository.findForFormTaskInt(task)')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formEmployeeInt(Request $request, Comment $comment, ManagerChecklist $task)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $comment->setUser($this->getUser());
+    $form = $this->createForm(CommentFormType::class, $comment, ['attr' => ['action' => $this->generateUrl('app_comment_employee_form_int', ['task' => $task->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(Comment::class)->save($comment);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::COMMENT_ADD);
+
+        return $this->redirectToRoute('app_checklist_view', ['id' => $task->getId()]);
+
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['comment'] = $comment;
+
+    return $this->render('comment/modal_form.html.twig', $args);
+  }
+
+  #[Route('/edit-intern/{id}', name: 'app_comment_edit_int')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function editInt(Request $request, Comment $comment)    : Response { if (!$this->isGranted('ROLE_USER')) {
+    return $this->redirect($this->generateUrl('app_login'));
+  }
+
+    $form = $this->createForm(CommentFormType::class, $comment, ['attr' => ['action' => $this->generateUrl('app_comment_edit_int', ['id' => $comment->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(Comment::class)->save($comment);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::COMMENT_EDIT);
+
+        return $this->redirectToRoute('app_checklist_view', ['id' => $comment->getManagerChecklist()->getId()]);
+
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['comment'] = $comment;
+    $args['user'] = $this->getUser();
+
+    $mobileDetect = new MobileDetect();
+    if ($mobileDetect->isMobile()) {
+      if ($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('comment/form.html.twig', $args);
+      }
+      return $this->render('comment/phone/form.html.twig', $args);
+    }
+    return $this->render('comment/form.html.twig', $args);
+  }
+
+
+  #[Route('/comment-delete-intern/{id}', name: 'app_comment_delete_int')]
+  public function deleteInt(Comment $comment)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $comment->setIsSuspended(true);
+    $this->em->getRepository(Comment::class)->save($comment);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::COMMENT_DELETE);
+
+    return $this->redirectToRoute('app_checklist_view', ['id' => $comment->getManagerChecklist()->getId()]);
+
+  }
+
+
+
 }

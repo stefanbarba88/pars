@@ -20,19 +20,16 @@
                             </h4>
                         </div>
                     </div>
-
                 </div>
                 <!-- /page header -->
+
 
                 <!-- Content area -->
                 <div class="content">
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Lista mojih zadataka</h5>
-                            <div class="my-auto ms-auto">
-                                <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
-                            </div>
+                            <h5 class="mb-0">Lista zadataka koji su u toku</h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive card">
@@ -41,6 +38,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Zadatak</th>
+                                        <th>Zaposleni</th>
                                         <th {% if pagination.isSorted('[c.priority]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Prioritet ', ['c.priority']) }}
                                             {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.priority' %}
@@ -62,16 +60,6 @@
                                             {% endif %}
                                         </th>
                                         <th>Kreirao</th>
-                                        <th {% if pagination.isSorted('[c.status]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Status ', ['c.status']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.status' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.status' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
                                         <th {% if pagination.isSorted('[c.updated]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Poslednja izmena ', ['c.updated']) }}
                                             {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.updated' %}
@@ -82,6 +70,7 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
+                                        <th>Izmenio</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
@@ -93,6 +82,11 @@
                                                 <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
                                                     {{ task.task }}
                                                 </a>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    {{ task.user.getFullName() }}
+                                                </div>
                                             </td>
                                             <td class="text-center">
                                                 {% if task.priority == 1 %}
@@ -118,21 +112,17 @@
                                                 {{ task.createdBy.getFullName() }}
                                             </td>
                                             <td>
-                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
-                                                    <span class="badge bg-secondary text-primary">Kreiran</span>
-                                                {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
-                                                    <span class="badge bg-yellow text-primary">U toku</span>
-                                                {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
-                                                    <span class="badge bg-primary text-white">Završen</span>
-                                                {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::KONVERTOVANO') %}
-                                                    <span class="badge bg-yellow text-primary">Konvertovan</span>
-                                                {% endif %}
-                                            </td>
-                                            <td>
                                                 {% if task.updated is not null %}
                                                     <div class="d-inline-flex align-items-center">
-                                                        {{ task.updated | date("d.m.Y H:i")}}{% if task.editBy is not null %}<br>{{ task.editBy.getNameWithFirstLetter }}{% endif %}
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ task.updated | date("d.m.Y H:i")}}
                                                     </div>
+                                                {% endif %}
+                                            </td>
+
+                                            <td>
+                                                {% if task.editBy is not null %}
+                                                    {{ task.editBy.getFullName() }}
                                                 {% endif %}
                                             </td>
 
@@ -146,41 +136,11 @@
                                                             <i class="ph-eye me-2"></i>
                                                             Vidite
                                                         </a>
-                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
-                                                            <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-play me-2"></i>
-                                                                Pokrenite
-                                                            </a>
-                                                            <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-check me-2"></i>
-                                                                Završite
-                                                            </a>
-                                                            <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-note-pencil me-2"></i>
-                                                                Izmenite
-                                                            </a>
-                                                            <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-trash me-2"></i>
-                                                                Obrišite
-                                                            </a>
-                                                            {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
-                                                                <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="dropdown-item">
-                                                                    <i class="ph-magic-wand me-2"></i>
-                                                                    Konvertuj u zadatak sa merenjem
-                                                                </a>
-                                                            {% endif %}
-                                                        {% endif %}
                                                         {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
                                                             <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
                                                                 <i class="ph-check me-2"></i>
                                                                 Zatvorite
                                                             </a>
-                                                            <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-arrows-counter-clockwise me-2"></i>
-                                                                Ponovite
-                                                            </a>
-                                                        {% endif %}
-                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
                                                             <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
                                                                 <i class="ph-arrows-counter-clockwise me-2"></i>
                                                                 Ponovite

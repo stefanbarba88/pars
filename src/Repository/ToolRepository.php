@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\FastTask;
+use App\Entity\Plan;
 use App\Entity\Tool;
 use App\Entity\ToolHistory;
 use App\Entity\ToolReservation;
@@ -209,7 +210,7 @@ class ToolRepository extends ServiceEntityRepository {
     if (!is_null($reservations)) {
       foreach ($reservations as $res) {
         $tool = $res->getTool();
-        $whereToolShouldGo = $this->getEntityManager()->getRepository(FastTask::class)->whereToolShouldGo($tool);
+        $whereToolShouldGo = $this->getEntityManager()->getRepository(Plan::class)->whereToolShouldGo($tool);
         $list[] = [
           'reservation' => $res,
           'where' => $whereToolShouldGo

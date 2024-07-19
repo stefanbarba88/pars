@@ -23,32 +23,43 @@
                 </div>
                 <!-- /page header -->
 
+
                 <!-- Content area -->
                 <div class="content">
                     <div class="d-lg-flex align-items-lg-start">
 
-                            <!-- Right content -->
-                            <div class="tab-content flex-fill">
-                                <div class="tab-pane fade active show">
-                                    <div class="card">
-                                        <div class="card-header d-flex align-items-center">
-                                            <h5 class="mb-0">Komentar</h5>
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Komentar</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2">
+                                            <div class="col-4">Kreiran:</div>
+                                            <div class="col-8">{{ comment.created | date('d.m.Y') }}</div>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="row p-2">
-                                                <div class="col-4">Kreiran:</div>
-                                                <div class="col-8">{{ comment.created | date('d.m.Y') }}</div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Komentar:</div>
+                                            <div class="col-8">
+                                                {{ comment.comment }}
                                             </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Postavio:</div>
+                                            <div class="col-8">{{ comment.user.fullName }}</div>
+                                        </div>
+                                        {% if comment.task is null %}
                                             <div class="row p-2 bg-light">
-                                                <div class="col-4">Komentar:</div>
+                                                <div class="col-4">Interni zadatak:</div>
                                                 <div class="col-8">
-                                                    {{ comment.comment }}
+                                                    <a href="{{ path('app_checklist_view', {id:comment.managerChecklist.id}) }}">
+                                                        Interni ({{ comment.managerChecklist.user.fullName }})
+                                                    </a>
                                                 </div>
                                             </div>
-                                            <div class="row p-2">
-                                                <div class="col-4">Postavio:</div>
-                                                <div class="col-8">{{ comment.user.fullName }}</div>
-                                            </div>
+                                        {% else %}
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Zadatak:</div>
                                                 <div class="col-8">
@@ -57,13 +68,14 @@
                                                     </a>
                                                 </div>
                                             </div>
-                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
-                            <!-- /right content -->
-
                         </div>
+                        <!-- /right content -->
+
+                    </div>
                 </div>
                 <!-- /content area -->
 
@@ -76,7 +88,7 @@
 
         </div>
         <!-- /main content -->
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
 
     </div>
     {% include 'includes/notification.html.twig' %}

@@ -243,80 +243,67 @@
                                             {% endif %}
                                         </div>
                                 </div>
-{#                                <div class="card">#}
-{#                                    <div class="card-header">#}
-{#                                        <h5 class="mb-0">Komentari</h5>#}
-{#                                    </div>#}
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Komentari</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if comments is empty %}
+                                            <div class="d-flex flex-column flex-lg-row mb-3">
+                                                <div class="me-lg-3 mb-2 mb-lg-0">
+                                                    Nema komentara
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            {% for comment in comments %}
+                                                <div class="d-flex flex-column flex-lg-row mb-3">
+                                                    <div class="me-lg-3 mb-2 mb-lg-0">
+                                                        {% if not is_granted('ROLE_EMPLOYEE') or app.user == comment.user%}
+                                                            <a href="#"><img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt="{{ comment.user.fullName }}" title="{{ comment.user.fullName }}"></a>
+                                                        {% else %}
+                                                            <img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt="{{ comment.user.fullName }}" title="{{ comment.user.fullName }}">
+                                                        {% endif %}
+                                                    </div>
 
-{#                                    <div class="card-body">#}
-{#                                        {% if comments is empty %}#}
-{#                                            <div class="d-flex flex-column flex-lg-row mb-3">#}
-{#                                                <div class="me-lg-3 mb-2 mb-lg-0">#}
-{#                                                    Nema komentara#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                        {% else %}#}
-{#                                            {% for comment in comments %}#}
-{#                                                <div class="d-flex flex-column flex-lg-row mb-3">#}
-{#                                                    <div class="me-lg-3 mb-2 mb-lg-0">#}
-{#                                                        <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}"><img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt=""></a>#}
-{#                                                    </div>#}
+                                                    <div class="flex-fill">
+                                                        {% if not is_granted('ROLE_EMPLOYEE') or app.user == comment.user%}
+                                                            <a href="#" class="fw-semibold">{{ comment.user.getFullName() }}</a>
+                                                        {% else %}
+                                                            <a href="#"  class="fw-semibold text-body">{{ comment.user.getFullName() }}</a>
+                                                        {% endif %}
 
-{#                                                    <div class="flex-fill">#}
-{#                                                        <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}" class="fw-semibold">{{ comment.user.getFullName() }}</a>#}
-{#                                                        <span class="fs-sm text-muted ms-3">{{ comment.created | date("d.m.Y H:i:s")}}</span>#}
+                                                        <span class="fs-sm text-muted ms-3">{{ comment.created | date("d.m.Y H:i:s")}}</span>
 
-{#                                                        <p>{{ comment.comment }}</p>#}
-{#                                                        {% if not is_granted('ROLE_EMPLOYEE') or comment.user == app.user %}#}
-{#                                                            <ul class="list-inline mb-0">#}
-{#                                                                <li class="list-inline-item">#}
-{#                                                                    <a href="{{ path('app_comment_edit', { id: comment.id}) }}">Izmenite</a>#}
-{#                                                                </li>#}
-{#                                                                <li class="list-inline-item">#}
-{#                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}">Obrišite</a>#}
-{#                                                                </li>#}
-{#                                                            </ul>#}
-{#                                                            <!-- delete note modal -->#}
-{#                                                            <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">#}
-{#                                                                <div class="modal-dialog">#}
-{#                                                                    <div class="modal-content">#}
-{#                                                                        <div class="modal-header bg-danger text-white border-0">#}
-{#                                                                            <h6 class="modal-title">Potvrda</h6>#}
-{#                                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                                                                        </div>#}
+                                                        <p>{{ comment.comment }}</p>
+                                                        {% if comment.user == app.user %}
+                                                            <ul class="list-inline mb-0">
+                                                                <li class="list-inline-item">
+                                                                    <a href="{{ path('app_comment_edit_int', { id: comment.id}) }}">Izmenite</a>
+                                                                </li>
+                                                                <li class="list-inline-item">
+                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}">Obrišite</a>
+                                                                </li>
+                                                            </ul>
 
-{#                                                                        <div class="modal-body">#}
-{#                                                                            <p>Da li ste sigurni da želite da obrišete ovaj komentar?</p>#}
-{#                                                                        </div>#}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
 
-{#                                                                        <div class="modal-footer">#}
-{#                                                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>#}
-{#                                                                            <a href="{{ path('app_comment_delete', {id: comment.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i>Obrišite</a>#}
-{#                                                                        </div>#}
-{#                                                                    </div>#}
-{#                                                                </div>#}
-{#                                                            </div>#}
-{#                                                            <!-- /delete note modal -->#}
-{#                                                        {% endif %}#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            {% endfor %}#}
-{#                                        {% endif %}#}
-{#                                    </div>#}
-{#                                    {% if task.isDeleted == 0 %}#}
-{#                                        <div class="card-footer d-flex justify-content-between align-items-center">#}
-{#                                            <div class="d-flex align-items-center"></div>#}
-{#                                            <div class="d-inline-flex mb-0">#}
-{#                                                {% if not is_granted('ROLE_EMPLOYEE') or app.user in task.assignedUsers%}#}
-{#                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_comment"><i class="ph-plus me-2"></i> Dodajte</button>#}
-{#                                                {% else %}#}
-{#                                                    <button type="button" class="btn btn-primary" disabled data-bs-toggle="modal" data-bs-target="#modal_form_comment"><i class="ph-plus me-2"></i> Dodajte</button>#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                            {{ render(controller('App\\Controller\\CommentController::form', { task: task.id } )) }}#}
-{#                                        </div>#}
-{#                                    {% endif %}#}
-{#                                </div>#}
+                                    <div class="card-footer d-flex justify-content-between align-items-center">
+                                        {% if not is_granted('ROLE_EMPLOYEE') or app.user == checklist.user%}
+                                            <div class="d-flex align-items-center"></div>
+                                            <div class="d-inline-flex mb-0">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_comment"><i class="ph-plus me-2"></i> Dodajte</button>
+                                            </div>
+                                            {{ render(controller('App\\Controller\\CommentController::formInt', { task: checklist.id } )) }}
+                                        {% endif %}
+                                    </div>
+
+
+                                </div>
                             </div>
                         </div>
                         <!-- /right content -->
@@ -337,21 +324,40 @@
         </div>
         <!-- /main content -->
 
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #} #}
     </div>
     {% include 'includes/notification.html.twig' %}
+    {% if comments is not empty %}
+        {% for comment in comments %}
+            <!-- delete note modal -->
+            <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white border-0">
+                            <h6 class="modal-title">Potvrda</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <p>Da li ste sigurni da želite da obrišete ovaj komentar?</p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
+                            <a href="{{ path('app_comment_delete_int', {id: comment.id} ) }}" class="btn btn-danger"><i class="ph-trash me-2"></i>Obrišite</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /delete note modal -->
+        {% endfor %}
+    {% endif %}
 {% endblock content %}
 
 {% block includeJavascript %}
     {{ parent() }}
 
     <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
-{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
 
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
@@ -387,7 +393,7 @@
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
     {% endif %}
-
+    <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
 {% endblock includeJavascript %}
 
 {#{% block footerJavascript %}#}

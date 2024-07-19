@@ -56,7 +56,7 @@
                                 <div class="col">
                                     {% if calendar %}
                                         <a type="button" href="{{ path('app_calendar_list') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-top-start py-2">
-                                            <i class="ph-calendar bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <i class="ph-calendar bg-secondary bg-opacity-25 text-primary lh-1 rounded-pill p-2 ph-2x"></i>
                                             <h5 class="mb-0">
                                                 {{ noCalendar }}
                                             </h5>
@@ -67,7 +67,7 @@
                                     {% endif %}
                                     {% if car %}
                                         <a type="button" href="{{ path('app_cars') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2">
-                                            <i class="ph-car bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <i class="ph-car bg-secondary bg-opacity-25 text-primary lh-1 rounded-pill p-2 ph-2x"></i>
                                             <h5 class="mb-0">{{ noCars }}</h5>
                                             <div class="fw-semibold">
                                                 Broj vozila
@@ -78,7 +78,7 @@
                                 <div class="col">
                                     {% if tool %}
                                         <a type="button" href="{{ path('app_tools') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-top-end py-2">
-                                            <i class="ph-wrench bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <i class="ph-wrench bg-secondary bg-opacity-25 text-primary lh-1 rounded-pill p-2 ph-2x"></i>
                                             <h5 class="mb-0">{{ noTools }}</h5>
                                             <div class="fw-semibold">
                                                 Broj opreme
@@ -87,7 +87,7 @@
                                     {% endif %}
                                     {% if client %}
                                         <a type="button" href="{{ path('app_ticket_list') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-end py-2">
-                                            <i class="ph-ticket bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <i class="ph-ticket bg-secondary bg-opacity-25 text-primary lh-1 rounded-pill p-2 ph-2x"></i>
                                             <h5 class="mb-0">{{ noTickets }}</h5>
                                             <div class="fw-semibold">
                                                 Broj tiketa
@@ -880,7 +880,7 @@
 
         </div>
         <!-- /main content -->
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
     </div>
     {% include 'includes/notification.html.twig' %}
 

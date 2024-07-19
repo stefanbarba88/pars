@@ -27,20 +27,23 @@
 
 
                     <div class="row">
-                        <div class="col-xl-12">
+                        <div class="col-xl-6">
+                            <!-- Marketing campaigns -->
                             <div class="card">
-                                <div class="card-header d-flex align-items-center py-lg-0">
-                                    <h5 class="py-0 mb-0">Zaduženo</h5>
+
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Zaduženi resursi</h5>
                                 </div>
-                                <div class="table-responsive card">
+                                <div class="table-responsive">
                                     <table class="table table-hover table-bordered table_morecondensed">
+                                        {% if car %}
                                         <thead>
                                         <tr class="table-light">
                                             <th colspan="3">Vozilo</th>
                                         </tr>
                                         <tr class="bg-light">
-                                            <th>Vozilo</th>
-                                            <th>Razdužite</th>
+                                            <th>Naziv</th>
+                                            <th>Kome razdužiti</th>
                                             <th class="text-center" style="width: 20px;">
                                                 <i class="ph-dots-three"></i>
                                             </th>
@@ -49,43 +52,53 @@
                                         <tbody>
                                         {% if reservation is not null %}
                                             {% if reservation.finished is null %}
-                                                <td style="width: 40%;">
-                                                    <div class="fw-semibold">{{ reservation.car.plate }}</div>
-                                                </td>
-                                                <td style="width: 50%;">
-                                                    {% if whereCarShouldGo is defined and whereCarShouldGo is not empty %}
-                                                        {{ whereCarShouldGo.getNameWithFirstLetter }}
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    <a href="{{ path('app_car_employee_reservation_stop_details', {id:reservation.id}) }}" class="btn btn-primary">Razdužite</a>
-                                                </td>
+                                                <tr>
+                                                    <td>
+                                                        <div class="text-body">
+                                                            {{ reservation.car.plate }}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="text-body">
+                                                            {% if whereCarShouldGo is defined and whereCarShouldGo is not empty %}
+                                                                {{ whereCarShouldGo.getNameWithFirstLetter }}
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="text-body">
+                                                            <a href="{{ path('app_car_employee_reservation_stop_details', {id:reservation.id}) }}" class="btn btn-primary"><i class="ph-car me-2"></i> Razdužite</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             {% else %}
                                                 <tr>
-                                                    <td colspan="3"><div class="text-body">
+                                                    <td colspan="3">
+                                                        <div class="text-body">
                                                             Niste zadužili vozilo
-                                                        </div></td>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             {% endif %}
                                         {% else %}
                                             <tr>
-                                                <td colspan="3"><div class="text-body">
-                                                        Niste zadužili vozilo
-                                                    </div></td>
+                                                <td colspan="3">
+                                                    <div class="text-body">
+                                                        Nemate zaduženo vozilo
+                                                    </div>
+                                                </td>
                                             </tr>
                                         {% endif %}
                                         </tbody>
-                                    </table>
-                                </div>
-                                <div class="table-responsive card">
-                                    <table class="table table-hover table-bordered table_morecondensed">
+                                        {% endif %}
+                                        {% if tool %}
                                         <thead>
                                         <tr class="table-light">
                                             <th colspan="3">Oprema</th>
                                         </tr>
                                         <tr class="bg-light">
                                             <th>Naziv</th>
-                                            <th>Razdužite</th>
+                                            <th>Kome razdužiti</th>
                                             <th class="text-center" style="width: 20px;">
                                                 <i class="ph-dots-three"></i>
                                             </th>
@@ -95,12 +108,12 @@
                                         {% if toolsReservation is not empty %}
                                             {% for reservation in toolsReservation %}
                                                 <tr>
-                                                    <td style="width: 40%;">
-                                                        <div class="fw-semibold">
+                                                    <td>
+                                                        <div class="text-body">
                                                             {{ reservation.reservation.tool.title }}
                                                         </div>
                                                     </td>
-                                                    <td style="width: 50%;">
+                                                    <td>
                                                         <div class="text-body">
                                                             {% if reservation.where is not null %}
                                                                 {{ reservation.where.getNameWithFirstLetter }}
@@ -109,7 +122,7 @@
                                                     </td>
                                                     <td>
                                                         <div class="text-body">
-                                                            <a href="{{ path('app_tool_employee_reservation_stop_details', {id:reservation.reservation.id}) }}" class="btn btn-primary">Razdužite</a>
+                                                            <a href="{{ path('app_tool_employee_reservation_stop_details', {id:reservation.reservation.id}) }}" class="btn btn-primary"><i class="ph-wrench me-2"></i> Razdužite</a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -117,31 +130,34 @@
                                         {% else %}
                                             <tr>
                                                 <td colspan="3"><div class="text-body">
-                                                        Niste zadužili opremu
-                                                    </div></td>
+                                                        Nemate zadužene opreme
+                                                    </div>
+                                                </td>
                                             </tr>
                                         {% endif %}
                                         </tbody>
+                                        {% endif %}
                                     </table>
                                 </div>
                             </div>
+                            <!-- /marketing campaigns -->
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xl-12">
+                        <div class="col-xl-6">
+                            <!-- Marketing campaigns -->
                             <div class="card">
-                                <div class="card-header d-flex align-items-center py-lg-0">
-                                    <h5 class="py-0 mb-0">Za zaduživanje</h5>
+
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Resursi za zaduživanje</h5>
                                 </div>
-                                <div class="table-responsive card">
+                                <div class="table-responsive">
                                     <table class="table table-hover table-bordered table_morecondensed">
+                                        {% if car %}
                                         <thead>
                                         <tr class="table-light">
                                             <th colspan="3">Vozilo</th>
                                         </tr>
                                         <tr class="bg-light">
-                                            <th>Vozilo</th>
+                                            <th>Naziv</th>
                                             <th>Trenutno zadužen</th>
                                             <th class="text-center" style="width: 20px;">
                                                 <i class="ph-dots-three"></i>
@@ -149,19 +165,18 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-
                                         {% if carToReserve is not null %}
                                             <tr>
-                                                <td style="width: 40%;">
-                                                    <div class="fw-semibold">
+                                                <td>
+                                                    <div class="text-body">
                                                         {{ carToReserve.plate }}
                                                     </div>
                                                 </td>
-                                                <td style="width: 50%;">
+                                                <td>
                                                     <div class="text-body">
                                                         {% if lastReservation is not null %}
                                                             {% if lastReservation.driver.id != app.user.id %}
-                                                                {{ lastReservation.driver.getNameWithFirstLetter }}
+                                                                {{ lastReservation.driver.getNameWithFirstLetter}}
                                                             {% else %}
                                                                 Vozilo je već zaduženo
                                                             {% endif %}
@@ -174,7 +189,7 @@
                                                 <td>
                                                     <div class="text-body">
                                                         {% if lastReservation is not null %}
-                                                            <a href="" class="btn btn-primary disabled">Zadužite</a>
+                                                            <a href="" class="btn btn-primary disabled"><i class="ph-car me-2"></i> Zadužite</a>
                                                         {% else %}
                                                             <a href="{{ path('app_car_employee_reservation_details_form', {id:carToReserve.id}) }}" class="btn btn-primary"><i class="ph-car me-2" ></i> Zadužite</a>
                                                         {% endif %}
@@ -188,12 +203,9 @@
                                                     </div></td>
                                             </tr>
                                         {% endif %}
-
                                         </tbody>
-                                    </table>
-                                </div>
-                                <div class="table-responsive card">
-                                    <table class="table table-hover table-bordered table_morecondensed">
+                                        {% endif %}
+                                        {% if tool %}
                                         <thead>
                                         <tr class="table-light">
                                             <th colspan="3">Oprema</th>
@@ -210,16 +222,16 @@
                                         {% if toolsToReserve is not empty %}
                                             {% for tool in toolsToReserve %}
                                                 <tr>
-                                                    <td style="width: 40%;">
-                                                        <div class="fw-semibold">
+                                                    <td>
+                                                        <div class="text-body">
                                                             {{ tool.tool.title }}
                                                         </div>
                                                     </td>
-                                                    <td style="width: 50%;">
+                                                    <td>
                                                         <div class="text-body">
                                                             {% if tool.tool.isReserved %}
                                                                 {% if tool.lastReservation.user.id != app.user.id %}
-                                                                    {{ tool.lastReservation.user.fullName}}
+                                                                    {{ tool.lastReservation.user.getNameWithFirstLetter}}
                                                                 {% else %}
                                                                     Oprema je već zadužena
                                                                 {% endif %}
@@ -228,12 +240,13 @@
                                                             {% endif %}
                                                         </div>
                                                     </td>
+
                                                     <td>
                                                         <div class="text-body">
                                                             {% if tool.tool.isReserved %}
-                                                                <a href="" class="btn btn-primary disabled">Zadužite</a>
+                                                                <a href="" class="btn btn-primary disabled"><i class="ph-wrench me-2"></i> Zadužite</a>
                                                             {% else %}
-                                                                <a href="{{ path('app_employee_reservation_details_tool_form', {id: tool.tool.id}) }}" class="btn btn-primary">Zadužite</a>
+                                                                <a href="{{ path('app_employee_reservation_details_tool_form', {id: tool.tool.id}) }}" class="btn btn-primary"><i class="ph-wrench me-2"></i> Zadužite</a>
                                                             {% endif %}
                                                         </div>
                                                     </td>
@@ -247,9 +260,11 @@
                                             </tr>
                                         {% endif %}
                                         </tbody>
+                                        {% endif %}
                                     </table>
                                 </div>
                             </div>
+                            <!-- /marketing campaigns -->
                         </div>
                     </div>
 
@@ -263,7 +278,7 @@
         </div>
 
         <!-- /main content -->
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

@@ -131,8 +131,22 @@ class HomeController extends AbstractController {
 
       if ($user->getCompany()->getSettings()->isCar()) {
         $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $user, 'finished' => null], ['id' => 'desc']);
-
       }
+
+      if ($user->getCompany()->getSettings()->isTool()) {
+        $args['noTools'] = 0;
+        if ($user->getToolReservations()->isEmpty()) {
+          $args['noTools'] = 0;
+        } else {
+          foreach ($user->getToolReservations() as $res) {
+            if (is_null($res->getFinished())) {
+              $args['noTools']++;
+            }
+          }
+        }
+      }
+
+
       $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUser($user);
 //        $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUserBasic($user);
 

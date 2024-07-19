@@ -8,6 +8,7 @@ use App\Classes\Data\PrioritetData;
 use App\Classes\Data\RepeatingIntervalData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Category;
+use App\Entity\Comment;
 use App\Entity\ManagerChecklist;
 use App\Entity\Pdf;
 use App\Entity\Project;
@@ -434,6 +435,7 @@ class CheckListController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args['checklist'] = $checklist;
+    $args['comments'] = $this->em->getRepository(Comment::class)->findBy(['managerChecklist' => $checklist, 'isSuspended' => false], ['id' => 'DESC']);
     return $this->render('check_list/view.html.twig', $args);
   }
 

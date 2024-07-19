@@ -39,20 +39,21 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive card">
-                                            <table class="table table-bordered table-hover table-responsive table-sm">
+                                            <table class="table table-bordered table-hover table-responsive table-sm" id="myTable">
                                                 <thead>
-                                                <tr class="bg-light text-primary">
-                                                    <th colspan="11">Zadaci</th>
-                                                </tr>
                                                 <tr class="bg-light text-primary">
                                                     <th>Projekat</th>
                                                     <th>Kategorija</th>
                                                     <th>Zaposleni</th>
                                                     <th>Primarni dnevnik</th>
                                                     <th>Aktivnosti</th>
-                                                    <th>Oprema</th>
-                                                    <th>Vozilo</th>
-                                                    <th>Vozač</th>
+                                                    {% if isTool %}
+                                                        <th>Oprema</th>
+                                                    {% endif %}
+                                                    {% if isCar %}
+                                                        <th>Vozilo</th>
+                                                        <th>Vozač</th>
+                                                    {% endif %}
                                                     <th>Vreme</th>
                                                     <th style="width: 18%">Napomena</th>
                                                     <th style="width: 2%">Naplativ</th>
@@ -95,6 +96,7 @@
                                                                 {% endfor %}
                                                             {% endif %}
                                                         </td>
+                                                        {% if isTool %}
                                                         <td>
                                                             <div class="fw-semibold">
                                                                 {% if task.oprema is not empty %}
@@ -104,6 +106,8 @@
                                                                 {% endif %}
                                                             </div>
                                                         </td>
+                                                            {% endif %}
+                                                            {% if isCar %}
                                                         <td>
                                                             <div class="fw-semibold">
                                                                 {% if task.car is not null %}{{ getCarById(task.car) }}{% endif %}
@@ -114,6 +118,7 @@
                                                                 {% if task.driver is not null %}{{ getUserById(task.driver) }}{% endif %}
                                                             </div>
                                                         </td>
+                                                                {% endif %}
                                                         <td>
                                                             <div class="d-inline-flex align-items-center">
                                                                 <i class="ph-clock me-2"></i>
@@ -252,7 +257,7 @@
         </div>
         <!-- /main content -->
 
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -295,5 +300,13 @@
 
 {% endblock includeJavascript %}
 
-
+{% block footerJavascript %}
+    <script>
+        $(document).ready(function() {
+            var columnCount = $('#myTable thead tr th').length;
+            var newHeader = $('<tr class="bg-light text-primary"><th colspan="' + columnCount + '">Zadaci</th></tr>');
+            $('#myTable thead').prepend(newHeader);
+        });
+    </script>
+{% endblock footerJavascript %}
 

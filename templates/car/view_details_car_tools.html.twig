@@ -26,288 +26,158 @@
                 <div class="content">
 
                     <div class="row ">
-                        <div class="col-xl-12">
+                        <div class="col-xl-6">
                             <!-- Marketing campaigns -->
                             <div class="card">
 
                             <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Zaduženo</h5>
+                            <h5 class="mb-0">Zaduženi resursi</h5>
                                 </div>
-                                <div class="table-responsive card">
+                                <div class="table-responsive">
                                     <table class="table table-hover table-bordered table-sm">
-                                        <thead>
-                                        <tr class="table-light">
-                                            <th colspan="8">Vozilo</th>
-                                        </tr>
-                                        <tr class="bg-light">
-                                            <th>Vozilo</th>
-                                            <th>Zadužen</th>
-                                            <th>Kilometraža</th>
-                                            <th>Nivo goriva</th>
-                                            <th>Nivo čistoće</th>
-                                            <th>Napomena</th>
-                                            <th>Razdužiti</th>
-                                            <th class="text-center" style="width: 20px;">
-                                                <i class="ph-dots-three"></i>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% if reservation is not null %}
-                                            {% if reservation.finished is null %}
-                                                <tr>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {{ reservation.car.carName }}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {{ reservation.created | date("d.m.Y H:i:s")}}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {{ reservation.kmStart }} km
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {% if reservation.fuelStart == constant('App\\Classes\\Data\\FuelData::PRAZNO') %}
-                                                                Prazan rezervoar
-                                                            {% endif %}
-                                                            {% if reservation.fuelStart == constant('App\\Classes\\Data\\FuelData::CETVRT') %}
-                                                                1/4
-                                                            {% endif %}
-                                                            {% if reservation.fuelStart == constant('App\\Classes\\Data\\FuelData::POLA') %}
-                                                                1/2
-                                                            {% endif %}
-                                                            {% if reservation.fuelStart == constant('App\\Classes\\Data\\FuelData::TRI_CETVRTI') %}
-                                                                3/4
-                                                            {% endif %}
-                                                            {% if reservation.fuelStart == constant('App\\Classes\\Data\\FuelData::PUN') %}
-                                                                Pun rezervoar
-                                                            {% endif %}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {% if reservation.cleanStart == constant('App\\Classes\\Data\\CleanData::LOSE') %}
-                                                                Loše
-                                                            {% endif %}
-                                                            {% if reservation.cleanStart == constant('App\\Classes\\Data\\CleanData::DOVOLJNO') %}
-                                                                Dovoljno
-                                                            {% endif %}
-                                                            {% if reservation.cleanStart == constant('App\\Classes\\Data\\CleanData::DOBRO') %}
-                                                                Dobro
-                                                            {% endif %}
-                                                            {% if reservation.cleanStart == constant('App\\Classes\\Data\\CleanData::VRLO_DOBRO') %}
-                                                                Vrlo dobro
-                                                            {% endif %}
-                                                            {% if reservation.cleanStart == constant('App\\Classes\\Data\\CleanData::ODLICNO') %}
-                                                                Odlično
-                                                            {% endif %}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {{ reservation.descStart }}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {% if whereCarShouldGo is defined and whereCarShouldGo is not empty %}
-                                                                {{ whereCarShouldGo.fullName }}
-                                                            {% endif %}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            <a href="{{ path('app_car_employee_reservation_stop_details', {id:reservation.id}) }}" class="btn btn-primary"><i class="ph-car me-2"></i> Razdužite</a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                        {% if car %}
+                                            <thead>
+                                            <tr class="table-light">
+                                                <th colspan="3">Vozilo</th>
+                                            </tr>
+                                            <tr class="bg-light">
+                                                <th>Naziv</th>
+                                                <th>Kome razdužiti</th>
+                                                <th class="text-center" style="width: 20px;">
+                                                    <i class="ph-dots-three"></i>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% if reservation is not null %}
+                                                {% if reservation.finished is null %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ reservation.car.carName }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% if whereCarShouldGo is defined and whereCarShouldGo is not empty %}
+                                                                    {{ whereCarShouldGo.fullName }}
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                <a href="{{ path('app_car_employee_reservation_stop_details', {id:reservation.id}) }}" class="btn btn-primary"><i class="ph-car me-2"></i> Razdužite</a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="3">
+                                                            <div class="text-body">
+                                                                Niste zadužili vozilo
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
                                             {% else %}
                                                 <tr>
-                                                    <td colspan="8">
+                                                    <td colspan="3">
                                                         <div class="text-body">
-                                                            Niste zadužili vozilo
+                                                            Nemate zaduženo vozilo
                                                         </div>
                                                     </td>
                                                 </tr>
                                             {% endif %}
-                                        {% else %}
-                                            <tr>
-                                                <td colspan="8">
-                                                    <div class="text-body">
-                                                        Niste zadužili vozilo
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                            </tbody>
                                         {% endif %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="table-responsive card">
-                                    <table class="table table-hover table-bordered table-sm">
-                                        <thead>
-                                        <tr class="table-light">
-                                            <th colspan="5">Oprema</th>
-                                        </tr>
-                                        <tr class="bg-light">
-                                            <th>Naziv</th>
-                                            <th>Zadužen</th>
-                                            <th>Napomena</th>
-                                            <th>Razdužiti</th>
-                                            <th class="text-center" style="width: 20px;">
-                                                <i class="ph-dots-three"></i>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% if toolsReservation is not empty %}
-                                            {% for reservation in toolsReservation %}
+                                        {% if tool %}
+                                            <thead>
+                                            <tr class="table-light">
+                                                <th colspan="3">Oprema</th>
+                                            </tr>
+                                            <tr class="bg-light">
+                                                <th>Naziv</th>
+                                                <th>Kome razdužiti</th>
+                                                <th class="text-center" style="width: 20px;">
+                                                    <i class="ph-dots-three"></i>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% if toolsReservation is not empty %}
+                                                {% for reservation in toolsReservation %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ reservation.reservation.tool.title }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% if reservation.where is not null %}
+                                                                    {{ reservation.where.fullName }}
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                <a href="{{ path('app_tool_employee_reservation_stop_details', {id:reservation.reservation.id}) }}" class="btn btn-primary"><i class="ph-wrench me-2"></i> Razdužite</a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% else %}
                                                 <tr>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {{ reservation.reservation.tool.title }}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {{ reservation.reservation.created | date("d.m.Y H:i:s")}}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {{ reservation.reservation.descStart }}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            {% if reservation.where is not null %}
-                                                                {{ reservation.where.fullName }}
-                                                            {% endif %}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-body">
-                                                            <a href="{{ path('app_tool_employee_reservation_stop_details', {id:reservation.reservation.id}) }}" class="btn btn-primary"><i class="ph-wrench me-2"></i> Razdužite</a>
+                                                    <td colspan="3"><div class="text-body">
+                                                            Nemate zadužene opreme
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            {% endfor %}
-                                        {% else %}
-                                            <tr>
-                                                <td colspan="5"><div class="text-body">
-                                                        Niste zadužili opremu
-                                                    </div></td>
-                                            </tr>
+                                            {% endif %}
+                                            </tbody>
                                         {% endif %}
-                                        </tbody>
                                     </table>
-
                                 </div>
                             </div>
                             <!-- /marketing campaigns -->
                         </div>
-                    </div>
-
-
-                    <div class="row ">
-                        <div class="col-xl-12">
+                        <div class="col-xl-6">
                             <!-- Marketing campaigns -->
                             <div class="card">
 
-                            <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Za zaduživanje</h5>
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Resursi za zaduživanje</h5>
                                 </div>
-                                <div class="table-responsive card">
+                                <div class="table-responsive">
                                     <table class="table table-hover table-bordered table-sm">
-                                        <thead>
-                                        <tr class="table-light">
-                                            <th colspan="3">Vozilo</th>
-                                        </tr>
-                                        <tr class="bg-light">
-                                            <th>Vozilo</th>
-                                            <th>Trenutno zadužen</th>
-                                            <th class="text-center" style="width: 20px;">
-                                                <i class="ph-dots-three"></i>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% if carToReserve is not null %}
-                                            <tr>
-                                                <td>
-                                                    <div class="text-body">
-                                                        {{ carToReserve.carName }}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="text-body">
-                                                        {% if lastReservation is not null %}
-                                                            {% if lastReservation.driver.id != app.user.id %}
-                                                                {{ lastReservation.driver.fullName}}
-                                                            {% else %}
-                                                                Vozilo je već zaduženo
-                                                            {% endif %}
-                                                        {% else %}
-                                                            U firmi
-                                                        {% endif %}
-                                                    </div>
-                                                </td>
-
-                                                <td>
-                                                    <div class="text-body">
-                                                        {% if lastReservation is not null %}
-                                                            <a href="" class="btn btn-primary disabled"><i class="ph-car me-2"></i> Zadužite</a>
-                                                        {% else %}
-                                                            <a href="{{ path('app_car_employee_reservation_details_form', {id:carToReserve.id}) }}" class="btn btn-primary"><i class="ph-car me-2" ></i> Zadužite</a>
-                                                        {% endif %}
-                                                    </div>
-                                                </td>
+                                        {% if car %}
+                                            <thead>
+                                            <tr class="table-light">
+                                                <th colspan="3">Vozilo</th>
                                             </tr>
-                                        {% else %}
-                                            <tr>
-                                                <td colspan="3"><div class="text-body">
-                                                        Nemate vozilo za zaduživanje
-                                                    </div></td>
+                                            <tr class="bg-light">
+                                                <th>Naziv</th>
+                                                <th>Trenutno zadužen</th>
+                                                <th class="text-center" style="width: 20px;">
+                                                    <i class="ph-dots-three"></i>
+                                                </th>
                                             </tr>
-                                        {% endif %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="table-responsive card">
-                                    <table class="table table-hover table-bordered table-sm">
-                                        <thead>
-                                        <tr class="table-light">
-                                            <th colspan="3">Oprema</th>
-                                        </tr>
-                                        <tr class="bg-light">
-                                            <th>Naziv</th>
-                                            <th>Trenutno zadužen</th>
-                                            <th class="text-center" style="width: 20px;">
-                                                <i class="ph-dots-three"></i>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% if toolsToReserve is not empty %}
-                                            {% for tool in toolsToReserve %}
+                                            </thead>
+                                            <tbody>
+                                            {% if carToReserve is not null %}
                                                 <tr>
                                                     <td>
                                                         <div class="text-body">
-                                                            {{ tool.tool.title }}
+                                                            {{ carToReserve.carName }}
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="text-body">
-                                                            {% if tool.tool.isReserved %}
-                                                                {% if tool.lastReservation.user.id != app.user.id %}
-                                                                    {{ tool.lastReservation.user.fullName}}
+                                                            {% if lastReservation is not null %}
+                                                                {% if lastReservation.driver.id != app.user.id %}
+                                                                    {{ lastReservation.driver.fullName}}
                                                                 {% else %}
-                                                                    Oprema je već zadužena
+                                                                    Vozilo je već zaduženo
                                                                 {% endif %}
                                                             {% else %}
                                                                 U firmi
@@ -317,30 +187,85 @@
 
                                                     <td>
                                                         <div class="text-body">
-                                                            {% if tool.tool.isReserved %}
-                                                                <a href="" class="btn btn-primary disabled"><i class="ph-wrench me-2"></i> Zadužite</a>
+                                                            {% if lastReservation is not null %}
+                                                                <a href="" class="btn btn-primary disabled"><i class="ph-car me-2"></i> Zadužite</a>
                                                             {% else %}
-                                                                <a href="{{ path('app_employee_reservation_details_tool_form', {id: tool.tool.id}) }}" class="btn btn-primary"><i class="ph-wrench me-2"></i> Zadužite</a>
+                                                                <a href="{{ path('app_car_employee_reservation_details_form', {id:carToReserve.id}) }}" class="btn btn-primary"><i class="ph-car me-2" ></i> Zadužite</a>
                                                             {% endif %}
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            {% endfor %}
-                                        {% else %}
-                                            <tr>
-                                                <td colspan="3"><div class="text-body">
-                                                        Nemate opremu za zaduživanje
-                                                    </div></td>
-                                            </tr>
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="3"><div class="text-body">
+                                                            Nemate vozilo za zaduživanje
+                                                        </div></td>
+                                                </tr>
+                                            {% endif %}
+                                            </tbody>
                                         {% endif %}
-                                        </tbody>
+                                        {% if tool %}
+                                            <thead>
+                                            <tr class="table-light">
+                                                <th colspan="3">Oprema</th>
+                                            </tr>
+                                            <tr class="bg-light">
+                                                <th>Naziv</th>
+                                                <th>Trenutno zadužen</th>
+                                                <th class="text-center" style="width: 20px;">
+                                                    <i class="ph-dots-three"></i>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% if toolsToReserve is not empty %}
+                                                {% for tool in toolsToReserve %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {{ tool.tool.title }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% if tool.tool.isReserved %}
+                                                                    {% if tool.lastReservation.user.id != app.user.id %}
+                                                                        {{ tool.lastReservation.user.fullName}}
+                                                                    {% else %}
+                                                                        Oprema je već zadužena
+                                                                    {% endif %}
+                                                                {% else %}
+                                                                    U firmi
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+
+                                                        <td>
+                                                            <div class="text-body">
+                                                                {% if tool.tool.isReserved %}
+                                                                    <a href="" class="btn btn-primary disabled"><i class="ph-wrench me-2"></i> Zadužite</a>
+                                                                {% else %}
+                                                                    <a href="{{ path('app_employee_reservation_details_tool_form', {id: tool.tool.id}) }}" class="btn btn-primary"><i class="ph-wrench me-2"></i> Zadužite</a>
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="3"><div class="text-body">
+                                                            Nemate opremu za zaduživanje
+                                                        </div></td>
+                                                </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        {% endif %}
                                     </table>
                                 </div>
                             </div>
                             <!-- /marketing campaigns -->
                         </div>
                     </div>
-
 
                 </div>
                 <!-- /content area -->
@@ -352,7 +277,7 @@
         </div>
 
         <!-- /main content -->
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #} #}
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

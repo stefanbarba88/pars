@@ -12,6 +12,7 @@ use App\Entity\CarReservation;
 use App\Entity\Expense;
 use App\Entity\FastTask;
 use App\Entity\Image;
+use App\Entity\Plan;
 use App\Entity\Tool;
 use App\Entity\ToolReservation;
 use App\Entity\User;
@@ -458,6 +459,9 @@ class CarController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::CAR_ADD_IMAGE);
 
+        if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+          return $this->redirectToRoute('app_home');
+        }
         return $this->redirectToRoute('app_car_images_view', ['id' => $reservation->getCar()->getId()]);
 
       }
@@ -874,115 +878,6 @@ class CarController extends AbstractController {
 
   }
 
-//ovo dodajemo kada budemo kreirali plan
-
-  #[Route('/view-details-car-tools/', name: 'app_car_tools_details_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewDetailsCarTools(): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args['user'] = $this->getUser();
-
-    $args['reservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $this->getUser()], ['id' => 'desc']);
-    if (!is_null($args['reservation'])) {
-      $car = $args['reservation']->getCar();
-      $args['whereCarShouldGo'] = $this->em->getRepository(FastTask::class)->whereCarShouldGo($car);
-    }
-    $args['toolsReservation'] = $this->em->getRepository(Tool::class)->findReservedToolsBy($this->getUser());
-
-
-    $args['carToReserve'] = $this->em->getRepository(FastTask::class)->findCarToReserve($this->getUser());
-    $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $args['carToReserve'], 'finished' => null], ['id' => 'desc']);
-    $args['toolsToReserve'] = $this->em->getRepository(FastTask::class)->findToolsToReserve($this->getUser());
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/view_details_car_tools.html.twig', $args);
-    }
-
-    return $this->render('car/view_details_car_tools.html.twig', $args);
-  }
-
-  #[Route('/stop-employee-reservation-details/{id}', name: 'app_car_employee_reservation_stop_details')]
-  public function stopEmployeeReservationDetails(CarReservation $reservation, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    $user = $this->getUser();
-    $form = $this->createForm(CarStopReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_stop_details', ['id' => $reservation->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $reservation->setFinished(new DateTimeImmutable());
-        $this->em->getRepository(CarReservation::class)->save($reservation);
-
-        return $this->redirectToRoute('app_car_tools_details_view');
-      }
-    }
-
-    $args['form'] = $form->createView();
-    $args['reservation'] = $reservation;
-    $args['car'] = $reservation->getCar();
-    $args['user'] = $user;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/form_reservation_stop_employee.html.twig', $args);
-    }
-    return $this->render('car/form_reservation_stop_employee.html.twig', $args);
-  }
-
-  #[Route('/form-employee-reservation-details/{id}', name: 'app_car_employee_reservation_details_form', defaults: ['id' => 0])]
-  #[Entity('car', expr: 'repository.find(id)')]
-  #[Entity('reservation', expr: 'repository.findForFormCar(car)')]
-//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formEmployeeReservationDetails(CarReservation $reservation, Car $car, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    $user = $this->getUser();
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $reservation->setDriver($user);
-      $reservation->setKmStart($car->getKm());
-    }
-
-    $form = $this->createForm(CarReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_details_form', ['id' => $car->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $this->em->getRepository(CarReservation::class)->save($reservation);
-
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_RESERVE);
-
-          return $this->redirectToRoute('app_car_tools_details_view');
-
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['car'] = $car;
-    $args['reservation'] = $reservation;
-    $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/form_reservation_employee.html.twig', $args);
-    }
-    return $this->render('car/form_reservation_employee.html.twig', $args);
-  }
-
   #[Route('/reports', name: 'app_car_reports')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function formReport(Request $request)    : Response {
@@ -1129,6 +1024,117 @@ class CarController extends AbstractController {
     $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true],['id' => 'ASC']);
 
     return $this->render('report_car/control_expense.html.twig', $args);
+  }
+
+
+  #[Route('/view-details-car-tools/', name: 'app_car_tools_details_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewDetailsCarTools(): Response {
+    if (!$this->isGranted('ROLE_USER') || (!$this->getUser()->getCompany()->getSettings()->isCar() && !$this->getUser()->getCompany()->getSettings()->isTool())) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args['user'] = $this->getUser();
+
+    $args['reservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $this->getUser()], ['id' => 'desc']);
+    if (!is_null($args['reservation'])) {
+      $car = $args['reservation']->getCar();
+      $args['whereCarShouldGo'] = $this->em->getRepository(Plan::class)->whereCarShouldGo($car);
+    }
+    $args['toolsReservation'] = $this->em->getRepository(Tool::class)->findReservedToolsBy($this->getUser());
+
+
+    $args['carToReserve'] = $this->em->getRepository(Plan::class)->findCarToReserve($this->getUser());
+    $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $args['carToReserve'], 'finished' => null], ['id' => 'desc']);
+    $args['toolsToReserve'] = $this->em->getRepository(Plan::class)->findToolsToReserve($this->getUser());
+
+    $args['car'] = $this->getUser()->getCompany()->getSettings()->isCar();
+    $args['tool'] = $this->getUser()->getCompany()->getSettings()->isTool();
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/view_details_car_tools.html.twig', $args);
+    }
+
+    return $this->render('car/view_details_car_tools.html.twig', $args);
+  }
+
+  #[Route('/stop-employee-reservation-details/{id}', name: 'app_car_employee_reservation_stop_details')]
+  public function stopEmployeeReservationDetails(CarReservation $reservation, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $user = $this->getUser();
+    $form = $this->createForm(CarStopReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_stop_details', ['id' => $reservation->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $reservation->setFinished(new DateTimeImmutable());
+        $this->em->getRepository(CarReservation::class)->save($reservation);
+
+        return $this->redirectToRoute('app_car_tools_details_view');
+      }
+    }
+
+    $args['form'] = $form->createView();
+    $args['reservation'] = $reservation;
+    $args['car'] = $reservation->getCar();
+    $args['user'] = $user;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/form_reservation_stop_employee.html.twig', $args);
+    }
+    return $this->render('car/form_reservation_stop_employee.html.twig', $args);
+  }
+
+  #[Route('/form-employee-reservation-details/{id}', name: 'app_car_employee_reservation_details_form', defaults: ['id' => 0])]
+  #[Entity('car', expr: 'repository.find(id)')]
+  #[Entity('reservation', expr: 'repository.findForFormCar(car)')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formEmployeeReservationDetails(CarReservation $reservation, Car $car, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $user = $this->getUser();
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $reservation->setDriver($user);
+      $reservation->setKmStart($car->getKm());
+    }
+
+    $form = $this->createForm(CarReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_details_form', ['id' => $car->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(CarReservation::class)->save($reservation);
+
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::CAR_RESERVE);
+
+        return $this->redirectToRoute('app_car_tools_details_view');
+
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['car'] = $car;
+    $args['reservation'] = $reservation;
+    $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('car/phone/form_reservation_employee.html.twig', $args);
+    }
+    return $this->render('car/form_reservation_employee.html.twig', $args);
   }
 
 }

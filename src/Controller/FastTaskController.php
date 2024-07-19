@@ -140,8 +140,12 @@ FastTaskController extends AbstractController {
     $args['activities'] = $this->em->getRepository(Activity::class)->getActivities();
     $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()], ['title' => 'ASC']);
     $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
+
+
     $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
+
     $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
+
     $args['disabledDates'] = $this->em->getRepository(Plan::class)->getDisabledDates();
     $args['datum'] = $datum;
 
@@ -210,6 +214,8 @@ FastTaskController extends AbstractController {
 
     $args = [];
     $args['plan'] = $plan;
+    $args['isCar'] = $plan->getCompany()->getSettings()->isCar();
+    $args['isTool'] = $plan->getCompany()->getSettings()->isTool();
 
     return $this->render('fast_task/view.html.twig', $args);
   }

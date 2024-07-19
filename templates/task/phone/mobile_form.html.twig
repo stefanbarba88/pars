@@ -365,7 +365,7 @@
         </div>
         <!-- /main content -->
 
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
     </div>
     {% if project is defined %}
         {{ render(controller('App\\Controller\\TaskController::editDate', { task: task, project: project } )) }}

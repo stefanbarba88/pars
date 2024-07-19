@@ -38,13 +38,31 @@ class CarsStatusCommand extends Command {
 
     $companies = $this->em->getRepository(Company::class)->findBy(['isSuspended' => false]);
 
+//    foreach ($companies as $company) {
+//      if ($company->getSettings()->isCar()) {
+//        $rezervacije = [];
+//        $cars = $this->em->getRepository(Car::class)->findBy(['company' => $company, 'isSuspended' => false]);
+//        foreach ($cars as $car) {
+//          $rezervacije[] = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'DESC']);
+//        }
+//
+//        if (!empty($rezervacije)) {
+//          $this->mail->carStatus($rezervacije, $company);
+//        }
+//      }
+//    }
+
     foreach ($companies as $company) {
       if ($company->getSettings()->isCar()) {
         $rezervacije = [];
         $cars = $this->em->getRepository(Car::class)->findBy(['company' => $company, 'isSuspended' => false]);
         foreach ($cars as $car) {
-          $rezervacije[] = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'DESC']);
+          $rezervacija = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'DESC']);
+          if (!is_null($rezervacija)) {
+            $rezervacije[] = $rezervacija;
+          }
         }
+
         if (!empty($rezervacije)) {
           $this->mail->carStatus($rezervacije, $company);
         }

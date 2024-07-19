@@ -4,12 +4,15 @@ namespace App\Repository;
 
 use App\Classes\Data\FastTaskData;
 use App\Entity\Activity;
+use App\Entity\Car;
 use App\Entity\Category;
 use App\Entity\Company;
 use App\Entity\Plan;
 use App\Entity\PripremaZadatak;
 use App\Entity\Project;
+use App\Entity\Task;
 use App\Entity\Tool;
+use App\Entity\ToolReservation;
 use App\Entity\User;
 use App\Service\MailService;
 use DateInterval;
@@ -701,6 +704,397 @@ class PlanRepository extends ServiceEntityRepository {
       return $task;
     }
     return $this->getEntityManager()->getRepository(Plan::class)->find($id);
+
+  }
+
+  public function findCarToReserve(User $user): ?Car {
+    $company = $this->security->getUser()->getCompany();
+    $sutra = new DateTimeImmutable('tomorrow');
+    $danas = new DateTimeImmutable();
+
+    $startDate = $danas->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $danas->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $danasnjiTaskovi = $this->getEntityManager()->getRepository(Task::class)->getTasksByDate($danas);
+    $sutrasnjiTaskovi = $this->getEntityManager()->getRepository(Task::class)->getTasksByDate($sutra);
+
+
+    $lista = [];
+    foreach ($danasnjiTaskovi as $dnsTask) {
+      if (!empty($dnsTask['driver']) && $dnsTask['driver'][0] == $user ){
+        if ($dnsTask['status'] != 2) {
+          $lista[] = [
+            'datum' => $dnsTask['task']->getTime(),
+            'car' => $dnsTask['task']->getCar(),
+          ];
+        }
+      }
+    }
+
+    if (empty($lista)) {
+      foreach ($sutrasnjiTaskovi as $dnsTask) {
+        if (!empty($dnsTask['driver']) && $dnsTask['driver'][0] == $user ){
+          if ($dnsTask['status'] != 2) {
+            $lista[] = [
+              'datum' => $dnsTask['task']->getTime(),
+              'car' => $dnsTask['task']->getCar(),
+            ];
+          }
+        }
+      }
+      $qb = $this->createQueryBuilder('f');
+      $qb
+        ->andWhere($qb->expr()->orX(
+          $qb->expr()->eq('f.status', ':status2'),
+          $qb->expr()->eq('f.status', ':status3')
+        ))
+
+        ->andWhere('f.company = :company')
+        ->setParameter(':company', $company)
+        ->setParameter('status2', FastTaskData::SAVED)
+        ->setParameter('status3', FastTaskData::EDIT)
+        ->setMaxResults(1); // Postavljamo da vrati samo jedan rezultat
+
+      $query = $qb->getQuery();
+      $fastTask = $query->getOneOrNullResult();
+
+
+      if(!is_null($fastTask)) {
+        foreach ($fastTask->getPripremaZadataks() as $fast) {
+          if (!is_null($fast->getDriver())) {
+            if ($fast->getDriver() == $user->getId()) {
+              if (!is_null($fast->getVreme())) {
+                $vreme = $fastTask->getDatumKreiranja();
+              } else {
+                $vreme = $fast->getVreme();
+              }
+
+              if (!is_null($fast->getCar())) {
+                $vozilo = $fast->getCar();
+              } else {
+                $vozilo = null;
+              }
+              $lista[] = [
+                'datum' => $vreme,
+                'car' => $vozilo,
+              ];
+            }
+          }
+        }
+      }
+    }
+
+    usort($lista, function($a, $b) {
+      return $a['datum'] <=> $b['datum'];
+    });
+
+    foreach ($lista as $list) {
+      if (!is_null($list['car'])) {
+        return $this->getEntityManager()->getRepository(Car::class)->find($list['car']);
+      }
+    }
+
+    return null;
+
+  }
+  public function whereCarShouldGo(Car $car): ?User {
+    $company = $this->security->getUser()->getCompany();
+
+    $sutra = new DateTimeImmutable('tomorrow');
+    $danas = new DateTimeImmutable();
+
+    $startDate = $danas->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $danas->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $danasnjiTaskovi = $this->getEntityManager()->getRepository(Task::class)->getTasksByDate($danas);
+    $sutrasnjiTaskovi = $this->getEntityManager()->getRepository(Task::class)->getTasksByDate($sutra);
+
+    $lista = [];
+    foreach ($danasnjiTaskovi as $dnsTask) {
+      if (!empty($dnsTask['car']) && $dnsTask['car'][0] == $car ){
+        if ($dnsTask['status'] != 2) {
+          $lista[] = [
+            'datum' => $dnsTask['task']->getTime(),
+            'driver' => $dnsTask['task']->getDriver(),
+          ];
+        }
+      }
+    }
+
+    if (empty($lista)) {
+      foreach ($sutrasnjiTaskovi as $dnsTask) {
+        if (!empty($dnsTask['car']) && $dnsTask['car'][0] == $car ){
+          if ($dnsTask['status'] != 2) {
+            $lista[] = [
+              'datum' => $dnsTask['task']->getTime(),
+              'driver' => $dnsTask['task']->getDriver(),
+            ];
+          }
+        }
+      }
+
+      $qb = $this->createQueryBuilder('f');
+      $qb
+        ->andWhere($qb->expr()->orX(
+          $qb->expr()->eq('f.status', ':status2'),
+          $qb->expr()->eq('f.status', ':status3')
+        ))
+        ->andWhere('f.company = :company')
+        ->setParameter(':company', $company)
+        ->setParameter('status2', FastTaskData::SAVED)
+        ->setParameter('status3', FastTaskData::EDIT)
+        ->setMaxResults(1); // Postavljamo da vrati samo jedan rezultat
+
+      $query = $qb->getQuery();
+      $fastTask = $query->getOneOrNullResult();
+
+
+      if(!is_null($fastTask)) {
+        foreach ($fastTask->getPripremaZadataks() as $fast) {
+          if (!is_null($fast->getCar())) {
+            if ($fast->getCar() == $car->getId()) {
+              if (!is_null($fast->getVreme())) {
+                $vreme = $fastTask->getDatumKreiranja();
+              } else {
+                $vreme = $fast->getVreme();
+              }
+
+              if (!is_null($fast->getDriver())) {
+                $vozac = $fast->getDriver();
+              } else {
+                $vozac = null;
+              }
+              $lista[] = [
+                'datum' => $vreme,
+                'driver' => $vozac,
+              ];
+            }
+          }
+        }
+      }
+    }
+
+    usort($lista, function($a, $b) {
+      return $a['datum'] <=> $b['datum'];
+    });
+
+    foreach ($lista as $list) {
+      if (!is_null($list['driver'])) {
+        return $this->getEntityManager()->getRepository(User::class)->find($list['driver']);
+      }
+    }
+
+    return null;
+
+  }
+
+  public function findToolsToReserve(User $user): array {
+    $company = $this->security->getUser()->getCompany();
+    $sutra = new DateTimeImmutable('tomorrow');
+    $danas = new DateTimeImmutable();
+
+    $startDate = $danas->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $danas->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $danasnjiTaskovi = $this->getEntityManager()->getRepository(Task::class)->getTasksByDate($danas);
+    $sutrasnjiTaskovi = $this->getEntityManager()->getRepository(Task::class)->getTasksByDate($sutra);
+
+    $lista = [];
+
+    foreach ($danasnjiTaskovi as $dnsTask) {
+      if ($dnsTask['status'] != 2) {
+        if (!$dnsTask['task']->getOprema()->isEmpty()) {
+          if ($dnsTask['task']->getPriorityUserLog() == $user->getId()) {
+            foreach ($dnsTask['task']->getOprema() as $opr) {
+              $lista[] = [
+                'datum' => $dnsTask['task']->getTime(),
+                'user' => $dnsTask['task']->getPriorityUserLog(),
+                'tool' => $opr->getId(),
+              ];
+            }
+          }
+        }
+      }
+    }
+
+    if (empty($lista)) {
+      foreach ($sutrasnjiTaskovi as $dnsTask) {
+        if ($dnsTask['status'] != 2) {
+          if (!$dnsTask['task']->getOprema()->isEmpty()) {
+            if ($dnsTask['task']->getPriorityUserLog() == $user->getId()) {
+              foreach ($dnsTask['task']->getOprema() as $opr) {
+                $lista[] = [
+                  'datum' => $dnsTask['task']->getTime(),
+                  'user' => $dnsTask['task']->getPriorityUserLog(),
+                  'tool' => $opr->getId(),
+                ];
+              }
+            }
+          }
+        }
+      }
+
+      $qb = $this->createQueryBuilder('f');
+      $qb
+        ->andWhere($qb->expr()->orX(
+          $qb->expr()->eq('f.status', ':status2'),
+          $qb->expr()->eq('f.status', ':status3')
+        ))
+        ->andWhere('f.company = :company')
+        ->setParameter(':company', $company)
+        ->setParameter('status2', FastTaskData::SAVED)
+        ->setParameter('status3', FastTaskData::EDIT)
+        ->setMaxResults(1); // Postavljamo da vrati samo jedan rezultat
+
+      $query = $qb->getQuery();
+      $fastTask = $query->getOneOrNullResult();
+
+      if (!is_null($fastTask)) {
+        foreach ($fastTask->getPripremaZadataks() as $fast) {
+          if (!$fast->getOprema()->isEmpty()) {
+            foreach ($fast->getOprema() as $opr) {
+              if ($user->getId() == $fast->getPriorityUserLog()) {
+                if (!is_null($fast->getVreme())) {
+                  $vreme = $fastTask->getDatumKreiranja();
+                } else {
+                  $vreme = $fast->getVreme();
+                }
+
+                $lista[] = [
+                  'datum' => $vreme,
+                  'user' => $fast->getPriorityUserLog(),
+                  'tool' => $opr->getId(),
+                ];
+              }
+            }
+          }
+        }
+      }
+    }
+
+    usort($lista, function ($a, $b) {
+      return $a['datum'] <=> $b['datum'];
+    });
+
+
+    $noviNiz = [];
+
+    foreach ($lista as $element) {
+      $datum = $element['datum']->getTimestamp();
+      if (!isset($noviNiz[$datum])) {
+        $noviNiz[$datum] = [];
+      }
+      $noviNiz[$datum][] = [
+        "user" => $element['user'],
+        "tool" => $element['tool'],
+      ];
+    }
+
+    $listaOpreme = [];
+    if (!empty($noviNiz)) {
+      foreach (reset($noviNiz) as $list) {
+        $tool = $this->getEntityManager()->getRepository(Tool::class)->find($list['tool']);
+        $listaOpreme[] = [
+          'tool' => $tool,
+          'lastReservation' => $this->getEntityManager()->getRepository(ToolReservation::class)->findOneBy(['tool' => $tool], ['id' => 'desc'])
+        ];
+      }
+    }
+    return $listaOpreme;
+  }
+  public function whereToolShouldGo(Tool $tool): ?User {
+    $company = $this->security->getUser()->getCompany();
+    $sutra = new DateTimeImmutable('tomorrow');
+    $danas = new DateTimeImmutable();
+
+    $startDate = $danas->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $danas->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $danasnjiTaskovi = $this->getEntityManager()->getRepository(Task::class)->getTasksByDate($danas);
+    $sutrasnjiTaskovi = $this->getEntityManager()->getRepository(Task::class)->getTasksByDate($sutra);
+
+    $lista = [];
+
+    foreach ($danasnjiTaskovi as $dnsTask) {
+      if ($dnsTask['status'] != 2) {
+        if (!$dnsTask['task']->getOprema()->isEmpty()) {
+          foreach ($dnsTask['task']->getOprema() as $opr) {
+            if ($opr == $tool) {
+              $lista[] = [
+                'datum' => $dnsTask['task']->getTime(),
+                'user' => $dnsTask['task']->getPriorityUserLog(),
+                'tool' => $tool->getId(),
+              ];
+            }
+          }
+        }
+      }
+    }
+
+    if (empty($lista)) {
+      foreach ($sutrasnjiTaskovi as $dnsTask) {
+        if ($dnsTask['status'] != 2) {
+          if (!$dnsTask['task']->getOprema()->isEmpty()) {
+            foreach ($dnsTask['task']->getOprema() as $opr) {
+              if ($opr == $tool) {
+                $lista[] = [
+                  'datum' => $dnsTask['task']->getTime(),
+                  'user' => $dnsTask['task']->getPriorityUserLog(),
+                  'tool' => $tool->getId(),
+                ];
+              }
+            }
+          }
+        }
+      }
+
+      $qb = $this->createQueryBuilder('f');
+      $qb
+        ->andWhere($qb->expr()->orX(
+          $qb->expr()->eq('f.status', ':status2'),
+          $qb->expr()->eq('f.status', ':status3')
+        ))
+        ->andWhere('f.company = :company')
+        ->setParameter(':company', $company)
+        ->setParameter('status2', FastTaskData::SAVED)
+        ->setParameter('status3', FastTaskData::EDIT)
+        ->setMaxResults(1); // Postavljamo da vrati samo jedan rezultat
+
+      $query = $qb->getQuery();
+      $fastTask = $query->getOneOrNullResult();
+
+
+      if (!is_null($fastTask)) {
+        foreach ($fastTask->getPripremaZadataks() as $fast) {
+          if (!$fast->getOprema()->isEmpty()) {
+            if ($fast->getOprema()->contains($tool)) {
+              if (!is_null($fast->getVreme())) {
+                $vreme = $fastTask->getDatumKreiranja();
+              } else {
+                $vreme = $fast->getVreme();
+              }
+
+              $lista[] = [
+                'datum' => $vreme,
+                'user' => $fast->getPriorityUserLog(),
+                'tool' => $tool->getId(),
+              ];
+            }
+          }
+        }
+      }
+    }
+    usort($lista, function ($a, $b) {
+      return $a['datum'] <=> $b['datum'];
+    });
+
+    foreach ($lista as $list) {
+      if (!is_null($list['user'])) {
+        return $this->getEntityManager()->getRepository(User::class)->find($list['user']);
+      }
+    }
+
+    return null;
 
   }
 

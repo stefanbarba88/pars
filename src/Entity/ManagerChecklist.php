@@ -53,6 +53,9 @@ class ManagerChecklist {
   #[ORM\Column]
   private ?int $status = TaskStatusData::NIJE_ZAPOCETO;
 
+  #[ORM\OneToMany(mappedBy: 'managerChecklist', targetEntity: Comment::class)]
+  private Collection $comment;
+
   #[ORM\ManyToOne]
   private ?User $user = null;
 
@@ -84,6 +87,7 @@ class ManagerChecklist {
 
   public function __construct() {
     $this->pdfs = new ArrayCollection();
+    $this->comment = new ArrayCollection();
   }
 
   public function getCompany(): ?Company {
@@ -352,5 +356,33 @@ class ManagerChecklist {
   public function setEditBy(?User $editBy): void {
     $this->editBy = $editBy;
   }
+  /**
+   * @return Collection<int, Comment>
+   */
+  public function getComment(): Collection
+  {
+    return $this->comment;
+  }
 
+  public function addComment(Comment $comment): self
+  {
+    if (!$this->comment->contains($comment)) {
+      $this->comment->add($comment);
+      $comment->setManagerChecklist($this);
+    }
+
+    return $this;
+  }
+
+  public function removeComment(Comment $comment): self
+  {
+    if ($this->comment->removeElement($comment)) {
+      // set the owning side to null (unless already changed)
+      if ($comment->getManagerChecklist() === $this) {
+        $comment->setManagerChecklist(null);
+      }
+    }
+
+    return $this;
+  }
 }

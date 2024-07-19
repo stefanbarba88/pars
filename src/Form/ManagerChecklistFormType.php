@@ -88,7 +88,7 @@ class ManagerChecklistFormType extends AbstractType {
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],
-        'placeholder' => '---Izaberite nivo prioriteta---',
+        'placeholder' => '--Izaberite nivo prioriteta--',
         'choices' => PrioritetData::form(),
         'expanded' => false,
         'multiple' => false,

@@ -581,87 +581,6 @@ class ToolController extends AbstractController {
     return $this->render('tool/view_reservation.html.twig', $args);
   }
 
-//  #[Route('/stop-employee-reservation-details-tool/{id}', name: 'app_tool_employee_reservation_stop_details')]
-//  public function stopEmployeeReservationDetails(ToolReservation $reservation, Request $request): Response {
-//    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
-//      return $this->redirect($this->generateUrl('app_login'));
-//    }
-//
-//    $user = $this->getUser();
-//    $form = $this->createForm(ToolStopReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_tool_employee_reservation_stop_details', ['id' => $reservation->getId()])]]);
-//    if ($request->isMethod('POST')) {
-//      $form->handleRequest($request);
-//
-//      if ($form->isSubmitted() && $form->isValid()) {
-//
-//        $reservation->setFinished(new DateTimeImmutable());
-//        $this->em->getRepository(ToolReservation::class)->save($reservation);
-//
-//        return $this->redirectToRoute('app_car_tools_details_view');
-//      }
-//    }
-//
-//    $args['form'] = $form->createView();
-//    $args['reservation'] = $reservation;
-//    $args['tool'] = $reservation->getTool();
-//    $args['user'] = $user;
-//
-//    $mobileDetect = new MobileDetect();
-//    if($mobileDetect->isMobile()) {
-//      return $this->render('tool/phone/form_reservation_stop_employee.html.twig', $args);
-//    }
-//    return $this->render('tool/form_reservation_stop_employee.html.twig', $args);
-//  }
-//
-//  #[Route('/form-employee-reservation-details-tool/{id}', name: 'app_employee_reservation_details_tool_form', defaults: ['id' => 0])]
-//  #[Entity('tool', expr: 'repository.find(id)')]
-//  #[Entity('reservation', expr: 'repository.findForFormTool(tool)')]
-////  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-//
-//  public function formEmployeeReservationDetailsTool(ToolReservation $reservation, Tool $tool, Request $request): Response {
-//    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
-//      return $this->redirect($this->generateUrl('app_login'));
-//    }
-//
-//    $user = $this->getUser();
-//
-//    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-//      $reservation->setUser($user);
-//    }
-//
-//
-//
-//    $form = $this->createForm(ToolReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_employee_reservation_details_tool_form', ['id' => $tool->getId()])]]);
-//    if ($request->isMethod('POST')) {
-//      $form->handleRequest($request);
-//
-//      if ($form->isSubmitted() && $form->isValid()) {
-//
-//        $this->em->getRepository(ToolReservation::class)->save($reservation);
-//
-//
-//        notyf()
-//          ->position('x', 'right')
-//          ->position('y', 'top')
-//          ->duration(5000)
-//          ->dismissible(true)
-//          ->addSuccess(NotifyMessagesData::TOOL_RESERVE);
-//
-//        return $this->redirectToRoute('app_car_tools_details_view');
-//
-//      }
-//    }
-//    $args['form'] = $form->createView();
-//    $args['tool'] = $tool;
-//    $args['reservation'] = $reservation;
-//    $mobileDetect = new MobileDetect();
-//    if($mobileDetect->isMobile()) {
-//      return $this->render('tool/phone/form_reservation_employee_details_form_user.html.twig', $args);
-//    }
-//    return $this->render('tool/form_reservation_employee_details_form_user.html.twig', $args);
-//  }
-
-
   #[Route('/stop-employee-reservation-tool/{id}', name: 'app_tool_employee_reservation_stop')]
   public function stopEmployeeReservationTool(ToolReservation $reservation, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
@@ -750,4 +669,85 @@ class ToolController extends AbstractController {
     return $this->render('report_tool/control.html.twig', $args);
   }
 
+
+
+  #[Route('/stop-employee-reservation-details-tool/{id}', name: 'app_tool_employee_reservation_stop_details')]
+  public function stopEmployeeReservationDetails(ToolReservation $reservation, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $user = $this->getUser();
+    $form = $this->createForm(ToolStopReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_tool_employee_reservation_stop_details', ['id' => $reservation->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $reservation->setFinished(new DateTimeImmutable());
+        $this->em->getRepository(ToolReservation::class)->save($reservation);
+
+        return $this->redirectToRoute('app_car_tools_details_view');
+      }
+    }
+
+    $args['form'] = $form->createView();
+    $args['reservation'] = $reservation;
+    $args['tool'] = $reservation->getTool();
+    $args['user'] = $user;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/form_reservation_stop_employee.html.twig', $args);
+    }
+    return $this->render('tool/form_reservation_stop_employee.html.twig', $args);
+  }
+
+  #[Route('/form-employee-reservation-details-tool/{id}', name: 'app_employee_reservation_details_tool_form', defaults: ['id' => 0])]
+  #[Entity('tool', expr: 'repository.find(id)')]
+  #[Entity('reservation', expr: 'repository.findForFormTool(tool)')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+
+  public function formEmployeeReservationDetailsTool(ToolReservation $reservation, Tool $tool, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $user = $this->getUser();
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+      $reservation->setUser($user);
+    }
+
+
+
+    $form = $this->createForm(ToolReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_employee_reservation_details_tool_form', ['id' => $tool->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+        $this->em->getRepository(ToolReservation::class)->save($reservation);
+
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::TOOL_RESERVE);
+
+        return $this->redirectToRoute('app_car_tools_details_view');
+
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['tool'] = $tool;
+    $args['reservation'] = $reservation;
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('tool/phone/form_reservation_employee_details_form_user.html.twig', $args);
+    }
+    return $this->render('tool/form_reservation_employee_details_form_user.html.twig', $args);
+  }
 }

@@ -20,8 +20,9 @@
                             </h4>
                         </div>
                     </div>
-
-                    {{ render(controller('App\\Controller\\WidgetController::carProfilNavigation', { car: car } )) }}
+                    {% if not is_granted('ROLE_EMPLOYEE') %}
+                        {{ render(controller('App\\Controller\\WidgetController::carProfilNavigation', { car: car } )) }}
+                    {% endif %}
                 </div>
                 <!-- /page header -->
 
@@ -72,7 +73,7 @@
                 <!-- /footer -->
         </div>
 
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #} #}
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

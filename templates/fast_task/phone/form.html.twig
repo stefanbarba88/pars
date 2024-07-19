@@ -50,7 +50,8 @@
                                 {% if tools|length <= noTools %}
                                     {% set noTools = tools|length %}
                                 {% endif %}
-                                <div class="row">
+                                {% if noUsers > 0 %}
+                                    <div class="row">
                                     <div class="col-sm-6 col-lg-12">
                                         <div class="table-responsive card">
                                             <table class="table table-bordered table-responsive table_morecondensed">
@@ -85,8 +86,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% endif %}
                                 <div class="row">
-                                    <div class="col-sm-6 col-lg-8">
+                                    {% if noTools > 0 %}
+                                        <div class="col-sm-6 col-lg-8">
                                         <div class="table-responsive card">
                                             <table class="table table-bordered table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
@@ -115,7 +118,9 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6 col-lg-4">
+                                    {% endif %}
+                                    {% if noCars > 0 %}
+                                        <div class="col-sm-6 col-lg-4">
                                         <div class="table-responsive card">
                                             <table class="table table-bordered table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
@@ -144,6 +149,7 @@
                                             </table>
                                         </div>
                                     </div>
+                                    {% endif %}
                                 </div>
 
                             </div>
@@ -215,7 +221,7 @@
         </div>
         <!-- /main content -->
 
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -425,7 +431,7 @@
                         </div>
                         </div>
 
-                        <div class="col-lg-3 quick-form-media">
+                        <div class="col-lg-3 quick-form-media {% if tools|length == 0 %} d-none {% endif %}">
                         <div class="mb-1">
                         <label class="form-label" for="task_form_oprema_${currentRowIdx}">Oprema:</label>
                         <select id="task_form_oprema_${currentRowIdx}" name="zadatak[${currentRowIdx}][tools][]" class="form-control select small-input" multiple>
@@ -436,7 +442,7 @@
                         </div>
                         </div>
 
-                        <div class="col-lg-2 quick-form-media">
+                        <div class="col-lg-2 quick-form-media {% if cars|length == 0 %} d-none {% endif %}">
                         <div class="mb-1">
                         <label class="form-label" for="task_form_vozilo_${currentRowIdx}">Vozilo:</label>
                         <select id="task_form_vozilo_${currentRowIdx}" name="zadatak[${currentRowIdx}][car]" class="form-control select small-input">
@@ -448,7 +454,7 @@
                         </div>
                         </div>
 
-                        <div class="col-lg-2 quick-form-media">
+                        <div class="col-lg-2 quick-form-media {% if cars|length == 0 %} d-none {% endif %}">
                         <div class="mb-1">
                         <label class="form-label" for="task_form_vozac_${currentRowIdx}">Vozač:</label>
                         <select id="task_form_vozac_${currentRowIdx}" name="zadatak[${currentRowIdx}][driver]" class="form-control select small-input">

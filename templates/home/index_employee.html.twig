@@ -19,6 +19,12 @@
                         </div>
                     {% endif %}
 
+                    {% if car or tool %}
+                        <div class="my-auto ms-auto py-lg-2">
+                            <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-squares-four me-2"></i> Zaduživanje</a>
+                        </div>
+                    {% endif %}
+
 {#                    <div class="alert alert-secondary alert-dismissible fade show">#}
 {#                        <span class="fw-semibold">Uputstvo je ažurirano 13.09.2023.</span> Preuzmite i pogledajte šta je <a href="{{ asset('/assets/manual/manual.pdf') }}" class="alert-link" download>novo</a> dodato.#}
 {#                    </div>#}
@@ -101,13 +107,13 @@
 
                                 <!-- Basic sparklines -->
                                 <div class="card">
-                                    <div class="card-body">
+                                    <div class="card-body bg-secondary">
                                         <div class="d-flex align-items-center">
                                             <i class="ph-folders ph-2x text-primary me-3"></i>
 
                                             <div class="flex-fill text-end">
                                                 <h4 class="mb-0"></h4>
-                                                <span class="text-muted">Projekti</span>
+                                                <span class="fw-semibold">Projekti</span>
                                             </div>
                                         </div>
                                     </div>
@@ -133,13 +139,13 @@
 
                                 <!-- Basic sparklines -->
                                 <div class="card">
-                                    <div class="card-body">
+                                    <div class="card-body bg-secondary">
                                         <div class="d-flex align-items-center">
                                             <i class="ph-list-bullets ph-2x text-primary me-3"></i>
 
                                             <div class="flex-fill text-end">
                                                 <h4 class="mb-0">{{ countTasksActiveByUser }}</h4>
-                                                <span class="text-muted">Zadaci</span>
+                                                <span class="fw-semibold">Zadaci</span>
                                             </div>
                                         </div>
                                     </div>
@@ -159,13 +165,13 @@
 
                                 <!-- Basic sparklines -->
                                 <div class="card">
-                                    <div class="card-body">
+                                    <div class="card-body bg-secondary">
                                         <div class="d-flex align-items-center">
                                             <i class="ph-list ph-2x text-primary me-3"></i>
 
                                             <div class="flex-fill text-end">
                                                 <h4 class="mb-0">{{ checklistActive }}</h4>
-                                                <span class="text-muted">Interni zadaci</span>
+                                                <span class="fw-semibold">Interni zadaci</span>
                                             </div>
                                         </div>
                                     </div>
@@ -187,13 +193,13 @@
 
                                     <!-- Basic sparklines -->
                                     <div class="card">
-                                        <div class="card-body">
+                                        <div class="card-body bg-secondary bg-opacity-25">
                                             <div class="d-flex align-items-center">
                                                 <i class="ph-calendar ph-2x text-primary me-3"></i>
 
                                                 <div class="flex-fill text-end">
                                                     <h4 class="mb-0"></h4>
-                                                    <span class="text-muted">Kalendar</span>
+                                                    <span class="fw-semibold">Kalendar</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -221,13 +227,17 @@
 
                                     <!-- Basic sparklines -->
                                     <div class="card">
-                                        <div class="card-body">
+                                        <div class="card-body bg-secondary bg-opacity-25">
                                             <div class="d-flex align-items-center">
                                                 <i class="ph-car ph-2x text-primary me-3"></i>
 
                                                 <div class="flex-fill text-end">
-                                                    <h4 class="mb-0"></h4>
-                                                    <span class="text-muted">Vozila</span>
+                                                    <h4 class="mb-0">
+                                                        {% if lastReservation is not null %}
+                                                            {{ lastReservation.car.carName }}
+                                                        {% endif %}
+                                                    </h4>
+                                                    <span class="fw-semibold">Vozila</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -257,13 +267,13 @@
 
                                     <!-- Basic sparklines -->
                                     <div class="card">
-                                        <div class="card-body">
+                                        <div class="card-body bg-secondary bg-opacity-25">
                                             <div class="d-flex align-items-center">
                                                 <i class="ph-wrench ph-2x text-primary me-3"></i>
 
                                                 <div class="flex-fill text-end">
-                                                    <h4 class="mb-0"></h4>
-                                                    <span class="text-muted">Oprema</span>
+                                                    <h4 class="mb-0">{{ noTools }}</h4>
+                                                    <span class="fw-semibold">Oprema</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -669,7 +679,7 @@
 
         </div>
         <!-- /main content -->
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
     </div>
     {% include 'includes/notification.html.twig' %}
 

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Classes\Data\UserRolesData;
 use App\Entity\Comment;
+use App\Entity\ManagerChecklist;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\User;
@@ -97,6 +98,15 @@ class CommentRepository extends ServiceEntityRepository {
 
     $comment = new Comment();
     $comment->setTask($task);
+    $comment->setCompany($task->getCompany());
+    return $comment;
+
+  }
+
+  public function findForFormTaskInt(ManagerChecklist $task = null): Comment {
+
+    $comment = new Comment();
+    $comment->setManagerChecklist($task);
     $comment->setCompany($task->getCompany());
     return $comment;
 

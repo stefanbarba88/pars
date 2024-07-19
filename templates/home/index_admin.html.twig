@@ -17,13 +17,13 @@
                             <div class="col-sm-6 col-xl-3">
                                 <!-- Basic sparklines -->
                                 <div class="card">
-                                    <div class="card-body">
+                                    <div class="card-body bg-secondary">
                                         <div class="d-flex align-items-center">
                                             <i class="ph-users ph-2x text-primary me-3"></i>
 
                                             <div class="flex-fill text-end">
                                                 <h4 class="mb-0">{{ noZaposleni }}</h4>
-                                                <span class="text-muted">Zaposleni</span>
+                                                <span class="fw-semibold">Zaposleni</span>
                                             </div>
                                         </div>
                                     </div>
@@ -45,13 +45,13 @@
                             <div class="col-sm-6 col-xl-3">
                                 <!-- Basic sparklines -->
                                 <div class="card">
-                                    <div class="card-body">
+                                    <div class="card-body bg-secondary">
                                         <div class="d-flex align-items-center">
                                             <i class="ph-folders ph-2x text-primary me-3"></i>
 
                                             <div class="flex-fill text-end">
                                                 <h4 class="mb-0">{{ noProjekata }}</h4>
-                                                <span class="text-muted">Projekti</span>
+                                                <span class="fw-semibold">Projekti</span>
                                             </div>
                                         </div>
                                     </div>
@@ -73,13 +73,13 @@
                             <div class="col-sm-6 col-xl-3">
                                 <!-- Basic sparklines -->
                                 <div class="card">
-                                    <div class="card-body">
+                                    <div class="card-body bg-secondary">
                                         <div class="d-flex align-items-center">
                                             <i class="ph-list-bullets ph-2x text-primary me-3"></i>
 
                                             <div class="flex-fill text-end">
                                                 <h4 class="mb-0">{{ noTasks }}</h4>
-                                                <span class="text-muted">Zadaci</span>
+                                                <span class="fw-semibold">Zadaci</span>
                                             </div>
                                         </div>
                                     </div>
@@ -99,13 +99,13 @@
                             </div>
                             <div class="col-sm-6 col-xl-3">
                                 <div class="card">
-                                    <div class="card-body">
+                                    <div class="card-body bg-secondary">
                                         <div class="d-flex align-items-center">
                                             <i class="ph-list ph-2x text-primary me-3"></i>
 
                                             <div class="flex-fill text-end">
                                                 <h4 class="mb-0">{{ noInternTasks }}</h4>
-                                                <span class="text-muted">Interni zadaci</span>
+                                                <span class="fw-semibold">Interni zadaci</span>
                                             </div>
                                         </div>
                                     </div>
@@ -128,13 +128,13 @@
                                 <div class="col-sm-6 col-xl-3">
                                     <!-- Basic sparklines -->
                                     <div class="card">
-                                        <div class="card-body">
+                                        <div class="card-body bg-secondary bg-opacity-25">
                                             <div class="d-flex align-items-center">
                                                 <i class="ph-calendar ph-2x text-primary me-3"></i>
 
                                                 <div class="flex-fill text-end">
                                                     <h4 class="mb-0">{{ noCalendar }}</h4>
-                                                    <span class="text-muted">Kalendar</span>
+                                                    <span class="fw-semibold">Kalendar</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -157,13 +157,13 @@
                                 <div class="col-sm-6 col-xl-3">
                                     <!-- Basic sparklines -->
                                     <div class="card">
-                                        <div class="card-body">
+                                        <div class="card-body bg-secondary bg-opacity-25">
                                             <div class="d-flex align-items-center">
                                                 <i class="ph-car ph-2x text-primary me-3"></i>
 
                                                 <div class="flex-fill text-end">
                                                     <h4 class="mb-0">{{ noCars }}</h4>
-                                                    <span class="text-muted">Vozila</span>
+                                                    <span class="fw-semibold">Vozila</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -184,13 +184,13 @@
                             {% if tool %}
                                 <div class="col-sm-6 col-xl-3">
                                     <div class="card">
-                                        <div class="card-body">
+                                        <div class="card-body bg-secondary bg-opacity-25">
                                             <div class="d-flex align-items-center">
                                                 <i class="ph-wrench ph-2x text-primary me-3"></i>
 
                                                 <div class="flex-fill text-end">
                                                     <h4 class="mb-0">{{ noTools }}</h4>
-                                                    <span class="text-muted">Oprema</span>
+                                                    <span class="fw-semibold">Oprema</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -208,13 +208,13 @@
                             {% if client %}
                                 <div class="col-sm-6 col-xl-3">
                                     <div class="card">
-                                        <div class="card-body">
+                                        <div class="card-body bg-secondary bg-opacity-25">
                                             <div class="d-flex align-items-center">
-                                                <i class="ph-wrench ph-2x text-primary me-3"></i>
+                                                <i class="ph-ticket ph-2x text-primary me-3"></i>
 
                                                 <div class="flex-fill text-end">
                                                     <h4 class="mb-0">{{ noTickets }}</h4>
-                                                    <span class="text-muted">Tiketi</span>
+                                                    <span class="fw-semibold">Zahtevi klijenta</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1409,7 +1409,7 @@
 
         </div>
         <!-- /main content -->
-        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
     </div>
     {% include 'includes/notification.html.twig' %}
 

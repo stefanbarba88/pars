@@ -728,6 +728,13 @@
                                         <div class="fw-semibold">
                                             Kancelarija</div>
                                     </button>
+                                     <button type="button" class="btn btn-light w-100 flex-column rounded-0 py-2" data-bs-toggle="modal" data-bs-target="#modal_other">
+                                            <i class="ph-palette bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                            <h5 class="mb-0">{{ dostupnosti.noOther }}</h5>
+                                            <div class="fw-semibold">
+                                                Ostale kategorije
+                                            </div>
+                                        </button>
                                     <button type="button" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-end py-2" data-bs-toggle="modal" data-bs-target="#modal_kuca"><i class="ph-house bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
                                         <h5 class="mb-0">{{ dostupnosti.noKuca }}</h5>
                                         <div class="fw-semibold">
@@ -1735,6 +1742,39 @@
                                             {% set bg_class_kuca = '' %}
                                         {% endif %}
                                         <div class="row p-2 fw-semibold {{ bg_class_kuca }}">
+                                            <div class="col-12">{{ user.fullName }}</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if dostupnosti.other is not empty %}
+            <div id="modal_other" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white border-0">
+                            <h6 class="modal-title">Zaposleni na radu na ostalim kategorijama</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card">
+                                <div class="card-body">
+                                    {% set bg_class_other = '' %}
+                                    {% for user in dostupnosti.other %}
+                                        {% if loop.index is even %}
+                                            {% set bg_class_other = 'bg-light' %}
+                                        {% else %}
+                                            {% set bg_class_other = '' %}
+                                        {% endif %}
+                                        <div class="row p-2 fw-semibold {{ bg_class_other }}">
                                             <div class="col-12">{{ user.fullName }}</div>
                                         </div>
                                     {% endfor %}

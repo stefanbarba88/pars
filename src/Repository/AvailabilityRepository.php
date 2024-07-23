@@ -811,12 +811,14 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $noKancelarija = 0;
     $noKuca = 0;
     $noTeren = 0;
+    $noOther = 0;
 
     $nedostupni = [];
     $vanZadatka = [];
     $kancelarija = [];
     $kuca = [];
     $teren = [];
+    $other = [];
 
 //    $zamene = [];
 //    $plan = $this->getEntityManager()->getRepository(FastTask::class)->findOneBy(['company' => $company, 'datum' => $danasnjiPlan->setTime(14, 30)]);
@@ -893,6 +895,10 @@ class AvailabilityRepository extends ServiceEntityRepository {
               $noKuca++;
               $kuca[] = $user;
             }
+            if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() != AppConfig::KUCA_CAT_ID && $tsk['task']->getCategory()->getId() != AppConfig::TEREN_CAT_ID && $tsk['task']->getCategory()->getId() != AppConfig::KANC_CAT_ID)) {
+              $noOther++;
+              $other[] = $user;
+            }
           }
         }
 
@@ -921,6 +927,10 @@ class AvailabilityRepository extends ServiceEntityRepository {
                 $noKuca++;
                 $kuca[] = $user;
               }
+              if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() != AppConfig::KUCA_CAT_ID && $tsk['task']->getCategory()->getId() != AppConfig::TEREN_CAT_ID && $tsk['task']->getCategory()->getId() != AppConfig::KANC_CAT_ID)) {
+                $noOther++;
+                $other[] = $user;
+              }
             }
           }
         }
@@ -938,6 +948,8 @@ class AvailabilityRepository extends ServiceEntityRepository {
       'kancelarija' => $kancelarija,
       'vanZadatka' => $vanZadatka,
       'kuca' => $kuca,
+      'other' => $other,
+      'noOther' => $noOther,
     ];
 
 

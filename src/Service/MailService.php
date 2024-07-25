@@ -6,6 +6,7 @@ use App\Classes\CompanyInfo;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Calendar;
 use App\Entity\Client;
+use App\Entity\Comment;
 use App\Entity\Email;
 use App\Entity\ManagerChecklist;
 use App\Entity\Task;
@@ -80,6 +81,30 @@ class MailService {
     $args['checklist'] = $checklist;
     $args['link'] = $this->router->generate('app_checklist_view', ['id' => $checklist->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
     $to = $checklist->getUser()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function checklistCommentTask(ManagerChecklist $checklist, Comment $comment): void {
+
+    $args = [];
+
+    $subject = 'Komentar od ' . $comment->getUser()->getFullName();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/interni_task_comment.html.twig';
+    $args['user'] = $comment->getUser()->getFullName();
+    $args['checklist'] = $checklist;
+    $args['comment'] = $comment;
+    $args['link'] = $this->router->generate('app_checklist_view', ['id' => $checklist->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+    if ($comment->getUser() == $checklist->getCreatedBy()) {
+      $to = $checklist->getUser()->getEmail();
+    } else {
+      $to = $checklist->getCreatedBy()->getEmail();
+    }
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 

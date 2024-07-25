@@ -3320,6 +3320,7 @@ class FastTaskRepository extends ServiceEntityRepository {
 
   public function saveFastTask(FastTask $fastTask, array $data): ?FastTask {
     $datum = $data['task_quick_form_datum'];
+    $everyone = $data['task_quick_form_everyone'];
     $format = "d.m.Y H:i:s";
     $dateTime = DateTimeImmutable::createFromFormat($format, $datum . '14:30:00');
     $company = $fastTask->getCompany();
@@ -3360,6 +3361,7 @@ class FastTaskRepository extends ServiceEntityRepository {
     $stanja = [];
 
     $fastTask->setDatum($dateTime);
+    $fastTask->setEverione($everyone);
     $noTasks = 0;
     $noSubs = 0;
 

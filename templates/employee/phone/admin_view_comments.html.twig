@@ -61,11 +61,19 @@
                                                                 <span>{{ comment.comment | slice(0, 20) ~ (comment.comment | length > 20 ? '...' : '') }}</span>
                                                             </a>
                                                         </td>
-                                                        <td>
-                                                            <a href="" class="text-body">
-                                                                {{ comment.task.title }}
-                                                            </a>
-                                                        </td>
+                                                        {% if comment.task is null %}
+                                                            <td>
+                                                                <a href="{{ path('app_checklist_view', {id:comment.managerChecklist.id}) }}" class="fw-semibold">
+                                                                    Interni ({{ comment.managerChecklist.user.fullName }})
+                                                                </a>
+                                                            </td>
+                                                        {% else %}
+                                                            <td>
+                                                                <a href="{{ path('app_task_view', {id:comment.task.id}) }}" class="fw-semibold">
+                                                                    {{ comment.task.title }}
+                                                                </a>
+                                                            </td>
+                                                        {% endif %}
                                                         <td class="text-center">
                                                             <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ comment.id }}" aria-expanded="false"><i class="ph-magnifying-glass-plus"></i></a>
                                                         </td>

@@ -17,6 +17,9 @@ class FastTask {
   #[ORM\Column]
   private ?int $id = null;
 
+  #[ORM\Column(nullable: true)]
+  private ?bool $everyone = false;
+
   #[ORM\Column]
   private ?int $status = null;
 
@@ -3191,6 +3194,20 @@ class FastTask {
    */
   public function setZstatus10(?int $zstatus10): void {
     $this->zstatus10 = $zstatus10;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getEveryone(): ?bool {
+    return $this->everyone;
+  }
+
+  /**
+   * @param bool|null $everyone
+   */
+  public function setEveryone(?bool $everyone): void {
+    $this->everyone = $everyone;
   }
 
 

@@ -67,8 +67,11 @@ FastTaskController extends AbstractController {
     if ($request->isMethod('POST')) {
 
       $data = $request->request->all();
+      $args['everyone'] = 0;
       $args['datum'] = $data['task_quick_form_datum'];
-
+      if (isset($data['task_quick_form_everyone'])) {
+        $args['everyone'] = $data['task_quick_form_everyone'];
+      }
       return $this->redirectToRoute('app_quick_tasks_form', $args);
 
     }
@@ -94,6 +97,7 @@ FastTaskController extends AbstractController {
       $datum = $request->get('datum');
     }
 
+    $everyone = $request->get('everyone');
 
     if ($request->isMethod('POST')) {
 
@@ -123,7 +127,15 @@ FastTaskController extends AbstractController {
 
     $args = [];
 
-    $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
+
+    if ($everyone == 1) {
+      $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailableAll($datum);
+    } else {
+      $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
+    }
+
+
+    $args['drivers'] = $args['users'];
     $args['unavailableUsers'] = $this->em->getRepository(User::class)->getUsersUnvailable($datum);
     $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
     $projects = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
@@ -133,10 +145,11 @@ FastTaskController extends AbstractController {
     $args['projects'] = array_merge($projects, $projectsM);
     $args['projectsS'] = array_merge($projectsS, $projectsM);
     $args['cars'] = $this->em->getRepository(Car::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
-    $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
+
     $args['tools'] = $this->em->getRepository(Tool::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
     $args['disabledDates'] = $this->em->getRepository(FastTask::class)->getDisabledDates();
     $args['datum'] = $datum;
+    $args['everyone'] = $everyone;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
@@ -170,9 +183,16 @@ FastTaskController extends AbstractController {
 
     $args = [];
 
+    if ($fastTask->getEveryone() == 1) {
+      $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailableAll($fastTask->getDatum()->format('d.m.Y'));
+    } else {
+      $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($fastTask->getDatum()->format('d.m.Y'));
+    }
+
+
+    $args['drivers'] = $args['users'];
     $args['unavailableUsers'] = $this->em->getRepository(User::class)->getUsersUnvailable($fastTask->getDatum()->format('d.m.Y'));
-    $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($fastTask->getDatum()->format('d.m.Y'));
-    $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($fastTask->getDatum()->format('d.m.Y'));
+
     $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
     $projects = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
     $projectsS = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO]);

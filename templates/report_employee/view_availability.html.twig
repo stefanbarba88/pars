@@ -65,8 +65,6 @@
                                                     <th>Izlazak</th>
                                                     <th>Nema merenje</th>
                                                     <th>Stari odmor <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Broj neiskorišćenih dana starog odmora na dan 01.01. tekuće godine." data-bs-original-title="Napomena"></i></th>
-                                                    <th>Do 01.07.</th>
-                                                    <th>Od 01.07.</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -88,11 +86,29 @@
                                                                     {{ report.nedostupanProfil}}
                                                                 </div>
                                                             </td>
-                                                            <td>{{ report.dan}}</td>
-                                                            <td>{{ report.odmor}}</td>
-                                                            <td>{{ report.neradniKolektivniOdmor}}</td>
-                                                            <td>{{ report.bolovanje}}</td>
-                                                            <td>{{ report.slava}}</td>
+                                                            {% if dan is defined %}
+                                                                <td class="bg-light fw-semibold">{{ report.dan}}</td>
+                                                            {% else %}
+                                                                <td>{{ report.dan}}</td>
+                                                            {% endif %}
+                                                            {% if odmor is defined %}
+                                                                <td class="bg-light fw-semibold">{{ report.odmor}}</td>
+                                                                <td class="bg-light fw-semibold">{{ report.neradniKolektivniOdmor}}</td>
+                                                            {% else %}
+                                                                <td>{{ report.odmor}}</td>
+                                                                <td>{{ report.neradniKolektivniOdmor}}</td>
+                                                            {% endif %}
+
+                                                            {% if bolovanje is defined %}
+                                                                <td class="bg-light fw-semibold">{{ report.bolovanje}}</td>
+                                                            {% else %}
+                                                                <td>{{ report.bolovanje}}</td>
+                                                            {% endif %}
+                                                            {% if slava is defined %}
+                                                                <td class="bg-light fw-semibold">{{ report.slava}}</td>
+                                                            {% else %}
+                                                                <td>{{ report.slava}}</td>
+                                                            {% endif %}
                                                             <td>{{ report.izasao}}</td>
                                                             <td>
                                                                 <div class="fw-semibold">
@@ -104,13 +120,11 @@
                                                                     {{ report.vacationData.old}}
                                                                 </div>
                                                             </td>
-                                                            <td>{{ report.vacationData.used1}}</td>
-                                                            <td>{{ report.vacationData.used2}}</td>
                                                         </tr>
                                                     {% endfor %}
                                                 {% else %}
                                                     <tr>
-                                                        <td colspan="13">
+                                                        <td colspan="11">
                                                             <div class="text-body">
                                                                 Nema podataka u zadatom periodu
                                                             </div>

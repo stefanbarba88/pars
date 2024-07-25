@@ -63,11 +63,11 @@ class AvailabilityRepository extends ServiceEntityRepository {
       $users = $this->getEntityManager()->getRepository(User::class)->findBy(['company' => $company, 'userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
     }
 
-    if (isset($data['category'])) {
-      foreach ($data['category'] as $tip) {
-        $tipovi [] = $tip;
-      }
-    }
+//    if (isset($data['category'])) {
+//      foreach ($data['category'] as $tip) {
+//        $tipovi [] = $tip;
+//      }
+//    }
 
     foreach ($users as $user) {
       $report[] = $this->getDaysByDate($user, $start, $stop, $tipovi);
@@ -78,7 +78,8 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
   }
 
-  public function getDaysByDate(User $user, $start, $stop, $tipovi): array {
+//  public function getDaysByDate(User $user, $start, $stop, $tipovi): array {
+  public function getDaysByDate(User $user, $start, $stop): array {
 
     $nedostupan = 0;
     $izasao = 0;
@@ -98,27 +99,27 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $slava = 0;
     $bolovanje = 0;
     $ostalo = 0;
-    if (!empty($tipovi)) {
+//    if (!empty($tipovi)) {
+//      $requests = $this->createQueryBuilder('c')
+//        ->where('c.datum BETWEEN :startDate AND :endDate')
+//        ->andWhere('c.User = :user')
+//        ->andWhere('c.type IN (:types)')
+//        ->setParameter('startDate', $start)
+//        ->setParameter('endDate', $stop)
+//        ->setParameter('user', $user)
+//        ->setParameter('types', $tipovi)
+//        ->getQuery()
+//        ->getResult();
+//    } else {
       $requests = $this->createQueryBuilder('c')
         ->where('c.datum BETWEEN :startDate AND :endDate')
         ->andWhere('c.User = :user')
-        ->andWhere('c.type IN (:types)')
-        ->setParameter('startDate', $start)
-        ->setParameter('endDate', $stop)
-        ->setParameter('user', $user)
-        ->setParameter('types', $tipovi)
-        ->getQuery()
-        ->getResult();
-    } else {
-      $requests = $this->createQueryBuilder('c')
-        ->where('c.datum BETWEEN :startDate AND :endDate')
-        ->andWhere('c.User = :user')
         ->setParameter('startDate', $start)
         ->setParameter('endDate', $stop)
         ->setParameter('user', $user)
         ->getQuery()
         ->getResult();
-    }
+//    }
 
     foreach ($requests as $req) {
       if ($req->getType() == AvailabilityData::PRISUTAN) {

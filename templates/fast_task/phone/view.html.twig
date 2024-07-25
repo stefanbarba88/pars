@@ -4,7 +4,6 @@
     {{ render(controller('App\\Controller\\WidgetController::header' )) }}
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
-
         <!-- Main content -->
         <div class="content-wrapper">
 
@@ -32,7 +31,7 @@
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
-                                <div class="card">
+                                <div class="card table-portrait">
                                     <div class="card-header">
                                         <h5 class="mb-0">Plan rada za {{ fastTask.datum | date("d.m.Y") }}
                                         </h5>
@@ -106,6 +105,127 @@
                                                         <td class="text-center text-primary">
                                                             <a type="button" data-bs-toggle="modal" data-bs-target="#modal_sub{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
                                                         </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card table-landscape">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Plan rada za {{ fastTask.datum | date("d.m.Y") }}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead>
+                                                <tr class="bg-light text-primary">
+                                                    <th colspan="9">Plan rada na gradilištima sa letećim ekipama</th>
+                                                </tr>
+                                                <tr class="bg-light text-primary">
+                                                    <th>Projekat</th>
+                                                    <th>Vreme</th>
+                                                    <th>Geodete</th>
+                                                    <th>Aktivnosti</th>
+                                                    <th>Oprema</th>
+                                                    <th>Vozilo</th>
+                                                    <th>Vozač</th>
+                                                    <th style="width: 18%">Napomena</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for task in fastTaskView.zadaci %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                {{ task.projekat.title }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                {{ task.vreme }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                {% if task.zaposleni1 is not null %}{{ task.zaposleni1.getNameWithFirstLetter() }}<br>{% endif %}
+                                                                {% if task.zaposleni2 is not null %}{{ task.zaposleni2.getNameWithFirstLetter() }}<br>{% endif %}
+                                                                {% if task.zaposleni3 is not null %}{{ task.zaposleni3.getNameWithFirstLetter() }}{% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {% if task.aktivnosti is not empty %}
+                                                                {% for akt in task.aktivnosti %}
+                                                                    {{ akt.title }}<br>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                {% if task.oprema is not empty %}
+                                                                    {% for opr in task.oprema %}
+                                                                        {{ opr.title }}<br>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                {% if task.vozilo is not null %}{{ task.vozilo.plate }}{% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                {% if task.vozac is not null %}{{ task.vozac.getNameWithFirstLetter() }}{% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {{ task.napomena }}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="table-responsive card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead>
+                                                <tr class="bg-light text-primary">
+                                                    <th colspan="4">Plan zamena na gradlištima sa stalnim ekipama</th>
+                                                </tr>
+                                                <tr class="bg-light text-primary">
+                                                    <th>Projekat</th>
+                                                    <th>Vreme</th>
+                                                    <th>Geodeta</th>
+                                                    <th style="width: 25%">Napomena</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for zamena in fastTaskView.zamene%}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                {{ zamena.projekat.title }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                {{ zamena.vreme }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                {% if zamena is not null %}{{ zamena.zaposleni.getNameWithFirstLetter() }}{% endif %}
+                                                            </div>
+                                                        </td>
+
+                                                        <td>
+                                                            {{ zamena.napomena }}
+                                                        </td>
+
                                                     </tr>
                                                 {% endfor %}
                                                 </tbody>
@@ -324,5 +444,39 @@
 
 {% endblock includeJavascript %}
 
+{% block footerJavascript %}
+
+    <script>
+        $(document).ready(function() {
+            // Funkcija za ažuriranje klasa na osnovu orijentacije
+            function updateTableDisplay() {
+                if (window.innerHeight > window.innerWidth) {
+                    // Portretni režim
+                    $('.table-portrait').removeClass('d-none').addClass('d-block');
+                    $('.navbar').removeClass('d-none').addClass('d-block');
+                    $('.page-header').removeClass('d-none').addClass('d-block');
+                    $('.table-landscape').removeClass('d-block').addClass('d-none');
+                } else {
+                    // Pejzažni režim
+                    $('.table-portrait').removeClass('d-block').addClass('d-none');
+                    $('.navbar').removeClass('d-block').addClass('d-none');
+                    $('.page-header').removeClass('d-block').addClass('d-none');
+                    $('.table-landscape').removeClass('d-none').addClass('d-block');
+                    $('.table-landscape').css('font-size', '10px');
+                }
+            }
+
+            // Inicijalni prikaz tabele
+            updateTableDisplay();
+
+            // Praćenje promene orijentacije
+            $(window).on('orientationchange resize', function() {
+                updateTableDisplay();
+            });
+        });
+
+    </script>
+
+{% endblock footerJavascript %}
 
 

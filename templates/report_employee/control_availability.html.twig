@@ -50,6 +50,17 @@
                                     </div>
                                 </div>
                                 <div class="row">
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            <label class="form-label required" for="report_form_cat">Tip:</label>#}
+{#                                            <select id="report_form_cat" name="report_form[category][]" class="form-control select" multiple>#}
+{#                                                {% for key, value in categories %}#}
+{#                                                    <option value="{{ key }}">{{ value }}</option>#}
+{#                                                {% endfor %}#}
+{#                                            </select>#}
+{#                                            <span class="form-text">Ako ne izaberete tip u izveštaju će biti prikazani svi dani.</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <label class="form-label required" for="report_form_cat">Tip:</label>
@@ -58,7 +69,7 @@
                                                     <option value="{{ key }}">{{ value }}</option>
                                                 {% endfor %}
                                             </select>
-                                            <span class="form-text">Ako ne izaberete tip u izveštaju će biti prikazani svi dani.</span>
+                                            <span class="form-text">Izaberite tip dana koji će biti istaknut u izveštaju.</span>
                                         </div>
                                     </div>
                                 </div>

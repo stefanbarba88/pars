@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\AvailabilityData;
+use App\Classes\Data\CalendarData;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
@@ -1323,13 +1324,24 @@ class EmployeeController extends AbstractController {
 
     if ($request->isMethod('POST')) {
       $data = $request->request->all();
-
-//      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
       $args['reports'] = $this->em->getRepository(Availability::class)->getReport($data['report_form'], $this->getUser()->getCompany());
-//      $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
       $args['period'] = $data['report_form']['period'];
       $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
 
+      if (isset ($data['report_form']['category'])) {
+        if (in_array(CalendarData::SLOBODAN_DAN, $data['report_form']['category'])) {
+          $args['dan'] = true;
+        }
+        if (in_array(CalendarData::ODMOR, $data['report_form']['category'])) {
+          $args['odmor'] = true;
+        }
+        if (in_array(CalendarData::BOLOVANJE, $data['report_form']['category'])) {
+          $args['bolovanje'] = true;
+        }
+        if (in_array(CalendarData::SLAVA, $data['report_form']['category'])) {
+          $args['slava'] = true;
+        }
+      }
       return $this->render('report_employee/view_availability.html.twig', $args);
 
     }
@@ -1337,7 +1349,7 @@ class EmployeeController extends AbstractController {
     $args = [];
 
     $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $this->getUser()->getCompany(), 'userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
-    $args['categories'] = AvailabilityData::TIPOVI;
+    $args['categories'] = CalendarData::TIP;
     return $this->render('report_employee/control_availability.html.twig', $args);
   }
 

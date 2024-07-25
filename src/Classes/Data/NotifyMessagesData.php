@@ -116,4 +116,8 @@ class NotifyMessagesData {
   public const TICKET_DELETE = 'Uspešno ste obrisali tiket.';
 
 
+  public const VERIFY_ACTIVITY_CHECKED = 'Prihvatili aktivnost.';
+  public const VERIFY_ACTIVITY_UNCHECKED = 'Odbili ste aktivnost.';
+  public const VERIFY_ACTIVITY_DELETE = 'Obrisali ste aktivnost.';
+
 }

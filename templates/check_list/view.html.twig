@@ -259,7 +259,7 @@
                                                 <div class="d-flex flex-column flex-lg-row mb-3">
                                                     <div class="me-lg-3 mb-2 mb-lg-0">
                                                         {% if not is_granted('ROLE_EMPLOYEE') or app.user == comment.user%}
-                                                            <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}"><img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt="{{ comment.user.fullName }}" title="{{ comment.user.fullName }}"></a>
+                                                            <a href="#"><img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt="{{ comment.user.fullName }}" title="{{ comment.user.fullName }}"></a>
                                                         {% else %}
                                                             <img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt="{{ comment.user.fullName }}" title="{{ comment.user.fullName }}">
                                                         {% endif %}
@@ -267,7 +267,7 @@
 
                                                     <div class="flex-fill">
                                                         {% if not is_granted('ROLE_EMPLOYEE') or app.user == comment.user%}
-                                                            <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}" class="fw-semibold">{{ comment.user.getFullName() }}</a>
+                                                            <a href="#" class="fw-semibold">{{ comment.user.getFullName() }}</a>
                                                         {% else %}
                                                             <a href="#"  class="fw-semibold text-body">{{ comment.user.getFullName() }}</a>
                                                         {% endif %}
@@ -345,7 +345,7 @@
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                            <a href="{{ path('app_comment_delete', {id: comment.id} ) }}" class="btn btn-danger"><i class="ph-trash me-2"></i>Obrišite</a>
+                            <a href="{{ path('app_comment_delete_int', {id: comment.id} ) }}" class="btn btn-danger"><i class="ph-trash me-2"></i>Obrišite</a>
                         </div>
                     </div>
                 </div>

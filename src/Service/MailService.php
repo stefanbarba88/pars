@@ -433,4 +433,22 @@ class MailService {
 
   }
 
+  public function kadrovskaEmployeeCheck($user, $ugovori): void {
+
+    $args = [];
+    $date = new DateTimeImmutable();
+    $subject = 'Status zaposlenih na dan ' . $date->format('d.m.Y');
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/status_zaposlenih.html.twig';
+    $to = $user->getEmail();
+    $args['ugovori'] = $ugovori;
+    $args['date'] = $date;
+
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
 }

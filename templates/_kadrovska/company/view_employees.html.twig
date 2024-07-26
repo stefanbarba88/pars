@@ -155,7 +155,8 @@
                                                 </thead>
                                                 <tbody>
                                                 {% for user in pagination %}
-                                                    <tr>
+                                                    {% set userDays = getDaysRemaining(user) %}
+                                                        <tr class="{{ userDays.klasa }}">
                                                         <td>
                                                             <a href="{{ path('app_employee_profile_view_kadrovska', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="35" height="35" alt="{{ user.ime }}"></a>
                                                         </td>
@@ -175,10 +176,14 @@
                                                             {{ user.vrstaZaposlenjaData }}
                                                         </td>
                                                         <td>
-                                                            <div class="d-inline-flex align-items-center">
-                                                                <i class="ph-calendar me-2"></i>
-                                                                {{ user.krajUgovora | date("d.m.Y.")}}
-                                                            </div>
+                                                            {% if user.krajUgovora is not null %}
+
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ user.krajUgovora | date("d.m.Y.")}}
+                                                                    {% if userDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ userDays.poruka }}" data-bs-original-title="{{ userDays.poruka }}"></i>{% endif %}
+                                                                </div>
+                                                            {% endif %}
                                                         </td>
                                                         <td class="text-center">
                                                             <div class="dropdown">

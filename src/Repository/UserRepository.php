@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Classes\AppConfig;
 use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VrstaZaposlenjaData;
@@ -1458,6 +1459,227 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       ->getQuery()
       ->getResult();
   }
+
+  public function getDaysRemaining(User $user): array {
+    $poruka = '';
+    $klasa = '';
+    $now = new DateTimeImmutable();
+    $now->setTime(0,0);
+
+    if (!is_null($user->getKrajUgovora())) {
+      $contractEndDate = $user->getKrajUgovora();
+      // Izračunavanje razlike između trenutnog datuma i datuma kraja ugovora
+      $days = (int) $now->diff($contractEndDate)->format('%R%a');
+
+      if ($days > 0 && $days < 15) {
+        $poruka = 'Ugovor ističe za ' . $days . ' dana.';
+        $klasa = 'bg-info bg-opacity-50';
+      } elseif ($days == 0) {
+        $poruka = 'Ugovor ističe danas.';
+        $klasa = 'bg-warning bg-opacity-50';
+      } elseif ($days < 0) {
+        $poruka = 'Ugovor je istekao pre ' . abs($days) . ' dana.';
+        $klasa = 'bg-danger bg-opacity-50';
+      }
+    }
+
+    return [
+      'klasa' => $klasa,
+      'poruka' => $poruka
+    ];
+  }
+
+  public function getUsersCount(User $user): array {
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      $qb = $this->createQueryBuilder('u');
+      $now = new DateTimeImmutable();
+      $now->setTime(0,0);
+
+      // Ukupan broj korisnika
+      $totalUsers = $this->createQueryBuilder('u')
+        ->where('u.isKadrovska = 1')
+        ->andWhere('u.company = :company')
+        ->setParameter('company', $user->getCompany())
+        ->andWhere('u.isSuspended = 0')
+        ->andWhere('u.userType = :userType')
+        ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+        ->getQuery()
+        ->getResult();
+
+      // Broj korisnika kojima ugovor ističe za manje od 15 dana
+      $expiresInLessThan15Days = $this->createQueryBuilder('u')
+        ->where('u.krajUgovora IS NOT NULL')
+        ->andWhere('u.company = :company')
+        ->setParameter('company', $user->getCompany())
+        ->andWhere('u.isKadrovska = 1')
+        ->andWhere('u.isSuspended = 0')
+        ->andWhere('u.userType = :userType')
+        ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+        ->andWhere('u.krajUgovora > :now')
+        ->andWhere('u.krajUgovora <= :futureDate')
+        ->setParameter('now', $now)
+        ->setParameter('futureDate', $now->modify('+15 days'))
+        ->getQuery()
+        ->getResult();
+
+      // Broj korisnika kojima ugovor ističe danas
+      $expiresToday = $this->createQueryBuilder('u')
+        ->where('u.krajUgovora IS NOT NULL')
+        ->andWhere('u.company = :company')
+        ->setParameter('company', $user->getCompany())
+        ->andWhere('u.isKadrovska = 1')
+        ->andWhere('u.isSuspended = 0')
+        ->andWhere('u.userType = :userType')
+        ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+        ->andWhere('u.krajUgovora = :today')
+        ->setParameter('today', $now->format('Y-m-d'))
+        ->getQuery()
+        ->getResult();
+
+      // Broj korisnika kojima je ugovor istekao
+      $expiredUsers = $this->createQueryBuilder('u')
+        ->where('u.krajUgovora IS NOT NULL')
+        ->andWhere('u.company = :company')
+        ->setParameter('company', $user->getCompany())
+        ->andWhere('u.isKadrovska = 1')
+        ->andWhere('u.isSuspended = 0')
+        ->andWhere('u.userType = :userType')
+        ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+        ->andWhere('u.krajUgovora < :today')
+        ->setParameter('today', $now->format('Y-m-d'))
+        ->getQuery()
+        ->getResult();
+
+      return [
+        'totalUsers' => count($totalUsers),
+        'expiresInLessThan15Days' => count($expiresInLessThan15Days),
+        'expiresToday' => count($expiresToday),
+        'expiredUsers' => count($expiredUsers),
+      ];
+    } else {
+      $qb = $this->createQueryBuilder('u');
+      $now = new DateTimeImmutable();
+      $now->setTime(0,0);
+
+      // Ukupan broj korisnika
+      $totalUsers = $this->createQueryBuilder('u')
+        ->where('u.isKadrovska = 1')
+        ->andWhere('u.isSuspended = 0')
+        ->andWhere('u.userType = :userType')
+        ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+        ->getQuery()
+        ->getResult();
+
+      // Broj korisnika kojima ugovor ističe za manje od 15 dana
+      $expiresInLessThan15Days = $this->createQueryBuilder('u')
+        ->where('u.krajUgovora IS NOT NULL')
+        ->andWhere('u.isKadrovska = 1')
+        ->andWhere('u.isSuspended = 0')
+        ->andWhere('u.userType = :userType')
+        ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+        ->andWhere('u.krajUgovora > :now')
+        ->andWhere('u.krajUgovora <= :futureDate')
+        ->setParameter('now', $now)
+        ->setParameter('futureDate', $now->modify('+15 days'))
+        ->getQuery()
+        ->getResult();
+
+      // Broj korisnika kojima ugovor ističe danas
+      $expiresToday = $this->createQueryBuilder('u')
+        ->where('u.krajUgovora IS NOT NULL')
+        ->andWhere('u.isKadrovska = 1')
+        ->andWhere('u.isSuspended = 0')
+        ->andWhere('u.userType = :userType')
+        ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+        ->andWhere('u.krajUgovora = :today')
+        ->setParameter('today', $now->format('Y-m-d'))
+        ->getQuery()
+        ->getResult();
+
+      // Broj korisnika kojima je ugovor istekao
+      $expiredUsers = $this->createQueryBuilder('u')
+        ->where('u.krajUgovora IS NOT NULL')
+        ->andWhere('u.isKadrovska = 1')
+        ->andWhere('u.isSuspended = 0')
+        ->andWhere('u.userType = :userType')
+        ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+        ->andWhere('u.krajUgovora < :today')
+        ->setParameter('today', $now->format('Y-m-d'))
+        ->getQuery()
+        ->getResult();
+
+      return [
+        'totalUsers' => count($totalUsers),
+        'expiresInLessThan15Days' => count($expiresInLessThan15Days),
+        'expiresToday' => count($expiresToday),
+        'expiredUsers' => count($expiredUsers),
+      ];
+    }
+
+
+  }
+
+  public function getUsersCheckEmail(): array {
+
+    $qb = $this->createQueryBuilder('u');
+    $now = new DateTimeImmutable();
+    $now->setTime(0,0);
+
+    // Broj korisnika kojima ugovor ističe za manje od 15 dana
+    $expiresInLessThan15Days = $this->createQueryBuilder('u')
+      ->where('u.krajUgovora IS NOT NULL')
+      ->andWhere('u.isKadrovska = 1')
+      ->andWhere('u.isSuspended = 0')
+      ->andWhere('u.userType = :userType')
+      ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+      ->andWhere('u.krajUgovora > :now')
+      ->andWhere('u.krajUgovora <= :futureDate')
+      ->setParameter('now', $now)
+      ->setParameter('futureDate', $now->modify('+15 days'))
+      ->orderBy('u.company', 'ASC')
+      ->addOrderBy('u.krajUgovora', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+    // Broj korisnika kojima ugovor ističe danas
+    $expiresToday = $this->createQueryBuilder('u')
+      ->where('u.krajUgovora IS NOT NULL')
+      ->andWhere('u.isKadrovska = 1')
+      ->andWhere('u.isSuspended = 0')
+      ->andWhere('u.userType = :userType')
+      ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+      ->andWhere('u.krajUgovora = :today')
+      ->setParameter('today', $now->format('Y-m-d'))
+      ->orderBy('u.company', 'ASC')
+      ->addOrderBy('u.krajUgovora', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+    // Broj korisnika kojima je ugovor istekao
+    $expiredUsers = $this->createQueryBuilder('u')
+      ->where('u.krajUgovora IS NOT NULL')
+      ->andWhere('u.isKadrovska = 1')
+      ->andWhere('u.isSuspended = 0')
+      ->andWhere('u.userType = :userType')
+      ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)
+      ->andWhere('u.krajUgovora < :today')
+      ->setParameter('today', $now->format('Y-m-d'))
+      ->orderBy('u.company', 'ASC')
+      ->addOrderBy('u.krajUgovora', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+    return [
+      'soon' => $expiresInLessThan15Days,
+      'today' => $expiresToday,
+      'expired' => $expiredUsers,
+    ];
+
+  }
+
+
+
 
 //    /**
 //     * @return User[] Returns an array of User objects

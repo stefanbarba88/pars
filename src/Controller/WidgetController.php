@@ -264,7 +264,7 @@ class WidgetController extends AbstractController {
     $args['user'] = $loggedUser;
 
     if ($loggedUser->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      $args['countEmployees'] = $this->em->getRepository(User::class)->count(['isKadrovska' => true, 'isSuspended' => false, 'company' => $loggedUser->getCompany()]);
+      $args['countEmployees'] = $this->em->getRepository(User::class)->getUsersCount($loggedUser);
       $args['countEmployeesArchive'] = $this->em->getRepository(User::class)->count(['isKadrovska' => true, 'isSuspended' => true, 'company' => $loggedUser->getCompany()]);
 
       $args['countAddons'] = $this->em->getRepository(Addon::class)->count(['company' => $loggedUser->getCompany(), 'isSuspended' => false]);
@@ -276,7 +276,7 @@ class WidgetController extends AbstractController {
       $args['countCompanies'] = $this->em->getRepository(Company::class)->count(['firma' => $loggedUser->getCompany()->getId(), 'isSuspended' => false]);
       $args['countCompaniesArchive'] = $this->em->getRepository(Company::class)->count(['firma' => $loggedUser->getCompany()->getId(), 'isSuspended' => true]);
 
-      $args['countEmployees'] = $this->em->getRepository(User::class)->count(['isKadrovska' => true, 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE]);
+      $args['countEmployees'] = $this->em->getRepository(User::class)->getUsersCount($loggedUser);
       $args['countEmployeesArchive'] = $this->em->getRepository(User::class)->count(['isKadrovska' => true, 'isSuspended' => true, 'userType' => UserRolesData::ROLE_EMPLOYEE]);
 
 

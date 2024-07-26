@@ -55,6 +55,7 @@ class AppExtension extends AbstractExtension {
       new TwigFunction('getTekuciPoslovi', [$this, 'getTekuciPoslovi']),
       new TwigFunction('getCarById', [$this, 'getCarById']),
       new TwigFunction('getUserById', [$this, 'getUserById']),
+      new TwigFunction('getDaysRemaining', [$this, 'getDaysRemaining']),
     ];
   }
 
@@ -118,6 +119,9 @@ class AppExtension extends AbstractExtension {
   public function getUserById(int $id): string {
     $user = $this->entityManager->getRepository(User::class)->find($id);
     return $user->getFullName();
+  }
+  public function getDaysRemaining(User $user): array {
+    return $this->entityManager->getRepository(User::class)->getDaysRemaining($user);
   }
 
 

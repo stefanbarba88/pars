@@ -172,10 +172,12 @@
                                                             {{ user.vrstaZaposlenjaData }}
                                                         </td>
                                                         <td>
-                                                            <div class="d-inline-flex align-items-center">
-                                                                <i class="ph-calendar me-2"></i>
-                                                                {{ user.krajUgovora | date("d.m.Y.")}}
-                                                            </div>
+                                                            {% if user.krajUgovora is not null %}
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-calendar me-2"></i>
+                                                                    {{ user.krajUgovora | date("d.m.Y.")}}
+                                                                </div>
+                                                            {% endif %}
                                                         </td>
                                                         <td class="text-center">
                                                             <div class="dropdown">

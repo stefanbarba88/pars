@@ -56,7 +56,16 @@
                         <a href="{{ path('app_kadrovska_company_employees', {id:user.company.id}) }}" class="nav-link">
                             <i class="ph-users"></i>
                             <span>Zaposleni</span>
-                            <span class="badge bg-secondary align-self-center rounded-pill ms-auto">{{ countEmployees }}</span>
+                            <div class="d-flex ms-auto">
+
+                                <span class="badge bg-info bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiresInLessThan15Days'] }}</span>
+
+                                <span class="badge bg-warning bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiresToday'] }}</span>
+
+                                <span class="badge bg-danger bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiredUsers'] }}</span>
+
+                                <span class="badge bg-secondary rounded-pill ms-2">{{ countEmployees['totalUsers'] }}</span>
+                            </div>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -195,7 +204,17 @@
                         <a href="{{ path('app_employees_kadrovska') }}" class="nav-link">
                             <i class="ph-users"></i>
                             <span>Lista</span>
-                            <span class="badge bg-secondary align-self-center rounded-pill ms-auto">{{ countEmployees }}</span>
+                            <div class="d-flex ms-auto">
+
+                                <span class="badge bg-info bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiresInLessThan15Days'] }}</span>
+
+                                <span class="badge bg-warning bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiresToday'] }}</span>
+
+                                <span class="badge bg-danger bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiredUsers'] }}</span>
+
+                                <span class="badge bg-secondary rounded-pill ms-2">{{ countEmployees['totalUsers'] }}</span>
+                            </div>
+
                         </a>
                     </li>
                     <li class="nav-item">

@@ -110,10 +110,12 @@
                                                 {{ user.vrstaZaposlenjaData }}
                                             </td>
                                             <td>
-                                                <div class="d-inline-flex align-items-center">
-                                                    <i class="ph-calendar me-2"></i>
-                                                    {{ user.krajUgovora | date("d.m.Y.")}}
-                                                </div>
+                                                {% if user.krajUgovora is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ user.krajUgovora | date("d.m.Y.")}}
+                                                    </div>
+                                                {% endif %}
                                             </td>
                                             <td>{% if user.pozicija is not null %}{{ user.pozicija.title }}{% endif %}</td>
                                             <td><div class="fw-semibold"><a href="{{ path('app_kadrovska_company_view', { id: user.company.id}) }}">{{ user.company.title }}</a></div></td>

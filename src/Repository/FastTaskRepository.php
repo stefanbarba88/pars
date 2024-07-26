@@ -3361,7 +3361,7 @@ class FastTaskRepository extends ServiceEntityRepository {
     $stanja = [];
 
     $fastTask->setDatum($dateTime);
-    $fastTask->setEverione($everyone);
+    $fastTask->setEveryone($everyone);
     $noTasks = 0;
     $noSubs = 0;
 

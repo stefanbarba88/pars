@@ -181,6 +181,7 @@
 												<i class="ph-calendar"></i>
 											</span>
                                                 <input type="text" id="task_form_datum_edit" name="task_quick_form_datum" class="form-control datepicker-date-format-custom required" value="{{ fastTask.datum | date("d.m.Y") }}"/>
+                                                <input type="text" id="task_form_everyone" name="task_quick_form_everyone" hidden="hidden" value="{{ fastTask.everyone }}"/>
                                             </div>
                                             <span class="form-text">Format: 31.12.1900.</span>
                                         </div>

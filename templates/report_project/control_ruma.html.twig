@@ -1,0 +1,109 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Izveštaj o projektima (Ruma)
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Detalji izveštaja</h5>
+                        </div>
+                        <form name="report_form" method="post" action="{{ path('app_project_reports_ruma') }}" class="form-validate-jquery" novalidation="novalidation" id="report_form">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="report_form_period">Period:*</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ph-calendar"></i></span>
+                                                <input type="text" autocomplete="off" class="form-control daterange-locale-sr required" id="report_form_period" name="report_form[period]">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Kreirajte</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+        <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+    {#    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>#}
+    {#    <script src="{{ asset('assets/demo/pages/editor_ckeditor_classic.js') }}"></script>#}
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}

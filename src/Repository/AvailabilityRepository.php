@@ -863,6 +863,50 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
   }
 
+
+  public function getDostupnostByUserId(User $user, string $datum) {
+    $return = [];
+    $return['task'] = [];
+    $return['code'] = 10;
+    $datetime = DateTimeImmutable::createFromFormat('d.m.Y.', $datum);
+    $formattedDate = $datetime->format('Y-m-d 00:00:00');
+
+    $dostupnosti = $this->createQueryBuilder('t')
+      ->where('t.type <> 3')
+      ->andWhere('t.User = :user')
+      ->andWhere('t.datum = :datum')
+      ->setParameter(':user', $user->getId())
+      ->setParameter(':datum', $formattedDate)
+      ->getQuery()
+      ->getResult();
+
+    if (!empty($dostupnosti)) {
+      foreach ($dostupnosti as $dost) {
+        if ($dost->getType() == 2) {
+          $return['code'] = 0;
+        } else {
+          if (is_null($dost->getZahtev())) {
+            $return['code'] = 5;
+          } else {
+            $return['code'] = $dost->getZahtev();
+          }
+        }
+      }
+    } else {
+      $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByUserTwigCheck($user, $datetime);
+      if (empty($tasks)) {
+        $return['task'] = [];
+        $return['code'] = 11;
+      } else {
+        foreach ($tasks as $task) {
+          $return['task'][] = $task->getProject()->getTitle();
+        }
+      }
+    }
+    return $return;
+
+  }
+
   public function getDostupnostByUserTwigSutra(User $user): ?int {
 
     $datum = new DateTimeImmutable();

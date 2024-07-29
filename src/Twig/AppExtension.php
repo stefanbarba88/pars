@@ -48,6 +48,7 @@ class AppExtension extends AbstractExtension {
       new TwigFunction('getLogStatusByUser', [$this, 'getLogStatusByUser']),
       new TwigFunction('getDostupnostByUserSutra', [$this, 'getDostupnostByUserSutra']),
       new TwigFunction('getDostupnostByUser', [$this, 'getDostupnostByUser']),
+      new TwigFunction('getDostupnostByUserId', [$this, 'getDostupnostByUserId']),
       new TwigFunction('getCountTasksByProject', [$this, 'getCountTasksByProject']),
       new TwigFunction('getCountDaysTasksByProject', [$this, 'getCountDaysTasksByProject']),
       new TwigFunction('getTekuciPoslovi', [$this, 'getTekuciPoslovi']),
@@ -100,6 +101,17 @@ class AppExtension extends AbstractExtension {
 
   public function getCountDaysTasksByProject(Project $project):array {
     return $this->entityManager->getRepository(Project::class)->getCountDaysTasksByProject($project);
+  }
+
+  public function getDostupnostByUserId(int $id, string $datum): array {
+    $user = $this->entityManager->getRepository(User::class)->find($id);
+    $check =  $this->entityManager->getRepository(Availability::class)->getDostupnostByUserId($user, trim($datum));
+
+    return [
+      'user' => $user,
+      'code' => $check['code'],
+      'tasks' => $check['task']
+    ];
   }
 
 }

@@ -3067,6 +3067,23 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
+  public function getTasksByUserTwigCheck(User $user, DateTimeImmutable $datum) {
+    $endDate = $datum->format('Y-m-d 23:59:59');
+    $startDate = $datum->format('Y-m-d 00:00:00');
+
+    return $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.datumKreiranja >= :startDate')
+      ->andWhere('t.datumKreiranja <= :endDate')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':userId', $user->getId())
+      ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+  }
 
 //    /**
 //     * @return Task[] Returns an array of Task objects

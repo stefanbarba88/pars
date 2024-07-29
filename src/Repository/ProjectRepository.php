@@ -380,6 +380,98 @@ class ProjectRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $kategorija);
   }
 
+  public function getReportRuma(array $data): array {
+    $dates = explode(' - ', $data['period']);
+
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+    $project1 = $this->getEntityManager()->getRepository(Project::class)->find(94);
+    $project2 = $this->getEntityManager()->getRepository(Project::class)->find(130);
+
+    if (isset($data['category'])){
+      foreach ($data['category'] as $cat) {
+        $kategorija [] = $this->getEntityManager()->getRepository(Category::class)->findOneBy(['id' => $cat]);
+      }
+    } else {
+      $kategorija [] = 0;
+    }
+
+    $array1 =  $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project1, $kategorija, 1);
+
+    $array2 =  $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project2, $kategorija, 1);
+
+    $result = $array2[0];
+
+// Iteriramo kroz $array1[0]
+    foreach ($array1[0] as $key => $value) {
+      // Ako ključ iz $array1[0] već postoji u $array2[0], spojimo vrednosti
+      if (array_key_exists($key, $result)) {
+        $result[$key] = array_merge($result[$key], $value);
+      } else {
+        // Ako ključ ne postoji u $array2[0], dodajemo novi ključ i vrednost
+        $result[$key] = $value;
+      }
+    }
+
+// Ako želite da ažurirate $array2[0] sa novim podacima
+    $array2[0] = $result;
+    $tempArray = [];
+    foreach ($array2[0] as $dateString => $info) {
+      $date = DateTimeImmutable::createFromFormat('d.m.Y.', $dateString);
+      if ($date) {
+        $tempArray[$date->getTimestamp()] = $info;
+      }
+    }
+
+// Sortiraj po timestamp-ovima, koji predstavljaju datume
+    ksort($tempArray);
+
+// Formatiraj ključeve nazad u originalni format
+    $sortedData = [];
+    foreach ($tempArray as $timestamp => $info) {
+      $date = (new DateTimeImmutable())->setTimestamp($timestamp);
+      $formattedDate = $date->format('d.m.Y.') . ' ';
+      $sortedData[$formattedDate] = $info;
+    }
+
+//    foreach ($sortedData as $datum => &$entries) {
+//      $uniqueUsers = [];
+//      foreach ($entries as $entry) {
+//        foreach ($entry['zaduzeni'] as $zaduzen) {
+//          $uniqueUsers[$zaduzen->getId()] = $zaduzen;
+//        }
+//      }
+//      $entries['unique'] = array_values($uniqueUsers);
+//    }
+
+    $referentniKorisnici = [50, 57, 96, 52, 60];
+
+    foreach ($sortedData as $datum => &$entries) {
+      $uniqueUsers = [];
+      $presentUserIds = [];
+
+      foreach ($entries as $entry) {
+        foreach ($entry['zaduzeni'] as $zaduzen) {
+          $uniqueUsers[$zaduzen->getId()] = $zaduzen;
+          $presentUserIds[] = $zaduzen->getId();
+        }
+      }
+
+      // Dobijanje jedinstvenih ID-ova korisnika koji su prisutni
+      $presentUserIds = array_unique($presentUserIds);
+
+      // Dobijanje ID-ova korisnika koji nisu prisutni (odsutni)
+      $odsutni = array_diff($referentniKorisnici, $presentUserIds);
+
+      // Dodavanje jedinstvenih korisnika i odsutnih korisnika u entries
+      $entries['unique'] = array_values($uniqueUsers);
+      $entries['odsutni'] = $odsutni;
+    }
+
+  return $sortedData;
+  }
+
   public function getReportAll(array $data): array {
     $company = $this->security->getUser()->getCompany();
     $projectsData = [];

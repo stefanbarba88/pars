@@ -577,79 +577,6 @@ class ProjectController extends AbstractController {
     return $this->render('project/view_docs.html.twig', $args);
   }
 
-  #[Route('/reports', name: 'app_project_reports')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReport(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    if ($request->isMethod('POST')) {
-
-      $data = $request->request->all();
-
-      if (empty($data['report_form']['project'])) {
-        $args['reportsAll'] = $this->em->getRepository(Project::class)->getReportAll($data['report_form']);
-      } else {
-        $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
-        $args['project'] = $this->em->getRepository(Project::class)->find($data['report_form']['project']);
-      }
-      $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksProject($data['report_form'], $args['project']);
-      $args['period'] = $data['report_form']['period'];
-
-      if (isset($data['report_form']['datum'])){
-        $args['datum'] = 1;
-      }
-      if (isset($data['report_form']['opis'])){
-        $args['opis'] = 1;
-      }
-      if (isset($data['report_form']['klijent'])){
-        $args['klijent'] = 1;
-      }
-      if (isset($data['report_form']['start'])){
-        $args['start'] = 1;
-      }
-      if (isset($data['report_form']['stop'])){
-        $args['stop'] = 1;
-      }
-      if (isset($data['report_form']['razlika'])){
-        $args['razlika'] = 1;
-      }
-      if (isset($data['report_form']['razlikaz'])){
-        $args['razlikaz'] = 1;
-      }
-      if (isset($data['report_form']['ukupno'])){
-        $args['ukupno'] = 1;
-      }
-      if (isset($data['report_form']['ukupnoz'])){
-        $args['ukupnoz'] = 1;
-      }
-      if (isset($data['report_form']['zaduzeni'])){
-        $args['zaduzeni'] = 1;
-      }
-      if (isset($data['report_form']['napomena'])){
-        $args['napomena'] = 1;
-      }
-      if (isset($data['report_form']['checklist'])){
-        $args['checklist'] = 1;
-      }
-
-      if (empty($data['report_form']['project'])) {
-        return $this->render('report_project/view_all.html.twig', $args);
-      }
-
-      return $this->render('report_project/view.html.twig', $args);
-
-    }
-
-    $args = [];
-
-    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
-    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
-
-    return $this->render('report_project/control.html.twig', $args);
-  }
-
   #[Route('/reports-archive', name: 'app_project_reports_archive')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function formReportArchive(Request $request)    : Response {
@@ -1738,6 +1665,108 @@ dd($request);
       ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
     return new RedirectResponse($url);
+  }
+
+
+  #[Route('/reports', name: 'app_project_reports')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReport(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+
+      if (empty($data['report_form']['project'])) {
+        $args['reportsAll'] = $this->em->getRepository(Project::class)->getReportAll($data['report_form']);
+      } else {
+        $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
+        $args['project'] = $this->em->getRepository(Project::class)->find($data['report_form']['project']);
+      }
+      $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksProject($data['report_form'], $args['project']);
+      $args['period'] = $data['report_form']['period'];
+
+      if (isset($data['report_form']['datum'])){
+        $args['datum'] = 1;
+      }
+      if (isset($data['report_form']['opis'])){
+        $args['opis'] = 1;
+      }
+      if (isset($data['report_form']['klijent'])){
+        $args['klijent'] = 1;
+      }
+      if (isset($data['report_form']['start'])){
+        $args['start'] = 1;
+      }
+      if (isset($data['report_form']['stop'])){
+        $args['stop'] = 1;
+      }
+      if (isset($data['report_form']['razlika'])){
+        $args['razlika'] = 1;
+      }
+      if (isset($data['report_form']['razlikaz'])){
+        $args['razlikaz'] = 1;
+      }
+      if (isset($data['report_form']['ukupno'])){
+        $args['ukupno'] = 1;
+      }
+      if (isset($data['report_form']['ukupnoz'])){
+        $args['ukupnoz'] = 1;
+      }
+      if (isset($data['report_form']['zaduzeni'])){
+        $args['zaduzeni'] = 1;
+      }
+      if (isset($data['report_form']['napomena'])){
+        $args['napomena'] = 1;
+      }
+      if (isset($data['report_form']['checklist'])){
+        $args['checklist'] = 1;
+      }
+
+      if (empty($data['report_form']['project'])) {
+        return $this->render('report_project/view_all.html.twig', $args);
+      }
+
+      return $this->render('report_project/view.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
+
+    return $this->render('report_project/control.html.twig', $args);
+  }
+
+  #[Route('/reports-ruma', name: 'app_project_reports_ruma')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportRuma(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+
+      $args['reports'] = $this->em->getRepository(Project::class)->getReportRuma($data['report_form']);
+
+      $args['period'] = $data['report_form']['period'];
+
+
+      return $this->render('report_project/view_ruma.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
+
+    return $this->render('report_project/control_ruma.html.twig', $args);
   }
 }
 

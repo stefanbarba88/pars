@@ -1,0 +1,209 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content" xmlns="http://www.w3.org/1999/html">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Izveštaj o projektima (Ruma)
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <div class="d-lg-flex align-items-lg-start">
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">{{ period }}</h5>
+                                        <div class="my-auto ms-auto">
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive card">
+                                            <table class="table table-hover table-bordered table_morecondensed">
+                                                <thead>
+                                                <tr class="table-light">
+                                                    <th>Datum</th>
+                                                    <th>Zaposleni</th>
+                                                    <th>Zamena</th>
+                                                    <th>Odsutan (razlog odsustva)</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% if reports is not empty %}
+                                                    {% for key, value in reports %}
+                                                        <tr>
+                                                            <td class="table-light">{{ key }}</td>
+                                                            <td>
+                                                                {% for user in value.unique %}
+                                                                    {% if user.id in  [50, 57, 96, 52, 60] %}
+                                                                        {{ user.fullName }} (
+                                                                        {% if value[0] is defined %}
+                                                                            {% for zad in value[0].zaduzeni %}
+                                                                                {% if user.id == zad.id %}
+                                                                                    {{ value[0].task.task.project.title }}
+                                                                                {% endif%}
+                                                                            {% endfor%}
+                                                                         {% endif%}
+                                                                        {% if value[1] is defined %}
+                                                                            {% for zad in value[1].zaduzeni %}
+                                                                                {% if user.id == zad.id %}
+                                                                                    {{ value[1].task.task.project.title }}
+                                                                                {% endif%}
+                                                                            {% endfor%}
+                                                                        {% endif%}
+                                                                        {% if value[2] is defined %}
+                                                                            {% for zad in value[2].zaduzeni %}
+                                                                                {% if user.id == zad.id %}
+                                                                                    {{ value[2].task.task.project.title }}
+                                                                                {% endif%}
+                                                                            {% endfor%}
+                                                                        {% endif%}
+                                                                        ) <br>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </td>
+                                                            <td>
+                                                                {% for user in value.unique %}
+                                                                    {% if user.id not in  [50, 57, 96, 52, 60] %}
+                                                                        {{ user.fullName }}<br>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </td>
+                                                            <td>
+                                                                {% for id in value.odsutni %}
+                                                                    {% set rez = getDostupnostByUserId(id, key) %}
+                                                                    {% if rez.code == 11 %}
+                                                                        {{ rez.user.fullName }} - Nije bio u radnom odnosu
+                                                                    {% endif %}
+                                                                    {% if rez.code == 10 %}
+                                                                        {{ rez.user.fullName }} - ({% for tas in rez.tasks %}{{ tas }}, {% endfor %})
+                                                                    {% endif %}
+                                                                    {% if rez.code < 10 %}
+                                                                        {% if rez.code == 0 %}
+                                                                            {{ rez.user.fullName }} - Izašao
+                                                                        {% elseif rez.code == 1 %}
+                                                                            {{ rez.user.fullName }} - Slobodan dan
+                                                                        {% elseif rez.code == 2 %}
+                                                                            {{ rez.user.fullName }} - Odmor
+                                                                        {% elseif rez.code == 3 %}
+                                                                            {{ rez.user.fullName }} - Bolovanje
+                                                                        {% elseif rez.code == 4 %}
+                                                                            {{ rez.user.fullName }} - Slava
+                                                                        {% else %}
+                                                                            {{ rez.user.fullName }} - Nema merenje
+                                                                        {% endif %}
+                                                                    {% endif %}<br>
+
+                                                                {% endfor %}
+{#                                                                {% for id in value.odsutni %}#}
+{#                                                                  {{ getDostupnostByUserId(id, key) }}#}
+{#                                                                {% endfor %}#}
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="9">
+                                                            <div class="text-body">
+                                                                Nema odrađenih zadataka u zadatom periodu
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+

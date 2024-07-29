@@ -39,7 +39,7 @@ class RemainingDaysCheckCommand extends Command {
 
     $ugovori = $this->em->getRepository(User::class)->getUsersCheckEmail();
 
-    if ($ugovori['soon'] > 0 || $ugovori['today'] > 0 || $ugovori['expired'] > 0) {
+    if (!empty($ugovori['soon']) || !empty($ugovori['today']) || !empty($ugovori['expired'])) {
 
       foreach ($admins as $admin) {
         $this->mail->kadrovskaEmployeeCheck($admin, $ugovori);

@@ -21,7 +21,7 @@ class AppConfig {
   public const KUCA_CAT_ID = 2;
   public const KANC_CAT_ID = 3;
 
-  public const KADROVSKA = 9;
+  public const KADROVSKA = 14;
 
 
 

@@ -246,7 +246,7 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
     return  $this->createQueryBuilder('c')
       ->andWhere('c.user = :user')
       ->setParameter(':user', $loggedUser)
-      ->andWhere('c.status <> :status or c.status <> :status1')
+      ->andWhere('c.status <> :status and c.status <> :status1')
       ->setParameter(':status', InternTaskStatusData::ZAVRSENO)
       ->setParameter(':status1', InternTaskStatusData::KONVERTOVANO)
       ->orderBy('c.status', 'ASC')

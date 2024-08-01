@@ -256,6 +256,21 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
       ->getResult();
 
   }
+  public function getChecklistCreatedByUserActive(User $loggedUser) {
+
+    return  $this->createQueryBuilder('c')
+      ->andWhere('c.createdBy = :user')
+      ->setParameter(':user', $loggedUser)
+      ->andWhere('c.status <> :status and c.status <> :status1')
+      ->setParameter(':status', InternTaskStatusData::ZAVRSENO)
+      ->setParameter(':status1', InternTaskStatusData::KONVERTOVANO)
+      ->orderBy('c.status', 'ASC')
+      ->addOrderBy('c.datumKreiranja', 'ASC')
+      ->addOrderBy('c.priority', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+  }
 
   public function getInternTasksByDateUser(DateTimeImmutable $date, User $user): array  {
     $company = $this->security->getUser()->getCompany();

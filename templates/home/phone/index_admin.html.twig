@@ -11,6 +11,66 @@
             <div class="content-inner">
 
                 <div class="content">
+                    {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') %}
+                        {% if checklistCreatedByUserActive is not empty %}
+                            <div class="col-xl-12">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_item2" aria-expanded="false" type="button">
+                                        <h5 class="mb-0">Kreirani zadaci</h5>
+                                        <div class="d-inline-flex ms-auto">
+                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{{ countChecklistCreatedByUserActive }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div id="collapsed_item2" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-bordered table_morecondensed">
+                                                <tbody>
+                                                <tr class="table-light fw-semibold">
+                                                    <td colspan="3">Aktivni</td>
+                                                </tr>
+                                                {% for task in checklistCreatedByUserActive | slice (0,5) %}
+                                                    <tr>
+                                                        <td>
+                                                            {{ task.user.getNameWithFirstLetter() }}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                                <span class="badge bg-secondary text-primary">Kreiran</span>
+                                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                                <span class="badge bg-yellow text-primary">U toku</span>
+                                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                                <span class="badge bg-primary text-white">Završen</span>
+                                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::KONVERTOVANO') %}
+                                                                <span class="badge bg-yellow text-primary">Konvertovan</span>
+                                                            {% endif %}
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Vidi" data-bs-original-title="Vidi">
+                                                                <i class="ph-eye"></i></a>
+                                                        </td>
+
+                                                    </tr>
+                                                {% endfor %}
+                                                <tr class="table-light fw-semibold">
+                                                    <td colspan="2"></td>
+                                                    <td class="text-center">
+                                                        <div class="d-inline-flex mb-0">
+                                                            <a href="{{ path('app_checklist_list') }}" class="btn-sm btn-primary"> Vidi sve</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
                     {% if checklistActive is not empty %}
                         <div class="col-xl-12">
                             <div class="card">

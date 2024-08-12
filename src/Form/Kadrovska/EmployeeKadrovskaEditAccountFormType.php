@@ -39,7 +39,7 @@ class EmployeeKadrovskaEditAccountFormType extends AbstractType {
 
     $plainUserType = $dataObject->getUser()->getPlainUserType();
     $userType = $dataObject->getUser()->getUserType();
-    $company = $dataObject->getUser()->getCreatedBy()->getCompany();
+
 
     $builder
       ->add('plainPassword', TextType::class, [

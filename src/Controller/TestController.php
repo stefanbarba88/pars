@@ -31,17 +31,22 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-#[Route('/email')]
+#[Route('/test')]
 class TestController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
 
-  #[Route('/send-email/', name: 'send_email')]
-  public function sendEmail(MailService $mailService): Response {
+  #[Route('/ok', name: 'test_ok')]
+  public function ok(Request $request): Response {
 
-    $mailService->test('stefanmaksimovic88@hotmail.com');
-    $mailService->test('stefanmaksimovic88@gmail.com');
-    $mailService->test('sm@epars.rs');
+    dd($request);
+
+    return $this->redirectToRoute('app_home');
+  }
+  #[Route('/fail', name: 'test_fail')]
+  public function fail(Request $request): Response {
+
+    dd($request);
 
     return $this->redirectToRoute('app_home');
   }

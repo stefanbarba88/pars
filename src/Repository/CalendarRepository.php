@@ -137,11 +137,29 @@ class CalendarRepository extends ServiceEntityRepository {
 //      ->addOrderBy('c.start', 'DESC')
 //      ->getQuery();
     $company = $loggedUser->getCompany();
-    return $this->createQueryBuilder('c')
+    $results = $this->createQueryBuilder('c')
       ->andWhere('c.company = :company')
       ->setParameter(':company', $company)
-      ->addOrderBy('c.start', 'DESC')
-      ->getQuery();
+      ->getQuery()
+      ->getResult();
+
+// Ručno sortiranje u PHP-u
+    usort($results, function($a, $b) {
+      $statusOrder = [1, 2, 3, 0];
+
+      $statusA = array_search($a->getStatus(), $statusOrder);
+      $statusB = array_search($b->getStatus(), $statusOrder);
+
+      if ($statusA === $statusB) {
+        // Sort by start date DESC
+        return $b->getStart() <=> $a->getStart();
+      }
+
+      // Sort by status first
+      return $statusA <=> $statusB;
+    });
+
+    return $results;
 
   }
 

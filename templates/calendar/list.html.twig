@@ -39,47 +39,11 @@
                                     <thead class="bg-light text-primary">
                                     <tr>
                                         <th>Zaposleni</th>
-                                        <th  {% if pagination.isSorted('[c.type]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Tip ', ['c.type']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.type' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.type' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
-                                        <th {% if pagination.isSorted('[c.start]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Početak ', ['c.start']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.start' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.start' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
-                                        <th {% if pagination.isSorted('[c.finish]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Kraj ', ['c.finish']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.finish' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.finish' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
+                                        <th>Tip</th>
+                                        <th>Početak</th>
+                                        <th>Kraj</th>
                                         <th>Napomena</th>
-                                        <th {% if pagination.isSorted('[c.status]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Status ', ['c.status']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.status' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.status' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
+                                        <th>Status</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>

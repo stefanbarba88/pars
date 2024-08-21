@@ -1276,21 +1276,22 @@ class ProjectController extends AbstractController {
         $sheet->getStyle('B' . $startAktivnosti + 1)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
         $sheet->getStyle('B' . $startAktivnosti + 1)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-        $sheet->setCellValue('B' . $startAktivnosti + 3, 'Za ' . $klijent[0] . ':');
+        $sheet->setCellValue('B' . $startAktivnosti + 5, 'Za ' . $klijent[0] . ':');
 
-        $sheet->getStyle('B' . $startAktivnosti + 3)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('B' . $startAktivnosti + 3)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('B' . $startAktivnosti + 6)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('B' . $startAktivnosti + 6)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->mergeCells('B' . $startAktivnosti + 6 . ':B' . $startAktivnosti + 12);
 
-        $sheet->getStyle('B' . $startAktivnosti + 5)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle('B' . $startAktivnosti + 12)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
 
-        $sheet->mergeCells('F' . $startAktivnosti + 3 . ':H' . $startAktivnosti + 3);
-        $sheet->mergeCells('F' . $startAktivnosti + 4 . ':H' . $startAktivnosti + 4);
-        $sheet->setCellValue('F' . $startAktivnosti + 3, 'Za ' . $company->getTitle() . ':');
+//        $sheet->mergeCells('F' . $startAktivnosti + 6 . ':H' . $startAktivnosti + 6);
+        $sheet->mergeCells('F' . $startAktivnosti + 6 . ':H' . $startAktivnosti + 12);
+        $sheet->setCellValue('F' . $startAktivnosti + 5, 'Za ' . $company->getTitle() . ':');
 
-        $sheet->getStyle('F' . $startAktivnosti + 3)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('F' . $startAktivnosti + 3)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('F' . $startAktivnosti + 5)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle('F' . $startAktivnosti + 5)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-        $sheet->getStyle('F' . $startAktivnosti + 5 . ':H' . $startAktivnosti + 5)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle('F' . $startAktivnosti + 12 . ':H' . $startAktivnosti + 12)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
       }
       if ($type == 3) {
 
@@ -1687,6 +1688,9 @@ dd($request);
       }
       $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksProject($data['report_form'], $args['project']);
       $args['period'] = $data['report_form']['period'];
+
+      $args['periodNo'] = count($args['reports'][0]);
+      $args['internNo'] = count($args['intern']);
 
       if (isset($data['report_form']['datum'])){
         $args['datum'] = 1;

@@ -23,7 +23,6 @@
             </div>
             <!-- /sidebar header -->
 
-
             <!-- Main navigation -->
             <div class="sidebar-section">
                 <ul class="nav nav-sidebar" data-nav-type="accordion">
@@ -36,13 +35,9 @@
                     <li class="nav-item">
                         <a href="{{ path('app_home') }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
                             <i class="ph-house"></i>
-                            <span>
-                                Kontrolna tabla
-{#                            <span class="d-block fw-normal opacity-50">1</span>#}
-                        </span>
+                            <span>Kontrolna tabla</span>
                         </a>
                     </li>
-
 
                     <!-- taskovi -->
                     <li class="nav-item-header">
@@ -50,25 +45,25 @@
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_tasks') }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_tasks') }}" class="nav-link {{ current_route == 'app_tasks' ? 'active' : '' }}">
                             <i class="ph-list-bullets"></i>
                             <span>Aktuelni</span>
                             {% if countTasksActiveByUser > 0 %}
-                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksActiveByUser }}</span>
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksActiveByUser }}</span>
                             {% endif %}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_tasks_unclosed') }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_tasks_unclosed') }}" class="nav-link {{ current_route == 'app_tasks_unclosed' ? 'active' : '' }}">
                             <i class="ph-list-dashes"></i>
                             <span>Nezatvoreni</span>
                             {% if countTasksUnclosedByUser > 0 %}
-                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksUnclosedByUser }}</span>
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countTasksUnclosedByUser }}</span>
                             {% endif %}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_tasks_unclosed_logs') }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_tasks_unclosed_logs') }}" class="nav-link {{ current_route == 'app_tasks_unclosed_logs' ? 'active' : '' }}">
                             <i class="ph-clipboard-text"></i>
                             <span>Nezatvoreni dnevnici</span>
                             {% if countTasksUnclosedLogsByUser > 0 %}
@@ -77,19 +72,19 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_stopwatch_verify_activity_list') }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_stopwatch_verify_activity_list') }}" class="nav-link {{ current_route == 'app_stopwatch_verify_activity_list' ? 'active' : '' }}">
                             <i class="ph-archive-box"></i>
                             <span>Prijemi za potvrdu</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_tasks_arhiva') }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_tasks_arhiva') }}" class="nav-link {{ current_route == 'app_tasks_arhiva' ? 'active' : '' }}">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_task_form_date') }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_task_form_date') }}" class="nav-link {{ current_route == 'app_task_form_date' ? 'active' : '' }}">
                             <i class="ph-folder-plus"></i>
                             <span>Dodajte</span>
                         </a>
@@ -101,7 +96,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a href="{{ path('app_checklist_to_do') }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_checklist_to_do') }}" class="nav-link {{ current_route == 'app_checklist_to_do' ? 'active' : '' }}">
                             <i class="ph-list-plus"></i>
                             <span>Interni zadaci</span>
                             {% if countChecklistActive > 0 %}
@@ -115,7 +110,7 @@
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_projects') }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_projects') }}" class="nav-link {{ current_route == 'app_projects' ? 'active' : '' }}">
                             <i class="ph-folders"></i>
                             <span>Lista</span>
                             <span class="badge bg-yellow align-self-center rounded-pill ms-auto"></span>
@@ -129,26 +124,26 @@
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_employee_car_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_employee_car_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_employee_car_view' ? 'active' : '' }}">
                             <i class="ph-car"></i>
                             <span>Vozila</span>
                         </a>
                     </li>
                     {% if user.car is not null %}
                         <li class="nav-item">
-                            <a href="{{ path('app_car_employee_reservation_stop', {id:lastReservation.id}) }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                            <a href="{{ path('app_car_employee_reservation_stop', {id:lastReservation.id}) }}" class="nav-link {{ current_route == 'app_car_employee_reservation_stop' ? 'active' : '' }}">
                                 <i class="ph-car"></i>
                                 <span>Razdužite</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ path('app_car_employee_expense_form', {id:user.car}) }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                            <a href="{{ path('app_car_employee_expense_form', {id:user.car}) }}" class="nav-link {{ current_route == 'app_car_employee_expense_form' ? 'active' : '' }}">
                                 <i class="ph-money"></i>
                                 <span>Trošak</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                            <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="nav-link {{ current_route == 'app_car_image_form' ? 'active' : '' }}">
                                 <i class="ph-image"></i>
                                 <span>Slike</span>
                             </a>
@@ -162,69 +157,60 @@
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_employee_tools_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_employee_tools_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_employee_tools_view' ? 'active' : '' }}">
                             <i class="ph-wrench"></i>
                             <span>Oprema</span>
                         </a>
                     </li>
-
-
 
                     <li class="nav-item-header">
                         <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Ostalo</div>
                         <i class="ph-calendar sidebar-resize-show"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_employee_calendar_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_employee_calendar_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_employee_calendar_view' ? 'active' : '' }}">
                             <i class="ph-calendar"></i>
                             <span>Kalendar</span>
-                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_employee_activity_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_employee_activity_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_employee_activity_view' ? 'active' : '' }}">
                             <i class="ph-activity"></i>
                             <span>Aktivnosti</span>
-                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_overtime_employee_form') }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_overtime_employee_form') }}" class="nav-link {{ current_route == 'app_overtime_employee_form' ? 'active' : '' }}">
                             <i class="ph-hourglass-simple-high"></i>
                             <span>Prekovremeni sati</span>
-                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_employee_notes_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_employee_notes_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_employee_notes_view' ? 'active' : '' }}">
                             <i class="ph-clipboard-text"></i>
                             <span>Beleške</span>
-                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_employee_docs_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_employee_docs_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_employee_docs_view' ? 'active' : '' }}">
                             <i class="ph-file"></i>
                             <span>Dokumenta</span>
-                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_employee_images_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_employee_images_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_employee_images_view' ? 'active' : '' }}">
                             <i class="ph-image"></i>
                             <span>Slike</span>
-                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_employee_comments_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_employee_comments_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_employee_comments_view' ? 'active' : '' }}">
                             <i class="ph-chats-circle"></i>
                             <span>Komentari</span>
-                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_users_contacts') }}" class="nav-link {{ current_route == 'app_home' ? 'active' : '' }}">
+                        <a href="{{ path('app_users_contacts') }}" class="nav-link {{ current_route == 'app_users_contacts' ? 'active' : '' }}">
                             <i class="ph-chats"></i>
                             <span>Kontakti</span>
                         </a>
@@ -233,7 +219,6 @@
                         <a href="{{ asset('/assets/manual/manual.pdf') }}" class="nav-link download">
                             <i class="ph-lifebuoy"></i>
                             <span>Uputstvo</span>
-                            {#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
                         </a>
                     </li>
 
@@ -245,6 +230,7 @@
         <!-- /sidebar content -->
 
     </div>
+
     <!-- /main sidebar -->
 {% else %}
     <!-- Main sidebar admin -->

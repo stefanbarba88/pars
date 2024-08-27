@@ -1,0 +1,66 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Content area -->
+                <div class="content d-flex justify-content-center align-items-center">
+
+                    <!-- Container -->
+                    <div class="flex-fill">
+
+                        <!-- Error title -->
+                        <div class="text-center mb-4">
+                            <img src="{{ asset('assets/images/error_bg.svg') }}" class="img-fluid mb-3" height="230" alt="">
+                            <h1 class="display-3 fw-semibold lh-1 mb-3">Desila se greška</h1>
+                            <h5>Stranica koju tražite ne postoji ili je došlo do neke druge greške.<br> Vratite se ili idite na drugu stranu.</h5>
+                        </div>
+                        <!-- /error title -->
+
+
+                        <!-- Error content -->
+                        <div class="text-center">
+                            <a href="{{ path('app_home') }}" class="btn btn-primary">
+                                <i class="ph-house me-2"></i>
+                                Početna
+                            </a>
+                        </div>
+                        <!-- /error wrapper -->
+
+                    </div>
+                    <!-- /container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+
+
+    <!-- /vertical form modal -->
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+    <script src="{{ asset('assets/demo/pages/dashboard.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
+
+{% endblock includeJavascript %}

@@ -103,7 +103,7 @@ class JMBGcheck {
   /**
    * Validate Control Number
    */
-  public function validateControlNumber() {
+  public function validateControlNumber(): static {
     /*
         Kontrolna cifra se izračunava sledećom formulom DDMMGGGRRBBBK = ABVGDĐEŽZIJKL
         L = 11 – (( 7*(A+E) + 6*(B+Ž) + 5*(V+Z) + 4*(G+I) + 3*(D+J) + 2*(Đ+K) ) % 11)
@@ -187,7 +187,7 @@ class JMBGcheck {
   /**
    * Parse JMBG number
    */
-  public function parse() {
+  public function parse(): static {
 
     /*
         Matični broj se sastoji od 13 cifara koje potiču iz šest grupa podataka, i to:
@@ -230,7 +230,7 @@ class JMBGcheck {
     return $this;
   }
 
-  public function parseBirthSerialNumber() {
+  public function parseBirthSerialNumber(): static {
     //Serial number (if the baby born was the 1st, 2nd, 3rd... child that day)
     //000-499 male
     //500-999 female
@@ -250,7 +250,7 @@ class JMBGcheck {
     return $this;
   }
 
-  public function addOrdinalNumberSuffix(int $number) {
+  public function addOrdinalNumberSuffix(int $number): string {
     if (!in_array(($number % 100), array(11, 12, 13))) {
       switch ($number % 10) {
         case 1:
@@ -281,7 +281,7 @@ class JMBGcheck {
     return $this;
   }
 
-  public function parseRegistrationArea() {
+  public function parseRegistrationArea(): static {
 
     $number = $this->Person->get("RegistrationAreaNumber");
     $this->Person->set("RegistrationArea", $this->RegistrationAreaNumber[$number]);

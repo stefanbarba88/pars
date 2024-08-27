@@ -170,7 +170,7 @@ class UserKadrovskaRegistrationFormType extends AbstractType {
       ->add('jmbg', TextType::class, [
         'constraints' => [
           new Regex('/^\d{13}$/', 'JMBG morate uneti u odgovarajućem formatu'),
-          new JMBG('strict'),
+//          new JMBG('strict'),
         ],
         'attr' => [
           'maxlength' => '13',

@@ -147,20 +147,21 @@ class TaskController extends AbstractController {
 
     $data = $request->request->all();
 
+    $datumKreiranja = new DateTimeImmutable();
+
     if (isset($data['datumCheck'])) {
-      $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumCheck'])->setTime(0, 0);
-      $task->setDatumKreiranja($datumKreiranja);
+      $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumCheck']);
     }
 
     if (isset($data['datumCheckPhone'])) {
-      $datumKreiranja = DateTimeImmutable::createFromFormat('Y-m-d', $data['datumCheckPhone'])->setTime(0, 0);
-      $task->setDatumKreiranja($datumKreiranja);
+      $datumKreiranja = DateTimeImmutable::createFromFormat('Y-m-d', $data['datumCheckPhone']);
     }
 
     if (isset($data['datumK'])) {
-      $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumK'])->setTime(0, 0);
-      $task->setDatumKreiranja($datumKreiranja);
+      $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumK']);
     }
+
+    $task->setDatumKreiranja($datumKreiranja->setTime(0,0));
 
 
     $mobileDetect = new MobileDetect();
@@ -431,20 +432,21 @@ class TaskController extends AbstractController {
 
     $data = $request->request->all();
 
+    $datumKreiranja = new DateTimeImmutable();
+
     if (isset($data['datumCheck'])) {
-      $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumCheck'])->setTime(0, 0);
-      $task->setDatumKreiranja($datumKreiranja);
+      $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumCheck']);
     }
 
     if (isset($data['datumCheckPhone'])) {
-      $datumKreiranja = DateTimeImmutable::createFromFormat('Y-m-d', $data['datumCheckPhone'])->setTime(0, 0);
-      $task->setDatumKreiranja($datumKreiranja);
+      $datumKreiranja = DateTimeImmutable::createFromFormat('Y-m-d', $data['datumCheckPhone']);
     }
 
     if (isset($data['datumK'])) {
-      $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumK'])->setTime(0, 0);
-      $task->setDatumKreiranja($datumKreiranja);
+      $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumK']);
     }
+
+    $task->setDatumKreiranja($datumKreiranja->setTime(0,0));
 
     $mobileDetect = new MobileDetect();
 

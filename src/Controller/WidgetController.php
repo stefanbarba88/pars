@@ -28,10 +28,12 @@ class WidgetController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
 
-  public function adminMainSidebar(): Response {
+  public function adminMainSidebar(?string $_route = null): Response {
     $loggedUser = $this->getUser();
     $args = [];
     $args['user'] = $loggedUser;
+
+    $args['current_route'] = $_route;
 
     if ($loggedUser->getuserType() == UserRolesData::ROLE_EMPLOYEE) {
       $args['countTasksActiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksByUser($loggedUser);
@@ -258,10 +260,12 @@ class WidgetController extends AbstractController {
 
     return $this->render('_kadrovska/widget/right_sidebar.html.twig', $args);
   }
-  public function adminMainSidebarKadrovska(): Response {
+  public function adminMainSidebarKadrovska(?string $_route = null): Response {
     $loggedUser = $this->getUser();
     $args = [];
     $args['user'] = $loggedUser;
+
+    $args['current_route'] = $_route;
 
     if ($loggedUser->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
       $args['countEmployees'] = $this->em->getRepository(User::class)->getUsersCount($loggedUser);

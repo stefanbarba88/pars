@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Entity\UserHistory;
 use App\Form\UserEditAccountFormType;
 use App\Form\UserEditImageFormType;
+use App\Form\UserEditInfoFormType;
 use App\Form\UserRegistrationFormType;
 use App\Form\UserSuspendedFormType;
 use App\Service\UploadService;

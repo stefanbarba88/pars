@@ -1,5 +1,5 @@
 {% if is_granted('ROLE_EMPLOYEE') %}
-    <!-- Main sidebar admin -->
+
     <div class="sidebar sidebar-dark sidebar-main sidebar-expand-lg">
 
         <!-- Sidebar content -->
@@ -23,7 +23,6 @@
             </div>
             <!-- /sidebar header -->
 
-
             <!-- Main navigation -->
             <div class="sidebar-section">
                 <ul class="nav nav-sidebar" data-nav-type="accordion">
@@ -34,12 +33,9 @@
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_kadrovska_home') }}" class="nav-link active">
+                        <a href="{{ path('app_kadrovska_home') }}" class="nav-link {{ current_route == 'app_kadrovska_home' ? 'active' : '' }}">
                             <i class="ph-house"></i>
-                            <span>
-                                Kontrolna tabla
-{#                            <span class="d-block fw-normal opacity-50">1</span>#}
-                        </span>
+                            <span>Kontrolna tabla</span>
                         </a>
                     </li>
                     <li class="nav-item-header">
@@ -47,43 +43,38 @@
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_kadrovska_company_view', {id:user.company.id}) }}" class="nav-link">
+                        <a href="{{ path('app_kadrovska_company_view', {id:user.company.id}) }}" class="nav-link {{ current_route == 'app_kadrovska_company_view' ? 'active' : '' }}">
                             <i class="ph-factory"></i>
                             <span>Profil</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_kadrovska_company_employees', {id:user.company.id}) }}" class="nav-link">
+                        <a href="{{ path('app_kadrovska_company_employees', {id:user.company.id}) }}" class="nav-link {{ current_route == 'app_kadrovska_company_employees' ? 'active' : '' }}">
                             <i class="ph-users"></i>
                             <span>Zaposleni</span>
                             <div class="d-flex ms-auto">
-
                                 <span class="badge bg-info bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiresInLessThan15Days'] }}</span>
-
                                 <span class="badge bg-warning bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiresToday'] }}</span>
-
                                 <span class="badge bg-danger bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiredUsers'] }}</span>
-
                                 <span class="badge bg-secondary rounded-pill ms-2">{{ countEmployees['totalUsers'] }}</span>
                             </div>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_kadrovska_company_employees_calendar', {id:user.company.id}) }}" class="nav-link">
+                        <a href="{{ path('app_kadrovska_company_employees_calendar', {id:user.company.id}) }}" class="nav-link {{ current_route == 'app_kadrovska_company_employees_calendar' ? 'active' : '' }}">
                             <i class="ph-calendar"></i>
                             <span>Kalendar</span>
-{#                            <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCompaniesArchive }}</span>#}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_kadrovska_company_employees_addon', {id:user.company.id}) }}" class="nav-link">
+                        <a href="{{ path('app_kadrovska_company_employees_addon', {id:user.company.id}) }}" class="nav-link {{ current_route == 'app_kadrovska_company_employees_addon' ? 'active' : '' }}">
                             <i class="ph-activity"></i>
                             <span>Aktivnosti</span>
                             <span class="badge bg-secondary align-self-center rounded-pill ms-auto">{{ countAddons }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_kadrovska_company_employees_archive', {id:user.company.id}) }}" class="nav-link">
+                        <a href="{{ path('app_kadrovska_company_employees_archive', {id:user.company.id}) }}" class="nav-link {{ current_route == 'app_kadrovska_company_employees_archive' ? 'active' : '' }}">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
                             <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countEmployeesArchive }}</span>
@@ -109,8 +100,8 @@
 
             <!-- Sidebar header -->
             <div class="sidebar-section">
-                <div class="sidebar-section-body d-flex justify-content-center">
-                    <h5 class="sidebar-resize-hide flex-grow-1 my-auto">Navigacija</h5>
+                <div class="sidebar-section-body d-flex justify-content-between align-items-center">
+                    <h5 class="sidebar-resize-hide my-auto">Navigacija</h5>
 
                     <div>
                         <button type="button" class="btn btn-flat-white btn-icon btn-sm rounded-pill border-transparent sidebar-control sidebar-main-resize d-none d-lg-inline-flex">
@@ -123,9 +114,7 @@
                     </div>
                 </div>
             </div>
-
             <!-- /sidebar header -->
-
 
             <!-- Main navigation -->
             <div class="sidebar-section">
@@ -137,12 +126,9 @@
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_kadrovska_home') }}" class="nav-link active">
+                        <a href="{{ path('app_kadrovska_home') }}" class="nav-link {{ current_route == 'app_kadrovska_home' ? 'active' : '' }}">
                             <i class="ph-house"></i>
-                            <span>
-                            Kontrolna tabla
-{#                            <span class="d-block fw-normal opacity-50">broj aktivnih taskova</span>#}
-                        </span>
+                            <span>Kontrolna tabla</span>
                         </a>
                     </li>
 
@@ -152,47 +138,41 @@
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_kadrovska_companies') }}" class="nav-link">
+                        <a href="{{ path('app_kadrovska_companies') }}" class="nav-link {{ current_route == 'app_kadrovska_companies' ? 'active' : '' }}">
                             <i class="ph-factory"></i>
                             <span>Lista</span>
                             <span class="badge bg-secondary align-self-center rounded-pill ms-auto">{{ countCompanies }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_kadrovska_companies_archive') }}" class="nav-link">
+                        <a href="{{ path('app_kadrovska_companies_archive') }}" class="nav-link {{ current_route == 'app_kadrovska_companies_archive' ? 'active' : '' }}">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
                             <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCompaniesArchive }}</span>
                         </a>
                     </li>
+
                     {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN') %}
                         <!-- Korisnici -->
-                            <li class="nav-item-header">
-                                <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Korisnici sistema</div>
-                                <i class="ph-dots-three sidebar-resize-show"></i>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ path('app_kadrovska_users') }}" class="nav-link">
-                                    <i class="ph-users"></i>
-                                    <span>Lista</span>
-                                    <span class="badge bg-secondary align-self-center rounded-pill ms-auto">{{ countUsers }}</span>
-                                </a>
-                            </li>
+                        <li class="nav-item-header">
+                            <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Korisnici sistema</div>
+                            <i class="ph-dots-three sidebar-resize-show"></i>
+                        </li>
                         <li class="nav-item">
-                            <a href="{{ path('app_kadrovska_users_archive') }}" class="nav-link">
+                            <a href="{{ path('app_kadrovska_users') }}" class="nav-link {{ current_route == 'app_kadrovska_users' ? 'active' : '' }}">
+                                <i class="ph-users"></i>
+                                <span>Lista</span>
+                                <span class="badge bg-secondary align-self-center rounded-pill ms-auto">{{ countUsers }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_kadrovska_users_archive') }}" class="nav-link {{ current_route == 'app_kadrovska_users_archive' ? 'active' : '' }}">
                                 <i class="ph-archive"></i>
                                 <span>Arhiva</span>
                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countUsersArchive }}</span>
                             </a>
                         </li>
                     {% endif %}
-{#                    <li class="nav-item">#}
-{#                        <a href="" class="nav-link">#}
-{#                            <i class="ph-file-text"></i>#}
-{#                            <span>Izveštaji</span>#}
-{#                        </a>#}
-{#                    </li>#}
-                    <!-- /Korisnici -->
 
                     <!-- Zaposleni -->
                     <li class="nav-item-header">
@@ -201,139 +181,31 @@
                     </li>
 
                     <li class="nav-item">
-                        <a href="{{ path('app_employees_kadrovska') }}" class="nav-link">
+                        <a href="{{ path('app_employees_kadrovska') }}" class="nav-link {{ current_route == 'app_employees_kadrovska' ? 'active' : '' }}">
                             <i class="ph-users"></i>
                             <span>Lista</span>
                             <div class="d-flex ms-auto">
-
                                 <span class="badge bg-info bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiresInLessThan15Days'] }}</span>
-
                                 <span class="badge bg-warning bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiresToday'] }}</span>
-
                                 <span class="badge bg-danger bg-opacity-50 rounded-pill ms-2">{{ countEmployees['expiredUsers'] }}</span>
-
                                 <span class="badge bg-secondary rounded-pill ms-2">{{ countEmployees['totalUsers'] }}</span>
                             </div>
-
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('app_employees_archive_kadrovska') }}" class="nav-link">
+                        <a href="{{ path('app_employees_archive_kadrovska') }}" class="nav-link {{ current_route == 'app_employees_archive_kadrovska' ? 'active' : '' }}">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
                             <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCompaniesArchive }}</span>
                         </a>
                     </li>
 
-                    <!-- /Zaposleni -->
-
-                        <!-- Kalendar -->
-{#                        <li class="nav-item-header">#}
-{#                            <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Kalendar</div>#}
-{#                            <i class="ph-calendar sidebar-resize-show"></i>#}
-{#                        </li>#}
-{#                        <li class="nav-item">#}
-{#                            <a href="{{ path('app_calendar_list') }}" class="nav-link">#}
-{#                                <i class="ph-calendar-plus"></i>#}
-{#                                <span>Zahtevi</span>#}
-{#                                {% if countCalendarRequests > 0 %}#}
-{#                                    <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCalendarRequests }}</span>#}
-{#                                {% endif %}#}
-
-{#                            </a>#}
-{#                        </li>#}
-{#                        <li class="nav-item">#}
-{#                            <a href="{{ path('app_availability_list') }}" class="nav-link">#}
-{#                                <i class="ph-calendar"></i>#}
-{#                                <span>Dostupnost</span>#}
-{#                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span>#}
-{#                            </a>#}
-{#                        </li>#}
-
-
-
-
-{#                    <li class="nav-item nav-item-submenu">#}
-{#                        <a href="#" class="nav-link">#}
-{#                            <i class="ph-archive"></i>#}
-{#                            <span>Arhiva</span>#}
-{#                        </a>#}
-{#                        <ul class="nav-group-sub collapse">#}
-{#                            <li class="nav-item"><a href="{{ path('app_clients_archive') }}" class="nav-link">Lista</a></li>#}
-{#                                                        <li class="nav-item"><a href="" class="nav-link">Izveštaji</a></li>#}
-{#                        </ul>#}
-{#                    </li>#}
-{#                    <li class="nav-item">#}
-{#                        <a href="" class="nav-link">#}
-{#                            <i class="ph-file-text"></i>#}
-{#                            <span>Izveštaji</span>#}
-{#                        </a>#}
-{#                    </li>#}
-
-{#                    <li class="nav-item-header">#}
-{#                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Podašavanja</div>#}
-{#                        <i class="ph-dots-three sidebar-resize-show"></i>#}
-{#                    </li>#}
-{#                    <li class="nav-item nav-item-submenu">#}
-{#                        <a href="#" class="nav-link">#}
-{#                            <i class="ph-wrench"></i>#}
-{#                            <span>Podešavanja</span>#}
-{#                        </a>#}
-{#                        <ul class="nav-group-sub collapse">#}
-{#                            <li class="nav-item"><a href="{{ path('app_settings_form', {id: user.company.settings.id}) }}" class="nav-link">Opšte</a></li>#}
-{#                            <li class="nav-item"><a href="{{ path('app_cities') }}" class="nav-link">Gradovi</a></li>#}
-{#                            <li class="nav-item"><a href="{{ path('app_holidays') }}" class="nav-link">Neradni dani</a></li>#}
-{#                            <li class="nav-item"><a href="{{ path('app_holiday_vacation_form') }}" class="nav-link">Kolektivni odmor</a></li>#}
-
-
-{#                            <li class="nav-item"><a href="{{ asset('/assets/manual/manual.pdf') }}" class="nav-link" download>Uputstvo korisnik</a></li>#}
-{#                            <li class="nav-item"><a href="{{ asset('/assets/manual/manual_admin.pdf') }}" class="nav-link" download>Uputstvo administrator</a></li>#}
-{#                            <li class="nav-item"><a href = "mailto: stefanmaksimovic88@gmail.com.com" class="nav-link">Pitanja i sugestije</a></li>#}
-                            <li class="nav-item nav-item-submenu">
-                                <a href="#" class="nav-link">Katalog</a>
-                                <ul class="nav-group-sub collapse">
-{#                                    <li class="nav-item"><a href="{{ path('app_cities') }}" class="nav-link">Gradovi</a></li>#}
-                                    <li class="nav-item"><a href="{{ path('app_positions_kadrovska') }}" class="nav-link">Radna mesta</a></li>
-                                    <li class="nav-item"><a href="{{ path('app_zvanja_kadrovska') }}" class="nav-link">Zvanja</a></li>
-{#                                    <li class="nav-item"><a href="{{ path('app_activities') }}" class="nav-link">Aktivnosti</a></li>#}
-{#                                    <li class="nav-item"><a href="{{ path('app_categories') }}" class="nav-link">Kategorije</a></li>#}
-{#                                    <li class="nav-item"><a href="{{ path('app_labels') }}" class="nav-link">Oznake</a></li>#}
-{#                                    <li class="nav-item"><a href="{{ path('app_holidays') }}" class="nav-link">Neradni dani</a></li>#}
-{#                                    <li class="nav-item"><a href="{{ path('app_holiday_vacation_form') }}" class="nav-link">Kolektivni odmor</a></li>#}
-                                </ul>
-                            </li>
-                            {#                        <li class="nav-item nav-item-submenu">#}
-                            {#                            <a href="#" class="nav-link">Authentication</a>#}
-                            {#                            <ul class="nav-group-sub collapse">#}
-                            {#                 #}
-                            {#                                <li class="nav-item"><a href="login_registration.html" class="nav-link">Simple registration</a></li>#}
-                            {#                                <li class="nav-item"><a href="login_registration_advanced.html" class="nav-link">More registration info</a></li>#}
-                            {#                                <li class="nav-item"><a href="login_unlock.html" class="nav-link">Unlock user</a></li>#}
-                            {#                                <li class="nav-item"><a href="login_password_recover.html" class="nav-link">Reset password</a></li>#}
-                            {#                                <li class="nav-item"><a href="login_hide_navbar.html" class="nav-link">Hide navbar</a></li>#}
-                            {#                                <li class="nav-item"><a href="login_transparent.html" class="nav-link">Transparent box</a></li>#}
-                            {#                                <li class="nav-item"><a href="login_background.html" class="nav-link">Background option</a></li>#}
-                            {#                                <li class="nav-item"><a href="login_validation.html" class="nav-link">With validation</a></li>#}
-                            {#                                <li class="nav-item"><a href="login_tabbed.html" class="nav-link">Tabbed form</a></li>#}
-                            {#                                <li class="nav-item"><a href="login_modals.html" class="nav-link">Inside modals</a></li>#}
-                            {#                            </ul>#}
-                            {#                        </li>#}
-                            {#                        <li class="nav-item nav-item-submenu">#}
-                            {#                            <a href="#" class="nav-link">Error pages</a>#}
-                            {#                            <ul class="nav-group-sub collapse">#}
-                            {#                                <li class="nav-item"><a href="error_403.html" class="nav-link">Error 403</a></li>#}
-                            {#                                <li class="nav-item"><a href="error_404.html" class="nav-link">Error 404</a></li>#}
-                            {#                                <li class="nav-item"><a href="error_405.html" class="nav-link">Error 405</a></li>#}
-                            {#                                <li class="nav-item"><a href="error_500.html" class="nav-link">Error 500</a></li>#}
-                            {#                                <li class="nav-item"><a href="error_503.html" class="nav-link">Error 503</a></li>#}
-                            {#                                <li class="nav-item"><a href="error_offline.html" class="nav-link">Offline page</a></li>#}
-                            {#                            </ul>#}
-                            {#                        </li>#}
+                    <li class="nav-item nav-item-submenu {{ current_route starts with 'app_' and current_route matches '/app_(positions_kadrovska)/' ? 'nav-item-open' : '' }}">
+                        <a href="#" class="nav-link {{ current_route starts with 'app_' and current_route matches '/app_(positions_kadrovska)/' ? 'nav-item-open' : '' }}">Katalog</a>
+                        <ul class="nav-group-sub collapse {{ current_route starts with 'app_' and current_route matches '/app_(positions_kadrovska)/' ? 'show' : '' }}">
+                            <li class="nav-item"><a href="{{ path('app_positions_kadrovska') }}" class="nav-link {{ current_route == 'app_positions_kadrovska' ? 'active' : '' }}">Radna mesta</a></li>
                         </ul>
                     </li>
-
-                    <!-- /page kits -->
-
                 </ul>
             </div>
             <!-- /main navigation -->
@@ -343,6 +215,7 @@
 
     </div>
     <!-- /main sidebar -->
+
 {% endif %}
 
 

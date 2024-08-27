@@ -29,7 +29,7 @@ class Email {
   private ?string $file = null;
 
   #[ORM\Column(length: 255, nullable: true)]
-  private ?string $function = null;
+  private ?string $func = null;
 
   #[ORM\Column(nullable: true)]
   private ?int $line = null;
@@ -47,7 +47,7 @@ class Email {
     $mail->setSubject($subject);
     $mail->setBody($body);
     $mail->setFile($file);
-    $mail->setFunction($function);
+    $mail->setFunc($function);
     $mail->setLine($line);
 
     return  $mail;
@@ -102,12 +102,12 @@ class Email {
     return $this;
   }
 
-  public function getFunction(): ?string {
-    return $this->function;
+  public function getFunc(): ?string {
+    return $this->func;
   }
 
-  public function setFunction(?string $function): self {
-    $this->function = $function;
+  public function setFunc(?string $func): self {
+    $this->func = $func;
 
     return $this;
   }

@@ -86,6 +86,24 @@ class MailService {
 
   }
 
+  public function checklistTaskReminder(ManagerChecklist $checklist): void {
+
+    $args = [];
+
+    $subject = 'Podsetnik na interni zadatak od ' . $checklist->getCreatedBy()->getFullName();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/reminder_interni_task.html.twig';
+    $args['user'] = $checklist->getUser()->getFullName();
+    $args['checklist'] = $checklist;
+    $args['link'] = $this->router->generate('app_checklist_view', ['id' => $checklist->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+    $to = $checklist->getUser()->getEmail();
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
   public function checklistCommentTask(ManagerChecklist $checklist, Comment $comment): void {
 
     $args = [];

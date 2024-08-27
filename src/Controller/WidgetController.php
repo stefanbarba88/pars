@@ -33,9 +33,10 @@ class WidgetController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
 
-  public function adminMainSidebar(): Response {
+  public function adminMainSidebar(?string $_route = null): Response {
     $loggedUser = $this->getUser();
     $args = [];
+    $args['current_route'] = $_route;
 
     if ($loggedUser->getuserType() == UserRolesData::ROLE_EMPLOYEE) {
       $args['countTasksActiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksByUser($loggedUser);

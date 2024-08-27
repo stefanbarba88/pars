@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Classes\Data\InternTaskStatusData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Category;
+use App\Entity\Company;
 use App\Entity\ManagerChecklist;
 use App\Entity\Project;
 use App\Entity\User;
@@ -238,6 +239,17 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
       ->addOrderBy('c.datumKreiranja', 'ASC')
       ->addOrderBy('c.priority', 'ASC')
       ->getQuery();
+
+  }
+
+  public function getChecklistForCommand() {
+
+    return  $this->createQueryBuilder('c')
+      ->andWhere('c.status <> :status and c.status <> :status1')
+      ->setParameter(':status', InternTaskStatusData::ZAVRSENO)
+      ->setParameter(':status1', InternTaskStatusData::KONVERTOVANO)
+      ->getQuery()
+      ->getResult();
 
   }
 

@@ -52,29 +52,44 @@ class CalendarColorsData implements DataClassInterface {
     return self::DATA;
   }
 
-  public static function getColorByType(int $type): string {
+  public static function getColorByType(?int $type): ?string {
+    // Ako je $type null, vrati null ili neki drugi podrazumevani rezultat
+    if ($type === null) {
+      return '#b4ff00'; // Ili, ako želiš podrazumevanu boju, zameni ovo sa željenom vrednošću
+    }
+
     $d = Map::from(self::DATA)
       ->find(function (array $data) use ($type) {
         return $data['id'] == $type;
       });
 
-    return $d['color'];
+    return $d['color'] ?? null; // Vraća null ako nije pronađen odgovarajući rezultat
   }
-  public static function getTitleByType(int $type): string {
+
+  public static function getTitleByType(?int $type): ?string {
+    if ($type === null) {
+      return 'Izašao'; // Ili, ako želiš podrazumevani naslov, zameni ovo sa željenom vrednošću
+    }
+
     $d = Map::from(self::DATA)
       ->find(function (array $data) use ($type) {
         return $data['id'] == $type;
       });
 
-    return $d['title'];
+    return $d['title'] ?? null; // Vraća null ako nije pronađen odgovarajući rezultat
   }
-  public static function getTextByType(int $type): string {
+
+  public static function getTextByType(?int $type): ?string {
+    if ($type === null) {
+      return '#00233f'; // Ili, ako želiš podrazumevani tekst, zameni ovo sa željenom vrednošću
+    }
+
     $d = Map::from(self::DATA)
       ->find(function (array $data) use ($type) {
         return $data['id'] == $type;
       });
 
-    return $d['text'];
+    return $d['text'] ?? null; // Vraća null ako nije pronađen odgovarajući rezultat
   }
 
 

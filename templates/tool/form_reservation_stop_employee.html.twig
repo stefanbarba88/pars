@@ -3,7 +3,7 @@
 {% block content %}
     {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
 <div class="page-content">
-    {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar')) }}
+    {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
     <!-- Main content -->
 
     <div class="content-wrapper">

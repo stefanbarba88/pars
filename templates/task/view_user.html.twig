@@ -838,392 +838,185 @@
 
 {% endblock includeJavascript %}
 
-{#{% block footerJavascript %}#}
-{#    <script type="text/javascript">#}
-{#        $(function () {#}
-
-{#            {% if stopwatch is not null  %}#}
-{#                let startDateTime = new Date({{ stopwatch ? stopwatch.start | date('Y, (m-1), d, H, i, s') : '2014,8,26,2,1,0,0' }});// YYYY (M-1) D H m s (start time and date from DB)#}
-{#                #}{#let startDateTime = new Date({{ stopwatch.start | date('Y, (m-1), d, H, i, s') }});// YYYY (M-1) D H m s (start time and date from DB)#}
-{#                let startStamp = startDateTime.getTime();#}
-
-{#                let newDate = new Date();#}
-{#                let newStamp = newDate.getTime();#}
-
-{#                let timer;#}
-
-{#                function updateClock() {#}
-{#                    newDate = new Date();#}
-{#                    newStamp = newDate.getTime();#}
-{#                    let diff = Math.round((newStamp-startStamp)/1000);#}
-
-{#                    // let d = Math.floor(diff/(24*60*60));#}
-{#                    // diff = diff-(d*24*60*60);#}
-{#                    let h = Math.floor(diff/(60*60));#}
-{#                    diff = diff-(h*60*60);#}
-{#                    let m = Math.floor(diff/(60));#}
-{#                    diff = diff-(m*60);#}
-{#                    let s = diff;#}
-
-{#                    if (h < 10) {#}
-{#                        h = '0' + h;#}
-{#                    }#}
-
-{#                    if (m < 10) {#}
-{#                        m = '0' + m;#}
-{#                    }#}
-
-{#                    document.getElementById("timeH").innerHTML = h;#}
-{#                    document.getElementById("timeM").innerHTML = m;#}
-{#                }#}
-
-{#                setInterval(updateClock, 1000);#}
-
-{#            function treptanje() {#}
-{#                var elementM = document.getElementById("timeSeparator");#}
-{#                if (elementM) {#}
-{#                    if (elementM.style.visibility === "visible") {#}
-{#                        elementM.style.visibility = "hidden";#}
-{#                    } else {#}
-{#                        elementM.style.visibility = "visible";#}
-{#                    }#}
-{#                }#}
-{#            }#}
-
-{#// Pozivamo funkciju za treptanje svake sekunde#}
-{#            setInterval(treptanje, 1000);#}
-
-{#            const modalBtn = document.getElementById('stopTimer');#}
-{#            modalBtn.addEventListener('click', function() {#}
-{#                // Get the user's current position#}
-{#                navigator.geolocation.getCurrentPosition(function(position) {#}
-{#                    // Get the longitude and latitude from the position#}
-{#                    const lon = position.coords.longitude;#}
-{#                    const lat = position.coords.latitude;#}
-
-{#                    // Do something with the coordinates, like logging them to the console#}
-{#                    {% if stopwatch %}#}
-{#                        let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+lon+'&lat='+lat;#}
-{#                        $('#link-stop').attr('href', urlStop);#}
-{#                    {% endif %}#}
-{#                }, function(error) {#}
-{#                    // Handle error#}
-{#                    console.error(error);#}
-{#                });#}
-{#            });#}
-
-{#                //dok se ne sredi na serveru ssl sertifikat#}
-{#                #}{#modalBtn.addEventListener('click', function() #}{#}#}
-{#                #}{#    {% if stopwatch %}#}
-{#                #}{#        let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+123+'&lat='+456;#}
-{#                #}{#        $('#link-stop').attr('href', urlStop);#}
-{#                #}{#    {% endif %}#}
-{#                #}{#});#}
-{#            {% endif %}#}
-{#            // Get the current position#}
-{#            navigator.geolocation.getCurrentPosition(#}
-{#                function success(position) {#}
-
-{#                    // Get the longitude and latitude from the position#}
-{#                    let lon = position.coords.longitude;#}
-{#                    let lat = position.coords.latitude;#}
-
-{#                    // Create the URL with the coordinates as parameters#}
-{#                    let urlStart = '{{ path('app_stopwatch_start', {id: taskLog.id}) }}?lon='+lon+'&lat='+lat;#}
-{#                    $('#link-start').attr('href', urlStart);#}
-
-
-{#                },#}
-{#                function error(error) {#}
-{#                    // Handle error#}
-{#                }#}
-{#            );#}
-
-{#            //dok se ne sredi na serveru ssl sertifikat#}
-{#            #}{#let urlStart = '{{ path('app_stopwatch_start', {id: taskLog.id}) }}?lon='+123+'&lat='+456;#}
-{#            #}{#$('#link-start').attr('href', urlStart);#}
-
-
-
-
-{#            document.getElementById('stop').addEventListener('click', () => {#}
-{#                document.getElementById('ime').value = Math.round((newStamp-startStamp)/1000);#}
-{#            });#}
-{#        });#}
-
-{#        // $(document).ready(function() {#}
-{#        //     var options = {#}
-{#        //         // target:        '#output1',   // target element(s) to be updated with server response#}
-{#        //         success:       editInfoResponse,  // post-submit callback#}
-{#        //         //         // target:        '#error',#}
-{#        //         //         // other available options:#}
-{#        //         //         //url:       url         // override for form's 'action' attribute#}
-{#        //         //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#        //                 dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#        //         //         //clearForm: true        // clear all form fields after successful submit#}
-{#        //                 resetForm: true,        // reset the form after successful submit#}
-{#        //         //         success:   editInfoResponse#}
-{#        //         //         // $.ajax options can be used here too, for example:#}
-{#        //         //         //timeout:   3000#}
-{#        //     };#}
-{#        //#}
-{#        //     // bind form using 'ajaxForm'#}
-{#        //     $('#infoForma').ajaxForm(options);#}
-{#        // });#}
-{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
-{#        //     // for normal html responses, the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseText property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'xml' then the first argument to the success callback#}
-{#        //     // is the XMLHttpRequest object's responseXML property#}
-{#        //#}
-{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
-{#        //     // property set to 'json' then the first argument to the success callback#}
-{#        //     // is the json data object returned by the server#}
-{#        //#}
-{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
-{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
-{#        // }#}
-{#        // $(function () {#}
-{#        //     var options = {#}
-{#        //         // target:        '#error',#}
-{#        //         // other available options:#}
-{#        //         //url:       url         // override for form's 'action' attribute#}
-{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
-{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
-{#        //         //clearForm: true        // clear all form fields after successful submit#}
-{#        //         resetForm: true,        // reset the form after successful submit#}
-{#        //         success:   editInfoResponse#}
-{#        //         // $.ajax options can be used here too, for example:#}
-{#        //         //timeout:   3000#}
-{#        //     };#}
-{#        //     // bind form using ajaxForm#}
-{#        //     $('#infoForma').submit(function() {#}
-{#        //         // inside event callbacks 'this' is the DOM element so we first#}
-{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
-{#        //         $(this).ajaxSubmit(options);#}
-{#        //#}
-{#        //         // !!! Important !!!#}
-{#        //         // always return false to prevent standard browser submit and page navigation#}
-{#        //         return false;#}
-{#        //     });#}
-{#        // });#}
-{#        //#}
-{#        // function editInfoResponse(data) {#}
-{#        //     // 'data' is the json object returned from the server#}
-{#        //#}
-{#        //     if (data.success === 1) {#}
-{#        //         swal({#}
-{#        //             type: 'success',#}
-{#        //             title: 'Correct!',#}
-{#        //             html: 'All safe! Here is the answer from the tool:'#}
-{#        //         })#}
-{#        //     }#}
-{#        //     else {#}
-{#        //         var error = data.error_msg.toString();#}
-{#        //         swal({#}
-{#        //             type: 'error',#}
-{#        //             title: 'Correct!',#}
-{#        //             html: 'All safe! Here is the answer from the tool:'#}
-{#        //         })#}
-{#        //     }#}
-{#        //#}
-{#        // }#}
-
-{#    </script>#}
-{#{% endblock footerJavascript %}#}
 
 {% block footerJavascript %}
-    <script type="text/javascript">
-        $(function () {
+    {% if isGeolocation %}
+        <script type="text/javascript">
+            $(function () {
 
-            {% if stopwatch is not null  %}
-            let startDateTime = new Date({{ stopwatch ? stopwatch.start | date('Y, (m-1), d, H, i, s') : '2014,8,26,2,1,0,0' }});// YYYY (M-1) D H m s (start time and date from DB)
-            {#let startDateTime = new Date({{ stopwatch.start | date('Y, (m-1), d, H, i, s') }});// YYYY (M-1) D H m s (start time and date from DB)#}
-            let startStamp = startDateTime.getTime();
+                {% if stopwatch is not null %}
+                let startDateTime = new Date({{ stopwatch ? stopwatch.start | date('Y, (m-1), d, H, i, s') : '2014,8,26,2,1,0,0' }});// YYYY (M-1) D H m s (start time and date from DB)
+                let startStamp = startDateTime.getTime();
 
-            let newDate = new Date();
-            let newStamp = newDate.getTime();
+                let newDate = new Date();
+                let newStamp = newDate.getTime();
 
-            let timer;
+                let timer;
 
-            function updateClock() {
-                newDate = new Date();
-                newStamp = newDate.getTime();
-                let diff = Math.round((newStamp-startStamp)/1000);
+                function updateClock() {
+                    newDate = new Date();
+                    newStamp = newDate.getTime();
+                    let diff = Math.round((newStamp-startStamp)/1000);
 
-                // let d = Math.floor(diff/(24*60*60));
-                // diff = diff-(d*24*60*60);
-                let h = Math.floor(diff/(60*60));
-                diff = diff-(h*60*60);
-                let m = Math.floor(diff/(60));
-                diff = diff-(m*60);
-                let s = diff;
+                    let h = Math.floor(diff/(60*60));
+                    diff = diff-(h*60*60);
+                    let m = Math.floor(diff/(60));
+                    diff = diff-(m*60);
+                    let s = diff;
 
-                if (h < 10) {
-                    h = '0' + h;
+                    if (h < 10) {
+                        h = '0' + h;
+                    }
+
+                    if (m < 10) {
+                        m = '0' + m;
+                    }
+
+                    document.getElementById("timeH").innerHTML = h;
+                    document.getElementById("timeM").innerHTML = m;
                 }
 
-                if (m < 10) {
-                    m = '0' + m;
-                }
+                setInterval(updateClock, 1000);
 
-                document.getElementById("timeH").innerHTML = h;
-                document.getElementById("timeM").innerHTML = m;
-            }
-
-            setInterval(updateClock, 1000);
-
-            function treptanje() {
-                var elementM = document.getElementById("timeSeparator");
-                if (elementM) {
-                    if (elementM.style.visibility === "visible") {
-                        elementM.style.visibility = "hidden";
-                    } else {
-                        elementM.style.visibility = "visible";
+                function treptanje() {
+                    var elementM = document.getElementById("timeSeparator");
+                    if (elementM) {
+                        if (elementM.style.visibility === "visible") {
+                            elementM.style.visibility = "hidden";
+                        } else {
+                            elementM.style.visibility = "visible";
+                        }
                     }
                 }
-            }
 
-// Pozivamo funkciju za treptanje svake sekunde
-            setInterval(treptanje, 1000);
+                // Pozivamo funkciju za treptanje svake sekunde
+                setInterval(treptanje, 1000);
 
-            const modalBtn = document.getElementById('stopTimer');
-            {#modalBtn.addEventListener('click', function() {#}
-            {#    // Get the user's current position#}
-            {#    navigator.geolocation.getCurrentPosition(function(position) {#}
-            {#        // Get the longitude and latitude from the position#}
-            {#        const lon = position.coords.longitude;#}
-            {#        const lat = position.coords.latitude;#}
+                const modalBtn = document.getElementById('stopTimer');
+                modalBtn.addEventListener('click', function() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            const lon = position.coords.longitude;
+                            const lat = position.coords.latitude;
 
-            {#        // Do something with the coordinates, like logging them to the console#}
-            {#        {% if stopwatch %}#}
-            {#            let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+lon+'&lat='+lat;#}
-            {#            $('#link-stop').attr('href', urlStop);#}
-            {#        {% endif %}#}
-            {#    }, function(error) {#}
-            {#        // Handle error#}
-            {#        console.error(error);#}
-            {#    });#}
-            {#});#}
+                            {% if stopwatch %}
+                            let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+lon+'&lat='+lat;
+                            $('#link-stop').attr('href', urlStop);
+                            {% endif %}
+                        }, function(error) {
+                            alert("Geolokacija nije dozvoljena, dozvolite geolokaciju u vašem pretraživaču pa ponovo učitajte stranicu.");
+                        });
+                    } else {
+                        alert("Geolokacija nije podržana u ovom pretraživaču.");
+                    }
+                });
 
-            //dok se ne sredi na serveru ssl sertifikat
-            modalBtn.addEventListener('click', function() {
-                {% if stopwatch %}
-                let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+123+'&lat='+456;
-                $('#link-stop').attr('href', urlStop);
                 {% endif %}
+
+                function handleLocationClick(event, linkElement, urlPath) {
+                    event.preventDefault(); // Prevent default link behavior
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            function success(position) {
+                                let lon = position.coords.longitude;
+                                let lat = position.coords.latitude;
+                                window.location.href = urlPath + '?lon=' + lon + '&lat=' + lat; // Redirect to the constructed URL
+                            },
+                            function error() {
+                                alert("Geolokacija nije dozvoljena, dozvolite geolokaciju u vašem pretraživaču pa ponovo učitajte stranicu.");
+                            }
+                        );
+                    } else {
+                        alert("Geolokacija nije podržana u ovom pretraživaču.");
+                    }
+                }
+
+                $('#link-start').on('click', function(event) {
+                    handleLocationClick(event, this, '{{ path('app_stopwatch_start', {id: taskLog.id}) }}');
+                });
+
+                {% if stopwatch is not null %}
+                $('#link-stop').on('click', function(event) {
+                    handleLocationClick(event, this, '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}');
+                });
+                {% endif %}
+
+                document.getElementById('stop').addEventListener('click', () => {
+                    document.getElementById('ime').value = Math.round((newStamp-startStamp)/1000);
+                });
             });
-            {% endif %}
-            // Get the current position
-            {#navigator.geolocation.getCurrentPosition(#}
-            {#    function success(position) {#}
+        </script>
+    {% else %}
+        <script type="text/javascript">
+            $(function () {
 
-            {#        // Get the longitude and latitude from the position#}
-            {#        let lon = position.coords.longitude;#}
-            {#        let lat = position.coords.latitude;#}
+                {% if stopwatch is not null  %}
+                let startDateTime = new Date({{ stopwatch ? stopwatch.start | date('Y, (m-1), d, H, i, s') : '2014,8,26,2,1,0,0' }});// YYYY (M-1) D H m s (start time and date from DB)
+                {#let startDateTime = new Date({{ stopwatch.start | date('Y, (m-1), d, H, i, s') }});// YYYY (M-1) D H m s (start time and date from DB)#}
+                let startStamp = startDateTime.getTime();
 
-            {#        // Create the URL with the coordinates as parameters#}
-            {#        let urlStart = '{{ path('app_stopwatch_start', {id: taskLog.id}) }}?lon='+lon+'&lat='+lat;#}
-            {#        $('#link-start').attr('href', urlStart);#}
+                let newDate = new Date();
+                let newStamp = newDate.getTime();
 
+                let timer;
 
-            {#    },#}
-            {#    function error(error) {#}
-            {#        // Handle error#}
-            {#    }#}
-            {#);#}
+                function updateClock() {
+                    newDate = new Date();
+                    newStamp = newDate.getTime();
+                    let diff = Math.round((newStamp-startStamp)/1000);
 
-            //dok se ne sredi na serveru ssl sertifikat
-            let urlStart = '{{ path('app_stopwatch_start', {id: taskLog.id}) }}?lon='+123+'&lat='+456;
-            $('#link-start').attr('href', urlStart);
+                    // let d = Math.floor(diff/(24*60*60));
+                    // diff = diff-(d*24*60*60);
+                    let h = Math.floor(diff/(60*60));
+                    diff = diff-(h*60*60);
+                    let m = Math.floor(diff/(60));
+                    diff = diff-(m*60);
+                    let s = diff;
 
+                    if (h < 10) {
+                        h = '0' + h;
+                    }
 
-            document.getElementById('stop').addEventListener('click', () => {
-                document.getElementById('ime').value = Math.round((newStamp-startStamp)/1000);
+                    if (m < 10) {
+                        m = '0' + m;
+                    }
+
+                    document.getElementById("timeH").innerHTML = h;
+                    document.getElementById("timeM").innerHTML = m;
+                }
+
+                setInterval(updateClock, 1000);
+
+                function treptanje() {
+                    var elementM = document.getElementById("timeSeparator");
+                    if (elementM) {
+                        if (elementM.style.visibility === "visible") {
+                            elementM.style.visibility = "hidden";
+                        } else {
+                            elementM.style.visibility = "visible";
+                        }
+                    }
+                }
+
+                setInterval(treptanje, 1000);
+
+                const modalBtn = document.getElementById('stopTimer');
+                modalBtn.addEventListener('click', function() {
+                    {% if stopwatch %}
+                    let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+123+'&lat='+456;
+                    $('#link-stop').attr('href', urlStop);
+                    {% endif %}
+                });
+                {% endif %}
+
+                //dok se ne sredi na serveru ssl sertifikat
+                let urlStart = '{{ path('app_stopwatch_start', {id: taskLog.id}) }}?lon='+123+'&lat='+456;
+                $('#link-start').attr('href', urlStart);
+
+                document.getElementById('stop').addEventListener('click', () => {
+                    document.getElementById('ime').value = Math.round((newStamp-startStamp)/1000);
+                });
             });
-        });
-
-        // $(document).ready(function() {
-        //     var options = {
-        //         // target:        '#output1',   // target element(s) to be updated with server response
-        //         success:       editInfoResponse,  // post-submit callback
-        //         //         // target:        '#error',
-        //         //         // other available options:
-        //         //         //url:       url         // override for form's 'action' attribute
-        //         //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute
-        //                 dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
-        //         //         //clearForm: true        // clear all form fields after successful submit
-        //                 resetForm: true,        // reset the form after successful submit
-        //         //         success:   editInfoResponse
-        //         //         // $.ajax options can be used here too, for example:
-        //         //         //timeout:   3000
-        //     };
-        //
-        //     // bind form using 'ajaxForm'
-        //     $('#infoForma').ajaxForm(options);
-        // });
-        // function showResponse(responseText, statusText, xhr, $form)  {
-        //     // for normal html responses, the first argument to the success callback
-        //     // is the XMLHttpRequest object's responseText property
-        //
-        //     // if the ajaxForm method was passed an Options Object with the dataType
-        //     // property set to 'xml' then the first argument to the success callback
-        //     // is the XMLHttpRequest object's responseXML property
-        //
-        //     // if the ajaxForm method was passed an Options Object with the dataType
-        //     // property set to 'json' then the first argument to the success callback
-        //     // is the json data object returned by the server
-        //
-        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +
-        //         '\n\nThe output div should have already been updated with the responseText.');
-        // }
-        // $(function () {
-        //     var options = {
-        //         // target:        '#error',
-        //         // other available options:
-        //         //url:       url         // override for form's 'action' attribute
-        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute
-        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
-        //         //clearForm: true        // clear all form fields after successful submit
-        //         resetForm: true,        // reset the form after successful submit
-        //         success:   editInfoResponse
-        //         // $.ajax options can be used here too, for example:
-        //         //timeout:   3000
-        //     };
-        //     // bind form using ajaxForm
-        //     $('#infoForma').submit(function() {
-        //         // inside event callbacks 'this' is the DOM element so we first
-        //         // wrap it in a jQuery object and then invoke ajaxSubmit
-        //         $(this).ajaxSubmit(options);
-        //
-        //         // !!! Important !!!
-        //         // always return false to prevent standard browser submit and page navigation
-        //         return false;
-        //     });
-        // });
-        //
-        // function editInfoResponse(data) {
-        //     // 'data' is the json object returned from the server
-        //
-        //     if (data.success === 1) {
-        //         swal({
-        //             type: 'success',
-        //             title: 'Correct!',
-        //             html: 'All safe! Here is the answer from the tool:'
-        //         })
-        //     }
-        //     else {
-        //         var error = data.error_msg.toString();
-        //         swal({
-        //             type: 'error',
-        //             title: 'Correct!',
-        //             html: 'All safe! Here is the answer from the tool:'
-        //         })
-        //     }
-        //
-        // }
-
-    </script>
+        </script>
+    {% endif %}
 {% endblock footerJavascript %}

@@ -51,6 +51,9 @@ class Settings {
   private bool $isBasic = true;
 
   #[ORM\Column]
+  private bool $isGeolocation = false;
+
+  #[ORM\Column]
   private bool $isCar = false;
 
   #[ORM\Column]
@@ -422,6 +425,20 @@ class Settings {
    */
   public function setIsPlan(bool $isPlan): void {
     $this->isPlan = $isPlan;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isGeolocation(): bool {
+    return $this->isGeolocation;
+  }
+
+  /**
+   * @param bool $isGeolocation
+   */
+  public function setIsGeolocation(bool $isGeolocation): void {
+    $this->isGeolocation = $isGeolocation;
   }
 
 

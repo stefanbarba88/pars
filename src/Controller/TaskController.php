@@ -1377,6 +1377,8 @@ class TaskController extends AbstractController {
 
     $args['lastEdit'] = $this->em->getRepository(StopwatchTime::class)->lastEdit($args['taskLog']);
 
+    $args['isGeolocation'] = $user->getCompany()->getSettings()->isGeolocation();
+
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       return $this->render('task/phone/view_user.html.twig', $args);

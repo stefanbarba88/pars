@@ -86,6 +86,14 @@ class SettingsFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
+      ->add('isGeolocation', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
 
       ->add('minEntry', IntegerType::class, [
         'required' => false,

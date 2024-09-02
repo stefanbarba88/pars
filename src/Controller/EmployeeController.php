@@ -628,6 +628,9 @@ class EmployeeController extends AbstractController {
       if (isset($data['report_form']['checklist'])){
         $args['checklist'] = 1;
       }
+      if (isset($data['report_form']['robotika'])){
+        $args['robotika'] = 1;
+      }
 
 
       return $this->render('report_employee/view.html.twig', $args);
@@ -693,6 +696,9 @@ class EmployeeController extends AbstractController {
       }
       if (isset($data['report_form']['checklist'])){
         $args['checklist'] = 1;
+      }
+      if (isset($data['report_form']['robotika'])){
+        $args['robotika'] = 1;
       }
 
 
@@ -772,13 +778,14 @@ class EmployeeController extends AbstractController {
         $sheet->getColumnDimension('K')->setAutoSize(true);
         $sheet->getColumnDimension('L')->setWidth($maxCellWidth);
         $sheet->getColumnDimension('M')->setAutoSize(true);
+        $sheet->getColumnDimension('N')->setAutoSize(true);
 
 
-        $sheet->mergeCells('A1:M1');
+        $sheet->mergeCells('A1:N1');
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A1')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
         $sheet->setCellValue('A1', $user->getFullName() . ': ' . $datum);
-        $style = $sheet->getStyle('A1:M1');
+        $style = $sheet->getStyle('A1:N1');
         $font = $style->getFont();
         $font->setSize(18); // Postavite veličinu fonta na 14
         $font->setBold(true); // Postavite font kao boldiran
@@ -786,11 +793,11 @@ class EmployeeController extends AbstractController {
         $sheet->mergeCells('A2:A3');
         $sheet->mergeCells('B2:K2');
 
-        $sheet->mergeCells('M2:M3');
+        $sheet->mergeCells('N2:N3');
 
         $sheet->setCellValue('A2', 'Datum');
         $sheet->setCellValue('B2', 'Opis izvedenog posla');
-        $sheet->setCellValue('M2', 'Izvršioci');
+        $sheet->setCellValue('N2', 'Izvršioci');
 
         $sheet->getStyle('A2:A3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A2:A3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
@@ -800,8 +807,8 @@ class EmployeeController extends AbstractController {
         $sheet->getStyle('B2:J2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
 
-        $sheet->getStyle('M2:M3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('M2:M3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('N2:N3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('N2:N3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
 
 
@@ -816,6 +823,7 @@ class EmployeeController extends AbstractController {
         $sheet->setCellValue('J3', 'Ukupno');
         $sheet->setCellValue('K3', 'Ukupno*');
         $sheet->setCellValue('L3', 'Napomena');
+        $sheet->setCellValue('M3', 'Robotika');
 
 
         $sheet->getStyle('B3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -851,6 +859,9 @@ class EmployeeController extends AbstractController {
         $sheet->getStyle('L3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('L3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
+        $sheet->getStyle('M3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('M3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
 
         $font = $sheet->getStyle('A')->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
@@ -877,6 +888,8 @@ class EmployeeController extends AbstractController {
         $font = $sheet->getStyle('L')->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
         $font = $sheet->getStyle('M')->getFont();
+        $font->setSize(14); // Postavite veličinu fonta na 14
+        $font = $sheet->getStyle('N')->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
 
 
@@ -951,7 +964,10 @@ class EmployeeController extends AbstractController {
           $m = 0;
 
           foreach ($item as $stopwatch) {
-
+            $robotika = '';
+            if ($stopwatch['robotika'] == 1) {
+              $robotika = 'Da';
+            }
 
             $aktivnosti = [];
             foreach ($stopwatch['activity'] as $akt) {
@@ -1006,6 +1022,11 @@ class EmployeeController extends AbstractController {
             $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
             $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
+            $sheet->setCellValue('M' . $startAktivnosti, $robotika);
+            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setWrapText(true);
+            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
             $users = '';
             $usersCount = count($stopwatch['users']);
 
@@ -1018,10 +1039,10 @@ class EmployeeController extends AbstractController {
               }
             }
 
-            $sheet->setCellValue('M' . $startAktivnosti, $users);
-            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setWrapText(true);
-            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            $sheet->setCellValue('N' . $startAktivnosti, $users);
+            $sheet->getStyle('N' . $startAktivnosti)->getAlignment()->setWrapText(true);
+            $sheet->getStyle('N' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle('N' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
 
             if (!is_null($stopwatch['client'])) {
@@ -1051,11 +1072,11 @@ class EmployeeController extends AbstractController {
 
         $dimension = $sheet->calculateWorksheetDimension();
         $sheet->getStyle($dimension)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-        $sheet->getStyle('A1:M3')->getFill()->setFillType(Fill::FILL_SOLID);
-        $sheet->getStyle('A1:M3')->getFill()->getStartColor()->setRGB('CCCCCC');
+        $sheet->getStyle('A1:N3')->getFill()->setFillType(Fill::FILL_SOLID);
+        $sheet->getStyle('A1:N3')->getFill()->getStartColor()->setRGB('CCCCCC');
 
         // Postavite font za opseg od A1 do M2
-        $style = $sheet->getStyle('A2:M3');
+        $style = $sheet->getStyle('A2:N3');
         $font = $style->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
         $font->setBold(true); // Postavite font kao boldiran
@@ -1068,7 +1089,7 @@ class EmployeeController extends AbstractController {
           $offset = $offset + $start;
 //        dd($offset);
 
-          $sheet->getStyle('A' . $start . ':M' . $offset)->applyFromArray($styleArray);
+          $sheet->getStyle('A' . $start . ':N' . $offset)->applyFromArray($styleArray);
 
           $start = $offset + 1;
 

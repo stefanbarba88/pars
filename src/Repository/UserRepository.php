@@ -496,12 +496,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       $kategorija [] = 0;
     }
 
-    if (isset($data['naplativ'])) {
-      $naplativ = $data['naplativ'];
-      return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUser($start, $stop, $user, $kategorija, $naplativ);
+    $robotika1 = 0;
+
+    if (isset($data['robotika1'])) {
+      $robotika1 = 1;
     }
 
-    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUser($start, $stop, $user, $kategorija);
+    if (isset($data['naplativ'])) {
+      $naplativ = $data['naplativ'];
+      return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUser($start, $stop, $user, $robotika1, $kategorija, $naplativ);
+    }
+
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUser($start, $stop, $user, $robotika1, $kategorija);
   }
 
   public function getReportXls(string $datum, User $user): array {

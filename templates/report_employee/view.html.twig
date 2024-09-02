@@ -141,6 +141,10 @@
                                                                             <th>Napomena</th>
                                                                         {% endif %}
 
+                                                                        {% if robotika is defined %}
+                                                                            <th>Robotika</th>
+                                                                        {% endif %}
+
                                                                         {% if zaduzeni is defined %}
                                                                             <th>Izvršioci</th>
                                                                         {% endif %}
@@ -211,6 +215,13 @@
                                                                                         <td>
                                                                                             {% if stopwatch.description is not empty %}
                                                                                                 {{ stopwatch.description }}
+                                                                                            {% endif %}
+                                                                                        </td>
+                                                                                    {% endif %}
+                                                                                    {% if robotika is defined %}
+                                                                                        <td>
+                                                                                            {% if stopwatch.robotika == 1 %}
+                                                                                                Da
                                                                                             {% endif %}
                                                                                         </td>
                                                                                     {% endif %}

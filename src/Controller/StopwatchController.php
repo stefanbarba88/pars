@@ -130,6 +130,12 @@ class StopwatchController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
+       if (isset($request->request->all()['stopwatch_time_form']['robotika'])) {
+         $stopwatch->setIsRobotika(true);
+       } else {
+         $stopwatch->setIsRobotika(false);
+       }
+
         $sati = $request->request->get('overtime_vreme_sati');
         $minuti = $request->request->get('overtime_vreme_minuti');
         $napomena = $request->request->get('overtime_napomena');
@@ -299,6 +305,12 @@ class StopwatchController extends AbstractController {
           return $this->redirectToRoute('app_task_log_view', ['id' => $taskLog->getId()]);
         }
 
+        if (isset($request->request->all()['stopwatch_time_add_form']['robotika'])) {
+          $stopwatch->setIsRobotika(true);
+        } else {
+          $stopwatch->setIsRobotika(false);
+        }
+
         $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTimeManual($stopwatch, $request->request->get('stopwatch_time_add_form_period'));
 
         $uploadFiles = $request->files->all()['stopwatch_time_add_form']['pdf'];
@@ -433,6 +445,12 @@ class StopwatchController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
+
+        if (isset($request->request->all()['stopwatch_time_add_form']['robotika'])) {
+          $stopwatch->setIsRobotika(true);
+        } else {
+          $stopwatch->setIsRobotika(false);
+        }
 
         $uploadFiles = $request->files->all()['stopwatch_time_add_form']['pdf'];
         if (!empty ($uploadFiles)) {

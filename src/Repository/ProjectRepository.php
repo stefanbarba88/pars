@@ -372,12 +372,19 @@ class ProjectRepository extends ServiceEntityRepository {
       $kategorija [] = 0;
     }
 
-    if (isset($data['naplativ'])) {
-      $naplativ = $data['naplativ'];
-      return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $kategorija, $naplativ);
+    $robotika1 = 0;
+
+    if (isset($data['robotika1'])) {
+      $robotika1 = 1;
     }
 
-    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $kategorija);
+
+    if (isset($data['naplativ'])) {
+      $naplativ = $data['naplativ'];
+      return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $robotika1, $kategorija, $naplativ);
+    }
+
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project, $robotika1, $kategorija);
   }
 
   public function getReportRuma(array $data): array {
@@ -397,9 +404,9 @@ class ProjectRepository extends ServiceEntityRepository {
       $kategorija [] = 0;
     }
 
-    $array1 =  $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project1, $kategorija, 1);
+    $array1 =  $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project1, 0, $kategorija, 1);
 
-    $array2 =  $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project2, $kategorija, 1);
+    $array2 =  $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProject($start, $stop, $project2, 0, $kategorija, 1);
 
     $result = $array2[0];
 

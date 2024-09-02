@@ -81,6 +81,18 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="form_robotika">Rad sa robotikom:</label>
+                                        <div class="input-group">
+                                            <label class="form-check mb-2">
+                                                <input type="checkbox" class="form-check-input" name="stopwatch_time_add_form[robotika]" {% if stopwatch.isRobotika %} checked {% endif %}>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-client" aria-expanded="false">Klijent</div>
                             <div class="row collapse" id="collapse-client">

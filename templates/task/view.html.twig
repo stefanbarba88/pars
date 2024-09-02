@@ -493,6 +493,22 @@
                                                             </div>
                                                         </div>
 
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Robotika</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="mb-3">
+                                                                    {% set found = false %}
+
+                                                                    {% for stopwatch in stopwatchesActive %}
+                                                                        {% if stopwatch.robotika == 1 and not found %}
+                                                                            <i class="ph-robot me-2"></i>Rad sa robotikom
+                                                                            {% set found = true %}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                         <div class="fw-bold border-bottom pb-2 mb-3">Klijent</div>
                                                         <div class="row">
                                                             <div class="col-lg-12">

@@ -42,6 +42,9 @@ class StopwatchTime {
   #[ORM\Column]
   private ?bool $isDeleted = false;
 
+  #[ORM\Column(nullable: true)]
+  private ?bool $isRobotika = false;
+
 
   #[ORM\Column(nullable: true)]
   private ?int $diffRounded = null;
@@ -446,6 +449,20 @@ class StopwatchTime {
    */
   public function setAdditionalDesc(?string $additionalDesc): void {
     $this->additionalDesc = $additionalDesc;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getIsRobotika(): ?bool {
+    return $this->isRobotika;
+  }
+
+  /**
+   * @param bool|null $isRobotika
+   */
+  public function setIsRobotika(?bool $isRobotika): void {
+    $this->isRobotika = $isRobotika;
   }
 
 

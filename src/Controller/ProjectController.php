@@ -577,6 +577,289 @@ class ProjectController extends AbstractController {
     return $this->render('project/view_docs.html.twig', $args);
   }
 
+  #[Route('/reports-izlasci', name: 'app_project_izlasci_reports')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportIzlasci(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $company = $this->getUser()->getCompany();
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+      $args['reports'] = $this->em->getRepository(Project::class)->getCountTasksByProjectCompany($company, $data);
+      $args['period'] = $data['report_form']['period'];
+      $args['kategorije'] = $args['reports'][1];
+
+      return $this->render('report_project/view_izlasci.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
+
+    return $this->render('report_project/control_izlasci.html.twig', $args);
+  }
+
+
+  #[Route('/view-report', name: 'app_project_report_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewReport(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+dd($request);
+    $args['project'] = '123';
+
+    return $this->render('report_project/view.html.twig', $args);
+  }
+
+
+  #[Route('/list-fakture/', name: 'app_projects_fakture')]
+  public function listFakture(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $search = [];
+    $args['mesec'] = date('m', strtotime('-1 month'));
+    $args['godina'] = date('Y', strtotime('-1 month'));
+//    $search['status'] = $request->query->all('status');
+    $search['period'] = $request->query->get('period');
+
+    if (!is_null($search['period'])) {
+      $dateParts = explode('.', $search['period']);
+      $args['mesec'] = $dateParts[0];
+      $args['godina'] = $dateParts[1];
+    }
+
+    $user = $this->getUser();
+
+
+    $projects = $this->em->getRepository(ProjectFaktura::class)->getAllFakturePaginator($search, $user);
+
+    $pagination = $paginator->paginate(
+      $projects, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+
+
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/list_paginator_fakture.html.twig', $args);
+    }
+
+    return $this->render('project/list_paginator_fakture.html.twig', $args);
+  }
+
+  #[Route('/view-faktura/{id}', name: 'app_project_faktura_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewFaktura(ProjectFaktura $faktura)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $user = $this->getUser();
+    if ($user->getCompany() != $faktura->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+    $args['faktura'] = $faktura;
+
+    return $this->render('project/view_faktura.html.twig', $args);
+  }
+
+  #[Route('/edit-faktura/{id}', name: 'app_project_faktura_edit')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function editFaktura(Request $request, ProjectFaktura $faktura)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $faktura->setEditBy($this->getUser());
+
+    $form = $this->createForm(FakturaFormType::class, $faktura, ['attr' => ['action' => $this->generateUrl('app_project_faktura_edit', ['id' => $faktura->getId()])]]);
+    if ($request->isMethod('POST')) {
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+        $url = $request->getSession()->get('url');
+        $this->em->getRepository(ProjectFaktura::class)->save($faktura);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return new RedirectResponse($url);
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['faktura'] = $faktura;
+
+    return $this->render('project/edit_faktura.html.twig', $args);
+  }
+
+  #[Route('/view-checklist/{id}', name: 'app_project_checklist_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewChecklist(Project $project, PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $user = $this->getUser();
+    if ($user->getCompany() != $project->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+    $args = [];
+    $search = [];
+
+    $search['kategorija'] = $request->query->get('kategorija');
+    $search['period'] = $request->query->get('period');
+    $search['zaposleni'] = $request->query->get('zaposleni');
+    $args['project'] = $project;
+
+    $tasks = $this->em->getRepository(ManagerChecklist::class)->getTasksByProjectPaginator($search, $user, $project);
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
+
+    $args['pagination'] = $pagination;
+    $args['search'] = $search;
+
+    $args['kategorije'] = $this->em->getRepository(Category::class)->getCategoriesTask();
+    $args['users'] = $this->em->getRepository(User::class)->getUsersForChecklist();
+
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('project/phone/view_checklist.html.twig', $args);
+    }
+    return $this->render('project/view_checklist.html.twig', $args);
+  }
+
+  #[Route('/check-faktura/{id}', name: 'app_project_faktura_check')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function checkFaktura(Request $request, ProjectFaktura $faktura)    : RedirectResponse {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $faktura->setEditBy($this->getUser());
+
+    $url = $request->getSession()->get('url');
+
+    if ($faktura->getStatus() == 0) {
+      $faktura->setStatus(1);
+    } else {
+      $faktura->setStatus(0);
+    }
+
+    $this->em->getRepository(ProjectFaktura::class)->save($faktura);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+    return new RedirectResponse($url);
+  }
+
+
+  #[Route('/reports', name: 'app_project_reports')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReport(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+
+      if (empty($data['report_form']['project'])) {
+        $args['reportsAll'] = $this->em->getRepository(Project::class)->getReportAll($data['report_form']);
+      } else {
+        $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
+        $args['project'] = $this->em->getRepository(Project::class)->find($data['report_form']['project']);
+      }
+      $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksProject($data['report_form'], $args['project']);
+      $args['period'] = $data['report_form']['period'];
+
+      $args['periodNo'] = count($args['reports'][0]);
+      $args['internNo'] = count($args['intern']);
+
+      if (isset($data['report_form']['datum'])){
+        $args['datum'] = 1;
+      }
+      if (isset($data['report_form']['opis'])){
+        $args['opis'] = 1;
+      }
+      if (isset($data['report_form']['klijent'])){
+        $args['klijent'] = 1;
+      }
+      if (isset($data['report_form']['start'])){
+        $args['start'] = 1;
+      }
+      if (isset($data['report_form']['stop'])){
+        $args['stop'] = 1;
+      }
+      if (isset($data['report_form']['razlika'])){
+        $args['razlika'] = 1;
+      }
+      if (isset($data['report_form']['razlikaz'])){
+        $args['razlikaz'] = 1;
+      }
+      if (isset($data['report_form']['ukupno'])){
+        $args['ukupno'] = 1;
+      }
+      if (isset($data['report_form']['ukupnoz'])){
+        $args['ukupnoz'] = 1;
+      }
+      if (isset($data['report_form']['zaduzeni'])){
+        $args['zaduzeni'] = 1;
+      }
+      if (isset($data['report_form']['napomena'])){
+        $args['napomena'] = 1;
+      }
+      if (isset($data['report_form']['checklist'])){
+        $args['checklist'] = 1;
+      }
+      if (isset($data['report_form']['robotika'])){
+        $args['robotika'] = 1;
+      }
+
+      if (empty($data['report_form']['project'])) {
+        return $this->render('report_project/view_all.html.twig', $args);
+      }
+
+      return $this->render('report_project/view.html.twig', $args);
+
+    }
+
+    $args = [];
+
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
+    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
+
+    return $this->render('report_project/control.html.twig', $args);
+  }
+
   #[Route('/reports-archive', name: 'app_project_reports_archive')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function formReportArchive(Request $request)    : Response {
@@ -636,6 +919,10 @@ class ProjectController extends AbstractController {
         $args['checklist'] = 1;
       }
 
+      if (isset($data['report_form']['robotika'])){
+        $args['robotika'] = 1;
+      }
+
       if (empty($data['report_form']['project'])) {
         return $this->render('report_project/view_all.html.twig', $args);
       }
@@ -653,31 +940,7 @@ class ProjectController extends AbstractController {
     return $this->render('report_project/control.html.twig', $args);
   }
 
-  #[Route('/reports-izlasci', name: 'app_project_izlasci_reports')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReportIzlasci(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-    $company = $this->getUser()->getCompany();
 
-    if ($request->isMethod('POST')) {
-
-      $data = $request->request->all();
-      $args['reports'] = $this->em->getRepository(Project::class)->getCountTasksByProjectCompany($company, $data);
-      $args['period'] = $data['report_form']['period'];
-      $args['kategorije'] = $args['reports'][1];
-
-      return $this->render('report_project/view_izlasci.html.twig', $args);
-
-    }
-
-    $args = [];
-
-    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
-
-    return $this->render('report_project/control_izlasci.html.twig', $args);
-  }
 
   #[Route('/report-xls', name: 'app_project_report_xls')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -738,13 +1001,14 @@ class ProjectController extends AbstractController {
         $sheet->getColumnDimension('K')->setAutoSize(true);
         $sheet->getColumnDimension('L')->setWidth($maxCellWidth);
         $sheet->getColumnDimension('M')->setAutoSize(true);
+        $sheet->getColumnDimension('N')->setAutoSize(true);
 
 
-        $sheet->mergeCells('A1:M1');
+        $sheet->mergeCells('A1:N1');
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A1')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
         $sheet->setCellValue('A1', $klijent[0] . ': ' . $projekat->getTitle() . ' - ' . $datum);
-        $style = $sheet->getStyle('A1:M1');
+        $style = $sheet->getStyle('A1:N1');
         $font = $style->getFont();
         $font->setSize(18); // Postavite veličinu fonta na 14
         $font->setBold(true); // Postavite font kao boldiran
@@ -752,11 +1016,11 @@ class ProjectController extends AbstractController {
         $sheet->mergeCells('A2:A3');
         $sheet->mergeCells('B2:K2');
 
-        $sheet->mergeCells('M2:M3');
+        $sheet->mergeCells('N2:N3');
 
         $sheet->setCellValue('A2', 'Datum');
         $sheet->setCellValue('B2', 'Opis izvedenog posla');
-        $sheet->setCellValue('M2', 'Izvršioci');
+        $sheet->setCellValue('N2', 'Izvršioci');
 
         $sheet->getStyle('A2:A3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A2:A3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
@@ -765,8 +1029,8 @@ class ProjectController extends AbstractController {
         $sheet->getStyle('B2:J2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
 
-        $sheet->getStyle('M2:M3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('M2:M3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('N2:N3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('N2:N3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
 
         $sheet->setCellValue('B3', 'Kategorija');
@@ -780,6 +1044,7 @@ class ProjectController extends AbstractController {
         $sheet->setCellValue('J3', 'Ukupno');
         $sheet->setCellValue('K3', 'Ukupno*');
         $sheet->setCellValue('L3', 'Napomena');
+        $sheet->setCellValue('M3', 'Robotika');
 
 
         $sheet->getStyle('B3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -815,6 +1080,9 @@ class ProjectController extends AbstractController {
         $sheet->getStyle('L3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('L3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
+        $sheet->getStyle('M3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('M3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
 
         $font = $sheet->getStyle('J')->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
@@ -839,6 +1107,8 @@ class ProjectController extends AbstractController {
         $font = $sheet->getStyle('B')->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
         $font = $sheet->getStyle('D')->getFont();
+        $font->setSize(14); // Postavite veličinu fonta na 14
+        $font = $sheet->getStyle('N')->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
 
 
@@ -911,6 +1181,11 @@ class ProjectController extends AbstractController {
           $m = 0;
 
           foreach ($item as $stopwatch) {
+            $robotika = '';
+
+            if ($stopwatch['robotika'] == 1) {
+              $robotika = 'Da';
+            }
 
             $aktivnosti = [];
             foreach ($stopwatch['activity'] as $akt) {
@@ -965,6 +1240,12 @@ class ProjectController extends AbstractController {
             $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
             $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
+            $sheet->setCellValue('M' . $startAktivnosti, $robotika);
+            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setWrapText(true);
+            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+
             $users = '';
             $usersCount = count($stopwatch['users']);
 
@@ -977,10 +1258,10 @@ class ProjectController extends AbstractController {
               }
             }
 
-            $sheet->setCellValue('M' . $startAktivnosti, $users);
-            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setWrapText(true);
-            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-            $sheet->getStyle('M' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            $sheet->setCellValue('N' . $startAktivnosti, $users);
+            $sheet->getStyle('N' . $startAktivnosti)->getAlignment()->setWrapText(true);
+            $sheet->getStyle('N' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle('N' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
 
             if (!is_null($stopwatch['client'])) {
@@ -1006,11 +1287,11 @@ class ProjectController extends AbstractController {
 
         $dimension = $sheet->calculateWorksheetDimension();
         $sheet->getStyle($dimension)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-        $sheet->getStyle('A1:M3')->getFill()->setFillType(Fill::FILL_SOLID);
-        $sheet->getStyle('A1:M3')->getFill()->getStartColor()->setRGB('CCCCCC');
+        $sheet->getStyle('A1:N3')->getFill()->setFillType(Fill::FILL_SOLID);
+        $sheet->getStyle('A1:N3')->getFill()->getStartColor()->setRGB('CCCCCC');
 
         // Postavite font za opseg od A1 do M2
-        $style = $sheet->getStyle('A2:M3');
+        $style = $sheet->getStyle('A2:N3');
         $font = $style->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
         $font->setBold(true); // Postavite font kao boldiran
@@ -1023,7 +1304,7 @@ class ProjectController extends AbstractController {
           $offset = $offset + $start;
 //        dd($offset);
 
-          $sheet->getStyle('A' . $start . ':M' . $offset)->applyFromArray($styleArray);
+          $sheet->getStyle('A' . $start . ':N' . $offset)->applyFromArray($styleArray);
 
           $start = $offset + 1;
 
@@ -1449,17 +1730,17 @@ class ProjectController extends AbstractController {
         }
       }
     }
-      $sheet->setTitle("Izvestaj");
+    $sheet->setTitle("Izvestaj");
 
-      // Create your Office 2007 Excel (XLSX Format)
-      $writer = new Xls($spreadsheet);
+    // Create your Office 2007 Excel (XLSX Format)
+    $writer = new Xls($spreadsheet);
 
-      // In this case, we want to write the file in the public directory
-      $publicDirectory = $this->getParameter('kernel.project_dir') . '/var/excel';
-      // e.g /var/www/project/public/my_first_excel_symfony4.xlsx
-      $excelFilepath =  $publicDirectory . '/'.$projekat->getTitle() . '_'. $datum .'.xls';
+    // In this case, we want to write the file in the public directory
+    $publicDirectory = $this->getParameter('kernel.project_dir') . '/var/excel';
+    // e.g /var/www/project/public/my_first_excel_symfony4.xlsx
+    $excelFilepath =  $publicDirectory . '/'.$projekat->getTitle() . '_'. $datum .'.xls';
 
-      // Create the file
+    // Create the file
     try {
       $writer->save($excelFilepath);
     } catch (Exception $e) {
@@ -1487,259 +1768,6 @@ class ProjectController extends AbstractController {
     $args = [];
 
     $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany()]);
-    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
-
-    return $this->render('report_project/control.html.twig', $args);
-  }
-
-  #[Route('/view-report', name: 'app_project_report_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewReport(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-dd($request);
-    $args['project'] = '123';
-
-    return $this->render('report_project/view.html.twig', $args);
-  }
-
-
-  #[Route('/list-fakture/', name: 'app_projects_fakture')]
-  public function listFakture(PaginatorInterface $paginator, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args = [];
-
-    $search = [];
-    $args['mesec'] = date('m', strtotime('-1 month'));
-    $args['godina'] = date('Y', strtotime('-1 month'));
-//    $search['status'] = $request->query->all('status');
-    $search['period'] = $request->query->get('period');
-
-    if (!is_null($search['period'])) {
-      $dateParts = explode('.', $search['period']);
-      $args['mesec'] = $dateParts[0];
-      $args['godina'] = $dateParts[1];
-    }
-
-    $user = $this->getUser();
-
-
-    $projects = $this->em->getRepository(ProjectFaktura::class)->getAllFakturePaginator($search, $user);
-
-    $pagination = $paginator->paginate(
-      $projects, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
-
-    $args['pagination'] = $pagination;
-
-
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('project/phone/list_paginator_fakture.html.twig', $args);
-    }
-
-    return $this->render('project/list_paginator_fakture.html.twig', $args);
-  }
-
-  #[Route('/view-faktura/{id}', name: 'app_project_faktura_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewFaktura(ProjectFaktura $faktura)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $user = $this->getUser();
-    if ($user->getCompany() != $faktura->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args['faktura'] = $faktura;
-
-    return $this->render('project/view_faktura.html.twig', $args);
-  }
-
-  #[Route('/edit-faktura/{id}', name: 'app_project_faktura_edit')]
-//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editFaktura(Request $request, ProjectFaktura $faktura)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $faktura->setEditBy($this->getUser());
-
-    $form = $this->createForm(FakturaFormType::class, $faktura, ['attr' => ['action' => $this->generateUrl('app_project_faktura_edit', ['id' => $faktura->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-        $url = $request->getSession()->get('url');
-        $this->em->getRepository(ProjectFaktura::class)->save($faktura);
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
-
-        return new RedirectResponse($url);
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['faktura'] = $faktura;
-
-    return $this->render('project/edit_faktura.html.twig', $args);
-  }
-
-  #[Route('/view-checklist/{id}', name: 'app_project_checklist_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewChecklist(Project $project, PaginatorInterface $paginator, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $user = $this->getUser();
-    if ($user->getCompany() != $project->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args = [];
-    $search = [];
-
-    $search['kategorija'] = $request->query->get('kategorija');
-    $search['period'] = $request->query->get('period');
-    $search['zaposleni'] = $request->query->get('zaposleni');
-    $args['project'] = $project;
-
-    $tasks = $this->em->getRepository(ManagerChecklist::class)->getTasksByProjectPaginator($search, $user, $project);
-    $pagination = $paginator->paginate(
-      $tasks, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
-
-    $args['pagination'] = $pagination;
-    $args['search'] = $search;
-
-    $args['kategorije'] = $this->em->getRepository(Category::class)->getCategoriesTask();
-    $args['users'] = $this->em->getRepository(User::class)->getUsersForChecklist();
-
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('project/phone/view_checklist.html.twig', $args);
-    }
-    return $this->render('project/view_checklist.html.twig', $args);
-  }
-
-  #[Route('/check-faktura/{id}', name: 'app_project_faktura_check')]
-//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function checkFaktura(Request $request, ProjectFaktura $faktura)    : RedirectResponse {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $faktura->setEditBy($this->getUser());
-
-    $url = $request->getSession()->get('url');
-
-    if ($faktura->getStatus() == 0) {
-      $faktura->setStatus(1);
-    } else {
-      $faktura->setStatus(0);
-    }
-
-    $this->em->getRepository(ProjectFaktura::class)->save($faktura);
-
-    notyf()
-      ->position('x', 'right')
-      ->position('y', 'top')
-      ->duration(5000)
-      ->dismissible(true)
-      ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
-
-    return new RedirectResponse($url);
-  }
-
-
-  #[Route('/reports', name: 'app_project_reports')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReport(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    if ($request->isMethod('POST')) {
-
-      $data = $request->request->all();
-
-      if (empty($data['report_form']['project'])) {
-        $args['reportsAll'] = $this->em->getRepository(Project::class)->getReportAll($data['report_form']);
-      } else {
-        $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
-        $args['project'] = $this->em->getRepository(Project::class)->find($data['report_form']['project']);
-      }
-      $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksProject($data['report_form'], $args['project']);
-      $args['period'] = $data['report_form']['period'];
-
-      $args['periodNo'] = count($args['reports'][0]);
-      $args['internNo'] = count($args['intern']);
-
-      if (isset($data['report_form']['datum'])){
-        $args['datum'] = 1;
-      }
-      if (isset($data['report_form']['opis'])){
-        $args['opis'] = 1;
-      }
-      if (isset($data['report_form']['klijent'])){
-        $args['klijent'] = 1;
-      }
-      if (isset($data['report_form']['start'])){
-        $args['start'] = 1;
-      }
-      if (isset($data['report_form']['stop'])){
-        $args['stop'] = 1;
-      }
-      if (isset($data['report_form']['razlika'])){
-        $args['razlika'] = 1;
-      }
-      if (isset($data['report_form']['razlikaz'])){
-        $args['razlikaz'] = 1;
-      }
-      if (isset($data['report_form']['ukupno'])){
-        $args['ukupno'] = 1;
-      }
-      if (isset($data['report_form']['ukupnoz'])){
-        $args['ukupnoz'] = 1;
-      }
-      if (isset($data['report_form']['zaduzeni'])){
-        $args['zaduzeni'] = 1;
-      }
-      if (isset($data['report_form']['napomena'])){
-        $args['napomena'] = 1;
-      }
-      if (isset($data['report_form']['checklist'])){
-        $args['checklist'] = 1;
-      }
-
-      if (empty($data['report_form']['project'])) {
-        return $this->render('report_project/view_all.html.twig', $args);
-      }
-
-      return $this->render('report_project/view.html.twig', $args);
-
-    }
-
-    $args = [];
-
-    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
     $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesProject();
 
     return $this->render('report_project/control.html.twig', $args);

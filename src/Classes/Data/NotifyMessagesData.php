@@ -13,6 +13,7 @@ class NotifyMessagesData {
 
 
   public const EDIT_SUCCESS = 'Uspešno ste kreirali/izmenili stavku.';
+  public const EDIT_ITEM_ERROR = 'Niste uspešno kreirali/izmenili stavku. Proverite podatke.';
   public const DELETE_SUCCESS = 'Uspešno ste obrisali stavku.';
 
   //Poruke za klijenta

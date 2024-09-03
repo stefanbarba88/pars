@@ -94,6 +94,19 @@ class CalendarController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
+        if ($calendar->getStart() > $calendar->getFinish()) {
+
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addError(NotifyMessagesData::EDIT_ITEM_ERROR);
+
+          return $this->redirectToRoute('app_home');
+
+        }
+
         if ($calendar->getUser()->isEmpty()) {
           $data = $request->request->all();
           $user = $this->em->getRepository(User::class)->find($data['form']['zaposleni']);
@@ -186,6 +199,19 @@ class CalendarController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
+
+        if ($calendar->getStart() > $calendar->getFinish()) {
+
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addError(NotifyMessagesData::EDIT_ITEM_ERROR);
+
+          return $this->redirectToRoute('app_calendar_list');
+
+        }
 
         if ($calendar->getUser()->isEmpty()) {
           $data = $request->request->all();

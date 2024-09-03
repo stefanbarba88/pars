@@ -61,6 +61,7 @@ class HolidayController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
+
         $this->em->getRepository(Holiday::class)->save($holiday);
 
         notyf()
@@ -96,6 +97,19 @@ class HolidayController extends AbstractController {
 
       $startDatum = DateTimeImmutable::createFromFormat('d.m.Y', $start)->setTime(0, 0);
       $krajDatum = DateTimeImmutable::createFromFormat('d.m.Y', $kraj)->setTime(0, 0);
+
+      if ($startDatum > $krajDatum) {
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addError(NotifyMessagesData::EDIT_ITEM_ERROR);
+
+        return $this->redirectToRoute('app_holidays');
+
+      }
 
       $datumi = [];
       $current = clone $startDatum;

@@ -426,7 +426,20 @@
                                                             <div class="col-lg-12">
                                                                 <div class="mb-3">
                                                                     {% for stopwatch in stopwatchesActive %}
-                                                                        <i class="ph-timer me-2"></i>{{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }}<br>
+                                                                        <i class="ph-timer me-2"></i>{{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }}
+                                                                        {% set startLat = stopwatch.startLat %} {# Zamenite sa stvarnim vrednostima za start lat i lon #}
+                                                                        {% set startLon = stopwatch.startLon %}
+                                                                        {% set stopLat = stopwatch.stopLat %} {# Zamenite sa stvarnim vrednostima za stop lat i lon #}
+                                                                        {% set stopLon = stopwatch.stopLon %}
+
+                                                                        {%  if not (startLon starts with '123') and startLon is not null %}
+
+                                                                            <a href="https://yandex.ru/maps/?pt={{ startLon }},{{ startLat }}~{{ stopLon }},{{ stopLat }}&z=12&l=map&lang=sr_RU" target="_blank" data-bs-popup="tooltip" aria-label="Vidite na mapama" data-bs-original-title="Vidite na mapama">
+                                                                                <i class="ph-map-pin-line mx-2"></i>
+                                                                            </a>
+
+                                                                        {% endif %}
+                                                                        <br>
                                                                     {% endfor %}
                                                                 </div>
                                                             </div>

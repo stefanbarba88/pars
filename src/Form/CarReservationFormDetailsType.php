@@ -44,6 +44,7 @@ class CarReservationFormDetailsType extends AbstractType {
     $driver = $dataObject->getReservation()->getDriver();
     $company = $dataObject->getReservation()->getCompany();
 
+
       $builder
         ->add('car', EntityType::class, [
           'class' => Car::class,
@@ -80,7 +81,7 @@ class CarReservationFormDetailsType extends AbstractType {
         ->add('kmStart', NumberType::class, [
           'attr' => [
             'min' => $car->getKm(),
-            'max' => $car->getKm() + 500,
+            'max' => $car->getKm(),
           ],
           'required' => true,
           'html5' => true,

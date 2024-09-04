@@ -285,7 +285,7 @@ class MailService {
 
     $args = [];
 
-    $subject = 'Izmenjen je tiket od ' . $ticket->getCompany()->getTitle();
+    $subject = 'Izmenjen je tiket od ' . $ticket->getClient()->getTitle();
 
     $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
@@ -301,7 +301,7 @@ class MailService {
 
     $args = [];
 
-    $subject = 'Kreiran je tiket od ' . $ticket->getCompany()->getTitle();
+    $subject = 'Kreiran je tiket od ' . $ticket->getClient()->getTitle();
 
     $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
@@ -317,13 +317,13 @@ class MailService {
 
     $args = [];
 
-    $subject = 'Rešen je tiket od ' . $ticket->getCompany()->getTitle();
+    $subject = 'Rešen je tiket kreiran od ' . $ticket->getClient()->getTitle();
 
     $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/finish_ticket.html.twig';
     $args['tiket'] = $ticket;
-    $to = $ticket->getCompany()->getEmail();
+    $to = $ticket->getClient()->getContact()->first()->getEmail();
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 

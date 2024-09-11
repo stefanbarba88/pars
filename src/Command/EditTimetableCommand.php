@@ -54,9 +54,7 @@ class EditTimetableCommand extends Command {
       }
     }
 
-
     $end = microtime(true);
-
 
     echo "The code took " . date('i:s', $end - $start) . " minutes to complete. \n";
 

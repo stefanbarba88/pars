@@ -138,6 +138,7 @@ class PlanRepository extends ServiceEntityRepository {
 
   public function editPlan(Plan $plan, $data, $dataInterni): Plan {
 
+
     $ostaju = [];
 
     $noviNiz = array_merge($data, $dataInterni);
@@ -408,26 +409,32 @@ class PlanRepository extends ServiceEntityRepository {
           $priprema = $this->getEntityManager()->getRepository(PripremaZadatak::class)->find($dat['id']);
           if ($priprema->getProject()->getId() != $dat['projekat']) {
             $priprema->setProject($this->getEntityManager()->getRepository(Project::class)->find($dat['projekat']));
+            $priprema->setStatus(2);
           }
           if ($priprema->getCategory()->getId() != $dat['category']) {
             $priprema->setCategory($this->getEntityManager()->getRepository(Category::class)->find($dat['category']));
+            $priprema->setStatus(2);
           }
           if ($priprema->getPriorityUserLog() != $dat['primary']) {
             $priprema->setPriorityUserLog($dat['primary']);
+            $priprema->setStatus(2);
           }
           if (trim($priprema->getDescription()) != trim($dat['desc'])) {
             $priprema->setDescription(trim($dat['desc']));
+            $priprema->setStatus(2);
           }
 
           if (!empty($dat['car'])) {
             if ($priprema->getCar() != $dat['car']) {
               $priprema->setCar($dat['car']);
               $priprema->setDriver($dat['driver']);
+              $priprema->setStatus(2);
             }
           } else {
             if (!is_null($priprema->getCar())) {
               $priprema->setCar(null);
               $priprema->setDriver(null);
+              $priprema->setStatus(2);
             }
           }
 
@@ -439,6 +446,7 @@ class PlanRepository extends ServiceEntityRepository {
               $users->add($this->getEntityManager()->getRepository(User::class)->find($user));
             }
             $priprema->setAssignedUsers($users);
+            $priprema->setStatus(2);
           }
 
 
@@ -450,10 +458,12 @@ class PlanRepository extends ServiceEntityRepository {
                 $activities->add($this->getEntityManager()->getRepository(Activity::class)->find($act));
               }
               $priprema->setActivity($activities);
+              $priprema->setStatus(2);
             }
           } else {
             if (!empty($priprema->getActivitiesIds())) {
               $priprema->setActivity($activities);
+              $priprema->setStatus(2);
             }
           }
 
@@ -465,20 +475,24 @@ class PlanRepository extends ServiceEntityRepository {
                 $tools->add($this->getEntityManager()->getRepository(Tool::class)->find($tool));
               }
               $priprema->setOprema($tools);
+              $priprema->setStatus(2);
             }
           } else {
             if (!empty($priprema->getOpremaIds())) {
               $priprema->setOprema($tools);
+              $priprema->setStatus(2);
             }
           }
 
           if (isset($dat['naplativ'])) {
             if ($priprema->getIsFree() == 1) {
               $priprema->setIsFree(false);
+              $priprema->setStatus(2);
             }
           } else {
             if ($priprema->getIsFree() == 0) {
               $priprema->setIsFree(true);
+              $priprema->setStatus(2);
             }
           }
           $this->getEntityManager()->getRepository(PripremaZadatak::class)->save($priprema);
@@ -545,13 +559,16 @@ class PlanRepository extends ServiceEntityRepository {
 
           if ($priprema->getProject()->getId() != $dat['projekat']) {
             $priprema->setProject($this->getEntityManager()->getRepository(Project::class)->find($dat['projekat']));
+            $priprema->setStatus(2);
           }
           if ($priprema->getCategory()->getId() != $dat['category']) {
             $priprema->setCategory($this->getEntityManager()->getRepository(Category::class)->find($dat['category']));
+            $priprema->setStatus(2);
           }
 
           if (trim($priprema->getDescription()) != trim($dat['desc'])) {
             $priprema->setDescription(trim($dat['desc']));
+            $priprema->setStatus(2);
           }
 
           $assignedUsersIds = $priprema->getAssignedUsersIds();
@@ -562,6 +579,7 @@ class PlanRepository extends ServiceEntityRepository {
               $users->add($this->getEntityManager()->getRepository(User::class)->find($user));
             }
             $priprema->setAssignedUsers($users);
+            $priprema->setStatus(2);
           }
 
           $this->getEntityManager()->getRepository(PripremaZadatak::class)->save($priprema);

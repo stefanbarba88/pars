@@ -32,7 +32,7 @@
                             <h5 class="mb-0">Lista projekata</h5>
                             {% if not is_granted('ROLE_EMPLOYEE') %}
                                 <div class="my-auto ms-auto">
-                                    <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                    <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus"></i></a>
                                 </div>
                             {% endif %}
                         </div>
@@ -71,9 +71,13 @@
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         {% if is_granted('ROLE_EMPLOYEE') %}
                                                             <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                            <a href="{{ path('app_project_profile_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-info me-2"></i> Info</a>
+                                                            <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Zadaci</a>
+                                                            <a href="{{ path('app_project_checklist_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-list-bullets me-2"></i> Interni</a>
                                                         {% else %}
                                                             <a href="{{ path('app_project_profile_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-info me-2"></i> Info</a>
                                                             <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Zadaci</a>
+                                                            <a href="{{ path('app_project_checklist_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-list-bullets me-2"></i> Interni</a>
                                                             <a href="{{ path('app_project_activity_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-activity me-2"></i> Aktivnosti</a>
                                                             <a href="{{ path('app_project_form', { id: project.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
                                                             {% if project.suspended == 0 %}

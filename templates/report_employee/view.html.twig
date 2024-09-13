@@ -47,8 +47,12 @@
 {#                                                </div>#}
 {#                                            {% endif %}#}
 {#                                        </div>#}
+                                        <div class="my-auto ms-auto">
+                                            {% if reports[0] is not empty %}
+                                                <a href="{{ path('app_employee_reports_pdf', {data: dataPdf}) }}" class="btn btn-light"><i class="ph-file-pdf me-2"></i> Izvezite</a>
+                                            {% endif %}
+                                        </div>
                                     </div>
-
                                     <div class="card-body">
                                         <div class="table-responsive card">
                                             <table class="table table-hover table-bordered table_morecondensed">

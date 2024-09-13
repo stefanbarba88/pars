@@ -856,73 +856,72 @@
     {% if isGeolocation %}
         <script type="text/javascript">
             $(function () {
-
                 {% if stopwatch is not null %}
-                let startDateTime = new Date({{ stopwatch ? stopwatch.start | date('Y, (m-1), d, H, i, s') : '2014,8,26,2,1,0,0' }});// YYYY (M-1) D H m s (start time and date from DB)
-                let startStamp = startDateTime.getTime();
+                    let startDateTime = new Date({{ stopwatch ? stopwatch.start | date('Y, (m-1), d, H, i, s') : '2014,8,26,2,1,0,0' }});// YYYY (M-1) D H m s (start time and date from DB)
+                    let startStamp = startDateTime.getTime();
 
-                let newDate = new Date();
-                let newStamp = newDate.getTime();
+                    let newDate = new Date();
+                    let newStamp = newDate.getTime();
 
-                let timer;
+                    let timer;
 
-                function updateClock() {
-                    newDate = new Date();
-                    newStamp = newDate.getTime();
-                    let diff = Math.round((newStamp-startStamp)/1000);
+                    function updateClock() {
+                        newDate = new Date();
+                        newStamp = newDate.getTime();
+                        let diff = Math.round((newStamp-startStamp)/1000);
 
-                    let h = Math.floor(diff/(60*60));
-                    diff = diff-(h*60*60);
-                    let m = Math.floor(diff/(60));
-                    diff = diff-(m*60);
-                    let s = diff;
+                        let h = Math.floor(diff/(60*60));
+                        diff = diff-(h*60*60);
+                        let m = Math.floor(diff/(60));
+                        diff = diff-(m*60);
+                        let s = diff;
 
-                    if (h < 10) {
-                        h = '0' + h;
+                        if (h < 10) {
+                            h = '0' + h;
+                        }
+
+                        if (m < 10) {
+                            m = '0' + m;
+                        }
+
+                        document.getElementById("timeH").innerHTML = h;
+                        document.getElementById("timeM").innerHTML = m;
                     }
 
-                    if (m < 10) {
-                        m = '0' + m;
-                    }
+                    setInterval(updateClock, 1000);
 
-                    document.getElementById("timeH").innerHTML = h;
-                    document.getElementById("timeM").innerHTML = m;
-                }
-
-                setInterval(updateClock, 1000);
-
-                function treptanje() {
-                    var elementM = document.getElementById("timeSeparator");
-                    if (elementM) {
-                        if (elementM.style.visibility === "visible") {
-                            elementM.style.visibility = "hidden";
-                        } else {
-                            elementM.style.visibility = "visible";
+                    function treptanje() {
+                        var elementM = document.getElementById("timeSeparator");
+                        if (elementM) {
+                            if (elementM.style.visibility === "visible") {
+                                elementM.style.visibility = "hidden";
+                            } else {
+                                elementM.style.visibility = "visible";
+                            }
                         }
                     }
-                }
 
-                // Pozivamo funkciju za treptanje svake sekunde
-                setInterval(treptanje, 1000);
+                    // Pozivamo funkciju za treptanje svake sekunde
+                    setInterval(treptanje, 1000);
 
-                const modalBtn = document.getElementById('stopTimer');
-                modalBtn.addEventListener('click', function() {
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(function(position) {
-                            const lon = position.coords.longitude;
-                            const lat = position.coords.latitude;
+                    const modalBtn = document.getElementById('stopTimer');
+                    modalBtn.addEventListener('click', function() {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                                const lon = position.coords.longitude;
+                                const lat = position.coords.latitude;
 
-                            {% if stopwatch %}
-                            let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+lon+'&lat='+lat;
-                            $('#link-stop').attr('href', urlStop);
-                            {% endif %}
-                        }, function(error) {
-                            alert("Geolokacija nije dozvoljena, dozvolite geolokaciju u vašem pretraživaču pa ponovo učitajte stranicu.");
-                        });
-                    } else {
-                        alert("Geolokacija nije podržana u ovom pretraživaču.");
-                    }
-                });
+                                {% if stopwatch %}
+                                let urlStop = '{{ path('app_stopwatch_form', {id: stopwatch.id}) }}?lon='+lon+'&lat='+lat;
+                                $('#link-stop').attr('href', urlStop);
+                                {% endif %}
+                            }, function(error) {
+                                alert("Geolokacija nije dozvoljena, dozvolite geolokaciju u vašem pretraživaču pa ponovo učitajte stranicu.");
+                            });
+                        } else {
+                            alert("Geolokacija nije podržana u ovom pretraživaču.");
+                        }
+                    });
 
                 {% endif %}
 

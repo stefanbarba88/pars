@@ -181,15 +181,18 @@
 {% block footerJavascript %}
 
 <script>
-    $(document).ready(function() {
 
+        $(document).ready(function() {
         // Date format
-        // izmenjen format da bi bio po srpskim standardima
         const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom1');
         const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom2');
+
+        let dpDateCustomFormat1;
+        let dpDateCustomFormat2;
+
         if (dpDateCustomFormatElement1) {
-        const today = new Date(); // Trenutni datum
-        const dpDateCustomFormat = new Datepicker(dpDateCustomFormatElement1, {
+        const today = new Date();
+        dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
         container: '.content-inner',
         buttonClass: 'btn',
         prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
@@ -197,19 +200,15 @@
         format: 'dd.mm.yyyy',
         todayBtn: true,
         weekStart: 1,
-        minDate: today, // Postavljamo minimalni datum na trenutni datum
+        minDate: today,
         daysOfWeekHighlighted: [0, 6],
-        language: 'sr-latn',
-        {#datesDisabled: [#}
-        {#    {% for date in disabledDates %}#}
-        {#    '{{ date }}',#}
-        {#    {% endfor %}#}
-        {#],#}
+        language: 'sr-latn'
     });
     }
+
         if (dpDateCustomFormatElement2) {
-        const today = new Date(); // Trenutni datum
-        const dpDateCustomFormat = new Datepicker(dpDateCustomFormatElement2, {
+        const today = new Date();
+        dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
         container: '.content-inner',
         buttonClass: 'btn',
         prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
@@ -217,17 +216,38 @@
         format: 'dd.mm.yyyy',
         todayBtn: true,
         weekStart: 1,
-        minDate: today, // Postavljamo minimalni datum na trenutni datum
+        minDate: today,
         daysOfWeekHighlighted: [0, 6],
-        language: 'sr-latn',
-        {#datesDisabled: [#}
-        {#    {% for date in disabledDates %}#}
-        {#    '{{ date }}',#}
-        {#    {% endfor %}#}
-        {#],#}
+        language: 'sr-latn'
     });
     }
+
+        function parseDate(input) {
+        const parts = input.split('.');
+        return new Date(parts[2], parts[1] - 1, parts[0]); // format dd.mm.yyyy
+    }
+
+
+            function updateFinishMinDate() {
+                const startDateStr = $('#calendar_form_start').val();
+                if (startDateStr) {
+                    const minDate = parseDate(startDateStr);
+                    dpDateCustomFormat2.setOptions({
+                        minDate: minDate
+                    });
+                    // Praznimo vrednost drugog inputa kada se izabere novi datum u prvom
+                    $('#calendar_form_finish').val('');
+                }
+            }
+
+        $('#calendar_form_start').on('changeDate', function() {
+        updateFinishMinDate();
+
     });
+
+    });
+
+
 </script>
 
 {% endblock footerJavascript %}

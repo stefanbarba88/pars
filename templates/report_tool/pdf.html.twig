@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Izveštaj {{ period }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            padding: 10px;
+            page-break-inside: avoid; /* Sprečava razbijanje kartice */
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            page-break-after: avoid; /* Sprečava razbijanje kartice */
+        }
+        .card-body {
+            padding: 10px;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -10px;
+            page-break-inside: avoid; /* Sprečava razbijanje redova unutar kartice */
+        }
+        .col-6 {
+            flex: 1;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .bg-light {
+            background-color: #f8f9fa;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            page-break-inside: auto; /* Omogućava prelaz stranice unutar tabele */
+            font-size: 12px; /* Smanjuje veličinu fonta za kompaktniji prikaz */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px; /* Smanjena vrednost paddinga */
+            text-align: left;
+            page-break-inside: avoid; /* Sprečava razbijanje redova unutar tabele */
+            page-break-after: auto;
+        }
+
+        th {
+            background-color: #f8f9fa; /* Neutralna boja za zaglavlje */
+            color: #333; /* Tamnija boja za tekst zaglavlja */
+            font-weight: bold;
+        }
+
+        thead {
+            display: table-header-group; /* Prikazuje zaglavlje tabele na svakoj novoj stranici */
+        }
+
+        tbody {
+            display: table-row-group; /* Standardno ponašanje za telo tabele */
+        }
+
+        img {
+            max-width: 100px; /* Ograničava veličinu slike u tabeli */
+            height: auto; /* Čuva proporcije slike */
+        }
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .header-logo img {
+            max-width: none; /* Uklanja ograničenje veličine za logotip */
+            max-height: 100px; /* Podesite visinu logotipa na željenu vrednost */
+        }
+        .company-details {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="header-row">
+{#    <div class="header-logo">#}
+{#        <img src="{{ absolute_url(asset('assets/images/logo/logo1.png')) }}" alt="Logo">#}
+{#    </div>#}
+    <div class="company-details">
+        <div>{{ company.title() }}</div>
+        <div>{{ company.grad.ptt }} {{ company.grad.title }}, {{ company.adresa }}</div>
+        <div>Tel: {{ company.telefon1 }}</div>
+        <div>E-mail: {{ company.email }}</div>
+    </div>
+</div>
+<div class="container">
+
+    <div class="card">
+        <div class="card-header">{{ tool.title }}: {{ period }}</div>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered table_morecondensed">
+                    <thead>
+                    <tr class="table-light">
+                        <th>Zaduženi</th>
+                        <th>Početak rezervacije</th>
+                        <th>Napomena</th>
+                        <th>Kraj rezervacije</th>
+                        <th>Napomena</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% if reports is not empty %}
+                        {% for res in reports %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ res.user.fullName }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">
+                                        <div class="d-inline-flex align-items-center">
+                                            <i class="ph-calendar me-2"></i>{{ res.created | date('d.m.Y') }}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {{ res.descStart }}
+                                </td>
+                                <td>
+                                    {% if res.finished is not null %}
+                                        <div class="fw-semibold">
+                                            <div class="d-inline-flex align-items-center">
+                                                <i class="ph-calendar me-2"></i>{{ res.finished | date('d.m.Y') }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ res.descStop }}
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="9">
+                                <div class="text-body">
+                                    Nema rezervacija u zadatom periodu
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+    </div>
+</div>
+</body>
+</html>

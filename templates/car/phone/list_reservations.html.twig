@@ -34,13 +34,13 @@
                             <div class="my-auto ms-auto">
                                 {% if car.suspended == false %}
                                     {% if lastReservation is null %}
-                                        <a href="{{ path('app_car_reservation_form', { id : car.id }) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                        <a href="{{ path('app_car_reservation_form', { id : car.id }) }}" class="btn btn-primary"><i class="ph-plus"></i></a>
                                     {% else %}
                                         {% if lastReservation.finished is not null %}
-                                            <a href="{{ path('app_car_reservation_form', { id : car.id }) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                            <a href="{{ path('app_car_reservation_form', { id : car.id }) }}" ><i class="ph-plus"></i></a>
                                         {% else %}
-                                            <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Slike</a>
-                                            <a href="{{ path('app_car_reservation_stop', { id: lastReservation.id}) }}" class="btn btn-primary"> Razdužite</a>
+                                            <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" ><i class="ph-image"></i></a>
+                                            <a href="{{ path('app_car_reservation_stop', { id: lastReservation.id}) }}" ><i class="ph-minus"></i></a>
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}

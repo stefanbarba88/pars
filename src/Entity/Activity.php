@@ -10,7 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ActivityRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ORM\Table(name: 'activities')]
+#[ORM\Table(name: 'activities', indexes: [
+  new ORM\Index(columns: ['title'], name: 'activity_title_idx'),
+  new ORM\Index(columns: ['id'], name: 'activity_id_idx')
+])]
 class Activity {
   #[ORM\Id]
   #[ORM\GeneratedValue]

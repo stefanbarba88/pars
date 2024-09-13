@@ -43,11 +43,11 @@
                                         <div class="my-auto ms-auto">
                                             {% if app.user == user%}
                                                 {% if user.car is null %}
-                                                    <a href="{{ path('app_car_employee_reservation_form', {user:user.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Zadužite</a>
+                                                    <a href="{{ path('app_car_employee_reservation_form', {user:user.id}) }}" ><i class="ph-car"></i></a>
                                                 {% else %}
-                                                    <a href="{{ path('app_car_employee_expense_form', {id:lastReservation.car.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Trošak</a>
-                                                    <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Slike</a>
-                                                    <a href="{{ path('app_car_employee_reservation_stop', {id:lastReservation.id}) }}" class="btn btn-primary"> Razdužite</a>
+                                                    <a href="{{ path('app_car_employee_expense_form', {id:lastReservation.car.id}) }}" ><i class="ph-money"></i></a>
+                                                    <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" ><i class="ph-image "></i></a>
+                                                    <a href="{{ path('app_car_employee_reservation_stop', {id:lastReservation.id}) }}" ><i class="ph-car"></i></a>
                                                 {% endif %}
                                             {% endif %}
                                         </div>

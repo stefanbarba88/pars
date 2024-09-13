@@ -24,6 +24,7 @@ use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
+use Knp\Snappy\Pdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,7 +36,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/tools')]
 class ToolController extends AbstractController {
-  public function __construct(private readonly ManagerRegistry $em) {
+  private $knpSnappyPdf;
+  public function __construct(private readonly ManagerRegistry $em, Pdf $knpSnappyPdf) {
+    $this->knpSnappyPdf = $knpSnappyPdf;
   }
 
   //tipovi opreme
@@ -644,6 +647,8 @@ class ToolController extends AbstractController {
       $args['tool'] = $this->em->getRepository(Tool::class)->find($data['report_form']['oprema']);
       $args['period'] = $data['report_form']['period'];
 
+      $args['dataPdf'] = $data;
+
       return $this->render('report_tool/view.html.twig', $args);
 
     }
@@ -653,6 +658,35 @@ class ToolController extends AbstractController {
     $args['tools'] =  $this->em->getRepository(Tool::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false],['id' => 'ASC']);
 
     return $this->render('report_tool/control.html.twig', $args);
+  }
+
+  #[Route('/reports-pdf', name: 'app_tool_reports_pdf')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportPdf(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+
+
+    $data = $request->query->all();
+
+      $args['reports'] = $this->em->getRepository(ToolReservation::class)->getReport($request->query->all()['data']['report_form']);
+      $args['tool'] = $this->em->getRepository(Tool::class)->find($request->query->all()['data']['report_form']['oprema']);
+      $args['period'] = $request->query->all()['data']['report_form']['period'];
+
+    $args['dataPdf'] = $data;
+    $args['company'] = $this->getUser()->getCompany();
+
+    $html = $this->renderView('report_tool/pdf.html.twig', $args);
+
+    $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
+
+    return new Response($pdfContent, 200, [
+      'Content-Type' => 'application/pdf',
+      'Content-Disposition' => 'inline; filename="tool_' . $args['period'] . '.pdf"',
+    ]);
+
   }
 
   #[Route('/reports-archive', name: 'app_tool_reports_archive')]

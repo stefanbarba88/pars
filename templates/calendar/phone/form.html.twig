@@ -178,3 +178,22 @@
 
 
 {% endblock includeJavascript %}
+{% block footerJavascript %}
+
+    <script>
+        $(document).ready(function() {
+            // Kada se datum promeni u inputu "start"
+            $('#phone_calendar_form_start').on('change', function() {
+                // Dohvati izabrani datum u "start" inputu
+                var selectedDate = $(this).val();
+
+                // Postavi minimalni datum u "finish" inputu na izabrani datum
+                $('#phone_calendar_form_finish').attr('min', selectedDate);
+
+                // Prazni vrednost u "finish" inputu kada se promeni datum u "start" inputu
+                $('#phone_calendar_form_finish').val('');
+            });
+        });
+    </script>
+
+{% endblock footerJavascript %}

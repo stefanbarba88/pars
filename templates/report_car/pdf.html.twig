@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Izveštaj {{ period }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            padding: 10px;
+            page-break-inside: avoid; /* Sprečava razbijanje kartice */
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            page-break-after: avoid; /* Sprečava razbijanje kartice */
+        }
+        .card-body {
+            padding: 10px;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -10px;
+            page-break-inside: avoid; /* Sprečava razbijanje redova unutar kartice */
+        }
+        .col-6 {
+            flex: 1;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .bg-light {
+            background-color: #f8f9fa;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            page-break-inside: auto; /* Omogućava prelaz stranice unutar tabele */
+            font-size: 12px; /* Smanjuje veličinu fonta za kompaktniji prikaz */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px; /* Smanjena vrednost paddinga */
+            text-align: left;
+            page-break-inside: avoid; /* Sprečava razbijanje redova unutar tabele */
+            page-break-after: auto;
+        }
+
+        th {
+            background-color: #f8f9fa; /* Neutralna boja za zaglavlje */
+            color: #333; /* Tamnija boja za tekst zaglavlja */
+            font-weight: bold;
+        }
+
+        thead {
+            display: table-header-group; /* Prikazuje zaglavlje tabele na svakoj novoj stranici */
+        }
+
+        tbody {
+            display: table-row-group; /* Standardno ponašanje za telo tabele */
+        }
+
+        img {
+            max-width: 100px; /* Ograničava veličinu slike u tabeli */
+            height: auto; /* Čuva proporcije slike */
+        }
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .header-logo img {
+            max-width: none; /* Uklanja ograničenje veličine za logotip */
+            max-height: 100px; /* Podesite visinu logotipa na željenu vrednost */
+        }
+        .company-details {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="header-row">
+{#    <div class="header-logo">#}
+{#        <img src="{{ absolute_url(asset('assets/images/logo/logo1.png')) }}" alt="Logo">#}
+{#    </div>#}
+    <div class="company-details">
+        <div>{{ company.title() }}</div>
+        <div>{{ company.grad.ptt }} {{ company.grad.title }}, {{ company.adresa }}</div>
+        <div>Tel: {{ company.telefon1 }}</div>
+        <div>E-mail: {{ company.email }}</div>
+    </div>
+</div>
+<div class="container">
+
+    <div class="card">
+        <div class="card-header">{{ car.getCarName }}: {{ period }}</div>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered table_morecondensed">
+                    <thead>
+                    <tr class="table-light">
+                        {% if vozac is defined %}
+                            <th>Vozač</th>
+                        {% endif %}
+                        {% if start is defined %}
+                            <th>Početak rezervacije</th>
+                        {% endif %}
+                        {% if dstart is defined %}
+                            <th>Čistoća</th>
+                            <th>Gorivo</th>
+                            <th>Napomena</th>
+                        {% endif %}
+                        {% if stop is defined %}
+                            <th>Kraj rezervacije</th>
+                        {% endif %}
+                        {% if dstop is defined %}
+                            <th>Čistoća</th>
+                            <th>Gorivo</th>
+                            <th>Napomena</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% if reports is not empty %}
+                        {% for res in reports %}
+                            <tr>
+                                {% if vozac is defined %}
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ res.driver.fullName }}
+                                        </div>
+                                    </td>
+                                {% endif %}
+
+                                {% if start is defined %}
+                                    <td>
+                                        <div class="fw-semibold">
+                                            <div class="d-inline-flex align-items-center">
+                                                <i class="ph-calendar me-2"></i>{{ res.created | date('d.m.Y') }} ({{ res.kmStart }} km)
+                                            </div>
+                                        </div>
+                                    </td>
+                                {% endif %}
+                                {% if dstart is defined %}
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {% if res.cleanStart == constant('App\\Classes\\Data\\CleanData::LOSE') %}
+                                                Loše
+                                            {% endif %}
+                                            {% if res.cleanStart == constant('App\\Classes\\Data\\CleanData::DOVOLJNO') %}
+                                                Dovoljno
+                                            {% endif %}
+                                            {% if res.cleanStart == constant('App\\Classes\\Data\\CleanData::DOBRO') %}
+                                                Dobro
+                                            {% endif %}
+                                            {% if res.cleanStart == constant('App\\Classes\\Data\\CleanData::VRLO_DOBRO') %}
+                                                Vrlo dobro
+                                            {% endif %}
+                                            {% if res.cleanStart == constant('App\\Classes\\Data\\CleanData::ODLICNO') %}
+                                                Odlično
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {% if res.fuelStart is not null %}
+                                                {% if res.fuelStart <= constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                                    {% if res.fuelStart == constant('App\\Classes\\Data\\FuelData::PRAZNO') %}
+                                                        <span class="badge bg-yellow text-primary">Prazan</span>
+                                                    {% endif %}
+                                                    {% if res.fuelStart == constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                                        <span class="badge bg-yellow text-primary">1/4</span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% if res.fuelStart == constant('App\\Classes\\Data\\FuelData::POLA') %}
+                                                        <span class="badge bg-secondary text-primary">1/2</span>
+                                                    {% endif %}
+                                                    {% if res.fuelStart == constant('App\\Classes\\Data\\FuelData::TRI_CETVRTI') %}
+                                                        <span class="badge bg-secondary text-primary">3/4</span>
+                                                    {% endif %}
+                                                    {% if res.fuelStart == constant('App\\Classes\\Data\\FuelData::PUN') %}
+                                                        <span class="badge bg-secondary text-primary">Pun</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {{ res.descStart }}
+                                        </div>
+                                    </td>
+                                {% endif %}
+
+                                {% if stop is defined %}
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {% if res.finished is not null %}
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>{{ res.finished | date('d.m.Y') }} ({{ res.kmStop }} km)
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                {% endif %}
+                                {% if dstop is defined %}
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {% if res.cleanStop == constant('App\\Classes\\Data\\CleanData::LOSE') %}
+                                                Loše
+                                            {% endif %}
+                                            {% if res.cleanStop == constant('App\\Classes\\Data\\CleanData::DOVOLJNO') %}
+                                                Dovoljno
+                                            {% endif %}
+                                            {% if res.cleanStop == constant('App\\Classes\\Data\\CleanData::DOBRO') %}
+                                                Dobro
+                                            {% endif %}
+                                            {% if res.cleanStop == constant('App\\Classes\\Data\\CleanData::VRLO_DOBRO') %}
+                                                Vrlo dobro
+                                            {% endif %}
+                                            {% if res.cleanStop == constant('App\\Classes\\Data\\CleanData::ODLICNO') %}
+                                                Odlično
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {% if res.fuelStop is not null %}
+                                                {% if res.fuelStop <= constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                                    {% if res.fuelStop == constant('App\\Classes\\Data\\FuelData::PRAZNO') %}
+                                                        <span class="badge bg-yellow text-primary">Prazan</span>
+                                                    {% endif %}
+                                                    {% if res.fuelStop == constant('App\\Classes\\Data\\FuelData::CETVRT') %}
+                                                        <span class="badge bg-yellow text-primary">1/4</span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% if res.fuelStop == constant('App\\Classes\\Data\\FuelData::POLA') %}
+                                                        <span class="badge bg-secondary text-primary">1/2</span>
+                                                    {% endif %}
+                                                    {% if res.fuelStop == constant('App\\Classes\\Data\\FuelData::TRI_CETVRTI') %}
+                                                        <span class="badge bg-secondary text-primary">3/4</span>
+                                                    {% endif %}
+                                                    {% if res.fuelStop == constant('App\\Classes\\Data\\FuelData::PUN') %}
+                                                        <span class="badge bg-secondary text-primary">Pun</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {{ res.descStop }}
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="9">
+                                <div class="text-body">
+                                    Nema rezervacija u zadatom periodu
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+    </div>
+</div>
+</body>
+</html>

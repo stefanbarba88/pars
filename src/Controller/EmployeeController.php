@@ -31,6 +31,7 @@ use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Knp\Component\Pager\PaginatorInterface;
+use Knp\Snappy\Pdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -47,8 +48,11 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 #[Route('/employees')]
 class EmployeeController extends AbstractController {
 
-  public function __construct(private readonly ManagerRegistry $em) {
+  private $knpSnappyPdf;
+  public function __construct(private readonly ManagerRegistry $em, Pdf $knpSnappyPdf) {
+    $this->knpSnappyPdf = $knpSnappyPdf;
   }
+
 
   #[Route('/list/', name: 'app_employees')]
   public function list(PaginatorInterface $paginator, Request $request): Response {
@@ -621,6 +625,7 @@ class EmployeeController extends AbstractController {
         $args['checklist'] = 1;
       }
 
+      $args['dataPdf'] = $data;
 
       return $this->render('report_employee/view.html.twig', $args);
 
@@ -631,6 +636,77 @@ class EmployeeController extends AbstractController {
     $args['users'] =  $this->em->getRepository(User::class)->getUsersForChecklist();
     $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
     return $this->render('report_employee/control.html.twig', $args);
+  }
+
+  #[Route('/reports-pdf', name: 'app_employee_reports_pdf')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportPdf(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+
+      $data = $request->query->all();
+
+    $args['company'] = $this->getUser()->getCompany();
+
+//      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
+      $args['reports'] = $this->em->getRepository(User::class)->getReport($request->query->all()['data']['report_form']);
+
+      $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($request->query->all()['data']['report_form']);
+
+      $args['period'] = $request->query->all()['data']['report_form']['period'];
+      $args['user'] = $this->em->getRepository(User::class)->find($request->query->all()['data']['report_form']['zaposleni']);
+
+      if (isset($request->query->all()['data']['report_form']['datum'])){
+        $args['datum'] = 1;
+      }
+      if (isset($request->query->all()['data']['report_form']['opis'])){
+        $args['opis'] = 1;
+      }
+      if (isset($request->query->all()['data']['report_form']['klijent'])){
+        $args['klijent'] = 1;
+      }
+      if (isset($request->query->all()['data']['report_form']['start'])){
+        $args['start'] = 1;
+      }
+      if (isset($request->query->all()['data']['report_form']['stop'])){
+        $args['stop'] = 1;
+      }
+      if (isset($request->query->all()['data']['report_form']['razlika'])){
+        $args['razlika'] = 1;
+      }
+      if (isset($request->query->all()['data']['report_form']['razlikaz'])){
+        $args['razlikaz'] = 1;
+      }
+      if (isset($request->query->all()['data']['report_form']['ukupno'])){
+        $args['ukupno'] = 1;
+      }
+      if (isset($request->query->all()['data']['report_form']['ukupnoz'])){
+        $args['ukupnoz'] = 1;
+      }
+      if (isset($request->query->all()['data']['report_form']['zaduzeni'])){
+        $args['zaduzeni'] = 1;
+      }
+      if (isset($request->query->all()['data']['report_form']['napomena'])){
+        $args['napomena'] = 1;
+      }
+      if (isset($request->query->all()['data']['report_form']['checklist'])){
+        $args['checklist'] = 1;
+      }
+
+      $args['dataPdf'] = $request->query->all()['data']['report_form'];
+
+
+    $html = $this->renderView('report_employee/activity_pdf.html.twig', $args);
+
+    $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
+
+    return new Response($pdfContent, 200, [
+      'Content-Type' => 'application/pdf',
+      'Content-Disposition' => 'inline; filename="activity_' . $args['period'] . '.pdf"',
+    ]);
+
   }
 
   #[Route('/reports-availability', name: 'app_employee_availability_reports')]
@@ -648,43 +724,7 @@ class EmployeeController extends AbstractController {
 //      $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
       $args['period'] = $data['report_form']['period'];
       $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
-
-      if (isset($data['report_form']['datum'])){
-        $args['datum'] = 1;
-      }
-      if (isset($data['report_form']['opis'])){
-        $args['opis'] = 1;
-      }
-      if (isset($data['report_form']['klijent'])){
-        $args['klijent'] = 1;
-      }
-      if (isset($data['report_form']['start'])){
-        $args['start'] = 1;
-      }
-      if (isset($data['report_form']['stop'])){
-        $args['stop'] = 1;
-      }
-      if (isset($data['report_form']['razlika'])){
-        $args['razlika'] = 1;
-      }
-      if (isset($data['report_form']['razlikaz'])){
-        $args['razlikaz'] = 1;
-      }
-      if (isset($data['report_form']['ukupno'])){
-        $args['ukupno'] = 1;
-      }
-      if (isset($data['report_form']['ukupnoz'])){
-        $args['ukupnoz'] = 1;
-      }
-      if (isset($data['report_form']['zaduzeni'])){
-        $args['zaduzeni'] = 1;
-      }
-      if (isset($data['report_form']['napomena'])){
-        $args['napomena'] = 1;
-      }
-      if (isset($data['report_form']['checklist'])){
-        $args['checklist'] = 1;
-      }
+      $args['dataPdf'] = $data;
 
 
       return $this->render('report_employee/view_availability.html.twig', $args);
@@ -696,6 +736,32 @@ class EmployeeController extends AbstractController {
     $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $this->getUser()->getCompany(), 'userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
     $args['categories'] = AvailabilityData::TIPOVI;
     return $this->render('report_employee/control_availability.html.twig', $args);
+  }
+
+  #[Route('/reports-availability-pdf', name: 'app_employee_availability_reports_pdf')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function formReportAvailabilityPdf(Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+      $company = $this->getUser()->getCompany();
+
+//      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
+      $args['reports'] = $this->em->getRepository(Availability::class)->getReport($request->query->all()['data']['report_form'], $company);
+//      $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
+      $args['period'] = $request->query->all()['data']['report_form']['period'];
+      $args['company'] = $company;
+
+
+    $html = $this->renderView('report_employee/pdf.html.twig', $args);
+
+    $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
+
+    return new Response($pdfContent, 200, [
+      'Content-Type' => 'application/pdf',
+      'Content-Disposition' => 'inline; filename="availability_' . $args['period'] . '.pdf"',
+    ]);
+
   }
 
   #[Route('/reports-archive', name: 'app_employee_archive_reports')]
@@ -753,6 +819,7 @@ class EmployeeController extends AbstractController {
         $args['checklist'] = 1;
       }
 
+      $args['dataPdf'] = $data;
 
       return $this->render('report_employee/view.html.twig', $args);
 

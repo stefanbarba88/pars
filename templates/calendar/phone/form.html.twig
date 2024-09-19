@@ -87,7 +87,7 @@
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                            {{ form_widget(form.start, {attr: { class: 'form-control' }}) }}
+                                            {{ form_widget(form.start, {attr: { class: 'form-control required', min: 'now'|date('Y-m-d') }}) }}
                                         </div>
                                         <span class="form-text">Format: 31.12.1900. Prvi dan perioda.</span>
                                     </div>
@@ -99,7 +99,7 @@
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                            {{ form_widget(form.finish, {attr: { class: 'form-control' }}) }}
+                                            {{ form_widget(form.finish, {attr: { class: 'form-control required' }}) }}
                                         </div>
                                         <span class="form-text">Format: 31.12.1900. Zaključni dan perioda.</span>
                                     </div>
@@ -108,7 +108,7 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
-                                        {{ form_label(form.note, 'Napomena:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.note, 'Napomena:', {'label_attr': {'class': 'form-label', 'id': 'napomena-id'}}) }}
                                         {{ form_widget(form.note, {attr: { class: 'form-control' }}) }}
                                     </div>
                                 </div>
@@ -171,7 +171,7 @@
 
     <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>
+
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
     {% endif %}
@@ -180,14 +180,42 @@
 {% endblock includeJavascript %}
 {% block footerJavascript %}
 
-<script>
-    $(function () {
+        <script>
+            $(document).ready(function() {
+                // Kada se datum promeni u inputu "start"
+                $('#phone_calendar_form_start').on('change', function() {
+                    // Dohvati izabrani datum u "start" inputu
+                    var selectedDate = $(this).val();
 
-        ClassicEditor.create(document.querySelector('.ckeditor'), {
-            toolbar: [ 'heading', 'bold', 'italic', 'bulletedList', 'numberedList', 'blockQuote' , 'link', 'undo', 'redo' ]
-        }).catch(error => {
-            console.error(error);
-        });
-    });
-</script>
+                    // Postavi minimalni datum u "finish" inputu na izabrani datum
+                    $('#phone_calendar_form_finish').attr('min', selectedDate);
+
+                    // Prazni vrednost u "finish" inputu kada se promeni datum u "start" inputu
+                    $('#phone_calendar_form_finish').val('');
+                });
+
+                function updateNoteField() {
+                    var selectedType = $('#phone_calendar_form_type').val();
+
+                    if (selectedType == '1') {
+                        // Dodaj required atribut i promeni labelu
+                        $('#phone_calendar_form_note').attr('required', true);
+                        $('#napomena-id').text('Napomena:*');
+                    } else {
+                        // Ukloni required atribut i promeni labelu
+                        $('#phone_calendar_form_note').removeAttr('required');
+                        $('#napomena-id').text('Napomena:');
+                    }
+                }
+
+                // Prati promene u izboru tipa
+                $('#phone_calendar_form_type').change(function() {
+                    updateNoteField();
+                });
+
+                // Primeni promene pri učitavanju strane
+                updateNoteField();
+            });
+        </script>
+
 {% endblock footerJavascript %}

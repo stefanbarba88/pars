@@ -94,8 +94,10 @@ class KadrovskaEmployeeController extends AbstractController {
     $session = new Session();
     $session->set('url', $request->getRequestUri());
 
+
     $args['pagination'] = $pagination;
     $args['kompanije'] = $this->em->getRepository(Company::class)->findBy(['firma' => $korisnik->getCompany()->getId(), 'isSuspended' => false]);
+
 
 //    $mobileDetect = new MobileDetect();
 //    if($mobileDetect->isMobile()) {

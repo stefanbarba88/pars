@@ -95,6 +95,10 @@
                                             <div class="col-4">PIB/VAT:</div>
                                             <div class="col-8">{{ company.pib }}</div>
                                         </div>
+                                        <div class="row p-2 ">
+                                            <div class="col-4">MB:</div>
+                                            <div class="col-8">{{ company.mb }}</div>
+                                        </div>
 {#                                        <div class="row p-2 bg">#}
 {#                                            <div class="col-4">Lica za kontakt:</div>#}
 {#                                            <div class="col-8">#}
@@ -103,11 +107,11 @@
 {#                                                {% endfor %}#}
 {#                                            </div>#}
 {#                                        </div>#}
-                                        <div class="row p-2">
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Kreirao:</div>
                                             <div class="col-8">{{ company.createdBy.getFullName() }}</div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2">
                                             <div class="col-4">Vreme:</div>
                                             <div class="col-8">{{ company.created | date("d.m.Y") }} u {{ company.created | date("H:i:s") }}</div>
                                         </div>

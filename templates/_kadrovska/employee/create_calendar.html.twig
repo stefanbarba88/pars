@@ -81,6 +81,7 @@
                                     <div class="mb-3">
                                         {{ form_label(form.days, 'Broj dana:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.days, {attr: { class: 'form-control required disable-input' }}) }}
+                                        <span class="form-text">U broj dana uračunati su i dani vikenda i neradnih dana. Ukoliko njih ne želite da računate, umanjite ukupan broj dana za odgovarajući broj.</span>
                                     </div>
                                 </div>
                             </div>
@@ -142,6 +143,7 @@
                                         <div class="mb-3">
                                             {{ form_label(form.days, 'Broj dana:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.days, {attr: { class: 'form-control required' }}) }}
+                                            <span class="form-text">U broj dana uračunati su i dani vikenda i neradnih dana. Ukoliko njih ne želite da računate, umanjite ukupan broj dana za odgovarajući broj.</span>
                                         </div>
                                     </div>
                                 </div>
@@ -241,6 +243,7 @@
 
     <script>
         $(document).ready(function() {
+
             // Date format
             const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom1');
             const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom2');
@@ -258,12 +261,10 @@
                     format: 'dd.mm.yyyy',
                     todayBtn: true,
                     weekStart: 1,
-                    minDate: today,
                     daysOfWeekHighlighted: [0, 6],
                     language: 'sr-latn'
                 });
             }
-
             if (dpDateCustomFormatElement2) {
                 const today = new Date();
                 dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
@@ -274,7 +275,6 @@
                     format: 'dd.mm.yyyy',
                     todayBtn: true,
                     weekStart: 1,
-                    minDate: today,
                     daysOfWeekHighlighted: [0, 6],
                     language: 'sr-latn'
                 });
@@ -311,9 +311,12 @@
             $('#kadrovska_calendar_form_start').on('changeDate', function() {
                 updateFinishMinDate();
                 calculateDaysDifference();
+                $('#kadrovska_calendar_form_finish').val('');
             });
 
             $('#kadrovska_calendar_form_finish').on('changeDate', calculateDaysDifference);
+            updateFinishMinDate()
+            calculateDaysDifference()
         });
     </script>
 

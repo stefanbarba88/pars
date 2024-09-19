@@ -33,7 +33,7 @@ class Soap {
       <LicenceID>' . self::LICENCE . '</LicenceID>
       </AuthenticationHeader>';
     $client->setHeaders($header);
-dd($client->getError());
+//dd($client->getError());
     $params = [
       'companyID' => self::CID,
       'companyCode' => self::CCODE,

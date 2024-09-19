@@ -50,6 +50,14 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <div class="mb-3">
+                                                <label class="form-label" for="mb">MB:</label>
+                                                <input id="mb" name="mb" class="form-control" type="text">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="text-end">
@@ -84,6 +92,7 @@
                                             {% endif %}
                                         </th>
                                         <th>PIB/VAT</th>
+                                        <th>MB</th>
                                         <th {% if pagination.isSorted('[u.isSuspended]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Status ', ['u.isSuspended']) }}
                                             {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.isSuspended' %}
@@ -103,6 +112,7 @@
                                             <td>{{ company.id }}</td>
                                             <td><div class="fw-semibold"><a href="{{ path('app_kadrovska_company_view', {id:company.id}) }}">{{ company.title }}</a></div></td>
                                             <td>{{ company.pib }}</td>
+                                            <td>{{ company.mb }}</td>
                                             <td>
                                                 {{ company.getBadgeByStatus | raw }}
                                             </td>

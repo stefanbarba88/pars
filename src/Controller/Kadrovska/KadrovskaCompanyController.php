@@ -15,6 +15,7 @@ use App\Entity\Company;
 use App\Entity\Image;
 use App\Entity\User;
 use App\Form\CompanyFormType;
+use App\Form\Kadrovska\KadrovskaCompanyFormType;
 use App\Service\UploadService;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
@@ -47,6 +48,7 @@ class KadrovskaCompanyController extends AbstractController {
 
     $search['title'] = $request->query->get('title');
     $search['pib'] = $request->query->get('pib');
+    $search['mb'] = $request->query->get('mb');
 
     $companies = $this->em->getRepository(Company::class)->getAllCompaniesPaginatorKadrovska($search, $korisnik->getCompany()->getId());
 
@@ -80,6 +82,7 @@ class KadrovskaCompanyController extends AbstractController {
 
     $search['title'] = $request->query->get('title');
     $search['pib'] = $request->query->get('pib');
+    $search['mb'] = $request->query->get('mb');
 
     $companies = $this->em->getRepository(Company::class)->getAllCompaniesPaginatorKadrovskaArchive($search, $korisnik->getCompany()->getId());
 
@@ -140,17 +143,18 @@ class KadrovskaCompanyController extends AbstractController {
       $company->setTitle($data['naziv']);
       $company->setAdresa($data['adresa']);
       $company->setPib($data['pib']);
+      $company->setMb($data['mb']);
       $grad = $this->em->getRepository(City::class)->findOneBy(['ptt' => $data['ptt']]);
       $company->setGrad($grad);
     }
 
-    $form = $this->createForm(CompanyFormType::class, $company, ['attr' => ['action' => $this->generateUrl('app_kadrovska_company_form', ['id' => $company->getId()])]]);
+    $form = $this->createForm(KadrovskaCompanyFormType::class, $company, ['attr' => ['action' => $this->generateUrl('app_kadrovska_company_form', ['id' => $company->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
 
-        $file = $request->files->all()['company_form']['image'];
+        $file = $request->files->all()['kadrovska_company_form']['image'];
 
         if(!is_null($file)) {
 //          $file = Avatar::getAvatar($this->getParameter('kernel.project_dir') . $usr->getAvatarUploadPath(), $usr);

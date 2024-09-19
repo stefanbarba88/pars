@@ -55,6 +55,9 @@ class Company {
   private ?string $pib = null;
 
   #[ORM\Column(nullable: true)]
+  private ?string $mb = null;
+
+  #[ORM\Column(nullable: true)]
   private ?string $firma = null;
 
 
@@ -354,6 +357,20 @@ class Company {
    */
   public function setFirma(?string $firma): void {
     $this->firma = $firma;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getMb(): ?string {
+    return $this->mb;
+  }
+
+  /**
+   * @param string|null $mb
+   */
+  public function setMb(?string $mb): void {
+    $this->mb = $mb;
   }
 
 

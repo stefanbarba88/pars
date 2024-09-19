@@ -59,6 +59,12 @@
                                                         {{ form_widget(form.isSerbian, {attr: { class: 'form-control required select' }}) }}
                                                     </div>
                                                 </div>
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-lg-6">
@@ -70,8 +76,9 @@
                                                 </div>
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">
-                                                        {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                        {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
+                                                        {{ form_label(form.mb, 'MB:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.mb, {attr: { class: 'form-control required', maxLength: '9' }}) }}
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -197,15 +204,15 @@
 {% block footerJavascript %}
     <script>
         $(document).ready(function() {
-            $("#company_form_isSerbian").change(function() {
+            $("#kadrovska_company_form_isSerbian").change(function() {
                 if ($(this).val() === 1) {
-                    $("#company_form_pib").attr({
+                    $("#kadrovska_company_form_pib").attr({
                         "maxlength": 9,
                         "minlength": 9
                     });
                     $("#formatPib").text('Format: Uneti tačno 9 cifara.');
                 } else {
-                    $("#company_form_pib").removeAttr("maxlength")
+                    $("#kadrovska_company_form_pib").removeAttr("maxlength")
                         .removeAttr("minlength");
                     $("#formatPib").text('Format: Uneti cifre u skladu sa formatom države u kojoj se kompanija nalazi.');
                 }

@@ -118,6 +118,12 @@ class CompanyRepository extends ServiceEntityRepository {
       ))
         ->setParameter('pib', '%' . $filter['pib'] . '%');
     }
+    if (!empty($filter['mb'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.mb', ':mb'),
+      ))
+        ->setParameter('mb', '%' . $filter['mb'] . '%');
+    }
 
     $qb
       ->orderBy('u.title', 'ASC')
@@ -143,6 +149,12 @@ class CompanyRepository extends ServiceEntityRepository {
         $qb->expr()->like('u.pib', ':pib'),
       ))
         ->setParameter('pib', '%' . $filter['pib'] . '%');
+    }
+    if (!empty($filter['mb'])) {
+      $qb->andWhere($qb->expr()->orX(
+        $qb->expr()->like('u.mb', ':mb'),
+      ))
+        ->setParameter('mb', '%' . $filter['mb'] . '%');
     }
 
     $qb

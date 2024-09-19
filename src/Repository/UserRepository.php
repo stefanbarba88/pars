@@ -1242,9 +1242,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       ))
         ->setParameter('prezime', '%' . $filter['prezime'] . '%');
     }
-    if (!empty($filter['companija'])) {
+    if (!empty($filter['company'])) {
       $qb->andWhere('u.company = :company');
-      $qb->setParameter('company', $filter['kompanija']);
+      $qb->setParameter('company', $filter['company']);
     }
 
     $qb

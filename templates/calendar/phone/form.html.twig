@@ -110,6 +110,7 @@
                                     <div class="mb-3">
                                         {{ form_label(form.note, 'Napomena:', {'label_attr': {'class': 'form-label', 'id': 'napomena-id'}}) }}
                                         {{ form_widget(form.note, {attr: { class: 'form-control' }}) }}
+                                        <span class="form-text dan"></span>
                                     </div>
                                 </div>
                             </div>
@@ -201,10 +202,12 @@
                         // Dodaj required atribut i promeni labelu
                         $('#phone_calendar_form_note').attr('required', true);
                         $('#napomena-id').text('Napomena:*');
+                        $('.dan').text('Obavezno navesti da li je dan fleksibilan, tj. da li odgovara i neki drugi datum. Takođe navesti i ako je potreban samo deo radnog dana.');
                     } else {
                         // Ukloni required atribut i promeni labelu
                         $('#phone_calendar_form_note').removeAttr('required');
                         $('#napomena-id').text('Napomena:');
+                        $('.dan').text('');
                     }
                 }
 

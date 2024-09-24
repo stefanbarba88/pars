@@ -53,49 +53,75 @@ class ImportVacationCommand extends Command {
 
     $danas = new DateTimeImmutable();
 
-    $company = $this->em->getRepository(Company::class)->find(9);
+    $company = $this->em->getRepository(Company::class)->find(14);
 
-    $putanja = $this->params->get('kernel.project_dir'). '/var/uploaded_files/mb.xml';
-
-    $lagerData = simplexml_load_file($putanja);
-
-
-    foreach ($lagerData as $koris) {
-
-      $user = new User();
-      $user->setCompany($this->em->getRepository(Company::class)->find(12));
-      $user->setPlainPassword(AppConfig::DEFAULT_PASS);
-
-      $user->setUserType(UserRolesData::ROLE_EMPLOYEE);
-      $user->setTrack(0);
-
-      $user->setIme($koris->ime);
-      $user->setPrezime($koris->prezime);
-      $user->setPol((int)$koris->pol);
-      $user->setIsKadrovska(true);
-      $user->setGrad($this->em->getRepository(City::class)->findOneBy(['title' => trim($koris->grad)]));
-      $user->setAdresa($koris->adresa);
-      $user->setJmbg($koris->jmbg);
-
-      $user->setVrstaZaposlenja((int)$koris->vrsta_zaposlenja);
-      $user->setPozicija($this->em->getRepository(ZaposleniPozicija::class)->findOneBy(['title' => mb_strtoupper(trim($koris->pozicija))]));
-      $user->setNivoObrazovanja((int)$koris->nivo_obrazovanja);
-      $user->setZvanje($this->em->getRepository(Titula::class)->findOneBy(['title' => mb_strtoupper(trim($koris->zvanje))]));
-      $user->setMestoRada(trim($koris->mesto_rada));
-
-      $start = DateTimeImmutable::createFromFormat('d.m.Y.', $koris->start);
-      $stop = DateTimeImmutable::createFromFormat('d.m.Y.', $koris->start);
-      if ($start) {
-        $user->setPocetakUgovora($start);
-      }
-      if ($stop) {
-        $user->setPocetakUgovora($stop);
-      }
-
-      $file = Avatar::getAvatar($this->params->get('kernel.project_dir') . $user->getAvatarUploadPath(), $user);
-      $this->em->getRepository(User::class)->register($user, $file, $this->params->get('kernel.project_dir'));
-
-    }
+//    $putanja = $this->params->get('kernel.project_dir'). '/var/rvr.xml';
+//
+//    $lagerData = simplexml_load_file($putanja);
+//
+//
+//    foreach ($lagerData as $koris) {
+//
+//      $user = new User();
+//      $user->setCompany($this->em->getRepository(Company::class)->find(26));
+//      $user->setPlainPassword(AppConfig::DEFAULT_PASS);
+//
+//      $user->setUserType(UserRolesData::ROLE_EMPLOYEE);
+//      $user->setTrack(0);
+//
+//      $user->setIme($koris->ime);
+//      $user->setPrezime($koris->prezime);
+//      $user->setPol((int)$koris->pol);
+//      $user->setIsKadrovska(true);
+//
+//      $gradString = trim($koris->grad);
+//
+//// Razdvajanje stringa na delove pre i posle zareza
+//      $deloviGrada = explode(',', $gradString);
+//
+//// Prvi deo (pre zareza)
+//      $gradPreZareza = isset($deloviGrada[0]) ? trim($deloviGrada[0]) : null;
+//// Drugi deo (posle zareza)
+//      $gradPosleZareza = isset($deloviGrada[1]) ? trim($deloviGrada[1]) : null;
+//
+//// Prvo pokušaj da nađeš grad pre zareza
+//      $grad = $this->em->getRepository(City::class)->findOneBy(['title' => $gradPreZareza]);
+//
+//// Ako je rezultat null, pokušaj sa gradom posle zareza
+//      if ($grad === null && $gradPosleZareza) {
+//        $grad = $this->em->getRepository(City::class)->findOneBy(['title' => $gradPosleZareza]);
+//      }
+//
+//
+//      $user->setGrad($grad);
+//      $user->setAdresa($koris->adresa);
+//      $user->setJmbg($koris->jmbg);
+//
+//      $user->setVrstaZaposlenja((int)$koris->vrsta_zaposlenja);
+//      $user->setPozicija($this->em->getRepository(ZaposleniPozicija::class)->findOneBy(['title' => mb_strtoupper(trim($koris->pozicija))]));
+//
+//      //      $user->setNivoObrazovanja((int)$koris->nivo_obrazovanja);
+//      //      $user->setZvanje($this->em->getRepository(Titula::class)->findOneBy(['title' => mb_strtoupper(trim($koris->zvanje))]));
+//
+//      $user->setNivoObrazovanja(null);
+//
+//      $user->setZvanje(null);
+//
+//      $user->setMestoRada(trim($koris->mesto_rada));
+//
+//      $start = DateTimeImmutable::createFromFormat('d.m.Y.', $koris->start);
+//      $stop = DateTimeImmutable::createFromFormat('d.m.Y.', $koris->start);
+//      if ($start) {
+//        $user->setPocetakUgovora($start);
+//      }
+//      if ($stop) {
+//        $user->setPocetakUgovora($stop);
+//      }
+//
+//      $file = Avatar::getAvatar($this->params->get('kernel.project_dir') . $user->getAvatarUploadPath(), $user);
+//      $this->em->getRepository(User::class)->register($user, $file, $this->params->get('kernel.project_dir'));
+//
+//    }
 
 
     //zvanje
@@ -145,30 +171,70 @@ class ImportVacationCommand extends Command {
 //    }
 
     //Zaposleni pozicije
-//    $jobs = [
-//      "Prodavac u maloprodaji",
-//      "Trgovinski manipulant",
-//      "Kalkulant",
-//      "Knjigovođa",
-//      "Komercijalista",
-//      "Poslovođa prodavnice",
-//      "Zamenik poslovođe prodavnice",
-//      "Prodavac u maloprodaji",
-//      "Poslovođa prodavnice I kategorije",
-//      "Poslovođa prodavnice",
-//      "Trgovinski kontrolor",
-//      "Trgovinski kontrolor - pomoćnik",
-//      "Analitičar finansijskog poslovanja",
-//      "Glavni kalkulant"
-//    ];
+    $jobs = [
+    "Administrativni operater",
+    "Alatničar",
+    "Direktor održavanja",
+    "Direktor prodaje",
+    "Finansijski direktor",
+    "Generalni direktor",
+    "Glavni majstor na mašini",
+    "Higijeničar",
+    "Kartonažer",
+    "Kartonažer + magacioner u magacinu gotovog proizvoda",
+    "Kartonažer + ppz",
+    "Kartonažer na sortiranju otpada + PPZ",
+    "Magacioner u magacinu gotovih proizvoda",
+    "Magacioner u magacinu paleta",
+    "Magacioner u magacinu repromaterijala",
+    "Magacioner u magacinu rezervnih delova i pomoćnog materijala",
+    "Majstor na mašini",
+    "Manuelni radnik",
+    "Planer proizvodnje",
+    "Pomoćnik glavnog majstora I kategorije",
+    "Pomoćnik glavnog majstora II kategorije",
+    "Pomoćnik glavnog majstora na mašini - II kategorije",
+    "Pomoćnik kartonažera",
+    "Pomoćnik kartonažera + higijeničar",
+    "Pomoćnik magacionera u magacinu gotovih proizvoda",
+    "Pomoćnik magacionera u magacinu repromaterijala",
+    "Pomoćnik tehničkog direktora",
+    "Pomoćnik viljuškariste",
+    "Poslovni sekretar",
+    "Radnik na održavanju paleta",
+    "Radnik na OMS/Viljuškarista",
+    "Referent komercijale",
+    "Referent nabavke",
+    "Referent prodaje",
+    "Referent računovodstva",
+    "Referent za fakturisanje",
+    "Referent za HR",
+    "Referent za standardizaciju",
+    "Savetnik generalnog direktora",
+    "Šef magacina gotovih proizvoda",
+    "Šef računovodstva",
+    "Šef smene I kategorija",
+    "Šef smene II kategorija",
+    "Stručni saradnik u računovodstvu",
+    "Supervizor održavanja",
+    "Tehničar laboratorije",
+    "Tehničar održavanja objekta - Domar",
+    "Tehničar planiranog i neplaniranog održavanja",
+    "Tehničar planiranog održavanja",
+    "Tehnički direktor",
+    "Viljuškarista",
+    "Vodeći glavni majstor na mašini",
+    "Vodeći glavni majstor na mašini + ppz",
+    "Vozač teretnog vozila"
+    ];
 //
-//    foreach ($jobs as $job) {
-//
-//      $pos = new ZaposleniPozicija();
-//      $pos->setTitle(mb_strtoupper($job));
-//      $pos->setCompany($company);
-//      $pos = $this->em->getRepository(ZaposleniPozicija::class)->save($pos);
-//    }
+    foreach ($jobs as $job) {
+
+      $pos = new ZaposleniPozicija();
+      $pos->setTitle(mb_strtoupper($job));
+      $pos->setCompany($company);
+      $pos = $this->em->getRepository(ZaposleniPozicija::class)->save($pos);
+    }
 
 
     $end = microtime(true);

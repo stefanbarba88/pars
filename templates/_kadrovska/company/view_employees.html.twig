@@ -166,10 +166,15 @@
                                                             {{ user.getObrazovanje() }}
                                                         </td>
                                                         <td>
-                                                            {{ user.zvanje.title }}
+                                                            {% if user.zvanje is not null %}
+                                                                {{ user.zvanje.title }}
+                                                            {% endif %}
                                                         </td>
                                                         <td>
-                                                            {{ user.pozicija.title }}
+                                                            {% if user.pozicija is not null %}
+                                                                {{ user.pozicija.title }}
+                                                            {% endif %}
+
                                                         </td>
 
                                                         <td>

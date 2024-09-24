@@ -463,7 +463,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       $qb->setParameter('zvanje', $filter['zvanje']);
     }
 
-    $qb
+    $qb->orderBy('CASE WHEN u.krajUgovora IS NULL THEN 1 ELSE 0 END', 'ASC')
       ->addOrderBy('u.krajUgovora', 'ASC')
       ->getQuery();
 
@@ -1247,9 +1247,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       $qb->setParameter('company', $filter['company']);
     }
 
-    $qb
-      ->orderBy('u.krajUgovora', 'ASC')
-      ->getQuery();
+
+       $qb->orderBy('CASE WHEN u.krajUgovora IS NULL THEN 1 ELSE 0 END', 'ASC')
+         ->addOrderBy('u.krajUgovora', 'ASC')
+         ->getQuery();
+
+    return $qb;
 
 
     return $qb;

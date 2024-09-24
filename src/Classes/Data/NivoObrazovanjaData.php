@@ -24,7 +24,8 @@ class NivoObrazovanjaData implements DataClassInterface {
     13 => "VII-2 Magistar nauka",
     14 => "VII-2 Specijalizacija u medicini",
     15 => "VII-2 Specijalističke akademske studije",
-    16 => "VIII Doktor nauka"
+    16 => "VIII Doktor nauka",
+    17 => "Nema podataka"
   ];
 
   public static function form(): array {

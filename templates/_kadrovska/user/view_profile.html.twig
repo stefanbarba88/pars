@@ -110,7 +110,11 @@
                                                 </div>
                                                 <div class="row p-2 bg-light">
                                                     <div class="col-4">Slava:</div>
-                                                    <div class="col-8">{{ user.slava | date("d.m.")}}</div>
+                                                    <div class="col-8">
+                                                        {% if user.slava is not null %}
+                                                            {{ user.slava | date("d.m.")}}
+                                                        {% endif %}
+                                                    </div>
                                                 </div>
 
                                             </div>
@@ -155,7 +159,9 @@
                                                 </div>
                                                 <div class="row p-2">
                                                     <div class="col-4">Zvanje:</div>
-                                                    <div class="col-8">{{ user.zvanje.title }}</div>
+                                                    <div class="col-8">{% if user.zvanje is not null %}
+                                                        {{ user.zvanje.title }}
+                                                    {% endif %}</div>
                                                 </div>
                                             </div>
                                         </div>

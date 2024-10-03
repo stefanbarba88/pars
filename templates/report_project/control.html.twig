@@ -33,20 +33,48 @@
                         <form name="report_form" method="post" action="{{ path('app_project_reports') }}" class="form-validate-jquery" novalidation="novalidation" id="report_form">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-2">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="report_form_multiple">Više projekata:*</label>
+                                            <div class="input-group">
+                                                <label class="form-check mb-2">
+                                                    <input type="checkbox" class="form-check-input" name="report_form[multiple]">
+                                                    <span class="form-check-label">Izveštaj za više projekata</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-lg-6 single">
                                         <div class="mb-3">
                                             <label class="form-label required" for="report_form_project">Projekat*:</label>
-                                            <select id="report_form_project" name="report_form[project]" class="form-control select required">
+                                            <select id="report_form_project" name="report_form[project]" class="form-control select">
                                                 <option value="">--Izaberite projekat--</option>
                                                 {% for project in projects %}
                                                     <option value="{{ project.id }}">{{ project.title }}</option>
                                                 {% endfor %}
                                             </select>
-{#                                            <span class="form-text">Ako ne izaberete projekat u izveštaju će biti prikazani svi projekti.</span>#}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12 double">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="report_form_projects">Projekti:*</label>
+                                            <select id="report_form_projects" name="report_form[projects][]" class="form-control listbox-basic" multiple="multiple">
+                                                {% for project in projects %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+
+
+
+                                <div class="row single">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <label class="form-label required" for="report_form_cat">Kategorija:</label>
@@ -70,7 +98,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-2 single">
                                         <div class="mb-3">
                                             <label class="form-label" for="report_form_period">Naplativost:*</label>
                                             <div class="input-group">
@@ -81,7 +109,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-2 single">
                                         <div class="mb-3">
                                             <label class="form-label" for="report_form_period">Interni zadaci:*</label>
                                             <div class="input-group">
@@ -92,7 +120,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-2">
+                                    <div class="col-lg-2 single">
                                         <div class="mb-3">
                                             <label class="form-label" for="report_form_robotika">Robotika:*</label>
                                             <div class="input-group">
@@ -104,7 +132,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row single">
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             <label class="form-label" for="report_form_details">Detalji prikaza:</label>
@@ -179,7 +207,8 @@
                                 </div>
 
                                 <div class="text-end">
-                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Kreirajte</button>
+                                    <button type="submit" class="btn btn-primary single"><i class="ph-gear-six me-2"></i> Kreirajte</button>
+                                    <button type="submit" class="btn btn-primary double"><i class="ph-file-xls me-2"></i> Kreirajte</button>
                                 </div>
                             </div>
                         </form>
@@ -232,6 +261,9 @@
     <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
     <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
 
+    <script src="{{ asset('assets/js/vendor/forms/inputs/dual_listbox.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_dual_listboxes.js') }}"></script>
+
     <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
     {#    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>#}
@@ -241,3 +273,47 @@
     {% endif %}
 
 {% endblock includeJavascript %}
+{% block footerJavascript %}
+
+    <script>
+        $(document).ready(function() {
+            // Pratimo promenu na checkbox-u
+            $('input[name="report_form[multiple]"]').change(function() {
+                if ($(this).is(':checked')) {
+                    // Ako je checkbox checkiran, prikazujemo deo sa klasom 'double' i sakrivamo 'single'
+                    $('.single').hide();
+                    $('.double').show();
+
+                    // Resetujemo vrednost select-a sa id-em 'report_form_project'
+                    $('#report_form_project').val('').removeAttr('required');
+
+                    // Dodajemo required atribut na select sa id-em 'report_form_projects'
+                    $('#report_form_projects').attr('required', true);
+                } else {
+                    // Ako je checkbox odčekiran, prikazujemo deo sa klasom 'single' i sakrivamo 'double'
+                    $('.single').show();
+                    $('.double').hide();
+
+                    // Resetujemo vrednost select-a sa id-em 'report_form_projects'
+                    $('#report_form_projects').val([]).removeAttr('required');
+
+                    // Dodajemo required atribut na select sa id-em 'report_form_project'
+                    $('#report_form_project').attr('required', true);
+                }
+            });
+
+            // Inicijalno sakrijemo deo sa klasom 'double' ukoliko checkbox nije checkiran
+            if (!$('input[name="report_form[multiple]"]').is(':checked')) {
+                $('.double').hide();
+                $('#report_form_project').attr('required', true); // Postavi required na single
+                $('#report_form_projects').removeAttr('required'); // Ukloni required sa double
+            } else {
+                $('.single').hide();
+                $('#report_form_projects').attr('required', true); // Postavi required na double
+                $('#report_form_project').removeAttr('required'); // Ukloni required sa single
+            }
+        });
+
+    </script>
+
+{% endblock footerJavascript %}

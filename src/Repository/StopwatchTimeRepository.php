@@ -443,7 +443,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
                   'zaduzeni' => $task['task']->getAssignedUsers(),
                   'klijent' => $task['task']->getProject()->getClient(),
                   'stopwatches' => $this->getStopwatchesActive($task['log']),
-                  'time' => $this->getStopwatchTimeByTask($task['task']),
+                  'time' => $this->getStopwatchTimeByTaskAndUser($task['task'], $user),
                   'activity' => $this->getStopwatchesActivity($task['log']),
                   'description' => $this->getStopwatchesDescription($task['log']),
                   'task' => $task,
@@ -458,7 +458,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
                 'zaduzeni' => $task['task']->getAssignedUsers(),
                 'klijent' => $task['task']->getProject()->getClient(),
                 'stopwatches' => $this->getStopwatchesActive($task['log']),
-                'time' => $this->getStopwatchTimeByTask($task['task']),
+                'time' => $this->getStopwatchTimeByTaskAndUser($task['task'], $user),
                 'activity' => $this->getStopwatchesActivity($task['log']),
                 'description' => $this->getStopwatchesDescription($task['log']),
                 'task' => $task,
@@ -498,7 +498,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
                     'zaduzeni' => $task['task']->getAssignedUsers(),
                     'klijent' => $task['task']->getProject()->getClient(),
                     'stopwatches' => $this->getStopwatchesActive($task['log']),
-                    'time' => $this->getStopwatchTimeByTask($task['task']),
+                    'time' => $this->getStopwatchTimeByTaskAndUser($task['task'], $user),
                     'activity' => $this->getStopwatchesActivity($task['log']),
                     'description' => $this->getStopwatchesDescription($task['log']),
                     'task' => $task,
@@ -513,7 +513,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
                   'zaduzeni' => $task['task']->getAssignedUsers(),
                   'klijent' => $task['task']->getProject()->getClient(),
                   'stopwatches' => $this->getStopwatchesActive($task['log']),
-                  'time' => $this->getStopwatchTimeByTask($task['task']),
+                  'time' => $this->getStopwatchTimeByTaskAndUser($task['task'], $user),
                   'activity' => $this->getStopwatchesActivity($task['log']),
                   'description' => $this->getStopwatchesDescription($task['log']),
                   'task' => $task,
@@ -615,7 +615,6 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
       ];
     }
 
-
     return [$groupedTasks, $ukupnoVreme, $noviStopwatchesNiz];
   }
 
@@ -639,7 +638,7 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
             'klijent' => $task['task']->getProject()->getClient(),
             'stopwatches' => $this->getStopwatchesActive($task['log']),
             'countActivities' => $this->getCountStopwatchesActive($task['log']),
-            'time' => $this->getStopwatchTimeByTaskLog($task['log']),
+            'time' => $this->getStopwatchTimeByTaskAndUser($task['task'], $user),
             'activity' => $this->getStopwatchesActivity($task['log']),
             'description' => $this->getStopwatchesDescription($task['log']),
             'task' => $task,
@@ -1188,6 +1187,116 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
     $priorityUserLog = $task->getPriorityUserLog();
     $priorityLogUser = $this->getEntityManager()->getRepository(User::class)->find($priorityUserLog);
+
+
+
+    $hoursTotalRounded = 0;
+    $minutesTotalRounded = 0;
+    $hoursTotalReal = 0;
+    $minutesTotalReal = 0;
+
+    $hoursRounded = 0;
+    $minutesRounded = 0;
+    $hoursReal = 0;
+    $minutesReal = 0;
+
+    $logs = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $task]);
+
+    foreach ($logs as $log) {
+      $times = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $log, 'isDeleted' => false]);
+      foreach ($times as $time) {
+        $hoursTotalRounded = $hoursTotalRounded + intdiv($time->getDiffRounded(), 60);
+        $minutesTotalRounded = $minutesTotalRounded + $time->getDiffRounded() % 60;
+        $hoursTotalReal = $hoursTotalReal + intdiv($time->getDiff(), 60);
+        $minutesTotalReal = $minutesTotalReal + $time->getDiff() % 60;
+      }
+
+    }
+
+    $minutesRoundedU = $hoursTotalRounded * 60 + $minutesTotalRounded;
+    $minutesRealU = $hoursTotalReal * 60 + $minutesTotalReal;
+
+    $h = intdiv($minutesRoundedU, 60);
+    $m = $minutesRoundedU % 60;
+    $hR = intdiv($minutesRealU, 60);
+    $mR = $minutesRealU % 60;
+
+
+//    if ($priority == TimerPriorityData::FIRST_ASSIGN) {
+//      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $task], ['id' => 'ASC']);
+//    } elseif ($priority == TimerPriorityData::ROLE_GEO) {
+//      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneByUserPosition($task, 1);
+//    } elseif ($priority == TimerPriorityData::ROLE_FIG) {
+//      $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneByUserPosition($task, 2);
+//    }
+
+    $logPriority = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $task, 'user' => $priorityLogUser]);
+
+    if(!empty($logPriority)) {
+      $timesPriority = $this->getEntityManager()->getRepository(StopwatchTime::class)->findBy(['taskLog' => $logPriority, 'isDeleted' => false]);
+      foreach ($timesPriority as $time) {
+        $hoursRounded = $hoursRounded + intdiv($time->getDiffRounded(), 60);
+        $minutesRounded = $minutesRounded + $time->getDiffRounded() % 60;
+        $hoursReal = $hoursReal + intdiv($time->getDiff(), 60);
+        $minutesReal = $minutesReal + $time->getDiff() % 60;
+      }
+      $minutes = $hoursRounded * 60 + $minutesRounded;
+      $minutesR = $hoursReal * 60 + $minutesReal;
+
+      $htP = intdiv($minutes, 60);
+      $mtP = $minutes % 60;
+      $hRtP = intdiv($minutesR, 60);
+      $mRtP = $minutesR % 60;
+
+      if ($h < 10) {
+        $h = '0' . $h;
+      }
+      if ($m < 10) {
+        $m = '0' . $m;
+      }
+      if ($hR < 10) {
+        $hR = '0' . $hR;
+      }
+      if ($mR < 10) {
+        $mR = '0' . $mR;
+      }
+      if ($htP < 10) {
+        $htP = '0' . $htP;
+      }
+      if ($mtP < 10) {
+        $mtP = '0' . $mtP;
+      }
+      if ($hRtP < 10) {
+        $hRtP = '0' . $hRtP;
+      }
+      if ($mRtP < 10) {
+        $mRtP = '0' . $mRtP;
+      }
+
+
+      return [
+        'hours' => $h,
+        'minutes' => $m,
+        'hoursReal' => $hR,
+        'minutesReal' => $mR,
+        'hoursTimePriority' => $htP,
+        'minutesTimePriority' => $mtP,
+        'hoursRealTimePriority' => $hRtP,
+        'minutesRealTimePriority' => $mRtP,
+        'priority' => $priorityLogUser->getFullName()
+      ];
+    }
+    return [];
+  }
+
+
+  public function getStopwatchTimeByTaskAndUser(Task $task, User $user): array {
+
+//    $priority = $task->getProject()->getTimerPriority();
+//    $priorityTitle = $task->getProject()->getTimerPriorityJson();
+
+//    $priorityUserLog = $task->getPriorityUserLog();
+    $priorityLogUser = $user;
 
 
 

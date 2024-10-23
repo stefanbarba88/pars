@@ -123,6 +123,57 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
     return $dostupnost;
   }
 
+  public function addCheckDostupnost(User $user, Availability $dostupnost): ?Availability {
+
+    $company = $user->getCompany();
+
+    $datum = new DateTimeImmutable();
+    $dayOfWeek = $datum->format('N');
+
+    $startDate = $datum->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $datum->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $datumCheck = $datum->setTime(0,0);
+
+    $merenja = $this->createQueryBuilder('t')
+      ->where('t.start BETWEEN :startDate AND :endDate')
+      ->andWhere('t.isDeleted = 0')
+      ->andWhere('t.company = :company')
+      ->setParameter('company', $company)
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->getQuery()
+      ->getResult();
+
+
+
+    $merenjeUser = [];
+    foreach ($merenja as $merenje) {
+      if ($merenje->getTaskLog()->getUser() == $user) {
+        $merenjeUser[] = $merenje;
+      }
+    }
+
+    if (empty($merenjeUser)) {
+      if ($user->getNeradniDan() == $dayOfWeek) {
+        $merenjeUser[] = $user;
+      }
+    }
+
+    if (!empty($merenjeUser)) {
+      if ($dostupnost->getType() == AvailabilityData::NEDOSTUPAN) {
+        $dostupnost->setType(AvailabilityData::IZASAO);
+      }
+    } else {
+      if ($dostupnost->getType() == AvailabilityData::PRISUTAN) {
+        $dostupnost->setType(AvailabilityData::IZASAO);
+      }
+    }
+
+    $this->getEntityManager()->getRepository(Availability::class)->save($dostupnost);
+    return $dostupnost;
+  }
+
 
 
   public function removeDostupnost(StopwatchTime $stopwatchTime): ?Availability {

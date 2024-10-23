@@ -3,11 +3,13 @@
 namespace App\Form;
 
 use App\Classes\Data\CalendarData;
+use App\Classes\Data\PotvrdaData;
 use App\Entity\Calendar;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -18,6 +20,9 @@ class PhoneCalendarFormType extends AbstractType {
 
     $builder
       ->add('note', TextareaType::class, [
+        'required' => false
+      ])
+      ->add('vreme', TextType::class, [
         'required' => false
       ])
 
@@ -36,6 +41,22 @@ class PhoneCalendarFormType extends AbstractType {
           'data-minimum-results-for-search' => 'Infinity',
         ],
         'choices' => CalendarData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('part', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('flexible', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
         'expanded' => false,
         'multiple' => false,
       ])

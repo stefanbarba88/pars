@@ -23,6 +23,9 @@ class Calendar {
   #[ORM\Column(type: Types::TEXT, nullable: true)]
   private ?string $note = null;
 
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $vreme = null;
+
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
   private ?DateTimeImmutable $start = null;
 
@@ -34,6 +37,12 @@ class Calendar {
 
   #[ORM\Column]
   private ?int $status = 1;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $flexible = 0;
+
+  #[ORM\Column(nullable: true)]
+  private ?int $part = 0;
 
   #[ORM\Column]
   private DateTimeImmutable $created;
@@ -184,6 +193,62 @@ class Calendar {
   public function setNote(?string $note): void {
     $this->note = $note;
   }
+
+  /**
+   * @return int|null
+   */
+  public function getFlexible(): ?int {
+    return $this->flexible;
+  }
+
+  /**
+   * @param int|null $flexible
+   */
+  public function setFlexible(?int $flexible): void {
+    $this->flexible = $flexible;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getPart(): ?int {
+    return $this->part;
+  }
+
+  /**
+   * @param int|null $part
+   */
+  public function setPart(?int $part): void {
+    $this->part = $part;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getVreme(): ?string {
+    return $this->vreme;
+  }
+
+  /**
+   * @param string|null $vreme
+   */
+  public function setVreme(?string $vreme): void {
+    if ($vreme) {
+      // Razdvajamo string po " - "
+      $parts = explode(' - ', $vreme);
+
+      // Početno i krajnje vreme (uzimamo samo deo nakon datuma)
+      $startVreme = substr(trim($parts[0]), -5); // Uzimamo zadnjih 5 karaktera (vreme u formatu HH:MM)
+      $endVreme = substr(trim($parts[1]), -5); // Isto i za kraj
+
+      // Setujemo vreme u formatu "HH:MM - HH:MM"
+      $this->vreme = $startVreme . ' - ' . $endVreme;
+    } else {
+      $this->vreme = null; // Ako je prosleđeni string null
+    }
+  }
+
+
 
 
 }

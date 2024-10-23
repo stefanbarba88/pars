@@ -21,6 +21,9 @@ class Availability {
   #[ORM\Column]
   private ?int $type = 1;
 
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $vreme = null;
+
   #[ORM\Column]
   private ?int $typeDay = 0;
 
@@ -194,6 +197,20 @@ class Availability {
    */
   public function setTypeDay(?int $typeDay): void {
     $this->typeDay = $typeDay;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getVreme(): ?string {
+    return $this->vreme;
+  }
+
+  /**
+   * @param string|null $vreme
+   */
+  public function setVreme(?string $vreme): void {
+    $this->vreme = $vreme;
   }
 
 

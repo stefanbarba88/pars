@@ -58,6 +58,9 @@
                                                                                 {% if member.car is not null %}
                                                                                     <i class="ph-car me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{ member.car.plate }}" data-bs-original-title="Zaduženo vozilo"></i>
                                                                                 {% endif %}
+                                                                                {% if member.vreme is not empty %}
+                                                                                    <i class="ph-coffee me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{ member.vreme }}" data-bs-original-title="Nedostupan"></i>
+                                                                                {% endif %}
                                                                             </div>
                                                                             <span class="sakriveno d-none">{{ member.id }}</span>
                                                                         </div>

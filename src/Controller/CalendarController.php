@@ -219,8 +219,14 @@ class CalendarController extends AbstractController {
           $dostupnost = new Availability();
           $dostupnost->setDatum($datum);
           $dostupnost->setUser($calendar->getUser()->first());
-          $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
           $dostupnost->setZahtev($calendar->getType());
+
+          $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
+
+          if ($calendar->getPart() == 1) {
+            $dostupnost->setType(AvailabilityData::IZASAO);
+            $dostupnost->setVreme($calendar->getVreme());
+          }
           $dostupnost->setCalendar($calendar->getId());
           $dostupnost->setCompany($calendar->getCompany());
           $this->em->getRepository(Availability::class)->save($dostupnost);

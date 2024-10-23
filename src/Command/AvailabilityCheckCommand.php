@@ -54,6 +54,8 @@ class AvailabilityCheckCommand extends Command {
         $dostupnost = $this->em->getRepository(Availability::class)->findOneBy(['datum' => $danas->setTime(0,0), 'User' => $user]);
         if (is_null($dostupnost)) {
           $this->em->getRepository(StopwatchTime::class)->addDostupnost($user);
+        } else {
+          $this->em->getRepository(StopwatchTime::class)->addCheckDostupnost($user, $dostupnost);
         }
       }
     }

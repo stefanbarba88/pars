@@ -103,7 +103,38 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="row p-2 bg-light">
+                                            <div class="col-4">Fleksibilan:</div>
+                                            <div class="col-8">
+                                                {% if calendar.flexible is not null %}
+                                                    {% if calendar.flexible == 0 %}
+                                                        <span class="badge bg-primary text-white">Ne</span>
+                                                    {% elseif calendar.flexible == 1 %}
+                                                        <span class="badge bg-yellow text-primary">Da</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 ">
+                                            <div class="col-4">Parcijalan:</div>
+                                            <div class="col-8">
+                                                {% if calendar.part is not null %}
+                                                    {% if calendar.part == 0 %}
+                                                        <span class="badge bg-primary text-white">Ne</span>
+                                                    {% elseif calendar.part == 1 %}
+                                                        <span class="badge bg-yellow text-primary">Da</span> {{ calendar.vreme }}
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Napomena:</div>
+                                            <div class="col-8">{{ calendar.note }}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 ">
                                             <div class="col-4">Status:</div>
                                             <div class="col-8">
                                                 {% if calendar.status == 0 %}
@@ -115,11 +146,6 @@
                                                 {% elseif calendar.status == 3 %}
                                                     <span class="badge bg-yellow text-primary">Odbijen</span>
                                                 {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Napomena:</div>
-                                            <div class="col-8">{{ calendar.note }}
                                             </div>
                                         </div>
                                     </div>

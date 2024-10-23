@@ -552,13 +552,20 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     $usersList = [];
     foreach ($users as $user) {
-      $dostupan = $this->getEntityManager()->getRepository(Availability::class)->checkDostupnost($user, $dan);
 
+      $dostupan = $this->getEntityManager()->getRepository(Availability::class)->checkDostupnost($user, $dan);
       if ($dostupan) {
         $ime = $user->getFullName();
         $car = $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $user->getCar()]);
         if (!is_null($car)) {
           $ime = $ime . ' (' . $car->getPlate() . ')';
+        }
+        $izlazak = $this->getEntityManager()->getRepository(Availability::class)->checkIzlazak($user, $dan);
+
+        if (!is_null($izlazak)) {
+          $vreme = $izlazak->getVreme();
+        } else {
+          $vreme = '';
         }
 
         $usersList [] = [
@@ -567,7 +574,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
           'car' => $car,
           'user' => $user,
           'slika' => $user->getImage()->getThumbnail100(),
-          'pozicija' => $user->getPozicija()->getTitle()
+          'pozicija' => $user->getPozicija()->getTitle(),
+          'vreme' => $vreme
         ];
       }
     }
@@ -584,12 +592,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     $usersList = [];
     foreach ($users as $user) {
       $dostupan = $this->getEntityManager()->getRepository(Availability::class)->checkDostupnost($user, $dan);
-
       if ($dostupan) {
         $ime = $user->getFullName();
         $car = $this->getEntityManager()->getRepository(Car::class)->findOneBy(['id' => $user->getCar()]);
         if (!is_null($car)) {
           $ime = $ime . ' (' . $car->getPlate() . ')';
+        }
+
+        $izlazak = $this->getEntityManager()->getRepository(Availability::class)->checkIzlazak($user, $dan);
+
+        if (!is_null($izlazak)) {
+          $vreme = $izlazak->getVreme();
+        } else {
+          $vreme = '';
         }
 
         $usersList [] = [
@@ -598,7 +613,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
           'car' => $car,
           'user' => $user,
           'slika' => $user->getImage()->getThumbnail100(),
-          'pozicija' => $user->getPozicija()->getTitle()
+          'pozicija' => $user->getPozicija()->getTitle(),
+          'vreme' => $vreme
         ];
       }
     }

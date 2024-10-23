@@ -39,8 +39,28 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="overtime_datum">Datum:*</label>
+                                            <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                                <input type="text" id="overtime_datum" autocomplete="off" name="overtime_datum" class="form-control datepicker-date-format-custom1 required"/>
+                                            </div>
+                                            <span class="form-text">Format: 31.12.1900.</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="overtime_zadatak">Zadatak:*</label>
+                                            <select id="overtime_zadatak" name="overtime_zadatak" class="form-control required select" required data-minimum-results-for-search='Infinity'>
+                                                <option value="">--Izaberite zadatak--</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <label class="form-label" for="overtime_vreme">Sati i minuti:*</label>
@@ -69,18 +89,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="overtime_datum">Datum:*</label>
-                                                <div class="input-group">
-											<span class="input-group-text">
-												<i class="ph-calendar"></i>
-											</span>
-                                                    <input type="text" id="overtime_datum" autocomplete="off" name="overtime_datum" class="form-control datepicker-date-format-custom1 required"/>
-                                                </div>
-                                                <span class="form-text">Format: 31.12.1900.</span>
-                                            </div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -178,7 +186,49 @@
                 language: 'sr-latn',
             });
         }
+        $(document).ready(function() {
+            // Funkcija koja osvežava zadatke na osnovu izabranog zaposlenog i datuma
+            function fetchTasks() {
+                var zaduzeniId = $('#overtime_zaduzeni').val();
+                var datum = $('#overtime_datum').val();
 
+                if (zaduzeniId && datum) {
+                    $.ajax({
+                        url: '{{ path('app_overtime_tasks') }}', // Putanja na serveru koja vraća zadatke
+                        type: 'POST',
+                        data: {
+                            zaduzeni: zaduzeniId,
+                            datum: datum
+                        },
+                        success: function(response) {
+                            // Očisti trenutne opcije
+                            // $('#overtime_zadatak').empty();
+                            // Očisti trenutne opcije, osim prve (default)
+                            $('#overtime_zadatak').find('option').not(':first').remove();
+
+                            // Pretpostavka: response je niz objekata zadataka [{id: 1, naziv: 'Zadatak 1'}, ...]
+                            $.each(response, function(index, task) {
+                                $('#overtime_zadatak').append($('<option>', {
+                                    value: task.id,
+                                    text: task.title
+                                }));
+                            });
+                        },
+                        error: function() {
+                            alert('Greška prilikom učitavanja zadataka.');
+                        }
+                    });
+                }
+            }
+
+            $('#overtime_zaduzeni').change(fetchTasks);
+
+            // Kada se izabere datum iz datepickera
+            $('#overtime_datum').on('changeDate', function() {
+                fetchTasks();
+            });
+            // $('#overtime_zaduzeni, #overtime_datum').change(fetchTasks);
+        });
     </script>
 
 {% endblock footerJavascript %}

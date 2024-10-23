@@ -3085,6 +3085,28 @@ class TaskRepository extends ServiceEntityRepository {
       ->getResult();
   }
 
+  public function getTasksByEmployeeAndDate($userId, $datum) {
+
+    $date = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
+
+    $endDate = $date->format('Y-m-d 23:59:59');
+    $startDate = $date->format('Y-m-d 00:00:00');
+
+    return $this->createQueryBuilder('t')
+      ->select('t.id, t.title')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.datumKreiranja >= :startDate')
+      ->andWhere('t.datumKreiranja <= :endDate')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':userId', $userId)
+      ->setParameter(':startDate', $startDate)
+      ->setParameter(':endDate', $endDate)
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery()
+      ->getResult();
+  }
+
 //    /**
 //     * @return Task[] Returns an array of Task objects
 //     */

@@ -3,9 +3,11 @@
 namespace App\Form;
 
 use App\Classes\Data\CalendarData;
+use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Calendar;
 use App\Entity\User;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -54,6 +56,9 @@ class CalendarFormType extends AbstractType {
       ->add('note', TextareaType::class, [
         'required' => false
       ])
+      ->add('vreme', TextType::class, [
+        'required' => false
+      ])
 
       ->add('start', DateType::class, [
         'required' => false,
@@ -78,6 +83,23 @@ class CalendarFormType extends AbstractType {
         'multiple' => false,
       ])
 
+      ->add('part', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('flexible', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+
 
 
     ;
@@ -86,6 +108,7 @@ class CalendarFormType extends AbstractType {
   public function configureOptions(OptionsResolver $resolver): void {
     $resolver->setDefaults([
       'data_class' => Calendar::class,
+      'allow_extra_fields' => true,
     ]);
   }
 }

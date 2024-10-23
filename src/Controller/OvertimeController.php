@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Overtime;
+use App\Entity\Task;
 use App\Entity\User;
 use DateTimeImmutable;
 use Detection\MobileDetect;
@@ -90,6 +91,7 @@ class OvertimeController extends AbstractController {
       $minuti = $request->request->get('overtime_vreme_minuti');
       $datum = $request->request->get('overtime_datum');
       $napomena = $request->request->get('overtime_napomena');
+      $task = $this->em->getRepository(Task::class)->find($request->request->get('overtime_zadatak'));
 
       $overtime->setUser($user);
       $overtime->setHours($sati);
@@ -97,6 +99,7 @@ class OvertimeController extends AbstractController {
       $overtime->setDatum(DateTimeImmutable::createFromFormat('d.m.Y', $datum)->setTime(0, 0));
       $overtime->setStatus(1);
       $overtime->setNote($napomena);
+      $overtime->setTask($task);
 
 
       $this->em->getRepository(Overtime::class)->save($overtime);
@@ -133,6 +136,7 @@ class OvertimeController extends AbstractController {
       $minuti = $request->request->get('overtime_vreme_minuti');
       $datum = $request->request->get('overtime_datum');
       $napomena = $request->request->get('overtime_napomena');
+      $task = $this->em->getRepository(Task::class)->find($request->request->get('overtime_zadatak'));
 
       $overtime->setUser($user);
       $overtime->setHours($sati);
@@ -140,6 +144,7 @@ class OvertimeController extends AbstractController {
       $overtime->setDatum(DateTimeImmutable::createFromFormat('d.m.Y', $datum)->setTime(0, 0));
       $overtime->setStatus(0);
       $overtime->setNote($napomena);
+      $overtime->setTask($task);
 
 
       $this->em->getRepository(Overtime::class)->save($overtime);
@@ -199,6 +204,20 @@ class OvertimeController extends AbstractController {
     $this->em->getRepository(Overtime::class)->save($overtime);
 
     return $this->redirectToRoute('app_overtimes');
+  }
+
+  #[Route('/get-overime-taks', name: 'app_overtime_tasks')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function getTasks(Request $request) {
+    $zaduzeniId = $request->request->get('zaduzeni');
+    $datum = $request->request->get('datum');
+
+    // Pretpostavimo da imate servis koji vraća zadatke na osnovu zaduženog i datuma
+    $tasks = $this->em->getRepository(Task::class)->getTasksByEmployeeAndDate($zaduzeniId, $datum);
+
+    // Vraćamo JSON odgovor
+    return $this->json($tasks);
+
   }
 
 }

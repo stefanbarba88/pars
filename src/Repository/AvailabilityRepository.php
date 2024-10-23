@@ -140,6 +140,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
       }
       if ($req->getType() == AvailabilityData::IZASAO) {
         $izasao++;
+        $dostupan++;
       }
       if ($req->getType() == AvailabilityData::NEDOSTUPAN) {
         $nedostupan++;
@@ -502,6 +503,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
       }
       if ($req->getType() == AvailabilityData::IZASAO) {
         $izasao++;
+        $dostupan++;
       }
       if ($req->getType() == AvailabilityData::NEDOSTUPAN) {
         $nedostupan++;
@@ -612,6 +614,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
       }
       if ($req->getType() == AvailabilityData::IZASAO) {
         $izasao++;
+        $dostupan++;
       }
       if ($req->getType() == AvailabilityData::NEDOSTUPAN) {
         $nedostupan++;
@@ -745,7 +748,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $datum = new DateTimeImmutable();
     $danas = $datum->format('Y-m-d 00:00:00');
     $dostupnosti = $this->createQueryBuilder('t')
-      ->where('t.type <> 3')
+      ->where('t.type < 2')
       ->andWhere('t.datum >= :danas')
       ->andWhere('t.company = :company')
       ->setParameter(':company', $company)
@@ -782,7 +785,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $datum = new DateTimeImmutable();
     $danas = $datum->format('Y-m-d 00:00:00');
     $dostupnosti = $this->createQueryBuilder('t')
-      ->where('t.type <> 3')
+      ->where('t.type < 2')
       ->andWhere('t.datum >= :danas')
       ->andWhere('t.company = :company')
       ->setParameter(':company', $company)
@@ -798,7 +801,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $dostupnost = [];
     $datum = new DateTimeImmutable();
     $dostupnosti = $this->createQueryBuilder('t')
-      ->where('t.type <> 3')
+      ->where('t.type < 2')
       ->andWhere('t.User = :user')
       ->setParameter(':user', $user->getId())
       ->getQuery()
@@ -838,7 +841,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
     $datum = new DateTimeImmutable();
     $dostupnosti = $this->createQueryBuilder('t')
-      ->where('t.type <> 3')
+      ->where('t.type < 2')
       ->andWhere('t.User = :user')
       ->andWhere('t.datum = :datum')
       ->setParameter(':user', $user->getId())
@@ -872,7 +875,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $formattedDate = $datetime->format('Y-m-d 00:00:00');
 
     $dostupnosti = $this->createQueryBuilder('t')
-      ->where('t.type <> 3')
+      ->where('t.type < 2')
       ->andWhere('t.User = :user')
       ->andWhere('t.datum = :datum')
       ->setParameter(':user', $user->getId())
@@ -912,7 +915,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $datum = new DateTimeImmutable();
     $sutra = $datum->add(new DateInterval('P1D'));
     $dostupnosti = $this->createQueryBuilder('t')
-      ->where('t.type <> 3')
+      ->where('t.type < 2')
       ->andWhere('t.User = :user')
       ->andWhere('t.datum = :datum')
       ->setParameter(':user', $user->getId())
@@ -943,7 +946,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $datum = new DateTimeImmutable();
     $danas = $datum->format('Y-m-d 00:00:00');
     $dostupnosti = $this->createQueryBuilder('t')
-      ->where('t.type <> 3')
+      ->where('t.type < 2')
       ->andWhere('t.datum = :danas')
       ->andWhere('t.company = :company')
       ->setParameter(':company', $company)
@@ -1247,7 +1250,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $datum = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
     $danas = $datum->format('Y-m-d 00:00:00');
     $dostupnost = $this->createQueryBuilder('t')
-      ->where('t.type <> 3')
+      ->where('t.type < 2')
       ->andWhere('t.datum = :danas')
       ->andWhere('t.User = :user')
       ->setParameter(':danas', $danas)
@@ -1260,6 +1263,21 @@ class AvailabilityRepository extends ServiceEntityRepository {
     }
 
     return false;
+  }
+
+  public function checkIzlazak(User $user, string $datum): ?Availability {
+
+    $datum = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
+    $danas = $datum->format('Y-m-d 00:00:00');
+    return $this->createQueryBuilder('t')
+      ->where('t.type = 2')
+      ->andWhere('t.datum = :danas')
+      ->andWhere('t.User = :user')
+      ->setParameter(':danas', $danas)
+      ->setParameter(':user', $user->getId())
+      ->getQuery()
+      ->getOneOrNullResult();
+
   }
 
   public function addDostupnostDelete(StopwatchTime $stopwatchTime): ?Availability {

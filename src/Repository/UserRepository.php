@@ -1180,18 +1180,29 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     $qb = $this->createQueryBuilder('u');
 
+//    $korisnici = $qb->where('u.company = :company')
+//      ->setParameter(':company', $company)
+//      ->andWhere('u.isSuspended = :suspenzija')
+//      ->setParameter('suspenzija', 0)
+//      ->andWhere('u.ProjectType = :projekat')
+//      ->setParameter('projekat', TipProjektaData::LETECE)
+//      ->andWhere('u.userType = :userType')
+//      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+//      ->andWhere($qb->expr()->notIn('u.id', $users))
+//      ->getQuery()
+//      ->getResult();
     $korisnici = $qb->where('u.company = :company')
-      ->setParameter(':company', $company)
+      ->setParameter('company', $company)  // Bez dvotačke
       ->andWhere('u.isSuspended = :suspenzija')
       ->setParameter('suspenzija', 0)
       ->andWhere('u.ProjectType = :projekat')
       ->setParameter('projekat', TipProjektaData::LETECE)
       ->andWhere('u.userType = :userType')
-      ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
-      ->andWhere($qb->expr()->notIn('u.id', $users))
+      ->setParameter('userType', UserRolesData::ROLE_EMPLOYEE)  // Bez dvotačke
+      ->andWhere($qb->expr()->notIn('u.id', ':users'))  // Koristi ':users' u upitu
+      ->setParameter('users', $users)  // Bez dvotačke
       ->getQuery()
       ->getResult();
-
     return $korisnici;
   }
 

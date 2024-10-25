@@ -1227,6 +1227,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
         $users = array_values($users);
 
         $sviKorisnici =  $this->getEntityManager()->getRepository(User::class)->getRazlikaUsers($company, $users);
+
         $checkKoris = [];
         foreach ($sviKorisnici as $koris) {
           if ($this->checkDostupnost($koris, $danas->modify('+1 day')->format('d.m.Y'))) {

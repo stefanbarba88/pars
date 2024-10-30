@@ -50,7 +50,6 @@ class ManagerChecklistFormType extends AbstractType {private $em;
     $company = $dataObject->getReservation()->getCompany();
     $datum = $dataObject->getReservation()->getDatumKreiranja();
 
-
 //    if ($company->getSettings()->isCalendar()) {
 //      $builder->add('user', EntityType::class, [
 //        'class' => User::class,
@@ -77,7 +76,7 @@ class ManagerChecklistFormType extends AbstractType {private $em;
           return $user->getFullName();
         },
         'expanded' => false,
-        'multiple' => true,
+        'multiple' => false,
       ]);
 //    }
 

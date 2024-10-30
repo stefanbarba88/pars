@@ -90,12 +90,13 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="fw-bold border-bottom pb-2 mb-3" data-bs-toggle="collapse" data-bs-target="#collapse-cat" aria-expanded="false">Podešavanje projekta i kategorije</div>
-                                <div class="row collapse" id="collapse-cat">
+                                <div class="fw-bold border-bottom pb-2 mb-3" data-bs-toggle="collapse" data-bs-target="#collapse-cat" aria-expanded="true">Podešavanje projekta i kategorije</div>
+                                <div class="row collapse show" id="collapse-cat">
                                     <div class="col-lg-6 ">
                                         <div class="mb-3">
                                             <label class="form-label" for="phone_checklist_project">Projekat:*</label>
                                             <select id="phone_checklist_project" name="phone_checklist[project]" class="form-control required" required>
+                                                <option value="">--Izaberite projekat--</option>
                                                 {% if project is defined %}
                                                     <option value="{{ project.id }}">{{ project.title }}</option>
                                                 {% else %}
@@ -110,6 +111,7 @@
                                         <div class="mb-3">
                                             <label class="form-label" for="phone_checklist_category">Kategorija:*</label>
                                             <select id="phone_checklist_category" name="phone_checklist[category]" class="form-control required" required>
+                                                <option value="">--Izaberite kategoriju--</option>
                                                 {% for category in categories %}
                                                     <option value="{{ category.id }}">{{ category.title }}</option>
                                                 {% endfor %}

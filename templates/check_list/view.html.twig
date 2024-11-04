@@ -48,12 +48,18 @@
                                                         </a>
                                                         <a href="{{ path('app_checklist_finish', {id: checklist.id}) }}" class="dropdown-item">
                                                             <i class="ph-check me-2"></i>
-                                                            Završite
+                                                            Zatvorite
                                                         </a>
                                                         <a href="{{ path('app_checklist_edit', {id: checklist.id}) }}" class="dropdown-item">
                                                             <i class="ph-note-pencil me-2"></i>
                                                             Izmenite
                                                         </a>
+                                                        {% if checklist.repeating == 1 %}
+                                                            <a href="{{ path('app_checklist_turn_off_repeating', {id: checklist.id}) }}" class="dropdown-item">
+                                                                <i class="ph-warning-circle me-2"></i>
+                                                                Isključite ponavljanje
+                                                            </a>
+                                                        {% endif %}
                                                         <a href="{{ path('app_checklist_delete', {id: checklist.id}) }}" class="dropdown-item">
                                                             <i class="ph-trash me-2"></i>
                                                             Obrišite
@@ -81,6 +87,12 @@
                                                             <i class="ph-arrows-counter-clockwise me-2"></i>
                                                             Ponovite
                                                         </a>
+                                                        {% if checklist.repeating == 1 %}
+                                                            <a href="{{ path('app_checklist_turn_off_repeating', {id: checklist.id}) }}" class="dropdown-item">
+                                                                <i class="ph-warning-circle me-2"></i>
+                                                                Isključite ponavljanje
+                                                            </a>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
 
@@ -91,10 +103,17 @@
                                                         <i class="ph-gear"></i>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
+
                                                         <a href="{{ path('app_checklist_replay', {id: checklist.id}) }}" class="dropdown-item">
                                                             <i class="ph-arrows-counter-clockwise me-2"></i>
                                                             Ponovite
                                                         </a>
+                                                        {% if checklist.repeating == 1 %}
+                                                            <a href="{{ path('app_checklist_turn_off_repeating', {id: checklist.id}) }}" class="dropdown-item">
+                                                                <i class="ph-warning-circle me-2"></i>
+                                                                Isključite ponavljanje
+                                                            </a>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
 
@@ -123,13 +142,19 @@
                                                     <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
                                                 {% elseif checklist.priority == 5 %}
                                                     <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                {% else %}
+                                                    <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
                                                 {% endif %}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Datum zadatka:</div>
+                                            <div class="col-4">Datum i vreme zadatka:</div>
                                             <div class="col-8">
-                                                {{ checklist.datumKreiranja | date('d.m.Y') }}
+                                                {% if checklist.time is null %}
+                                                    {{ checklist.datumKreiranja | date('d.m.Y') }}
+                                                {% else %}
+                                                    {{ checklist.time | date('d.m.Y H:i') }}
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="row p-2">
@@ -250,7 +275,7 @@
                                     <div class="card-body">
                                         {% if comments is empty %}
                                             <div class="d-flex flex-column flex-lg-row mb-3">
-                                                <div class="me-lg-3 mb-2 mb-lg-0">
+                                                <div class="me-lg-3 mb-2 mb-lg-0 fw-semibold">
                                                     Nema komentara
                                                 </div>
                                             </div>

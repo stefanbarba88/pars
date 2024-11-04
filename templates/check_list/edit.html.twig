@@ -76,6 +76,19 @@
                                         <span class="form-text">Ukoliko je potrebna izmena datuma zadatka, obrišite ga i ponovo kreirajte zbog ponovnog učitavanja dostupnosti zaposlenih.</span>
                                     </div>
                                 </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="manager_checklist_form_vreme">Vreme zadatka:</label>
+                                        <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-clock"></i>
+											</span>
+
+                                            <input id="manager_checklist_form_vreme" name="manager_checklist_form_vreme" class="form-control"  type="time" value="{{ checklist.time | date('H:i') }}">
+                                        </div>
+                                        <span class="form-text">Definišete vreme kada zadatak treba da počne sa izvršavanjem.</span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-12">

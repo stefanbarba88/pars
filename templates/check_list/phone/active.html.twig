@@ -31,7 +31,7 @@
                             <h5 class="mb-0">Lista zadataka koji su u toku</h5>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive card">
+                            <div class="card">
                                 <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                     <thead class="bg-light test-primary">
                                     <tr>
@@ -98,6 +98,12 @@
                                                             <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
                                                                 <i class="ph-arrows-counter-clockwise me-2"></i>
                                                                 Ponovite
+                                                            </a>
+                                                        {% endif %}
+                                                        {% if task.repeating == 1 %}
+                                                            <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-warning-circle me-2"></i>
+                                                                Isključite ponavljanje
                                                             </a>
                                                         {% endif %}
                                                     </div>

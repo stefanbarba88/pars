@@ -40,24 +40,27 @@
                                     </div>
 
                                     <div id="collapsed_item1" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-hover table-bordered table-sm">
                                                 <tbody>
                                                 <tr class="table-light fw-semibold">
-                                                    <td colspan="4">Aktivni</td>
+                                                    <td colspan="6">Aktivni</td>
                                                 </tr>
                                                 {% for task in checklistActive | slice (0,5) %}
                                                     <tr>
                                                         <td>
                                                             <div class="d-inline-flex align-items-center">
                                                                 <i class="ph-calendar me-2"></i>
-                                                                {{ task.created | date("d.m.Y")}}
+                                                                {{ task.created | date("d.m.Y")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="tooltip" aria-label="Zadatak se ponavlja" data-bs-original-title="Zadatak se ponavlja"></i> {% endif %}
                                                             </div>
                                                         </td>
-                                                        <td>
+                                                        <td class="fw-semibold">
                                                             <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
                                                                 {{ task.task | slice(0, 100) ~ (task.task | length > 100 ? '...' : '') }}
                                                             </a>
+                                                        </td>
+                                                        <td>
+                                                            Kreirao {{ task.createdBy.fullName }}
                                                         </td>
                                                         <td class="text-center">
                                                             {% if task.priority == 1 %}
@@ -73,45 +76,129 @@
                                                             {% endif %}
                                                         </td>
                                                         <td class="text-center">
-                                                            <div class="d-inline-flex">
-                                                                <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Vidi" data-bs-original-title="Vidi">
-                                                                    <i class="ph-eye"></i></a>
-                                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
-                                                                    <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Start" data-bs-original-title="Start">
-                                                                        <i class="ph-play "></i></a>
-                                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Stop" data-bs-original-title="Stop">
-                                                                        <i class="ph-check "></i></a>
-                                                                    <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Izmeni" data-bs-original-title="Izmeni">
-                                                                        <i class="ph-note-pencil"></i></a>
-                                                                    <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Obriši" data-bs-original-title="Obriši">
-                                                                        <i class="ph-trash "></i></a>
-                                                                    {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
-                                                                        <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Konvertuj u zadatak sa merenjem" data-bs-original-title="Konvertuj u zadatak sa merenjem">
-                                                                            <i class="ph-magic-wand "></i></a>
+                                                            {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                                <span class="badge bg-secondary text-primary">Kreiran</span>
+                                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                                <span class="badge bg-yellow text-primary">U toku</span>
+                                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                                <span class="badge bg-primary text-white">Završen</span>
+                                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::KONVERTOVANO') %}
+                                                                <span class="badge bg-yellow text-primary">Konvertovan</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <div class="dropdown">
+                                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                    <i class="ph-gear"></i>
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-end">
+                                                                    <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="dropdown-item">
+                                                                        <i class="ph-eye me-2 "></i>Vidite</a>
+                                                                    {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                                        <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-play me-2 "></i>Pokrenite</a>
+                                                                        <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item" >
+                                                                            <i class="ph-check me-2 "></i>Zatvorite</a>
+                                                                        <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="dropdown-item" >
+                                                                            <i class="ph-note-pencil me-2 "></i>Izmenite</a>
+                                                                        <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item" >
+                                                                            <i class="ph-trash me-2 "></i>Obrišite</a>
+                                                                        {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
+                                                                            <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="dropdown-item">
+                                                                                <i class="ph-magic-wand me-2 "></i> Konvertujete u zadatak sa merenjem</a>
+                                                                        {% endif %}
                                                                     {% endif %}
-                                                                {% endif %}
-                                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
-                                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Stop" data-bs-original-title="Stop">
-                                                                        <i class="ph-check"></i></a>
-                                                                    <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Ponovi" data-bs-original-title="Ponovi">
-                                                                        <i class="ph-arrows-counter-clockwise"></i></a>
-                                                                {% endif %}
-                                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
-                                                                    <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Ponovi" data-bs-original-title="Ponovi">
-                                                                        <i class="ph-arrows-counter-clockwise"></i></a>
-                                                                {% endif %}
+                                                                    {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                                        <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-checkme-2 "></i> Zatvorite</a>
+                                                                        <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-arrows-counter-clockwiseme-2 "></i>Ponovite</a>
+                                                                    {% endif %}
+                                                                    {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                                        <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-arrows-counter-clockwiseme-2 "></i>Ponovite</a>
+                                                                    {% endif %}
+                                                                </div>
                                                             </div>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
                                                 <tr class="table-light fw-semibold">
-                                                    <td colspan="3"></td>
+                                                    <td colspan="5"></td>
                                                     <td class="text-center">
                                                         <div class="d-inline-flex mb-0">
-                                                            <a href="{{ path('app_checklist_to_do') }}" class="btn-sm btn-primary"> Vidi sve</a>
+                                                            <a href="{{ path('app_checklist_list') }}" class="btn-sm btn-primary"> Vidi sve</a>
                                                         </div>
                                                     </td>
                                                 </tr>
+
+
+                                                {#                                                {% for task in checklistActive | slice (0,5) %}#}
+                                                {#                                                    <tr>#}
+                                                {#                                                        <td>#}
+                                                {#                                                            <div class="d-inline-flex align-items-center">#}
+                                                {#                                                                <i class="ph-calendar me-2"></i>#}
+                                                {#                                                                {{ task.created | date("d.m.Y")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="tooltip" aria-label="Zadatak se ponavlja" data-bs-original-title="Zadatak se ponavlja"></i> {% endif %}#}
+                                                {#                                                            </div>#}
+                                                {#                                                        </td>#}
+                                                {#                                                        <td class="fw-semibold">#}
+                                                {#                                                            <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">#}
+                                                {#                                                                {{ task.task | slice(0, 100) ~ (task.task | length > 100 ? '...' : '') }}#}
+                                                {#                                                            </a>#}
+                                                {#                                                        </td>#}
+                                                {#                                                        <td class="text-center">#}
+                                                {#                                                            {% if task.priority == 1 %}#}
+                                                {#                                                                <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>#}
+                                                {#                                                            {% elseif task.priority == 2 %}#}
+                                                {#                                                                <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>#}
+                                                {#                                                            {% elseif task.priority == 4 %}#}
+                                                {#                                                                <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>#}
+                                                {#                                                            {% elseif task.priority == 5 %}#}
+                                                {#                                                                <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>#}
+                                                {#                                                            {% else %}#}
+                                                {#                                                                <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>#}
+                                                {#                                                            {% endif %}#}
+                                                {#                                                        </td>#}
+                                                {#                                                        <td class="text-center">#}
+                                                {#                                                            <div class="d-inline-flex">#}
+                                                {#                                                                <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Vidi" data-bs-original-title="Vidi">#}
+                                                {#                                                                    <i class="ph-eye"></i></a>#}
+                                                {#                                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}#}
+                                                {#                                                                    <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Start" data-bs-original-title="Start">#}
+                                                {#                                                                        <i class="ph-play "></i></a>#}
+                                                {#                                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Stop" data-bs-original-title="Stop">#}
+                                                {#                                                                        <i class="ph-check "></i></a>#}
+                                                {#                                                                    <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Izmeni" data-bs-original-title="Izmeni">#}
+                                                {#                                                                        <i class="ph-note-pencil"></i></a>#}
+                                                {#                                                                    <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Obriši" data-bs-original-title="Obriši">#}
+                                                {#                                                                        <i class="ph-trash "></i></a>#}
+                                                {#                                                                    {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}#}
+                                                {#                                                                        <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Konvertuj u zadatak sa merenjem" data-bs-original-title="Konvertuj u zadatak sa merenjem">#}
+                                                {#                                                                            <i class="ph-magic-wand "></i></a>#}
+                                                {#                                                                    {% endif %}#}
+                                                {#                                                                {% endif %}#}
+                                                {#                                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}#}
+                                                {#                                                                    <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Stop" data-bs-original-title="Stop">#}
+                                                {#                                                                        <i class="ph-check"></i></a>#}
+                                                {#                                                                    <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Ponovi" data-bs-original-title="Ponovi">#}
+                                                {#                                                                        <i class="ph-arrows-counter-clockwise"></i></a>#}
+                                                {#                                                                {% endif %}#}
+                                                {#                                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}#}
+                                                {#                                                                    <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Ponovi" data-bs-original-title="Ponovi">#}
+                                                {#                                                                        <i class="ph-arrows-counter-clockwise"></i></a>#}
+                                                {#                                                                {% endif %}#}
+                                                {#                                                            </div>#}
+                                                {#                                                        </td>#}
+                                                {#                                                    </tr>#}
+                                                {#                                                {% endfor %}#}
+                                                {#                                                <tr class="table-light fw-semibold">#}
+                                                {#                                                    <td colspan="5"></td>#}
+                                                {#                                                    <td class="text-center">#}
+                                                {#                                                        <div class="d-inline-flex mb-0">#}
+                                                {#                                                            <a href="{{ path('app_checklist_to_do') }}" class="btn-sm btn-primary"> Vidi sve</a>#}
+                                                {#                                                        </div>#}
+                                                {#                                                    </td>#}
+                                                {#                                                </tr>#}
 
                                                 </tbody>
                                             </table>
@@ -133,7 +220,7 @@
                                         <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>
                                     </div>
                                 </div>
-                                <div class="table-responsive card">
+                                <div class="card">
                                     <table class="table table-hover table-bordered table-sm">
                                         <thead class="bg-light">
                                         <tr class="table-light">
@@ -221,7 +308,7 @@
                             <div class="card-header d-flex align-items-center">
                             <h5 class="mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>
                                 </div>
-                                <div class="table-responsive card">
+                                <div class="card">
                                     <table class="table table-hover table-bordered table-sm">
                                         <thead class="bg-light">
                                         <tr class="table-light">
@@ -315,7 +402,7 @@
                             <div class="card-header d-flex align-items-center">
                             <h5 class="mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
                                 </div>
-                                <div class="table-responsive card">
+                                <div class="card">
                                     <table class="table table-hover table-bordered table-sm">
                                         <thead class="bg-light">
                                         <tr class="table-light">

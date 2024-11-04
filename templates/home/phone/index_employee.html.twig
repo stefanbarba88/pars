@@ -48,8 +48,9 @@
                                                 <tr>
                                                     <td>
                                                         <div class="d-inline-flex align-items-center">
-                                                            <i class="ph-calendar me-2"></i>
-                                                            {{ task.created | date("d.m.Y")}}
+                                                            <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Vidi" data-bs-original-title="Vidi">
+                                                                <i class="ph-calendar me-2"></i>{{ task.created | date("d.m.Y")}}
+                                                            </a>{% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="tooltip" aria-label="Zadatak se ponavlja" data-bs-original-title="Zadatak se ponavlja"></i> {% endif %}
                                                         </div>
                                                     </td>
                                                     <td class="text-center">
@@ -65,10 +66,8 @@
                                                             <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
                                                         {% endif %}
                                                     </td>
-
                                                     <td class="text-center">
-                                                        <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-primary" data-bs-popup="tooltip" aria-label="Vidi" data-bs-original-title="Vidi">
-                                                            <i class="ph-eye"></i></a>
+                                                        <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details_checklista{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
                                                     </td>
 
                                                 </tr>
@@ -141,7 +140,7 @@
                                         <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>
                                     </div>
                                 </div>
-                                <div class="table-responsive card">
+                                <div class="card">
                                     <table class="table table-hover table-bordered table_morecondensed">
                                         <thead class="bg-light">
                                         <tr>
@@ -201,7 +200,7 @@
                             <div class="card-header d-lg-flex py-lg-0">
                                 <h5 class="py-lg-3 mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>
                             </div>
-                            <div class="table-responsive card">
+                            <div class="card">
                                 <table class="table table-hover table-bordered table_morecondensed">
                                     <thead class="bg-light">
                                     <tr>
@@ -255,7 +254,7 @@
                             <div class="card-header d-lg-flex py-lg-0">
                                 <h5 class="py-lg-3 mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>
                             </div>
-                            <div class="table-responsive card">
+                            <div class="card">
                                 <table class="table table-hover table-bordered table_morecondensed">
                                     <thead class="bg-light">
                                     <tr>
@@ -318,6 +317,113 @@
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
     {% include 'includes/notification.html.twig' %}
+
+    {% if checklistActive is not empty %}
+        {% for task in checklistActive%}
+            <div id="modal_details_checklista{{ loop.index }}" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white border-0">
+                            <h6 class="modal-title">Detalji zadatka</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="card">
+                                <div class="card-body">
+                                    {% if task.comment is empty %}
+                                        <div class="row p-2">
+                                            <div class="col-12 fw-semibold">Nema komentara</div>
+                                        </div>
+                                    {% else %}
+                                        {% for comment in task.comment %}
+                                            <div class="row p-2 {% if loop.index is odd %}bg-light{% endif %}">
+                                                <div class="col-4">{{ comment.user.getNameWithFirstLetter }} <span class="text-muted" style="font-size: 10px">{{ comment.created | date("d.m.Y") }} u {{ comment.created | date("H:i:s") }}</span></div>
+                                                <div class="col-8 fw-semibold">{{ comment.comment }}</div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row p-2">
+                                        <div class="col-4">Zadatak:</div>
+                                        <div class="col-8">{{ task.task }}</div>
+                                    </div>
+                                    <div class="row p-2 bg-light">
+                                        <div class="col-4">Kreirao:</div>
+                                        <div class="col-8">{{ task.createdBy.getNameWithFirstLetter }}
+                                        </div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-4">Prioritet:</div>
+                                        <div class="col-8">
+                                            {% if task.priority == 1 %}
+                                                <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                            {% elseif task.priority == 2 %}
+                                                <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                            {% elseif task.priority == 4 %}
+                                                <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                            {% elseif task.priority == 5 %}
+                                                <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                            {% else %}
+                                                <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="row p-2 bg-light">
+                                        <div class="col-4">Datum i vreme:</div>
+                                        <div class="col-8">
+                                            {% if task.time is null %}
+                                                {{ task.datumKreiranja | date('d.m.Y') }}
+                                            {% else %}
+                                                {{ task.time | date('d.m.Y H:i') }}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-4">Status:</div>
+                                        <div class="col-8">
+                                            {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                <span class="badge bg-secondary text-primary">Kreiran</span>
+                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                <span class="badge bg-yellow text-primary">U toku</span>
+                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                <span class="badge bg-primary text-white">Završen</span>
+                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::KONVERTOVANO') %}
+                                                <span class="badge bg-yellow text-primary">Konvertovan</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="row p-2 bg-light">
+                                        <div class="col-4">Ponavljanje:</div>
+                                        <div class="col-8">
+                                            Zadatak se ponavlja
+                                            {% if task.repeatingInterval == 1 %}
+                                                svakog dana, sledeći zadatak će biti dostupan
+                                            {% elseif  task.repeatingInterval == 2 %}
+                                                svake sedmice, sledeći zadatak će biti dostupan
+                                            {% elseif  task.repeatingInterval == 3 %}
+                                                svakog meseca, sledeći zadatak će biti dostupan
+                                            {% elseif  task.repeatingInterval == 4 %}
+                                                svake godine, sledeći zadatak će biti dostupan
+                                            {% endif %}
+                                            {{ task.datumPonavljanja | date("d.m.Y.")}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
     {% if tomorrowTimetable is not empty %}
         {% for task in tomorrowTimetable %}
             {% if task['projekat'] is not null %}

@@ -31,7 +31,7 @@
                             <h5 class="mb-0">Arhiva zadataka</h5>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive card">
+                            <div class="card">
                                 <table class="table table-bordered table-hover table-responsive table-sm">
                                     <thead class="bg-light test-primary">
                                     <tr>
@@ -102,7 +102,7 @@
                                                 {% if task.datumKreiranja is not null %}
                                                     <div class="d-inline-flex align-items-center">
                                                         <i class="ph-calendar me-2"></i>
-                                                        {{ task.datumKreiranja | date("d.m.Y")}}
+                                                        {{ task.datumKreiranja | date("d.m.Y")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Zadatak se ponavlja"></i> {% endif %}
                                                     </div>
                                                 {% endif %}
                                             </td>
@@ -138,6 +138,12 @@
                                                             <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
                                                                 <i class="ph-arrows-counter-clockwise me-2"></i>
                                                                 Ponovite
+                                                            </a>
+                                                        {% endif %}
+                                                        {% if task.repeating == 1 %}
+                                                            <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-warning-circle me-2"></i>
+                                                                Isključite ponavljanje
                                                             </a>
                                                         {% endif %}
                                                     </div>

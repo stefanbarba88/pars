@@ -44,6 +44,10 @@ class WidgetController extends AbstractController {
 //    $args['countTasksArchiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksArchiveByUser($loggedUser);
 //
       $args['countTasksUnclosedLogsByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($loggedUser);
+
+      $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $this->getUser(), 'status' => InternTaskStatusData::NIJE_ZAPOCETO]);
+      $args['countChecklistActive'] = count($args['checklistActive']);
+
     } else {
       $args['countPlanRada'] = $this->em->getRepository(FastTask::class)->countPlanRadaActive();
 
@@ -94,15 +98,18 @@ class WidgetController extends AbstractController {
       $args['countActiveCars'] = $this->em->getRepository(Car::class)->count(['isSuspended' => false, 'company' => $loggedUser->getCompany()]);
       $args['countCarsActive'] = $this->em->getRepository(Car::class)->count(['isReserved' => true, 'isSuspended' => false, 'company' => $loggedUser->getCompany()]);
       $args['countCarsInactive'] = $this->em->getRepository(Car::class)->count(['isReserved' => false, 'isSuspended' => false, 'company' => $loggedUser->getCompany()]);
+
+      $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $this->getUser(), 'status' => InternTaskStatusData::NIJE_ZAPOCETO]);
+      $args['checklistCreated'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['status' => InternTaskStatusData::NIJE_ZAPOCETO, 'company' => $loggedUser->getCompany(), 'createdBy' => $loggedUser]);
+      $args['checklistOnline'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['status' => InternTaskStatusData::ZAPOCETO, 'company' => $loggedUser->getCompany(), 'createdBy' => $loggedUser]);
+
+      $args['countChecklistActive'] = count($args['checklistActive']);
+      $args['countChecklistCreated'] = count($args['checklistCreated']);
+      $args['countChecklistOnline'] = count($args['checklistOnline']);
+
     }
 
-    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $this->getUser(), 'status' => InternTaskStatusData::NIJE_ZAPOCETO]);
-    $args['checklistCreated'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['status' => InternTaskStatusData::NIJE_ZAPOCETO, 'company' => $loggedUser->getCompany()]);
-    $args['checklistOnline'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['status' => InternTaskStatusData::ZAPOCETO, 'company' => $loggedUser->getCompany()]);
 
-    $args['countChecklistActive'] = count($args['checklistActive']);
-    $args['countChecklistCreated'] = count($args['checklistCreated']);
-    $args['countChecklistOnline'] = count($args['checklistOnline']);
 
 
     $args['user'] = $loggedUser;

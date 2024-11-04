@@ -50,49 +50,57 @@ class RepeatingTasksCreatorCommand extends Command {
     $danas = new DateTimeImmutable();
 
     $tasksIntern = $this->em->getRepository(ManagerChecklist::class)->findBy(['datumPonavljanja' => $danas->setTime(0,0), 'repeating' => 1]);
+    $tasksIds = [];
 
     foreach ($tasksIntern as $task) {
+
       if ($task->getStatus() != InternTaskStatusData::KONVERTOVANO) {
-      $this->em->detach($task);
-      $newTask = new ManagerChecklist();
-      $newTask->setTask($task->getTask());
-      $newTask->setCreatedBy($task->getCreatedBy());
-      $newTask->setUser($task->getUser());
-      $newTask->setProject($task->getProject());
-      $newTask->setCategory($task->getCategory());
-      $newTask->setCompany($task->getCompany());
-      $newTask->setPriority($task->getPriority());
+        $tasksIds[] = $task->getId();
+        $this->em->detach($task);
+        $newTask = new ManagerChecklist();
+        $newTask->setTask($task->getTask());
+        $newTask->setCreatedBy($task->getCreatedBy());
+        $newTask->setUser($task->getUser());
+        $newTask->setProject($task->getProject());
+        $newTask->setCategory($task->getCategory());
+        $newTask->setCompany($task->getCompany());
+        $newTask->setPriority($task->getPriority());
 
-      $newTask->setDatumKreiranja($task->getDatumPonavljanja());
+        $newTask->setDatumKreiranja($task->getDatumPonavljanja());
 
-      if ($task->getRepeatingInterval() == RepeatingIntervalData::TACAN_DATUM) {
-        $newTask->setDatumPonavljanja(null);
-        $newTask->setRepeating(null);
-        $newTask->setRepeatingInterval(null);
-      } else {
-        if ($task->getRepeatingInterval() == RepeatingIntervalData::DAY) {
-          $newTask->setDatumPonavljanja($task->getDatumPonavljanja()->modify('+1 day'));
-          $newTask->setRepeatingInterval($task->getRepeatingInterval());
-          $newTask->setRepeating($task->getRepeating());
+        if ($task->getRepeatingInterval() == RepeatingIntervalData::TACAN_DATUM) {
+          $newTask->setDatumPonavljanja(null);
+          $newTask->setRepeating(null);
+          $newTask->setRepeatingInterval(null);
+        } else {
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::DAY) {
+            $newTask->setDatumPonavljanja($task->getDatumPonavljanja()->modify('+1 day'));
+            $newTask->setRepeatingInterval($task->getRepeatingInterval());
+            $newTask->setRepeating($task->getRepeating());
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::WEEK) {
+            $newTask->setDatumPonavljanja($task->getDatumPonavljanja()->modify('+1 week'));
+            $newTask->setRepeatingInterval($task->getRepeatingInterval());
+            $newTask->setRepeating($task->getRepeating());
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::MONTH) {
+            $newTask->setDatumPonavljanja($task->getDatumPonavljanja()->modify('+1 month'));
+            $newTask->setRepeatingInterval($task->getRepeatingInterval());
+            $newTask->setRepeating($task->getRepeating());
+          }
+          if ($task->getRepeatingInterval() == RepeatingIntervalData::YEAR) {
+            $newTask->setDatumPonavljanja($task->getDatumPonavljanja()->modify('+1 year'));
+            $newTask->setRepeatingInterval($task->getRepeatingInterval());
+            $newTask->setRepeating($task->getRepeating());
+          }
         }
-        if ($task->getRepeatingInterval() == RepeatingIntervalData::WEEK) {
-          $newTask->setDatumPonavljanja($task->getDatumPonavljanja()->modify('+1 week'));
-          $newTask->setRepeatingInterval($task->getRepeatingInterval());
-          $newTask->setRepeating($task->getRepeating());
-        }
-        if ($task->getRepeatingInterval() == RepeatingIntervalData::MONTH) {
-          $newTask->setDatumPonavljanja($task->getDatumPonavljanja()->modify('+1 month'));
-          $newTask->setRepeatingInterval($task->getRepeatingInterval());
-          $newTask->setRepeating($task->getRepeating());
-        }
-        if ($task->getRepeatingInterval() == RepeatingIntervalData::YEAR) {
-          $newTask->setDatumPonavljanja($task->getDatumPonavljanja()->modify('+1 year'));
-          $newTask->setRepeatingInterval($task->getRepeatingInterval());
-          $newTask->setRepeating($task->getRepeating());
-        }
+        $this->em->getRepository(ManagerChecklist::class)->save($newTask);
+
       }
-      $this->em->getRepository(ManagerChecklist::class)->save($newTask);}
     }
+
+    $this->em->getRepository(ManagerChecklist::class)->removeRepeating($tasksIds);
+
 
     $end = microtime(true);
 

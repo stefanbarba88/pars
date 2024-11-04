@@ -26,6 +26,9 @@ class ManagerChecklist {
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $datumKreiranja = null;
 
+  #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+  private ?DateTimeImmutable $time = null;
+
   #[ORM\Column(nullable: true)]
   private ?DateTimeImmutable $deadline;
 
@@ -385,6 +388,20 @@ class ManagerChecklist {
       }
 
       return $this;
+  }
+
+  /**
+   * @return DateTimeImmutable|null
+   */
+  public function getTime(): ?DateTimeImmutable {
+    return $this->time;
+  }
+
+  /**
+   * @param DateTimeImmutable|null $time
+   */
+  public function setTime(?DateTimeImmutable $time): void {
+    $this->time = $time;
   }
 
 }

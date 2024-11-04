@@ -125,6 +125,7 @@ class TaskRepository extends ServiceEntityRepository {
     $task->setProject($checklist->getProject());
     $task->setCategory($checklist->getCategory());
     $task->setDatumKreiranja($checklist->getDatumKreiranja());
+    $task->setTime($checklist->getTime());
     $task->setTitle($checklist->getProject()->getTitle() . ' - ' . $checklist->getDatumKreiranja()->format('d.m.Y'));
     $task->setDescription($checklist->getTask());
 

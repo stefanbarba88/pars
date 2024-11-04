@@ -165,7 +165,6 @@ class CheckListController extends AbstractController {
     if ($request->isMethod('POST')) {
 
       $data = $request->request->all();
-
       $files = [];
 
       if (isset($data['checklist']['datum'])) {
@@ -175,6 +174,13 @@ class CheckListController extends AbstractController {
         $repeating = $data['checklist']['repeating'];
         $repeatingInterval = $data['checklist']['repeatingInterval'];
         $time1 = null;
+        if (isset($request->request->all('checklist')['podsetnik'])) {
+          $notify = $request->request->all('checklist')['podsetnik'];
+        } else {
+          $notify = null;
+        }
+
+
         if (!empty($request->request->all('checklist')['vreme'])) {
           $time = $request->request->all('checklist')['vreme'];
           $time1 = $datumKreiranja->modify($time);
@@ -200,6 +206,12 @@ class CheckListController extends AbstractController {
           $task->setCompany($this->getUser()->getCompany());
           $task->setRepeating($repeating);
           $task->setTime($time1);
+          if ($notify == 'on') {
+            $task->setIsNotify(true);
+          } else {
+            $task->setIsNotify(false);
+          }
+
 
 
           if ($repeating == 1) {
@@ -248,6 +260,13 @@ class CheckListController extends AbstractController {
         $repeating = $data['phone_checklist']['repeating'];
         $repeatingInterval = $data['phone_checklist']['repeatingInterval'];
         $time1 = null;
+
+        if (isset($request->request->all('phone_checklist')['podsetnik'])) {
+          $notify = $request->request->all('phone_checklist')['podsetnik'];
+        } else {
+          $notify = null;
+        }
+
         if (!empty($request->request->all('phone_checklist')['vreme'])) {
           $time = $request->request->all('phone_checklist')['vreme'];
           $time1 = $datumKreiranja->modify($time);
@@ -273,6 +292,11 @@ class CheckListController extends AbstractController {
           $task->setCompany($this->getUser()->getCompany());
           $task->setRepeating($repeating);
           $task->setTime($time1);
+          if ($notify == 'on') {
+            $task->setIsNotify(true);
+          } else {
+            $task->setIsNotify(false);
+          }
 
 
           if ($repeating == 1) {
@@ -412,6 +436,7 @@ class CheckListController extends AbstractController {
           }
         }
         $vreme = $checklist->getTime();
+
         if (!empty($request->request->get('manager_checklist_form_vreme'))) {
           $time = $request->request->get('manager_checklist_form_vreme');
           if (is_null($vreme)) {
@@ -419,6 +444,18 @@ class CheckListController extends AbstractController {
           }
           $time1 = $vreme->modify($time);
           $checklist->setTime($time1);
+        }
+
+        if (!is_null($request->request->get('manager_checklist_form_podsetnik'))) {
+          $notify = $request->request->get('manager_checklist_form_podsetnik');
+        } else {
+          $notify = null;
+        }
+
+        if ($notify == 'on') {
+          $checklist->setIsNotify(true);
+        } else {
+          $checklist->setIsNotify(false);
         }
 
         $this->em->getRepository(ManagerChecklist::class)->save($checklist);

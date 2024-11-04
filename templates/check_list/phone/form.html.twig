@@ -32,7 +32,7 @@
                         <form name="task_quick_form" method="post" action="{{ path('app_checklist_form') }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="task_quick_form">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-4">
                                         <div class="mb-3">
                                             <label class="form-label" for="phone_checklist_datum">Datum zadatka:*</label>
                                             <div class="input-group">
@@ -47,7 +47,7 @@
                                             <span class="form-text">Definišete kada zadatak treba da se izvrši.</span>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-4">
                                         <div class="mb-3">
                                             <label class="form-label" for="phone_checklist_vreme">Vreme zadatka:</label>
                                             <div class="input-group">
@@ -58,6 +58,17 @@
                                                 <input id="phone_checklist_vreme" name="phone_checklist[vreme]" class="form-control"  type="time">
                                             </div>
                                             <span class="form-text">Definišete vreme kada zadatak treba da počne sa izvršavanjem.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-1">
+                                            <label class="form-label" for="phone_checklist[podsetnik]">Podsetnik:</label>
+                                            <div class="input-group mb-1">
+                                                <label class="form-check mb-2">
+                                                    <input type="checkbox" class="form-check-input" name="phone_checklist[podsetnik]">
+                                                </label>
+                                            </div>
+                                            <span class="form-text">Šalje email podsetnik pola sata pre zadatog vremena, ako je podešeno.</span>
                                         </div>
                                     </div>
                                 </div>

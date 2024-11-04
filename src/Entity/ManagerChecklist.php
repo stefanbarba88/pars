@@ -36,6 +36,9 @@ class ManagerChecklist {
   private ?int $repeating = 0;
 
   #[ORM\Column(nullable: true)]
+  private ?bool $isNotify = false;
+
+  #[ORM\Column(nullable: true)]
   private ?int $repeatingInterval = null;
 
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
@@ -402,6 +405,20 @@ class ManagerChecklist {
    */
   public function setTime(?DateTimeImmutable $time): void {
     $this->time = $time;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getIsNotify(): ?bool {
+    return $this->isNotify;
+  }
+
+  /**
+   * @param bool|null $isNotify
+   */
+  public function setIsNotify(?bool $isNotify): void {
+    $this->isNotify = $isNotify;
   }
 
 }

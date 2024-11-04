@@ -43,9 +43,10 @@ class InternTaskNotifyCommand extends Command {
 
 
     $now = new DateTimeImmutable('now');
-    $timeOnly = $now->setTime($now->format('H'), $now->format('i'));
+    $time = $now->modify('+30 minutes');
+    $timePlusHalfHour = $time->setTime($time->format('H'), $time->format('i'));
 
-    $tasks = $this->em->getRepository(ManagerChecklist::class)->findBy(['time' => $timeOnly]);
+    $tasks = $this->em->getRepository(ManagerChecklist::class)->findBy(['time' => $timePlusHalfHour]);
 
     foreach ($tasks as $task) {
       $this->mail->checklistTaskReminder($task);

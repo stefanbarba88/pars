@@ -84,17 +84,24 @@
                                         <div class="mb-3">
                                             <label class="form-label" for="phone_checklist_zaduzeni">Zaduženi:*</label>
                                             <select id="phone_checklist_zaduzeni" name="phone_checklist[zaduzeni][]" class="form-control required" required multiple>
-                                                {% for user in users %}
-                                                    {% if korisnik is defined %}
-                                                        {% if user.id == korisnik.id %}
-                                                            <option value="{{ user.id }}" selected>{% if user.pozicija is not null  %}{{ user.getNameForForm }}{% else %}{{ user.getFullName }}{% endif %}</option>
-                                                        {% else %}
-                                                            <option value="{{ user.id }}">{% if user.pozicija is not null  %}{{ user.getNameForForm }}{% else %}{{ user.getFullName }}{% endif %}</option>
-                                                        {% endif %}
-                                                    {% else %}
+                                                {% if korisnik is defined %}
+                                                    <option value="{{ korisnik.id }}" selected>{% if korisnik.pozicija is not null  %}{{ korisnik.getNameForForm }}{% else %}{{ korisnik.getFullName }}{% endif %}</option>
+                                                {% else %}
+                                                    {% for user in users %}
                                                         <option value="{{ user.id }}">{% if user.pozicija is not null  %}{{ user.getNameForForm }}{% else %}{{ user.getFullName }}{% endif %}</option>
-                                                    {% endif %}
-                                                {% endfor %}
+                                                    {% endfor %}
+                                                {% endif %}
+{#                                                {% for user in users %}#}
+{#                                                    {% if korisnik is defined %}#}
+{#                                                        {% if user.id == korisnik.id %}#}
+{#                                                            <option value="{{ user.id }}" selected>{% if user.pozicija is not null  %}{{ user.getNameForForm }}{% else %}{{ user.getFullName }}{% endif %}</option>#}
+{#                                                        {% else %}#}
+{#                                                            <option value="{{ user.id }}">{% if user.pozicija is not null  %}{{ user.getNameForForm }}{% else %}{{ user.getFullName }}{% endif %}</option>#}
+{#                                                        {% endif %}#}
+{#                                                    {% else %}#}
+{#                                                        <option value="{{ user.id }}">{% if user.pozicija is not null  %}{{ user.getNameForForm }}{% else %}{{ user.getFullName }}{% endif %}</option>#}
+{#                                                    {% endif %}#}
+{#                                                {% endfor %}#}
                                             </select>
                                         </div>
                                     </div>

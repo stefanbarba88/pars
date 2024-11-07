@@ -50,36 +50,41 @@ class ManagerChecklistFormType extends AbstractType {
 
     $company = $dataObject->getReservation()->getCompany();
     $datum = $dataObject->getReservation()->getDatumKreiranja();
+    $kreator = $dataObject->getReservation()->getCreatedBy();
 
 
     if ($company->getSettings()->isCalendar()) {
-      $builder->add('user', EntityType::class, [
-        'class' => User::class,
-        'choices' => $this->em->getUsersAvailableChecklist($datum),
-        'choice_label' => function ($user) {
-          return $user->getFullName();
-        },
-        'expanded' => false,
-        'multiple' => false,
-      ]);
+      if ($kreator->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        $builder->add('user', EntityType::class, [
+          'class' => User::class,
+          'choices' => $this->em->getUsersAvailableChecklist($datum),
+          'choice_label' => function ($user) {
+            return $user->getFullName();
+          },
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+      }
     } else {
-      $builder->add('user', EntityType::class, [
-        'class' => User::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.userType <> :userType')
-            ->andWhere('g.isSuspended = 0')
-            ->andWhere('g.company = :company')
-            ->setParameter(':company', $company)
-            ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
-            ->orderBy('g.prezime', 'ASC');
-        },
-        'choice_label' => function ($user) {
-          return $user->getFullName();
-        },
-        'expanded' => false,
-        'multiple' => false,
-      ]);
+      if ($kreator->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        $builder->add('user', EntityType::class, [
+          'class' => User::class,
+          'query_builder' => function (EntityRepository $em) use ($company) {
+            return $em->createQueryBuilder('g')
+              ->andWhere('g.userType <> :userType')
+              ->andWhere('g.isSuspended = 0')
+              ->andWhere('g.company = :company')
+              ->setParameter(':company', $company)
+              ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
+              ->orderBy('g.prezime', 'ASC');
+          },
+          'choice_label' => function ($user) {
+            return $user->getFullName();
+          },
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+      }
     }
 
     $builder

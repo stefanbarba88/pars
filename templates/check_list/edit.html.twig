@@ -87,12 +87,14 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.user, 'Zaduženi:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.user, {attr: { class: 'form-control select required' }}) }}
+                                {% if app.user.userType != constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.user, 'Zaduženi:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.user, {attr: { class: 'form-control select required' }}) }}
+                                        </div>
                                     </div>
-                                </div>
+                                {% endif %}
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.priority, 'Prioritet:*', {'label_attr': {'class': 'form-label'}}) }}

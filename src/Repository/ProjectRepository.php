@@ -20,6 +20,7 @@ use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -665,13 +666,20 @@ class ProjectRepository extends ServiceEntityRepository {
     return $qb;
   }
 
-  public function getProjectsByUserPaginator(User $user, $filter) {
+  public function getProjectsByUserPaginator(User $user, $filter): QueryBuilder {
 
     $qb = $this->createQueryBuilder('p');
 
-      $qb->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
+//      $qb->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
+//      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+//      ->andWhere('tl.user = :userId')
+//      ->andWhere('p.isSuspended = 0')
+//      ->setParameter(':userId', $user->getId());
+
+    $qb->innerJoin(Task::class, 't', Join::WITH, 'p = t.project')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
-      ->andWhere('tl.user = :userId')
+      ->leftJoin(ManagerChecklist::class, 'mc', Join::WITH, 'p = mc.project AND mc.user = :userId')
+      ->andWhere('tl.user = :userId OR mc.user IS NOT NULL')
       ->andWhere('p.isSuspended = 0')
       ->setParameter(':userId', $user->getId());
 

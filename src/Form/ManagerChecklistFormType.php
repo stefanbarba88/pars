@@ -78,7 +78,7 @@ class ManagerChecklistFormType extends AbstractType {
           return $user->getFullName();
         },
         'expanded' => false,
-        'multiple' => true,
+        'multiple' => false,
       ]);
     }
 

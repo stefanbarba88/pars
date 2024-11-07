@@ -410,7 +410,7 @@
                                         <table class="table table-hover table-bordered table-sm">
                                             <thead class="bg-light">
                                             <tr class="table-light">
-                                                    <th colspan="5">Lista internih zadataka za danas</th>
+                                                    <th colspan="6">Lista internih zadataka za danas</th>
 {#                                                <th class="text-center">#}
 {#                                                    <span class="badge bg-yellow rounded-pill">{{ countLogs }}</span>#}
 {#                                                </th>#}
@@ -420,7 +420,8 @@
                                                 <th>Projekat</th>
                                                 <th>Kategorija</th>
                                                 <th>Zaposleni</th>
-                                                <th>Opis</th>
+                                                <th>Prioritet</th>
+                                                <th>Zadatak</th>
                                                 <th class="text-center" style="width: 20px;">
                                                     <i class="ph-dots-three"></i>
                                                 </th>
@@ -449,15 +450,29 @@
                                                                         {{ task.category.title }}
                                                                     </div>
                                                                 </td>
-                                                                <td>
-                                                                    <div class="fw-semibold">
-                                                                        <div class="btn-group">
-                                                                            <a href="{{ path('app_employee_checklist_view', { id: task.user.id }) }}" class="d-inline-flex align-items-center ">
-                                                                                {{ task.user.fullName }}
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
+                                                        <td>
+                                                            <div class="fw-semibold">
+                                                                <div class="btn-group">
+                                                                    <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.fullName }}
+                                                                        {% if task.comment.count > 0 %}
+                                                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
+                                                                        {% endif %}</a>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            {% if task.priority == 1 %}
+                                                                <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                            {% elseif task.priority == 2 %}
+                                                                <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                            {% elseif task.priority == 4 %}
+                                                                <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                            {% elseif task.priority == 5 %}
+                                                                <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                            {% else %}
+                                                                <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
+                                                            {% endif %}
+                                                        </td>
                                                                 <td>
                                                                     <div class="text-body">
                                                                         {{ task.task }}
@@ -473,7 +488,7 @@
                                                 {% endfor %}
                                             {% else %}
                                                 <tr>
-                                                    <td colspan="5">
+                                                    <td colspan="6">
                                                         <div class="fw-semibold">
                                                             Nema kreiranih zadataka za danas
                                                         </div>

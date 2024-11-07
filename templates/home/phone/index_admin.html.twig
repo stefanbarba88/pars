@@ -106,10 +106,11 @@
                                 <div class="col-xl-12">
                                     <!-- Marketing campaigns -->
                                     <div class="card">
-                                        <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_plan5" aria-expanded="false" type="button">
-                                            <h5 class="mb-0">Plan rada za {{ planRada.datumKreiranja | date('d.m.Y') }}</h5>
+                                        <div class="card-header d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_plan5" aria-expanded="false" type="button">
+                                            <h5 class="mb-0">Plan rada {{ planRada.datumKreiranja | date('d.m.Y') }}</h5>
                                             <div class="my-auto ms-auto">
                                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ planRada.pripremaZadataks.count | default(0) }}</span>
+                                                <i class="ph-caret-down collapsible-indicator"></i>
                                             </div>
                                             {#                                        {% if tomorrowTimetableId != 0 %}#}
                                             {#                                            <div class="my-auto ms-auto">#}
@@ -178,11 +179,13 @@
                                     <div class="col-xl-12">
                                         <!-- Marketing campaigns -->
                                         <div class="card">
-                                            <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_plan5" aria-expanded="false" type="button">
-                                                <h5 class="mb-0">Plan rada za {{ planRadaSutra.datumKreiranja | date('d.m.Y') }} {% if planRadaSutra.status != 4 %}<a href="{{ path('app_quick_task_edit', { id: planRadaSutra.id}) }}"><i class="ph-note-pencil"></i></a>{% endif %}</h5>
+                                            <div class="card-header d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_plan5" aria-expanded="false" type="button">
+                                                <h5 class="mb-0">Plan rada {{ planRadaSutra.datumKreiranja | date('d.m.Y') }} {% if planRadaSutra.status != 4 %}<a href="{{ path('app_quick_task_edit', { id: planRadaSutra.id}) }}"><i class="ph-note-pencil"></i></a>{% endif %}</h5>
                                                 <div class="my-auto ms-auto">
                                                     <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ planRadaSutra.pripremaZadataks.count | default(0) }}</span>
+                                                    <i class="ph-caret-down collapsible-indicator"></i>
                                                 </div>
+
                                             </div>
                                             <div id="collapsed_plan5" class="table-responsive card accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
                                                 <table class="table table-hover table-bordered table_morecondensed">
@@ -248,11 +251,12 @@
                             <!-- Marketing campaigns -->
                             <div class="card">
 
-                                <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_plan1" aria-expanded="false" type="button">
-                                    <h5 class="mb-0">Zadaci kreirani za {{ danas | date('d.m.Y') }}</h5>
+                                <div class="card-header d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_plan1" aria-expanded="false" type="button">
+                                    <h5 class="mb-0">Zadaci {{ danas | date('d.m.Y') }}</h5><a href="{{ path('app_task_form_date') }}"><i class="ph-plus-circle mx-1"></i></a>
 
                                     <div class="my-auto ms-auto">
-                                        <a href="{{ path('app_task_form_date') }}" class="btn btn-primary"><i class="ph-plus"></i></a>
+                                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ timetable | length | default(0) }}</span>
+                                        <i class="ph-caret-down collapsible-indicator"></i>
                                     </div>
                                 </div>
                                 <div id="collapsed_plan1" class="table-responsive card accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
@@ -507,16 +511,17 @@
                             </div>
                             <!-- /marketing campaigns -->
                         </div>
-                    </div>
+                        </div>
                         <div class="row">
                         <div class="col-xl-12">
                             <!-- Marketing campaigns -->
                             <div class="card">
 
-                                <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_plan2" aria-expanded="false" type="button">
-                                    <h5 class="mb-0">Interni zadaci kreirani za {{ danas | date('d.m.Y') }}</h5>
+                                <div class="card-header d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_plan2" aria-expanded="false" type="button">
+                                    <h5 class="mb-0">Interni zadaci {{ danas | date('d.m.Y') }}</h5><a href="{{ path('app_checklist_form') }}"><i class="ph-plus-circle mx-1"></i></a>
                                     <div class="my-auto ms-auto">
-                                        <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus"></i></a>
+                                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ timetableIntern | length | default(0) }}</span>
+                                        <i class="ph-caret-down collapsible-indicator"></i>
                                     </div>
                                 </div>
                                 <div id="collapsed_plan2" class="table-responsive card accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
@@ -556,7 +561,10 @@
                                                         <td style="width: 45%;">
                                                             <div class="fw-semibold">
                                                                 <div class="btn-group">
-                                                                    {{ task.user.getNameWithFirstLetter }}
+                                                                    <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.getNameWithFirstLetter }}
+                                                                        {% if task.comment.count > 0 %}
+                                                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
+                                                                        {% endif %}</a>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -589,9 +597,12 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 45%;">
-                                                            <div class="fw-semibold">
+                                                                 <div class="fw-semibold">
                                                                 <div class="btn-group">
-                                                                    {{ task.user.getNameWithFirstLetter }}
+                                                                    <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.getNameWithFirstLetter }}
+                                                                        {% if task.comment.count > 0 %}
+                                                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
+                                                                        {% endif %}</a>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -624,9 +635,12 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 45%;">
-                                                            <div class="fw-semibold">
+                                                             <div class="fw-semibold">
                                                                 <div class="btn-group">
-                                                                    {{ task.user.getNameWithFirstLetter }}
+                                                                    <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.getNameWithFirstLetter }}
+                                                                        {% if task.comment.count > 0 %}
+                                                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
+                                                                        {% endif %}</a>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -659,9 +673,12 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 45%;">
-                                                            <div class="fw-semibold">
+                                                               <div class="fw-semibold">
                                                                 <div class="btn-group">
-                                                                    {{ task.user.getNameWithFirstLetter }}
+                                                                    <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.getNameWithFirstLetter }}
+                                                                        {% if task.comment.count > 0 %}
+                                                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
+                                                                        {% endif %}</a>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -752,10 +769,11 @@
                                 <div class="col-xl-12">
                                     <div class="card">
 
-                                    <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_plan3" aria-expanded="false" type="button">
-                                        <h5 class="mb-0">Zadaci kreirani za {{ sutra | date('d.m.Y') }}</h5>
+                                    <div class="card-header d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_plan3" aria-expanded="false" type="button">
+                                        <h5 class="mb-0">Zadaci {{ sutra | date('d.m.Y') }}</h5>
                                         <div class="my-auto ms-auto">
                                             <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ tomorrowTimetable | length | default(0) }}</span>
+                                            <i class="ph-caret-down collapsible-indicator"></i>
                                         </div>
                                     </div>
 
@@ -815,11 +833,12 @@
                                     <!-- Marketing campaigns -->
                                     <div class="card">
 
-                                        <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_plan4" aria-expanded="false" type="button">
-                                            <h5 class="mb-0">Interni zadaci kreirani za {{ sutra | date('d.m.Y') }}</h5>
+                                        <div class="card-header d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_plan4" aria-expanded="false" type="button">
+                                            <h5 class="mb-0">Interni zadaci {{ sutra | date('d.m.Y') }}</h5>
                                              <div class="my-auto ms-auto">
                                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ tomorrowTimetableIntern | length | default(0) }}</span>
-                                            </div>
+                                                 <i class="ph-caret-down collapsible-indicator"></i>
+                                             </div>
                                         </div>
 
                                         <div id="collapsed_plan4" class="table-responsive card accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
@@ -874,7 +893,7 @@
                     {% endif %}
 
 
-{#
+
                 </div>
                 <!-- /content area -->
 
@@ -891,469 +910,7 @@
     </div>
     {% include 'includes/notification.html.twig' %}
 
-{#    {% if tomorrowSubs is not empty %}#}
-{#        {% for task in tomorrowSubs %}#}
-{#            {% if task['projekat'] is not null %}#}
-{#                <div id="modal_details_subs_task{{ loop.index }}" class="modal fade" tabindex="-1">#}
-{#                    <div class="modal-dialog">#}
-{#                        <div class="modal-content">#}
-{#                            <div class="modal-header bg-primary text-white border-0">#}
-{#                                <h6 class="modal-title">Detalji zamene</h6>#}
-{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                            </div>#}
 
-{#                            <div class="modal-body">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-body">#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Projekat:</div>#}
-{#                                            <div class="col-8">{{ task['projekat'].title }}</div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Geodeta:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task['geo'] is not null %}#}
-{#                                                    {{ task['geo'].getNameWithFirstLetter }}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Vreme:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.vreme is not null %}#}
-{#                                                    {{ task.vreme}}#}
-{#                                                {% else %}#}
-{#                                                    Vreme nije zadato#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Napomena:</div>#}
-{#                                            <div class="col-8">{{ task.napomena }}</div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-
-{#                            <div class="modal-footer">#}
-{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            {% endif %}#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
-
-{#    {% if plan is not empty %}#}
-{#        {% for task in plan %}#}
-{#            {% if task['projekat'] is not null %}#}
-{#                <div id="modal_details1_task_plan{{ loop.index }}" class="modal fade" tabindex="-1">#}
-{#                    <div class="modal-dialog">#}
-{#                        <div class="modal-content">#}
-{#                            <div class="modal-header bg-primary text-white border-0">#}
-{#                                <h6 class="modal-title">Detalji zadatka</h6>#}
-{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                            </div>#}
-
-{#                            <div class="modal-body">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-body">#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Projekat:</div>#}
-{#                                            <div class="col-8">{{ task['projekat'].title }}</div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Geodete:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task['geo1'] is not null %}#}
-{#                                                    {{ task['geo1'].getNameWithFirstLetter }} <br>#}
-{#                                                {% endif %}#}
-{#                                                {% if task['geo2'] is not null %}#}
-{#                                                    {{ task['geo2'].getNameWithFirstLetter }} <br>#}
-{#                                                {% endif %}#}
-{#                                                {% if task['geo3'] is not null %}#}
-{#                                                    {{ task['geo3'].getNameWithFirstLetter }}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Aktivnosti:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% for akt in task['aktivnosti'] %}#}
-{#                                                    {{ akt.title }} <br>#}
-{#                                                {% endfor %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Oprema:</div>#}
-{#                                            <div class="col-8">#}
-
-{#                                                {% for opr in task['oprema'] %}#}
-{#                                                    {{ opr.title }} <br>#}
-{#                                                {% endfor %}#}
-
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Vozilo:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.vozilo is not null %}#}
-{#                                                    {{ task.vozilo.getCarName }}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Vreme:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.vreme is not null %}#}
-{#                                                    {{ task.vreme}}#}
-{#                                                {% else %}#}
-{#                                                    Vreme nije zadato#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Napomena:</div>#}
-{#                                            <div class="col-8">{{ task.napomena }}</div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-
-{#                            <div class="modal-footer">#}
-{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            {% endif %}#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
-{#    {% if subs is not empty %}#}
-{#        {% for task in subs %}#}
-{#            {% if task['projekat'] is not null %}#}
-{#                <div id="modal_details_subs_task_subs{{ loop.index }}" class="modal fade" tabindex="-1">#}
-{#                    <div class="modal-dialog">#}
-{#                        <div class="modal-content">#}
-{#                            <div class="modal-header bg-primary text-white border-0">#}
-{#                                <h6 class="modal-title">Detalji zamene</h6>#}
-{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                            </div>#}
-
-{#                            <div class="modal-body">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-body">#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Projekat:</div>#}
-{#                                            <div class="col-8">{{ task['projekat'].title }}</div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Geodeta:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task['geo'] is not null %}#}
-{#                                                    {{ task['geo'].getNameWithFirstLetter }}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Vreme:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.vreme is not null %}#}
-{#                                                    {{ task.vreme}}#}
-{#                                                {% else %}#}
-{#                                                    Vreme nije zadato#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Napomena:</div>#}
-{#                                            <div class="col-8">{{ task.napomena }}</div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-
-{#                            <div class="modal-footer">#}
-{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            {% endif %}#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
-
-{#    {% if currentTime < "14:30" %}#}
-{#        {% if dostupnosti.nedostupni is not empty %}#}
-{#            <div id="modal_nedostupni" class="modal fade" tabindex="-1">#}
-{#                <div class="modal-dialog">#}
-{#                    <div class="modal-content">#}
-{#                        <div class="modal-header bg-primary text-white border-0">#}
-{#                            <h6 class="modal-title">Odsutni zaposleni</h6>#}
-{#                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                        </div>#}
-{#                        <div class="modal-body">#}
-{#                            <div class="card">#}
-{#                                <div class="card-body">#}
-{#                                    {% set bg_class = '' %}#}
-{#                                    {% for user in dostupnosti.nedostupni %}#}
-{#                                        {% set dost = getDostupnostByUser(user) %}#}
-{#                                        {% if loop.index is even %}#}
-{#                                            {% set bg_class = 'bg-light' %}#}
-{#                                        {% else %}#}
-{#                                            {% set bg_class = '' %}#}
-{#                                        {% endif %}#}
-{#                                        <div class="row p-2 {{ bg_class }} fw-semibold">#}
-{#                                            <div class="col-6"><a href="{{ path('app_employee_calendar_view', {id: user.id}) }}">{{ user.fullName }}</a></div>#}
-{#                                            <div class="col-6">#}
-{#                                                {% if dost == 0 %}#}
-{#                                                    Izašao#}
-{#                                                {% elseif dost == 1 %}#}
-{#                                                    Slobodan dan#}
-{#                                                {% elseif dost == 2 %}#}
-{#                                                    Odmor#}
-{#                                                {% elseif dost == 3 %}#}
-{#                                                    Bolovanje#}
-{#                                                {% elseif dost == 4 %}#}
-{#                                                    Slava#}
-{#                                                {% else %}#}
-{#                                                    Ostalo#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    {% endfor %}#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-
-{#                        <div class="modal-footer">#}
-{#                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        {% endif %}#}
-{#    {% else %}#}
-{#        {% if dostupnostiSutra.nedostupni is not empty %}#}
-{#            <div id="modal_nedostupni" class="modal fade" tabindex="-1">#}
-{#                <div class="modal-dialog">#}
-{#                    <div class="modal-content">#}
-{#                        <div class="modal-header bg-primary text-white border-0">#}
-{#                            <h6 class="modal-title">Odsutni zaposleni</h6>#}
-{#                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                        </div>#}
-{#                        <div class="modal-body">#}
-{#                            <div class="card">#}
-{#                                <div class="card-body">#}
-{#                                    {% set bg_class_sutra = '' %}#}
-{#                                    {% for user in dostupnostiSutra.nedostupni %}#}
-{#                                        {% set dost = getDostupnostByUserSutra(user) %}#}
-{#                                        {% if loop.index is even %}#}
-{#                                            {% set bg_class_sutra = 'bg-light' %}#}
-{#                                        {% else %}#}
-{#                                            {% set bg_class_sutra = '' %}#}
-{#                                        {% endif %}#}
-{#                                        <div class="row p-2 fw-semibold{{ bg_class_sutra }}">#}
-{#                                            <div class="col-6"><a href="{{ path('app_employee_calendar_view', {id: user.id}) }}">{{ user.fullName }}</a></div>#}
-{#                                            <div class="col-6">#}
-{#                                                {% if dost == 0 %}#}
-{#                                                    Izašao#}
-{#                                                {% elseif dost == 1 %}#}
-{#                                                    Slobodan dan#}
-{#                                                {% elseif dost == 2 %}#}
-{#                                                    Odmor#}
-{#                                                {% elseif dost == 3 %}#}
-{#                                                    Bolovanje#}
-{#                                                {% elseif dost == 4 %}#}
-{#                                                    Slava#}
-{#                                                {% else %}#}
-{#                                                    Ostalo#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    {% endfor %}#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-
-{#                        <div class="modal-footer">#}
-{#                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        {% endif %}#}
-{#    {% endif %}#}
-{#    {% if dostupnosti.vanZadatka is not empty %}#}
-{#        <div id="modal_vanzadatka" class="modal fade" tabindex="-1">#}
-{#            <div class="modal-dialog">#}
-{#                <div class="modal-content">#}
-{#                    <div class="modal-header bg-primary text-white border-0">#}
-{#                        <h6 class="modal-title">Slobodni zaposleni bez obaveze</h6>#}
-{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                    </div>#}
-{#                    <div class="modal-body">#}
-{#                        <div class="card">#}
-{#                            <div class="card-body">#}
-{#                                {% set bg_class_van_zadatka = '' %}#}
-{#                                {% for user in dostupnosti.vanZadatka %}#}
-{#                                    {% if loop.index is even %}#}
-{#                                        {% set bg_class_van_zadatka = 'bg-light' %}#}
-{#                                    {% else %}#}
-{#                                        {% set bg_class_van_zadatka = '' %}#}
-{#                                    {% endif %}#}
-{#                                    <div class="row p-2 fw-semibold {{ bg_class_van_zadatka }}">#}
-{#                                        <div class="col-12">{{ user.fullName }}</div>#}
-{#                                    </div>#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
-{#                    <div class="modal-footer">#}
-{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endif %}#}
-
-
-{#    {% if dostupnosti.kancelarija is not empty %}#}
-{#        <div id="modal_kancelarija" class="modal fade" tabindex="-1">#}
-{#            <div class="modal-dialog">#}
-{#                <div class="modal-content">#}
-{#                    <div class="modal-header bg-primary text-white border-0">#}
-{#                        <h6 class="modal-title">Zaposleni u kancelariji</h6>#}
-{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                    </div>#}
-{#                    <div class="modal-body">#}
-{#                        <div class="card">#}
-{#                            <div class="card-body">#}
-{#                                {% set bg_class_kancelarija = '' %}#}
-{#                                {% for user in dostupnosti.kancelarija %}#}
-{#                                    {% if loop.index is even %}#}
-{#                                        {% set bg_class_kancelarija = 'bg-light' %}#}
-{#                                    {% else %}#}
-{#                                        {% set bg_class_kancelarija = '' %}#}
-{#                                    {% endif %}#}
-{#                                    <div class="row p-2 fw-semibold {{ bg_class_kancelarija }}">#}
-{#                                        <div class="col-12">{{ user.fullName }}</div>#}
-{#                                    </div>#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
-{#                    <div class="modal-footer">#}
-{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endif %}#}
-{#    {% if dostupnosti.unknown is not empty %}#}
-{#        <div id="modal_unknown" class="modal fade" tabindex="-1">#}
-{#            <div class="modal-dialog">#}
-{#                <div class="modal-content">#}
-{#                    <div class="modal-header bg-primary text-white border-0">#}
-{#                        <h6 class="modal-title">Neraspoređeni zaposleni</h6>#}
-{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                    </div>#}
-{#                    <div class="modal-body">#}
-{#                        <div class="card">#}
-{#                            <div class="card-body">#}
-{#                                {% set bg_class_unknown = '' %}#}
-{#                                {% for user in dostupnosti.unknown %}#}
-{#                                    {% if loop.index is even %}#}
-{#                                        {% set bg_class_unknown = 'bg-light' %}#}
-{#                                    {% else %}#}
-{#                                        {% set bg_class_unknown = '' %}#}
-{#                                    {% endif %}#}
-{#                                    <div class="row p-2 fw-semibold {{ bg_class_unknown }}">#}
-{#                                        <div class="col-12">{{ user.fullName }}</div>#}
-{#                                    </div>#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
-{#                    <div class="modal-footer">#}
-{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endif %}#}
-{#    {% if nerasporedjenost is not empty %}#}
-{#        <div id="modal_unknown_sutra" class="modal fade" tabindex="-1">#}
-{#            <div class="modal-dialog">#}
-{#                <div class="modal-content">#}
-{#                    <div class="modal-header bg-primary text-white border-0">#}
-{#                        <h6 class="modal-title">Neraspoređeni zaposleni za sutra</h6>#}
-{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                    </div>#}
-{#                    <div class="modal-body">#}
-{#                        <div class="card">#}
-{#                            <div class="card-body">#}
-{#                                {% set bg_class_unknown = '' %}#}
-{#                                {% for user in nerasporedjenost.nerasporedjeniSutra %}#}
-{#                                    {% if loop.index is even %}#}
-{#                                        {% set bg_class_unknown = 'bg-light' %}#}
-{#                                    {% else %}#}
-{#                                        {% set bg_class_unknown = '' %}#}
-{#                                    {% endif %}#}
-{#                                    <div class="row p-2 fw-semibold {{ bg_class_unknown }}">#}
-{#                                        <div class="col-12">{{ user.fullName }}</div>#}
-{#                                    </div>#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
-{#                    <div class="modal-footer">#}
-{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endif %}#}
-
-{#    {% if tekuciPoslovi is not empty %}#}
-{#        <div id="modal_tekuci" class="modal fade" tabindex="-1">#}
-{#            <div class="modal-dialog">#}
-{#                <div class="modal-content">#}
-{#                    <div class="modal-header bg-primary text-white border-0">#}
-{#                        <h6 class="modal-title">Zaposleni na tekućim obavezama</h6>#}
-{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                    </div>#}
-{#                    <div class="modal-body">#}
-{#                        <div class="card">#}
-{#                            <div class="card-body">#}
-{#                                {% set bg_class_unknown = '' %}#}
-{#                                {% for task in tekuciPoslovi %}#}
-{#                                    {% if loop.index is even %}#}
-{#                                        {% set bg_class_unknown = 'bg-light' %}#}
-{#                                    {% else %}#}
-{#                                        {% set bg_class_unknown = '' %}#}
-{#                                    {% endif %}#}
-{#                                    <div class="row p-2 fw-semibold {{ bg_class_unknown }}">#}
-{#                                        <div class="col-12">{{ task.user.fullName }}</div>#}
-{#                                    </div>#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
-{#                    <div class="modal-footer">#}
-{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endif %}#}
-    <!-- /vertical form modal -->
     {% if settings.isPlanTomorrow %}
         {% if "now"|date("H:i") < settings.radnoVreme | date ("H:i") %}
             {% if tomorrowTimetable is not empty %}
@@ -1586,21 +1143,35 @@
                             <div class="modal-body">
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="row p-2">
-                                            <div class="col-4">Projekat:</div>
-                                            <div class="col-8">{{ task.project.title }}</div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Zaposleni:</div>
-                                            <div class="col-8">{{ task.user.getNameWithFirstLetter }}</div>
-                                        </div>
+                                        {% if task.comment is empty %}
+                                            <div class="row p-2">
+                                                <div class="col-12 fw-semibold">Nema komentara</div>
+                                            </div>
+                                        {% else %}
+                                            {% for comment in task.comment %}
+                                                <div class="row p-2 {% if loop.index is odd %}bg-light{% endif %}">
+                                                    <div class="col-4">{{ comment.user.getNameWithFirstLetter }} <span class="text-muted" style="font-size: 10px">{{ comment.created | date("d.m.Y") }} u {{ comment.created | date("H:i:s") }}</span></div>
+                                                    <div class="col-8 fw-semibold">{{ comment.comment }}</div>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-body">
                                         <div class="row p-2">
                                             <div class="col-4">Zadatak:</div>
                                             <div class="col-8">{{ task.task }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
+                                            <div class="col-4">Zaduženi:</div>
+                                            <div class="col-8">{{ task.user.getNameWithFirstLetter }}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
                                             <div class="col-4">Prioritet:</div>
-                                            <div class="col-8">{% if task.priority == 1 %}
+                                            <div class="col-8">
+                                                {% if task.priority == 1 %}
                                                     <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
                                                 {% elseif task.priority == 2 %}
                                                     <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
@@ -1608,7 +1179,50 @@
                                                     <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
                                                 {% elseif task.priority == 5 %}
                                                     <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
-                                                {% endif %}</div>
+                                                {% else %}
+                                                    <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Datum i vreme:</div>
+                                            <div class="col-8">
+                                                {% if task.time is null %}
+                                                    {{ task.datumKreiranja | date('d.m.Y') }}
+                                                {% else %}
+                                                    {{ task.time | date('d.m.Y H:i') }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Status:</div>
+                                            <div class="col-8">
+                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                    <span class="badge bg-secondary text-primary">Kreiran</span>
+                                                {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                    <span class="badge bg-yellow text-primary">U toku</span>
+                                                {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                    <span class="badge bg-primary text-white">Završen</span>
+                                                {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::KONVERTOVANO') %}
+                                                    <span class="badge bg-yellow text-primary">Konvertovan</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Ponavljanje:</div>
+                                            <div class="col-8">
+                                                Zadatak se ponavlja
+                                                {% if task.repeatingInterval == 1 %}
+                                                    svakog dana, sledeći zadatak će biti dostupan
+                                                {% elseif  task.repeatingInterval == 2 %}
+                                                    svake sedmice, sledeći zadatak će biti dostupan
+                                                {% elseif  task.repeatingInterval == 3 %}
+                                                    svakog meseca, sledeći zadatak će biti dostupan
+                                                {% elseif  task.repeatingInterval == 4 %}
+                                                    svake godine, sledeći zadatak će biti dostupan
+                                                {% endif %}
+                                                {{ task.datumPonavljanja | date("d.m.Y.")}}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

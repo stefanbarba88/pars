@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueEntity(fields: ['email'], message: 'U bazi već postoji korisnik sa ovim email nalogom')]
+#[UniqueEntity(fields: ['email'], message: 'U bazi već postoji korisnik sa ovim email nalogom', ignoreNull: true)]
 class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUserInterface {
   #[ORM\Id]
   #[ORM\GeneratedValue]

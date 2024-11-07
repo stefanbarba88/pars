@@ -863,7 +863,7 @@
                                     <table class="table table-hover table-bordered table-sm">
                                         <thead class="bg-light">
                                         <tr class="table-light">
-                                            <th colspan="4">Raspored</th>
+                                            <th colspan="5">Raspored</th>
                                             <th colspan="1">
                                                 <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                             </th>
@@ -872,7 +872,8 @@
                                             <th>Projekat</th>
                                             <th>Kategorija</th>
                                             <th>Zaposleni</th>
-                                            <th>Opis zadatka</th>
+                                            <th>Prioritet</th>
+                                            <th>Zadatak</th>
                                             <th class="text-center" style="width: 20px;">
                                                 <i class="ph-dots-three"></i>
                                             </th>
@@ -881,7 +882,7 @@
                                         <tbody>
                                         {% if timetableIntern is not empty %}
                                                 <tr class="table-light">
-                                                    <td colspan="5" class="fw-semibold">Teren</td>
+                                                    <td colspan="6" class="fw-semibold">Teren</td>
                                                 </tr>
                                             {% for task in timetableIntern %}
                                                 {% if task.project is not null %}
@@ -908,11 +909,26 @@
                                                         <td>
                                                             <div class="fw-semibold">
                                                                 <div class="btn-group">
-                                                                    {{ task.user.fullName }}
+                                                                    <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.fullName }}
+                                                                        {% if task.comment.count > 0 %}
+                                                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
+                                                                        {% endif %}</a>
                                                                 </div>
                                                             </div>
                                                         </td>
-
+                                                        <td class="text-center">
+                                                            {% if task.priority == 1 %}
+                                                                <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                            {% elseif task.priority == 2 %}
+                                                                <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                            {% elseif task.priority == 4 %}
+                                                                <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                            {% elseif task.priority == 5 %}
+                                                                <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                            {% else %}
+                                                                <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
+                                                            {% endif %}
+                                                        </td>
                                                         <td>
                                                             <div class="text-body">
                                                                 {{ task.task }}
@@ -928,7 +944,7 @@
                                                 {% endif %}
                                             {% endfor %}
                                                 <tr class="table-light">
-                                                    <td colspan="5" class="fw-semibold">Kancelarija</td>
+                                                    <td colspan="6" class="fw-semibold">Kancelarija</td>
                                                 </tr>
                                             {% for task in timetableIntern %}
                                                 {% if task.project is not null %}
@@ -955,11 +971,26 @@
                                                         <td>
                                                             <div class="fw-semibold">
                                                                 <div class="btn-group">
-                                                                    {{ task.user.fullName }}
+                                                                    <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.fullName }}
+                                                                        {% if task.comment.count > 0 %}
+                                                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
+                                                                        {% endif %}</a>
                                                                 </div>
                                                             </div>
                                                         </td>
-
+                                                        <td class="text-center">
+                                                            {% if task.priority == 1 %}
+                                                                <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                            {% elseif task.priority == 2 %}
+                                                                <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                            {% elseif task.priority == 4 %}
+                                                                <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                            {% elseif task.priority == 5 %}
+                                                                <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                            {% else %}
+                                                                <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
+                                                            {% endif %}
+                                                        </td>
                                                         <td>
                                                             <div class="text-body">
                                                                 {{ task.task }}
@@ -975,7 +1006,7 @@
                                                 {% endif %}
                                             {% endfor %}
                                                 <tr class="table-light">
-                                                    <td colspan="5" class="fw-semibold">Rad od kuće</td>
+                                                    <td colspan="6" class="fw-semibold">Rad od kuće</td>
                                                 </tr>
                                             {% for task in timetableIntern %}
                                                 {% if task.project is not null %}
@@ -1002,11 +1033,26 @@
                                                         <td>
                                                             <div class="fw-semibold">
                                                                 <div class="btn-group">
-                                                                    {{ task.user.fullName }}
+                                                                    <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.fullName }}
+                                                                        {% if task.comment.count > 0 %}
+                                                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
+                                                                        {% endif %}</a>
                                                                 </div>
                                                             </div>
                                                         </td>
-
+                                                        <td class="text-center">
+                                                            {% if task.priority == 1 %}
+                                                                <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                            {% elseif task.priority == 2 %}
+                                                                <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                            {% elseif task.priority == 4 %}
+                                                                <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                            {% elseif task.priority == 5 %}
+                                                                <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                            {% else %}
+                                                                <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
+                                                            {% endif %}
+                                                        </td>
                                                         <td>
                                                             <div class="text-body">
                                                                 {{ task.task }}
@@ -1022,7 +1068,7 @@
                                                 {% endif %}
                                             {% endfor %}
                                             <tr class="table-light">
-                                                <td colspan="5" class="fw-semibold">Ostalo</td>
+                                                <td colspan="6" class="fw-semibold">Ostalo</td>
                                             </tr>
                                             {% for task in timetableIntern %}
                                                 {% if task.project is not null %}
@@ -1049,11 +1095,26 @@
                                                         <td>
                                                             <div class="fw-semibold">
                                                                 <div class="btn-group">
-                                                                    {{ task.user.fullName }}
+                                                                    <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.fullName }}
+                                                                        {% if task.comment.count > 0 %}
+                                                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
+                                                                        {% endif %}</a>
                                                                 </div>
                                                             </div>
                                                         </td>
-
+                                                        <td class="text-center">
+                                                            {% if task.priority == 1 %}
+                                                                <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                            {% elseif task.priority == 2 %}
+                                                                <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                            {% elseif task.priority == 4 %}
+                                                                <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                            {% elseif task.priority == 5 %}
+                                                                <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                            {% else %}
+                                                                <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
+                                                            {% endif %}
+                                                        </td>
                                                         <td>
                                                             <div class="text-body">
                                                                 {{ task.task }}
@@ -1070,7 +1131,7 @@
                                             {% endfor %}
                                         {% else %}
                                             <tr>
-                                                <td colspan="5">
+                                                <td colspan="6">
                                                     <div class="fw-semibold">
                                                         Nema kreiranih zadataka za danas
                                                     </div>
@@ -1348,13 +1409,14 @@
                                             <table class="table table-hover table-bordered table-sm">
                                                 <thead class="bg-light">
                                                 <tr class="table-light">
-                                                    <th colspan="4">Raspored</th>
+                                                    <th colspan="5">Raspored</th>
                                                 </tr>
                                                 <tr>
                                                     <th>Projekat</th>
                                                     <th>Kategorija</th>
                                                     <th>Zaposleni</th>
-                                                    <th>Opis zadatka</th>
+                                                    <th>Prioritet</th>
+                                                    <th>Zadatak</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -1379,6 +1441,19 @@
                                                                        </div>
                                                                    </div>
                                                                </td>
+                                                               <td class="text-center">
+                                                                   {% if task.priority == 1 %}
+                                                                       <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                                   {% elseif task.priority == 2 %}
+                                                                       <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                                   {% elseif task.priority == 4 %}
+                                                                       <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                                   {% elseif task.priority == 5 %}
+                                                                       <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                                   {% else %}
+                                                                       <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>
+                                                                   {% endif %}
+                                                               </td>
                                                                <td>
                                                                     <div class="text-body">
                                                                         {{ task.task }}
@@ -1389,7 +1464,7 @@
                                                     {% endfor %}
                                                 {% else %}
                                                     <tr>
-                                                        <td colspan="4">
+                                                        <td colspan="5">
                                                             <div class="fw-semibold">
                                                                 Nema kreiranih zadataka za danas
                                                             </div>
@@ -1421,549 +1496,6 @@
     </div>
     {% include 'includes/notification.html.twig' %}
 
-{#    {% if tomorrowTimetable is not empty %}#}
-{#        {% for task in tomorrowTimetable %}#}
-{#            {% if task['projekat'] is not null %}#}
-{#                <div id="modal_details1_task{{ loop.index }}" class="modal fade" tabindex="-1">#}
-{#                    <div class="modal-dialog">#}
-{#                        <div class="modal-content">#}
-{#                            <div class="modal-header bg-primary text-white border-0">#}
-{#                                <h6 class="modal-title">Detalji zadatka</h6>#}
-{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                            </div>#}
-
-{#                            <div class="modal-body">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-body">#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Projekat:</div>#}
-{#                                            <div class="col-8">{{ task['projekat'].title }}</div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Geodete:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task['geo1'] is not null %}#}
-{#                                                    {{ task['geo1'].getNameWithFirstLetter }} <br>#}
-{#                                                {% endif %}#}
-{#                                                {% if task['geo2'] is not null %}#}
-{#                                                    {{ task['geo2'].getNameWithFirstLetter }} <br>#}
-{#                                                {% endif %}#}
-{#                                                {% if task['geo3'] is not null %}#}
-{#                                                    {{ task['geo3'].getNameWithFirstLetter }}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Aktivnosti:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% for akt in task['aktivnosti'] %}#}
-{#                                                    {{ akt.title }} <br>#}
-{#                                                {% endfor %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Oprema:</div>#}
-{#                                            <div class="col-8">#}
-
-{#                                                {% for opr in task['oprema'] %}#}
-{#                                                    {{ opr.title }} <br>#}
-{#                                                {% endfor %}#}
-
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Vozilo:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.vozilo is not null %}#}
-{#                                                    {{ task.vozilo.getCarName }}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Vreme:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.vreme is not null %}#}
-{#                                                    {{ task.vreme}}#}
-{#                                                {% else %}#}
-{#                                                    Vreme nije zadato#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Napomena:</div>#}
-{#                                            <div class="col-8">{{ task.napomena }}</div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-
-{#                            <div class="modal-footer">#}
-{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            {% endif %}#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
-{#    {% if tomorrowSubs is not empty %}#}
-{#        {% for task in tomorrowSubs %}#}
-{#            {% if task['projekat'] is not null %}#}
-{#                <div id="modal_details_subs_task{{ loop.index }}" class="modal fade" tabindex="-1">#}
-{#                    <div class="modal-dialog">#}
-{#                        <div class="modal-content">#}
-{#                            <div class="modal-header bg-primary text-white border-0">#}
-{#                                <h6 class="modal-title">Detalji zamene</h6>#}
-{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                            </div>#}
-
-{#                            <div class="modal-body">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-body">#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Projekat:</div>#}
-{#                                            <div class="col-8">{{ task['projekat'].title }}</div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Geodeta:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task['geo'] is not null %}#}
-{#                                                    {{ task['geo'].getNameWithFirstLetter }}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Vreme:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.vreme is not null %}#}
-{#                                                    {{ task.vreme}}#}
-{#                                                {% else %}#}
-{#                                                    Vreme nije zadato#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Napomena:</div>#}
-{#                                            <div class="col-8">{{ task.napomena }}</div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-
-{#                            <div class="modal-footer">#}
-{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            {% endif %}#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
-
-{#    {% if plan is not empty %}#}
-{#        {% for task in plan %}#}
-{#            {% if task['projekat'] is not null %}#}
-{#                <div id="modal_details1_task_plan{{ loop.index }}" class="modal fade" tabindex="-1">#}
-{#                    <div class="modal-dialog">#}
-{#                        <div class="modal-content">#}
-{#                            <div class="modal-header bg-primary text-white border-0">#}
-{#                                <h6 class="modal-title">Detalji zadatka</h6>#}
-{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                            </div>#}
-
-{#                            <div class="modal-body">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-body">#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Projekat:</div>#}
-{#                                            <div class="col-8">{{ task['projekat'].title }}</div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Geodete:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task['geo1'] is not null %}#}
-{#                                                    {{ task['geo1'].getNameWithFirstLetter }} <br>#}
-{#                                                {% endif %}#}
-{#                                                {% if task['geo2'] is not null %}#}
-{#                                                    {{ task['geo2'].getNameWithFirstLetter }} <br>#}
-{#                                                {% endif %}#}
-{#                                                {% if task['geo3'] is not null %}#}
-{#                                                    {{ task['geo3'].getNameWithFirstLetter }}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Aktivnosti:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% for akt in task['aktivnosti'] %}#}
-{#                                                    {{ akt.title }} <br>#}
-{#                                                {% endfor %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Oprema:</div>#}
-{#                                            <div class="col-8">#}
-
-{#                                                {% for opr in task['oprema'] %}#}
-{#                                                    {{ opr.title }} <br>#}
-{#                                                {% endfor %}#}
-
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Vozilo:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.vozilo is not null %}#}
-{#                                                    {{ task.vozilo.getCarName }}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Vreme:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.vreme is not null %}#}
-{#                                                    {{ task.vreme}}#}
-{#                                                {% else %}#}
-{#                                                    Vreme nije zadato#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Napomena:</div>#}
-{#                                            <div class="col-8">{{ task.napomena }}</div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-
-{#                            <div class="modal-footer">#}
-{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            {% endif %}#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
-{#    {% if subs is not empty %}#}
-{#        {% for task in subs %}#}
-{#            {% if task['projekat'] is not null %}#}
-{#                <div id="modal_details_subs_task_subs{{ loop.index }}" class="modal fade" tabindex="-1">#}
-{#                    <div class="modal-dialog">#}
-{#                        <div class="modal-content">#}
-{#                            <div class="modal-header bg-primary text-white border-0">#}
-{#                                <h6 class="modal-title">Detalji zamene</h6>#}
-{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                            </div>#}
-
-{#                            <div class="modal-body">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-body">#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Projekat:</div>#}
-{#                                            <div class="col-8">{{ task['projekat'].title }}</div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Geodeta:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task['geo'] is not null %}#}
-{#                                                    {{ task['geo'].getNameWithFirstLetter }}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Vreme:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.vreme is not null %}#}
-{#                                                    {{ task.vreme}}#}
-{#                                                {% else %}#}
-{#                                                    Vreme nije zadato#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Napomena:</div>#}
-{#                                            <div class="col-8">{{ task.napomena }}</div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-
-{#                            <div class="modal-footer">#}
-{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            {% endif %}#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
-
-{#    {% if timetable is not empty %}#}
-{#        {% for task in timetable %}#}
-{#                <div id="modal_details_task{{ loop.index }}" class="modal fade" tabindex="-1">#}
-{#                    <div class="modal-dialog">#}
-{#                        <div class="modal-content">#}
-{#                            <div class="modal-header bg-primary text-white border-0">#}
-{#                                <h6 class="modal-title">Detalji zadatka</h6>#}
-{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                            </div>#}
-
-{#                            <div class="modal-body">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-body">#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Projekat:</div>#}
-{#                                            <div class="col-8">{{ task.task.title }}</div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Geodete:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% for user in task.task.assignedUsers %}#}
-{#                                                    {{ user.getNameWithFirstLetter }} <br>#}
-{#                                                {% endfor %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Aktivnosti:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% for akt in task.task.activity %}#}
-{#                                                    {{ akt.title }} <br>#}
-{#                                                {% endfor %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Oprema:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% for opt in task.task.oprema %}#}
-{#                                                    {{ opt.title }} <br>#}
-{#                                                {% endfor %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Vozilo:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.car is not empty %}#}
-{#                                                    {{ task.car[0].plate }}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Vreme:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.task.time is not null %}#}
-{#                                                    {% if task.task.time|date('H:i') != '00:00' %}#}
-{#                                                        {{ task.task.time|date('H:i') }}h#}
-{#                                                    {% else %}#}
-{#                                                        Vreme nije zadato#}
-{#                                                    {% endif %}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Napomena:</div>#}
-{#                                            <div class="col-8">{{ task.task.description }}</div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-
-{#                            <div class="modal-footer">#}
-{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
-
-{#    {% if currentTime < "14:30" %}#}
-{#    {% else %}#}
-{#        {% if dostupnostiSutra.nedostupni is not empty %}#}
-{#            <div id="modal_nedostupni" class="modal fade" tabindex="-1">#}
-{#                <div class="modal-dialog">#}
-{#                    <div class="modal-content">#}
-{#                        <div class="modal-header bg-primary text-white border-0">#}
-{#                            <h6 class="modal-title">Odsutni zaposleni</h6>#}
-{#                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                        </div>#}
-{#                        <div class="modal-body">#}
-{#                            <div class="card">#}
-{#                                <div class="card-body">#}
-{#                                    {% set bg_class_sutra = '' %}#}
-{#                                    {% for user in dostupnostiSutra.nedostupni %}#}
-{#                                        {% set dost = getDostupnostByUserSutra(user) %}#}
-{#                                        {% if loop.index is even %}#}
-{#                                            {% set bg_class_sutra = 'bg-light' %}#}
-{#                                        {% else %}#}
-{#                                            {% set bg_class_sutra = '' %}#}
-{#                                        {% endif %}#}
-{#                                        <div class="row p-2 fw-semibold{{ bg_class_sutra }}">#}
-{#                                            <div class="col-6"><a href="{{ path('app_employee_calendar_view', {id: user.id}) }}">{{ user.fullName }}</a></div>#}
-{#                                            <div class="col-6">#}
-{#                                                {% if dost == 0 %}#}
-{#                                                    Izašao#}
-{#                                                {% elseif dost == 1 %}#}
-{#                                                    Slobodan dan#}
-{#                                                {% elseif dost == 2 %}#}
-{#                                                    Odmor#}
-{#                                                {% elseif dost == 3 %}#}
-{#                                                    Bolovanje#}
-{#                                                {% elseif dost == 4 %}#}
-{#                                                    Slava#}
-{#                                                {% else %}#}
-{#                                                    Ostalo#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    {% endfor %}#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-
-{#                        <div class="modal-footer">#}
-{#                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        {% endif %}#}
-{#    {% endif %}#}
-{#    {% if dostupnosti.vanZadatka is not empty %}#}
-{#        <div id="modal_vanzadatka" class="modal fade" tabindex="-1">#}
-{#            <div class="modal-dialog">#}
-{#                <div class="modal-content">#}
-{#                    <div class="modal-header bg-primary text-white border-0">#}
-{#                        <h6 class="modal-title">Slobodni zaposleni bez obaveze</h6>#}
-{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                    </div>#}
-{#                    <div class="modal-body">#}
-{#                        <div class="card">#}
-{#                            <div class="card-body">#}
-{#                                {% set bg_class_van_zadatka = '' %}#}
-{#                                {% for user in dostupnosti.vanZadatka %}#}
-{#                                    {% if loop.index is even %}#}
-{#                                        {% set bg_class_van_zadatka = 'bg-light' %}#}
-{#                                    {% else %}#}
-{#                                        {% set bg_class_van_zadatka = '' %}#}
-{#                                    {% endif %}#}
-{#                                    <div class="row p-2 fw-semibold {{ bg_class_van_zadatka }}">#}
-{#                                        <div class="col-12">{{ user.fullName }}</div>#}
-{#                                    </div>#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
-{#                    <div class="modal-footer">#}
-{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endif %}#}
-{#    #}
-{#    {% if dostupnosti.unknown is not empty %}#}
-{#        <div id="modal_unknown" class="modal fade" tabindex="-1">#}
-{#            <div class="modal-dialog">#}
-{#                <div class="modal-content">#}
-{#                    <div class="modal-header bg-primary text-white border-0">#}
-{#                        <h6 class="modal-title">Neraspoređeni zaposleni</h6>#}
-{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                    </div>#}
-{#                    <div class="modal-body">#}
-{#                        <div class="card">#}
-{#                            <div class="card-body">#}
-{#                                {% set bg_class_unknown = '' %}#}
-{#                                {% for user in dostupnosti.unknown %}#}
-{#                                    {% if loop.index is even %}#}
-{#                                        {% set bg_class_unknown = 'bg-light' %}#}
-{#                                    {% else %}#}
-{#                                        {% set bg_class_unknown = '' %}#}
-{#                                    {% endif %}#}
-{#                                    <div class="row p-2 fw-semibold {{ bg_class_unknown }}">#}
-{#                                        <div class="col-12">{{ user.fullName }}</div>#}
-{#                                    </div>#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
-{#                    <div class="modal-footer">#}
-{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endif %}#}
-
-{#    {% if nerasporedjenost is not empty %}#}
-{#        <div id="modal_unknown_sutra" class="modal fade" tabindex="-1">#}
-{#            <div class="modal-dialog">#}
-{#                <div class="modal-content">#}
-{#                    <div class="modal-header bg-primary text-white border-0">#}
-{#                        <h6 class="modal-title">Neraspoređeni zaposleni za sutra</h6>#}
-{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                    </div>#}
-{#                    <div class="modal-body">#}
-{#                        <div class="card">#}
-{#                            <div class="card-body">#}
-{#                                {% set bg_class_unknown = '' %}#}
-{#                                {% for user in nerasporedjenost.nerasporedjeniSutra %}#}
-{#                                    {% if loop.index is even %}#}
-{#                                        {% set bg_class_unknown = 'bg-light' %}#}
-{#                                    {% else %}#}
-{#                                        {% set bg_class_unknown = '' %}#}
-{#                                    {% endif %}#}
-{#                                    <div class="row p-2 fw-semibold {{ bg_class_unknown }}">#}
-{#                                        <div class="col-12">{{ user.fullName }}</div>#}
-{#                                    </div>#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
-{#                    <div class="modal-footer">#}
-{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endif %}#}
-
-{#    {% if tekuciPoslovi is not empty %}#}
-{#        <div id="modal_tekuci" class="modal fade" tabindex="-1">#}
-{#            <div class="modal-dialog">#}
-{#                <div class="modal-content">#}
-{#                    <div class="modal-header bg-primary text-white border-0">#}
-{#                        <h6 class="modal-title">Zaposleni na tekućim obavezama</h6>#}
-{#                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                    </div>#}
-{#                    <div class="modal-body">#}
-{#                        <div class="card">#}
-{#                            <div class="card-body">#}
-{#                                {% set bg_class_unknown = '' %}#}
-{#                                {% for task in tekuciPoslovi %}#}
-{#                                    {% if loop.index is even %}#}
-{#                                        {% set bg_class_unknown = 'bg-light' %}#}
-{#                                    {% else %}#}
-{#                                        {% set bg_class_unknown = '' %}#}
-{#                                    {% endif %}#}
-{#                                    <div class="row p-2 fw-semibold {{ bg_class_unknown }}">#}
-{#                                        <div class="col-12">{{ task.user.fullName }}</div>#}
-{#                                    </div>#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
-{#                    <div class="modal-footer">#}
-{#                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endif %}#}
     {% if settings.isPlanEmployee %}
         {% if dostupnosti.kancelarija is not empty %}
             <div id="modal_kancelarija" class="modal fade" tabindex="-1">

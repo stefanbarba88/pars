@@ -187,7 +187,7 @@
                                 <!-- Marketing campaigns -->
                                 <div class="card">
                                     <div class="card-header d-flex align-items-center">
-                                        <h5 class="mb-0">Zadaci kreirani za {{ danas | date('d.m.Y') }}</h5>
+                                        <h5 class="mb-0">Zadaci {{ danas | date('d.m.Y') }}</h5>
                                         {#                                    <div class="my-auto ms-auto">#}
                                         {#                                        <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>#}
                                         {#                                    </div>#}
@@ -235,7 +235,7 @@
                                                         {% endfor %}
                                                     </td>
                                                     <td>
-                                                        <a href="{{ path('app_task_view_user', { id: log[0].task.id}) }}" class="btn btn-primary"><i class="ph-clipboard"></i></a>
+                                                        <a href="{{ path('app_task_view_user', { id: log[0].task.id}) }}"><i class="ph-clipboard"></i></a>
                                                     </td>
                                                     </tr>
                                                 {% endfor %}
@@ -253,7 +253,7 @@
                                 <!-- Marketing campaigns -->
                                 <div class="card">
                                     <div class="card-header d-flex align-items-center">
-                                        <h5 class="mb-0">Interni zadaci kreirani za {{ danas | date('d.m.Y') }}</h5>
+                                        <h5 class="mb-0">Interni zadaci {{ danas | date('d.m.Y') }}</h5>
 {#                                                                            <div class="my-auto ms-auto">#}
 {#                                                                                <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>#}
 {#                                                                            </div>#}
@@ -270,8 +270,8 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            {% if checklistTomorrow is not empty %}
-                                                {% for task in checklistTomorrow %}
+                                            {% if checklistToday is not empty %}
+                                                {% for task in checklistToday %}
                                                     {% if task.project is not null %}
                                                             {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
                                                                 <tr>
@@ -291,14 +291,15 @@
                                                             <td style="width: 45%;">
                                                                 <div class="fw-semibold">
                                                                     <div class="btn-group">
-                                                                        <a href="{{ path('app_employee_checklist_view', { id: task.user.id }) }}" class="d-inline-flex align-items-center ">
-                                                                            {{ task.user.getNameWithFirstLetter }}
-                                                                        </a>
+                                                                        <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.getNameWithFirstLetter }}
+                                                                            {% if task.comment.count > 0 %}
+                                                                                <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
+                                                                            {% endif %}</a>
                                                                     </div>
                                                                 </div>
                                                             </td>
                                                             <td class="test-center text-primary">
-                                                                <a href="{{ path('app_checklist_view', { id: task.id}) }}" class="btn btn-primary"><i class="ph-clipboard"></i></a>
+                                                                <a href="{{ path('app_checklist_view', { id: task.id}) }}"><i class="ph-clipboard"></i></a>
                                                             </td>
                                                             </tr>
                                                         {% endif %}

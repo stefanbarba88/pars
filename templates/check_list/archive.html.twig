@@ -22,7 +22,6 @@
                     </div>
                 </div>
                 <!-- /page header -->
-
                 <!-- Content area -->
                 <div class="content">
                     <!-- State saving -->
@@ -31,7 +30,7 @@
                             <h5 class="mb-0">Arhiva zadataka</h5>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive card">
+                            <div class="card">
                                 <table class="table table-bordered table-hover table-responsive table-sm">
                                     <thead class="bg-light test-primary">
                                     <tr>
@@ -102,7 +101,7 @@
                                                 {% if task.datumKreiranja is not null %}
                                                     <div class="d-inline-flex align-items-center">
                                                         <i class="ph-calendar me-2"></i>
-                                                        {{ task.datumKreiranja | date("d.m.Y")}}
+                                                        {{ task.datumKreiranja | date("d.m.Y")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Zadatak se ponavlja"></i> {% endif %}
                                                     </div>
                                                 {% endif %}
                                             </td>
@@ -140,6 +139,12 @@
                                                                 Ponovite
                                                             </a>
                                                         {% endif %}
+                                                        {% if task.repeating == 1 %}
+                                                            <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-warning-circle me-2"></i>
+                                                                Isključite ponavljanje
+                                                            </a>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </td>
@@ -159,6 +164,142 @@
                     <!-- /state saving -->
                 </div>
                 <!-- /content area -->
+{#                <!-- Content area -->#}
+{#                <div class="content">#}
+{#                    <!-- State saving -->#}
+{#                    <div class="card">#}
+{#                        <div class="card-header d-flex align-items-center">#}
+{#                            <h5 class="mb-0">Arhiva zadataka</h5>#}
+{#                        </div>#}
+{#                        <div class="card-body">#}
+{#                            <div class="table-responsive card">#}
+{#                                <table class="table table-bordered table-hover table-responsive table-sm">#}
+{#                                    <thead class="bg-light test-primary">#}
+{#                                    <tr>#}
+{#                                        <th>#</th>#}
+{#                                        <th>Zadatak</th>#}
+{#                                        <th>Zaposleni</th>#}
+{#                                        <th {% if pagination.isSorted('[c.priority]') %} class="sorted"{% endif %}>#}
+{#                                            {{ knp_pagination_sortable(pagination, 'Prioritet ', ['c.priority']) }}#}
+{#                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.priority' %}#}
+{#                                                &#8595;#}
+{#                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.priority' %}#}
+{#                                                &#8593;#}
+{#                                            {% else %}#}
+{#                                                &#8597;#}
+{#                                            {% endif %}#}
+{#                                        </th>#}
+{#                                        <th {% if pagination.isSorted('[c.datumKreiranja]') %} class="sorted"{% endif %}>#}
+{#                                            {{ knp_pagination_sortable(pagination, 'Datum zadatka ', ['c.datumKreiranja']) }}#}
+{#                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.datumKreiranja' %}#}
+{#                                                &#8595;#}
+{#                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.datumKreiranja' %}#}
+{#                                                &#8593;#}
+{#                                            {% else %}#}
+{#                                                &#8597;#}
+{#                                            {% endif %}#}
+{#                                        </th>#}
+{#                                        <th>Kreirao</th>#}
+{#                                        <th {% if pagination.isSorted('[c.finish]') %} class="sorted"{% endif %}>#}
+{#                                            {{ knp_pagination_sortable(pagination, 'Datum završetka ', ['c.finish']) }}#}
+{#                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.finish' %}#}
+{#                                                &#8595;#}
+{#                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.finish' %}#}
+{#                                                &#8593;#}
+{#                                            {% else %}#}
+{#                                                &#8597;#}
+{#                                            {% endif %}#}
+{#                                        </th>#}
+{#                                        <th>Završio</th>#}
+{#                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>#}
+{#                                    </tr>#}
+{#                                    </thead>#}
+{#                                    <tbody>#}
+{#                                    {% for task in pagination %}#}
+{#                                        <tr>#}
+{#                                            <td>{{ task.id }}</td>#}
+{#                                            <td>#}
+{#                                                <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">#}
+{#                                                    {{ task.task }}#}
+{#                                                </a>#}
+{#                                            </td>#}
+{#                                            <td>#}
+{#                                                <div class="fw-semibold">#}
+{#                                                    {{ task.user.getFullName() }}#}
+{#                                                </div>#}
+{#                                            </td>#}
+{#                                            <td class="text-center">#}
+{#                                                {% if task.priority == 1 %}#}
+{#                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>#}
+{#                                                {% elseif task.priority == 2 %}#}
+{#                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>#}
+{#                                                {% elseif task.priority == 4 %}#}
+{#                                                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>#}
+{#                                                {% elseif task.priority == 5 %}#}
+{#                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
+{#                                            <td>#}
+{#                                                {% if task.datumKreiranja is not null %}#}
+{#                                                    <div class="d-inline-flex align-items-center">#}
+{#                                                        <i class="ph-calendar me-2"></i>#}
+{#                                                        {{ task.datumKreiranja | date("d.m.Y")}}#}
+{#                                                    </div>#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
+
+{#                                            <td>#}
+{#                                                {{ task.createdBy.getFullName() }}#}
+{#                                            </td>#}
+{#                                            <td>#}
+{#                                                {% if task.finish is not null %}#}
+{#                                                    <div class="d-inline-flex align-items-center">#}
+{#                                                        <i class="ph-calendar me-2"></i>#}
+{#                                                        {{ task.finish | date("d.m.Y")}}#}
+{#                                                    </div>#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
+{#                                            <td>#}
+{#                                                {% if task.editBy is not null %}#}
+{#                                                    {{ task.editBy.getFullName() }}#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
+
+{#                                            <td class="text-center">#}
+{#                                                <div class="dropdown">#}
+{#                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">#}
+{#                                                        <i class="ph-gear"></i>#}
+{#                                                    </a>#}
+{#                                                    <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                        <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="dropdown-item">#}
+{#                                                            <i class="ph-eye me-2"></i>#}
+{#                                                            Vidite#}
+{#                                                        </a>#}
+{#                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}#}
+{#                                                            <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">#}
+{#                                                                <i class="ph-arrows-counter-clockwise me-2"></i>#}
+{#                                                                Ponovite#}
+{#                                                            </a>#}
+{#                                                        {% endif %}#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                    {% endfor %}#}
+{#                                    </tbody>#}
+{#                                </table>#}
+{#                            </div>#}
+{#                        </div>#}
+
+{#                        <div class="card-footer">#}
+{#                            <div class="navigation float-end">#}
+{#                                {{ knp_pagination_render(pagination) }}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <!-- /state saving -->#}
+{#                </div>#}
+{#                <!-- /content area -->#}
 
                 <!-- Footer -->
                 {% include 'includes/footer.html.twig' %}

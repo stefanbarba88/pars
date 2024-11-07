@@ -22,7 +22,6 @@
                     </div>
                 </div>
                 <!-- /page header -->
-
                 <!-- Content area -->
                 <div class="content">
                     <!-- State saving -->
@@ -31,7 +30,7 @@
                             <h5 class="mb-0">Arhiva zadataka</h5>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive card">
+                            <div class="card">
                                 <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                     <thead class="bg-light test-primary">
                                     <tr>
@@ -66,7 +65,7 @@
                                                 {% if task.datumKreiranja is not null %}
                                                     <div class="d-inline-flex align-items-center">
                                                         <i class="ph-calendar me-2"></i>
-                                                        {{ task.datumKreiranja | date("d.m.Y")}}
+                                                        {{ task.datumKreiranja | date("d.m.Y")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Zadatak se ponavlja"></i> {% endif %}
                                                     </div>
                                                 {% endif %}
                                             </td>
@@ -76,7 +75,7 @@
                                                     Završio: {{ task.editBy.getNameWithFirstLetter }}
                                                 {% endif %}
                                             </td>
-                                            
+
                                             <td class="text-center">
                                                 <div class="dropdown">
                                                     <a href="#" class="text-body" data-bs-toggle="dropdown">
@@ -91,6 +90,12 @@
                                                             <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
                                                                 <i class="ph-arrows-counter-clockwise me-2"></i>
                                                                 Ponovite
+                                                            </a>
+                                                        {% endif %}
+                                                        {% if task.repeating == 1 %}
+                                                            <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-warning-circle me-2"></i>
+                                                                Isključite ponavljanje
                                                             </a>
                                                         {% endif %}
                                                     </div>
@@ -112,6 +117,95 @@
                     <!-- /state saving -->
                 </div>
                 <!-- /content area -->
+{#                <!-- Content area -->#}
+{#                <div class="content">#}
+{#                    <!-- State saving -->#}
+{#                    <div class="card">#}
+{#                        <div class="card-header d-flex align-items-center">#}
+{#                            <h5 class="mb-0">Arhiva zadataka</h5>#}
+{#                        </div>#}
+{#                        <div class="card-body">#}
+{#                            <div class="table-responsive card">#}
+{#                                <table class="table table-bordered table-hover table-responsive table_morecondensed">#}
+{#                                    <thead class="bg-light test-primary">#}
+{#                                    <tr>#}
+
+{#                                        <th>Zaposleni</th>#}
+{#                                        <th>Završen</th>#}
+{#                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>#}
+{#                                    </tr>#}
+{#                                    </thead>#}
+{#                                    <tbody>#}
+{#                                    {% for task in pagination %}#}
+{#                                        <tr>#}
+{#                                            <td>#}
+{#                                                <div class="fw-semibold">#}
+{#                                                    {{ task.user.getFullName() }}#}
+{#                                                </div>#}
+{#                                            </td>#}
+{#                                            <td>#}
+{#                                                {% if task.finish is not null %}#}
+{#                                                    <div class="d-inline-flex align-items-center">#}
+{#                                                        <i class="ph-calendar me-2"></i>#}
+{#                                                        {{ task.finish | date("d.m.Y")}}#}
+{#                                                    </div>#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
+{#                                            <td class="text-center">#}
+{#                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ task.id }}" aria-expanded="false"><i class="ph-caret-down collapsible-indicator"></i></a>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        <tr id="collapsed_item{{ task.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">#}
+{#                                            <td>#}
+{#                                                {% if task.datumKreiranja is not null %}#}
+{#                                                    <div class="d-inline-flex align-items-center">#}
+{#                                                        <i class="ph-calendar me-2"></i>#}
+{#                                                        {{ task.datumKreiranja | date("d.m.Y")}}#}
+{#                                                    </div>#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
+
+{#                                            <td>#}
+{#                                                {% if task.editBy is not null %}#}
+{#                                                    Završio: {{ task.editBy.getNameWithFirstLetter }}#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
+{#                                            #}
+{#                                            <td class="text-center">#}
+{#                                                <div class="dropdown">#}
+{#                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">#}
+{#                                                        <i class="ph-gear"></i>#}
+{#                                                    </a>#}
+{#                                                    <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                        <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="dropdown-item">#}
+{#                                                            <i class="ph-eye me-2"></i>#}
+{#                                                            Vidite#}
+{#                                                        </a>#}
+{#                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}#}
+{#                                                            <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">#}
+{#                                                                <i class="ph-arrows-counter-clockwise me-2"></i>#}
+{#                                                                Ponovite#}
+{#                                                            </a>#}
+{#                                                        {% endif %}#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                    {% endfor %}#}
+{#                                    </tbody>#}
+{#                                </table>#}
+{#                            </div>#}
+{#                        </div>#}
+
+{#                        <div class="card-footer">#}
+{#                            <div class="navigation float-end">#}
+{#                                {{ knp_pagination_render(pagination) }}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <!-- /state saving -->#}
+{#                </div>#}
+{#                <!-- /content area -->#}
 
                 <!-- Footer -->
                 {% include 'includes/footer.html.twig' %}

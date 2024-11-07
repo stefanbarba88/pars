@@ -39,7 +39,9 @@ class CheckListController extends AbstractController {
     }
     $args = [];
 
-    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator(InternTaskStatusData::NIJE_ZAPOCETO);
+    $user = $this->getUser();
+
+    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator(InternTaskStatusData::NIJE_ZAPOCETO, $user);
 
     $pagination = $paginator->paginate(
       $dostupnosti, /* query NOT result */
@@ -60,9 +62,9 @@ class CheckListController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
+    $user = $this->getUser();
 
-    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator(InternTaskStatusData::ZAVRSENO);
+    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator(InternTaskStatusData::ZAVRSENO, $user);
 
     $pagination = $paginator->paginate(
       $dostupnosti, /* query NOT result */
@@ -85,7 +87,8 @@ class CheckListController extends AbstractController {
     }
     $args = [];
 
-    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator(InternTaskStatusData::ZAPOCETO);
+    $user = $this->getUser();
+    $dostupnosti = $this->em->getRepository(ManagerChecklist::class)->getChecklistPaginator(InternTaskStatusData::ZAPOCETO, $user);
 
     $pagination = $paginator->paginate(
       $dostupnosti, /* query NOT result */
@@ -171,6 +174,20 @@ class CheckListController extends AbstractController {
         $repeating = $data['checklist']['repeating'];
         $repeatingInterval = $data['checklist']['repeatingInterval'];
 
+
+        $time1 = null;
+        if (isset($request->request->all('checklist')['podsetnik'])) {
+          $notify = $request->request->all('checklist')['podsetnik'];
+        } else {
+          $notify = null;
+        }
+
+        if (!empty($request->request->all('checklist')['vreme'])) {
+          $time = $request->request->all('checklist')['vreme'];
+          $time1 = $datumKreiranja->modify($time);
+        }
+
+
         if(!empty ($uploadFiles)) {
           foreach ($uploadFiles as $uploadFile) {
             $pdf = new Pdf();
@@ -190,6 +207,12 @@ class CheckListController extends AbstractController {
           $task->setDatumKreiranja($datumKreiranja);
           $task->setCompany($this->getUser()->getCompany());
           $task->setRepeating($repeating);
+          $task->setTime($time1);
+          if ($notify == 'on') {
+            $task->setIsNotify(true);
+          } else {
+            $task->setIsNotify(false);
+          }
 
 
           if ($repeating == 1) {
@@ -237,6 +260,18 @@ class CheckListController extends AbstractController {
         $uploadFiles = $request->files->all()['phone_checklist']['pdf'];
         $repeating = $data['phone_checklist']['repeating'];
         $repeatingInterval = $data['phone_checklist']['repeatingInterval'];
+        $time1 = null;
+
+        if (isset($request->request->all('phone_checklist')['podsetnik'])) {
+          $notify = $request->request->all('phone_checklist')['podsetnik'];
+        } else {
+          $notify = null;
+        }
+
+        if (!empty($request->request->all('phone_checklist')['vreme'])) {
+          $time = $request->request->all('phone_checklist')['vreme'];
+          $time1 = $datumKreiranja->modify($time);
+        }
 
         if(!empty ($uploadFiles)) {
           foreach ($uploadFiles as $uploadFile) {
@@ -257,7 +292,12 @@ class CheckListController extends AbstractController {
           $task->setDatumKreiranja($datumKreiranja);
           $task->setCompany($this->getUser()->getCompany());
           $task->setRepeating($repeating);
-
+          $task->setTime($time1);
+          if ($notify == 'on') {
+            $task->setIsNotify(true);
+          } else {
+            $task->setIsNotify(false);
+          }
 
           if ($repeating == 1) {
 
@@ -401,6 +441,29 @@ class CheckListController extends AbstractController {
           if ($checklist->getRepeatingInterval() == RepeatingIntervalData::YEAR) {
             $checklist->setDatumPonavljanja($checklist->getDatumKreiranja()->modify('+1 year'));
           }
+        }
+
+        $vreme = $checklist->getTime();
+
+        if (!empty($request->request->get('manager_checklist_form_vreme'))) {
+          $time = $request->request->get('manager_checklist_form_vreme');
+          if (is_null($vreme)) {
+            $vreme = new DateTimeImmutable();
+          }
+          $time1 = $vreme->modify($time);
+          $checklist->setTime($time1);
+        }
+
+        if (!is_null($request->request->get('manager_checklist_form_podsetnik'))) {
+          $notify = $request->request->get('manager_checklist_form_podsetnik');
+        } else {
+          $notify = null;
+        }
+
+        if ($notify == 'on') {
+          $checklist->setIsNotify(true);
+        } else {
+          $checklist->setIsNotify(false);
         }
 
         $this->em->getRepository(ManagerChecklist::class)->save($checklist);
@@ -600,5 +663,30 @@ class CheckListController extends AbstractController {
     return $this->redirectToRoute('app_checklist_list');
   }
 
+  #[Route('/turn-off-repeating/{id}', name: 'app_checklist_turn_off_repeating')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function turnOff(ManagerChecklist $checklist)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
+    $checklist->setRepeating(0);
+    $checklist->setRepeatingInterval(null);
+    $checklist->setDatumPonavljanja(null);
+
+    $this->em->getRepository(ManagerChecklist::class)->save($checklist);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::CHECKLIST_EDIT);
+
+    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirectToRoute('app_home');
+    }
+
+    return $this->redirectToRoute('app_checklist_list');
+  }
 }

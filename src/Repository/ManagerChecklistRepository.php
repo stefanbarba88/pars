@@ -40,29 +40,82 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
   }
 
 
-  public function getChecklistPaginator($status): Query {
+//  public function getChecklistPaginator($status): Query {
+//
+//    $company = $this->security->getUser()->getCompany();
+//
+//    if ($status == InternTaskStatusData::ZAVRSENO) {
+//      return $this->createQueryBuilder('c')
+//        ->where('c.company = :company')
+//        ->setParameter('company', $company)
+//        ->andWhere('c.status = :status')
+//        ->setParameter('status', $status)
+//        ->orderBy('c.datumKreiranja', 'DESC')
+//        ->addOrderBy('c.priority', 'ASC')
+//        ->getQuery();
+//    } else {
+//      return $this->createQueryBuilder('c')
+//        ->where('c.company = :company')
+//        ->setParameter('company', $company)
+//        ->andWhere('c.status = :status')
+//        ->setParameter('status', $status)
+//        ->orderBy('c.datumKreiranja', 'ASC')
+//        ->addOrderBy('c.priority', 'ASC')
+//        ->getQuery();
+//    }
+//
+//  }
+  public function getChecklistPaginator($status, $user): Query {
 
     $company = $this->security->getUser()->getCompany();
 
-    if ($status == InternTaskStatusData::ZAVRSENO) {
-      return $this->createQueryBuilder('c')
-        ->where('c.company = :company')
-        ->setParameter('company', $company)
-        ->andWhere('c.status = :status')
-        ->setParameter('status', $status)
-        ->orderBy('c.datumKreiranja', 'DESC')
-        ->addOrderBy('c.priority', 'ASC')
-        ->getQuery();
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN || $user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN ) {
+      if ($status == InternTaskStatusData::ZAVRSENO) {
+        return $this->createQueryBuilder('c')
+          ->where('c.company = :company')
+          ->setParameter('company', $company)
+          ->andWhere('c.status = :status')
+          ->setParameter('status', $status)
+          ->orderBy('c.datumKreiranja', 'DESC')
+          ->addOrderBy('c.priority', 'ASC')
+          ->getQuery();
+      } else {
+        return $this->createQueryBuilder('c')
+          ->where('c.company = :company')
+          ->setParameter('company', $company)
+          ->andWhere('c.status = :status')
+          ->setParameter('status', $status)
+          ->orderBy('c.datumKreiranja', 'ASC')
+          ->addOrderBy('c.priority', 'ASC')
+          ->getQuery();
+      }
     } else {
-      return $this->createQueryBuilder('c')
-        ->where('c.company = :company')
-        ->setParameter('company', $company)
-        ->andWhere('c.status = :status')
-        ->setParameter('status', $status)
-        ->orderBy('c.datumKreiranja', 'ASC')
-        ->addOrderBy('c.priority', 'ASC')
-        ->getQuery();
+      if ($status == InternTaskStatusData::ZAVRSENO) {
+        return $this->createQueryBuilder('c')
+          ->where('c.company = :company')
+          ->setParameter('company', $company)
+          ->andWhere('c.status = :status')
+          ->setParameter('status', $status)
+          ->andWhere('c.createdBy = :user')
+          ->setParameter('user', $user)
+          ->orderBy('c.datumKreiranja', 'DESC')
+          ->addOrderBy('c.priority', 'ASC')
+          ->getQuery();
+      } else {
+        return $this->createQueryBuilder('c')
+          ->where('c.company = :company')
+          ->setParameter('company', $company)
+          ->andWhere('c.status = :status')
+          ->setParameter('status', $status)
+          ->andWhere('c.createdBy = :user')
+          ->setParameter('user', $user)
+          ->orderBy('c.datumKreiranja', 'ASC')
+          ->addOrderBy('c.priority', 'ASC')
+          ->getQuery();
+      }
     }
+
+
 
   }
 
@@ -343,7 +396,6 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
   }
 
-
   public function finish(ManagerChecklist $checklist): ManagerChecklist {
 
     $checklist->setFinish(new DateTimeImmutable());
@@ -406,6 +458,36 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
   }
 
+  public function getChecklistUser(User $loggedUser) {
+
+    return  $this->createQueryBuilder('c')
+      ->andWhere('c.user = :user')
+      ->setParameter(':user', $loggedUser)
+      ->andWhere('c.status <> :status and c.status <> :status1')
+      ->setParameter(':status', InternTaskStatusData::ZAVRSENO)
+      ->setParameter(':status1', InternTaskStatusData::KONVERTOVANO)
+      ->orderBy('c.status', 'ASC')
+      ->addOrderBy('c.datumKreiranja', 'ASC')
+      ->addOrderBy('c.priority', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+  }
+  public function getChecklistCreatedByUserActive(User $loggedUser) {
+
+    return  $this->createQueryBuilder('c')
+      ->andWhere('c.createdBy = :user')
+      ->setParameter(':user', $loggedUser)
+      ->andWhere('c.status <> :status and c.status <> :status1')
+      ->setParameter(':status', InternTaskStatusData::ZAVRSENO)
+      ->setParameter(':status1', InternTaskStatusData::KONVERTOVANO)
+      ->orderBy('c.status', 'ASC')
+      ->addOrderBy('c.datumKreiranja', 'ASC')
+      ->addOrderBy('c.priority', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+  }
 
 //    /**
 //     * @return ManagerChecklist[] Returns an array of ManagerChecklist objects

@@ -22,7 +22,6 @@
                     </div>
                 </div>
                 <!-- /page header -->
-
                 <!-- Content area -->
                 <div class="content">
                     <!-- State saving -->
@@ -30,11 +29,11 @@
                         <div class="card-header d-flex align-items-center">
                             <h5 class="mb-0">Lista zadataka</h5>
                             <div class="my-auto ms-auto">
-                                <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus"></i></a>
+                                <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive card">
+                            <div class="card">
                                 <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                     <thead class="bg-light test-primary">
                                     <tr>
@@ -72,7 +71,7 @@
                                                 {% if task.datumKreiranja is not null %}
                                                     <div class="d-inline-flex align-items-center">
                                                         <i class="ph-calendar me-2"></i>
-                                                        {{ task.datumKreiranja | date("d.m.Y")}}
+                                                        {{ task.datumKreiranja | date("d.m.Y")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Zadatak se ponavlja"></i> {% endif %}
                                                     </div>
                                                 {% endif %}
                                             </td>
@@ -98,12 +97,18 @@
                                                             </a>
                                                             <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
                                                                 <i class="ph-check me-2"></i>
-                                                                Završite
+                                                                Zatvorite
                                                             </a>
                                                             <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="dropdown-item">
                                                                 <i class="ph-note-pencil me-2"></i>
                                                                 Izmenite
                                                             </a>
+                                                            {% if task.repeating == 1 %}
+                                                                <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-warning-circle me-2"></i>
+                                                                    Isključite ponavljanje
+                                                                </a>
+                                                            {% endif %}
                                                             <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">
                                                                 <i class="ph-trash me-2"></i>
                                                                 Obrišite
@@ -134,6 +139,117 @@
                     <!-- /state saving -->
                 </div>
                 <!-- /content area -->
+{#                <!-- Content area -->#}
+{#                <div class="content">#}
+{#                    <!-- State saving -->#}
+{#                    <div class="card">#}
+{#                        <div class="card-header d-flex align-items-center">#}
+{#                            <h5 class="mb-0">Lista zadataka</h5>#}
+{#                            <div class="my-auto ms-auto">#}
+{#                                <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus"></i></a>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="card-body">#}
+{#                            <div class="table-responsive card">#}
+{#                                <table class="table table-bordered table-hover table-responsive table_morecondensed">#}
+{#                                    <thead class="bg-light test-primary">#}
+{#                                    <tr>#}
+
+{#                                        <th>Zaposleni</th>#}
+{#                                        <th>Prioritet</th>#}
+{#                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>#}
+{#                                    </tr>#}
+{#                                    </thead>#}
+{#                                    <tbody>#}
+{#                                    {% for task in pagination %}#}
+{#                                        <tr>#}
+{#                                            <td>#}
+{#                                                <div class="fw-semibold">#}
+{#                                                    {{ task.user.getFullName() }}#}
+{#                                                </div>#}
+{#                                            </td>#}
+{#                                            <td class="text-center">#}
+{#                                                {% if task.priority == 1 %}#}
+{#                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>#}
+{#                                                {% elseif task.priority == 2 %}#}
+{#                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>#}
+{#                                                {% elseif task.priority == 4 %}#}
+{#                                                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>#}
+{#                                                {% elseif task.priority == 5 %}#}
+{#                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
+{#                                            <td class="text-center">#}
+{#                                                <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ task.id }}" aria-expanded="false"><i class="ph-caret-down collapsible-indicator"></i></a>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        <tr id="collapsed_item{{ task.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">#}
+{#                                            <td>#}
+{#                                                {% if task.datumKreiranja is not null %}#}
+{#                                                    <div class="d-inline-flex align-items-center">#}
+{#                                                        <i class="ph-calendar me-2"></i>#}
+{#                                                        {{ task.datumKreiranja | date("d.m.Y")}}#}
+{#                                                    </div>#}
+{#                                                {% endif %}#}
+{#                                            </td>#}
+
+{#                                            <td>#}
+{#                                                Kreirao: {{ task.createdBy.getNameWithFirstLetter }}#}
+{#                                            </td>#}
+
+{#                                            <td class="text-center">#}
+{#                                                <div class="dropdown">#}
+{#                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">#}
+{#                                                        <i class="ph-gear"></i>#}
+{#                                                    </a>#}
+{#                                                    <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                        <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="dropdown-item">#}
+{#                                                            <i class="ph-eye me-2"></i>#}
+{#                                                            Vidite#}
+{#                                                        </a>#}
+{#                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}#}
+{#                                                            <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="dropdown-item">#}
+{#                                                                <i class="ph-play me-2"></i>#}
+{#                                                                Pokrenite#}
+{#                                                            </a>#}
+{#                                                            <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">#}
+{#                                                                <i class="ph-check me-2"></i>#}
+{#                                                                Završite#}
+{#                                                            </a>#}
+{#                                                            <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="dropdown-item">#}
+{#                                                                <i class="ph-note-pencil me-2"></i>#}
+{#                                                                Izmenite#}
+{#                                                            </a>#}
+{#                                                            <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">#}
+{#                                                                <i class="ph-trash me-2"></i>#}
+{#                                                                Obrišite#}
+{#                                                            </a>#}
+{#                                                            {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}#}
+{#                                                                <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="dropdown-item">#}
+{#                                                                    <i class="ph-magic-wand me-2"></i>#}
+{#                                                                    Konvertuj u zadatak sa merenjem#}
+{#                                                                </a>#}
+{#                                                            {% endif %}#}
+{#                                                        {% endif %}#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                    {% endfor %}#}
+{#                                    </tbody>#}
+{#                                </table>#}
+{#                            </div>#}
+{#                        </div>#}
+
+{#                        <div class="card-footer">#}
+{#                            <div class="navigation float-end">#}
+{#                                {{ knp_pagination_render(pagination) }}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <!-- /state saving -->#}
+{#                </div>#}
+{#                <!-- /content area -->#}
 
                 <!-- Footer -->
                 {% include 'includes/footer.html.twig' %}

@@ -20,6 +20,12 @@ class ManagerChecklist {
   #[ORM\Column]
   private ?int $id = null;
 
+  #[ORM\Column(nullable: true)]
+  private ?bool $isNotify = false;
+
+  #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+  private ?DateTimeImmutable $time = null;
+
   #[ORM\Column(type: Types::TEXT)]
   private ?string $task = null;
 
@@ -385,4 +391,33 @@ class ManagerChecklist {
 
     return $this;
   }
+
+  /**
+   * @return DateTimeImmutable|null
+   */
+  public function getTime(): ?DateTimeImmutable {
+    return $this->time;
+  }
+
+  /**
+   * @param DateTimeImmutable|null $time
+   */
+  public function setTime(?DateTimeImmutable $time): void {
+    $this->time = $time;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getIsNotify(): ?bool {
+    return $this->isNotify;
+  }
+
+  /**
+   * @param bool|null $isNotify
+   */
+  public function setIsNotify(?bool $isNotify): void {
+    $this->isNotify = $isNotify;
+  }
+
 }

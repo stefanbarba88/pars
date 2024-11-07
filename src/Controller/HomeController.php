@@ -56,10 +56,10 @@ class HomeController extends AbstractController {
       $args['noCalendar'] = $this->em->getRepository(Calendar::class)->countCalendarRequests();
     }
     if ($args['car']) {
-      $args['noCars'] = $this->em->getRepository(Car::class)->count(['company' => $user->getCompany()]);
+      $args['noCars'] = $this->em->getRepository(Car::class)->count(['company' => $user->getCompany(), 'isSuspended' => false]);
     }
     if ($args['tool']) {
-      $args['noTools'] = $this->em->getRepository(Tool::class)->count(['company' => $user->getCompany()]);
+      $args['noTools'] = $this->em->getRepository(Tool::class)->count(['company' => $user->getCompany(), 'isSuspended' => false]);
     }
     if ($args['client']) {
       $ticket1 = $this->em->getRepository(Ticket::class)->count(['status' => InternTaskStatusData::NIJE_ZAPOCETO, 'company' => $user->getCompany()]);
@@ -93,6 +93,12 @@ class HomeController extends AbstractController {
       $args['noZaposleni'] = $this->em->getRepository(User::class)->count(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE]);
       $args['noProjekata'] = $this->em->getRepository(Project::class)->count(['company' => $user->getCompany(), 'isSuspended' => false]);
       $args['noTasks'] = $this->em->getRepository(Task::class)->count(['company' => $user->getCompany(), 'isDeleted' => false]);
+
+      $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->getChecklistUser($user);
+      $args['checklistCreatedByUserActive'] = $this->em->getRepository(ManagerChecklist::class)->getChecklistCreatedByUserActive($user);
+      $args['countChecklistActive'] = count($args['checklistActive']);
+      $args['countChecklistCreatedByUserActive'] = count($args['checklistCreatedByUserActive']);
+
       $args['noInternTasks'] = $this->em->getRepository(ManagerChecklist::class)->count(['status' => InternTaskStatusData::NIJE_ZAPOCETO, 'company' => $user->getCompany()]);
     }
 

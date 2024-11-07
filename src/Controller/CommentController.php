@@ -10,6 +10,7 @@ use App\Entity\Task;
 use App\Form\CommentFormType;
 use App\Form\PhoneTaskFormType;
 use App\Form\TaskFormType;
+use App\Service\MailService;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
@@ -224,7 +225,7 @@ class CommentController extends AbstractController {
   #[Entity('task', expr: 'repository.find(task)')]
   #[Entity('comment', expr: 'repository.findForFormTaskInt(task)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formInt(Request $request, Comment $comment, ManagerChecklist $task)    : Response {
+  public function formInt(Request $request, Comment $comment, ManagerChecklist $task, MailService $mailService)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
@@ -237,6 +238,8 @@ class CommentController extends AbstractController {
       if ($form->isSubmitted() && $form->isValid()) {
 
         $this->em->getRepository(Comment::class)->save($comment);
+
+        $mailService->checklistCommentTask($task, $comment);
 
         notyf()
           ->position('x', 'right')
@@ -259,7 +262,7 @@ class CommentController extends AbstractController {
   #[Entity('task', expr: 'repository.find(task)')]
   #[Entity('comment', expr: 'repository.findForFormTaskInt(task)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formEmployeeInt(Request $request, Comment $comment, ManagerChecklist $task)    : Response {
+  public function formEmployeeInt(Request $request, Comment $comment, ManagerChecklist $task, MailService $mailService)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
@@ -272,6 +275,8 @@ class CommentController extends AbstractController {
       if ($form->isSubmitted() && $form->isValid()) {
 
         $this->em->getRepository(Comment::class)->save($comment);
+
+        $mailService->checklistCommentTask($task, $comment);
 
         notyf()
           ->position('x', 'right')
@@ -292,7 +297,7 @@ class CommentController extends AbstractController {
 
   #[Route('/edit-intern/{id}', name: 'app_comment_edit_int')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editInt(Request $request, Comment $comment)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function editInt(Request $request, Comment $comment, MailService $mailService)    : Response { if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
@@ -303,6 +308,8 @@ class CommentController extends AbstractController {
       if ($form->isSubmitted() && $form->isValid()) {
 
         $this->em->getRepository(Comment::class)->save($comment);
+
+        $mailService->checklistCommentTask($comment->getManagerChecklist(), $comment);
 
         notyf()
           ->position('x', 'right')

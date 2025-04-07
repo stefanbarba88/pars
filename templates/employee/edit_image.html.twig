@@ -41,9 +41,7 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
+{{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
@@ -76,7 +74,7 @@
                                                 <div class="mb-3">
                                                     {{ form_label(form.slika, 'Profilna slika:', {'label_attr': {'class': 'form-label'}}) }}
                                                     {{ form_widget(form.slika, {attr: { class: 'form-control file-input required' }}) }}
-                                                    <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
+                                                    <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 5MB.</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -106,7 +104,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

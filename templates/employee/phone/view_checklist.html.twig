@@ -30,9 +30,7 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
+{{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
@@ -43,7 +41,7 @@
                                         <h5 class="mb-0">Lista internih zadataka</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light test-primary">
                                                 <tr>
@@ -60,7 +58,7 @@
                                                             {% if task.datumKreiranja is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ task.datumKreiranja | date("d.m.Y")}}
+                                                                    {{ task.datumKreiranja | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -95,7 +93,7 @@
                                                             {% if task.finish is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ task.finish | date("d.m.Y")}}
+                                                                    {{ task.finish | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -188,7 +186,7 @@
 
         </div>
         <!-- /main content -->
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
 
     </div>
     {% include 'includes/notification.html.twig' %}

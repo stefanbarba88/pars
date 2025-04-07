@@ -67,7 +67,11 @@ class StopwatchTime {
   #[ORM\Column(type: Types::TEXT, nullable: true,)]
   private ?string $additionalDesc = null;
 
+  #[ORM\Column(type: Types::TEXT, nullable: true,)]
+  private ?string $expencesDesc = null;
 
+  #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
+  private ?string $expencesPrice = null;
 
   #[ORM\Column]
   private DateTimeImmutable $created;
@@ -466,6 +470,34 @@ class StopwatchTime {
    */
   public function setAdditionalDesc(?string $additionalDesc): void {
     $this->additionalDesc = $additionalDesc;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getExpencesDesc(): ?string {
+    return $this->expencesDesc;
+  }
+
+  /**
+   * @param string|null $expencesDesc
+   */
+  public function setExpencesDesc(?string $expencesDesc): void {
+    $this->expencesDesc = $expencesDesc;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getExpencesPrice(): ?string {
+    return $this->expencesPrice;
+  }
+
+  /**
+   * @param string|null $expencesPrice
+   */
+  public function setExpencesPrice(?string $expencesPrice): void {
+    $this->expencesPrice = $expencesPrice;
   }
 
 

@@ -37,7 +37,7 @@
                                     <div class="card-header d-flex align-items-center">
                                     <h5 class="mb-0">Zahtev</h5>
                                         {% if calendar.start | date("Y-m-d") >= "now" | date("Y-m-d") %}
-                                        {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
+                                            {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.isAdmin%}
 
                                         <div class="my-auto ms-auto">
                                             <div class="dropdown">
@@ -87,6 +87,10 @@
                                         {% endif %}
                                     </div>
                                     <div class="card-body">
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Zaposleni:</div>
+                                            <div class="col-8">{{ calendar.user.first.fullName }}</div>
+                                        </div>
                                         <div class="row p-2">
                                             <div class="col-4">Tip:</div>
                                             <div class="col-8">
@@ -106,7 +110,7 @@
                                             <div class="col-8">
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ calendar.start | date("d.m.Y")}}
+                                                    {{ calendar.start | date("d.m.Y.")}}
                                                 </div>
                                             </div>
                                         </div>
@@ -115,11 +119,41 @@
                                             <div class="col-8">
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ calendar.finish | date("d.m.Y")}}
+                                                    {{ calendar.finish | date("d.m.Y.")}}
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
+                                            <div class="col-4">Fleksibilan:</div>
+                                            <div class="col-8">
+                                                {% if calendar.flexible is not null %}
+                                                    {% if calendar.flexible == 0 %}
+                                                        <span class="badge bg-primary text-white">Ne</span>
+                                                    {% elseif calendar.flexible == 1 %}
+                                                        <span class="badge bg-yellow text-primary">Da</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 ">
+                                            <div class="col-4">Parcijalan:</div>
+                                            <div class="col-8">
+                                                {% if calendar.part is not null %}
+                                                    {% if calendar.part == 0 %}
+                                                        <span class="badge bg-primary text-white">Ne</span>
+                                                    {% elseif calendar.part == 1 %}
+                                                        <span class="badge bg-yellow text-primary">Da</span> {{ calendar.vreme }}
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Napomena:</div>
+                                            <div class="col-8">{{ calendar.note }}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 ">
                                             <div class="col-4">Status:</div>
                                             <div class="col-8">
                                                 {% if calendar.status == 0 %}
@@ -155,7 +189,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

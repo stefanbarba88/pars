@@ -60,7 +60,7 @@
                         </form>
                         <div class="card-body">
                             <div class="card">
-                                <table class="table table-bordered table-hover table-responsive card-sm">
+                                <table class="table table-bordered table-hover card-sm">
                                     <thead class="bg-light text-primary">
                                     <tr>
                                         <th>Registracija</th>
@@ -74,7 +74,7 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Zaduženi</th>
+                                        <th>Zaposleni</th>
                                         <th>Nivo goriva</th>
                                         <th  {% if pagination.isSorted('[c.datumRegistracije]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Registracija ', ['c.datumRegistracije']) }}
@@ -112,10 +112,8 @@
                                     <tbody>
                                     {% set currentDate = date()|date("Y-m-d") %}
                                     {% for car in pagination %}
-                                        {% set nextRegistrationDate = car.datumNaredneRegistracije|date("Y-m-d") %}
-                                        {% set difference = nextRegistrationDate|date_modify('-30 days') %}
-                                        {% set difference = difference|date("Y-m-d") %}
-                                        <tr>
+                                        {% set carDays = getDaysRemainingCar(car) %}
+                                        <tr class="{{ carDays.klasa }}">
                                             <td><a href="{{ path('app_car_view', {id:car.id}) }}" class="fw-semibold">{{ car.getCarName }}</a></td>
                                             <td>
                                                 {% if car.isSuspended == false %}
@@ -182,18 +180,12 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ car.datumRegistracije | date("d.m.Y")}}
+                                                    {{ car.datumRegistracije | date("d.m.Y.")}}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
-
-
-                                                    {% if currentDate <= nextRegistrationDate and currentDate >= difference %}
-                                                        <span class="badge bg-yellow text-primary"><i class="ph-calendar me-2"></i>{{ car.datumNaredneRegistracije | date("d.m.Y")}}</span>
-                                                    {% else %}
-                                                        <i class="ph-calendar me-2"></i>{{ car.datumNaredneRegistracije | date("d.m.Y")}}
-                                                    {% endif %}
+                                                    <i class="ph-calendar me-2"></i>{{ car.datumNaredneRegistracije | date("d.m.Y.")}} {% if carDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ carDays.poruka }}" data-bs-original-title="{{ carDays.poruka }}"></i>{% endif %}
                                                 </div>
                                             </td>
                                             <td>
@@ -257,7 +249,7 @@
         </div>
         <!-- /main content -->
 
-        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

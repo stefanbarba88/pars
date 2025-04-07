@@ -29,6 +29,9 @@
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
                             <h5 class="mb-0">Lista kontakt lica</h5>
+                            <div class="my-auto ms-auto">
+                                <a href="{{ path('app_user_form', {type:2}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i></a>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="accordion" id="accordion_collapsed">
@@ -113,10 +116,10 @@
                                                             <i class="ph-image me-2"></i>
                                                             Profilna slika/avatar
                                                         </a>
-                                                        <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="dropdown-item">
-                                                            <i class="ph-gear me-2"></i>
-                                                            Podešavanja
-                                                        </a>
+{#                                                        <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="dropdown-item">#}
+{#                                                            <i class="ph-gear me-2"></i>#}
+{#                                                            Podešavanja#}
+{#                                                        </a>#}
                                                     </div>
                                                 </div>
                                             </td>
@@ -149,7 +152,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

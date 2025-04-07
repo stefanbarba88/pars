@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Classes\Data\NeradniDanData;
+use App\Classes\Data\NivoObrazovanjaData;
 use App\Classes\Data\PolData;
 use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\TipProjektaData;
@@ -10,6 +11,7 @@ use App\Classes\Data\UserRolesData;
 use App\Classes\Data\VozackiData;
 use App\Classes\Data\VrstaZaposlenjaData;
 use App\Entity\City;
+use App\Entity\Titula;
 use App\Entity\User;
 use App\Entity\ZaposleniPozicija;
 use App\Validator\JMBG;
@@ -42,81 +44,14 @@ class UserRegistrationFormType extends AbstractType {
 
     $plainUserType = $dataObject->getUser()->getPlainUserType();
     $company = $dataObject->getUser()->getCompany();
+    $type = 0;
+    if (!is_null($dataObject->getUser()->getUserType())) {
+      $type = $dataObject->getUser()->getUserType();
+    }
 
     $builder
       ->add('ime')
       ->add('prezime')
-      ->add('datumRodjenja', DateType::class, [
-        'required' => false,
-        'widget' => 'single_text',
-        'format' => 'dd.MM.yyyy',
-        'html5' => false,
-        'input' => 'datetime_immutable'
-      ])
-//      ->add('slava', DateType::class, [
-//        'required' => false,
-//        'widget' => 'single_text',
-//        'format' => 'dd.MM.yyyy',
-//        'html5' => false,
-//        'input' => 'datetime_immutable'
-//      ])
-      ->add('isPrvaPomoc', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('neradniDan', ChoiceType::class, [
-        'required' => false,
-        'placeholder' => '--Izaberite neradni dan--',
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => NeradniDanData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('isLekarski', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-//      ->add('projectType', ChoiceType::class, [
-//        'required' => false,
-//        'placeholder' => '--Izaberite tip projekta--',
-//        'choices' => TipProjektaData::form(),
-//        'expanded' => false,
-//        'multiple' => false,
-//      ])
-      ->add('vozacki', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => VozackiData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('isMobile', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('isLaptop', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
       ->add('pol', ChoiceType::class, [
         'placeholder' => '--Izaberite pol--',
         'attr' => [
@@ -126,46 +61,6 @@ class UserRegistrationFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-//      ->add('jmbg', TextType::class, [
-//        'constraints' => [
-//          new Regex('/^\d{13}$/', 'JMBG morate uneti u odgovarajućem formatu'),
-//          new JMBG('strict'),
-//        ],
-//        'attr' => [
-//          'maxlength' => '13',
-//          'minlength' => '13',
-//        ],
-//      ])
-      ->add('vrstaZaposlenja', ChoiceType::class, [
-        'required' => false,
-        'placeholder' => '--Izaberite vrstu zaposlenja--',
-        'choices' => VrstaZaposlenjaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-
-      ->add('plainPassword', TextType::class, [
-        'constraints' => [
-          new Regex('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', 'Lozinka mora imati minimum 8 karaktera (obavezno jedno veliko slovo, jedno malo slovo, jedan specijalan karakter i jednu cifru)'),
-        ],
-        'attr' => [
-          'minlength' => '8',
-          ],
-      ])
-
-      ->add('email', EmailType::class, [
-        'constraints' => [
-          new Regex('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', 'Email adresu morate uneti u odgovarajućem formatu'),
-        ],
-      ])
-
-      ->add('userType', ChoiceType::class, [
-        'placeholder' => '--Izaberite tip korisnika--',
-        'choices' => UserRolesData::formForFormByUserRole($plainUserType),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-
       ->add('slika', FileType::class, [
         'attr' => ['accept' => 'image/jpeg,image/png,image/jpg,image-gif', 'data-show-upload' => 'false'],
         // unmapped means that this field is not associated to any entity property
@@ -177,51 +72,31 @@ class UserRegistrationFormType extends AbstractType {
         // in the associated entity, so you can use the PHP constraint classes
         'constraints' => [
           new Image([
-            'maxSize' => '2048k',
-            'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 2Mb'
+            'maxSize' => '5120k',
+            'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 5MB'
           ])
         ],
       ])
-
-      ->add('grad', EntityType::class, [
-        'required' => false,
-        'placeholder' => '--Izaberite grad--',
-        'class' => City::class,
-        'query_builder' => function (EntityRepository $em) {
-          return $em->createQueryBuilder('g')
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => function ($grad) {
-          return $grad->getFormTitle();
-        },
-        'expanded' => false,
-        'multiple' => false,
+      ->add('plainPassword', TextType::class, [
+        'constraints' => [
+          new Regex('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', 'Lozinka mora imati minimum 8 karaktera (obavezno jedno veliko slovo, jedno malo slovo, jedan specijalan karakter i jednu cifru)'),
+        ],
+        'attr' => [
+          'minlength' => '8',
+        ],
       ])
-      ->add('pozicija', EntityType::class, [
-        'required' => false,
-        'placeholder' => '--Izaberite poziciju--',
-        'class' => ZaposleniPozicija::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.company = :company')
-            ->setParameter(':company', $company)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => false,
+      ->add('email', EmailType::class, [
+        'constraints' => [
+          new Regex('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', 'Email adresu morate uneti u odgovarajućem formatu'),
+        ],
       ])
-
-      ->add('adresa', TextType::class, [
-      'required' => false
-    ])
       ->add('telefon1',TextType::class, [
         'required' => false,
         'constraints' => [
           new Regex('/^\d{1,10}$/', 'Broj službenog telefona morate uneti u odgovarajućem formatu'),
         ],
-          'attr' => [
-            'maxlength' => '10'
+        'attr' => [
+          'maxlength' => '10'
         ],
       ])
       ->add('telefon2',TextType::class, [
@@ -230,14 +105,149 @@ class UserRegistrationFormType extends AbstractType {
           new Regex('/^\d{1,10}$/', 'Broj privatnog telefona morate uneti u odgovarajućem formatu'),
         ],
         'attr' => [
-            'maxlength' => '10'
+          'maxlength' => '10'
         ],
       ]);
+
+    if ($type < 5) {
+      $builder
+        ->add('datumRodjenja', DateType::class, [
+          'required' => false,
+          'widget' => 'single_text',
+          'format' => 'dd.MM.yyyy',
+          'html5' => false,
+          'input' => 'datetime_immutable'
+        ])
+        ->add('isPrvaPomoc', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => PotvrdaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('isAdmin', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => PotvrdaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('isLekarski', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => PotvrdaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('vozacki', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => VozackiData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('vrstaZaposlenja', ChoiceType::class, [
+          'required' => false,
+          'placeholder' => '--Izaberite vrstu zaposlenja--',
+          'choices' => VrstaZaposlenjaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('pocetakUgovora', DateType::class, [
+          'required' => false,
+          'widget' => 'single_text',
+          'format' => 'dd.MM.yyyy',
+          'html5' => false,
+          'input' => 'datetime_immutable'
+        ])
+        ->add('krajUgovora', DateType::class, [
+          'required' => false,
+          'widget' => 'single_text',
+          'format' => 'dd.MM.yyyy',
+          'html5' => false,
+          'input' => 'datetime_immutable'
+        ])
+        ->add('slava', DateType::class, [
+          'required' => false,
+          'widget' => 'single_text',
+          'format' => 'dd.MM.yyyy',
+          'html5' => false,
+          'input' => 'datetime_immutable'
+        ])
+        ->add('nivoObrazovanja', ChoiceType::class, [
+          'required' => false,
+          'placeholder' => '--Izaberite nivo obrazovanja--',
+          'choices' => NivoObrazovanjaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('grad', EntityType::class, [
+          'required' => false,
+          'placeholder' => '--Izaberite grad--',
+          'class' => City::class,
+          'query_builder' => function (EntityRepository $em) {
+            return $em->createQueryBuilder('g')
+              ->orderBy('g.id', 'ASC');
+          },
+          'choice_label' => function ($grad) {
+            return $grad->getFormTitle();
+          },
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('pozicija', EntityType::class, [
+          'required' => false,
+          'placeholder' => '--Izaberite poziciju--',
+          'class' => ZaposleniPozicija::class,
+          'query_builder' => function (EntityRepository $em) use ($company) {
+            return $em->createQueryBuilder('g')
+              ->andWhere('g.company = :company')
+              ->setParameter(':company', $company)
+              ->orderBy('g.id', 'ASC');
+          },
+          'choice_label' => 'title',
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('adresa', TextType::class, [
+          'required' => false
+        ])
+        ->add('zvanje', EntityType::class, [
+          'required' => false,
+          'placeholder' => '--Izaberite zvanje--',
+          'class' => Titula::class,
+          'query_builder' => function (EntityRepository $em) {
+            return $em->createQueryBuilder('g')
+              ->andWhere('g.isSuspended = 0')
+              ->orderBy('g.id', 'ASC');
+          },
+          'choice_label' => function ($zvanje) {
+            return $zvanje->getForForm();
+          },
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+    }
+    if ($type < 4) {
+      $builder
+        ->add('userType', ChoiceType::class, [
+          'placeholder' => '--Izaberite tip korisnika--',
+          'choices' => UserRolesData::formForFormByUserRole($plainUserType),
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+    }
+
   }
 
   public function configureOptions(OptionsResolver $resolver): void {
     $resolver->setDefaults([
       'data_class' => User::class,
+      'allow_extra_fields' => true
     ]);
   }
 }

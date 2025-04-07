@@ -38,7 +38,7 @@
                     {%endif%}
 
                     <!-- Wizard with validation -->
-                    <div class="card">
+                    <div class="card col-lg-6">
                         <div class="card-header">
                             <h6 class="mb-0">
                                 Dodavanje dnevnika
@@ -46,8 +46,14 @@
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
                         <div class="card-body">
-                            <div class="row">
-                                <div class="fw-bold border-bottom pb-2 mb-3">Zadate aktivnosti</div>
+                            <div class="row border-bottom pb-1 mb-3">
+
+                                <div class="fw-bold border-bottom pb-2 mb-3">Utrošeno vreme i zadate aktivnosti</div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <span class="badge bg-secondary text-primary me-2">{{ hours }} : {{ minutes }}h</span>
+                                    </div>
+                                </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {% if task.activity.toArray is not empty %}
@@ -59,14 +65,9 @@
                                         {% endif %}
                                     </div>
                                 </div>
+
                             </div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <span class="badge bg-secondary text-primary me-2">{{ hours }} : {{ minutes }}h</span>
-                                    </div>
-                                </div>
-                            </div>
+
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
@@ -107,7 +108,7 @@
                                 {% if "now"|date("H:i") > workTime | date ("H:i") %}
                                     <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-overtime" aria-expanded="false">Prekovremeni sati</div>
                                     <div class="row collapse show" id="collapse-overtime">
-                                                    <div class="col-lg-12">
+                                                    <div class="col-lg-6">
                                                         <div class="mb-3">
                                                             <label class="form-label" for="overtime_vreme">Sati i minuti:</label>
                                                             <div class="row gy-3">
@@ -142,6 +143,7 @@
                                                         <div class="mb-3">
                                                             <label class="form-label" for="overtime_napomena">Napomena:</label>
                                                             <textarea id="overtime_napomena" name="overtime_napomena" class="form-control"  rows="1"></textarea>
+                                                            <span class="form-text">Napomena o prekovremenim satima.</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -149,35 +151,128 @@
                             {% endif %}
 
 
-
+                            {% if client is empty %}
                             <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-client" aria-expanded="false">Klijent</div>
                             <div class="row collapse" id="collapse-client">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         {{ form_label(form.client, 'Klijent:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.client, {attr: { class: 'form-control select' }}) }}
+                                        <span class="form-text">Ako se radi o internom projektu, a želite da naglasite da se merenje odnosi na konkretnog klijenta.</span>
                                     </div>
                                 </div>
                             </div>
+                            {% endif %}
+                            {% if task.isExpenses %}
+                                <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-expences" aria-expanded="false">Trošak</div>
+                                <div class="row collapse" id="collapse-expences">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.expencesPrice, 'Trošak:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.expencesPrice, {attr: { class: 'form-control ' }}) }}
+                                            <span class="form-text">Unesite vrednost troška.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            {{ form_label(form.expencesDesc, 'Opis troška:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.expencesDesc, {attr: { class: 'form-control ' }}) }}
+                                            <span class="form-text">Opišite trošak koji ste imali.</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            {% endif %}
 
                             <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-pdf" aria-expanded="false">Dokumentacija</div>
+                            {% if pdfs is not empty %}
+                                <div class="row collapse" id="collapse-pdf">
+
+                                    {% for pdf in pdfs %}
+                                        <div class="col-xl-4 col-sm-6">
+                                            <div class="card card-body">
+                                                <div class="d-flex list-group-item align-items-start">
+                                                    <div class="me-3">
+                                                        <a href="{{ asset(pdf.path) }}" download><i class="ph-file-pdf text-danger ph-2x mt-1"></i></a>
+                                                    </div>
+                                                    <div class="flex-fill overflow-hidden">
+                                                        <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+
+                                                    </div>
+                                                    <div class="ms-3">
+                                                        <a href="{{ asset(pdf.path) }}" download class="text-body">
+                                                            <i class="ph-download-simple"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-flex align-items-start flex-nowrap">
+                                                    <div>
+                                                        <div class="fw-semibold me-2">Označiti za brisanje</div>
+                                                    </div>
+
+                                                    <div class="d-inline-flex ms-auto">
+                                                        <input type="checkbox" name="pdf_delete[{{ loop.index }}][checked]" class="form-check-input">
+                                                        <input type="text" hidden="hidden" value="{{ pdf.id }}" name="pdf_delete[{{ loop.index }}][value]" class="form-check-input">
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+                            {% endif %}
                             <div class="row collapse" id="collapse-pdf">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         {{ form_label(form.pdf, 'Dokumenta:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.pdf, {attr: { class: 'form-control file-input' }}) }}
-                                        <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
+                                        <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-image" aria-expanded="false">Slike</div>
+                            {% if images is not empty %}
+                                <div class="row collapse" id="collapse-image">
+
+                                    {% for image in images %}
+                                        <div class="col-sm-6 col-xl-4">
+                                            <div class="card">
+                                                <div class="card-img-actions mx-1 mt-1">
+                                                    <img class="card-img img-fluid" src="{{ image.thumbnail500 }}"  alt="">
+                                                    <div class="card-img-actions-overlay card-img">
+                                                        <a href="{{ image.thumbnail500 }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery2">
+                                                            <i class="ph-plus"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-start flex-nowrap">
+                                                        <div>
+                                                            <div class="fw-semibold me-2">Označiti za brisanje</div>
+                                                        </div>
+
+                                                        <div class="d-inline-flex ms-auto">
+                                                            <input type="checkbox" name="image_delete[{{ loop.index }}][checked]" class="form-check-input">
+                                                            <input type="text" hidden="hidden" value="{{ image.id }}" name="image_delete[{{ loop.index }}][value]" class="form-check-input">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+                            {% endif %}
                             <div class="row collapse" id="collapse-image">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         {{ form_label(form.image, 'Slike:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.image, {attr: { class: 'form-control file-input' }}) }}
-                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
+                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 5MB.</span>
                                     </div>
                                 </div>
                             </div>
@@ -204,7 +299,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

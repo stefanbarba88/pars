@@ -49,15 +49,35 @@ class ReassignTaskFormType extends AbstractType {
     $datum = $dataObject->getTask()->getDatumKreiranja();
 
     if ($settings->isCalendar()) {
-      $builder->add('assignedUsers', EntityType::class, [
-        'class' => User::class,
-        'choices' => $this->em->getUsersAvailable($datum),
-        'choice_label' => function ($user) {
-          return $user->getNameForForm();
-        },
-        'expanded' => false,
-        'multiple' => true,
-      ]);
+      if ($settings->isAllUsers()) {
+        $builder->add('assignedUsers', EntityType::class, [
+          'class' => User::class,
+          'query_builder' => function (EntityRepository $em) use ($company) {
+            return $em->createQueryBuilder('g')
+              ->andWhere('g.userType = :userType')
+              ->andWhere('g.isSuspended = 0')
+              ->andWhere('g.company = :company')
+              ->setParameter(':company', $company)
+              ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+              ->orderBy('g.prezime', 'ASC');
+          },
+          'choice_label' => function ($user) {
+            return $user->getNameForForm();
+          },
+          'expanded' => false,
+          'multiple' => true,
+        ]);
+      } else {
+        $builder->add('assignedUsers', EntityType::class, [
+          'class' => User::class,
+          'choices' => $this->em->getUsersAvailable($datum),
+          'choice_label' => function ($user) {
+            return $user->getNameForForm();
+          },
+          'expanded' => false,
+          'multiple' => true,
+        ]);
+      }
     } else {
       $builder->add('assignedUsers', EntityType::class, [
         'class' => User::class,

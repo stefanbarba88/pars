@@ -150,7 +150,7 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ project.created | date("d.m.Y")}}
+                                                    {{ project.created | date("d.m.Y.")}}
                                                 </div>
                                             </td>
 
@@ -203,7 +203,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

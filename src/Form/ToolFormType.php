@@ -46,6 +46,7 @@ class ToolFormType extends AbstractType {
         'class' => ToolType::class,
         'query_builder' => function (EntityRepository $em) {
           return $em->createQueryBuilder('g')
+            ->where('g.isSuspended = 0')
             ->orderBy('g.title', 'ASC');
         },
         'choice_label' => function ($tool) {

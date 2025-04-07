@@ -9,6 +9,7 @@ use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -59,23 +60,25 @@ class CommentRepository extends ServiceEntityRepository {
   }
 
 
-  public function getCommentsByUserPaginator(User $user) {
-    $company = $user->getCompany();
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+  public function getCommentsByUserPaginator($korisnik, $user): Query {
+    $company = $korisnik->getCompany();
+
+    if (is_null($user)) {
+      return $this->createQueryBuilder('c')
+        ->andWhere('c.company = :company')
+        ->setParameter('company', $company)
+        ->orderBy('c.isSuspended', 'ASC')
+        ->addOrderBy('c.id', 'DESC')
+        ->getQuery();
+    }
+
       return $this->createQueryBuilder('c')
         ->where('c.user = :userId')
         ->setParameter(':userId', $user->getId())
         ->orderBy('c.isSuspended', 'ASC')
         ->addOrderBy('c.id', 'DESC')
         ->getQuery();
-    }
 
-    return $this->createQueryBuilder('c')
-      ->andWhere('c.company = :company')
-      ->setParameter('company', $company)
-      ->orderBy('c.isSuspended', 'ASC')
-      ->addOrderBy('c.id', 'DESC')
-      ->getQuery();
   }
 
   public function countCommentsActive(): int {

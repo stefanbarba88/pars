@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Classes\Data\FastTaskData;
 use App\Classes\Data\InternTaskStatusData;
+use App\Classes\Data\TaskStatusData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\JMBGcheck\JMBGcheck;
 use App\Entity\Availability;
@@ -14,6 +15,7 @@ use App\Entity\FastTask;
 use App\Entity\ManagerChecklist;
 use App\Entity\Plan;
 use App\Entity\Project;
+use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\Ticket;
@@ -23,8 +25,11 @@ use App\Entity\User;
 use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 
@@ -34,7 +39,7 @@ class HomeController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
   #[Route('/', name: 'app_home')]
-  public function index()    : Response {
+  public function index(PaginatorInterface $paginator, Request $request, SessionInterface $session)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
@@ -43,7 +48,12 @@ class HomeController extends AbstractController {
     }
     $args = [];
     $user = $this->getUser();
+
     $company = $user->getCompany();
+    $args['admin'] = false;
+    if ($session->has('admin')) {
+      $args['admin'] = true;
+    }
 
     $args['user'] = $user;
     $args['client'] = $user->getCompany()->getSettings()->getIsClientView();
@@ -51,6 +61,10 @@ class HomeController extends AbstractController {
     $args['tool'] = $user->getCompany()->getSettings()->isTool();
     $args['calendar'] = $user->getCompany()->getSettings()->isCalendar();
     $args['settings'] = $user->getCompany()->getSettings();
+
+    $args['danas'] = new DateTimeImmutable();
+    $args['sutra'] = new DateTimeImmutable('tomorrow');
+
 
     if ($args['calendar']) {
       $args['noCalendar'] = $this->em->getRepository(Calendar::class)->countCalendarRequests();
@@ -66,73 +80,81 @@ class HomeController extends AbstractController {
       $ticket2 = $this->em->getRepository(Ticket::class)->count(['status' => InternTaskStatusData::ZAPOCETO, 'company' => $user->getCompany()]);
       $args['noTickets'] = $ticket1 + $ticket2;
     }
-
-    $args['sutra'] = new DateTimeImmutable('tomorrow');
-    $args['danas'] = new DateTimeImmutable();
-
-    if ($user->getCompany()->getSettings()->isPlanTomorrow()) {
-      $args['tomorrowTimetable'] = $this->em->getRepository(Task::class)->getTasksByDate($args['sutra']);
-      $args['tomorrowTimetableIntern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksByDate($args['sutra']);
-    }
-
-    if ($user->getCompany()->getSettings()->isPlanToday()) {
-      $args['timetable'] = $this->em->getRepository(Task::class)->getTasksByDate($args['danas']);
-      $args['timetableIntern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksByDate($args['danas']);
-    }
-
-    if ($user->getCompany()->getSettings()->isPlanEmployee()) {
-      $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getAllDostupnostiDanasBasic();
-    }
-
-    if ($user->getCompany()->getSettings()->isPlan()) {
-      $args['planRada'] = $this->em->getRepository(Plan::class)->findOneBy(['company' => $company, 'datumKreiranja' => $args['danas']->setTime(7,0) ]);
-      $args['planRadaSutra'] = $this->em->getRepository(Plan::class)->findOneBy(['company' => $company, 'datumKreiranja' => $args['sutra']->setTime(7,0) ]);
-    }
-
-    if ($user->getCompany()->getSettings()->isWidgete()) {
-      $args['noZaposleni'] = $this->em->getRepository(User::class)->count(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE]);
-      $args['noProjekata'] = $this->em->getRepository(Project::class)->count(['company' => $user->getCompany(), 'isSuspended' => false]);
-      $args['noTasks'] = $this->em->getRepository(Task::class)->count(['company' => $user->getCompany(), 'isDeleted' => false]);
-
-      $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->getChecklistUser($user);
-      $args['checklistCreatedByUserActive'] = $this->em->getRepository(ManagerChecklist::class)->getChecklistCreatedByUserActive($user);
-      $args['countChecklistActive'] = count($args['checklistActive']);
-      $args['countChecklistCreatedByUserActive'] = count($args['checklistCreatedByUserActive']);
-
-      $args['noInternTasks'] = $this->em->getRepository(ManagerChecklist::class)->count(['status' => InternTaskStatusData::NIJE_ZAPOCETO, 'company' => $user->getCompany()]);
-    }
-
-//
-//    $args['plan'] = $this->em->getRepository(FastTask::class)->getTimeTableActive();
-//    $args['subs'] = $this->em->getRepository(FastTask::class)->getTimeTableSubsActive();
-
-//    $args['tomorrowTimetable'] = $this->em->getRepository(FastTask::class)->getTimetable($args['sutra']);
-//    $args['tomorrowSubs'] = $this->em->getRepository(FastTask::class)->getSubs($args['sutra']);
-//    $args['tomorrowTimetableId'] = $this->em->getRepository(FastTask::class)->getTimeTableTomorrowId($args['sutra']);
-////    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostDanas();
-
-//    $args['dostupnostiSutra'] = $this->em->getRepository(Availability::class)->getAllDostupnostiSutra();
-//
-//    $args['nerasporedjenost'] = $this->em->getRepository(Availability::class)->getAllNerasporedjenost();
-//    $args['tekuciPoslovi'] = $this->em->getRepository(TimeTask::class)->findBy(['company' => $user->getCompany(), 'finish' => null]);
-
-//srediti ovaj upit, uzima puno resursa
-//    $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogs();
     $args['countTasksUnclosed'] = 0;
 
-//    $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $user, 'status' => 0], ['priority' => 'ASC', 'id' => 'ASC']);
-//    $args['countChecklistActive'] = count($args['checklistActive']);
-//
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $args['countTasksActiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksByUser($user);
-      $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->count(['user' => $this->getUser(), 'status' => InternTaskStatusData::NIJE_ZAPOCETO]);
-
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN || $user->getUserType() == UserRolesData::ROLE_ADMIN || $args['admin']) {
       if ($user->getCompany()->getSettings()->isPlanTomorrow()) {
-        $args['checklistTomorrow'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksByDateUser($args['sutra'], $user);
+        $args['tomorrowTimetable'] = $this->em->getRepository(Task::class)->getTasksByDate($args['sutra']);
+        $args['tomorrowTimetableIntern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksByDate($args['sutra']);
       }
 
       if ($user->getCompany()->getSettings()->isPlanToday()) {
-        $args['checklistToday'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksByDateUser($args['danas'], $user);
+        $args['timetable'] = $this->em->getRepository(Task::class)->getTasksByDate($args['danas']);
+        $args['timetableIntern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksByDate($args['danas']);
+      } else {
+        $tasks = $this->em->getRepository(Task::class)->getTasksByCompanyHomePaginator($company);
+        $pagination = $paginator->paginate(
+          $tasks, /* query NOT result */
+          $request->query->getInt('page', 1), /*page number*/
+          6,
+          [
+            'pageName' => 'page',  // Menjamo naziv parametra za stranicu
+            'pageParameterName' => 'page',  // Menjamo naziv parametra za stranicu
+            'sortFieldParameterName' => 'sort',  // Menjamo naziv parametra za sortiranje
+          ]
+        );
+        $args['pagination'] = $pagination;
+
+        $interns = $this->em->getRepository(ManagerChecklist::class)->getChecklistToDoHomeCompanyPaginator($company);
+        $pagination1 = $paginator->paginate(
+          $interns, /* query NOT result */
+          $request->query->getInt('page1', 1), /*page number*/
+          6,
+          [
+            'pageName' => 'page1',  // Menjamo naziv parametra za stranicu
+            'pageParameterName' => 'page1',  // Menjamo naziv parametra za stranicu
+            'sortFieldParameterName' => 'sort1',  // Menjamo naziv parametra za sortiranje
+          ]
+        );
+        $args['pagination1'] = $pagination1;
+      }
+
+      if ($user->getCompany()->getSettings()->isPlanEmployee()) {
+        $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getAllDostupnostiDanasBasic();
+      }
+
+      if ($user->getCompany()->getSettings()->isPlan()) {
+        $args['planRada'] = $this->em->getRepository(Plan::class)->findOneBy(['company' => $company, 'datumKreiranja' => $args['danas']->setTime(7,0) ]);
+        $args['planRadaSutra'] = $this->em->getRepository(Plan::class)->findOneBy(['company' => $company, 'datumKreiranja' => $args['sutra']->setTime(7,0) ]);
+      }
+
+      if ($user->getCompany()->getSettings()->isWidgete()) {
+        $args['noZaposleni'] = $this->em->getRepository(User::class)->count(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE]);
+        $args['noProjekata'] = $this->em->getRepository(Project::class)->count(['company' => $user->getCompany(), 'isSuspended' => false]);
+        $args['noTasks'] = $this->em->getRepository(Task::class)->countActiveTasks();
+
+        $args['verify'] = $this->em->getRepository(Task::class)->findBy(['status' => TaskStatusData::ZAVRSENO, 'company' => $company]);
+        $args['verifyNo'] = count($args['verify']);
+
+//        $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->getChecklistUser($user);
+//        $args['checklistCreatedByUserActive'] = $this->em->getRepository(ManagerChecklist::class)->getChecklistCreatedByUserActive($user);
+//        $args['countChecklistActive'] = count($args['checklistActive']);
+//        $args['countChecklistCreatedByUserActive'] = count($args['checklistCreatedByUserActive']);
+
+        $args['noInternTasks'] = $this->em->getRepository(ManagerChecklist::class)->countInternTasks($user->getCompany());
+      }
+    }
+
+
+
+    if ($user->getuserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
+      $args['countTasksActiveByUser'] = $this->em->getRepository(Task::class)->countGetTasksByUser($user);
+      $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->count(['user' => $user, 'status' => InternTaskStatusData::NIJE_ZAPOCETO]);
+
+      if ($user->getCompany()->getSettings()->isPlanTomorrow()) {
+        $args['planRadaSutra'] = $this->em->getRepository(Plan::class)->findOneBy(['company' => $company, 'datumKreiranja' => $args['sutra']->setTime(7,0) ]);
+        $args['tomorrowTimetable'] = $this->em->getRepository(Task::class)->getTasksByDate($args['sutra']);
+        $args['checklistTomorrow'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksByDateUser($args['sutra'], $user);
       }
 
       if ($user->getCompany()->getSettings()->isCar()) {
@@ -152,16 +174,45 @@ class HomeController extends AbstractController {
         }
       }
 
+      if ($user->getCompany()->getSettings()->isPlanToday()) {
+        $args['logs'] = $this->em->getRepository(Task::class)->findByUser($user, $args['danas'] );
+        $args['checklistToday'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksByDateUser($args['danas'], $user);
+      } else {
+        $tasks = $this->em->getRepository(Task::class)->getTasksByUserHomePaginator($user);
+        $pagination = $paginator->paginate(
+          $tasks, /* query NOT result */
+          $request->query->getInt('page', 1), /*page number*/
+          6,
+          [
+            'pageName' => 'page',  // Menjamo naziv parametra za stranicu
+            'pageParameterName' => 'page',  // Menjamo naziv parametra za stranicu
+            'sortFieldParameterName' => 'sort',  // Menjamo naziv parametra za sortiranje
+          ]
+        );
+        $args['pagination'] = $pagination;
 
-      $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUser($user);
-//        $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUserBasic($user);
+        $interns = $this->em->getRepository(ManagerChecklist::class)->getChecklistToDoHomePaginator($user);
+        $pagination1 = $paginator->paginate(
+          $interns, /* query NOT result */
+          $request->query->getInt('page1', 1), /*page number*/
+          6,
+          [
+            'pageName' => 'page1',  // Menjamo naziv parametra za stranicu
+            'pageParameterName' => 'page1',  // Menjamo naziv parametra za stranicu
+            'sortFieldParameterName' => 'sort1',  // Menjamo naziv parametra za sortiranje
+          ]
+        );
+        $args['pagination1'] = $pagination1;
 
+      }
 
       $args['countTasksUnclosedByUser'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedByUser($user);
       $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($user);
 
 
-      $args['countLogs'] = $this->em->getRepository(TaskLog::class)->countLogsByUser($user);
+      if ($user->isInTask()) {
+        $args['activeStopwatch'] = $this->em->getRepository(StopwatchTime::class)->findActiveStopwatchByUser($user);
+      }
 
       $mobileDetect = new MobileDetect();
       if($mobileDetect->isMobile()) {
@@ -175,6 +226,7 @@ class HomeController extends AbstractController {
     }
 
     $mobileDetect = new MobileDetect();
+    
     if($mobileDetect->isMobile()) {
       return $this->render('home/phone/index_admin.html.twig', $args);
     }
@@ -182,48 +234,4 @@ class HomeController extends AbstractController {
     return $this->render('home/index_admin.html.twig', $args);
   }
 
-  public function nav(): Response {
-//    $args = [];
-////    $args['sindikati'] = $em->getRepository(GranskiSindikat::class)->findBy(['parent' => GranskiSindikat::PARENT]);
-//
-//    $userRole = $this->getUser()->getUserType();
-//    $args['uputstvo'] = $em->getRepository(Uputstvo::class)->findOneBy(['role' => $userRole]);
-//
-//    switch ($userRole) {
-//      case UserRolesData::ROLE_UPRAVNIK_GRANE;
-//
-//        $args['grana'] = $this->getUser()->getGranskiSindikatUpGrana();
-//        $args['kongres'] = $em->getRepository(Kongres::class)->findOneBy(['grana' => $args['grana'], 'isArhiva' => false], ['datumOdrzavanja'=>'DESC']);
-//        $args['glavniOdbor'] = $em->getRepository(GlavniOdbor::class)->findOneBy(['grana' => $args['grana'], 'isArhiva' => false]);
-//        $args['izvrsniOdbor'] = $em->getRepository(IzvrsniOdbor::class)->findOneBy(['grana' => $args['grana'], 'isArhiva' => false]);
-//        $args['nadzorniOdbor'] = $em->getRepository(NadzorniOdbor::class)->findOneBy(['grana' => $args['grana'], 'isArhiva' => false]);
-//        $args['sekcijaZena'] = $em->getRepository(SekcijaZena::class)->findOneBy(['grana' => $args['grana'], 'isArhiva' => false]);
-//        $args['sekcijaMladih'] = $em->getRepository(SekcijaMladih::class)->findOneBy(['grana' => $args['grana'], 'isArhiva' => false]);
-//        $args['skupstina'] = $em->getRepository(Skupstina::class)->findOneBy(['grana' => $args['grana'], 'isArhiva' => false]);
-//        $args['predsednistvo'] = $em->getRepository(Predsednistvo::class)->findOneBy(['grana' => $args['grana'], 'isArhiva' => false]);
-//
-//        return $this->render('navigation/upravnik_grane_navigation.html.twig', $args);
-//
-//      case UserRolesData::ROLE_UPRAVNIK_CENTRALE;
-//        $args['savetUgs'] = $em->getRepository(SavetUgs::class)->findOneBy(['isArhiva' => false]);
-//        $args['statutarniOdbor'] = $em->getRepository(StatutarniOdbor::class)->findOneBy(['isArhiva' => false]);
-//        return $this->render('navigation/upravnik_centrale_navigation.html.twig', $args);
-//
-//      case UserRolesData::ROLE_REG_POVERENIK;
-//        $args['poverenistvo'] = $this->getUser()->getPoverenistvo();
-//        $args['grana'] = $args['poverenistvo']->getGranskiSindikat();
-//        return $this->render('navigation/regionalni_poverenik_navigation.html.twig', $args);
-//
-//      case UserRolesData::ROLE_POVERENIK;
-//        return $this->render('navigation/poverenik_navigation.html.twig', $args);
-//
-//      case UserRolesData::ROLE_SUPER_ADMIN;
-//        $args['savetUgs'] = $em->getRepository(SavetUgs::class)->findOneBy(['isArhiva' => false]);
-//        $args['statutarniOdbor'] = $em->getRepository(StatutarniOdbor::class)->findOneBy(['isArhiva' => false]);
-//        return $this->render('navigation/super_admin_navigation.html.twig', $args);
-//
-//      default:
-//        return new Response('');
-//    }
-  }
 }

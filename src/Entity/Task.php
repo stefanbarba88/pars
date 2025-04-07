@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Classes\Data\PrioritetData;
 use App\Classes\Data\TaskStatusData;
 use App\Classes\Slugify;
 use App\Repository\TaskRepository;
@@ -38,7 +39,7 @@ class Task implements JsonSerializable {
   #[ORM\Column]
   private ?int $id = null;
 
-  #[ORM\Column(length: 255)]
+  #[ORM\Column(length: 255, nullable: true)]
   private ?string $title = null;
 
   #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -69,13 +70,16 @@ class Task implements JsonSerializable {
   private ?DateTimeImmutable $time = null;
 
   #[ORM\Column]
-  private ?bool $isPriority = false;
+  private ?int $priority = PrioritetData::MEDIUM;
 
   #[ORM\Column(nullable: true)]
   private ?int $priorityUserLog = null;
 
   #[ORM\Column(nullable: true)]
   private ?bool $isEstimate = null;
+
+  #[ORM\Column(nullable: true)]
+  private ?bool $isSeparate = true;
 
   #[ORM\Column(nullable: true)]
   private ?bool $isFree = false;
@@ -181,13 +185,19 @@ class Task implements JsonSerializable {
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();
     $this->updated = new DateTimeImmutable();
-    $this->title = $this->getProject()->getTitle() . ' - ' . $this->datumKreiranja->format('d.m.Y');
+
+    // Postavi title samo ako nije već popunjeno
+    if (empty($this->title)) {
+      $this->title = $this->getProject()->getTitle() . ' - ' . $this->datumKreiranja->format('d.m.Y');
+    }
   }
 
   #[ORM\PreUpdate]
   public function preUpdate(): void {
     $this->updated = new DateTimeImmutable();
-    $this->title = $this->getProject()->getTitle() . ' - ' . $this->datumKreiranja->format('d.m.Y');
+    if (empty($this->title)) {
+      $this->title = $this->getProject()->getTitle() . ' - ' . $this->datumKreiranja->format('d.m.Y');
+    }
   }
 
   public function __clone() {
@@ -211,7 +221,6 @@ class Task implements JsonSerializable {
       'isExpenses' => $this->isIsExpenses(),
       'editBy' => $this->getEditByJson(),
       'parentTask' => $this->getParentTaskJson(),
-      'isPriority' => $this->isIsPriority(),
       'assignedUsers' => $this->getJsonAssignedUsers(),
       'pdfs' => $this->getJsonPdfs(),
       'minEntry' => $this->getMinEntry(),
@@ -261,15 +270,21 @@ class Task implements JsonSerializable {
     return $this->id;
   }
 
+  /**
+   * @return string|null
+   */
   public function getTitle(): ?string {
     return $this->title;
   }
 
-  public function setTitle(string $title): self {
+  /**
+   * @param string|null $title
+   */
+  public function setTitle(?string $title): void {
     $this->title = $title;
-
-    return $this;
   }
+
+
 
   public function getDescription(): ?string {
     return $this->description;
@@ -293,18 +308,20 @@ class Task implements JsonSerializable {
   }
 
   /**
-   * @return bool|null
+   * @return int|null
    */
-  public function isIsPriority(): ?bool {
-    return $this->isPriority;
+  public function getPriority(): ?int {
+    return $this->priority;
   }
 
   /**
-   * @param bool|null $isPriority
+   * @param int|null $priority
    */
-  public function setIsPriority(?bool $isPriority): void {
-    $this->isPriority = $isPriority;
+  public function setPriority(?int $priority): void {
+    $this->priority = $priority;
   }
+
+
 
 
   public function isIsEstimate(): ?bool {
@@ -841,6 +858,20 @@ class Task implements JsonSerializable {
    */
   public function setDatumPonavljanja(?DateTimeImmutable $datumPonavljanja): void {
     $this->datumPonavljanja = $datumPonavljanja;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getIsSeparate(): ?bool {
+    return $this->isSeparate;
+  }
+
+  /**
+   * @param bool|null $isSeparate
+   */
+  public function setIsSeparate(?bool $isSeparate): void {
+    $this->isSeparate = $isSeparate;
   }
 
 

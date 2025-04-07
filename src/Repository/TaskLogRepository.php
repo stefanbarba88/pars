@@ -56,7 +56,9 @@ class TaskLogRepository extends ServiceEntityRepository {
 
         $format = "d.m.Y";
         $datumZadatka = $task->getDatumKreiranja();
+        $rok = $task->getDeadline();
         $currentTime = new DateTimeImmutable();
+        $deadline = $currentTime->modify('+1 day');
 
 //        if ($datumZadatka->format($format) === $currentTime->format($format)) {
 //          $car = null;
@@ -67,7 +69,9 @@ class TaskLogRepository extends ServiceEntityRepository {
 //          }
 //          $taskLogs[] = [$log, $car];
 //        }
-        if ($datumZadatka->format($format) === $currentTime->format($format) && !$task->isIsDeleted()) {
+        if ($datumZadatka->format($format) === $currentTime->format($format) && !$task->isIsDeleted() && !is_null($task->getDeadline())) {
+          if ($rok->format($format) === $deadline->format($format)) {
+
           $car = null;
           if (!is_null($task->getCar())) {
             $car = $this->getEntityManager()->getRepository(Car::class)->find($task->getCar());
@@ -78,7 +82,7 @@ class TaskLogRepository extends ServiceEntityRepository {
 //          usort($taskLogs, function($a, $b) {
 //            return $a[2] <=> $b[2];
 //          });
-          usort($taskLogs, function($a, $b) {
+          usort($taskLogs, function ($a, $b) {
             // Prvo sortiranje po $logStatus (0, 1, 2)
             if ($a[3] != $b[3]) {
               return $a[3] - $b[3];
@@ -91,11 +95,13 @@ class TaskLogRepository extends ServiceEntityRepository {
             }
           });
         }
+        }
       }
     }
 
     return $taskLogs;
   }
+
   public function findByUserBasic(User $user): array {
 
     $logs = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['user' => $user]);

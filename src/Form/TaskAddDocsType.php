@@ -28,7 +28,7 @@ class TaskAddDocsType extends AbstractType {
             new File([
               'mimeTypes' => 'application/pdf',
               'maxSize' => '5120k',
-              'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5Mb.',
+              'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5MB.',
               'mimeTypesMessage' => 'Molimo Vas postavite dokument u .pdf formatu.'
             ])
           ])

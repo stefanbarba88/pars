@@ -30,25 +30,27 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
+{{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
 
+                                <!-- State saving -->
                                 <div class="card">
                                     <div class="card-header d-flex align-items-center">
                                         <h5 class="mb-0">Lista internih zadataka</h5>
+                                        <div class="my-auto ms-auto">
+                                            <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus"></i></a>
+                                        </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light test-primary">
                                                 <tr>
 
-                                                    <th>Datum zadatka</th>
+                                                    <th>Zaduženi</th>
                                                     <th>Prioritet</th>
                                                     <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                                 </tr>
@@ -57,14 +59,11 @@
                                                 {% for task in pagination %}
                                                     <tr>
                                                         <td>
-                                                            {% if task.datumKreiranja is not null %}
-                                                                <div class="d-inline-flex align-items-center">
-                                                                    <i class="ph-calendar me-2"></i>
-                                                                    {{ task.datumKreiranja | date("d.m.Y")}}
-                                                                </div>
-                                                            {% endif %}
+                                                            <div class="fw-semibold">
+                                                                {{ task.user.getFullName() }}
+                                                            </div>
                                                         </td>
-                                                        <td>
+                                                        <td class="text-center">
                                                             {% if task.priority == 1 %}
                                                                 <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
                                                             {% elseif task.priority == 2 %}
@@ -81,23 +80,16 @@
                                                     </tr>
                                                     <tr id="collapsed_item{{ task.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
                                                         <td>
-                                                            {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
-                                                                <span class="badge bg-secondary text-primary">Kreiran</span>
-                                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
-                                                                <span class="badge bg-yellow text-primary">U toku</span>
-                                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
-                                                                <span class="badge bg-primary text-white">Završen</span>
-                                                            {% elseif task.status == constant('App\\Classes\\Data\\InternTaskStatusData::KONVERTOVANO') %}
-                                                                <span class="badge bg-yellow text-primary">Konvertovan</span>
-                                                            {% endif %}
-                                                        </td>
-                                                        <td>
-                                                            {% if task.finish is not null %}
+                                                            {% if task.datumKreiranja is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ task.finish | date("d.m.Y")}}
+                                                                    {{ task.datumKreiranja | date("d.m.Y.")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Zadatak se ponavlja"></i> {% endif %}
                                                                 </div>
                                                             {% endif %}
+                                                        </td>
+
+                                                        <td>
+                                                            Kreirao: {{ task.createdBy.getNameWithFirstLetter }}
                                                         </td>
 
                                                         <td class="text-center">
@@ -117,7 +109,7 @@
                                                                         </a>
                                                                         <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
                                                                             <i class="ph-check me-2"></i>
-                                                                            Završite
+                                                                            Zatvorite
                                                                         </a>
                                                                         <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="dropdown-item">
                                                                             <i class="ph-note-pencil me-2"></i>
@@ -127,12 +119,18 @@
                                                                             <i class="ph-trash me-2"></i>
                                                                             Obrišite
                                                                         </a>
-                                                                        {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
-                                                                            <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="dropdown-item">
-                                                                                <i class="ph-magic-wand me-2"></i>
-                                                                                Konvertuj u zadatak sa merenjem
+                                                                        {% if task.repeating == 1 %}
+                                                                            <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                                <i class="ph-warning-circle me-2"></i>
+                                                                                Isključite ponavljanje
                                                                             </a>
                                                                         {% endif %}
+                                                                        {#                                                                        {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}#}
+                                                                        <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-magic-wand me-2"></i>
+                                                                            Konvertuj u zadatak sa merenjem
+                                                                        </a>
+                                                                        {#                                                                        {% endif %}#}
                                                                     {% endif %}
                                                                     {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
                                                                         <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
@@ -143,12 +141,24 @@
                                                                             <i class="ph-arrows-counter-clockwise me-2"></i>
                                                                             Ponovite
                                                                         </a>
+                                                                        {% if task.repeating == 1 %}
+                                                                            <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                                <i class="ph-warning-circle me-2"></i>
+                                                                                Isključite ponavljanje
+                                                                            </a>
+                                                                        {% endif %}
                                                                     {% endif %}
                                                                     {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
                                                                         <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
                                                                             <i class="ph-arrows-counter-clockwise me-2"></i>
                                                                             Ponovite
                                                                         </a>
+                                                                        {% if task.repeating == 1 %}
+                                                                            <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                                <i class="ph-warning-circle me-2"></i>
+                                                                                Isključite ponavljanje
+                                                                            </a>
+                                                                        {% endif %}
                                                                     {% endif %}
                                                                 </div>
                                                             </div>
@@ -166,6 +176,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- /state saving -->
 
 
                             </div>
@@ -188,7 +199,7 @@
 
         </div>
         <!-- /main content -->
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
 
     </div>
     {% include 'includes/notification.html.twig' %}

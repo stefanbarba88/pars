@@ -78,7 +78,7 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Zaduženi</th>
+                                        <th>Zaposleni</th>
                                         <th  {% if pagination.isSorted('[c.isSuspended]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Status ', ['c.isSuspended']) }}
                                             {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.isSuspended' %}
@@ -170,7 +170,7 @@
 {#                                <th>Naziv</th>#}
 {#                                <th>Tip</th>#}
 {#                                <th>Dostupnost</th>#}
-{#                                <th>Zaduženi</th>#}
+{#                                <th>Zaposleni</th>#}
 {#                                <th>Status</th>#}
 {#                                <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>#}
 {#                            </tr>#}
@@ -270,7 +270,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

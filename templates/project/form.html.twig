@@ -147,16 +147,17 @@
                                 </div>
                             </fieldset>
 
-                            <fieldset class="mb-3">
-                                <legend class="fs-base fw-bold border-bottom pb-2 mb-3">Informacije o finansiranju projekta</legend>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            {{ form_label(form.payment, 'Tip finansiranja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.payment, {attr: { class: 'form-control required select payment' }}) }}
-                                        </div>
-                                    </div>
-                                </div>
+{#                            <fieldset class="mb-3">#}
+{#                                <legend class="fs-base fw-bold border-bottom pb-2 mb-3">Informacije o troškovima projekta</legend>#}
+{#                                <div class="row">#}
+{#                                    <div class="col-lg-6">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.isExpenses, 'Praćenje troškova:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.isExpenses, {attr: { class: 'form-control required select payment' }}) }}#}
+{#                                            <span class="form-text">Definišete da li se prate troškovi prilikom izvršavanja zadataka. Pri kreiranju zadatka može se pojedinačno definisati za svaki zadatak. </span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
 
 {#                                <div class="row">#}
 {#                                    {% if project.payment == constant('App\\Classes\\Data\\VrstaPlacanjaData::FIKSNA_CENA') %}#}
@@ -301,8 +302,22 @@
 {#                                    {% endif %}#}
 
 {#                                </div>#}
-                            </fieldset>
+{#                            </fieldset>#}
+                            <fieldset class="mb-3">
+                                <legend class="fs-base fw-bold border-bottom pb-2 mb-3">Dokumentacija o projektu</legend>
+                                <div class="row">
 
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            {{ form_label(form.pdf, 'Dokumenta:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.pdf, {attr: { class: 'form-control file-input' }}) }}
+                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </fieldset>
 {#                            <fieldset class="mb-3">#}
 {#                                <legend class="fs-base fw-bold border-bottom pb-2 mb-3">Podešavanje praćenja vremena</legend>#}
 {#                                <div class="row">#}
@@ -389,7 +404,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -397,15 +412,17 @@
 {% block includeJavascript %}
     {{ parent() }}
 
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
 
     <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
 
     <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
-{#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
+
+    {#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
     <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
 
     <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
@@ -422,12 +439,9 @@
     <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
 
     <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
-
-    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/notifications/noty.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>
-{#    <script src="{{ asset('assets/demo/pages/editor_ckeditor_classic.js') }}"></script>#}
+
+    <script src="{{ asset('assets/demo/pages/form_dual_listboxes.js') }}"></script>
 
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>

@@ -24,6 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\File;
 
 class ProjectFormType extends AbstractType {
@@ -97,7 +98,7 @@ class ProjectFormType extends AbstractType {
         'expanded' => false,
         'multiple' => true,
       ])
-//      ->add('isClientView', ChoiceType::class, [
+//      ->add('isExpenses', ChoiceType::class, [
 //        'attr' => [
 //          'data-minimum-results-for-search' => 'Infinity',
 //        ],
@@ -114,12 +115,12 @@ class ProjectFormType extends AbstractType {
 //        'multiple' => false,
 //      ])
 
-      ->add('payment', ChoiceType::class, [
-        'placeholder' => '--Izaberite tip finansiranja--',
-        'choices' => VrstaPlacanjaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('payment', ChoiceType::class, [
+//        'placeholder' => '--Izaberite tip finansiranja--',
+//        'choices' => VrstaPlacanjaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
 
 //      ->add('team', EntityType::class, [
 //        'required' => false,
@@ -250,7 +251,27 @@ class ProjectFormType extends AbstractType {
         'html5' => false,
         'input' => 'datetime_immutable'
       ])
-
+      ->add('pdf', FileType::class, [
+        'attr' => ['accept' => '.pdf', 'data-show-upload' => 'false'],
+        'multiple' => true,
+        // unmapped means that this field is not associated to any entity property
+        'mapped' => false,
+        // make it optional so you don't have to re-upload the PDF file
+        // every time you edit the Product details
+        'required' => false,
+        // unmapped fields can't define their validation using annotations
+        // in the associated entity, so you can use the PHP constraint classes
+        'constraints' => [
+          new All([
+            new File([
+              'mimeTypes' => 'application/pdf',
+              'maxSize' => '5120k',
+              'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5Mb.',
+              'mimeTypesMessage' => 'Molimo Vas postavite dokument u .pdf formatu.'
+            ])
+          ])
+        ],
+      ])
     ;
   }
 

@@ -46,7 +46,7 @@
 
                             {% if task.isDeleted %}
                                 <div class="alert alert-danger fade show">
-                                    <span class="fw-semibold">Zadatak je obrisan.</span> Svi vremenski zapisi su obrisani, ali se mogu proveriti ulaskom u dnevnik zaduženog.
+                                    <span class="fw-semibold">Zadatak je obrisan.</span> Svi vremenski zapisi su obrisani, ali se mogu proveriti ulaskom u dnevnik zaposlenog.
                                 </div>
                             {% else %}
                                 {% if task.isClosed %}
@@ -702,7 +702,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 

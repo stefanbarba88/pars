@@ -30,9 +30,7 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
+{{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
@@ -41,7 +39,7 @@
 
                                 <div class="card">
                                     <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Lista rezervacija</h5>
+                                    <h5 class="mb-0">Lista rezervacija</h5>
                                         {% if app.user == user%}
                                             <div class="my-auto ms-auto">
                                                 <a href="{{ path('app_tool_reservation_user_form') }}" class="btn btn-primary"><i class="ph-plus"></i></a>
@@ -49,7 +47,7 @@
                                         {% endif %}
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -67,7 +65,7 @@
                                                         <td>
                                                             <div class="d-inline-flex align-items-center">
                                                                 <i class="ph-calendar me-2"></i>
-                                                                {{ reservation.created | date("d.m.Y")}}
+                                                                {{ reservation.created | date("d.m.Y.")}}
                                                             </div>
                                                         </td>
                                                         <td class="text-center">
@@ -79,7 +77,7 @@
                                                             {% if reservation.finished is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ reservation.finished | date("d.m.Y")}}
+                                                                    {{ reservation.finished | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -135,7 +133,7 @@
 
         </div>
         <!-- /main content -->
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
 
     </div>
     {% include 'includes/notification.html.twig' %}

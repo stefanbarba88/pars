@@ -32,11 +32,11 @@
 {#                                                    {{ daysAtMoment }}/{{ daysMonth }}#}
 {#                                                </span></h5>#}
                             <h5 class="mb-0">Lista projekata</h5>
-                            {% if not is_granted('ROLE_EMPLOYEE') %}
+
                                 <div class="my-auto ms-auto">
                                     <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus"></i></a>
                                 </div>
-                            {% endif %}
+
                         </div>
                         <div class="card-body">
                             <div class="accordion" id="accordion_collapsed">
@@ -96,7 +96,8 @@
                                     {% for project in pagination %}
                                         {% set noTasksIntern = getCountTasksByProjectIntern(project) | length  %}
                                         {% set noTasks = getCountTasksByProject(project)  %}
-                                        <tr>
+                                        {% set projectDays = getDaysRemainingProject(project) %}
+                                        <tr class="{{ projectDays.klasa }}">
                                             <td>
                                                 <div class="fw-semibold">
                                                     <a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a>
@@ -106,15 +107,9 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                {% if is_granted('ROLE_EMPLOYEE') %}
-                                                    {% for client in project.client %}
-                                                        {{ client.title }}{% if  not loop.last %},{% endif %}
-                                                    {% endfor %}
-                                                {% else %}
-                                                    {% for client in project.client %}
-                                                        <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title }}</a>{% if  not loop.last %},{% endif %}
-                                                    {% endfor %}
-                                                {% endif %}
+                                                {% for client in project.client %}
+                                                    <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title }}</a>{% if  not loop.last %},{% endif %}
+                                                {% endfor %}
                                             </td>
 
                                             <td class="text-center">
@@ -141,9 +136,7 @@
                                                         <i class="ph-gear"></i>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
-                                                        {% if is_granted('ROLE_EMPLOYEE') %}
-                                                            <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                        {% else %}
+
                                                             <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                             <a href="{{ path('app_project_form', { id: project.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
                                                             {% if project.suspended == 0 %}
@@ -151,7 +144,6 @@
                                                             {% else %}
                                                                 <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-check me-2"></i> Aktivirajte</a>
                                                             {% endif %}
-                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </td>
@@ -183,7 +175,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

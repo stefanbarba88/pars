@@ -52,7 +52,7 @@
                                                 {% if task.finish is not null %}
                                                     <div class="d-inline-flex align-items-center">
                                                         <i class="ph-calendar me-2"></i>
-                                                        {{ task.finish | date("d.m.Y")}}
+                                                        {{ task.finish | date("d.m.Y.")}}
                                                     </div>
                                                 {% endif %}
                                             </td>
@@ -65,7 +65,7 @@
                                                 {% if task.datumKreiranja is not null %}
                                                     <div class="d-inline-flex align-items-center">
                                                         <i class="ph-calendar me-2"></i>
-                                                        {{ task.datumKreiranja | date("d.m.Y")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Zadatak se ponavlja"></i> {% endif %}
+                                                        {{ task.datumKreiranja | date("d.m.Y.")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Zadatak se ponavlja"></i> {% endif %}
                                                     </div>
                                                 {% endif %}
                                             </td>
@@ -147,7 +147,7 @@
 {#                                                {% if task.finish is not null %}#}
 {#                                                    <div class="d-inline-flex align-items-center">#}
 {#                                                        <i class="ph-calendar me-2"></i>#}
-{#                                                        {{ task.finish | date("d.m.Y")}}#}
+{#                                                        {{ task.finish | date("d.m.Y.")}}#}
 {#                                                    </div>#}
 {#                                                {% endif %}#}
 {#                                            </td>#}
@@ -160,7 +160,7 @@
 {#                                                {% if task.datumKreiranja is not null %}#}
 {#                                                    <div class="d-inline-flex align-items-center">#}
 {#                                                        <i class="ph-calendar me-2"></i>#}
-{#                                                        {{ task.datumKreiranja | date("d.m.Y")}}#}
+{#                                                        {{ task.datumKreiranja | date("d.m.Y.")}}#}
 {#                                                    </div>#}
 {#                                                {% endif %}#}
 {#                                            </td>#}
@@ -217,7 +217,7 @@
         </div>
         <!-- /main content -->
 
-        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

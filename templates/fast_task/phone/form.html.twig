@@ -53,11 +53,11 @@
                                 {% if noUsers > 0 %}
                                     <div class="row">
                                     <div class="col-sm-6 col-lg-12">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
-                                                    <th colspan="{{ noUsers }}">Zaposleni</th>
+                                                    <th colspan="{{ noUsers }}">Zaposleni <i class="ph-info me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Nakon odabira u planu, zaposleni u listi će promeniti boju." data-bs-original-title="Dostupni zaposleni"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -71,6 +71,12 @@
                                                                             <div class="fw-semibold">{{ member.user.fullName }}
                                                                                 {% if member.car is not null %}
                                                                                     <i class="ph-car me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{ member.car.plate }}" data-bs-original-title="Zaduženo vozilo"></i>
+                                                                                {% endif %}
+                                                                                {% if member.oprema is not empty %}
+                                                                                    <i class="ph-wrench me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{% for alat in member.oprema %}{{ alat }}{% if not loop.last %}, {% endif %}{% endfor %}" data-bs-original-title="Zadužena oprema"></i>
+                                                                                {% endif %}
+                                                                                {% if member.vreme is not empty %}
+                                                                                    <i class="ph-coffee me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{ member.vreme }}" data-bs-original-title="Nedostupan"></i>
                                                                                 {% endif %}
                                                                             </div>
                                                                             <span class="sakriveno d-none">{{ member.id }}</span>
@@ -90,11 +96,11 @@
                                 <div class="row">
                                     {% if noTools > 0 %}
                                         <div class="col-sm-6 col-lg-8">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
-                                                    <th colspan="{{ noTools }}">Oprema</th>
+                                                    <th colspan="{{ noTools }}">Oprema <i class="ph-info me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Nakon odabira u planu, oprema u listi će promeniti boju." data-bs-original-title="Dostupna oprema"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -121,11 +127,11 @@
                                     {% endif %}
                                     {% if noCars > 0 %}
                                         <div class="col-sm-6 col-lg-4">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
-                                                    <th colspan="{{ noCars }}">Vozila</th>
+                                                    <th colspan="{{ noCars }}">Vozila <i class="ph-info me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Nakon odabira u planu, vozilo u listi će promeniti boju." data-bs-original-title="Dostupna vozila"></i></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -166,7 +172,6 @@
                             <div class="card-body">
 
                                 <input type="text" hidden="hidden" id="task_form_datum" name="task_quick_form_datum" value="{{ datum }}"/>
-
                                 <div class="card">
                                     <ul class="nav nav-tabs nav-tabs-underline nav-justified mb-0" role="tablist">
                                         <li class="nav-item" role="presentation"><a href="#tab-desc" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">Zadaci</a></li>
@@ -175,25 +180,25 @@
 
                                     <div class="tab-content card-body">
                                         <div class="tab-pane fade active show" id="tab-desc" role="tabpanel">
-                                            <div class="table-responsive card">
+                                            <div class="card">
 
                                                 <table class="table table-hover table-bordered table_morecondensed">
                                                     <tbody id="tbody"></tbody>
                                                 </table>
 
                                                 <div class="card-footer d-flex justify-content-between align-items-center bg-white">
-                                                    <div class="d-flex align-items-center"><a class="btn btn-primary" id="addBtn"><i class="ph-plus me-2"></i> Dodajte</a></div>
+                                                    <div class="d-flex align-items-center"><a class="btn btn-primary" id="addBtn"><i class="ph-plus"></i></a></div>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="tab-pane fade" id="tab-spec" role="tabpanel">
-                                            <div class="table-responsive card">
+                                            <div class="card">
                                                 <table class="table table-hover table-bordered table_morecondensed">
                                                     <tbody id="tbodyI"></tbody>
                                                 </table>
                                                 <div class="card-footer d-flex justify-content-between align-items-center bg-white">
-                                                    <div class="d-flex align-items-center"><a class="btn btn-primary" id="addBtnI"><i class="ph-plus me-2"></i> Dodajte</a></div>
+                                                    <div class="d-flex align-items-center"><a class="btn btn-primary" id="addBtnI"><i class="ph-plus"></i></a></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -201,7 +206,7 @@
                                 </div>
 
                                 <div class="text-end">
-                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk"></i></button>
                                 </div>
                             </div>
                         </form>
@@ -221,7 +226,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

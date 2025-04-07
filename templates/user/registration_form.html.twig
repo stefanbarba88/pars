@@ -46,48 +46,50 @@
                         <div class="card-body">
                             <div class="fw-bold border-bottom pb-2 mb-3">Lični podaci</div>
                             <div class="row">
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.ime, 'Ime:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.ime, {attr: { class: 'form-control required' }}) }}
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.prezime, 'Prezime:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.prezime, {attr: { class: 'form-control required' }}) }}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.userType, 'Tip korisnika:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.userType, {attr: { class: 'form-control select required role' }}) }}
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
+
                                 <div class="col-lg-4 hide ROLE_EMPLOYEE">
                                     <div class="mb-3">
                                         {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.pozicija, {attr: { class: 'form-control select pozicija' }}) }}
                                     </div>
                                 </div>
-{#                                <div class="col-lg-4 hide ROLE_EMPLOYEE">#}
-{#                                    <div class="mb-3">#}
-{#                                        {{ form_label(form.projectType, 'Tip projekta:*', {'label_attr': {'class': 'form-label'}}) }}#}
-{#                                        {{ form_widget(form.projectType, {attr: { class: 'form-control select pozicija' }}) }}#}
-{#                                    </div>#}
-{#                                </div>#}
+                                <div class="col-lg-4 hide ROLE_EMPLOYEE">
+                                    <div class="mb-3">
+                                        {{ form_label(form.isAdmin, 'Administrator:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.isAdmin, {attr: { class: 'form-control select pozicija' }}) }}
+                                        <span class="form-text">Definišite da li korisnik ima administratorske priviliegije.</span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-6 KLIJENT">
+                                <div class="col-lg-6 KLIJENT ADMIN">
                                     <div class="mb-3">
                                         {{ form_label(form.datumRodjenja, 'Datum rođenja:*', {'label_attr': {'class': 'form-label'}}) }}
                                         <div class="input-group">
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
 											</span>
-                                            {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom klijentRemove', autocomplete : 'off' }}) }}
+                                            {{ form_widget(form.datumRodjenja, {attr: { class: 'form-control required datepicker-date-format-custom klijentRemove adminRemove', autocomplete : 'off' }}) }}
                                         </div>
                                         <span class="form-text">Format: 31.12.1900</span>
                                     </div>
@@ -115,12 +117,59 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row KLIJENT">
-                                <div class="col-lg-6">
+                            <div class="row KLIJENT ADMIN">
+                                <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.vrstaZaposlenja, 'Vrsta zaposlenja:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required klijentRemove' }}) }}
-                                        <span class="form-text">Ako se radi o klijentu izaberite opciju "Nije u radnom odnosu".</span>
+                                        {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required klijentRemove adminRemove vrstaUgovora' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        {{ form_label(form.pocetakUgovora, 'Početak ugovora:', {'label_attr': {'class': 'form-label'}}) }}
+                                        <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                            {{ form_widget(form.pocetakUgovora, {attr: { class: 'form-control datepicker-date-format-custom2 ugovor1 required klijentRemove adminRemove', autocomplete : 'off' }}) }}
+                                        </div>
+                                        <span class="form-text">Format: 31.12.1900. Unesite datum početka radnog odnosa.</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        {{ form_label(form.krajUgovora, 'Kraj ugovora:', {'label_attr': {'class': 'form-label'}}) }}
+                                        <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                            {{ form_widget(form.krajUgovora, {attr: { class: 'form-control datepicker-date-format-custom3 ugovor1 ugovor2 required klijentRemove adminRemove', autocomplete : 'off' }}) }}
+                                        </div>
+                                        <span class="form-text">Format: 31.12.1900. Unesite datum kraja radnog odnosa ukoliko se ne radi o ugovoru na neodređeno.</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        {{ form_label(form.nivoObrazovanja, 'Nivo obrazovanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.nivoObrazovanja, {attr: { class: 'form-control select required klijentRemove adminRemove ' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        {{ form_label(form.zvanje, 'Zvanje:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.zvanje, {attr: { class: 'form-control select required klijentRemove adminRemove' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}
+                                        <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                            {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1', autocomplete : 'off' }}) }}
+                                        </div>
+                                        <span class="form-text">Format: 31.12.1900</span>
                                     </div>
                                 </div>
                             </div>
@@ -131,89 +180,89 @@
                                     <div class="mb-3">
                                         {{ form_label(form.slika, 'Profilna slika:', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.slika, {attr: { class: 'form-control file-input' }}) }}
-                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
+                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 5MB.</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="fw-bold border-bottom pb-2 mb-3">Kontakt podaci</div>
-                            <div class="row KLIJENT">
+                            <div class="fw-bold border-bottom pb-2 mb-3 ADMIN KLIJENT">Kontakt podaci</div>
+                            <div class="row KLIJENT ADMIN">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.grad, 'Grad:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.grad, {attr: { class: 'form-control select required klijentRemove' }}) }}
+                                        {{ form_widget(form.grad, {attr: { class: 'form-control select required klijentRemove adminRemove' }}) }}
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.adresa, 'Ulica i broj:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.adresa, {attr: { class: 'form-control required klijentRemove' }}) }}
+                                        {{ form_widget(form.adresa, {attr: { class: 'form-control required klijentRemove adminRemove' }}) }}
                                         <span class="form-text">Format: Bulevar Milutina Milankovića 1</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row ADMIN">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.telefon1, 'Telefon #1:', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.telefon1, {attr: { class: 'form-control' }}) }}
+                                        {{ form_label(form.telefon1, 'Službeni telefon:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.telefon1, {attr: { class: 'form-control required adminRemove' }}) }}
                                         <span class="form-text">Format: 0661111222</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
+                                        {{ form_label(form.telefon2, 'Privatni telefon:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.telefon2, {attr: { class: 'form-control adminRemove' }}) }}
                                         <span class="form-text">Format: 0661111222</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="fw-bold border-bottom pb-2 mb-3 KLIJENT">Ostale informacije</div>
-                            <div class="row KLIJENT">
+                            <div class="fw-bold border-bottom pb-2 mb-3 KLIJENT ADMIN">Ostale informacije</div>
+                            <div class="row KLIJENT ADMIN">
                                 <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.vozacki, 'Vozačka dozvola:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.vozacki, {attr: { class: 'form-control select required klijentRemove' }}) }}
+                                        {{ form_widget(form.vozacki, {attr: { class: 'form-control select required klijentRemove adminRemove' }}) }}
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.isLekarski, 'Lekarski pregled:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isLekarski, {attr: { class: 'form-control select required klijentRemove' }}) }}
+                                        {{ form_widget(form.isLekarski, {attr: { class: 'form-control select required klijentRemove adminRemove' }}) }}
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.isPrvaPomoc, 'Prva pomoć:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isPrvaPomoc, {attr: { class: 'form-control select required klijentRemove' }}) }}
+                                        {{ form_widget(form.isPrvaPomoc, {attr: { class: 'form-control select required klijentRemove adminRemove' }}) }}
                                     </div>
                                 </div>
                             </div>
-                            <div class="row KLIJENT">
+                            <div class="row KLIJENT ADMIN">
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            {{ form_label(form.neradniDan, 'Neradni dan:', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.neradniDan, {attr: { class: 'form-control select' }}) }}
-                                            <span class="form-text">Ukoliko zaposleni ne radi određenog dana u sedmici. Potrebno je uneti i dan vikenda ako firma radi vikendom.</span>
+                                            <label class="form-label" for="user_registration_form_neradniDan">Neradni dani:</label>
+                                            <select id="user_registration_form_neradniDan" name="user_registration_form[neradniDani][]" data-minimum-results-for-search="Infinity" class="form-control select" multiple="multiple"><option value="1">Ponedeljak</option><option value="2">Utorak</option><option value="3">Sreda</option><option value="4">Četvrtak</option><option value="5">Petak</option><option value="6">Subota</option><option value="7">Nedelja</option></select>
+                                            <span class="form-text">Ukoliko zaposleni ne radi određenim danima u sedmici. Potrebno je uneti i dan vikenda ako firma radi vikendom.</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="fw-bold border-bottom pb-2 mb-3 KLIJENT">Zaduženi uređaji</div>
-                            <div class="row KLIJENT">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isMobile, 'Mobilni telefon:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isMobile, {attr: { class: 'form-control select required klijentRemove' }}) }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isLaptop, 'Laptop:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isLaptop, {attr: { class: 'form-control select required klijentRemove' }}) }}
-                                    </div>
-                                </div>
-                            </div>
+{#                            <div class="fw-bold border-bottom pb-2 mb-3 KLIJENT">Zaposleni uređaji</div>#}
+{#                            <div class="row KLIJENT">#}
+{#                                <div class="col-lg-6">#}
+{#                                    <div class="mb-3">#}
+{#                                        {{ form_label(form.isMobile, 'Mobilni telefon:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        {{ form_widget(form.isMobile, {attr: { class: 'form-control select required klijentRemove' }}) }}#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="col-lg-6">#}
+{#                                    <div class="mb-3">#}
+{#                                        {{ form_label(form.isLaptop, 'Laptop:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        {{ form_widget(form.isLaptop, {attr: { class: 'form-control select required klijentRemove' }}) }}#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
                             <div class="text-end">
                                 <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i>Sačuvajte</button>
                             </div>
@@ -236,7 +285,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -287,6 +336,11 @@
                     $('.pozicija').addClass('required');
                     $('.KLIJENT').removeClass('hide');
                     $('.klijentRemove').addClass('required');
+                } else if  ($(this).val() == "2") {
+                    $('.ADMIN').addClass('hide');
+                    $('.adminRemove').removeClass('required');
+                    $('.ROLE_EMPLOYEE').addClass('hide');
+                    $('.pozicija').removeClass('required');
                 } else if  ($(this).val() == "5") {
                     $('.KLIJENT').addClass('hide');
                     $('.klijentRemove').removeClass('required');
@@ -297,6 +351,57 @@
                     $('.pozicija').removeClass('required');
                     $('.KLIJENT').removeClass('hide');
                     $('.klijentRemove').addClass('required');
+                }
+            });
+            $(".vrstaUgovora").change(function() {
+                if ($(this).val() == "0") {
+                    $('.ugovor1').removeClass('required');
+                    $('.ugovor2').removeClass('required');
+                    $('label[for="user_registration_form_pocetakUgovora"]').text(function(index, text) {
+                        return text.replace(' *', '');
+                    });
+                    $('label[for="user_registration_form_krajUgovora"]').text(function(index, text) {
+                        return text.replace(' *', '');
+                    });
+                } else if ($(this).val() == "6") {
+                    $('.ugovor1').addClass('required');
+                    $('.ugovor2').removeClass('required');
+                    $('label[for="user_registration_form_pocetakUgovora"]').text(function (index, text) {
+                        if (!text.includes('*')) {
+                            return text + ' *';
+                        }
+                        return text;
+                    });
+                    $('label[for="user_registration_form_krajUgovora"]').text(function (index, text) {
+                        return text.replace(' *', '');
+                    });
+                } else if ($(this).val() == "1") {
+                    $('.ugovor1').addClass('required');
+                    $('.ugovor2').removeClass('required');
+                    $('label[for="user_registration_form_pocetakUgovora"]').text(function(index, text) {
+                        if (!text.includes('*')) {
+                            return text + ' *';
+                        }
+                        return text;
+                    });
+                    $('label[for="user_registration_form_krajUgovora"]').text(function(index, text) {
+                        return text.replace(' *', '');
+                    });
+                } else {
+                    $('.ugovor1').addClass('required');
+                    $('.ugovor2').addClass('required');
+                    $('label[for="user_registration_form_pocetakUgovora"]').text(function(index, text) {
+                        if (!text.includes('*')) {
+                            return text + ' *';
+                        }
+                        return text;
+                    });
+                    $('label[for="user_registration_form_krajUgovora"]').text(function(index, text) {
+                        if (!text.includes('*')) {
+                            return text + ' *';
+                        }
+                        return text;
+                    });
                 }
             });
         });
@@ -312,6 +417,53 @@
                 todayBtn: true,
                 weekStart: 1,
                 maxDate: 'today',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
+        const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom1');
+        if(dpDateCustomFormatElement1) {
+            const dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
+        const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom2');
+        if(dpDateCustomFormatElement2) {
+            const dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                maxDate: 'today',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
+        const dpDateCustomFormatElement3 = document.querySelector('.datepicker-date-format-custom3');
+        if(dpDateCustomFormatElement3) {
+            const dpDateCustomFormat3 = new Datepicker(dpDateCustomFormatElement3, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                minDate: 'today',
                 daysOfWeekHighlighted: [0,6],
                 language: 'sr-latn',
                 // daysOfWeekDisabled: [0]

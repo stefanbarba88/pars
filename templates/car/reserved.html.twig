@@ -57,7 +57,7 @@
                         </form>
                         <div class="card-body">
                             <div class="card">
-                                <table class="table table-bordered table-hover table-responsive card-sm">
+                                <table class="table table-bordered table-hover card-sm">
                                     <thead class="bg-light text-primary">
                                     <tr>
                                         <th>Registracija</th>
@@ -71,7 +71,7 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Zaduženi</th>
+                                        <th>Zaposleni</th>
                                         <th>Nivo goriva</th>
                                         <th  {% if pagination.isSorted('[c.datumRegistracije]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Registracija ', ['c.datumRegistracije']) }}
@@ -179,7 +179,7 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ car.datumRegistracije | date("d.m.Y")}}
+                                                    {{ car.datumRegistracije | date("d.m.Y.")}}
                                                 </div>
                                             </td>
                                             <td>
@@ -187,9 +187,9 @@
 
 
                                                     {% if currentDate <= nextRegistrationDate and currentDate >= difference %}
-                                                        <span class="badge bg-yellow text-primary"><i class="ph-calendar me-2"></i>{{ car.datumNaredneRegistracije | date("d.m.Y")}}</span>
+                                                        <span class="badge bg-yellow text-primary"><i class="ph-calendar me-2"></i>{{ car.datumNaredneRegistracije | date("d.m.Y.")}}</span>
                                                     {% else %}
-                                                        <i class="ph-calendar me-2"></i>{{ car.datumNaredneRegistracije | date("d.m.Y")}}
+                                                        <i class="ph-calendar me-2"></i>{{ car.datumNaredneRegistracije | date("d.m.Y.")}}
                                                     {% endif %}
                                                 </div>
                                             </td>
@@ -254,7 +254,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

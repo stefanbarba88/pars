@@ -93,9 +93,15 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ user.datumRodjenja | date("d.m.Y")}}
+                                                    {{ user.datumRodjenja | date("d.m.Y.")}}
                                                 </div>
                                             </td>
+                                            <td>
+                                                {% if user.userType == 1 or user.userType == 2 or user.isAdmin %}
+                                                    <span class="badge bg-primary text-white">Administrator</span>
+                                                {% endif %}
+                                            </td>
+                                            <th>Admin prava</th>
                                             <td>
                                                 {{ user.getBadgeByStatus | raw }}
                                             </td>
@@ -153,7 +159,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

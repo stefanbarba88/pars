@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Classes\Data\InternTaskStatusData;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\UserRolesData;
-use App\Entity\ManagerChecklist;
 use App\Entity\Ticket;
 use App\Form\TicketFormType;
 use App\Service\MailService;
@@ -32,9 +31,18 @@ class TicketController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
-    $mobileDetect = new MobileDetect();
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if ($korisnik->getUserType() != UserRolesData::ROLE_CLIENT){
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
 
-    $company = $this->getUser()->getCompany();
+    if ($korisnik->getCompany() != $ticket->getCompany()){
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     $form = $this->createForm(TicketFormType::class, $ticket, ['attr' => ['action' => $this->generateUrl('app_ticket_form', ['id' => $ticket->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -72,12 +80,17 @@ class TicketController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->getIsClientView()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if ($korisnik->getUserType() != UserRolesData::ROLE_CLIENT){
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
 
     $args = [];
-
-    $user = $this->getUser();
-
-    $tickets = $this->em->getRepository(Ticket::class)->getTicketsPaginator($user, InternTaskStatusData::NIJE_ZAPOCETO);
+    $tickets = $this->em->getRepository(Ticket::class)->getTicketsPaginator($korisnik, InternTaskStatusData::NIJE_ZAPOCETO);
 
     $pagination = $paginator->paginate(
       $tickets, /* query NOT result */
@@ -99,12 +112,18 @@ class TicketController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->getIsClientView()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if ($korisnik->getUserType() != UserRolesData::ROLE_CLIENT){
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
 
     $args = [];
 
-    $user = $this->getUser();
-
-    $tickets = $this->em->getRepository(Ticket::class)->getTicketsPaginator($user, InternTaskStatusData::ZAVRSENO);
+    $tickets = $this->em->getRepository(Ticket::class)->getTicketsPaginator($korisnik, InternTaskStatusData::ZAVRSENO);
 
     $pagination = $paginator->paginate(
       $tickets, /* query NOT result */
@@ -126,6 +145,18 @@ class TicketController extends AbstractController {
   public function view(Ticket $ticket)    : Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->getIsClientView()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if ($korisnik->getUserType() != UserRolesData::ROLE_CLIENT){
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
+
+    if ($korisnik->getCompany() != $ticket->getCompany()){
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['ticket'] = $ticket;
     return $this->render('ticket/view.html.twig', $args);
@@ -182,6 +213,18 @@ class TicketController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->getIsClientView()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if ($korisnik->getUserType() != UserRolesData::ROLE_CLIENT){
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
+
+    if ($korisnik->getCompany() != $ticket->getCompany()){
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     $this->em->getRepository(Ticket::class)->remove($ticket);
 
@@ -201,7 +244,17 @@ class TicketController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->getIsClientView()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
+    if ($korisnik->getCompany() != $ticket->getCompany()){
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     $ticket->setStatus(InternTaskStatusData::ZAVRSENO);
     $this->em->getRepository(Ticket::class)->save($ticket);
 

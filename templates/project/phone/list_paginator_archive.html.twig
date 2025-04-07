@@ -78,15 +78,11 @@
                                                 <div class="fw-semibold"><a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a></div>
                                             </td>
                                             <td>
-                                                {% if is_granted('ROLE_EMPLOYEE') %}
-                                                    {% for client in project.client %}
-                                                        {{ client.title }}{% if  not loop.last %},{% endif %}
-                                                    {% endfor %}
-                                                {% else %}
+
                                                     {% for client in project.client %}
                                                         <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title }}</a>{% if  not loop.last %},{% endif %}
                                                     {% endfor %}
-                                                {% endif %}
+
                                             </td>
                                             <td class="text-center">
                                                 <div class="dropdown">
@@ -94,19 +90,14 @@
                                                         <i class="ph-gear"></i>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
-                                                        {% if is_granted('ROLE_EMPLOYEE') %}
-                                                            <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        <a href="{{ path('app_project_form', { id: project.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                        {% if project.suspended == 0 %}
+                                                            <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-x me-2"></i> Deaktivirajte</a>
                                                         {% else %}
-                                                            <a href="{{ path('app_project_profile_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-info me-2"></i> Info</a>
-                                                            <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-list-checks me-2"></i> Zadaci</a>
-                                                            <a href="{{ path('app_project_activity_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-activity me-2"></i> Aktivnosti</a>
-                                                            <a href="{{ path('app_project_form', { id: project.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
-                                                            {% if project.suspended == 0 %}
-                                                                <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-x me-2"></i> Deaktivirajte</a>
-                                                            {% else %}
-                                                                <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-check me-2"></i> Aktivirajte</a>
-                                                            {% endif %}
+                                                            <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-check me-2"></i> Aktivirajte</a>
                                                         {% endif %}
+
                                                     </div>
                                                 </div>
                                             </td>
@@ -137,7 +128,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

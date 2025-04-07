@@ -1,4 +1,4 @@
-<div class="navbar navbar-expand-lg border-top py-2">
+<div class="navbar navbar-expand-lg border-top py-0 py-sm-1">
     <div class="container-fluid">
         <ul class="nav navbar-nav flex-row flex-fill">
             <li class="nav-item me-1">
@@ -91,6 +91,12 @@
                     </a>
                 </li>
                 <li class="nav-item ms-lg-1">
+                    <a href="{{ path('app_employee_documents_view', { id: user.id}) }}" class="navbar-nav-link rounded">
+                        <i class="ph-files me-2"></i>
+                        Dokumentacija
+                    </a>
+                </li>
+                <li class="nav-item ms-lg-1">
                     <a href="{{ path('app_employee_comments_view', { id: user.id}) }}" class="navbar-nav-link rounded">
                         <i class="ph-chats-circle me-2"></i>
                         Komentari
@@ -120,12 +126,13 @@
 {#                            <i class="ph-clock-counter-clockwise me-2"></i>#}
 {#                            Istorija izmena#}
 {#                        </a>#}
-{#                        <div class="dropdown-divider"></div>#}
-{#                        <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="dropdown-item">#}
-{#                            <i class="ph-gear me-2"></i>#}
-{#                            Podešavanja#}
-{#                        </a>#}
-{#                        {% endif %}#}
+                        {% if app.user.userType != 5 or app.user.isAdmin %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ path('app_user_settings_form', { id: user.id, type:1}) }}" class="dropdown-item">
+                                <i class="ph-gear me-2"></i>
+                                Podešavanja
+                            </a>
+                        {% endif %}
                     </div>
                 </li>
             </ul>

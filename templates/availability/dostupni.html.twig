@@ -28,7 +28,7 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Lista dostupnih zaposlenih - {{ "now"|date("d.m.Y") }}</h5>
+                            <h5 class="mb-0">Lista dostupnih zaposlenih - {{ "now"|date("d.m.Y.") }}</h5>
                         </div>
                         <div class="card-body">
                             <div class="card">
@@ -36,16 +36,6 @@
                                     <thead class="bg-light text-primary">
                                     <tr>
                                         <th>Zaposleni</th>
-                                        <th  {% if pagination.isSorted('[u.isInTask]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Na zadatku ', ['u.isInTask']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.isInTask' %}
-                                                &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.isInTask' %}
-                                                &#8593;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
                                         <th>Pozicija</th>
 
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
@@ -55,15 +45,15 @@
                                     {% for user in pagination %}
                                         <tr>
                                             <td>
-                                                <div class="fw-semibold">
+                                                <div class="fw-semibold d-flex align-items-center">
                                                     <a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.fullName }}</a>
+                                                    {% if user.isInTask == 1 %}
+                                                        <span class="live mx-2"></span>
+                                                    {% endif %}
                                                 </div>
+
                                             </td>
-                                            <td>
-                                                {% if user.isInTask == 1 %}
-                                                    <span class="live"></span>
-                                                {% endif %}
-                                            </td>
+
                                             <td>
                                                 <div class="fw-semibold">{{ user.pozicija.title }}</div>
                                             </td>
@@ -112,7 +102,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

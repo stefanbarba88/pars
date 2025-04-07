@@ -52,32 +52,62 @@ class CalendarColorsData implements DataClassInterface {
     return self::DATA;
   }
 
-  public static function getColorByType(int $type): string {
+//  public static function getColorByType(?int $type): string {
+//    $defaultType = 5; // Podrazumevani ID ako je $type null
+//    $type = $type ?? $defaultType; // Ako je null, koristi 5
+//
+//    $d = Map::from(self::DATA)
+//      ->find(function (array $data) use ($type) {
+//        return $data['id'] == $type;
+//      });
+//
+//    return $d['color'] ?? ''; // Osiguravamo da ne bude greška ako ne nađe podatak
+//  }
+//  public static function getTitleByType(int $type): string {
+//
+//
+//    $d = Map::from(self::DATA)
+//      ->find(function (array $data) use ($type) {
+//        return $data['id'] == $type;
+//      });
+//
+//    return $d['title'];
+//  }
+//  public static function getTextByType(int $type): string {
+//    $d = Map::from(self::DATA)
+//      ->find(function (array $data) use ($type) {
+//        return $data['id'] == $type;
+//      });
+//
+//    return $d['text'];
+//  }
+
+  public static function getColorByType(?int $type): string {
+    $type = $type ?? 5; // Ako je null, koristi 5
+
     $d = Map::from(self::DATA)
-      ->find(function (array $data) use ($type) {
-        return $data['id'] == $type;
-      });
+      ->find(fn(array $data) => $data['id'] == $type);
 
-    return $d['color'];
+    return $d['color'] ?? ''; // Ako nije pronađen, vraća prazan string
   }
-  public static function getTitleByType(int $type): string {
+
+  public static function getTitleByType(?int $type): string {
+    $type = $type ?? 5; // Ako je null, koristi 5
+
     $d = Map::from(self::DATA)
-      ->find(function (array $data) use ($type) {
-        return $data['id'] == $type;
-      });
+      ->find(fn(array $data) => $data['id'] == $type);
 
-    return $d['title'];
+    return $d['title'] ?? ''; // Ako nije pronađen, vraća prazan string
   }
-  public static function getTextByType(int $type): string {
+
+  public static function getTextByType(?int $type): string {
+    $type = $type ?? 5; // Ako je null, koristi 5
+
     $d = Map::from(self::DATA)
-      ->find(function (array $data) use ($type) {
-        return $data['id'] == $type;
-      });
+      ->find(fn(array $data) => $data['id'] == $type);
 
-    return $d['text'];
+    return $d['text'] ?? ''; // Ako nije pronađen, vraća prazan string
   }
-
-
 
 //  public static function formForForm(): array {
 ////        $data = ['' => ''];

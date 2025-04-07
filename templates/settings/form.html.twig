@@ -44,32 +44,75 @@
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
                         <div class="card-body">
                             <div class="fw-bold border-bottom pb-2 mb-3">Informacije o firmi</div>
-                            <div class="col-lg-6">
-                                <div class="card-body">
-                                    <div class="row p-2">
-                                            <div class="col-4">Naziv:</div>
-                                            <div class="col-8">{{ settings.company.title }}</div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="card card-body bg-primary text-white">
+                                        <div class="d-flex">
+                                            <div class="me-3 align-self-center">
+                                                <i class="ph-factory ph-2x"></i>
+                                            </div>
+
+                                            <div class="flex-fill text-end">
+                                                <h6 class="mb-0">{{ settings.company.title }}</h6>
+                                                <span class="opacity-75">Naziv firme</span>
+                                            </div>
                                         </div>
-                                    <div class="row p-2 bg-light">
-                                            <div class="col-4">PIB/VAT:</div>
-                                            <div class="col-8">{{ settings.company.pib }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card card-body bg-primary text-white">
+                                        <div class="d-flex">
+                                            <div class="me-3 align-self-center">
+                                                <i class="ph-fingerprint-simple ph-2x"></i>
+                                            </div>
+
+                                            <div class="flex-fill text-end">
+                                                <h6 class="mb-0">{{ settings.company.pib }}</h6>
+                                                <span class="opacity-75">PIB</span>
+                                            </div>
                                         </div>
-                                    <div class="row p-2">
-                                        <div class="col-4">Email:</div>
-                                        <div class="col-8">{{ settings.company.email }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card card-body bg-primary text-white">
+                                        <div class="d-flex">
+                                            <div class="me-3 align-self-center">
+                                                <i class="ph-envelope ph-2x"></i>
+                                            </div>
+
+                                            <div class="flex-fill text-end">
+                                                <h6 class="mb-0">{{ settings.company.email }}</h6>
+                                                <span class="opacity-75">Email</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                             <div class="fw-bold border-bottom pb-2 mb-3">Radna sedmica</div>
                             <div class="col-lg-6 ">
                                 <div class="mb-3">
-                                    {{ form_label(form.workWeek, 'Radna sedmica:*', {'label_attr': {'class': 'form-label'}}) }}
-                                    {{ form_widget(form.workWeek, {attr: { class: 'form-control required select' }}) }}
-                                    <span class="form-text">Broj dana u radnoj sedmici. Ne utiče na period pre promene.</span>
+
+                                    <div class="mb-3">
+                                                <label class="form-label" for="user_registration_form_neradniDan">Radna sedmica:*</label>
+                                                <select id="user_registration_form_neradniDan" name="user_registration_form[neradniDani][]" data-minimum-results-for-search="Infinity" class="form-control select required" multiple="multiple">
+
+                                                    <option value="1" {% if 1 in settings.workWeek %} selected {% endif %}>Ponedeljak</option>
+                                                    <option value="2" {% if 2 in settings.workWeek %} selected {% endif %}>Utorak</option>
+                                                    <option value="3" {% if 3 in settings.workWeek %} selected {% endif %}>Sreda</option>
+                                                    <option value="4" {% if 4 in settings.workWeek %} selected {% endif %}>Četvrtak</option>
+                                                    <option value="5" {% if 5 in settings.workWeek %} selected {% endif %}>Petak</option>
+                                                    <option value="6" {% if 6 in settings.workWeek %} selected {% endif %}>Subota</option>
+                                                    <option value="7" {% if 7 in settings.workWeek %} selected {% endif %}>Nedelja</option>
+
+                                                </select>
+                                                <span class="form-text">Izbor dana u radnoj sedmici. Ne utiče na period pre promene.</span>
+                                            </div>
+
                                 </div>
                             </div>
                             <div class="fw-bold border-bottom pb-2 mb-3">Podešavanje praćenja vremena</div>
-                            <div class="col-lg-6 ">
+                            <div class="col-lg-4 ">
                                     <div class="mb-3">
                                         {{ form_label(form.isTimeRoundUp, 'Zaokruživanje vremena:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.isTimeRoundUp, {attr: { class: 'form-control required select round' }}) }}
@@ -78,14 +121,14 @@
                                 </div>
                             {% if settings.isTimeRoundUp %}
                                 <div class="row timeRound">
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-4">
                                         <div class="mb-3">
                                             {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval required select' }}) }}
                                             <span class="form-text">Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-4">
                                         <div class="mb-3">
                                             {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.minEntry, {attr: { class: 'form-control minent required' }}) }}
@@ -95,14 +138,14 @@
                                 </div>
                             {% else %}
                                 <div class="row hide timeRound ">
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-4">
                                         <div class="mb-3">
                                             {{ form_label(form.roundingInterval, 'Interval zaokruživanja:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.roundingInterval, {attr: { class: 'form-control interval select' }}) }}
                                             <span class="form-text">Ako je zaokruživanje podešeno na 15 minuta, 13 minuta se beleži kao 15 minuta.</span>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-4">
                                         <div class="mb-3">
                                             {{ form_label(form.minEntry, 'Minimalni unos:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.minEntry, {attr: { class: 'form-control minent' }}) }}
@@ -119,25 +162,41 @@
                                         {{ form_widget(form.isWidgete, {attr: { class: 'form-control required select' }}) }}
                                     </div>
                                 </div>
-                                <div class="col-lg-3">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isPlanToday, 'Plan za danas:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isPlanToday, {attr: { class: 'form-control required select' }}) }}
+{#                                {% if settings.plan %}#}
+{#                                    <div class="col-lg-3">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.isPlanToday, 'Plan za danas:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.isPlanToday, {attr: { class: 'form-control required select' }}) }}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="col-lg-3">#}
+{#                                        <div class="mb-3">#}
+{#                                            {{ form_label(form.isPlanTomorrow, 'Plan za sutra:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_widget(form.isPlanTomorrow, {attr: { class: 'form-control required select' }}) }}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+                                {% if settings.calendar %}
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            {{ form_label(form.isPlanEmployee, 'Pregled zaposleni:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.isPlanEmployee, {attr: { class: 'form-control required select' }}) }}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-lg-3">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isPlanTomorrow, 'Plan za sutra:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isPlanTomorrow, {attr: { class: 'form-control required select' }}) }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-3">
-                                    <div class="mb-3">
-                                        {{ form_label(form.isPlanEmployee, 'Pregled zaposleni:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.isPlanEmployee, {attr: { class: 'form-control required select' }}) }}
-                                    </div>
-                                </div>
+                                {% endif %}
                             </div>
+                            {% if settings.calendar %}
+                                <div class="fw-bold border-bottom pb-2 mb-3">Izbor zaposlenih</div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            {{ form_label(form.isAllUsers, 'Svi zaposleni u izboru:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.isAllUsers, {attr: { class: 'form-control required select' }}) }}
+                                            <span class="form-text">Da li svi zaposleni ulaze u izbor ili to zavisi od dostupnosti.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
                             <div class="fw-bold border-bottom pb-2 mb-3">Praćenje lokacije pri merenju</div>
                             <div class="row">
                                 <div class="col-lg-3">
@@ -147,7 +206,28 @@
                                     </div>
                                 </div>
                             </div>
-
+                            {% if settings.car %}
+                                <div class="fw-bold border-bottom pb-2 mb-3">Unos kilometraže</div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            {{ form_label(form.minKm, 'Unos kilometraže:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.minKm, {attr: { class: 'form-control required' }}) }}
+                                            <span class="form-text">Unosite maksimalno prihvatljivo odstupanje kilometraže pri razduživanju vozila.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="fw-bold border-bottom pb-2 mb-3">Mail za obaveštenja</div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="mb-3">
+                                        {{ form_label(form.email, 'Email:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.email, {attr: { class: 'form-control required' }}) }}
+                                        <span class="form-text">Unesite email na koji će stizati notifikacije o aplikaciji.</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="text-end">
                                 <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                             </div>
@@ -168,7 +248,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

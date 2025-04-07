@@ -32,7 +32,8 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <div class="sidebar sidebar-component sidebar-expand-lg sidebar-expand-sm sidebar-expand-md sidebar-expand-xl sidebar-expand-xxl sidebar-mobile-expanded bg-transparent shadow-none me-lg-3">
+                        <div class="sidebar sidebar-component sidebar-expand-lg sidebar-expand-sm sidebar-expand-md sidebar-expand-xl sidebar-expand-xxl bg-transparent shadow-none me-lg-3 d-none d-lg-block">
+
 
                             <!-- Sidebar content -->
                             <div class="sidebar-content">
@@ -116,7 +117,7 @@
                                         </div>
                                         <div class="row p-2">
                                             <div class="col-4">Vreme:</div>
-                                            <div class="col-8">{{ client.created | date("d.m.Y") }} u {{ client.created | date("H:i:s") }}</div>
+                                            <div class="col-8">{{ client.created | date("d.m.Y.") }} u {{ client.created | date("H:i:s") }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -159,7 +160,7 @@
                                             </div>
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Vreme:</div>
-                                                <div class="col-8">{{ client.updated | date("d.m.Y") }} u {{ client.updated | date("H:i:s") }}</div>
+                                                <div class="col-8">{{ client.updated | date("d.m.Y.") }} u {{ client.updated | date("H:i:s") }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -184,7 +185,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

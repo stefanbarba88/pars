@@ -24,7 +24,14 @@ class LabelRepository extends ServiceEntityRepository {
 
   public function save(Label $label): Label {
     $badge = 'badge bg-' . $label->getColor();
-    $label->setLabel('<span class="' . $badge . '">' . $label->getTitle() . '</span>');
+
+    if ($label->getColor() != 'secondary') {
+      $textColor = 'text-white';
+    } else {
+      $textColor = 'text-primary';
+    }
+
+    $label->setLabel('<span class="me-2 ' . $badge . ' ' . $textColor . '">' . $label->getTitle() . '</span>');
 
     if (is_null($label->getId())) {
       $this->getEntityManager()->persist($label);

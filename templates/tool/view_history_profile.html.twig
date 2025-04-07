@@ -79,7 +79,7 @@
                                                 <div class="col-8">
                                                     {% if toolH.sertifikat %}
                                                         {% if toolH.datumSertifikata is not null %}
-                                                            {{ toolH.datumSertifikata | date("d.m.Y")}}
+                                                            {{ toolH.datumSertifikata | date("d.m.Y.")}}
                                                         {% endif %}
                                                     {% else %}
                                                         /
@@ -129,7 +129,7 @@
                                             </div>
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Vreme:</div>
-                                                <div class="col-8">{{ toolHistory.created | date("d.m.Y") }} u {{ toolHistory.created | date("H:i:s") }}</div>
+                                                <div class="col-8">{{ toolHistory.created | date("d.m.Y.") }} u {{ toolHistory.created | date("H:i:s") }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -154,7 +154,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

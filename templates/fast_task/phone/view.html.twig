@@ -1,0 +1,549 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Plan rada
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card table-portrait">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Plan rada za {{ plan.datumKreiranja | date("d.m.Y.") }}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead>
+                                                <tr class="bg-light text-primary">
+                                                    <th colspan="3">Plan rada </th>
+                                                </tr>
+                                                <tr class="bg-light text-primary">
+                                                    <th>Projekat</th>
+                                                    <th>Zaposleni</th>
+                                                    <th class="text-center" style="width: 10px;">
+                                                        <i class="ph-dots-three"></i>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for task in plan.pripremaZadataks %}
+                                                    {% if task.taskType == 1 %}
+                                                    <tr {% if task.status == 2%}class="bg-dark bg-opacity-25"{% endif %}>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                {{ task.project.title }} {% if task.vreme is not null %} ({{ task.vreme | date('H:i')}}) {% endif %}
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                {% for user in task.assignedUsers %}
+                                                                    {{ user.fullName }}<br>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center text-primary">
+                                                            <a type="button" data-bs-toggle="modal" data-bs-target="#modal_task{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead>
+                                                <tr class="bg-light text-primary">
+                                                    <th colspan="3">Interni zadaci</th>
+                                                </tr>
+                                                <tr class="bg-light text-primary">
+                                                    <th>Projekat</th>
+                                                    <th>Zaposleni</th>
+                                                    <th class="text-center" style="width: 10px;">
+                                                        <i class="ph-dots-three"></i>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for task in plan.pripremaZadataks %}
+                                                    {% if task.taskType == 2 %}
+                                                    <tr {% if task.status == 2%}class="bg-dark bg-opacity-25"{% endif %}>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                {{ task.project.title }}
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 45%;">
+                                                            <div class="fw-semibold">
+                                                                {% for user in task.assignedUsers %}
+                                                                    {{ user.fullName }}<br>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center text-primary">
+                                                            <a type="button" data-bs-toggle="modal" data-bs-target="#modal_sub{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card table-landscape">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Plan rada za {{ plan.datumKreiranja | date("d.m.Y.") }}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed" id="myTable">
+                                                <thead>
+                                                <tr class="bg-light text-primary">
+                                                    <th>Projekat</th>
+                                                    <th>Kategorija</th>
+                                                    <th>Zaposleni</th>
+                                                    <th>Primarni dnevnik</th>
+                                                    <th>Aktivnosti</th>
+                                                    {% if isTool %}
+                                                        <th>Oprema</th>
+                                                    {% endif %}
+                                                    {% if isCar %}
+                                                        <th>Vozilo</th>
+                                                        <th>Vozač</th>
+                                                    {% endif %}
+                                                    <th>Vreme</th>
+                                                    <th style="width: 18%">Napomena</th>
+                                                    <th style="width: 2%">Naplativ</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for task in plan.pripremaZadataks %}
+                                                    {% if task.taskType == 1 %}
+                                                        <tr {% if task.status == 2%}class="bg-dark bg-opacity-25"{% endif %}>
+                                                            <td>
+                                                                <div class="fw-semibold">
+                                                                    {{ task.project.title }}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="fw-semibold">
+                                                                    {{ task.category.title }}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="fw-semibold">
+                                                                    {% for user in task.assignedUsers %}
+                                                                        {{ user.fullName }}<br>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="fw-semibold">
+                                                                    {% for user in task.assignedUsers %}
+                                                                        {% if task.priorityUserLog == user.id %}
+                                                                            {{ user.fullName }}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                {% if task.activity is not empty %}
+                                                                    {% for akt in task.activity %}
+                                                                        {{ akt.title }}<br>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            </td>
+                                                            {% if isTool %}
+                                                                <td>
+                                                                    <div class="fw-semibold">
+                                                                        {% if task.oprema is not empty %}
+                                                                            {% for opr in task.oprema %}
+                                                                                {{ opr.title }}<br>
+                                                                            {% endfor %}
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </td>
+                                                            {% endif %}
+                                                            {% if isCar %}
+                                                                <td>
+                                                                    <div class="fw-semibold">
+                                                                        {% if task.car is not null %}{{ getCarById(task.car) }}{% endif %}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="fw-semibold">
+                                                                        {% if task.driver is not null %}{{ getUserById(task.driver) }}{% endif %}
+                                                                    </div>
+                                                                </td>
+                                                            {% endif %}
+                                                            <td>
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-clock me-2"></i>
+                                                                    {{ task.vreme | date("H:i")}}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                {{ task.description }}
+                                                            </td>
+                                                            <td>
+                                                                {% if task.isFree %}
+                                                                    <span class="badge bg-yellow text-primary">Nenaplativ</span>
+                                                                {% else %}
+                                                                    <span class="badge bg-primary text-white">Naplativ</span>
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="card">
+                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                <thead>
+                                                <tr class="bg-light text-primary">
+                                                    <th colspan="5">Interni zadaci</th>
+                                                </tr>
+                                                <tr class="bg-light text-primary">
+                                                    <th>Projekat</th>
+                                                    <th>Kategorija</th>
+                                                    <th>Zaposleni</th>
+                                                    <th style="width: 18%">Zadatak</th>
+                                                    <th>Vreme</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for task in plan.pripremaZadataks %}
+                                                    {% if task.taskType == 2 %}
+                                                        <tr {% if task.status == 2%}class="bg-dark bg-opacity-25"{% endif %}>
+                                                            <td>
+                                                                <div class="fw-semibold">
+                                                                    {{ task.project.title }}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="fw-semibold">
+                                                                    {{ task.category.title }}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="fw-semibold">
+                                                                    {% for user in task.assignedUsers %}
+                                                                        {{ user.fullName }}<br>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </td>
+
+
+                                                            <td>
+                                                                {{ task.description }}
+                                                            </td>
+                                                            <td>
+                                                                <div class="d-inline-flex align-items-center">
+                                                                    <i class="ph-clock me-2"></i>
+                                                                    {{ task.vreme | date("H:i")}}
+                                                                </div>
+                                                            </td>
+
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% for task in plan.pripremaZadataks %}
+    {% if task.taskType == 1 %}
+            <div id="modal_task{{ loop.index }}" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white border-0">
+                            <h6 class="modal-title">Detalji zadatka</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row p-2">
+                                        <div class="col-4">Projekat:</div>
+                                        <div class="col-8">{{ task.project.title }}</div>
+                                    </div>
+                                    <div class="row p-2 bg-light">
+                                        <div class="col-4">Kategorija:</div>
+                                        <div class="col-8">
+                                            {{ task.category.title }}
+                                        </div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-4">Zaposleni:</div>
+                                        <div class="col-8">
+                                            {% for user in task.assignedUsers %}
+                                                {{ user.fullName }}<br>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="row p-2 bg-light">
+                                        <div class="col-4">Primarni dnevnik:</div>
+                                        <div class="col-8">
+                                            {% for user in task.assignedUsers %}
+                                                {% if task.priorityUserLog == user.id %}
+                                                    {{ user.fullName }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-4">Aktivnosti:</div>
+                                        <div class="col-8">
+                                            {% if task.activity is not empty %}
+                                                {% for akt in task.activity %}
+                                                    {{ akt.title }}<br>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="row p-2 bg-light">
+                                        <div class="col-4">Oprema:</div>
+                                        <div class="col-8">
+
+                                            {% if task.oprema is not empty %}
+                                                {% for opr in task.oprema %}
+                                                    {{ opr.title }}<br>
+                                                {% endfor %}
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-4">Vozilo:</div>
+                                        <div class="col-8">
+                                            {% if task.car is not null %}{{ getCarById(task.car) }}{% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="row p-2  bg-light">
+                                        <div class="col-4">Vozač:</div>
+                                        <div class="col-8">{% if task.driver is not null %}{{ getUserById(task.driver) }}{% endif %}</div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-4">Vreme:</div>
+                                        <div class="col-8">
+
+                                            <div class="d-inline-flex align-items-center">
+                                                <i class="ph-clock me-2"></i>
+                                                {{ task.vreme | date("H:i")}}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="row p-2  bg-light">
+                                        <div class="col-4">Napomena:</div>
+                                        <div class="col-8">{{ task.description }}</div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-4">Naplativ:</div>
+                                        <div class="col-8">
+
+                                            {% if task.isFree %}
+                                                <span class="badge bg-yellow text-primary">Nenaplativ</span>
+                                            {% else %}
+                                                <span class="badge bg-primary text-white">Naplativ</span>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    {% endif %}
+{% endfor %}
+
+{% for task in plan.pripremaZadataks %}
+    {% if task.taskType == 2 %}
+            <div id="modal_sub{{ loop.index }}" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white border-0">
+                            <h6 class="modal-title">Detalji zamene</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row p-2">
+                                        <div class="col-4">Projekat:</div>
+                                        <div class="col-8">{{ task.project.title }}</div>
+                                    </div>
+                                    <div class="row p-2 bg-light">
+                                        <div class="col-4">Kategorija:</div>
+                                        <div class="col-8">
+                                            {{ task.category.title }}
+                                        </div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-4">Zaposleni:</div>
+                                        <div class="col-8">
+                                            {% for user in task.assignedUsers %}
+                                                {{ user.fullName }}<br>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="row p-2 bg-light">
+                                        <div class="col-4">Zadatak:</div>
+                                        <div class="col-8">{{ task.description }}</div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-4">Vreme:</div>
+                                        <div class="col-8">
+                                            <div class="d-inline-flex align-items-center">
+                                                <i class="ph-clock me-2"></i>
+                                                {{ task.vreme | date("H:i")}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    {% endif %}
+{% endfor %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    {#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+{% endblock includeJavascript %}
+
+{% block footerJavascript %}
+    <script>
+        $(document).ready(function() {
+            var columnCount = $('#myTable thead tr th').length;
+            var newHeader = $('<tr class="bg-light text-primary"><th colspan="' + columnCount + '">Zadaci</th></tr>');
+            $('#myTable thead').prepend(newHeader);
+
+            // Funkcija za ažuriranje klasa na osnovu orijentacije
+            function updateTableDisplay() {
+                if (window.innerHeight > window.innerWidth) {
+                    // Portretni režim
+                    $('.table-portrait').removeClass('d-none').addClass('d-block');
+                    $('.navbar').removeClass('d-none').addClass('d-block');
+                    $('.page-header').removeClass('d-none').addClass('d-block');
+                    $('.table-landscape').removeClass('d-block').addClass('d-none');
+                } else {
+                    // Pejzažni režim
+                    $('.table-portrait').removeClass('d-block').addClass('d-none');
+                    $('.navbar').removeClass('d-block').addClass('d-none');
+                    $('.page-header').removeClass('d-block').addClass('d-none');
+                    $('.table-landscape').removeClass('d-none').addClass('d-block');
+                    $('.table-landscape').css('font-size', '10px');
+                }
+            }
+
+            // Inicijalni prikaz tabele
+            updateTableDisplay();
+
+            // Praćenje promene orijentacije
+            $(window).on('orientationchange resize', function() {
+                updateTableDisplay();
+            });
+        });
+
+    </script>
+
+{% endblock footerJavascript %}

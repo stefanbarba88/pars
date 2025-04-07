@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\RepeatingIntervalData;
+use App\Classes\Data\TaskStatusData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Car;
 use App\Entity\Category;
@@ -40,12 +41,17 @@ class TaskController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_tasks')]
-  public function list(PaginatorInterface $paginator, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
+  public function list(PaginatorInterface $paginator, Request $request, SessionInterface $session)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
+    $args['admin'] = false;
+    if ($session->has('admin')) {
+      $args['admin'] = true;
+    }
     $user = $this->getUser();
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
       $tasks = $this->em->getRepository(Task::class)->getTasksByUserPaginator($user);
     } else {
       $tasks = $this->em->getRepository(Task::class)->getAllTasksPaginator();
@@ -59,7 +65,6 @@ class TaskController extends AbstractController {
 
     $args['pagination'] = $pagination;
 
-
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       return $this->render('task/phone/list.html.twig', $args);
@@ -67,24 +72,59 @@ class TaskController extends AbstractController {
     return $this->render('task/list.html.twig', $args);
   }
 
-  #[Route('/archive/', name: 'app_tasks_arhiva')]
-  public function arhiva(PaginatorInterface $paginator, Request $request)    : Response {
+  #[Route('/verify/', name: 'app_tasks_verify')]
+  public function verify(PaginatorInterface $paginator, Request $request, SessionInterface $session)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
+    $tasks = $this->em->getRepository(Task::class)->getAllTasksVerifyPaginator();
+
+
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/verify.html.twig', $args);
+    }
+    return $this->render('task/verify.html.twig', $args);
   }
+
+  #[Route('/archive/', name: 'app_tasks_arhiva')]
+  public function arhiva(PaginatorInterface $paginator, Request $request, SessionInterface $session)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $args = [];
     $search = [];
+    $args['admin'] = false;
+    if ($session->has('admin')) {
+      $args['admin'] = true;
+    }
     $search['projekat'] = $request->query->get('projekat');
     $search['kategorija'] = $request->query->get('kategorija');
     $search['period'] = $request->query->get('period');
 
     $user = $this->getUser();
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $tasks = $this->em->getRepository(Task::class)->getTasksPaginator($search, $user);
-    } else {
+    if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE || $args['admin']) {
       $search['zaposleni'] = $request->query->get('zaposleni');
-      $tasks = $this->em->getRepository(Task::class)->getTasksPaginator($search, $user);
     }
+
+    $tasks = $this->em->getRepository(Task::class)->getTasksPaginatorArchive($search, $user,$args['admin'] );
 
     $pagination = $paginator->paginate(
       $tasks, /* query NOT result */
@@ -109,32 +149,71 @@ class TaskController extends AbstractController {
     return $this->render('task/archive_paginator.html.twig', $args);
   }
 
-  #[Route('/form-task-date/', name: 'app_task_form_date', defaults: ['id' => 0])]
-  #[Entity('task', expr: 'repository.findForForm(id)')]
-//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formDate(Task $task, Request $request,)    : Response {
+  #[Route('/unclosed/', name: 'app_tasks_unclosed')]
+  public function unclosed(PaginatorInterface $paginator, Request $request, SessionInterface $session)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
+    $args['admin'] = false;
+    if ($session->has('admin')) {
+      $args['admin'] = true;
+    }
+    $user = $this->getUser();
 
-    $data = $request->get('project');
-    if (!is_null($data)) {
-      $args['project'] = $data;
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
+      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedByUserPaginator($user);
+    } else {
+      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedPaginator();
     }
 
-//    $args['disabledDates'] = $this->em->getRepository(FastTask::class)->getDisabledDates();
-    $args['task'] = $task;
+
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $args['pagination'] = $pagination;
 
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/form_date.html.twig', $args);
-      }
-      return $this->render('task/phone/form_date.html.twig', $args);
+      return $this->render('task/phone/unclosed.html.twig', $args);
     }
-    return $this->render('task/form_date.html.twig', $args);
+    return $this->render('task/unclosed.html.twig', $args);
+  }
 
+  #[Route('/unclosed-logs/', name: 'app_tasks_unclosed_logs')]
+  public function unclosedLogs(PaginatorInterface $paginator, Request $request, SessionInterface $session)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+    $args['admin'] = false;
+    if ($session->has('admin')) {
+      $args['admin'] = true;
+    }
+    $user = $this->getUser();
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin'] ) {
+      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedLogsByUser($user);
+    } else {
+      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedLogsPaginator();
+    }
+    $pagination = $paginator->paginate(
+      $tasks, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/unclosed_logs.html.twig', $args);
+    }
+
+    return $this->render('task/unclosed_logs.html.twig', $args);
   }
 
   #[Route('/form/{id}', name: 'app_task_form', defaults: ['id' => 0])]
@@ -145,6 +224,14 @@ class TaskController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
+    $user = $this->getUser();
+    if ($user->getCompany() != $task->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+    $args['admin'] = false;
+    if ($session->has('admin')) {
+      $args['admin'] = true;
+    }
     $data = $request->request->all();
 
     $datumKreiranja = new DateTimeImmutable();
@@ -163,11 +250,9 @@ class TaskController extends AbstractController {
 
     $task->setDatumKreiranja($datumKreiranja->setTime(0,0));
 
-
     $mobileDetect = new MobileDetect();
 
-    $user = $this->getUser();
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
       $task->addAssignedUser($user);
     }
 
@@ -184,10 +269,10 @@ class TaskController extends AbstractController {
     }
 
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
-      } else {
+      if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
         $form = $this->createForm(PhoneTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
+      } else {
+        $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
       }
     } else {
       $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
@@ -241,7 +326,6 @@ class TaskController extends AbstractController {
               }
             }
           }
-
           $date = $task->getDatumKreiranja();
           if (!empty($request->request->all('task_form')['vreme'])) {
             $time = $request->request->all('task_form')['vreme'];
@@ -251,7 +335,6 @@ class TaskController extends AbstractController {
           else {
             $task->setTime($date);
           }
-
           foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
             if (!empty($assignedUser)){
               $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
@@ -266,54 +349,7 @@ class TaskController extends AbstractController {
           }
         }
         else {
-          if ($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-            $uploadFiles = $request->files->all()['task_form']['pdf'];
-            if(!empty ($uploadFiles)) {
-              foreach ($uploadFiles as $uploadFile) {
-                $pdf = new Pdf();
-                $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
-                $pdf->setTitle($file->getFileName());
-                $pdf->setPath($file->getAssetPath());
-                if (!is_null($task->getProject())) {
-                  $pdf->setProject($task->getProject());
-                }
-                $task->addPdf($pdf);
-              }
-            }
-            if ($task->getCompany()->getSettings()->isCar()) {
-              if (!empty($request->request->all('task_form')['car'])) {
-                $task->setCar($request->request->all('task_form')['car']);
-                if (!empty($request->request->all('task_form')['driver'])) {
-                  $task->setDriver($request->request->all('task_form')['driver']);
-                } else {
-                  $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
-                }
-              }
-            }
-
-            $date = $task->getDatumKreiranja();
-            if (!empty($request->request->all('task_form')['vreme'])) {
-              $time = $request->request->all('task_form')['vreme'];
-              $time1 = $date->modify($time);
-              $task->setTime($time1);
-            }
-            else {
-              $task->setTime($date);
-            }
-            foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
-              if (!empty($assignedUser)){
-                $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
-                if(!is_null($member)) {
-                  $task->addAssignedUser($member);
-
-                  if ($member->getId() == $request->request->all('task_form')['priorityUserLog'] ) {
-                    $task->setPriorityUserLog($member->getId());
-                  }
-                }
-              }
-            }
-          }
-          else {
+          if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
             $uploadFiles = $request->files->all()['phone_task_form']['pdf'];
             if(!empty ($uploadFiles)) {
               foreach ($uploadFiles as $uploadFile) {
@@ -360,6 +396,53 @@ class TaskController extends AbstractController {
               }
             }
           }
+          else {
+            $uploadFiles = $request->files->all()['task_form']['pdf'];
+            if(!empty ($uploadFiles)) {
+              foreach ($uploadFiles as $uploadFile) {
+                $pdf = new Pdf();
+                $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+                $pdf->setTitle($file->getFileName());
+                $pdf->setPath($file->getAssetPath());
+                if (!is_null($task->getProject())) {
+                  $pdf->setProject($task->getProject());
+                }
+                $task->addPdf($pdf);
+              }
+            }
+            if ($task->getCompany()->getSettings()->isCar()) {
+              if (!empty($request->request->all('task_form')['car'])) {
+                $task->setCar($request->request->all('task_form')['car']);
+                if (!empty($request->request->all('task_form')['driver'])) {
+                  $task->setDriver($request->request->all('task_form')['driver']);
+                } else {
+                  $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
+                }
+              }
+            }
+
+            $date = $task->getDatumKreiranja();
+            if (!empty($request->request->all('task_form')['vreme'])) {
+              $time = $request->request->all('task_form')['vreme'];
+              $time1 = $date->modify($time);
+              $task->setTime($time1);
+            }
+            else {
+              $task->setTime($date);
+            }
+            foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
+              if (!empty($assignedUser)){
+                $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+                if(!is_null($member)) {
+                  $task->addAssignedUser($member);
+
+                  if ($member->getId() == $request->request->all('task_form')['priorityUserLog'] ) {
+                    $task->setPriorityUserLog($member->getId());
+                  }
+                }
+              }
+            }
+          }
         }
 
         if ($task->getRepeating() == 1) {
@@ -377,6 +460,8 @@ class TaskController extends AbstractController {
           }
         }
 
+
+
         $task = $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
 
         $mailService->task($task);
@@ -389,7 +474,7 @@ class TaskController extends AbstractController {
           ->addSuccess(NotifyMessagesData::TASK_ADD);
 
 
-        if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+        if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
           return $this->redirectToRoute('app_home');
         }
         return $this->redirectToRoute('app_tasks');
@@ -405,18 +490,22 @@ class TaskController extends AbstractController {
     $args['isTool'] = $user->getCompany()->getSettings()->isTool();
     $args['isCar'] = $user->getCompany()->getSettings()->isCar();
     $args['isCalendar'] = $user->getCompany()->getSettings()->isCalendar();
+    $args['isAllUsers'] = $user->getCompany()->getSettings()->isAllUsers();
 
     if ($args['isCalendar']) {
-      $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+      if ($args['isAllUsers']) {
+        $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+      } else {
+        $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+      }
     } else {
       $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     }
 
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/form.html.twig', $args);
+      if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
+        return $this->render('task/phone/mobile_form.html.twig', $args);
       }
-      return $this->render('task/phone/mobile_form.html.twig', $args);
     }
     return $this->render('task/form.html.twig', $args);
   }
@@ -425,11 +514,18 @@ class TaskController extends AbstractController {
   #[Entity('project', expr: 'repository.find(project)')]
   #[Entity('task', expr: 'repository.findForFormProject(project)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formByProject(Task $task, Project $project, Request $request, UploadService $uploadService, MailService $mailService)    : Response {
+  public function formByProject(Task $task, Project $project, SessionInterface $session, Request $request, UploadService $uploadService, MailService $mailService)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $user = $this->getUser();
+    if ($user->getCompany() != $task->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+    $args['admin'] = false;
+    if ($session->has('admin')) {
+      $args['admin'] = true;
+    }
     $data = $request->request->all();
 
     $datumKreiranja = new DateTimeImmutable();
@@ -451,7 +547,7 @@ class TaskController extends AbstractController {
     $mobileDetect = new MobileDetect();
 
     $user = $this->getUser();
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
       $task->addAssignedUser($user);
     }
 
@@ -469,13 +565,13 @@ class TaskController extends AbstractController {
     }
 
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_project_form', ['project' => $project->getId()])]]);
+      if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
+        $form = $this->createForm(PhoneTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
       } else {
-        $form = $this->createForm(PhoneTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_project_form', ['project' => $project->getId()])]]);
+        $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
       }
     } else {
-      $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_project_form', ['project' => $project->getId()])]]);
+      $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
     }
 
     if ($request->isMethod('POST')) {
@@ -545,47 +641,98 @@ class TaskController extends AbstractController {
               }
             }
           }
-        } else {
-          $uploadFiles = $request->files->all()['phone_task_form']['pdf'];
-          if(!empty ($uploadFiles)) {
-            foreach ($uploadFiles as $uploadFile) {
-              $pdf = new Pdf();
-              $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
-              $pdf->setTitle($file->getFileName());
-              $pdf->setPath($file->getAssetPath());
-              if (!is_null($task->getProject())) {
-                $pdf->setProject($task->getProject());
-              }
-              $task->addPdf($pdf);
-            }
-          }
-          if ($task->getCompany()->getSettings()->isCar()) {
-            if (!empty($request->request->all('phone_task_form')['car'])) {
-              $task->setCar($request->request->all('phone_task_form')['car']);
-              if (!empty($request->request->all('phone_task_form')['driver'])) {
-                $task->setDriver($request->request->all('phone_task_form')['driver']);
-              } else {
-                $task->setDriver($request->request->all('phone_task_form')['assignedUsers'][0]);
+        }
+        else {
+          if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
+            $uploadFiles = $request->files->all()['phone_task_form']['pdf'];
+            if(!empty ($uploadFiles)) {
+              foreach ($uploadFiles as $uploadFile) {
+                $pdf = new Pdf();
+                $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+                $pdf->setTitle($file->getFileName());
+                $pdf->setPath($file->getAssetPath());
+                if (!is_null($task->getProject())) {
+                  $pdf->setProject($task->getProject());
+                }
+                $task->addPdf($pdf);
               }
             }
-          }
-          $date = $task->getDatumKreiranja();
-          if (!empty($request->request->all('phone_task_form')['vreme'])) {
-            $time = $request->request->all('phone_task_form')['vreme'];
-            $time1 = $date->modify($time);
-            $task->setTime($time1);
+            if ($task->getCompany()->getSettings()->isCar()) {
+              if (!empty($request->request->all('phone_task_form')['car'])) {
+                $task->setCar($request->request->all('phone_task_form')['car']);
+                if (!empty($request->request->all('phone_task_form')['driver'])) {
+                  $task->setDriver($request->request->all('phone_task_form')['driver']);
+                } else {
+                  $task->setDriver($request->request->all('phone_task_form')['assignedUsers'][0]);
+                }
+              }
+            }
+
+            $date = $task->getDatumKreiranja();
+            if (!empty($request->request->all('phone_task_form')['vreme'])) {
+              $time = $request->request->all('phone_task_form')['vreme'];
+              $time1 = $date->modify($time);
+              $task->setTime($time1);
+            }
+            else {
+              $task->setTime($date);
+            }
+            foreach ($request->request->all('phone_task_form')['assignedUsers'] as $key => $assignedUser) {
+              if (!empty($assignedUser)){
+                $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+                if(!is_null($member)) {
+                  $task->addAssignedUser($member);
+
+                  if ($member->getId() == $request->request->all('phone_task_form')['priorityUserLog'] ) {
+                    $task->setPriorityUserLog($member->getId());
+                  }
+                }
+              }
+            }
           }
           else {
-            $task->setTime($date);
-          }
-          foreach ($request->request->all('phone_task_form')['assignedUsers'] as $key => $assignedUser) {
-            if (!empty($assignedUser)){
-              $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
-              if(!is_null($member)) {
-                $task->addAssignedUser($member);
+            $uploadFiles = $request->files->all()['task_form']['pdf'];
+            if(!empty ($uploadFiles)) {
+              foreach ($uploadFiles as $uploadFile) {
+                $pdf = new Pdf();
+                $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+                $pdf->setTitle($file->getFileName());
+                $pdf->setPath($file->getAssetPath());
+                if (!is_null($task->getProject())) {
+                  $pdf->setProject($task->getProject());
+                }
+                $task->addPdf($pdf);
+              }
+            }
+            if ($task->getCompany()->getSettings()->isCar()) {
+              if (!empty($request->request->all('task_form')['car'])) {
+                $task->setCar($request->request->all('task_form')['car']);
+                if (!empty($request->request->all('task_form')['driver'])) {
+                  $task->setDriver($request->request->all('task_form')['driver']);
+                } else {
+                  $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
+                }
+              }
+            }
 
-                if ($key === 0) {
-                  $task->setPriorityUserLog($assignedUser);
+            $date = $task->getDatumKreiranja();
+            if (!empty($request->request->all('task_form')['vreme'])) {
+              $time = $request->request->all('task_form')['vreme'];
+              $time1 = $date->modify($time);
+              $task->setTime($time1);
+            }
+            else {
+              $task->setTime($date);
+            }
+            foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
+              if (!empty($assignedUser)){
+                $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+                if(!is_null($member)) {
+                  $task->addAssignedUser($member);
+
+                  if ($member->getId() == $request->request->all('task_form')['priorityUserLog'] ) {
+                    $task->setPriorityUserLog($member->getId());
+                  }
                 }
               }
             }
@@ -607,6 +754,7 @@ class TaskController extends AbstractController {
           }
         }
 
+
         $task = $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
         $mailService->task($task);
         notyf()
@@ -616,10 +764,10 @@ class TaskController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::TASK_ADD);
 
-        if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+        if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
           return $this->redirectToRoute('app_home');
         }
-        return $this->redirectToRoute('app_tasks');
+        return $this->redirectToRoute('app_project_tasks_view', ['id' => $project->getId()]);
       }
     }
 
@@ -635,9 +783,14 @@ class TaskController extends AbstractController {
     $args['isTool'] = $user->getCompany()->getSettings()->isTool();
     $args['isCar'] = $user->getCompany()->getSettings()->isCar();
     $args['isCalendar'] = $user->getCompany()->getSettings()->isCalendar();
+    $args['isAllUsers'] = $user->getCompany()->getSettings()->isAllUsers();
 
     if ($args['isCalendar']) {
-      $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+      if ($args['isAllUsers']) {
+        $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+      } else {
+        $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+      }
     } else {
       $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     }
@@ -661,6 +814,9 @@ class TaskController extends AbstractController {
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
+    if ($user->getCompany() != $task->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     if ($task->getId()) {
       $history = $this->json($task, Response::HTTP_OK, [], [
@@ -713,83 +869,16 @@ class TaskController extends AbstractController {
 //            ->addError(NotifyMessagesData::EDIT_ERROR);
 //        }
 
-        if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-          return $this->redirectToRoute('app_home');
-        }
         return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
       }
     }
     $args['form'] = $form->createView();
     $args['task'] = $task;
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/edit_info.html.twig', $args);
-      }
-      return $this->render('task/phone/edit_info.html.twig', $args);
-    }
+
     return $this->render('task/edit_info.html.twig', $args);
   }
 
-
-  #[Route('/unclosed/', name: 'app_tasks_unclosed')]
-  public function unclosed(PaginatorInterface $paginator, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-    $args = [];
-    $user = $this->getUser();
-
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedByUserPaginator($user);
-    } else {
-      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedPaginator();
-    }
-
-
-    $pagination = $paginator->paginate(
-      $tasks, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $args['pagination'] = $pagination;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('task/phone/unclosed.html.twig', $args);
-    }
-    return $this->render('task/unclosed.html.twig', $args);
-  }
-
-  #[Route('/unclosed-logs/', name: 'app_tasks_unclosed_logs')]
-  public function unclosedLogs(PaginatorInterface $paginator, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-    $args = [];
-    $user = $this->getUser();
-
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedLogsByUser($user);
-    } else {
-      $tasks = $this->em->getRepository(Task::class)->getTasksUnclosedLogsPaginator();
-    }
-    $pagination = $paginator->paginate(
-      $tasks, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $args['pagination'] = $pagination;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('task/phone/unclosed_logs.html.twig', $args);
-    }
-
-    return $this->render('task/unclosed_logs.html.twig', $args);
-  }
 
   public function editDate(Task $task, int $project = 0): Response {
 
@@ -800,12 +889,10 @@ class TaskController extends AbstractController {
     }
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/edit_date.html.twig', $args);
+      if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
+        return $this->render('task/phone/edit_date.html.twig', $args);
       }
-      return $this->render('task/phone/edit_date.html.twig', $args);
     }
-
     return $this->render('task/edit_date.html.twig', $args);
   }
 
@@ -817,9 +904,14 @@ class TaskController extends AbstractController {
     $args = [];
 
     $history = null;
-    //ovde izvlacimo ulogovanog usera
-    $user = $this->getUser();
 
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
 //    $user = $this->em->getRepository(User::class)->find(1);
 //    if ($task->getId()) {
 //      $history = $this->json($task, Response::HTTP_OK, [], [
@@ -834,18 +926,18 @@ class TaskController extends AbstractController {
 
     if ($request->isMethod('POST')) {
 
-        $data = $request->request->all();
+      $data = $request->request->all();
 
-        $task = $this->em->getRepository(Task::class)->mergeTasks($data);
+      $task = $this->em->getRepository(Task::class)->mergeTasks($data);
 
-          notyf()
-            ->position('x', 'right')
-            ->position('y', 'top')
-            ->duration(5000)
-            ->dismissible(true)
-            ->addSuccess(NotifyMessagesData::TASK_MERGE);
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::TASK_MERGE);
 
-          return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+      return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
     }
 
@@ -863,11 +955,18 @@ class TaskController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function addDocs(Task $task,UploadService $uploadService, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $history = null;
     //ovde izvlacimo ulogovanog usera
-    $user = $this->getUser();
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if (!in_array($korisnik, $task->getAssignedUsers()->toArray())) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
 
     if ($task->getId()) {
       $history = $this->json($task, Response::HTTP_OK, [], [
@@ -900,7 +999,7 @@ class TaskController extends AbstractController {
           }
         }
 
-        $this->em->getRepository(Task::class)->saveTaskInfo($task, $user, $history);
+        $this->em->getRepository(Task::class)->saveTaskInfo($task, $korisnik, $history);
 
         notyf()
           ->position('x', 'right')
@@ -909,9 +1008,6 @@ class TaskController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::DOC_ADD);
 
-        if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-          return $this->redirectToRoute('app_home');
-        }
         return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
       }
@@ -920,12 +1016,6 @@ class TaskController extends AbstractController {
     $args['task'] = $task;
 
     $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/add_pdf.html.twig', $args);
-      }
-      return $this->render('task/phone/add_pdf.html.twig', $args);
-    }
 
     return $this->render('task/add_pdf.html.twig', $args);
   }
@@ -934,11 +1024,18 @@ class TaskController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function reassign(Task $task, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
+    if ($user->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$user->isAdmin()) {
+        if ($user != $task->getCreatedBy()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
 
     if ($task->getId()) {
       $history = $this->json($task, Response::HTTP_OK, [], [
@@ -955,16 +1052,6 @@ class TaskController extends AbstractController {
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
       if ($form->isSubmitted() && $form->isValid()) {
-//      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
-//      if (!$taskIn) {
-//
-//        if (!empty($request->request->all('task_form')['car'])) {
-//          $task->setCar($request->request->all('task_form')['car']);
-//          if (!empty($request->request->all('task_form')['driver'])) {
-//            $task->setDriver($request->request->all('task_form')['driver']);
-//          }
-//          $task->setDriver($request->request->all('task_form')['assignedUsers'][0]);
-//        }
 
         if ($task->getCompany()->getSettings()->isCar()) {
 
@@ -1008,9 +1095,6 @@ class TaskController extends AbstractController {
           ->addSuccess(NotifyMessagesData::TASK_REASSIGN);
       }
 
-      if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-        return $this->redirectToRoute('app_home');
-      }
       return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
     }
@@ -1021,8 +1105,14 @@ class TaskController extends AbstractController {
     $args['task'] = $task;
     $args['primaryLog'] = $task->getPriorityUserLog();
 
+    $args['isAllUsers'] = $user->getCompany()->getSettings()->isAllUsers();
+
     if ($args['isCalendar']) {
-      $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+      if ($args['isAllUsers']) {
+        $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+      } else {
+        $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+      }
     } else {
       $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     }
@@ -1031,12 +1121,7 @@ class TaskController extends AbstractController {
     $args['form'] = $form->createView();
 
     $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/reassign.html.twig', $args);
-      }
-      return $this->render('task/phone/reassign.html.twig', $args);
-    }
+
     return $this->render('task/reassign.html.twig', $args);
   }
 
@@ -1044,11 +1129,18 @@ class TaskController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function reassignPrimaryLog(Task $task, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $history = null;
     //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
+    if ($user->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$user->isAdmin()) {
+        if ($user != $task->getCreatedBy()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
 
     if ($task->getId()) {
       $history = $this->json($task, Response::HTTP_OK, [], [
@@ -1065,27 +1157,17 @@ class TaskController extends AbstractController {
 //      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
 //      if (!$taskIn) {
 
-        $task->setPriorityUserLog($request->request->all('task_form')['primaryLog']);
-        $this->em->getRepository(Task::class)->save($task);
+      $task->setPriorityUserLog($request->request->all('task_form')['primaryLog']);
+      $this->em->getRepository(Task::class)->save($task);
 
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::TASK_LOG_PRIMARY);
-//      } else {
-//        notyf()
-//          ->position('x', 'right')
-//          ->position('y', 'top')
-//          ->duration(5000)
-//          ->dismissible(true)
-//          ->addError(NotifyMessagesData::DELETE_ERROR);
-//      }
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::TASK_LOG_PRIMARY);
 
-      if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-        return $this->redirectToRoute('app_home');
-      }
+
       return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
 
     }
@@ -1093,13 +1175,6 @@ class TaskController extends AbstractController {
     $args['task'] = $task;
     $args['users'] = $this->em->getRepository(Task::class)->getAssignedUsersByTask($task);
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/reassign_primary_log.html.twig', $args);
-      }
-      return $this->render('task/phone/reassign_primary_log.html.twig', $args);
-    }
     return $this->render('task/reassign_primary_log.html.twig', $args);
   }
 
@@ -1111,46 +1186,49 @@ class TaskController extends AbstractController {
     }
     $history = null;
 
-
-//    $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($taskLog->getTask());
-//    if (!$taskIn) {
-
-      $user = $this->getUser();
-      $task = $taskLog->getTask();
-      $zaduzeni = $taskLog->getUser();
-      $countStopwatches = $this->em->getRepository(StopwatchTime::class)->countStopwatches($taskLog);
-      $countActiveStopwatches = $this->em->getRepository(StopwatchTime::class)->countActiveStopwatches($taskLog);
-
-      if ($task->getId()) {
-        $history = $this->json($task, Response::HTTP_OK, [], [
-            ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-              return $object->getId();
-            }
-          ]
-        );
-        $history = $history->getContent();
+    $user = $this->getUser();
+    if ($user->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$user->isAdmin()) {
+        if ($user != $taskLog->getTask()->getCreatedBy()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
       }
+    }
+    $task = $taskLog->getTask();
+    $zaduzeni = $taskLog->getUser();
+    $countStopwatches = $this->em->getRepository(StopwatchTime::class)->countStopwatches($taskLog);
+    $countActiveStopwatches = $this->em->getRepository(StopwatchTime::class)->countActiveStopwatches($taskLog);
 
-      if ($countStopwatches == 0 && $countActiveStopwatches == 0 && $task->getDriver() != $zaduzeni->getId() ) {
+    if ($task->getId()) {
+      $history = $this->json($task, Response::HTTP_OK, [], [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+            return $object->getId();
+          }
+        ]
+      );
+      $history = $history->getContent();
+    }
 
-        $task->removeAssignedUser($zaduzeni);
-        $task->removeTaskLog($taskLog);
-        $this->em->getRepository(Task::class)->save($task);
+    if ($countStopwatches == 0 && $countActiveStopwatches == 0 && $task->getDriver() != $zaduzeni->getId() ) {
 
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::TASK_REASSIGN_REMOVE);
-      } else {
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addError(NotifyMessagesData::TASK_REASSIGN_REMOVE_ERROR);
-      }
+      $task->removeAssignedUser($zaduzeni);
+      $task->removeTaskLog($taskLog);
+      $this->em->getRepository(Task::class)->save($task);
+
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::TASK_REASSIGN_REMOVE);
+    } else {
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addError(NotifyMessagesData::TASK_REASSIGN_REMOVE_ERROR);
+    }
 
 //    } else {
 //      notyf()
@@ -1172,8 +1250,14 @@ class TaskController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $history = null;
-    //ovde izvlacimo ulogovanog usera
     $user = $this->getUser();
+    if ($user->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$user->isAdmin()) {
+        if ($user != $task->getCreatedBy()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
 
     if ($task->getId()) {
       $history = $this->json($task, Response::HTTP_OK, [], [
@@ -1189,25 +1273,25 @@ class TaskController extends AbstractController {
 
 //      $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
 //      if (!$taskIn) {
-        foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
-          if (!empty($assignedUser)){
-            $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
-            if(!is_null($member)) {
-              $task->addAssignedUser($member);
-              $taskLog = new TaskLog();
-              $taskLog->setUser($member);
-              $task->addTaskLog($taskLog);
-            }
+      foreach ($request->request->all('task_form')['assignedUsers'] as $key => $assignedUser) {
+        if (!empty($assignedUser)){
+          $member = $this->em->getRepository(User::class)->findOneBy(['id' => intval($assignedUser)]);
+          if(!is_null($member)) {
+            $task->addAssignedUser($member);
+            $taskLog = new TaskLog();
+            $taskLog->setUser($member);
+            $task->addTaskLog($taskLog);
           }
         }
-        $this->em->getRepository(Task::class)->save($task);
+      }
+      $this->em->getRepository(Task::class)->save($task);
 
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::TASK_REASSIGN_ADD);
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::TASK_REASSIGN_ADD);
 //      } else {
 //        notyf()
 //          ->position('x', 'right')
@@ -1223,30 +1307,40 @@ class TaskController extends AbstractController {
     $args['isCalendar'] = $user->getCompany()->getSettings()->isCalendar();
     $args['task'] = $task;
 
+    $args['isAllUsers'] = $user->getCompany()->getSettings()->isAllUsers();
+
     if ($args['isCalendar']) {
-      $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+      if ($args['isAllUsers']) {
+        $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
+      } else {
+        $args['users'] = $this->em->getRepository(User::class)->getUsersAvailable($task->getDatumKreiranja());
+      }
     } else {
       $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $user->getCompany(), 'isSuspended' => false, 'userType' => UserRolesData::ROLE_EMPLOYEE], ['prezime' => 'ASC']);
     }
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('task/reassign_task.html.twig', $args);
-      }
-      return $this->render('task/phone/reassign_task.html.twig', $args);
-    }
     return $this->render('task/reassign_task.html.twig', $args);
   }
 
   #[Route('/close/{id}', name: 'app_task_close')]
   public function close(Task $task)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-  foreach ($task->getTaskLogs() as $log) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
 
-    if (empty($log->getStopwatch()->toArray())) {
+    $user = $this->getUser();
+
+    if ($user->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$user->isAdmin()) {
+        if ($user != $task->getCreatedBy() && $user->getId() != $task->getPriorityUserLog()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
+
+    foreach ($task->getTaskLogs() as $log) {
+
+      if (empty($log->getStopwatch()->toArray())) {
 
         $stopwatch = new StopwatchTime();
         $stopwatch->setStart(new DateTimeImmutable());
@@ -1257,9 +1351,9 @@ class TaskController extends AbstractController {
         $this->em->getRepository(StopwatchTime::class)->setTime($stopwatch, $hours, $minutes);
         $stopwatch->setIsManuallyClosed(true);
         $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
-        $this->em->getRepository(StopwatchTime::class)->deleteStopwatch($stopwatch, $this->getUser());
+        $this->em->getRepository(StopwatchTime::class)->deleteStopwatch($stopwatch, $user);
+      }
     }
-  }
 
     $this->em->getRepository(Task::class)->close($task);
 
@@ -1273,51 +1367,98 @@ class TaskController extends AbstractController {
     return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
   }
 
+  #[Route('/status/{id}', name: 'app_task_status')]
+  public function status(Task $task, Request $request, MailService $mailService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $user = $this->getUser();
+    if ($user->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$user->isAdmin()) {
+        if ($user != $task->getCreatedBy()) {
+          if ($user->getId() != $task->getPriorityUserLog()) {
+            return $this->redirect($this->generateUrl('app_home'));
+          }
+        }
+      }
+    }
+
+    $status = $request->query->get('status');
+
+    $task->setStatus($status);
+    $this->em->getRepository(Task::class)->save($task);
+
+    if ($task->getStatus() == TaskStatusData::ZAVRSENO) {
+      $mailService->endTask($task);
+    }
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::TASK_EDIT);
+
+
+    return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+
+  }
+
   #[Route('/delete/{id}', name: 'app_task_delete')]
   public function delete(Task $task)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $user = $this->getUser();
+    if ($user->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$user->isAdmin()) {
+        if ($user != $task->getCreatedBy()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
 //    $taskIn = $this->em->getRepository(FastTask::class)->findTaskInPlan($task);
 //    if (!$taskIn) {
-      $this->em->getRepository(Task::class)->deleteTask($task, $user);
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::TASK_DELETE);
-//    } else {
-//      notyf()
-//        ->position('x', 'right')
-//        ->position('y', 'top')
-//        ->duration(5000)
-//        ->dismissible(true)
-//        ->addError(NotifyMessagesData::DELETE_ERROR);
-//    }
+    $this->em->getRepository(Task::class)->deleteTask($task, $user);
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess(NotifyMessagesData::TASK_DELETE);
+
     return $this->redirectToRoute('app_tasks');
   }
 
   #[Route('/view/{id}', name: 'app_task_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(Task $task)    : Response {
+  public function view(Task $task, SessionInterface $session)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-
-  if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-    if (in_array($this->getUser(), $task->getAssignedUsers()->toArray())) {
-      return $this->redirectToRoute('app_task_view_user', ['id' => $task->getId()]);
-    } else {
-      return $this->redirectToRoute('app_home');
+      return $this->redirect($this->generateUrl('app_login'));
     }
-  }
+    $user = $this->getUser();
+    $args['admin'] = false;
+    if ($session->has('admin')) {
+      $args['admin'] = true;
+    }
+    if ($user->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$args['admin']) {
+        if (in_array($user, $task->getAssignedUsers()->toArray())) {
+          return $this->redirectToRoute('app_task_view_user', ['id' => $task->getId()]);
+        } else {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
+    }
+
 
     $args['task'] = $task;
 
     $args['revision'] = $task->getTaskHistories()->count();
-    $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
+//    $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
+    $args['status'] = $task->getStatus();
+
 
     $args['taskLogs'] = $this->em->getRepository(TaskLog::class)->findLogs($task);
     $args['images'] = $this->em->getRepository(Task::class)->getImagesByTask($task);
@@ -1328,6 +1469,9 @@ class TaskController extends AbstractController {
     $args['taskLog'] = $this->em->getRepository(TaskLog::class)->findOneBy(['task' => $task, 'user' => $primaryUser]);
 
     $args['stopwatches'] = $this->em->getRepository(StopwatchTime::class)->getStopwatches($args['taskLog']);
+
+    $args['stopwatchesRunning'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchesRunning($task);
+
     $args['stopwatchesActive'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchesActive($args['taskLog']);
     $args['time1'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchTime($args['taskLog']);
 
@@ -1336,23 +1480,46 @@ class TaskController extends AbstractController {
     $args['driver'] = $this->em->getRepository(User::class)->findOneBy(['id' => $task->getDriver()]);
     $args['isTool'] = $task->getCompany()->getSettings()->isTool();
 
+    $args['times'] = [];
+    $args['totalTimes'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchTimeTotal($task);
+    if (!$task->getIsSeparate()) {
+      foreach ($task->getTaskLogs() as $log) {
+        $args['times'][] = $this->em->getRepository(StopwatchTime::class)->getStopwatchesActive($log);
+      }
+    }
+
     $args['time'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchTimeByTask($task);
+
 
     return $this->render('task/view.html.twig', $args);
   }
 
   #[Route('/view-user/{id}', name: 'app_task_view_user')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewUser(Task $task)    : Response {
+  public function viewUser(Task $task, SessionInterface $session)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-
-    if ($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+      return $this->redirect($this->generateUrl('app_login'));
     }
 
-    $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
+    $user = $this->getUser();
+    $args['admin'] = false;
+    if ($session->has('admin')) {
+      $args['admin'] = true;
+    }
+    if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+    } else {
+      if (!$args['admin']) {
+        if (!in_array($user, $task->getAssignedUsers()->toArray())) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      } else {
+        return $this->redirectToRoute('app_task_view', ['id' => $task->getId()]);
+      }
+    }
+
+//    $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
+    $args['status'] = $task->getStatus();
 
     $args['task'] = $task;
 
@@ -1377,35 +1544,20 @@ class TaskController extends AbstractController {
 
     $args['lastEdit'] = $this->em->getRepository(StopwatchTime::class)->lastEdit($args['taskLog']);
 
-    $args['isGeolocation'] = $user->getCompany()->getSettings()->isGeolocation();
+    $args['stopwatchesRunning'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchesRunning($task);
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('task/phone/view_user.html.twig', $args);
+    $args['isGeolocation'] = $user->getCompany()->getSettings()->isGeolocation();
+    $args['times'] = [];
+    $args['totalTimes'] = $this->em->getRepository(StopwatchTime::class)->getStopwatchTimeTotal($task);
+    if (!$task->getIsSeparate()) {
+      foreach ($task->getTaskLogs() as $log) {
+        $args['times'][] = $this->em->getRepository(StopwatchTime::class)->getStopwatchesActive($log);
+      }
     }
+
+
     return $this->render('task/view_user.html.twig', $args);
   }
 
-
-
-
-//  /**
-//   * @Route("/app_ajax", name="app_ajax")
-//   */
-//  public function getAllKorisnici(Request $request): JsonResponse {
-//    $korisnici = $this->em->getRepository(User::class)->findAll();
-//
-//    // Konvertuj korisnike u asocijativni niz radi lakše manipulacije
-//    $korisniciArray = [];
-//    foreach ($korisnici as $korisnik) {
-//      $korisniciArray[] = [
-//        'id' => $korisnik->getId(),
-//        'name' => $korisnik->getFullName(),
-//
-//      ];
-//    }
-//
-//    return new JsonResponse(['users' => $korisniciArray]);
-//  }
 
 }

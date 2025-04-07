@@ -123,13 +123,13 @@
                                     <td>
                                         <div class="d-inline-flex align-items-center">
                                             <i class="ph-calendar me-2"></i>
-                                            {{ project.created | date("d.m.Y")}}
+                                            {{ project.created | date("d.m.Y.")}}
                                         </div>
                                     </td>
                                     <td>
                                         <div class="d-inline-flex align-items-center">
                                             <i class="ph-bell-ringing me-2"></i>
-                                            {{ project.deadline ? project.deadline | date("d.m.Y") : '/' }}
+                                            {{ project.deadline ? project.deadline | date("d.m.Y.") : '/' }}
                                         </div>
                                     </td>
                                     <td>
@@ -178,7 +178,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

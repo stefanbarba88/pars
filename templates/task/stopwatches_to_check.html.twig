@@ -96,31 +96,12 @@
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a href="{{ path('app_stopwatch_check', { id: time.id}) }}" class="dropdown-item"><i class="ph-check me-2"></i> Potvrdite</a>
                                                         <a href="{{ path('app_task_log_view', { id: time.taskLog.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                        {#                                                <a href="{{ path('app_stopwatch_delete', { id: time.id}) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>#}
-                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ time.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+
                                                     </div>
                                                 </div>
                                             </td>
                                         </tr>
-                                        <div id="modal_delete_task{{ time.id }}" class="modal fade" tabindex="-1">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header bg-danger text-white border-0">
-                                                        <h6 class="modal-title">Potvrda</h6>
-                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                    </div>
 
-                                                    <div class="modal-body">
-                                                        <p>Da li ste sigurni da želite da obrišete ovaj zapis?</p>
-                                                    </div>
-
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                        <a href="{{ path('app_stopwatch_delete', {id: time.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     {% endfor %}
                                     </tbody>
                                 </table>
@@ -147,7 +128,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

@@ -48,7 +48,7 @@ class KadrovskaCompanyFormType extends AbstractType {
       ->add('telefon1',TextType::class, [
         'required' => false,
         'constraints' => [
-          new Regex('/^\d{1,10}$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
+          new Regex('/^\d{1,10}$/', 'Broj službenog morate uneti u odgovarajućem formatu'),
         ],
         'attr' => [
           'maxlength' => '10'
@@ -57,7 +57,7 @@ class KadrovskaCompanyFormType extends AbstractType {
       ->add('telefon2',TextType::class, [
         'required' => false,
         'constraints' => [
-          new Regex('/^\d{1,10}$/', 'Broj telefona#2 morate uneti u odgovarajućem formatu'),
+          new Regex('/^\d{1,10}$/', 'Broj službenog morate uneti u odgovarajućem formatu'),
         ],
         'attr' => [
           'maxlength' => '10'
@@ -104,8 +104,8 @@ class KadrovskaCompanyFormType extends AbstractType {
         // in the associated entity, so you can use the PHP constraint classes
         'constraints' => [
           new Image([
-            'maxSize' => '2048k',
-            'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 2Mb'
+            'maxSize' => '5120k',
+            'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 5MB'
           ])
         ],
       ]);

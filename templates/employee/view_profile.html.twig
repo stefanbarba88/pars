@@ -32,7 +32,7 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
                                         <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
+                       {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
                                         <!-- /left sidebar component -->
 
                                         <!-- Right content -->
@@ -50,7 +50,7 @@
                                                         </div>
                                                         <div class="row p-2 bg-light">
                                                             <div class="col-4">Datum rođenja:</div>
-                                                            <div class="col-8">{{ user.datumRodjenja | date("d.m.Y")}}</div>
+                                                            <div class="col-8">{{ user.datumRodjenja | date("d.m.Y.")}}</div>
                                                         </div>
                                                         <div class="row p-2">
                                                             <div class="col-4">Pol:</div>
@@ -66,7 +66,7 @@
                                                         </div>
                                                         <div class="row p-2 bg-light">
                                                             <div class="col-4">Službeni telefon:</div>
-                                                            <div class="col-8">{{ user.telefon1 | default('/') }}</div>
+                                                            <div class="col-8">{{ user.telefon1 }}</div>
                                                         </div>
                                                         <div class="row p-2">
                                                             <div class="col-4">Privatni telefon:</div>
@@ -86,7 +86,7 @@
                                                                 {% endif %}
                                                             </div>
                                                         </div>
-                                                        <div class="row p-2">
+                                                        <div class="row p-2 ">
                                                             <div class="col-4">Lekarski pregled:</div>
                                                             <div class="col-8">
                                                                 {% if user.lekarski %}
@@ -107,44 +107,47 @@
                                                             </div>
                                                         </div>
                                                         <div class="row p-2 ">
-                                                            <div class="col-4">Neradni dan:</div>
+                                                            <div class="col-4">Neradni dani:</div>
                                                             <div class="col-8">
                                                                 {% if user.neradniDan is not null %}
-                                                                    {% if user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::PONEDELJAK')%}
-                                                                        Ponedeljak
-                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::UTORAK')%}
-                                                                        Utorak
-                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::SREDA')%}
-                                                                        Sreda
-                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::CETVRTAK')%}
-                                                                        Četvrtak
-                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::PETAK')%}
-                                                                        Petak
-                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::SUBOTA')%}
-                                                                        Subota
-                                                                    {% elseif user.neradniDan == constant('App\\Classes\\Data\\NeradniDanData::NEDELJA')%}
-                                                                        Nedelja
-                                                                    {% endif %}
+                                                                    {% for key, value in user.neradniDan %}
+                                                                        {% if value == constant('App\\Classes\\Data\\NeradniDanData::PONEDELJAK') %}
+                                                                            Ponedeljak
+                                                                        {% elseif value == constant('App\\Classes\\Data\\NeradniDanData::UTORAK') %}
+                                                                            Utorak
+                                                                        {% elseif value == constant('App\\Classes\\Data\\NeradniDanData::SREDA') %}
+                                                                            Sreda
+                                                                        {% elseif value == constant('App\\Classes\\Data\\NeradniDanData::CETVRTAK') %}
+                                                                            Četvrtak
+                                                                        {% elseif value == constant('App\\Classes\\Data\\NeradniDanData::PETAK') %}
+                                                                            Petak
+                                                                        {% elseif value == constant('App\\Classes\\Data\\NeradniDanData::SUBOTA') %}
+                                                                            Subota
+                                                                        {% elseif value == constant('App\\Classes\\Data\\NeradniDanData::NEDELJA') %}
+                                                                            Nedelja
+                                                                        {% endif %}
+                                                                        {% if not loop.last %}, {% endif %}
+                                                                    {% endfor %}
+
                                                                 {% endif %}
                                                             </div>
                                                         </div>
                                                         <div class="row p-2 bg-light">
-                                                            <div class="col-4">Zaduženi uređaji:</div>
+                                                            <div class="col-4">Slava:</div>
                                                             <div class="col-8">
-                                                                {% if user.mobile %}
-                                                                    <i class="ph-device-mobile"></i>
-                                                                {% endif %}
-                                                                {% if user.laptop %}
-                                                                    <i class="ph-laptop"></i>
+                                                                {% if user.slava is not null %}
+                                                                    {{ user.slava | date('d.m.') }}
                                                                 {% endif %}
                                                             </div>
                                                         </div>
+
                                                     </div>
                                                 </div>
                                                 <div class="card">
                                                     <div class="card-header">
                                                         <h5 class="mb-0">Login podaci <a href="{{ path('app_employee_edit_account_form', {id: user.id, type : 1}) }}"><i class="ph-note-pencil"></i></a></h5>
                                                     </div>
+                                                    {% set userDays = getDaysRemaining(user) %}
                                                     <div class="card-body">
                                                         <div class="row p-2">
                                                             <div class="col-4">Email:</div>
@@ -159,13 +162,33 @@
                                                             <div class="col-8">{{ user.badgeByUserType | raw }}</div>
                                                         </div>
                                                         <div class="row p-2 bg-light">
-                                                            <div class="col-4">Pozicija:</div>
-                                                            <div class="col-8">{{ user.pozicija.title | default('/')  }}</div>
+                                                            <div class="col-4">Početak ugovora:</div>
+                                                            <div class="col-8">{{ user.pocetakUgovora | date("d.m.Y.")}}</div>
                                                         </div>
-{#                                                        <div class="row p-2">#}
-{#                                                            <div class="col-4">Tip projekta:</div>#}
-{#                                                            <div class="col-8">{{ user.projectByType | default('/')  }}</div>#}
-{#                                                        </div>#}
+                                                        <div class="row p-2">
+                                                            <div class="col-4">Kraj ugovora:</div>
+                                                            <div class="col-8">{{ user.krajUgovora | date("d.m.Y.")}} {% if userDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ userDays.poruka }}" data-bs-original-title="{{ userDays.poruka }}"></i>{% endif %}</div>
+                                                        </div>
+                                                        <div class="row p-2 bg-light">
+                                                            <div class="col-4">Pozicija:</div>
+                                                            <div class="col-8">
+                                                                {% if user.pozicija is not null %}
+                                                                    {{ user.pozicija.title }} {% if user.isAdmin %} ima administratorske privilegije {% endif %}
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row p-2">
+                                                            <div class="col-4">Nivo obrazovanja:</div>
+                                                            <div class="col-8">{{ user.getObrazovanje()  }}</div>
+                                                        </div>
+                                                        <div class="row p-2 bg-light">
+                                                            <div class="col-4">Zvanje:</div>
+                                                            <div class="col-8">
+                                                                {% if user.zvanje is not null %}
+                                                                    {{ user.zvanje.title }}
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 {% if user.editBy is not null %}
@@ -181,7 +204,7 @@
                                                             </div>
                                                             <div class="row p-2 bg-light">
                                                                 <div class="col-4">Vreme:</div>
-                                                                <div class="col-8">{{ user.updated | date("d.m.Y") }} u {{ user.updated | date("H:i:s") }}</div>
+                                                                <div class="col-8">{{ user.updated | date("d.m.Y.") }} u {{ user.updated | date("H:i:s") }}</div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -205,7 +228,7 @@
 
         </div>
         <!-- /main content -->
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
 
     </div>
     {% include 'includes/notification.html.twig' %}

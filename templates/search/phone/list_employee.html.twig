@@ -33,7 +33,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -58,7 +58,7 @@
                                                         </td>
 
                                                         <td class="text-center">
-                                                            <a href="{{ path('app_project_profile_view', {id: project.id}) }}" class="btn btn-primary">
+                                                            <a href="{{ path('app_project_profile_view', {id: project.id}) }}">
                                                                 <i class="ph-eye me-2"></i>
                                                                 Vidite
                                                             </a>
@@ -106,7 +106,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

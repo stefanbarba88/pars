@@ -9,6 +9,23 @@
 
             {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
             <div class="card-body">
+                <div class="row pb-1 mb-3">
+
+                    <div class="fw-bold border-bottom pb-2 mb-3">Zadate aktivnosti</div>
+
+                    <div class="col-lg-6">
+                        <div class="mb-3">
+                            {% if task.activity.toArray is not empty %}
+                                {% for act in task.activity %}
+                                    <i class="ph-checks me-2"></i>{{ act.title }}<br>
+                                {% endfor %}
+                            {% else %}
+                                Nema određenih aktivnosti za ovaj zadatak.
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
                 <div class="fw-bold border-bottom pb-2 mb-3">Utrošeno vreme</div>
                 <div class="row">
                     <div class="col-lg-12">
@@ -52,22 +69,45 @@
                     <div class="col-lg-12">
                         <div class="mb-3">
                             {{ form_label(form.description, 'Napomena:', {'label_attr': {'class': 'form-label'}}) }}
-                            {#                                        {{ form_widget(form.description, {attr: { class: 'form-control ckeditor_simple1' }}) }}#}
+                    {#                                        {{ form_widget(form.description, {attr: { class: 'form-control ckeditor_simple1' }}) }}#}
                             {{ form_widget(form.description, {attr: { class: 'form-control' }}) }}
                             <span class="form-text nap"></span>
                         </div>
                     </div>
                 </div>
 
+                {% if client is empty %}
                 <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-client" aria-expanded="false">Klijent</div>
                 <div class="row collapse" id="collapse-client">
                     <div class="col-lg-12">
                         <div class="mb-3">
                             {{ form_label(form.client, 'Klijent:', {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.client, {attr: { class: 'form-control select' }}) }}
+                            <span class="form-text">Ako se radi o internom projektu, a želite da naglasite da se merenje odnosi na konkretnog klijenta.</span>
                         </div>
                     </div>
                 </div>
+                {% endif %}
+                {% if task.isExpenses %}
+                    <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-expences" aria-expanded="false">Trošak</div>
+                    <div class="row collapse" id="collapse-expences">
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                {{ form_label(form.expencesPrice, 'Trošak:', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.expencesPrice, {attr: { class: 'form-control ' }}) }}
+                                <span class="form-text">Unesite vrednost troška.</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                {{ form_label(form.expencesDesc, 'Opis troška:', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.expencesDesc, {attr: { class: 'form-control ' }}) }}
+                                <span class="form-text">Opišite trošak koji ste imali.</span>
+                            </div>
+                        </div>
+
+                    </div>
+                {% endif %}
 
                 <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-pdf" aria-expanded="false">Dokumentacija</div>
                 <div class="row collapse" id="collapse-pdf">
@@ -75,7 +115,7 @@
                         <div class="mb-3">
                             {{ form_label(form.pdf, 'Dokumenta:', {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.pdf, {attr: { class: 'form-control file-input' }}) }}
-                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
+                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>
                         </div>
                     </div>
                 </div>
@@ -86,7 +126,7 @@
                         <div class="mb-3">
                             {{ form_label(form.image, 'Slike:', {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.image, {attr: { class: 'form-control file-input' }}) }}
-                            <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
+                            <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 5MB.</span>
                         </div>
                     </div>
                 </div>

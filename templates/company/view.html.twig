@@ -108,7 +108,7 @@
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Vreme:</div>
-                                            <div class="col-8">{{ company.created | date("d.m.Y") }} u {{ company.created | date("H:i:s") }}</div>
+                                            <div class="col-8">{{ company.created | date("d.m.Y.") }} u {{ company.created | date("H:i:s") }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -151,7 +151,7 @@
                                             </div>
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Vreme:</div>
-                                                <div class="col-8">{{ company.updated | date("d.m.Y") }} u {{ company.updated | date("H:i:s") }}</div>
+                                                <div class="col-8">{{ company.updated | date("d.m.Y.") }} u {{ company.updated | date("H:i:s") }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -176,7 +176,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

@@ -33,9 +33,7 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
+{{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
@@ -74,7 +72,7 @@
                                         </div>
                                     </form>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table-sm">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -129,7 +127,7 @@
                                                             {% if day.datum is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ day.datum | date("d.m.Y")}}
+                                                                    {{ day.datum | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -211,7 +209,7 @@
 
         </div>
         <!-- /main content -->
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
 
     </div>
     {% include 'includes/notification.html.twig' %}

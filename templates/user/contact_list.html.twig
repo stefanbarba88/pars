@@ -29,6 +29,9 @@
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
                             <h5 class="mb-0">Lista kontakt lica</h5>
+                            <div class="my-auto ms-auto">
+                                <a href="{{ path('app_user_form', {type:2}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                            </div>
                         </div>
                         <form method="get" action="{{ path('app_users_contact') }}" class="form-validate-jquery" novalidation="novalidation">
                             <div class="card-body">
@@ -47,17 +50,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                    {#                                    <div class="col-lg-3">#}
-                                    {#                                        <div class="mb-3">#}
-                                    {#                                            <label class="form-label required" for="pozicija">Pozicija :</label>#}
-                                    {#                                            <select id="pozicija" name="pozicija" class="form-control select">#}
-                                    {#                                                <option value="">--Izaberite poziciju--</option>#}
-                                    {#                                                {% for pos in positions %}#}
-                                    {#                                                    <option value="{{ pos.id }}">{{ pos.title }}</option>#}
-                                    {#                                                {% endfor %}#}
-                                    {#                                            </select>#}
-                                    {#                                        </div>#}
-                                    {#                                    </div>#}
+                            {#                                    <div class="col-lg-3">#}
+                            {#                                        <div class="mb-3">#}
+                            {#                                            <label class="form-label required" for="pozicija">Pozicija :</label>#}
+                            {#                                            <select id="pozicija" name="pozicija" class="form-control select">#}
+                            {#                                                <option value="">--Izaberite poziciju--</option>#}
+                            {#                                                {% for pos in positions %}#}
+                            {#                                                    <option value="{{ pos.id }}">{{ pos.title }}</option>#}
+                            {#                                                {% endfor %}#}
+                            {#                                            </select>#}
+                            {#                                        </div>#}
+                            {#                                    </div>#}
 {#                                    <div class="col-lg-4">#}
 {#                                        <div class="mb-3">#}
 {#                                            <label class="form-label" for="vrsta">Vrsta korisnika:</label>#}
@@ -150,10 +153,10 @@
                                                             <i class="ph-image me-2"></i>
                                                             Profilna slika/avatar
                                                         </a>
-                                                        <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="dropdown-item">
-                                                            <i class="ph-gear me-2"></i>
-                                                            Podešavanja
-                                                        </a>
+{#                                                        <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="dropdown-item">#}
+{#                                                            <i class="ph-gear me-2"></i>#}
+{#                                                            Podešavanja#}
+{#                                                        </a>#}
                                                     </div>
                                                 </div>
                                             </td>
@@ -185,7 +188,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

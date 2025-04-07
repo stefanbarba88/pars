@@ -80,7 +80,7 @@
                                                     <div class="mb-3">
                                                         {{ form_label(form.image, 'Profilna slika:', {'label_attr': {'class': 'form-label'}}) }}
                                                         {{ form_widget(form.image, {attr: { class: 'form-control file-input' }}) }}
-                                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
+                                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 5MB.</span>
                                                     </div>
                                                 </div>
 
@@ -105,14 +105,14 @@
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">
-                                                        {{ form_label(form.telefon1, 'Telefon #1:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_label(form.telefon1, 'Službeni telefon:*', {'label_attr': {'class': 'form-label'}}) }}
                                                         {{ form_widget(form.telefon1, {attr: { class: 'form-control required' }}) }}
                                                         <span class="form-text">Format: 0661111222</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">
-                                                        {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_label(form.telefon2, 'Privatni telefon:', {'label_attr': {'class': 'form-label'}}) }}
                                                         {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
                                                         <span class="form-text">Format: 0661111222</span>
                                                     </div>
@@ -151,7 +151,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

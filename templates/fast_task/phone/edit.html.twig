@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                Plan rada za {{ plan.datumKreiranja | date("d.m.Y") }}
+                                Plan rada za {{ plan.datumKreiranja | date("d.m.Y.") }}
                             </h4>
                         </div>
                     </div>
@@ -52,7 +52,7 @@
                                 {% if noUsers > 0 %}
                                     <div class="row">
                                     <div class="col-sm-6 col-lg-12">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -70,6 +70,12 @@
                                                                             <div class="fw-semibold">{{ member.user.fullName }}
                                                                                 {% if member.car is not null %}
                                                                                     <i class="ph-car me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{ member.car.plate }}" data-bs-original-title="Zaduženo vozilo"></i>
+                                                                                {% endif %}
+                                                                                {% if member.oprema is not empty %}
+                                                                                    <i class="ph-wrench me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{% for alat in member.oprema %}{{ alat }}{% if not loop.last %}, {% endif %}{% endfor %}" data-bs-original-title="Zadužena oprema"></i>
+                                                                                {% endif %}
+                                                                                {% if member.vreme is not empty %}
+                                                                                    <i class="ph-coffee me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{ member.vreme }}" data-bs-original-title="Nedostupan"></i>
                                                                                 {% endif %}
                                                                             </div>
                                                                             <span class="sakriveno d-none">{{ member.id }}</span>
@@ -171,7 +177,7 @@
                                 {#											<span class="input-group-text">#}
                                 {#												<i class="ph-calendar"></i>#}
                                 {#											</span>#}
-                                {#                                                <input type="text" id="task_form_datum_edit" name="task_quick_form_datum" class="form-control datepicker-date-format-custom required" value="{{ plan.datumKreiranja | date("d.m.Y") }}"/>#}
+                                {#                                                <input type="text" id="task_form_datum_edit" name="task_quick_form_datum" class="form-control datepicker-date-format-custom required" value="{{ plan.datumKreiranja | date("d.m.Y.") }}"/>#}
                                 {#                                            </div>#}
                                 {#                                            <span class="form-text">Format: 31.12.1900.</span>#}
                                 {#                                        </div>#}
@@ -356,7 +362,7 @@
                                                 </table>
 
                                                 <div class="card-footer d-flex justify-content-between align-items-center bg-white">
-                                                    <div class="d-flex align-items-center"><a class="btn btn-primary" id="addBtn"><i class="ph-plus me-2"></i> Dodajte</a></div>
+                                                    <div class="d-flex align-items-center"><a class="btn btn-primary" id="addBtn"><i class="ph-plus"></i></a></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -440,7 +446,7 @@
                                                     </tbody>
                                                 </table>
                                                 <div class="card-footer d-flex justify-content-between align-items-center bg-white">
-                                                    <div class="d-flex align-items-center"><a class="btn btn-primary" id="addBtnI"><i class="ph-plus me-2"></i> Dodajte</a></div>
+                                                    <div class="d-flex align-items-center"><a class="btn btn-primary" id="addBtnI"><i class="ph-plus"></i></a></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -472,7 +478,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

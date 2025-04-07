@@ -37,9 +37,32 @@
                             <div class="card">
                                 <table class="table table-bordered table-hover table-responsive table-sm">
                                     <thead class="bg-light test-primary">
+
                                     <tr>
                                         <th>#</th>
                                         <th>Zadatak</th>
+                                        <th>Kategorija</th>
+                                        <th>Projekat</th>
+                                        <th {% if pagination.isSorted('[c.datumKreiranja]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Datum zadatka ', ['c.datumKreiranja']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.datumKreiranja' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.datumKreiranja' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
+                                        <th {% if pagination.isSorted('[c.deadline]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Rok ', ['c.deadline']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.deadline' %}
+                                                &#8595;
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.deadline' %}
+                                                &#8593;
+                                            {% else %}
+                                                &#8597;
+                                            {% endif %}
+                                        </th>
                                         <th>Zaposleni</th>
                                         <th {% if pagination.isSorted('[c.priority]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Prioritet ', ['c.priority']) }}
@@ -51,11 +74,11 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th {% if pagination.isSorted('[c.datumKreiranja]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Datum zadatka ', ['c.datumKreiranja']) }}
-                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.datumKreiranja' %}
+                                        <th {% if pagination.isSorted('[c.status]') %} class="sorted"{% endif %}>
+                                            {{ knp_pagination_sortable(pagination, 'Status ', ['c.status']) }}
+                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.status' %}
                                                 &#8595;
-                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.datumKreiranja' %}
+                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.status' %}
                                                 &#8593;
                                             {% else %}
                                                 &#8597;
@@ -67,12 +90,39 @@
                                     </thead>
                                     <tbody>
                                     {% for task in pagination %}
+                                        {% set taskDays = getDaysRemainingChecklist(task) %}
                                         <tr>
                                             <td>{{ task.id }}</td>
                                             <td>
                                                 <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
                                                     {{ task.task }}
                                                 </a>
+                                            </td>
+                                            <td>
+                                                {% if task.category %}
+                                                    {{ task.category.title }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.project %}
+                                                    <a href="{{ path('app_project_profile_view', { id: task.project.id}) }}">{{ task.project.title }}</a>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.datumKreiranja is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ task.datumKreiranja | date("d.m.Y.")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Zadatak se ponavlja"></i> {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.deadline is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ task.deadline | date("d.m.Y.")}} {% if taskDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ taskDays.poruka }}" data-bs-original-title="{{ taskDays.poruka }}"></i>{% endif %}
+                                                    </div>
+                                                {% endif %}
                                             </td>
                                             <td>
                                                 <div class="fw-semibold">
@@ -91,13 +141,21 @@
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                {% if task.datumKreiranja is not null %}
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ task.datumKreiranja | date("d.m.Y")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Zadatak se ponavlja"></i> {% endif %}
-                                                    </div>
+                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                    <span class="badge bg-secondary text-primary">Nije startovan</span>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                    <span class="badge bg-yellow text-primary">Otvoren</span>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                    <span class="badge bg-primary text-white">Zatvoren</span>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::KONVERTOVANO') %}
+                                                    <span class="badge bg-yellow text-primary">Konvertovan</span>
                                                 {% endif %}
                                             </td>
+
+
 
                                             <td>
                                                 {{ task.createdBy.getFullName() }}
@@ -126,20 +184,48 @@
                                                                 <i class="ph-note-pencil me-2"></i>
                                                                 Izmenite
                                                             </a>
+                                                            <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-trash me-2"></i>
+                                                                Obrišite
+                                                            </a>
                                                             {% if task.repeating == 1 %}
                                                                 <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
                                                                     <i class="ph-warning-circle me-2"></i>
                                                                     Isključite ponavljanje
                                                                 </a>
                                                             {% endif %}
-                                                            <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">
-                                                                <i class="ph-trash me-2"></i>
-                                                                Obrišite
+                                                            {#                                                                        {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}#}
+                                                            <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-magic-wand me-2"></i>
+                                                                Konvertuj u zadatak sa merenjem
                                                             </a>
-                                                            {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
-                                                                <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="dropdown-item">
-                                                                    <i class="ph-magic-wand me-2"></i>
-                                                                    Konvertuj u zadatak sa merenjem
+                                                            {#                                                                        {% endif %}#}
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                            <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-check me-2"></i>
+                                                                Zatvorite
+                                                            </a>
+                                                            <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-arrows-counter-clockwise me-2"></i>
+                                                                Ponovite
+                                                            </a>
+                                                            {% if task.repeating == 1 %}
+                                                                <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-warning-circle me-2"></i>
+                                                                    Isključite ponavljanje
+                                                                </a>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                            <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-arrows-counter-clockwise me-2"></i>
+                                                                Ponovite
+                                                            </a>
+                                                            {% if task.repeating == 1 %}
+                                                                <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-warning-circle me-2"></i>
+                                                                    Isključite ponavljanje
                                                                 </a>
                                                             {% endif %}
                                                         {% endif %}
@@ -174,7 +260,7 @@
 {#                            </div>#}
 {#                        </div>#}
 {#                        <div class="card-body">#}
-{#                            <div class="table-responsive card">#}
+{#                            <div class="card">#}
 {#                                <table class="table table-bordered table-hover table-responsive table-sm">#}
 {#                                    <thead class="bg-light test-primary">#}
 {#                                    <tr>#}
@@ -234,7 +320,7 @@
 {#                                                {% if task.datumKreiranja is not null %}#}
 {#                                                    <div class="d-inline-flex align-items-center">#}
 {#                                                        <i class="ph-calendar me-2"></i>#}
-{#                                                        {{ task.datumKreiranja | date("d.m.Y")}}#}
+{#                                                        {{ task.datumKreiranja | date("d.m.Y.")}}#}
 {#                                                    </div>#}
 {#                                                {% endif %}#}
 {#                                            </td>#}
@@ -307,7 +393,7 @@
         </div>
         <!-- /main content -->
 
-        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

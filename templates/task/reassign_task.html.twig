@@ -32,7 +32,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
-                                Dodavanje novog zaduženog
+                                Dodavanje novog zaposlenog
                             </h6>
                         </div>
                         <form name="task_quick_form" method="post" action="{{ path('app_task_assign_add_user', {id:task.id}) }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="task_form">
@@ -45,7 +45,7 @@
                                         <div class="mb-1">
                                             <label class="form-label" for="task_form_geo1">Novi zaduženi:*</label>
                                             <select id="task_form_geo1" name="task_form[assignedUsers][]" class="form-control select required" required>
-                                                <option value="">--Izaberite novog zaduženog--</option>
+                                                <option value="">--Izaberite novog zaposlenog--</option>
                                                 {% for user in users %}
                                                     {% if user.id != task.priorityUserLog and user not in task.assignedUsers %}
                                                         <option value="{{ user.id }}">{{ user.getNameForForm }}</option>
@@ -80,7 +80,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

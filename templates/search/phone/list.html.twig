@@ -40,7 +40,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -69,7 +69,7 @@
                                                         </td>
 
                                                         <td class="text-center">
-                                                            <a href="{{ path('app_project_profile_view', {id: project.id}) }}" class="btn btn-primary">
+                                                            <a href="{{ path('app_project_profile_view', {id: project.id}) }}" >
                                                                 <i class="ph-eye"></i>
                                                             </a>
                                                         </td>
@@ -111,7 +111,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -141,7 +141,7 @@
                                                         </td>
 
                                                         <td class="text-center">
-                                                            <a href="{{ path('app_task_view', {id: task.id}) }}" class="btn btn-primary">
+                                                            <a href="{{ path('app_task_view', {id: task.id}) }}" >
                                                                 <i class="ph-eye"></i>
                                                             </a>
                                                         </td>
@@ -184,7 +184,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -213,7 +213,7 @@
                                                         </td>
 
                                                         <td class="text-center">
-                                                            <a href="{{ path('app_employee_profile_view', {id: user.id}) }}" class="btn btn-primary">
+                                                            <a href="{{ path('app_employee_profile_view', {id: user.id}) }}" >
                                                                 <i class="ph-eye"></i>
                                                             </a>
                                                         </td>
@@ -259,7 +259,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                             <tr>
@@ -288,7 +288,7 @@
                                                     </td>
 
                                                     <td class="text-center">
-                                                        <a href="{{ path('app_project_profile_view', {id: project.id}) }}" class="btn btn-primary">
+                                                        <a href="{{ path('app_project_profile_view', {id: project.id}) }}" >
                                                             <i class="ph-eye"></i>
 
                                                         </a>
@@ -334,7 +334,7 @@
                                     </div>
                                 </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                             <tr>
@@ -363,7 +363,7 @@
                                                     </td>
 
                                                     <td class="text-center">
-                                                        <a href="{{ path('app_task_view', {id: task.id}) }}" class="btn btn-primary">
+                                                        <a href="{{ path('app_task_view', {id: task.id}) }}" >
                                                             <i class="ph-eye"></i>
                                                         </a>
                                                     </td>
@@ -408,7 +408,7 @@
                                     </div>
                                 </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                             <tr>
@@ -437,7 +437,7 @@
                                                     </td>
 
                                                     <td class="text-center">
-                                                        <a href="{{ path('app_employee_profile_view', {id: user.id}) }}" class="btn btn-primary">
+                                                        <a href="{{ path('app_employee_profile_view', {id: user.id}) }}" >
                                                             <i class="ph-eye"></i>
                                                         </a>
                                                     </td>
@@ -487,7 +487,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

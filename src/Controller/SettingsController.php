@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\Settings;
 use App\Form\SettingsFormType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -20,9 +21,13 @@ class SettingsController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
-    $user = $this->getUser();
-    if ($user->getCompany() != $settings->getCompany()) {
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $settings->getCompany()) {
       return $this->redirect($this->generateUrl('app_home'));
     }
 
@@ -32,6 +37,7 @@ class SettingsController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
+        $settings->setWorkWeek($request->request->all()['user_registration_form']['neradniDani']);
 
 //        $test1 = $serializer->deserialize($test->getContent(), Project::class, 'json');
 

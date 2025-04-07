@@ -37,8 +37,10 @@ class ClientController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      return $this->redirect($this->generateUrl('app_home'));
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $args = [];
 
@@ -74,8 +76,10 @@ class ClientController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      return $this->redirect($this->generateUrl('app_home'));
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $args = [];
 
@@ -111,6 +115,18 @@ class ClientController extends AbstractController {
   public function form(Request $request, Client $client)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+//        if ($korisnik != $client->getContact()){
+        return $this->redirect($this->generateUrl('app_home'));
+//        }
+      }
+    }
+
+    if ($korisnik->getCompany() != $client->getCompany()){
+      return $this->redirect($this->generateUrl('app_home'));
     }
 
     $history = null;
@@ -155,6 +171,19 @@ class ClientController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+//        if ($korisnik != $client->getContact()){
+        return $this->redirect($this->generateUrl('app_home'));
+//        }
+      }
+    }
+
+    if ($korisnik->getCompany() != $client->getCompany()){
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     $args['client'] = $client;
 
     return $this->render('client/view_profile.html.twig', $args);
@@ -167,6 +196,17 @@ class ClientController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+//        if ($korisnik != $client->getContact()){
+        return $this->redirect($this->generateUrl('app_home'));
+//        }
+      }
+    }
+
+    if ($korisnik->getCompany() != $client->getCompany()){
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args = [];
     $args['client'] = $client;
 //    $tasks = $this->em->getRepository(Task::class)->getTasksArchiveByUser($usr);
@@ -178,44 +218,29 @@ class ClientController extends AbstractController {
     );
 
     $args['pagination'] = $pagination;
-
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      return $this->render('client/phone/view_tickets.html.twig', $args);
+    }
     return $this->render('client/view_tickets.html.twig', $args);
   }
-//
-//  #[Route('/view-calendar/{id}', name: 'app_client_calendar_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewCalendar(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
-//      return $this->redirect($this->generateUrl('app_login'));
-//    }
-//    $args['client'] = $client;
-//
-//    return $this->render('client/view_calendar.html.twig', $args);
-//  }
-
-//  #[Route('/view-cars/{id}', name: 'app_client_car_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewCar(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
-//      return $this->redirect($this->generateUrl('app_login'));
-//    }
-//    $args['client'] = $client;
-//
-//    return $this->render('client/view_cars.html.twig', $args);
-//  }
-//
-//  #[Route('/view-tools/{id}', name: 'app_client_tools_view')]
-////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-//  public function viewTools(Client $client)    : Response { if (!$this->isGranted('ROLE_USER')) {
-//      return $this->redirect($this->generateUrl('app_login'));
-//    }
-//    $args['client'] = $client;
-//
-//    return $this->render('client/view_tools.html.twig', $args);
-//  }
 
   #[Route('/settings/{id}', name: 'app_client_settings_form')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function settings(Client $client, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+//        if ($korisnik != $client->getContact()){
+        return $this->redirect($this->generateUrl('app_home'));
+//        }
+      }
+    }
+
+    if ($korisnik->getCompany() != $client->getCompany()){
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $history = null;
     if($client->getId()) {

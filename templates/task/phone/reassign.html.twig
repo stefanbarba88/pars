@@ -30,7 +30,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
-                                Izmena zaduženih
+                                Izmena zaposlenih
                             </h6>
                         </div>
 {#                        <form name="task_quick_form" method="post" action="{{ path('app_task_reassign', {id:task.id}) }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="task_form">#}
@@ -39,7 +39,7 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            {{ form_label(form.assignedUsers, 'Zaduženi:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_label(form.assignedUsers, 'Zaposleni:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.assignedUsers, {attr: { class: 'form-control required' }}) }}
                                             <span class="form-text">Morate dodati najmanje jednog zaposlenog sa liste kome dodeljujete zadatak.</span>
                                         </div>
@@ -99,7 +99,7 @@
                                 {% endif %}
 
                                 <div class="text-end">
-                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk"></i></button>
                             </div>
                             </div>
                         {{ form_end(form) }}
@@ -120,7 +120,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -306,9 +306,9 @@
                 // Resetujemo opcije u drugom select elementu
                 taskDriverSelect.empty();
 
-                // Proveravamo da li su izabrani zaduženi korisnici i vozilo
+                // Proveravamo da li su izabrani Zaposleni korisnici i vozilo
                 if (selectedAssignedUsers.length > 0 && selectedCar.val() !== "") {
-                    // Ako su izabrani zaduženi korisnici i vozilo, omogućujemo drugi select element i dodajemo opcije za vozače
+                    // Ako su izabrani Zaposleni korisnici i vozilo, omogućujemo drugi select element i dodajemo opcije za vozače
                     selectedAssignedUsers.each(function () {
                         var optionValue = $(this).val();
                         var optionText = $(this).text();
@@ -325,7 +325,7 @@
                         taskDriverSelect.val(selectedDriver);
                     }
                 } else {
-                    // Ako nisu izabrani zaduženi korisnici ili vozilo, onemogućujemo drugi select element, postavljamo opciju "--Izaberite vozača--" i vraćamo polje na neobavezno
+                    // Ako nisu izabrani Zaposleni korisnici ili vozilo, onemogućujemo drugi select element, postavljamo opciju "--Izaberite vozača--" i vraćamo polje na neobavezno
                     taskDriverSelect.append('<option value="">--Izaberite vozača--</option>');
                     taskDriverSelect.prop("disabled", true);
                     taskDriverSelect.prop('required', false);

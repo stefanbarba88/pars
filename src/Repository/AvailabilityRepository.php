@@ -68,7 +68,20 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
 
   }
+  public function checkIzlazak(User $user, string $datum): ?Availability {
 
+    $datum = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
+    $danas = $datum->format('Y-m-d 00:00:00');
+    return $this->createQueryBuilder('t')
+      ->where('t.type = 2')
+      ->andWhere('t.datum = :danas')
+      ->andWhere('t.User = :user')
+      ->setParameter(':danas', $danas)
+      ->setParameter(':user', $user->getId())
+      ->getQuery()
+      ->getOneOrNullResult();
+
+  }
   public function getDaysByDate(User $user, $start, $stop, $tipovi): array {
 
     $nedostupan = 0;
@@ -253,7 +266,9 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $ostalo = 0;
 
     $startDate = new DateTimeImmutable("$year-01-01");
-    $endDate = new DateTimeImmutable("$year-12-31");
+    $endDate = new DateTimeImmutable();
+    $endDate->modify('- 1 day')->setTime(0,0);
+
 
     $requests = $this->createQueryBuilder('c')
       ->where('c.datum BETWEEN :startDate AND :endDate')
@@ -303,7 +318,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
             $ostalo++;
             if ($req->getTypeDay() == TipNeradnihDanaData::RADNI_DAN) {
               $nemaMerenje++;
-            };
+            }
           }
           if ($req->getTypeDay() == TipNeradnihDanaData::PRAZNIK) {
             $neradniPraznik++;
@@ -363,7 +378,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
     $startDate = new DateTimeImmutable("$year-01-01");
     $endDate = new DateTimeImmutable();
-    $endDate->setTime(0,0);
+    $endDate->modify('- 1 day')->setTime(0,0);
 
     $requests = $this->createQueryBuilder('c')
       ->where('c.datum BETWEEN :startDate AND :endDate')
@@ -462,7 +477,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
       ->setParameter('startDate', $startDate)
       ->setParameter('endDate', $endDate)
       ->setParameter('user', $user)
-      ->setParameter('type', AvailabilityData::PRISUTAN)
+      ->setParameter('type', AvailabilityData::NEDOSTUPAN)
       ->getQuery()
       ->getResult();
 
@@ -550,9 +565,9 @@ class AvailabilityRepository extends ServiceEntityRepository {
         ];
       }
     }
-//    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format('Y'));
+
     $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday($datum->format('Y'));
-//    $dostupnost1 =  $this->getEntityManager()->getRepository(Holiday::class)->getDostupnostHoliday();
+
 
 
 
@@ -563,7 +578,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $company = $this->security->getUser()->getCompany();
     $datum = new DateTimeImmutable();
     $danas = $datum->format('Y-m-d 00:00:00');
-    $dostupnosti = $this->createQueryBuilder('t')
+    return $this->createQueryBuilder('t')
       ->where('t.type <> 3')
       ->andWhere('t.datum >= :danas')
       ->andWhere('t.company = :company')
@@ -571,9 +586,6 @@ class AvailabilityRepository extends ServiceEntityRepository {
       ->setParameter(':danas', $danas)
       ->orderBy('t.datum', 'ASC')
       ->getQuery();
-
-    return $dostupnosti;
-
   }
 
   public function getDostupnostByUser(User $user): array {
@@ -881,21 +893,21 @@ class AvailabilityRepository extends ServiceEntityRepository {
           $vanZadatka[] = $user;
 
         } else {
-          $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+          $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByStatusAndUser(TaskStatusData::ZAPOCETO, $user);
           foreach ($tasks as $tsk) {
-            if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == AppConfig::KANC_CAT_ID)) {
+            if ($tsk->getCategory()->getId() == AppConfig::KANC_CAT_ID) {
               $noKancelarija++;
               $kancelarija[] = $user;
             }
-            if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == AppConfig::TEREN_CAT_ID)) {
+            if ($tsk->getCategory()->getId() == AppConfig::TEREN_CAT_ID) {
               $noTeren++;
               $teren[] = $user;
             }
-            if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == AppConfig::KUCA_CAT_ID)) {
+            if ($tsk->getCategory()->getId() == AppConfig::KUCA_CAT_ID){
               $noKuca++;
               $kuca[] = $user;
             }
-            if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() != AppConfig::KUCA_CAT_ID && $tsk['task']->getCategory()->getId() != AppConfig::TEREN_CAT_ID && $tsk['task']->getCategory()->getId() != AppConfig::KANC_CAT_ID)) {
+            if ($tsk->getCategory()->getId() != AppConfig::KUCA_CAT_ID && $tsk->getCategory()->getId() != AppConfig::TEREN_CAT_ID && $tsk->getCategory()->getId() != AppConfig::KANC_CAT_ID) {
               $noOther++;
               $other[] = $user;
             }
@@ -913,21 +925,183 @@ class AvailabilityRepository extends ServiceEntityRepository {
             $vanZadatka[] = $user;
 
           } else {
-            $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+//            $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+            $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByStatusAndUser(TaskStatusData::ZAPOCETO, $user);
             foreach ($tasks as $tsk) {
-              if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == AppConfig::KANC_CAT_ID)) {
+              if ($tsk->getCategory()->getId() == AppConfig::KANC_CAT_ID) {
                 $noKancelarija++;
                 $kancelarija[] = $user;
               }
-              if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == AppConfig::TEREN_CAT_ID)) {
+              if ($tsk->getCategory()->getId() == AppConfig::TEREN_CAT_ID) {
                 $noTeren++;
                 $teren[] = $user;
               }
-              if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == AppConfig::KUCA_CAT_ID)) {
+              if ($tsk->getCategory()->getId() == AppConfig::KUCA_CAT_ID){
                 $noKuca++;
                 $kuca[] = $user;
               }
-              if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() != AppConfig::KUCA_CAT_ID && $tsk['task']->getCategory()->getId() != AppConfig::TEREN_CAT_ID && $tsk['task']->getCategory()->getId() != AppConfig::KANC_CAT_ID)) {
+              if ($tsk->getCategory()->getId() != AppConfig::KUCA_CAT_ID && $tsk->getCategory()->getId() != AppConfig::TEREN_CAT_ID && $tsk->getCategory()->getId() != AppConfig::KANC_CAT_ID) {
+                $noOther++;
+                $other[] = $user;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return [
+      'noKancelarija' => $noKancelarija,
+      'noVanZadatka' => $noVanZadatka,
+      'noTeren' => $noTeren,
+      'noKuca' => $noKuca,
+      'noNedostupni' => $noNedostupni,
+      'nedostupni' => $nedostupni,
+      'teren' => $teren,
+      'kancelarija' => $kancelarija,
+      'vanZadatka' => $vanZadatka,
+      'kuca' => $kuca,
+      'other' => $other,
+      'noOther' => $noOther,
+    ];
+
+
+  }
+
+  public function getAllDostupnostiDanasBasicCommand($company): array {
+
+    $calendar = $company->getSettings()->isCalendar();
+
+    $danasnjiPlan = new DateTimeImmutable();
+
+    $datum = date("d.m.Y");
+    $danas = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
+    $start = $danas->setTime(0,0);
+    $stop = $danas->setTime(23,59);
+
+    $noNedostupni = 0;
+    $noVanZadatka = 0;
+    $noKancelarija = 0;
+    $noKuca = 0;
+    $noTeren = 0;
+    $noOther = 0;
+
+    $nedostupni = [];
+    $vanZadatka = [];
+    $kancelarija = [];
+    $kuca = [];
+    $teren = [];
+    $other = [];
+
+//    $zamene = [];
+//    $plan = $this->getEntityManager()->getRepository(FastTask::class)->findOneBy(['company' => $company, 'datum' => $danasnjiPlan->setTime(14, 30)]);
+//    if (!is_null($plan)) {
+//      $zamene[] = $plan->getZgeo1();
+//      $zamene[] = $plan->getZgeo2();
+//      $zamene[] = $plan->getZgeo3();
+//      $zamene[] = $plan->getZgeo4();
+//      $zamene[] = $plan->getZgeo5();
+//      $zamene[] = $plan->getZgeo6();
+//      $zamene[] = $plan->getZgeo7();
+//      $zamene[] = $plan->getZgeo8();
+//      $zamene[] = $plan->getZgeo9();
+//      $zamene[] = $plan->getZgeo10();
+//    }
+//
+//    $zamene = array_filter($zamene, function($value) {
+//      return $value !== null;
+//    });
+//    $zamene = array_unique($zamene);
+//    $zamene = array_values($zamene);
+
+    $users = $this->getEntityManager()->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $company], ['prezime' => 'ASC']);
+
+//    foreach ($users as $user) {
+//      if (!$this->checkDostupnost($user, $datum)) {
+//        $noNedostupni++;
+//        $nedostupni[] = $user;
+//      } else {
+//        if (!$user->isInTask()) {
+//          $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+//          if (empty($tasks)) {
+//            if ($user->getProjectType() == TipProjektaData::LETECE) {
+//              if (!in_array($user->getId(), $zamene, true)) {
+//                $noUnknown++;
+//                $unknown[] = $user;
+//              }
+//            }
+//          } else {
+//            $noVanZadatka++;
+//            $vanZadatka[] = $user;
+//          }
+//        } else {
+//          $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+//          foreach ($tasks as $tsk) {
+//            if (($tsk['status'] == TaskStatusData::ZAPOCETO && $tsk['task']->getCategory()->getId() == 6) || $tsk['task']->getProject()->getId() == 39) {
+//              $noKancelarija++;
+//              $kancelarija[] = $user;
+//            }
+//          }
+//        }
+//
+//      }
+//    }
+    foreach ($users as $user) {
+
+      if (!$calendar) {
+        if (!$user->isInTask()) {
+          $noVanZadatka++;
+          $vanZadatka[] = $user;
+
+        } else {
+          $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByStatusAndUser(TaskStatusData::ZAPOCETO, $user);
+          foreach ($tasks as $tsk) {
+            if ($tsk->getCategory()->getId() == AppConfig::KANC_CAT_ID) {
+              $noKancelarija++;
+              $kancelarija[] = $user;
+            }
+            if ($tsk->getCategory()->getId() == AppConfig::TEREN_CAT_ID) {
+              $noTeren++;
+              $teren[] = $user;
+            }
+            if ($tsk->getCategory()->getId() == AppConfig::KUCA_CAT_ID){
+              $noKuca++;
+              $kuca[] = $user;
+            }
+            if ($tsk->getCategory()->getId() != AppConfig::KUCA_CAT_ID && $tsk->getCategory()->getId() != AppConfig::TEREN_CAT_ID && $tsk->getCategory()->getId() != AppConfig::KANC_CAT_ID) {
+              $noOther++;
+              $other[] = $user;
+            }
+          }
+        }
+
+      } else {
+        if (!$this->checkDostupnost($user, $datum)) {
+
+          $noNedostupni++;
+          $nedostupni[] = $user;
+        } else {
+          if (!$user->isInTask()) {
+            $noVanZadatka++;
+            $vanZadatka[] = $user;
+
+          } else {
+//            $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndUser($start, $stop, $user);
+            $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByStatusAndUser(TaskStatusData::ZAPOCETO, $user);
+            foreach ($tasks as $tsk) {
+              if ($tsk->getCategory()->getId() == AppConfig::KANC_CAT_ID) {
+                $noKancelarija++;
+                $kancelarija[] = $user;
+              }
+              if ($tsk->getCategory()->getId() == AppConfig::TEREN_CAT_ID) {
+                $noTeren++;
+                $teren[] = $user;
+              }
+              if ($tsk->getCategory()->getId() == AppConfig::KUCA_CAT_ID){
+                $noKuca++;
+                $kuca[] = $user;
+              }
+              if ($tsk->getCategory()->getId() != AppConfig::KUCA_CAT_ID && $tsk->getCategory()->getId() != AppConfig::TEREN_CAT_ID && $tsk->getCategory()->getId() != AppConfig::KANC_CAT_ID) {
                 $noOther++;
                 $other[] = $user;
               }

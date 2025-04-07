@@ -57,6 +57,18 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="period">Period:</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ph-calendar"></i></span>
+                                                <input type="text" class="form-control daterange-locale-sr" id="period" name="period">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
                                     {% if app.user.userType != 4 %}
                                         <div class="col-lg-4">
                                             <div class="mb-3">
@@ -70,17 +82,6 @@
                                             </div>
                                         </div>
                                     {% endif %}
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="period">Period:</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="ph-calendar"></i></span>
-                                                <input type="text" class="form-control daterange-locale-sr" id="period" name="period">
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div class="text-end">
@@ -106,7 +107,7 @@
                                         </th>
                                         <th>Zadatak</th>
                                         <th {% if pagination.isSorted('[t.isDeleted]') %}  class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Status ', ['t.isDeleted']) }}
+                                            {{ knp_pagination_sortable(pagination, 'Obrisan ', ['t.isDeleted']) }}
                                             {% if pagination.getDirection() == 'asc' and pagination.getSort() == 't.isDeleted' %}
                                                 &#8595;
                                             {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 't.isDeleted' %}
@@ -118,7 +119,7 @@
                                         <th>Kategorija</th>
                                         <th>Projekat</th>
                                         <th {% if pagination.isSorted('[t.datumKreiranja]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Datum kreiranja ', ['t.datumKreiranja']) }}
+                                            {{ knp_pagination_sortable(pagination, 'Datum zadatka ', ['t.datumKreiranja']) }}
                                             {% if pagination.getDirection() == 'asc' and pagination.getSort() == 't.datumKreiranja' %}
                                                 &#8595;
                                             {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 't.datumKreiranja' %}
@@ -127,7 +128,7 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Zaduženi</th>
+                                        <th>Zaposleni</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
@@ -135,7 +136,7 @@
                                     {% for task in pagination %}
                                         <tr>
                                             <td>{{ task.id }}</td>
-                                            {% if is_granted('ROLE_EMPLOYEE')%}
+                                            {% if is_granted('ROLE_EMPLOYEE') and not admin%}
                                                 {% if app.user in task.getAssignedUsers %}
                                                     <td>
                                                         <div class="fw-semibold">
@@ -204,13 +205,13 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ task.datumKreiranja | date("d.m.Y")}}
+                                                    {{ task.datumKreiranja | date("d.m.Y.")}}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="text-body">
 
-                                                    {% if is_granted('ROLE_EMPLOYEE')%}
+                                                    {% if is_granted('ROLE_EMPLOYEE') and not admin%}
                                                         {% for user in task.assignedUsers %}
                                                             {% if getLogStatusByUser(task, user) == 1 %}
                                                                 <div class="btn-group">
@@ -245,15 +246,15 @@
                                             </td>
 
                                             <td class="text-center">
-                                                {% if is_granted('ROLE_EMPLOYEE') and app.user in task.getAssignedUsers %}
+                                                {% if is_granted('ROLE_EMPLOYEE') and app.user in task.getAssignedUsers and not admin%}
                                                     <div class="dropdown">
                                                         <a href="#" class="text-body" data-bs-toggle="dropdown">
                                                             <i class="ph-gear"></i>
                                                         </a>
                                                         <div class="dropdown-menu dropdown-menu-end">
                                                             <a href="{{ path('app_task_view_user', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                            {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted and task.createdBy == app.user %}
-                                                                <a href="{{ path('app_task_reassign', {id: task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
+                                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted and task.createdBy == app.user %}
+                                                                <a href="{{ path('app_task_reassign', {id: task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zaposlene</a>
                                                             {% endif %}
                                                             {% if not task.isDeleted and task.createdBy == app.user and task.created > difference %}
                                                                 <a href="{{ path('app_task_edit_info', {id: task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
@@ -261,64 +262,27 @@
                                                         </div>
                                                     </div>
                                                 {% endif %}
-                                                {% if not is_granted('ROLE_EMPLOYEE') %}
+                                                {% if not is_granted('ROLE_EMPLOYEE') or admin%}
                                                     <div class="dropdown">
                                                         <a href="#" class="text-body" data-bs-toggle="dropdown">
                                                             <i class="ph-gear"></i>
                                                         </a>
                                                         <div class="dropdown-menu dropdown-menu-end">
                                                             <a href="{{ path('app_task_view', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                            {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
-                                                                <a href="{{ path('app_task_reassign', {id: task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
+                                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
+                                                                <a href="{{ path('app_task_reassign', {id: task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zaposlene</a>
                                                             {% endif %}
                                                             {% if not task.isDeleted %}
                                                                 <a href="{{ path('app_task_edit_info', {id: task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
-                                                                {% if getTaskStatus(task) == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
-                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal_close_task{{ task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Zatvorite</a>
+                                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                                    <a href="{{ path('app_task_close',{id: task.id} ) }}" class="dropdown-item"><i class="ph-x me-2"></i> Zatvorite</a>
                                                                 {% endif %}
-                                                                {% if getTaskStatus(task) != constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
-                                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                {% if task.status != constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                                    <a href="{{ path('app_task_delete', {id: task.id} ) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
                                                                 {% endif %}
                                                             {% endif %}
                                                         </div>
-                                                        <div id="modal_delete_task{{ task.id }}" class="modal fade" tabindex="-1">
-                                                            <div class="modal-dialog">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header bg-danger text-white border-0">
-                                                                        <h6 class="modal-title">Potvrda</h6>
-                                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                    </div>
 
-                                                                    <div class="modal-body">
-                                                                        <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>
-                                                                    </div>
-
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                        <a href="{{ path('app_task_delete', {id: task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div id="modal_close_task{{ task.id }}" class="modal fade" tabindex="-1">
-                                                            <div class="modal-dialog">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header bg-primary text-white border-0">
-                                                                        <h6 class="modal-title">Potvrda</h6>
-                                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                    </div>
-
-                                                                    <div class="modal-body">
-                                                                        <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>
-                                                                    </div>
-
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                        <a href="{{ path('app_task_close',{id: task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
                                                     </div>
                                                 {% endif %}
                                             </td>
@@ -349,7 +313,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

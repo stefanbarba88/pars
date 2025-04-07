@@ -71,7 +71,7 @@
                                                                 {% if addon.datum is not null %}
                                                                     <div class="d-inline-flex align-items-center">
                                                                         <i class="ph-calendar me-2"></i>
-                                                                        {{ addon.datum | date("d.m.Y")}}
+                                                                        {{ addon.datum | date("d.m.Y.")}}
                                                                     </div>
                                                                 {% endif %}
                                                             </div>
@@ -98,7 +98,7 @@
                                                                 {% if addon.start is not null %}
                                                                     <div class="d-inline-flex align-items-center">
                                                                         <i class="ph-calendar me-2"></i>
-                                                                        {{ addon.start | date("d.m.Y")}}
+                                                                        {{ addon.start | date("d.m.Y.")}}
                                                                     </div>
                                                                 {% endif %}
                                                             </div>
@@ -109,7 +109,7 @@
                                                                 {% if addon.finish is not null %}
                                                                     <div class="d-inline-flex align-items-center">
                                                                         <i class="ph-calendar me-2"></i>
-                                                                        {{ addon.finish | date("d.m.Y")}}
+                                                                        {{ addon.finish | date("d.m.Y.")}}
                                                                     </div>
                                                                 {% endif %}
                                                             </div>

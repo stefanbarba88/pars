@@ -35,15 +35,34 @@ class ClientFormType extends AbstractType {
     $clientId = $dataObject->getClient()->getId();
     $company = $dataObject->getClient()->getCompany();
 
+    if ($company->getSettings()->getIsClientView()) {
+      $builder->add('contact', EntityType::class, [
+          'placeholder' => 'Izaberite lice za kontakt',
+          'required' => false,
+          'class' => User::class,
+          'query_builder' => function (EntityRepository $em) use ($company, $clientId) {
+            return $em->createQueryBuilder('g')
+              ->andWhere('g.userType = :userType')
+              ->andWhere('g.company = :company')
+              ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
+              ->setParameter(':company', $company)
+              ->orderBy('g.id', 'ASC');
+          },
+          'choice_label' => function ($user) {
+            return $user->getFullName();
+          },
+          'expanded' => false,
+          'multiple' => true,
+        ]);
+    }
+
     $builder
       ->add('title')
       ->add('adresa')
-      ->add('contactPlain',TextType::class, [
-        'required' => false,
-      ])
+
       ->add('telefon1',TextType::class, [
         'constraints' => [
-          new Regex('/^\d{1,10}$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
+          new Regex('/^\d{1,10}$/', 'Broj službenog telefona morate uneti u odgovarajućem formatu'),
         ],
         'attr' => [
           'maxlength' => '10'
@@ -52,7 +71,7 @@ class ClientFormType extends AbstractType {
       ->add('telefon2',TextType::class, [
         'required' => false,
         'constraints' => [
-          new Regex('/^\d{1,10}$/', 'Broj telefona#2 morate uneti u odgovarajućem formatu'),
+          new Regex('/^\d{1,10}$/', 'Broj privatnog telefona morate uneti u odgovarajućem formatu'),
         ],
         'attr' => [
           'maxlength' => '10'
@@ -83,23 +102,8 @@ class ClientFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('contact', EntityType::class, [
-        'placeholder' => 'Izaberite lice za kontakt',
+      ->add('contactPlain',TextType::class, [
         'required' => false,
-        'class' => User::class,
-        'query_builder' => function (EntityRepository $em) use ($company, $clientId) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.userType = :userType')
-            ->andWhere('g.company = :company')
-            ->setParameter(':userType', UserRolesData::ROLE_CLIENT)
-            ->setParameter(':company', $company)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => function ($user) {
-          return $user->getFullName();
-        },
-        'expanded' => false,
-        'multiple' => true,
       ]);
   }
 

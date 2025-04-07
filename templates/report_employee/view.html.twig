@@ -54,7 +54,52 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-calendar-check ph-2x text-primary me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ details.broj_elemenata }}</h4>
+                                                            <span class="text-muted">Broj radnih dana</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-clock ph-2x text-primary me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ details.ukupno_vreme }}h</h4>
+                                                            <span class="text-muted">Ukupno vreme</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-timer ph-2x text-primary me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ details.prosek_vreme }}h</h4>
+                                                            <span class="text-muted">Prosečno vreme</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card">
                                             <table class="table table-hover table-bordered table_morecondensed">
                                                 <thead>
                                                 <tr class="table-light">
@@ -280,7 +325,7 @@
                                             <h5 class="mb-0">{{ user.fullName }}: {{ period }} - interni zadaci</h5>
                                         </div>
                                         <div class="card-body">
-                                            <div class="table-responsive card">
+                                            <div class="card">
                                                 <table class="table table-hover table-bordered table_morecondensed">
                                                     <thead>
                                                     <tr class="table-light">
@@ -348,7 +393,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

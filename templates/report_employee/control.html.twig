@@ -63,12 +63,23 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-3">
                                         <div class="mb-3">
                                             <label class="form-label" for="report_form_period">Period:*</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="ph-calendar"></i></span>
                                                 <input type="text" class="form-control daterange-locale-sr required" id="report_form_period" name="report_form[period]">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="report_form_zatvoren">Zatvoreni zadaci:*</label>
+                                            <div class="input-group">
+                                                <label class="form-check mb-2">
+                                                    <input type="checkbox" class="form-check-input" name="report_form[zatvoren]" checked value="1">
+                                                    <span class="form-check-label">Zatvoreni zadaci</span>
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -118,7 +129,7 @@
 
                                                                     <label class="form-check mb-2">
                                                                         <input type="checkbox" class="form-check-input" name="report_form[zaduzeni]" value="1">
-                                                                        <span class="form-check-label">Zaduženi</span>
+                                                                        <span class="form-check-label">Zaposleni</span>
                                                                     </label>
 
                                                                     <label class="form-check mb-2">
@@ -185,7 +196,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

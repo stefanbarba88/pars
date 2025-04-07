@@ -10,7 +10,7 @@ class UserRolesData implements DataClassInterface {
 
   public const ROLE_SUPER_ADMIN = 1;
   public const ROLE_ADMIN = 2;
-  public const ROLE_MANAGER = 3;
+//  public const ROLE_MANAGER = 3;
   public const ROLE_EMPLOYEE = 4;
   public const ROLE_CLIENT = 5;
 
@@ -26,14 +26,14 @@ class UserRolesData implements DataClassInterface {
       'id' => self::ROLE_ADMIN,
       'title' => 'Administrator',
       'role' => 'ROLE_ADMIN',
-      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-success">Administrator</span>',
+      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Administrator</span>',
     ],
-    'ROLE_MANAGER' => [
-      'id' => self::ROLE_MANAGER,
-      'title' => 'Menadžment',
-      'role' => 'ROLE_MANAGER',
-      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Menadžment</span>',
-    ],
+//    'ROLE_MANAGER' => [
+//      'id' => self::ROLE_MANAGER,
+//      'title' => 'Menadžment',
+//      'role' => 'ROLE_MANAGER',
+//      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Menadžment</span>',
+//    ],
     'ROLE_EMPLOYEE' => [
       'id' => self::ROLE_EMPLOYEE,
       'title' => 'Zaposleni',
@@ -62,12 +62,12 @@ class UserRolesData implements DataClassInterface {
       'role' => 'ROLE_ADMIN',
       'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-success">Administrator</span>',
     ],
-    'ROLE_MANAGER' => [
-      'id' => self::ROLE_MANAGER,
-      'title' => 'Menadžment',
-      'role' => 'ROLE_MANAGER',
-      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Menadžment</span>',
-    ],
+//    'ROLE_MANAGER' => [
+//      'id' => self::ROLE_MANAGER,
+//      'title' => 'Menadžment',
+//      'role' => 'ROLE_MANAGER',
+//      'badge' => '<span class="badge bg-light border-start border-width-3 text-body rounded-start-0 border-warning">Menadžment</span>',
+//    ],
     'ROLE_EMPLOYEE' => [
       'id' => self::ROLE_EMPLOYEE,
       'title' => 'Zaposleni',
@@ -101,16 +101,12 @@ class UserRolesData implements DataClassInterface {
         case UserRolesData::ROLE_SUPER_ADMIN:
           $data[$v['title']] = $v['id'];
           break;
+        case UserRolesData::ROLE_EMPLOYEE:
         case UserRolesData::ROLE_ADMIN:
           if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN ) {
             $data[$v['title']] = $v['id'];
           }
           break;
-        default:
-        case UserRolesData::ROLE_MANAGER:
-          if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_MANAGER ) {
-            $data[$v['title']] = $v['id'];
-          }
       }
     }
 
@@ -124,21 +120,13 @@ class UserRolesData implements DataClassInterface {
         case UserRolesData::ROLE_SUPER_ADMIN:
           $data[$v['title']] = $v['id'];
           break;
+        case UserRolesData::ROLE_EMPLOYEE:
         case UserRolesData::ROLE_ADMIN:
           if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_CLIENT ) {
             $data[$v['title']] = $v['id'];
           }
           break;
-        case UserRolesData::ROLE_EMPLOYEE:
-          if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_MANAGER && $v['id'] != self::ROLE_CLIENT ) {
-            $data[$v['title']] = $v['id'];
-          }
-          break;
-        default:
-        case UserRolesData::ROLE_MANAGER:
-          if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_MANAGER && $v['id'] != self::ROLE_CLIENT ) {
-            $data[$v['title']] = $v['id'];
-          }
+
       }
     }
 
@@ -148,7 +136,7 @@ class UserRolesData implements DataClassInterface {
   public static function formForFormByUserRoleKadrovskaEmployee(int $userType): array {
     $data = [];
     foreach (self::DATA as $v) {
-      if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_MANAGER && $v['id'] != self::ROLE_CLIENT ) {
+      if ($v['id'] != self::ROLE_SUPER_ADMIN && $v['id'] != self::ROLE_ADMIN && $v['id'] != self::ROLE_CLIENT ) {
         $data[$v['title']] = $v['id'];
       }
     }

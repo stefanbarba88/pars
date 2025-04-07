@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 use App\Classes\Data\AvailabilityData;
+use App\Classes\Data\CalendarColorsData;
 use App\Classes\Data\CalendarData;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TipNeradnihDanaData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\Availability;
+use App\Entity\Holiday;
 use App\Entity\User;
 use App\Entity\Vacation;
 use App\Form\AvailabilityFormType;
@@ -15,6 +18,7 @@ use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -29,6 +33,13 @@ class AvailabilityController extends AbstractController {
   public function list(PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
 
     $args = [];
@@ -53,26 +64,84 @@ class AvailabilityController extends AbstractController {
 
   }
 
-//  #[Route('/calendar/', name: 'app_availability_calendar')]
-//  public function calendar(): Response {
-//    if (!$this->isGranted('ROLE_USER')) {
-//      return $this->redirect($this->generateUrl('app_login'));
-//    }
-//
-//    $args = [];
-//    $user = $this->getUser();
-//
-//    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnost();
-//
-//
-//    return $this->render('availability/calendar.html.twig', $args);
-//  }
+  #[Route('/ucitaj-dogadjaje', name: 'ucitaj_dogadjaje')]
+  public function ucitajDogadjaje(Request $request): JsonResponse {
+
+    $start = new DateTimeImmutable($request->query->get('start')); // Datum početka iz AJAX zahteva
+    $end = new DateTimeImmutable($request->query->get('end')); // Datum kraja iz AJAX zahteva
+
+    $company = $this->getUser()->getCompany();
+
+    $dogadjaji = $this->em->getRepository(Availability::class)->createQueryBuilder('e')
+      ->where('e.datum >= :start AND e.datum <= :end')
+      ->andWhere('e.type <> 3')
+      ->andWhere('e.typeDay = 0')
+      ->andWhere('e.company = :company')
+      ->setParameter(':company', $company)
+      ->setParameter('start', $start)
+      ->setParameter('end', $end)
+      ->getQuery()
+      ->getResult();
+
+
+    $dogadjaji1 = $this->em->getRepository(Holiday::class)->createQueryBuilder('c')
+      ->where('c.datum >= :start AND c.datum <= :end')
+      ->andWhere('c.company = :company')
+      ->setParameter('company', $company)
+      ->setParameter('start', $start)
+      ->setParameter('end', $end)
+      ->getQuery()
+      ->getResult();
+
+
+    $response = [];
+
+    foreach ($dogadjaji as $dost) {
+      $response[] = [
+        "title" => $dost->getUser()->getFullName(),
+        "start" => $dost->getDatum()->format('Y-m-d'),
+        "datum" => $dost->getDatum()->format('d.m.Y'),
+        "color" => CalendarColorsData::getColorByType($dost->getZahtev()),
+        "name" => $dost->getUser()->getFullName(),
+        "id" => $dost->getUser()->getId(),
+        "zahtev" => $dost->getZahtev(),
+        "razlog" => CalendarColorsData::getTitleByType($dost->getZahtev()),
+        "textColor" => CalendarColorsData::getTextByType($dost->getZahtev()),
+        "vreme" => $dost->getVreme()
+      ];
+    }
+    foreach ($dogadjaji1 as $dost) {
+      $color = '#c4dfea';
+      $title = 'Praznik';
+      if($dost->getType() == TipNeradnihDanaData::KOLEKTIVNI_ODMOR) {
+        $color = '#00233d';
+        $title = 'Kolektvni odmor';
+      }
+
+      $response[] = [
+        "start" => $dost->getDatum()->format('Y-m-d'),
+        "backgroundColor" => $color,
+        "title" => $title,
+        "text" => '#00233F',
+        "display" => 'background'
+      ];
+    }
+
+    return new JsonResponse($response);
+  }
 
   #[Route('/available/', name: 'app_availability_available')]
   public function dostupni(PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
     $args = [];
     $dostupnosti = $this->em->getRepository(User::class)->getDostupniPaginator();
 
@@ -98,7 +167,12 @@ class AvailabilityController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $args = [];
     $dostupnosti = $this->em->getRepository(User::class)->getNedostupniPaginator();
 
@@ -124,6 +198,12 @@ class AvailabilityController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
 
     $this->em->getRepository(Availability::class)->remove($dostupnost);
 
@@ -136,7 +216,12 @@ class AvailabilityController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $this->em->getRepository(Availability::class)->makeAvailable($user);
 
     return $this->redirectToRoute('app_availability_unavailable');
@@ -148,7 +233,12 @@ class AvailabilityController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $this->em->getRepository(Availability::class)->makeUnavailable($user);
 
     return $this->redirectToRoute('app_availability_available');
@@ -159,6 +249,13 @@ class AvailabilityController extends AbstractController {
   public function addOld(Availability $availability, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
 
     $presek = new DateTimeImmutable('first day of July this year');

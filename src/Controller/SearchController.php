@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classes\Data\UserRolesData;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\User;
@@ -24,10 +25,14 @@ class SearchController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
-
     $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
 
+    $args = [];
     $search = [];
 
 
@@ -60,7 +65,6 @@ class SearchController extends AbstractController {
           'sortFieldParameterName' => 'sort',  // Menjamo naziv parametra za sortiranje
         ]
       );
-
       $pagination1 = $paginator->paginate(
         $tasks, /* query NOT result */
         $request->query->getInt('page1', 1), /*page number*/
@@ -104,10 +108,12 @@ class SearchController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
-
     $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
+    $args = [];
     $search = [];
 
 

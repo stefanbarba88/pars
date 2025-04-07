@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="1b765e2e-8dac-4878-87db-db899dfdd02c" name="epars">
-        <fileTransfer rootFolder="/var/www/html/pars/pars" accessType="SFTP" host="159.223.214.184" port="22" sshConfigId="5c387b80-6341-4f38-bba7-f0fbf0f22dfc" sshConfig="epars.rs">
+        <fileTransfer rootFolder="/var/www/html/pars/pars" accessType="SFTP" host="64.225.69.49" port="22" sshConfigId="5c387b80-6341-4f38-bba7-f0fbf0f22dfc" sshConfig="epars.rs">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

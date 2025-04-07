@@ -86,11 +86,9 @@
                                     <tbody>
                                     {% set currentDate = date()|date("Y-m-d") %}
                                     {% for car in pagination %}
-                                        {% set nextRegistrationDate = car.datumNaredneRegistracije|date("Y-m-d") %}
-                                        {% set difference = nextRegistrationDate|date_modify('-30 days') %}
-                                        {% set difference = difference|date("Y-m-d") %}
-                                        <tr>
-                                            <td><a href="{{ path('app_car_view', {id:car.id}) }}" class="fw-semibold">{{ car.plate }}</a></td>
+                                        {% set carDays = getDaysRemainingCar(car) %}
+                                        <tr class="{{ carDays.klasa }}">
+                                            <td><a href="{{ path('app_car_view', {id:car.id}) }}" class="fw-semibold">{{ car.plate }}</a> {{ car.datumNaredneRegistracije | date("d.m.Y.")}} {% if carDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ carDays.poruka }}" data-bs-original-title="{{ carDays.poruka }}"></i>{% endif %}</td>
                                             <td>
                                                 {% if car.isSuspended == false %}
                                                     {% if car.isReserved %}
@@ -212,7 +210,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

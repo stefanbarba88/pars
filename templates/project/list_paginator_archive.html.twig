@@ -62,16 +62,7 @@
                                             {% endif %}
                                         </th>
                                         <th>Klijent</th>
-                                        <th {% if pagination.isSorted('[p.type]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Tip ', ['p.type']) }}
-                                            {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.type' %}
-                                                &#8593;
-                                            {% elseif pagination.getDirection() == 'desc' and pagination.getSort() == 'p.type' %}
-                                                &#8595;
-                                            {% else %}
-                                                &#8597;
-                                            {% endif %}
-                                        </th>
+
                                         <th {% if pagination.isSorted('[p.created]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Datum kreiranja ', ['p.created']) }}
                                             {% if pagination.getDirection() == 'asc' and pagination.getSort() == 'p.created' %}
@@ -99,31 +90,17 @@
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                {% if is_granted('ROLE_EMPLOYEE') %}
-                                                    {% for client in project.client %}
-                                                        {{ client.title }}{% if  not loop.last %},{% endif %}
-                                                    {% endfor %}
-                                                {% else %}
+
                                                     {% for client in project.client %}
                                                         <a href="{{ path('app_client_profile_view', { id: client.id}) }}">{{ client.title }}</a>{% if  not loop.last %},{% endif %}
                                                     {% endfor %}
-                                                {% endif %}
+
                                             </td>
-                                            <td>
-                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::FIKSNO') %}
-                                                    <span class="badge bg-secondary text-primary">Stalno</span>
-                                                {% endif %}
-                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::LETECE') %}
-                                                    <span class="badge bg-primary text-white">Leteće</span>
-                                                {% endif %}
-                                                {% if project.type == constant('App\\Classes\\Data\\TipProjektaData::KOMBINOVANO') %}
-                                                    <span class="badge bg-yellow text-primary">Kombinovano</span>
-                                                {% endif %}
-                                            </td>
+
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ project.created | date("d.m.Y")}}
+                                                    {{ project.created | date("d.m.Y.")}}
                                                 </div>
                                             </td>
 
@@ -133,9 +110,7 @@
                                                         <i class="ph-gear"></i>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
-                                                        {% if is_granted('ROLE_EMPLOYEE') %}
-                                                            <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                        {% else %}
+
                                                             <a href="{{ path('app_project_tasks_view', { id: project.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                             <a href="{{ path('app_project_form', { id: project.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
                                                             {% if project.suspended == 0 %}
@@ -143,7 +118,7 @@
                                                             {% else %}
                                                                 <a href="{{ path('app_project_suspend', { id: project.id}) }}" class="dropdown-item"><i class="ph-check me-2"></i> Aktivirajte</a>
                                                             {% endif %}
-                                                        {% endif %}
+
                                                     </div>
                                                 </div>
                                             </td>
@@ -175,7 +150,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

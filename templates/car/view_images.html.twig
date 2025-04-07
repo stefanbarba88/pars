@@ -40,11 +40,10 @@
                                         <h5 class="mb-0">Dodate slike</h5>
                                     </div>
                                     <div class="card-body">
-                                        {% if reservations is not empty %}
+                                        {% if images is not empty %}
                                             <div class="row">
-                                                {% for reservation in reservations %}
-                                                    {% for image in reservation.image %}
-                                                        <div class="col-sm-6 col-xl-3">
+                                                {% for image in images %}
+                                                        <div class="col-sm-6 col-xl-2">
                                                             <div class="card">
                                                                 <div class="card-img-actions mx-1 mt-1">
                                                                     <img class="card-img img-fluid" src="{{ asset(image.thumbnail500) }}" alt="">
@@ -57,15 +56,16 @@
                                                                 <div class="card-body">
                                                                     <div class="d-flex align-items-start flex-nowrap">
                                                                         <div>
-                                                                            <a href="{{ path('app_car_reservation_view', {id: reservation.id}) }}">{{ reservation.driver.fullName }}: {{ reservation.created |date ('d.m.Y') }}-{{ reservation.finished| date('d.m.Y') }}</a>
+                                                                            <a href="{{ path('app_car_reservation_view', {id: image.carReservation.id}) }}">{{ image.carReservation.driver.fullName }}: {{ image.carReservation.created |date ('d.m.Y') }}-{{ image.carReservation.finished| date('d.m.Y') }}</a>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     {% endfor %}
-                                                {% endfor %}
                                             </div>
+                                        {% else %}
+                                            <div class="fw-semibold text-truncate">Nema dodatih slika</div>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -90,7 +90,7 @@
         </div>
         <!-- /main content -->
 
-        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

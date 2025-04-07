@@ -30,9 +30,7 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
+{{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
                         {% set userCreatedYear = user.created|date('Y') %}
                         {% set currentYear = "now"|date('Y') %}
 
@@ -44,36 +42,26 @@
                                     <div class="card-header d-flex align-items-center">
                                         <h5 class="mb-0">Lista zahteva</h5>
                                         <div class="my-auto ms-auto">
-                                            {% if app.user == user%}
-                                                <a href="{{ path('app_calendar_form', {user:user.id}) }}" class="btn btn-primary"><i class="ph-plus"></i></a>
-                                            {% endif %}
-
-                                            {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
-                                                <a href="{{ path('app_employee_calendar_days', {id : user.id}) }}" class="text-body">
-                                                    <i class="ph-note-pencil"></i>
+                                            <div class="dropdown">
+                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                    <i class="ph-gear"></i>
                                                 </a>
-                                                {#                                                <div class="dropdown">#}
-                                                {#                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">#}
-                                                {#                                                        <i class="ph-gear"></i>#}
-                                                {#                                                    </a>#}
-                                                {#                                                    <div class="dropdown-menu dropdown-menu-end">#}
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    {% if app.user == user %}
+                                                        <a href="{{ path('app_calendar_form', {user:user.id}) }}" class="dropdown-item"><i class="ph-plus me-2"></i> Dodajte</a>
+                                                    {% endif %}
+                                                    {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.isAdmin %}
+                                                        <a href="{{ path('app_employee_calendar_days', {id : user.id}) }}" class="dropdown-item">
+                                                            <i class="ph-note-pencil me-2"></i> Izmenite
+                                                        </a>
+                                                    {% endif %}
 
-                                                {#                                                        <a href="{{ path('app_vacation_form', {id : user.vacation.id}) }}" class="dropdown-item">#}
-                                                {#                                                            <i class="ph-note-pencil me-2"></i>#}
-                                                {#                                                            Izmenite#}
-                                                {#                                                        </a>#}
-                                                {#                                                        <a href="{{ path('app_employee_calendar_days', {id : user.id}) }}" class="dropdown-item">#}
-                                                {#                                                            <i class="ph-calendar me-2"></i>#}
-                                                {#                                                            Lista dana#}
-                                                {#                                                        </a>#}
-                                                {#                                                    </div>#}
-                                                {#                                                </div>#}
-                                            {% endif %}
-
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -89,7 +77,7 @@
                                                             {% if calendar.start is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ calendar.start | date("d.m.Y")}}
+                                                                    {{ calendar.start | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -97,7 +85,7 @@
                                                             {% if calendar.finish is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ calendar.finish | date("d.m.Y")}}
+                                                                    {{ calendar.finish | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -142,8 +130,8 @@
                                                                         <i class="ph-eye me-2"></i>
                                                                         Vidite
                                                                     </a>
-                                                                    {% if calendar.start | date('d.m.Y') <= 'now' | date('d.m.Y') %}
-                                                                        {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
+                                                                    {% if calendar.start | date("Y-m-d") >= "now" | date("Y-m-d") %}
+                                                                        {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.isAdmin %}
                                                                             {% if calendar.status != 2  %}
                                                                                 <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
                                                                                     <i class="ph-check me-2"></i>
@@ -190,7 +178,7 @@
                                             <h5 class="mb-0">Prisutnost od početka {{ 'now' | date('Y') }}. godine</h5>
                                         {% endif %}
                                         <div class="d-inline-flex ms-auto">
-                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{{ (noDays['dostupan'] / noRadnihDana) |number_format(2, '.', ',') }}</span>
+                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{% if noRadnihDana > 0 %} {{ (noDays['dostupan'] / noRadnihDana) |number_format(2, '.', ',') }} {% endif %}</span>
                                         </div>
                                     </div>
 
@@ -201,7 +189,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-fill">
                                                             <h4 class="mb-0">{{ noDays['dostupan'] }}/{{ noRadnihDana }}</h4>
-                                                            Broj radnih dana
+                                                            Broj radnih dana <i class="ph-info bg-primary" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Odnos dana u kojima je zaposleni imao merenje zadatka i ukupan broj radnih dana ne računajuci praznike i neradne dane firme. Može se desiti da zaposleni ima više radnih dana od mogućih ako je radio na praznik ili neradni dan." data-bs-original-title="Broj radnih dana"></i>
                                                         </div>
 
                                                         <i class="ph-briefcase ph-2x opacity-75 ms-3"></i>
@@ -216,8 +204,9 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-fill">
                                                             <h4 class="mb-0">{{ noDays['praznik'] }}</h4>
-                                                            Praznik
+                                                            Praznik <i class="ph-info bg-secondary" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Broj radnih dana kada je praznik." data-bs-original-title="Praznik"></i>
                                                         </div>
+
 
                                                         <i class="ph-cake ph-2x opacity-75 ms-3"></i>
                                                     </div>
@@ -229,7 +218,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-fill">
                                                             <h4 class="mb-0">{{ noDays['kolektivniOdmor'] }}</h4>
-                                                            Kolektivni odmor
+                                                            Kolektivni odmor <i class="ph-info bg-secondary" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Broj radnih dana kada je kolektivni odmor." data-bs-original-title="Kolektivni odmor"></i>
                                                         </div>
                                                         <i class="ph-globe-hemisphere-west ph-2x opacity-75 ms-3"></i>
                                                     </div>
@@ -241,7 +230,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-fill">
                                                             <h4 class="mb-0">{{ noDays['nedelja'] }}</h4>
-                                                            Neradni dan
+                                                            Neradni dan <i class="ph-info bg-secondary" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Broj radnih dana kada su neradni dani firme." data-bs-original-title="Neradni dan"></i>
                                                         </div>
 
                                                         <i class="ph-calendar-x ph-2x opacity-75 ms-3"></i>
@@ -252,11 +241,9 @@
                                             <div class="col-sm-6 col-xl-3">
                                                 <div class="card card-body bg-yellow text-primary">
                                                     <div class="d-flex align-items-center">
-
-
                                                         <div class="flex-fill">
                                                             <h4 class="mb-0">{{ overtime }}</h4>
-                                                            Prekovremeni sati
+                                                            Prekovremeni sati <i class="ph-info bg-yellow" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Neradni sati od početka godine." data-bs-original-title="Prekovremeni sati"></i>
                                                         </div>
                                                         <i class="ph-hourglass-high ph-2x opacity-75 ms-3"></i>
                                                     </div>
@@ -296,7 +283,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-fill">
                                                             <h4 class="mb-0">{{ noDays['nedostupanProfil'] }}/{{ noRadnihDana }}</h4>
-                                                            Broj dana odsustva
+                                                            Broj dana odsustva <i class="ph-info bg-primary" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Odnos dana u kojima zaposleni nije imao merenje zadatka i ukupan broj radnih dana ne računajuci praznike i neradne dane firme." data-bs-original-title="Broj neradnih dana"></i>
                                                         </div>
 
                                                         <i class="ph-briefcase ph-2x opacity-75 ms-3"></i>
@@ -377,7 +364,8 @@
 
                                                         <div class="flex-fill">
                                                             <h4 class="mb-0">{{ noDays['izasao'] }}</h4>
-                                                            Izlasci
+                                                            Izlasci <i class="ph-info bg-secondary" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Ako se desi da zaposleni koristi samo deo dana, a ne ceo slobodan dan." data-bs-original-title="Izlasci"></i>
+
                                                         </div>
                                                         <i class="ph-person-simple-run ph-2x opacity-75 ms-3"></i>
                                                     </div>
@@ -390,7 +378,8 @@
 
                                                         <div class="flex-fill">
                                                             <h4 class="mb-0">{{ noDays['neradniKolektivniOdmor'] }}</h4>
-                                                            Kolektivni odmor
+                                                            Kolektivni odmor <i class="ph-info bg-secondary" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Dani kolektivnog se ne rašunaju kao neradni dani firme." data-bs-original-title="Kolektivni odmor"></i>
+
                                                         </div>
                                                         <i class="ph-globe-hemisphere-west ph-2x opacity-75 ms-3"></i>
                                                     </div>
@@ -403,7 +392,8 @@
 
                                                         <div class="flex-fill">
                                                             <h4 class="mb-0">{{ noDays['nemaMerenje'] }}</h4>
-                                                            Nema merenje
+                                                            Nema merenje <i class="ph-info bg-yellow" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Broj dana u kojim zaposleni nije imao merenje iz ostalih razloga." data-bs-original-title="Bez merenja"></i>
+
                                                         </div>
                                                         <i class="ph-warning-circle ph-2x opacity-75 ms-3"></i>
                                                     </div>
@@ -495,7 +485,7 @@
 
         </div>
         <!-- /main content -->
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
 
     </div>
     {% include 'includes/notification.html.twig' %}
@@ -557,54 +547,72 @@
 
 {% block footerJavascript %}
     <script type="text/javascript">
-        const eventColors =
-            [
-                {% for event in dostupnosti %}
-                {% if event.id == '' %}
-                {
-                    {#title: '{{ event.title }}',#}
-                    start: '{{ event.start }}',
-                    backgroundColor: '{{ event.color }}',
-                    text: '{{ event.text }}',
-                    display: 'background',
-                },
-                {% else %}
-                {
-                    title: '{{ event.title }}',
-                    start: '{{ event.start }}',
-                    color: '{{ event.color }}',
-                    textColor: '{{ event.text }}',
-                },
-                {% endif %}
-                {% endfor %}
-            ]
         const initialLocaleCode = 'sr';
+
         // Define element
         const calendarEventColorsElement = document.querySelector('.fullcalendar-event-colors');
 
         // Initialize
-        if(calendarEventColorsElement) {
+        if (calendarEventColorsElement) {
             const calendarEventColorsInit = new FullCalendar.Calendar(calendarEventColorsElement, {
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,dayGridWeek,timeGridDay'
                 },
-                {#validRange: {#}
-                {#    start: '{{ "now"|date("Y") }}-{{ "now"|date("m") }}-01'#}
-                {#},#}
-                initialView: 'dayGridMonth' +
-                    '',
+
+                initialView: 'dayGridMonth',
                 locale: initialLocaleCode,
                 initialDate: new Date(),
-                navLinks: true, // can click day/week names to navigate views
-                businessHours: true, // display business hours
-                // editable: true,
-                // selectable: true,
-                // editable: true,
+                navLinks: true,
+                businessHours: true,
                 direction: document.dir == 'rtl' ? 'rtl' : 'ltr',
-                events: eventColors,
-                // height: 500
+                dayMaxEvents: 0,
+
+                // AJAX učitavanje događaja
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    $.ajax({
+                        url: '{{ path('ucitaj_dogadjaje_user') }}', // Ruta koja vraća JSON podatke
+                        method: 'GET',
+                        dataType: 'json',
+                        data: {
+                            start: fetchInfo.startStr,
+                            end: fetchInfo.endStr,
+                            user: {{ user.id }}
+                        },
+                        success: function(response) {
+                            successCallback(response); // Ubacujemo evente u kalendar
+                        },
+                        error: function() {
+                            failureCallback();
+                        }
+                    });
+                },
+                eventContent: function(info) {
+                    const eventColor = info.event.backgroundColor || '#000'; // Boja eventa
+                    const eventTextColor = info.event.textColor || '#000'; // Boja teksta eventa
+                    const eventVreme = info.event.extendedProps.vreme || ''; // Provera da li postoji vreme u extendedProps
+
+                    // Ako je događaj samo za pozadinu, ne prikazuje se standardni sadržaj
+                    if (info.event.display === 'background') {
+                        return {
+                            html: `<span></span>`
+                        };
+                    } else {
+                        // Ako postoji vreme, prikaži i vreme uz naslov
+                        if (eventVreme) {
+                            return {
+                                html: `<div style="color: ${eventTextColor}; background-color: ${eventColor}; font-size: 8px;">${info.event.title} (${eventVreme})</div>`
+
+                            };
+                        } else {
+                            // Ako nema vremena, samo prikaži naslov
+                            return {
+                                html: `<div style="color: ${eventTextColor}; background-color: ${eventColor}; font-size: 8px;">${info.event.title}</div>`
+                            };
+                        }
+                    }
+                },
             });
 
             // Init
@@ -617,6 +625,69 @@
                 })
             });
         }
+
+
+        {#const eventColors =#}
+        {#    [#}
+        {#        {% for event in dostupnosti %}#}
+        {#            {% if event.id == '' %}#}
+        {#                {#}
+        {#                    #}{#title: '{{ event.title }}',#}
+        {#                    start: '{{ event.start }}',#}
+        {#                    backgroundColor: '{{ event.color }}',#}
+        {#                    text: '{{ event.text }}',#}
+        {#                    display: 'background',#}
+        {#                },#}
+        {#            {% else %}#}
+        {#                {#}
+        {#                    title: '{{ event.title }}',#}
+        {#                    start: '{{ event.start }}',#}
+        {#                    color: '{{ event.color }}',#}
+        {#                    textColor: '{{ event.text }}',#}
+        {#                },#}
+        {#            {% endif %}#}
+        {#        {% endfor %}#}
+        {#    ]#}
+        {#const initialLocaleCode = 'sr';#}
+        {#// Define element#}
+        {#const calendarEventColorsElement = document.querySelector('.fullcalendar-event-colors');#}
+
+        {#// Initialize#}
+        {#if(calendarEventColorsElement) {#}
+        {#    const calendarEventColorsInit = new FullCalendar.Calendar(calendarEventColorsElement, {#}
+        {#        headerToolbar: {#}
+        {#            left: 'prev,next today',#}
+        {#            center: 'title',#}
+        {#            right: 'dayGridMonth,dayGridWeek,timeGridDay'#}
+        {#        },#}
+        {#        validRange: {#}
+        {#            start: '{{ "now"|date("Y") }}-{{ "now"|date("m") }}-01'#}
+        {#        },#}
+        {#        initialView: 'dayGridMonth',#}
+        {#        locale: initialLocaleCode,#}
+        {#        initialDate: new Date(),#}
+        {#        navLinks: true, // can click day/week names to navigate views#}
+        {#        businessHours: true, // display business hours#}
+        {#        // editable: true,#}
+        {#        // selectable: true,#}
+        {#        // editable: true,#}
+        {#        direction: document.dir == 'rtl' ? 'rtl' : 'ltr',#}
+        {#        events: eventColors,#}
+        {#        dayMaxEvents: true#}
+        {#        // height: 500#}
+        {#    });#}
+
+        {#    // Init#}
+        {#    calendarEventColorsInit.render();#}
+
+        {#    // Resize calendar when sidebar toggler is clicked#}
+        {#    document.querySelectorAll('.sidebar-control').forEach(function(sidebarToggle) {#}
+        {#        sidebarToggle.addEventListener('click', function() {#}
+        {#            calendarEventColorsInit.updateSize();#}
+        {#        })#}
+        {#    });#}
+        {#}#}
+        $(".fc-daygrid-day-bg .fc-event-title").addClass("pozadinkiEvent");
 
     </script>
 {% endblock footerJavascript %}

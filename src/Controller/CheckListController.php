@@ -128,12 +128,18 @@ class CheckListController extends AbstractController {
     return $this->render('check_list/list_to_do.html.twig', $args);
   }
 
+
   #[Route('/form/{id}', name: 'app_checklist_form', defaults: ['id' => 0])]
   #[Entity('checklist', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, ManagerChecklist $checklist, MailService $mailService, UploadService $uploadService)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $user = $this->getUser();
+
+    if ($user->getCompany() != $checklist->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
 
     $mobileDetect = new MobileDetect();
@@ -174,6 +180,12 @@ class CheckListController extends AbstractController {
         $repeating = $data['checklist']['repeating'];
         $repeatingInterval = $data['checklist']['repeatingInterval'];
 
+        $deadline = null;
+        if (!empty($request->request->all('checklist')['deadline'])) {
+          $deadline = $request->request->all('checklist')['deadline'];
+          $deadline = DateTimeImmutable::createFromFormat('d.m.Y', $deadline)->setTime(0, 0);
+        }
+
 
         $time1 = null;
         if (isset($request->request->all('checklist')['podsetnik'])) {
@@ -187,14 +199,38 @@ class CheckListController extends AbstractController {
           $time1 = $datumKreiranja->modify($time);
         }
 
-
-        if(!empty ($uploadFiles)) {
+        if (!empty ($uploadFiles)) {
           foreach ($uploadFiles as $uploadFile) {
+
+            if (!$uploadFile->getSize()) { // 5MB u bajtima
+              $errors[] = "Fajl premašuje dozvoljenu veličinu od 5MB.";
+              continue;
+            }
+
+
             $pdf = new Pdf();
             $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
             $files[] = $file;
           }
         }
+
+        if (!empty($errors)) {
+
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addError(NotifyMessagesData::DOC_ADD_ERROR);
+
+          if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirectToRoute('app_home');
+          }
+
+          return $this->redirectToRoute('app_checklist_list');
+
+        }
+
 
         foreach ($data['checklist']['zaduzeni'] as $zaduzeni) {
           $task = new ManagerChecklist();
@@ -205,6 +241,7 @@ class CheckListController extends AbstractController {
           $task->setProject($this->em->getRepository(Project::class)->find($data['checklist']['project']));
           $task->setCategory($this->em->getRepository(Category::class)->find($data['checklist']['category']));
           $task->setDatumKreiranja($datumKreiranja);
+          $task->setDeadline($deadline);
           $task->setCompany($this->getUser()->getCompany());
           $task->setRepeating($repeating);
           $task->setTime($time1);
@@ -261,6 +298,11 @@ class CheckListController extends AbstractController {
         $repeating = $data['phone_checklist']['repeating'];
         $repeatingInterval = $data['phone_checklist']['repeatingInterval'];
         $time1 = null;
+        $deadline = null;
+        if (!empty($request->request->all('phone_checklist')['deadline'])) {
+          $deadline = $request->request->all('phone_checklist')['deadline'];
+          $deadline = DateTimeImmutable::createFromFormat('m/d/Y', $deadline)->setTime(0, 0);
+        }
 
         if (isset($request->request->all('phone_checklist')['podsetnik'])) {
           $notify = $request->request->all('phone_checklist')['podsetnik'];
@@ -273,12 +315,36 @@ class CheckListController extends AbstractController {
           $time1 = $datumKreiranja->modify($time);
         }
 
-        if(!empty ($uploadFiles)) {
+        if (!empty ($uploadFiles)) {
           foreach ($uploadFiles as $uploadFile) {
+
+            if (!$uploadFile->getSize()) { // 5MB u bajtima
+              $errors[] = "Fajl premašuje dozvoljenu veličinu od 5MB.";
+              continue;
+            }
+
+
             $pdf = new Pdf();
             $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
             $files[] = $file;
           }
+        }
+
+        if (!empty($errors)) {
+
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addError(NotifyMessagesData::DOC_ADD_ERROR);
+
+          if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirectToRoute('app_home');
+          }
+
+          return $this->redirectToRoute('app_checklist_list');
+
         }
 
         foreach ($data['phone_checklist']['zaduzeni'] as $zaduzeni) {
@@ -290,6 +356,7 @@ class CheckListController extends AbstractController {
           $task->setProject($this->em->getRepository(Project::class)->find($data['phone_checklist']['project']));
           $task->setCategory($this->em->getRepository(Category::class)->find($data['phone_checklist']['category']));
           $task->setDatumKreiranja($datumKreiranja);
+          $task->setDeadline($deadline);
           $task->setCompany($this->getUser()->getCompany());
           $task->setRepeating($repeating);
           $task->setTime($time1);
@@ -358,7 +425,11 @@ class CheckListController extends AbstractController {
 
 
     if ($company->getSettings()->isCalendar()) {
-      $args['users'] = $this->em->getRepository(User::class)->getUsersAvailableChecklist($datum);
+      if ($company->getSettings()->isAllUsers()) {
+        $args['users'] = $this->em->getRepository(User::class)->getUsersForChecklist();
+      } else {
+        $args['users'] = $this->em->getRepository(User::class)->getUsersAvailableChecklist($datum);
+      }
     } else {
       $args['users'] = $this->em->getRepository(User::class)->getUsersForChecklist();
     }
@@ -385,11 +456,9 @@ class CheckListController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
-
-    if ($this->getUser()->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $this->getUser()->getUserType() != UserRolesData::ROLE_ADMIN && $this->getUser()->getUserType() != UserRolesData::ROLE_MANAGER) {
-      if ($this->getUser() != $checklist->getCreatedBy() || $this->getUser() != $checklist->getUser()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
+    $user= $this->getUser();
+    if ($user->getCompany() != $checklist->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
 
     if ($checklist->getStatus() != InternTaskStatusData::NIJE_ZAPOCETO) {
@@ -415,8 +484,13 @@ class CheckListController extends AbstractController {
       if ($form->isSubmitted() && $form->isValid()) {
 
         $uploadFiles = $request->files->all()['checklist']['pdf'];
+
         if (!empty ($uploadFiles)) {
           foreach ($uploadFiles as $uploadFile) {
+            if (!$uploadFile->getSize()) { // 5MB u bajtima
+              $errors[] = "Fajl premašuje dozvoljenu veličinu od 5MB.";
+              continue;
+            }
             $pdf = new Pdf();
             $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
             $pdf->setTitle($file->getFileName());
@@ -426,6 +500,22 @@ class CheckListController extends AbstractController {
             }
             $checklist->addPdf($pdf);
           }
+        }
+        if (!empty($errors)) {
+
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addError(NotifyMessagesData::DOC_ADD_ERROR);
+
+          if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirectToRoute('app_home');
+          }
+
+          return $this->redirectToRoute('app_checklist_list');
+
         }
 
         if ($checklist->getRepeating() == 1) {
@@ -452,6 +542,13 @@ class CheckListController extends AbstractController {
           }
           $time1 = $vreme->modify($time);
           $checklist->setTime($time1);
+        }
+
+        if (!empty($request->request->get('manager_checklist_form_deadline'))) {
+          $deadline = $request->request->get('manager_checklist_form_deadline');
+          $deadline = DateTimeImmutable::createFromFormat('d.m.Y', $deadline)->setTime(0, 0);
+
+          $checklist->setDeadline($deadline);
         }
 
         if (!is_null($request->request->get('manager_checklist_form_podsetnik'))) {
@@ -497,6 +594,12 @@ class CheckListController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+
+    $user= $this->getUser();
+    if ($user->getCompany() != $checklist->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     $args['checklist'] = $checklist;
     $args['comments'] = $this->em->getRepository(Comment::class)->findBy(['managerChecklist' => $checklist, 'isSuspended' => false], ['id' => 'DESC']);
     return $this->render('check_list/view.html.twig', $args);
@@ -509,7 +612,10 @@ class CheckListController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
-
+    $user= $this->getUser();
+    if ($user->getCompany() != $checklist->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     if ($request->isMethod('POST')) {
 
       $data = $request->request->all();
@@ -546,8 +652,11 @@ class CheckListController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
-    $koris = $this->getUser();
-    $this->em->getRepository(ManagerChecklist::class)->start($checklist, $koris);
+    $user= $this->getUser();
+    if ($user->getCompany() != $checklist->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+    $this->em->getRepository(ManagerChecklist::class)->start($checklist, $user);
 
     $mailService->checklistStatusTask($checklist);
 
@@ -571,9 +680,12 @@ class CheckListController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $koris = $this->getUser();
+    $user= $this->getUser();
+    if ($user->getCompany() != $checklist->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
-    $this->em->getRepository(ManagerChecklist::class)->replay($checklist, $koris);
+    $this->em->getRepository(ManagerChecklist::class)->replay($checklist, $user);
 
     $mailService->checklistStatusTask($checklist);
 
@@ -598,10 +710,9 @@ class CheckListController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
-    if ($this->getUser()->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $this->getUser()->getUserType() != UserRolesData::ROLE_ADMIN && $this->getUser()->getUserType() != UserRolesData::ROLE_MANAGER) {
-      if ($this->getUser() != $checklist->getCreatedBy() || $this->getUser() != $checklist->getUser()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
+    $koris = $this->getUser();
+    if ($koris->getCompany() != $checklist->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
 
     if ($checklist->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
@@ -618,7 +729,7 @@ class CheckListController extends AbstractController {
         return $this->redirectToRoute('app_checklist_list');
     }
 
-    $koris = $this->getUser();
+
 
     $task = $this->em->getRepository(Task::class)->createTaskFromChecklist($checklist);
     $checklist->setStatus(InternTaskStatusData::KONVERTOVANO);
@@ -647,6 +758,11 @@ class CheckListController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
+    $user= $this->getUser();
+    if ($user->getCompany() != $checklist->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     $this->em->getRepository(ManagerChecklist::class)->remove($checklist);
 
     notyf()
@@ -668,6 +784,11 @@ class CheckListController extends AbstractController {
   public function turnOff(ManagerChecklist $checklist)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $user= $this->getUser();
+    if ($user->getCompany() != $checklist->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
 
     $checklist->setRepeating(0);

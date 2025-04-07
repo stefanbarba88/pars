@@ -78,13 +78,15 @@
                                         <th>Ime</th>
                                         <th>Pozicija</th>
                                         <th>Datum rođenja</th>
+                                        <th>Admin prava</th>
                                         <th>Status</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for user in pagination %}
-                                        <tr>
+                                        {% set userDays = getDaysRemaining(user) %}
+                                        <tr class="{{ userDays.klasa }}">
                                             <td>
                                                 <a href="{{ path('app_employee_profile_view', { id: user.id}) }}"><img src="{{ asset(user.image.getThumbnail100())}}" class="rounded-circle" width="35" height="35" alt="{{ user.ime }}"></a>
                                             </td>
@@ -92,12 +94,18 @@
                                             <td><div class="fw-semibold"><a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
                                             <td>
                                                 {{ user.pozicija.title }}
+                                                {% if userDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ userDays.poruka }}" data-bs-original-title="{{ userDays.poruka }}"></i>{% endif %}
                                             </td>
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ user.datumRodjenja | date("d.m.Y")}}
+                                                    {{ user.datumRodjenja | date("d.m.Y.")}}
                                                 </div>
+                                            </td>
+                                            <td>
+                                                {% if user.userType == 1 or user.userType == 2 or user.isAdmin %}
+                                                    <span class="badge bg-primary text-white">Administrator</span>
+                                                {% endif %}
                                             </td>
                                             <td>
                                                 {{ user.getBadgeByStatus | raw }}
@@ -156,7 +164,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

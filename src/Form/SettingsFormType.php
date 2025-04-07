@@ -20,6 +20,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -27,6 +28,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class SettingsFormType extends AbstractType {
   public function buildForm(FormBuilderInterface $builder, array $options): void {
@@ -36,13 +38,63 @@ class SettingsFormType extends AbstractType {
       public function __construct(private readonly FormBuilderInterface $builder) {
       }
 
-      public function getReservation(): ?Project {
+      public function getReservation(): ?Settings {
         return $this->builder->getData();
       }
 
     };
 
+    $settings = $dataObject->getReservation();
 
+    if ($settings->isCalendar()) {
+      $builder
+        ->add('isAllUsers', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+        ->add('isPlanEmployee', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => PotvrdaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+    }
+    if ($settings->isCar()) {
+      $builder
+        ->add('minKm', NumberType::class, [
+          'required' => true,
+          'html5' => true,
+          'attr' => [
+            'min' => 0,
+            'step' => '1'
+          ],
+        ]);
+    }
+//    if ($settings->isPlan()) {
+//      $builder
+//        ->add('isPlanToday', ChoiceType::class, [
+//          'attr' => [
+//            'data-minimum-results-for-search' => 'Infinity',
+//          ],
+//          'choices' => PotvrdaData::form(),
+//          'expanded' => false,
+//          'multiple' => false,
+//        ])
+//        ->add('isPlanTomorrow', ChoiceType::class, [
+//          'attr' => [
+//            'data-minimum-results-for-search' => 'Infinity',
+//          ],
+//          'choices' => PotvrdaData::form(),
+//          'expanded' => false,
+//          'multiple' => false,
+//        ]);
+//    }
 
     $builder
 
@@ -62,30 +114,15 @@ class SettingsFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('isPlanToday', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
+
+      ->add('email', EmailType::class, [
+        'required' => false,
+        'constraints' => [
+          new Regex('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', 'Email adresu morate uneti u odgovarajućem formatu'),
         ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
       ])
-      ->add('isPlanTomorrow', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('isPlanEmployee', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+
+
       ->add('isGeolocation', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
@@ -112,15 +149,15 @@ class SettingsFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-      ->add('workWeek', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'placeholder' => '--Izaberite broj dana u radnoj nedelji--',
-        'choices' => WorkWeekData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
+//      ->add('workWeek', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'placeholder' => '--Izaberite broj dana u radnoj nedelji--',
+//        'choices' => WorkWeekData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ])
 
 
 
@@ -144,6 +181,7 @@ class SettingsFormType extends AbstractType {
   public function configureOptions(OptionsResolver $resolver): void {
     $resolver->setDefaults([
       'data_class' => Settings::class,
+      'allow_extra_fields' => true,
     ]);
   }
 }

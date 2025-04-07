@@ -29,7 +29,7 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Nezatvoreni dnevnici u predhodnih 7 dana</h5>
+                            <h5 class="mb-0">Nezatvoreni dnevnici</h5>
                         </div>
                         <div class="card-body">
                             <div class="card">
@@ -37,7 +37,7 @@
                                     <thead class="bg-light text-primary">
                                     <tr>
                                         <th>Zadatak</th>
-                                        <th>Zaduženi</th>
+                                        <th>Zaposleni</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
@@ -47,10 +47,10 @@
                                         <tr>
                                             <td>
                                                 <div class="fw-semibold">
-                                                    {% if app.user.userType != 4 %}
-                                                        <a href="{{ path('app_task_view', { id: task.log.task.id}) }}">{{ task.log.task.title }}</a>
-                                                    {% else %}
+                                                    {% if app.user.userType == 4 and not admin%}
                                                         <a href="{{ path('app_task_view_user', { id: task.log.task.id}) }}">{{ task.log.task.title }}</a>
+                                                    {% else %}
+                                                        <a href="{{ path('app_task_view', { id: task.log.task.id}) }}">{{ task.log.task.title }}</a>
                                                     {% endif %}
                                                 </div>
                                             </td>
@@ -64,7 +64,7 @@
                                                         <i class="ph-gear"></i>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
-                                                        {% if is_granted('ROLE_EMPLOYEE') %}
+                                                        {% if is_granted('ROLE_EMPLOYEE') and not admin %}
                                                             {% if app.user in task.log.task.getAssignedUsers %}
                                                                 <a href="{{ path('app_task_view_user', { id: task.log.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                             {% endif %}
@@ -101,7 +101,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

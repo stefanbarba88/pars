@@ -29,9 +29,7 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
+{{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
                         {% set userCreatedYear = user.created|date('Y') %}
                         {% set currentYear = "now"|date('Y') %}
 
@@ -49,7 +47,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -65,7 +63,7 @@
                                                             {% if calendar.start is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ calendar.start | date("d.m.Y")}}
+                                                                    {{ calendar.start | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -73,7 +71,7 @@
                                                             {% if calendar.finish is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ calendar.finish | date("d.m.Y")}}
+                                                                    {{ calendar.finish | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -119,7 +117,7 @@
                                                                         Vidite
                                                                     </a>
                                                                     {% if calendar.start | date("Y-m-d") >= "now" | date("Y-m-d") %}
-                                                                        {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER') %}
+                                                                        {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') %}
                                                                             {% if calendar.status != 2  %}
                                                                                 <a href="{{ path('app_calendar_allow', {id: calendar.id}) }}" class="dropdown-item">
                                                                                     <i class="ph-check me-2"></i>
@@ -458,7 +456,7 @@
 
         </div>
         <!-- /main content -->
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
 
     </div>
     {% include 'includes/notification.html.twig' %}

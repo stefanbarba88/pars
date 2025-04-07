@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Classes\Data\CalendarData;
+use App\Classes\Data\PotvrdaData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Calendar;
 use App\Entity\User;
@@ -12,6 +13,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -76,6 +78,25 @@ class CalendarFormType extends AbstractType {
         'choices' => CalendarData::form(),
         'expanded' => false,
         'multiple' => false,
+      ])
+      ->add('part', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('flexible', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('vreme', TextType::class, [
+        'required' => false
       ])
 
 

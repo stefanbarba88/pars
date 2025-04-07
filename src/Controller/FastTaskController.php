@@ -39,7 +39,12 @@ FastTaskController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isPlan()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $args = [];
 
     $fastTasks = $this->em->getRepository(Plan::class)->getAllPlansPaginator();
@@ -66,7 +71,12 @@ FastTaskController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isPlan()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
 
     if ($request->isMethod('POST')) {
 
@@ -81,7 +91,6 @@ FastTaskController extends AbstractController {
 
     $args['disabledDates'] = $this->em->getRepository(Plan::class)->getDisabledDates();
 
-
     return $this->render('fast_task/form_date.html.twig', $args);
 
   }
@@ -93,6 +102,15 @@ FastTaskController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isPlan()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $plan->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     if ($request->get('datum') !== null) {
       $datum = $request->get('datum');
@@ -102,11 +120,15 @@ FastTaskController extends AbstractController {
     if ($request->isMethod('POST')) {
 
       $data = $request->request->all('zadatak');
+
       $dataInterni = $request->request->all('zadatakI');
 
       $datePlan = $request->request->get('task_quick_form_datum');
+      $all = $request->request->get('task_quick_form_all');
+
       $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $datePlan);
       $plan->setDatumKreiranja($datumKreiranja->setTime(7,0));
+      $plan->setAllUsers($all);
 
       $plan = $this->em->getRepository(Plan::class)->savePlan($plan, $data, $dataInterni);
 
@@ -133,10 +155,16 @@ FastTaskController extends AbstractController {
     $args = [];
     $datumCheck = DateTimeImmutable::createFromFormat('d.m.Y', $datum);
 
-
 //    $args['users'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
 //    $args['drivers'] = $this->em->getRepository(User::class)->getUsersCarsAvailable($datum);
-    $args['users'] = $this->em->getRepository(User::class)->getUsersCarAvailable($datumCheck);
+
+
+    if ($this->getUser()->getCompany()->getSettings()->isAllUsers()) {
+      $args['users'] = $this->em->getRepository(User::class)->getUsersCarAvailableAll();
+    } else {
+      $args['users'] = $this->em->getRepository(User::class)->getUsersCarAvailable($datumCheck);
+    }
+
     $args['activities'] = $this->em->getRepository(Activity::class)->getActivities();
     $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()], ['title' => 'ASC']);
     $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
@@ -163,13 +191,22 @@ FastTaskController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isPlan()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $plan->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     if ($request->isMethod('POST')) {
 
       $data = $request->request->all('zadatak');
       $dataInterni = $request->request->all('zadatakI');
 
-      $plan = $this->em->getRepository(Plan::class)->editPlan($plan, $data, $dataInterni);
+      $this->em->getRepository(Plan::class)->editPlan($plan, $data, $dataInterni);
 
       notyf()
         ->position('x', 'right')
@@ -184,7 +221,13 @@ FastTaskController extends AbstractController {
 
     $args = [];
 
-    $args['users'] = $this->em->getRepository(User::class)->getUsersCarAvailable($plan->getDatumKreiranja());
+    if ($this->getUser()->getCompany()->getSettings()->isAllUsers()) {
+      $args['users'] = $this->em->getRepository(User::class)->getUsersCarAvailableAll();
+    } else {
+      $args['users'] = $this->em->getRepository(User::class)->getUsersCarAvailable($plan->getDatumKreiranja());
+    }
+
+
     $args['activities'] = $this->em->getRepository(Activity::class)->getActivities();
     $args['projects'] = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()], ['title' => 'ASC']);
     $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
@@ -200,9 +243,7 @@ FastTaskController extends AbstractController {
     if($mobileDetect->isMobile()) {
       return $this->render('fast_task/phone/edit.html.twig', $args);
     }
-
     return $this->render('fast_task/edit.html.twig', $args);
-
   }
 
   #[Route('/view/{id}', name: 'app_quick_tasks_view')]
@@ -211,12 +252,25 @@ FastTaskController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isPlan()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $plan->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args = [];
     $args['plan'] = $plan;
     $args['isCar'] = $plan->getCompany()->getSettings()->isCar();
     $args['isTool'] = $plan->getCompany()->getSettings()->isTool();
 
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+
+      return $this->render('fast_task/phone/view.html.twig', $args);
+    }
     return $this->render('fast_task/view.html.twig', $args);
   }
 
@@ -246,6 +300,16 @@ FastTaskController extends AbstractController {
     return $this->redirect($this->generateUrl('app_login'));
   }
 
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $plan->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     if ($plan->getStatus() == FastTaskData::FINAL) {
       notyf()
         ->position('x', 'right')
@@ -264,33 +328,29 @@ FastTaskController extends AbstractController {
         ->dismissible(true)
         ->addSuccess(NotifyMessagesData::PLAN_DELETE);
     }
-
-
-
-
     return $this->redirectToRoute('app_quick_tasks');
   }
 
-  #[Route('/email-timetable/{id}', name: 'app_email_timetable')]
-//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function emailTimetable(FastTask $fastTask, MailService $mail, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-
-      $datum = $fastTask->getDatum();
-      $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
-      $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($fastTask);
-
-      $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask, FastTaskData::SAVED);
-      $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($fastTask, FastTaskData::SAVED);
-
-      $mail->plan($timetable, $users, $datum);
-      $mail->subs($subs, $usersSub, $datum);
-
-    return $this->redirectToRoute('app_quick_tasks');
-
-  }
+//  #[Route('/email-timetable/{id}', name: 'app_email_timetable')]
+////  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+//  public function emailTimetable(FastTask $fastTask, MailService $mail, Request $request)    : Response {
+//    if (!$this->isGranted('ROLE_USER')) {
+//    return $this->redirect($this->generateUrl('app_login'));
+//  }
+//
+//      $datum = $fastTask->getDatum();
+//      $timetable = $this->em->getRepository(FastTask::class)->getTimetableByFastTasks($fastTask);
+//      $subs = $this->em->getRepository(FastTask::class)->getSubsByFastTasks($fastTask);
+//
+//      $users = $this->em->getRepository(FastTask::class)->getUsersForEmail($fastTask, FastTaskData::SAVED);
+//      $usersSub = $this->em->getRepository(FastTask::class)->getUsersSubsForEmail($fastTask, FastTaskData::SAVED);
+//
+//      $mail->plan($timetable, $users, $datum);
+//      $mail->subs($subs, $usersSub, $datum);
+//
+//    return $this->redirectToRoute('app_quick_tasks');
+//
+//  }
 //  #[Route('/save-plan/', name: 'app_save_plan')]
 ////  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
 //  public function saveTimetable(Request $request, MailService $mail) {

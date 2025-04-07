@@ -106,7 +106,7 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ overtime.datum | date("d.m.Y")}}
+                                                    {{ overtime.datum | date("d.m.Y.")}}
                                                 </div>
                                             </td>
                                             <td>{{ overtime.hours }}</td>
@@ -177,7 +177,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

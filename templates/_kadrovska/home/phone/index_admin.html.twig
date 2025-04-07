@@ -33,7 +33,7 @@
 {#                                                    <td>#}
 {#                                                        <div class="d-inline-flex align-items-center">#}
 {#                                                            <i class="ph-calendar me-2"></i>#}
-{#                                                            {{ task.created | date("d.m.Y")}}#}
+{#                                                            {{ task.created | date("d.m.Y.")}}#}
 {#                                                        </div>#}
 {#                                                    </td>#}
 {#                                                    <td class="text-center">#}
@@ -185,10 +185,10 @@
                                 <div class="card-header d-flex align-items-center">
                                     <h5 class="mb-0">Zadaci kreirani za {{ danas | date('d.m.Y') }}</h5>
                                     <div class="my-auto ms-auto">
-                                        <a href="{{ path('app_task_form_date') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                        <a href="{{ path('app_task_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                     </div>
                                 </div>
-                                <div class="table-responsive card">
+                                <div class="card">
                                     <table class="table table-hover table-bordered table_morecondensed">
                                         <thead class="bg-light">
                                         <tr>
@@ -452,7 +452,7 @@
                                         <a href="{{ path('app_checklist_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                     </div>
                                 </div>
-                                <div class="table-responsive card">
+                                <div class="card">
                                     <table class="table table-hover table-bordered table_morecondensed">
                                         <thead class="bg-light">
                                         <tr>
@@ -681,7 +681,7 @@
                                     <div class="card-header d-flex align-items-center">
                                         <h5 class="mb-0">Zadaci kreirani za {{ sutra | date('d.m.Y') }}</h5>
                                     </div>
-                                    <div class="table-responsive card">
+                                    <div class="card">
                                         <table class="table table-hover table-bordered table_morecondensed">
                                             <thead class="bg-light">
                                             <tr>
@@ -740,7 +740,7 @@
                                         <div class="card-header d-flex align-items-center">
                                             <h5 class="mb-0">Interni zadaci kreirani za {{ sutra | date('d.m.Y') }}</h5>
                                         </div>
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-hover table-bordered table_morecondensed">
                                                 <thead class="bg-light">
                                                 <tr>
@@ -807,7 +807,7 @@
 {#                                                                            </a>#}
 {#                                                                        </div>#}
 {#                                </div>#}
-{#                                <div class="table-responsive card">#}
+{#                                <div class="card">#}
 {#                                    <table class="table table-hover table-bordered table_morecondensed">#}
 {#                                        <thead class="bg-light">#}
 {#                                        <tr>#}
@@ -859,7 +859,7 @@
 {#                                        </tbody>#}
 {#                                    </table>#}
 {#                                </div>#}
-{#                                <div class="table-responsive card">#}
+{#                                <div class="card">#}
 {#                                    <table class="table table-hover table-bordered table_morecondensed">#}
 {#                                        <thead>#}
 {#                                        <tr class="table-light">#}
@@ -925,7 +925,7 @@
 {#                                            </div>#}
 {#                                        {% endif %}#}
 {#                                    </div>#}
-{#                                    <div class="table-responsive card">#}
+{#                                    <div class="card">#}
 {#                                        <table class="table table-hover table-bordered table_morecondensed">#}
 {#                                            <thead class="bg-light">#}
 {#                                            <tr>#}
@@ -977,7 +977,7 @@
 {#                                            </tbody>#}
 {#                                        </table>#}
 {#                                    </div>#}
-{#                                    <div class="table-responsive card">#}
+{#                                    <div class="card">#}
 {#                                        <table class="table table-hover table-bordered table_morecondensed">#}
 {#                                            <thead>#}
 {#                                            <tr class="table-light">#}
@@ -1168,7 +1168,7 @@
 {#                                            </div>#}
 {#                                        {% endif %}#}
 {#                                    </div>#}
-{#                                    <div class="table-responsive card">#}
+{#                                    <div class="card">#}
 {#                                        <table class="table table-hover table-bordered table_morecondensed">#}
 {#                                            <thead class="bg-light">#}
 {#                                            <tr>#}
@@ -1233,7 +1233,7 @@
 
         </div>
         <!-- /main content -->
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 

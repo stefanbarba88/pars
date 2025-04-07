@@ -1,8 +1,7 @@
 <!-- Left sidebar component -->
-<div class="sidebar sidebar-component sidebar-expand-lg sidebar-expand-sm sidebar-expand-md sidebar-expand-xl sidebar-expand-xxl sidebar-mobile-expanded bg-transparent shadow-none me-lg-3">
+<div class="sidebar sidebar-component sidebar-expand-lg sidebar-expand-sm sidebar-expand-md sidebar-expand-xl sidebar-expand-xxl bg-transparent shadow-none me-lg-3 d-none d-lg-block">
 
-
-    <!-- Sidebar content -->
+<!-- Sidebar content -->
     <div class="sidebar-content">
 
         <!-- Navigation -->
@@ -31,7 +30,7 @@
 {#                    <a href="{{ path('app_logout') }}" class="nav-link" data-bs-toggle="tab">#}
 {#                        <i class="ph-sign-out me-2"></i>Odjavite se#}
 {#                    </a>#}
-                    <a href="{{ path('app_user_settings_form', { id: user.id}) }}" class="nav-link">
+                    <a href="#" class="nav-link">
                         <i class="ph-lightbulb me-2"></i>Status
                         <span class="ms-auto">{{ user.badgeByStatus | raw }}</span>
                     </a>

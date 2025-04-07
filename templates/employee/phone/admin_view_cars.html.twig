@@ -30,24 +30,29 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
+{{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Zaduženo vozilo</h5>
+                                    <h5 class="mb-0">Zaduženo vozilo</h5>
                                         <div class="my-auto ms-auto">
-                                            {% if app.user == user%}
+                                            {% if app.user == user %}
                                                 {% if user.car is null %}
-                                                    <a href="{{ path('app_car_employee_reservation_form', {user:user.id}) }}" ><i class="ph-car"></i></a>
+                                                    <a href="{{ path('app_car_employee_reservation_form', {user:user.id}) }}" class="btn btn-primary"><i class="ph-car me-2"></i> Zadužite</a>
                                                 {% else %}
-                                                    <a href="{{ path('app_car_employee_expense_form', {id:lastReservation.car.id}) }}" ><i class="ph-money"></i></a>
-                                                    <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" ><i class="ph-image "></i></a>
-                                                    <a href="{{ path('app_car_employee_reservation_stop', {id:lastReservation.id}) }}" ><i class="ph-car"></i></a>
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-gear"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <a href="{{ path('app_car_employee_expense_form', {id:lastReservation.car.id}) }}" class="dropdown-item"><i class="ph-money me-2"></i> Trošak</a>
+                                                            <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="dropdown-item"><i class="ph-image me-2"></i> Slike</a>
+                                                            <a href="{{ path('app_car_employee_reservation_stop', {id:lastReservation.id}) }}" class="dropdown-item"><i class="ph-car-simple me-2"></i> Razdužite</a>
+                                                        </div>
+                                                    </div>
                                                 {% endif %}
                                             {% endif %}
                                         </div>
@@ -119,7 +124,7 @@
                             <h5 class="mb-0">Lista rezervacija</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -137,7 +142,7 @@
                                                         <td>
                                                             <div class="d-inline-flex align-items-center">
                                                                 <i class="ph-calendar me-2"></i>
-                                                                {{ reservation.created | date("d.m.Y")}}
+                                                                {{ reservation.created | date("d.m.Y.")}}
                                                             </div>
                                                         </td>
                                                         <td class="text-center">
@@ -149,7 +154,7 @@
                                                             {% if reservation.finished is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ reservation.finished | date("d.m.Y")}}
+                                                                    {{ reservation.finished | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -187,7 +192,7 @@
                             <h5 class="mb-0">Lista troškova</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -213,7 +218,7 @@
                                                             {% if expense.date is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ expense.date | date("d.m.Y")}}
+                                                                    {{ expense.date | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -227,28 +232,8 @@
                                                                     <a href="{{ path('app_car_employee_expense_view', { id: expense.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                                     {% if app.user == user%}
                                                                         <a href="{{ path('app_car_employee_expense_edit', { id: expense.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
-                                                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_expense{{ expense.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
+                                                                        <a href="{{ path('app_car_expense_delete', {id: expense.id} ) }}" class="dropdown-item"><i class="ph-x me-2"></i> Obrišite</a>
                                                                     {% endif %}
-                                                                </div>
-
-                                                                <div id="modal_delete_expense{{ expense.id }}" class="modal fade" tabindex="-1">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content">
-                                                                            <div class="modal-header bg-danger text-white border-0">
-                                                                                <h6 class="modal-title">Potvrda</h6>
-                                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                            </div>
-
-                                                                            <div class="modal-body">
-                                                                                <p>Da li ste sigurni da želite da obrišete ovaj trošak?</p>
-                                                                            </div>
-
-                                                                            <div class="modal-footer">
-                                                                                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Odustanite</button>
-                                                                                <a href="{{ path('app_car_expense_delete', {id: expense.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -287,7 +272,7 @@
 
         </div>
         <!-- /main content -->
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
 
     </div>
     {% include 'includes/notification.html.twig' %}

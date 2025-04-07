@@ -33,7 +33,7 @@
                                                 </span></h5>
                             {% if not is_granted('ROLE_EMPLOYEE') %}
                                 <div class="my-auto ms-auto">
-                                    <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                    <a href="{{ path('app_project_form') }}" class="btn btn-primary"><i class="ph-plus"></i></a>
                                 </div>
                             {% endif %}
                         </div>
@@ -175,7 +175,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

@@ -101,7 +101,7 @@
                                                         <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                     {% endif %}
                                                     {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.task.isDeleted and task.task.createdBy == app.user %}
-                                                        <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
+                                                        <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zaposlene</a>
                                                     {% endif %}
                                                     {% if not task.task.isDeleted and task.task.createdBy == app.user %}
                                                         <a href="{{ path('app_task_edit_info', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
@@ -110,7 +110,7 @@
                                                 {% else %}
                                                     <a href="{{ path('app_task_view', { id: task.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                     {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.task.isDeleted %}
-                                                        <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zadužene</a>
+                                                        <a href="{{ path('app_task_reassign', {id: task.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zaposlene</a>
                                                     {% endif %}
                                                     {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
                                                         <a href="#" data-bs-toggle="modal" data-bs-target="#modal_close_task{{ task.task.id }}" class="dropdown-item"><i class="ph-x me-2"></i> Zatvorite</a>
@@ -202,7 +202,7 @@
 {#                                    <td>#}
 {#                                        <div class="d-inline-flex align-items-center">#}
 {#                                            <i class="ph-calendar me-2"></i>#}
-{#                                            {{ task.created | date("d.m.Y")}}#}
+{#                                            {{ task.created | date("d.m.Y.")}}#}
 {#                                        </div>#}
 {#                                    </td>#}
 {#                                    <td>#}
@@ -244,7 +244,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

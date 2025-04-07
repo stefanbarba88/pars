@@ -1116,6 +1116,19 @@ class PlanRepository extends ServiceEntityRepository {
 
   }
 
+  public function countPlanRadaActive():int {
+    $company = $this->security->getUser()->getCompany();
+    $noPlan = $this->createQueryBuilder('c')
+      ->andWhere('c.status <> :final')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
+      ->setParameter('final', FastTaskData::FINAL)
+      ->getQuery()
+      ->getResult();
+
+    return count($noPlan);
+  }
+
 //    /**
 //     * @return Plan[] Returns an array of Plan objects
 //     */

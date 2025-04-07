@@ -105,20 +105,24 @@
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
+                                            <div class="col-4">Rok:</div>
+                                            <div class="col-8">
+                                                {% if ticket.deadline is not null %}
+                                                {{ ticket.deadline | date('d.m.Y') }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 ">
                                             <div class="col-4">Izmenjen:</div>
                                             <div class="col-8">{% if ticket.editBy is not null %}{{ ticket.editBy.fullName }}{% endif %}</div>
                                         </div>
-                                        <div class="row p-2">
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Status:</div>
                                             <div class="col-8">
                                                 {% if ticket.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
                                                     <span class="badge bg-secondary text-primary">Kreiran</span>
-                                                {% elseif ticket.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
-                                                    <span class="badge bg-yellow text-primary">U toku</span>
-                                                {% elseif ticket.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                {% else %}
                                                     <span class="badge bg-primary text-white">Završen</span>
-                                                {% elseif ticket.status == constant('App\\Classes\\Data\\InternTaskStatusData::KONVERTOVANO') %}
-                                                    <span class="badge bg-yellow text-primary">Konvertovan</span>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -219,7 +223,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

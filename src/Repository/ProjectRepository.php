@@ -356,6 +356,59 @@ class ProjectRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(Project::class)->find($id);
   }
 
+  public function getReportOther(array $data): array {
+    $dates = explode(' - ', $data['period']);
+
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+    $project = $this->getEntityManager()->getRepository(Project::class)->find($data['project']);
+
+    if (isset($data['category'])){
+      foreach ($data['category'] as $cat) {
+        $kategorija [] = $this->getEntityManager()->getRepository(Category::class)->findOneBy(['id' => $cat]);
+      }
+    } else {
+      $kategorija [] = 0;
+    }
+
+    if (isset($data['naplativ'])) {
+      $naplativ = $data['naplativ'];
+      return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProjectOther($start, $stop, $project, $kategorija, $naplativ);
+    }
+
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProjectOther($start, $stop, $project, $kategorija);
+  }
+
+  public function getDaysRemainingProject(Project $project): array {
+    $poruka = '';
+    $klasa = '';
+    $now = new DateTimeImmutable();
+    $now->setTime(0,0);
+
+    if (!is_null($project->getDeadline())) {
+      $contractEndDate = $project->getDeadline();
+      // Izračunavanje razlike između trenutnog datuma i datuma kraja ugovora
+      $days = (int) $now->diff($contractEndDate)->format('%R%a');
+
+      if ($days > 0 && $days < 15) {
+        $poruka = 'Rok za završetak projekta ističe za ' . $days . ' dana.';
+        $klasa = 'bg-info bg-opacity-50';
+      } elseif ($days == 0) {
+        $poruka = 'Rok za završetak projekta ističe danas.';
+        $klasa = 'bg-warning bg-opacity-50';
+      } elseif ($days < 0) {
+        $poruka = 'Rok za završetak projekta je istekao pre ' . abs($days) . ' dana.';
+        $klasa = 'bg-danger bg-opacity-50';
+      }
+    }
+
+    return [
+      'klasa' => $klasa,
+      'poruka' => $poruka
+    ];
+  }
+
   public function getReport(array $data): array {
     $dates = explode(' - ', $data['period']);
 
@@ -578,6 +631,32 @@ class ProjectRepository extends ServiceEntityRepository {
   }
 
   public function processMonthlyTasks(Project $project): array {
+
+    $zadaci = [];
+    $currentYear = date('Y');
+    $currentMonth = date('m');
+
+    for ($month = 1; $month <= $currentMonth; $month++) {
+      $startOfMonth = new DateTimeImmutable("$currentYear-$month-01");
+      $endOfMonth = new DateTimeImmutable("$currentYear-$month-" . date('t', strtotime("$currentYear-$month-01")));
+      $tasks = $this->getEntityManager()->getRepository(Task::class)->getTasksByDateAndProjectByCategory($startOfMonth, $endOfMonth, $project);
+      $zadaci[] = $tasks;
+    }
+
+    $sviZadaci = [];
+    $teren = [];
+
+    foreach ($zadaci as $zadatak) {
+      $sviZadaci[] = $zadatak['total'];
+      $teren[] = $zadatak['teren'];
+      $kuca[] = $zadatak['kuca'];
+      $kancelarija[] = $zadatak['kancelarija'];
+    }
+
+    return [$sviZadaci, $teren, $kuca, $kancelarija];
+
+  }
+  public function processMonthlyTasksIntern(Project $project): array {
 
     $zadaci = [];
     $currentYear = date('Y');

@@ -30,10 +30,9 @@ class CommentController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
     $korisnik = $this->getUser();
 
-    $comments = $this->em->getRepository(Comment::class)->getCommentsByUserPaginator($korisnik);
+    $comments = $this->em->getRepository(Comment::class)->getCommentsByUserPaginator($korisnik, null);
 
     $pagination = $paginator->paginate(
       $comments, /* query NOT result */
@@ -57,7 +56,10 @@ class CommentController extends AbstractController {
   public function form(Request $request, Comment $comment, Task $task)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getCompany() != $comment->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $comment->setUser($this->getUser());
     $form = $this->createForm(CommentFormType::class, $comment, ['attr' => ['action' => $this->generateUrl('app_comment_form', ['task' => $task->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -92,7 +94,10 @@ class CommentController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getCompany() != $comment->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $comment->setUser($this->getUser());
     $form = $this->createForm(CommentFormType::class, $comment, ['attr' => ['action' => $this->generateUrl('app_comment_employee_form', ['task' => $task->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -124,7 +129,10 @@ class CommentController extends AbstractController {
   public function edit(Request $request, Comment $comment)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getCompany() != $comment->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $form = $this->createForm(CommentFormType::class, $comment, ['attr' => ['action' => $this->generateUrl('app_comment_edit', ['id' => $comment->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -167,6 +175,10 @@ class CommentController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getCompany() != $comment->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $comment->setIsSuspended(true);
     $this->em->getRepository(Comment::class)->save($comment);
 
@@ -188,6 +200,10 @@ class CommentController extends AbstractController {
   public function deleteAdmin(Comment $comment)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getCompany() != $comment->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $comment->setIsSuspended(true);
     $this->em->getRepository(Comment::class)->save($comment);
@@ -212,14 +228,14 @@ class CommentController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getCompany() != $comment->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['comment'] = $comment;
 
     return $this->render('comment/view.html.twig', $args);
   }
-
-
-
-
 
   #[Route('/form-intern/{task}', name: 'app_comment_form_int')]
   #[Entity('task', expr: 'repository.find(task)')]
@@ -229,7 +245,10 @@ class CommentController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getCompany() != $comment->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $comment->setUser($this->getUser());
     $form = $this->createForm(CommentFormType::class, $comment, ['attr' => ['action' => $this->generateUrl('app_comment_form_int', ['task' => $task->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -266,7 +285,10 @@ class CommentController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getCompany() != $comment->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $comment->setUser($this->getUser());
     $form = $this->createForm(CommentFormType::class, $comment, ['attr' => ['action' => $this->generateUrl('app_comment_employee_form_int', ['task' => $task->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -300,7 +322,10 @@ class CommentController extends AbstractController {
   public function editInt(Request $request, Comment $comment, MailService $mailService)    : Response { if (!$this->isGranted('ROLE_USER')) {
     return $this->redirect($this->generateUrl('app_login'));
   }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getCompany() != $comment->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $form = $this->createForm(CommentFormType::class, $comment, ['attr' => ['action' => $this->generateUrl('app_comment_edit_int', ['id' => $comment->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -341,6 +366,10 @@ class CommentController extends AbstractController {
   public function deleteInt(Comment $comment)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getCompany() != $comment->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $comment->setIsSuspended(true);
     $this->em->getRepository(Comment::class)->save($comment);

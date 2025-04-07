@@ -28,10 +28,17 @@
 
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
-
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
+                                {% set taskDays = getDaysRemainingChecklist(checklist) %}
+                                {% if checklist.status != constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                    {% if taskDays.poruka is not empty %}
+                                        <div class="alert alert-danger fade show">
+                                            {{ taskDays.poruka }}
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
                                 <div class="card">
                                     <div class="card-header d-flex align-items-center">
                                         <h5 class="mb-0">Zadatak</h5>
@@ -120,13 +127,14 @@
                                             {% endif %}
                                         </div>
                                     </div>
+
                                     <div class="card-body">
                                         <div class="row p-2">
                                             <div class="col-4">Zadatak:</div>
                                             <div class="col-8">{{ checklist.task }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Zaduženi:</div>
+                                            <div class="col-4">Zaposleni:</div>
                                             <div class="col-8">
                                                 {{ checklist.user.fullName }}
                                             </div>
@@ -160,15 +168,26 @@
                                                 {% endif %}
                                             </div>
                                         </div>
-                                        <div class="row p-2">
+                                        <div class="row p-2 ">
+                                            <div class="col-4">Rok:</div>
+                                            <div class="col-8">
+                                                {% if checklist.deadline is not null %}
+                                                    {{ checklist.deadline | date('d.m.Y') }}
+                                                {% endif %}
+                                                {% if taskDays.poruka is not empty %}
+                                                    <i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ taskDays.poruka }}" data-bs-original-title="{{ taskDays.poruka }}"></i>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Projekat:</div>
                                             <div class="col-8">{{ checklist.project.title }}</div>
                                         </div>
-                                        <div class="row p-2 bg-light">
+                                        <div class="row p-2 ">
                                             <div class="col-4">Kategorija:</div>
                                             <div class="col-8">{{ checklist.category.title }}</div>
                                         </div>
-                                        <div class="row p-2 ">
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Status:</div>
                                             <div class="col-8">
                                                 {% if checklist.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
@@ -408,7 +427,7 @@
 {#                                            <div class="col-8">{{ checklist.task }}</div>#}
 {#                                        </div>#}
 {#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Zaduženi:</div>#}
+{#                                            <div class="col-4">Zaposleni:</div>#}
 {#                                            <div class="col-8">#}
 {#                                               {{ checklist.user.fullName }}#}
 {#                                            </div>#}
@@ -625,7 +644,6 @@
         </div>
         <!-- /main content -->
 
-        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
     </div>
     {% include 'includes/notification.html.twig' %}
     {% if comments is not empty %}

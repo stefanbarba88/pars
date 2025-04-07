@@ -51,7 +51,7 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ dost.datum | date("d.m.Y")}}
+                                                    {{ dost.datum | date("d.m.Y.")}}
                                                 </div>
                                             </td>
                                             <td class="text-center">
@@ -161,7 +161,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -182,67 +182,86 @@
 {% endblock includeJavascript %}
 {% block footerJavascript %}
     <script type="text/javascript">
-        const eventColors =
-            [
-                {% for event in dostupnosti %}
-                    {% if event.id == '' %}
-                        {
-                            {#title: '{{ event.title }}',#}
-                            start: '{{ event.start }}',
-                            backgroundColor: '{{ event.color }}',
-                            text: '{{ event.text }}',
-                            display: 'background',
-                        },
-                    {% else %}
-                        {
-                            title: '{{ event.title }}',
-                            start: '{{ event.start }}',
-                            color: '{{ event.color }}',
-                            textColor: '{{ event.text }}',
-                        },
-                    {% endif %}
-                {% endfor %}
-            ]
         const initialLocaleCode = 'sr';
+
         // Define element
         const calendarEventColorsElement = document.querySelector('.fullcalendar-event-colors');
 
-        // Initialize
-        if(calendarEventColorsElement) {
+        if (calendarEventColorsElement) {
             const calendarEventColorsInit = new FullCalendar.Calendar(calendarEventColorsElement, {
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridDay'
+                    right: 'dayGridMonth,dayGridWeek,timeGridDay'
                 },
-                validRange: {
-                    start: '{{ "now"|date("Y") }}-{{ "now"|date("m") }}-01'
-                },
-
                 initialView: 'dayGridMonth',
                 locale: initialLocaleCode,
                 initialDate: new Date(),
-                navLinks: true, // can click day/week names to navigate views
-                businessHours: true, // display business hours
-                // editable: true,
-                // selectable: true,
-                // editable: true,
+                navLinks: true,
+                businessHours: true,
                 direction: document.dir == 'rtl' ? 'rtl' : 'ltr',
-                events: eventColors,
-                dayMaxEvents: true
+                dayMaxEvents: 0,
+                // AJAX učitavanje događaja
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    $.ajax({
+                        url: '{{ path('ucitaj_dogadjaje') }}', // Ruta koja vraća JSON podatke
+                        method: 'GET',
+                        dataType: 'json',
+                        data: {
+                            start: fetchInfo.startStr,
+                            end: fetchInfo.endStr
+                        },
+                        success: function(response) {
+                            successCallback(response);
+                        },
+                        error: function() {
+                            failureCallback();
+                        }
+                    });
+                },
+
+                eventContent: function(info) {
+                    const eventColor = info.event.backgroundColor || '#000'; // Boja eventa
+                    const eventTextColor = info.event.textColor || '#000'; // Boja teksta eventa
+                    const eventVreme = info.event.extendedProps.vreme || ''; // Provera da li postoji vreme u extendedProps
+
+                    // Ako je događaj samo za pozadinu, ne prikazuje se standardni sadržaj
+                    if (info.event.display === 'background') {
+                        return {
+                            html: `<span></span>`
+                        };
+                    } else {
+                        // Ako postoji vreme, prikaži i vreme uz naslov
+                        if (eventVreme) {
+                            return {
+                                html: `<div style="color: ${eventTextColor}; background-color: ${eventColor}; font-size: 10px;">${info.event.title} (${eventVreme})</div>`
+
+                            };
+                        } else {
+                            // Ako nema vremena, samo prikaži naslov
+                            return {
+                                html: `<div style="color: ${eventTextColor}; background-color: ${eventColor}; font-size: 10px;">${info.event.title}</div>`
+                            };
+                        }
+                    }
+                },
             });
 
             // Init
             calendarEventColorsInit.render();
 
+            // Resize event listener za update kada se menja veličina ekrana
+            window.addEventListener('resize', function() {
+                calendarEventColorsInit.refetchEvents();
+            });
+
             // Resize calendar when sidebar toggler is clicked
             document.querySelectorAll('.sidebar-control').forEach(function(sidebarToggle) {
                 sidebarToggle.addEventListener('click', function() {
                     calendarEventColorsInit.updateSize();
-                })
+                });
             });
         }
-        $(".fc-daygrid-day-bg .fc-event-title").addClass("pozadinkiEvent");
 
     </script>
 {% endblock footerJavascript %}

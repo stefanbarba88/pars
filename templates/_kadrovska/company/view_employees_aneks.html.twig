@@ -148,7 +148,7 @@
                                                             {% if calendar.start is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ calendar.start | date("d.m.Y")}}
+                                                                    {{ calendar.start | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -156,7 +156,7 @@
                                                             {% if calendar.finish is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ calendar.finish | date("d.m.Y")}}
+                                                                    {{ calendar.finish | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>

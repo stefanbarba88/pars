@@ -50,17 +50,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                    {#                                    <div class="col-lg-3">#}
-                                    {#                                        <div class="mb-3">#}
-                                    {#                                            <label class="form-label required" for="pozicija">Pozicija :</label>#}
-                                    {#                                            <select id="pozicija" name="pozicija" class="form-control select">#}
-                                    {#                                                <option value="">--Izaberite poziciju--</option>#}
-                                    {#                                                {% for pos in positions %}#}
-                                    {#                                                    <option value="{{ pos.id }}">{{ pos.title }}</option>#}
-                                    {#                                                {% endfor %}#}
-                                    {#                                            </select>#}
-                                    {#                                        </div>#}
-                                    {#                                    </div>#}
+                            {#                                    <div class="col-lg-3">#}
+                            {#                                        <div class="mb-3">#}
+                            {#                                            <label class="form-label required" for="pozicija">Pozicija :</label>#}
+                            {#                                            <select id="pozicija" name="pozicija" class="form-control select">#}
+                            {#                                                <option value="">--Izaberite poziciju--</option>#}
+                            {#                                                {% for pos in positions %}#}
+                            {#                                                    <option value="{{ pos.id }}">{{ pos.title }}</option>#}
+                            {#                                                {% endfor %}#}
+                            {#                                            </select>#}
+                            {#                                        </div>#}
+                            {#                                    </div>#}
                                     <div class="col-lg-4">
                                         <div class="mb-3">
                                             <label class="form-label" for="vrsta">Vrsta korisnika:</label>
@@ -78,13 +78,13 @@
                                                         {% endif %}
                                                     {% endfor %}
                                                 {% endif %}
-                                                {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER')  %}
-                                                    {% for vrsta in vrste %}
-                                                        {% if vrsta.id > 3 %}
-                                                            <option value="{{ vrsta.id }}">{{ vrsta.title }}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% endif %}
+{#                                                {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER')  %}#}
+{#                                                    {% for vrsta in vrste %}#}
+{#                                                        {% if vrsta.id > 3 %}#}
+{#                                                            <option value="{{ vrsta.id }}">{{ vrsta.title }}</option>#}
+{#                                                        {% endif %}#}
+{#                                                    {% endfor %}#}
+{#                                                {% endif %}#}
                                             </select>
                                         </div>
                                     </div>
@@ -97,8 +97,8 @@
                             </div>
                         </form>
                         <div class="card-body">
+                            <div class="card">
 
-                            <div class="table-responsive card">
                                 <table class="table table-bordered table-hover table-responsive table-sm">
                                     <thead class="bg-light text-primary">
                                     <tr>
@@ -115,6 +115,7 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
+                                        <th>Admin prava</th>
                                         <th>Status</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
@@ -129,6 +130,11 @@
                                             <td><div class="fw-semibold"><a href="{{ path('app_user_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
                                             <td>
                                                 {{ user.getBadgeByUserType | raw }}
+                                            </td>
+                                            <td>
+                                                {% if user.userType == 1 or user.userType == 2 or user.isAdmin %}
+                                                    <span class="badge bg-primary text-white">Administrator</span>
+                                                {% endif %}
                                             </td>
                                             <td>
                                                 {{ user.getBadgeByStatus | raw }}
@@ -164,6 +170,7 @@
 
                                     </tbody>
                                 </table>
+
                             </div>
                         </div>
 
@@ -187,7 +194,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

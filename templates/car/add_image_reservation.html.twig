@@ -20,7 +20,7 @@
                             </h4>
                         </div>
                     </div>
-                    {% if not is_granted('ROLE_EMPLOYEE') %}
+                    {% if not is_granted('ROLE_EMPLOYEE') or app.user.isAdmin%}
                         {{ render(controller('App\\Controller\\WidgetController::carProfilNavigation', { car: car } )) }}
                     {% endif %}
                 </div>
@@ -51,7 +51,7 @@
                                     <div class="mb-3">
                                         {{ form_label(form.image, 'Slike:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.image, {attr: { class: 'form-control file-input required' }}) }}
-                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
+                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 5MB.</span>
                                     </div>
                             </div>
                             <div class="text-end">
@@ -73,7 +73,6 @@
                 <!-- /footer -->
         </div>
 
-        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #} #}
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

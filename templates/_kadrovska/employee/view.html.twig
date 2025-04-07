@@ -106,7 +106,7 @@
                                             <div class="col-8">
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ calendar.start | date("d.m.Y")}}
+                                                    {{ calendar.start | date("d.m.Y.")}}
                                                 </div>
                                             </div>
                                         </div>
@@ -115,7 +115,7 @@
                                             <div class="col-8">
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ calendar.finish | date("d.m.Y")}}
+                                                    {{ calendar.finish | date("d.m.Y.")}}
                                                 </div>
                                             </div>
                                         </div>
@@ -155,7 +155,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

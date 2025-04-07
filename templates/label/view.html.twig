@@ -70,7 +70,7 @@
                                             </div>
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Vreme:</div>
-                                                <div class="col-8">{{ label.updated | date("d.m.Y") }} u {{ label.updated | date("H:i:s") }}</div>
+                                                <div class="col-8">{{ label.updated | date("d.m.Y.") }} u {{ label.updated | date("H:i:s") }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -95,7 +95,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

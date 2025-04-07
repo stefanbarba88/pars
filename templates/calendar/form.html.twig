@@ -105,11 +105,35 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row dodatno">
+                                <div class="col-lg-3">
+                                    <div class="mb-3">
+                                        {{ form_label(form.flexible, 'Fleksibilan:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.flexible, {attr: { class: 'form-control select dan1' }}) }}
+                                        <span class="form-text">Izabrati da li drugi termin dolazi u obzir i ako dolazi u napomeni navesti koji.</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="mb-3">
+                                        {{ form_label(form.part, 'Parcijalno:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.part, {attr: { class: 'form-control select dan1' }}) }}
+                                        <span class="form-text">Izabrati da li je potreban deo dana ili ceo dan.</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 dodatno1">
+                                    <div class="mb-3">
+                                        {{ form_label(form.vreme, 'Period:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.vreme, {attr: { class: 'form-control daterange-locale-sr-stopwatch', autocomplete: 'off' }}) }}
+                                        <span class="form-text">Uneti period nedostupnosti.</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="mb-3">
-                                        {{ form_label(form.note, 'Napomena:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.note, 'Napomena:', {'label_attr': {'class': 'form-label', 'id': 'napomena-id'}}) }}
                                         {{ form_widget(form.note, {attr: { class: 'form-control' }}) }}
+                                        <span class="form-text dan">Prilikom slobodnog dana potrebno je navesti razlog.</span>
                                     </div>
                                 </div>
                             </div>
@@ -134,7 +158,7 @@
 
         </div>
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -180,52 +204,54 @@
 {% endblock includeJavascript %}
 {% block footerJavascript %}
 
-<script>
+    <script>
 
         $(document).ready(function() {
-        // Date format
-        const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom1');
-        const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom2');
+            // Date format
+            const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom1');
+            const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom2');
+            const dpDateCustomFormatElement3 = document.querySelector('.daterange-locale-sr-stopwatch');
 
-        let dpDateCustomFormat1;
-        let dpDateCustomFormat2;
+            let dpDateCustomFormat1;
+            let dpDateCustomFormat2;
+            let dpDateCustomFormat3;
 
-        if (dpDateCustomFormatElement1) {
-        const today = new Date();
-        dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
-        container: '.content-inner',
-        buttonClass: 'btn',
-        prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
-        nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
-        format: 'dd.mm.yyyy',
-        todayBtn: true,
-        weekStart: 1,
-        minDate: today,
-        daysOfWeekHighlighted: [0, 6],
-        language: 'sr-latn'
-    });
-    }
+            if (dpDateCustomFormatElement1) {
+                const today = new Date();
+                dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
+                    container: '.content-inner',
+                    buttonClass: 'btn',
+                    prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                    nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                    format: 'dd.mm.yyyy',
+                    todayBtn: true,
+                    weekStart: 1,
+                    minDate: today,
+                    daysOfWeekHighlighted: [0, 6],
+                    language: 'sr-latn'
+                });
+            }
 
-        if (dpDateCustomFormatElement2) {
-        const today = new Date();
-        dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
-        container: '.content-inner',
-        buttonClass: 'btn',
-        prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
-        nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
-        format: 'dd.mm.yyyy',
-        todayBtn: true,
-        weekStart: 1,
-        minDate: today,
-        daysOfWeekHighlighted: [0, 6],
-        language: 'sr-latn'
-    });
-    }
+            if (dpDateCustomFormatElement2) {
+                const today = new Date();
+                dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
+                    container: '.content-inner',
+                    buttonClass: 'btn',
+                    prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                    nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                    format: 'dd.mm.yyyy',
+                    todayBtn: true,
+                    weekStart: 1,
+                    minDate: today,
+                    daysOfWeekHighlighted: [0, 6],
+                    language: 'sr-latn'
+                });
+            }
 
-        function parseDate(input) {
-        const parts = input.split('.');
-        return new Date(parts[2], parts[1] - 1, parts[0]); // format dd.mm.yyyy
-    }
+            function parseDate(input) {
+                const parts = input.split('.');
+                return new Date(parts[2], parts[1] - 1, parts[0]); // format dd.mm.yyyy
+            }
 
 
             function updateFinishMinDate() {
@@ -240,14 +266,112 @@
                 }
             }
 
-        $('#calendar_form_start').on('changeDate', function() {
-        updateFinishMinDate();
+            $('#calendar_form_start').on('changeDate', function() {
+                updateFinishMinDate();
 
-    });
+            });
 
-    });
+            function updateNoteField() {
+                var selectedType = $('#calendar_form_type').val();
+
+                if (selectedType == '1') {
+                    // Dodaj required atribut i promeni labelu
+                    $('#calendar_form_note').attr('required', true);
+                    $('.dan1').addClass('required', true);
+                    $('.dodatno').removeClass('d-none');
+
+                    $('#napomena-id').text('Napomena:*');
 
 
-</script>
+
+                } else {
+                    // Ukloni required atribut i promeni labelu
+                    $('#calendar_form_note').removeAttr('required');
+                    $('.dan1').removeClass('required');
+                    $('.dodatno').addClass('d-none');
+
+                    $('#napomena-id').text('Napomena:');
+
+                }
+            }
+
+            // Prati promene u izboru tipa
+            $('#calendar_form_type').change(function() {
+                updateNoteField();
+            });
+
+            // Primeni promene pri učitavanju strane
+            updateNoteField();
+
+            function updateVremeField() {
+                var selectedType = $('#calendar_form_part').val();
+
+                if (selectedType == '1') {
+                    // Dodaj required atribut i promeni labelu
+                    $('#calendar_form_vreme').attr('required', true);
+                    $('.dodatno1').removeClass('d-none');
+
+                } else {
+                    // Ukloni required atribut i promeni labelu
+                    $('#calendar_form_vreme').removeAttr('required');
+                    $('.dodatno1').addClass('d-none');
+
+                }
+            }
+
+            // Prati promene u izboru tipa
+            $('#calendar_form_part').change(function() {
+                updateVremeField();
+            });
+            function updateVremeMinMax() {
+                const startDateStr = $('#calendar_form_start').val();
+                const stopDateStr = $('#calendar_form_finish').val();
+
+                if (startDateStr && stopDateStr) {
+                    const minDate = moment(startDateStr, 'DD.MM.YYYY');
+                    const maxDate = moment(stopDateStr, 'DD.MM.YYYY').endOf('day'); // Kraj dana (23:59:59)
+
+                    $('#calendar_form_vreme').daterangepicker({
+                        parentEl: '.content-inner',
+                        timePicker: true,
+                        timePicker24Hour: true,
+                        timePickerIncrement: 10,
+                        startDate: moment().startOf('hour'),
+                        endDate: moment().startOf('hour').add(1, 'hour'),
+
+                        locale: {
+                            applyLabel: 'Izaberite',
+                            cancelLabel: 'Odustanite',
+                            startLabel: 'Početni datum',
+                            endLabel: 'Krajnji datum',
+                            customRangeLabel: 'Izaberite vremenski period',
+                            daysOfWeek: ['N', 'Po', 'U', 'Sr', 'Č', 'Pe','Su'],
+                            monthNames: ['Januar', 'Februar', 'Mart', 'April', 'Maj', 'Jun', 'Jul', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'],
+                            firstDay: 1,
+                            format: 'DD.MM.YYYY HH:mm'
+                        },
+
+                        minDate: minDate,
+                        maxDate: maxDate
+                    });
+
+                    // Praznimo vrednost polja kada se promeni datum
+                    $('#calendar_form_vreme').val('');
+                }
+            }
+
+// Pozivanje funkcije kada se izaberu datumi
+            $('#calendar_form_start, #calendar_form_finish').on('changeDate', function() {
+                updateVremeMinMax();
+            });
+            // Primeni promene pri učitavanju strane
+            updateVremeField();
+            updateVremeMinMax();
+
+
+        });
+
+
+    </script>
 
 {% endblock footerJavascript %}

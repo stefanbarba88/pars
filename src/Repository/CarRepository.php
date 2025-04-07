@@ -7,6 +7,7 @@ use App\Entity\CarHistory;
 use App\Entity\CarReservation;
 use App\Entity\Company;
 use App\Entity\FastTask;
+use App\Entity\Task;
 use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -187,7 +188,38 @@ class CarRepository extends ServiceEntityRepository {
 
     return $qb;
   }
+  public function getDaysRemainingCar(Car $car): array {
+    $poruka = '';
+    $klasa = '';
+    $klasa1 = '';
+    $now = new DateTimeImmutable();
+    $now->setTime(0,0);
 
+    if (!is_null($car->getDatumNaredneRegistracije())) {
+      $contractEndDate = $car->getDatumNaredneRegistracije();
+      // Izračunavanje razlike između trenutnog datuma i datuma kraja ugovora
+      $days = (int) $now->diff($contractEndDate)->format('%R%a');
+
+      if ($days > 0 && $days < 7) {
+        $poruka = 'Registracija vozila ističe za ' . $days . ' dana.';
+        $klasa = 'bg-info bg-opacity-50';
+      } elseif ($days == 0) {
+        $poruka = 'Registracija vozila ističe danas.';
+        $klasa = 'bg-warning bg-opacity-50';
+        $klasa1 = 'bg-warning bg-opacity-10';
+      } elseif ($days < 0) {
+        $poruka = 'registracija vozila je istekla pre ' . abs($days) . ' dana.';
+        $klasa = 'bg-danger bg-opacity-50';
+        $klasa1 = 'bg-danger bg-opacity-10';
+      }
+    }
+
+    return [
+      'klasa' => $klasa,
+      'poruka' => $poruka,
+      'klasa1' => $klasa1
+    ];
+  }
 //    /**
 //     * @return Car[] Returns an array of Car objects
 //     */

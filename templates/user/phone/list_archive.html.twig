@@ -85,13 +85,13 @@
                                                                         {% endif %}
                                                                     {% endfor %}
                                                                 {% endif %}
-                                                                {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER')  %}
-                                                                    {% for vrsta in vrste %}
-                                                                        {% if vrsta.id > 3 %}
-                                                                            <option value="{{ vrsta.id }}">{{ vrsta.title }}</option>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                {% endif %}
+{#                                                                {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_MANAGER')  %}#}
+{#                                                                    {% for vrsta in vrste %}#}
+{#                                                                        {% if vrsta.id > 3 %}#}
+{#                                                                            <option value="{{ vrsta.id }}">{{ vrsta.title }}</option>#}
+{#                                                                        {% endif %}#}
+{#                                                                    {% endfor %}#}
+{#                                                                {% endif %}#}
                                                             </select>
                                                         </div>
                                                     </div>
@@ -110,8 +110,8 @@
 
 
                         <div class="card-body">
+                            <div class="card">
 
-                            <div class="table-responsive card">
                                 <table class="table table-bordered table-hover table-responsive table_morecondensed ">
                                     <thead class="bg-light text-primary">
                                     <tr>
@@ -170,6 +170,7 @@
 
                                     </tbody>
                                 </table>
+
                             </div>
                         </div>
 
@@ -193,7 +194,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

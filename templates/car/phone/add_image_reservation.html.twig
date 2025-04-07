@@ -56,11 +56,11 @@
                                             <div class="mb-3">
                                                 {{ form_label(form.image, 'Slike:*', {'label_attr': {'class': 'form-label'}}) }}
                                                 {{ form_widget(form.image, {attr: { class: 'form-control file-input required' }}) }}
-                                                <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
+                                                <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 5MB.</span>
                                             </div>
                                         </div>
                                         <div class="text-end">
-                                            <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                            <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk"></i></button>
                                         </div>
                                     </div>
                                     {{ form_end(form) }}
@@ -82,7 +82,7 @@
                 <!-- /footer -->
         </div>
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

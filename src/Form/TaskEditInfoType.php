@@ -122,6 +122,48 @@ TaskEditInfoType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
+
+      ->add('priority', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'placeholder' => '--Izaberite nivo prioriteta--',
+        'choices' => PrioritetData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('isExpenses', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('isFree', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('isSeparate', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('deadline', DateType::class, [
+        'required' => false,
+        'widget' => 'single_text',
+        'format' => 'dd.MM.yyyy',
+        'input' => 'datetime_immutable',
+        'html5' => false,
+        'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
+      ])
     ;
   }
 

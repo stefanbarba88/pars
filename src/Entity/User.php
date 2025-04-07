@@ -105,8 +105,8 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\Column(name: 'nivo_obrazovanja', length: 2, nullable: true)]
   private ?int $nivoObrazovanja = null;
 
-  #[ORM\Column(length: 1, nullable: true)]
-  private ?int $neradniDan = null;
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $neradniDan = null;
 
   #[ORM\Column(name: 'car', length: 3, nullable: true)]
   private ?int $car = null;
@@ -125,6 +125,9 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 
   #[ORM\Column]
   private bool $isSuspended = false;
+
+  #[ORM\Column]
+  private bool $isAdmin = false;
 
   #[ORM\Column]
   private bool $isKadrovska = false;
@@ -186,7 +189,8 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\ManyToMany(targetEntity: Client::class, mappedBy: 'contact')]
   private Collection $clients;
 
-
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: Pdf::class, cascade: ["persist", "remove"])]
+  private Collection $docs;
 
   #[ORM\OneToMany(mappedBy: 'driver', targetEntity: CarReservation::class)]
   private Collection $carReservations;
@@ -250,6 +254,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
 //    $this->timeTasks = new ArrayCollection();
 $this->addons = new ArrayCollection();
 $this->calendarkadrs = new ArrayCollection();
+    $this->docs = new ArrayCollection();
 
   }
 
@@ -724,7 +729,7 @@ $this->calendarkadrs = new ArrayCollection();
       'vozacki' => $this->getVozacki(),
 //      'slava' => $this->getSlava(),
       'isSuspended' => $this->isSuspended(),
-      'neradniDan' => $this->getNeradniDan(),
+
       'email' => $this->getEmail(),
       'image' => $this->getImage(),
 //      'projectType' => $this->getProjectType()
@@ -1140,19 +1145,18 @@ public function setVacation(Vacation $vacation): self
     return $this;
 }
 
-  /**
-   * @return int|null
-   */
-  public function getNeradniDan(): ?int {
-    return $this->neradniDan;
+
+  public function getNeradniDan(): ?array {
+    return json_decode($this->neradniDan, true);
   }
 
-  /**
-   * @param int|null $neradniDan
-   */
-  public function setNeradniDan(?int $neradniDan): void {
-    $this->neradniDan = $neradniDan;
+
+public function setNeradniDan(?array $neradniDan): self {
+    $this->neradniDan = json_encode($neradniDan);
+    return $this;
   }
+
+
 
   /**
    * @return bool
@@ -1324,7 +1328,49 @@ public function setVacation(Vacation $vacation): self
       return $this;
   }
 
+  /**
+   * @return Collection<int, Pdf>
+   */
+  public function getDocs(): Collection
+  {
+    return $this->docs;
+  }
 
+  public function addDoc(Pdf $doc): self
+  {
+    if (!$this->docs->contains($doc)) {
+      $this->docs->add($doc);
+      $doc->setUser($this);
+    }
+
+    return $this;
+  }
+
+  public function removeDoc(Pdf $doc): self
+  {
+    if ($this->docs->removeElement($doc)) {
+      // set the owning side to null (unless already changed)
+      if ($doc->getUser() === $this) {
+        $doc->setUser(null);
+      }
+    }
+
+    return $this;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isAdmin(): bool {
+    return $this->isAdmin;
+  }
+
+  /**
+   * @param bool $isAdmin
+   */
+  public function setIsAdmin(bool $isAdmin): void {
+    $this->isAdmin = $isAdmin;
+  }
 
 
 

@@ -92,7 +92,7 @@
 
                                     {% for tool in pagination %}
                                         <tr>
-                                            <td><a href="{{ path('app_tool_view', { id: tool.id}) }}" class="fw-semibold">{{ tool.title }}</td>
+                                            <td class="fw-semibold">{{ tool.title }}</td>
                                             <td>
                                                 {% if tool.isSuspended %}
                                                     <span class="badge bg-yellow text-primary">Deaktivirano</span>
@@ -100,31 +100,21 @@
                                                     <span class="badge bg-primary text-white">Aktivno</span>
                                                 {% endif %}
                                             </td>
-{#                                            <td class="text-center">#}
-{#                                                <div class="dropdown">#}
-{#                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">#}
-{#                                                        <i class="ph-gear"></i>#}
-{#                                                    </a>#}
-{#                                                    <div class="dropdown-menu dropdown-menu-end">#}
-{#                                                        <a href="{{ path('app_tool_view', { id: tool.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>#}
-{#                                                        {% if tool.isSuspended %}#}
-{#                                                            <a href="{{ path('app_tool_activate', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>#}
-{#                                                        {% else %}#}
-{#                                                            {% if tool.isReserved %}#}
-{#                                                                {% for res in tool.toolReservations %}#}
-{#                                                                    {% if res.finished is null%}#}
-{#                                                                        <a href="{{ path('app_tool_reservation_stop', { id: res.id, type:1}) }}" class="dropdown-item"><i class="ph-wrench me-2"></i> Razdužite</a>#}
-{#                                                                    {% endif %}#}
-{#                                                                {% endfor %}#}
-{#                                                            {% else %}#}
-{#                                                                <a href="{{ path('app_tool_reservation_form', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-wrench me-2"></i> Zadužite</a>#}
-{#                                                            {% endif %}#}
-{#                                                            <a href="{{ path('app_tool_form', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>#}
-{#                                                            <a href="{{ path('app_tool_activate', { id: tool.id, type:1}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>#}
-{#                                                        {% endif %}#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </td>#}
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        {% if tool.isSuspended %}
+                                                            <a href="{{ path('app_tool_type_activate', { id: tool.id}) }}" class="dropdown-item"><i class="ph-check-circle me-2"></i> Aktivirajte</a>
+                                                        {% else %}
+                                                            <a href="{{ path('app_tool_type_activate', { id: tool.id}) }}" class="dropdown-item"><i class="ph-minus-circle me-2"></i> Deaktivirajte</a>
+                                                        {% endif %}
+                                                        <a href="{{ path('app_tool_type_form', { id: tool.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                    </div>
+                                                </div>
+                                            </td>
                                         </tr>
                                     {% endfor %}
 
@@ -245,7 +235,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

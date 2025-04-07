@@ -38,12 +38,11 @@ class UserController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
       return $this->redirect($this->generateUrl('app_home'));
     }
 
     $args = [];
-
     $search = [];
 
     $search['ime'] = $request->query->get('ime');
@@ -78,7 +77,7 @@ class UserController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
       return $this->redirect($this->generateUrl('app_home'));
     }
 
@@ -119,8 +118,10 @@ class UserController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      return $this->redirect($this->generateUrl('app_home'));
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
 
     $args = [];
@@ -154,28 +155,47 @@ class UserController extends AbstractController {
   #[Route('/form/{id}', name: 'app_user_form', defaults: ['id' => 0])]
   #[Entity('usr', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, User $usr, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function form(Request $request, User $usr, UploadService $uploadService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      return $this->redirect($this->generateUrl('app_home'));
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if ($korisnik->getId() != $usr->getId()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
+      }
     }
-
     if ($korisnik->getCompany() != $usr->getCompany()) {
       return $this->redirect($this->generateUrl('app_home'));
     }
 
     $usr->setPlainUserType($this->getUser()->getUserType());
     $type = $request->query->getInt('type');
+
+    if ($type !== 0) {
+      if ($type == 1) {
+        $usr->setUserType(UserRolesData::ROLE_EMPLOYEE);
+      } else {
+        $usr->setUserType(UserRolesData::ROLE_CLIENT);
+      }
+    }
+
     $form = $this->createForm(UserRegistrationFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_form', ['id' => $usr->getId(), 'type' => $type])]]);
+
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
-
       if ($form->isSubmitted() && $form->isValid()) {
-
-
         $file = $request->files->all()['user_registration_form']['slika'];
+//        dd($request->request->all()['user_registration_form']['neradniDani']);
+        if (isset($request->request->all()['user_registration_form']['neradniDani'])) {
+          $usr->setNeradniDan($request->request->all()['user_registration_form']['neradniDani']);
+        }
+        if (isset($request->request->all()['user_registration_form']['isAdmin'])) {
+          $usr->setIsAdmin($request->request->all()['user_registration_form']['isAdmin']);
+        }
+
 
         if(is_null($file)) {
           $file = Avatar::getAvatar($this->getParameter('kernel.project_dir') . $usr->getAvatarUploadPath(), $usr);
@@ -192,15 +212,23 @@ class UserController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::REGISTRATION_USER_SUCCESS);
 
-        if ($type != 1) {
-          return $this->redirectToRoute('app_users');
+        if ($type == 1) {
+          return $this->redirectToRoute('app_employees');
         }
-        return $this->redirectToRoute('app_employees');
+        if ($type == 2) {
+          return $this->redirectToRoute('app_users_contact');
+        }
+        return $this->redirectToRoute('app_users');
 
       }
     }
     $args['form'] = $form->createView();
-
+    if ($type == 1) {
+      return $this->render('user/registration_employee.html.twig', $args);
+    }
+    if ($type == 2) {
+      return $this->render('user/registration_client.html.twig', $args);
+    }
     return $this->render('user/registration_form.html.twig', $args);
   }
 
@@ -211,15 +239,17 @@ class UserController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      if ($korisnik->getId() != $usr->getId()) {
-        return $this->redirect($this->generateUrl('app_home'));
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if ($korisnik->getId() != $usr->getId()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
       }
-
     }
     if ($korisnik->getCompany() != $usr->getCompany()) {
       return $this->redirect($this->generateUrl('app_home'));
     }
+
     $type = $request->query->getInt('type');
 
     $history = null;
@@ -239,6 +269,9 @@ class UserController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
+        if (isset($request->request->all()['user_registration_form']['neradniDani'])) {
+          $usr->setNeradniDan($request->request->all()['user_registration_form']['neradniDani']);
+        }
         $this->em->getRepository(User::class)->save($usr, $history);
 
         notyf()
@@ -267,15 +300,18 @@ class UserController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      if ($korisnik->getId() != $usr->getId()) {
-        return $this->redirect($this->generateUrl('app_home'));
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if ($korisnik->getId() != $usr->getId()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
       }
-
     }
     if ($korisnik->getCompany() != $usr->getCompany()) {
       return $this->redirect($this->generateUrl('app_home'));
     }
+
+
     $type = $request->query->getInt('type');
     $usr->setPlainUserType($this->getUser()->getUserType());
     $history = null;
@@ -296,6 +332,10 @@ class UserController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
+        if (isset($request->request->all()['user_edit_account_form']['isAdmin'])) {
+          $usr->setIsAdmin($request->request->all()['user_edit_account_form']['isAdmin']);
+        }
+
 
         $this->em->getRepository(User::class)->save($usr, $history);
 
@@ -320,15 +360,17 @@ class UserController extends AbstractController {
 
   #[Route('/edit-image/{id}', name: 'app_user_edit_image_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editImage(User $usr, Request $request, UploadService $uploadService)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function editImage(User $usr, Request $request, UploadService $uploadService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      if ($korisnik->getId() != $usr->getId()) {
-        return $this->redirect($this->generateUrl('app_home'));
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if ($korisnik->getId() != $usr->getId()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
       }
-
     }
     if ($korisnik->getCompany() != $usr->getCompany()) {
       return $this->redirect($this->generateUrl('app_home'));
@@ -389,9 +431,11 @@ class UserController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      if ($korisnik->getId() != $usr->getId()) {
-        return $this->redirect($this->generateUrl('app_home'));
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if ($korisnik->getId() != $usr->getId()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
       }
     }
     if ($korisnik->getCompany() != $usr->getCompany()) {
@@ -408,15 +452,15 @@ class UserController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      if ($korisnik->getId() != $usr->getId()) {
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
         return $this->redirect($this->generateUrl('app_home'));
       }
-
     }
     if ($korisnik->getCompany() != $usr->getCompany()) {
       return $this->redirect($this->generateUrl('app_home'));
     }
+
     $history = null;
     if($usr->getId()) {
       $history = $this->json($usr, Response::HTTP_OK, [], [
@@ -429,13 +473,15 @@ class UserController extends AbstractController {
     }
     $args['user'] = $usr;
 
-    $form = $this->createForm(UserSuspendedFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_settings_form', ['id' => $usr->getId()])]]);
+    $type = $request->query->getInt('type');
+
+    $form = $this->createForm(UserSuspendedFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_user_settings_form', ['id' => $usr->getId(), 'type' => $type])]]);
     if ($request->isMethod('POST')) {
 
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
-
+        $type = $request->query->getInt('type');
         $this->em->getRepository(User::class)->suspend($usr, $history);
 
           if ($usr->isSuspended()) {
@@ -453,8 +499,10 @@ class UserController extends AbstractController {
               ->dismissible(true)
               ->addSuccess(NotifyMessagesData::USER_SUSPENDED_FALSE);
           }
-
-        return $this->redirectToRoute('app_user_profile_view', ['id' => $usr->getId()]);
+        if ($type > 0) {
+          return $this->redirectToRoute('app_employees', ['id' => $usr->getId()]);
+        }
+        return $this->redirectToRoute('app_users', ['id' => $usr->getId()]);
       }
     }
 
@@ -470,11 +518,12 @@ class UserController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      if ($korisnik->getId() != $user->getId()) {
-        return $this->redirect($this->generateUrl('app_home'));
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        if ($korisnik->getId() != $user->getId()) {
+          return $this->redirect($this->generateUrl('app_home'));
+        }
       }
-
     }
     if ($korisnik->getCompany() != $user->getCompany()) {
       return $this->redirect($this->generateUrl('app_home'));
@@ -506,10 +555,14 @@ class UserController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      return $this->redirect($this->generateUrl('app_home'));
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
 
+          return $this->redirect($this->generateUrl('app_home'));
+
+      }
     }
+
     $args['userH'] = $serializer->deserialize($userHistory->getHistory(), User::class, 'json');
     $args['userHistory'] = $userHistory;
 

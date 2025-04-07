@@ -30,9 +30,7 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
+{{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
 
 
                         <!-- Right content -->
@@ -44,7 +42,7 @@
                             <h5 class="mb-0">Komentari</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                                 <thead class="bg-light text-primary">
                                                 <tr>
@@ -84,7 +82,7 @@
                                                             {% if comment.created is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ comment.created | date("d.m.Y")}}
+                                                                    {{ comment.created | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -92,7 +90,7 @@
                                                             {% if comment.updated is not null %}
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ comment.updated | date("d.m.Y")}}
+                                                                    {{ comment.updated | date("d.m.Y.")}}
                                                                 </div>
                                                             {% endif %}
                                                         </td>
@@ -113,30 +111,11 @@
                                                                         </a>
 
                                                                         {% if comment.isSuspended == 0 %}
-                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}" class="dropdown-item">
+                                                                            <a href="{{ path('app_comment_admin_delete', {id: comment.id} ) }}" class="dropdown-item">
                                                                                 <i class="ph-trash me-2"></i>
                                                                                 Obrišite
                                                                             </a>
                                                                         {% endif  %}
-                                                                    </div>
-                                                                </div>
-                                                                <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content text-start">
-                                                                            <div class="modal-header bg-danger text-white border-0">
-                                                                                <h6 class="modal-title">Potvrda</h6>
-                                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                            </div>
-
-                                                                            <div class="modal-body">
-                                                                                <p>Da li ste sigurni da želite da obrišete ovaj komentar?</p>
-                                                                            </div>
-
-                                                                            <div class="modal-footer">
-                                                                                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                                <a href="{{ path('app_comment_admin_delete', {id: comment.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
-                                                                            </div>
-                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -157,30 +136,11 @@
                                                                         </a>
 
                                                                         {% if comment.isSuspended == 0 %}
-                                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}" class="dropdown-item">
+                                                                            <a href="{{ path('app_comment_admin_delete', {id: comment.id} ) }}" class="dropdown-item">
                                                                                 <i class="ph-trash me-2"></i>
                                                                                 Obrišite
                                                                             </a>
                                                                         {% endif  %}
-                                                                    </div>
-                                                                </div>
-                                                                <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content text-start">
-                                                                            <div class="modal-header bg-danger text-white border-0">
-                                                                                <h6 class="modal-title">Potvrda</h6>
-                                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                            </div>
-
-                                                                            <div class="modal-body">
-                                                                                <p>Da li ste sigurni da želite da obrišete ovaj komentar?</p>
-                                                                            </div>
-
-                                                                            <div class="modal-footer">
-                                                                                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                                <a href="{{ path('app_comment_admin_delete', {id: comment.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
-                                                                            </div>
-                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -218,7 +178,7 @@
 
         </div>
         <!-- /main content -->
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
 
     </div>
     {% include 'includes/notification.html.twig' %}

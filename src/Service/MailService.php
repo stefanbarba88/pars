@@ -12,6 +12,7 @@ use App\Entity\Comment;
 use App\Entity\Email;
 use App\Entity\ManagerChecklist;
 use App\Entity\Plan;
+use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\Ticket;
 use App\Entity\User;
@@ -106,6 +107,21 @@ class MailService {
     }
   }
 
+  public function dailyReport($args1, $company): void {
+
+    $danas = new DateTimeImmutable();
+    $subject = 'Status firme na dan ' .  $danas->format('d.m.Y');
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/daily_status.html.twig';
+    $args['data'] = $args1;
+    $args['danas'] = $danas;
+    $args['company'] = $company;
+
+    $this->sendMail($company->getSettings()->getEmail(), $subject, $from, $sender, $template, $args);
+
+  }
+
   public function carStatus($rezervacije, $company): void {
 
     $args = [];
@@ -118,7 +134,7 @@ class MailService {
     $args['danas'] = $danas;
     $args['company'] = $company;
 
-    $this->sendMail($company->getEmail(), $subject, $from, $sender, $template, $args);
+    $this->sendMail($company->getSettings()->getEmail(), $subject, $from, $sender, $template, $args);
 
   }
   public function carCheck($cars, $company): void {
@@ -133,7 +149,7 @@ class MailService {
     $args['danas'] = $danas;
     $args['company'] = $company;
 
-    $this->sendMail($company->getEmail(), $subject, $from, $sender, $template, $args);
+    $this->sendMail($company->getSettings()->getEmail(), $subject, $from, $sender, $template, $args);
 
   }
 
@@ -179,16 +195,16 @@ class MailService {
     }
   }
 
-  public function endTask($task, $datum, $logs, $to): void {
+  public function endTask($task): void {
 
     $args = [];
     $subject = 'Zatvoren zadatak ' .  $task->getTitle();
     $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
     $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $to = $task->getCompany()->getSettings()->getEmail();
     $template = 'email/task.html.twig';
     $args['task'] = $task;
-    $args['danas'] = $datum;
-    $args['logs'] = $logs;
+    $args['logs'] = $this->em->getRepository(StopwatchTime::class)->getEndTime($task);
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 
@@ -299,7 +315,7 @@ class MailService {
     $args['user'] = $checklist->getUser()->getFullName();
     $args['checklist'] = $checklist;
     $args['link'] = $this->router->generate('app_checklist_view', ['id' => $checklist->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
-    $to = $checklist->getUser()->getCompany()->getEmail();
+    $to = $checklist->getUser()->getCompany()->getSettings()->getEmail();
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 
@@ -333,7 +349,7 @@ class MailService {
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/edit_ticket.html.twig';
     $args['tiket'] = $ticket;
-    $to = $ticket->getCompany()->getEmail();
+    $to = $ticket->getCompany()->getSettings()->getEmail();
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 
@@ -349,7 +365,7 @@ class MailService {
     $sender = CompanyInfo::ORGANIZATION_TITLE;
     $template = 'email/create_ticket.html.twig';
     $args['tiket'] = $ticket;
-    $to = $ticket->getCompany()->getEmail();
+    $to = $ticket->getCompany()->getSettings()->getEmail();
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
 

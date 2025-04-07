@@ -135,17 +135,17 @@
                                 {% if datum is defined %}
                                     <td>
                                         <div class="fw-semibold">
-                                            {{ key}}
+                                            {{ key}} ({{ value | length }})
                                         </div>
-                                        {#                                                                <div>#}
-                                        {#                                                                    {% if value[0].dan == 1 %}#}
-                                        {#                                                                        <span class="badge bg-secondary text-primary">Praznik</span>#}
-                                        {#                                                                    {% elseif value[0].dan  == 3 %}#}
-                                        {#                                                                        <span class="badge bg-secondary text-primary">Nedelja</span>#}
-                                        {#                                                                    {% elseif value[0].dan == 5 %}#}
-                                        {#                                                                        <span class="badge bg-yellow text-white">Praznik i nedelja</span>#}
-                                        {#                                                                    {% endif %}#}
-                                        {#                                                                </div>#}
+                                        <div>
+                                            {% if value[0].dan == 1 %}
+                                                <span class="badge bg-secondary text-primary">Praznik</span>
+                                            {% elseif value[0].dan  == 3 %}
+                                                <span class="badge bg-secondary text-primary">Neradni dan</span>
+                                            {% elseif value[0].dan == 5 %}
+                                                <span class="badge bg-secondary text-primary">Praznik i neradni dan</span>
+                                            {% endif %}
+                                        </div>
                                     </td>
                                 {% endif %}
 
@@ -170,6 +170,9 @@
                                     <table class="table table_morecondensed table-bordered">
                                         <thead class="bg-light">
                                         <tr>
+                                            {% if opis is defined %}
+                                                <th>Zadatak</th>
+                                            {% endif %}
                                             {% if opis is defined %}
                                                 <th>Kategorija</th>
                                             {% endif %}
@@ -208,8 +211,21 @@
                                         </thead>
                                         <tbody>
                                         {% if reports[2] is not empty %}
+                                            {% set prevTaskId = null %}
+                                            {% set toggleClass = false %}
+
                                             {% for stopwatch in reports[2][loop.index0] %}
-                                                <tr>
+                                                {% if prevTaskId is not null and prevTaskId != stopwatch.task.id %}
+                                                    {% set toggleClass = not toggleClass %}
+                                                {% endif %}
+                                                {% set prevTaskId = stopwatch.task.id %}
+
+                                                <tr class="{% if toggleClass %}bg-light{% endif %}">
+
+                                                    <td>
+                                                        {{ stopwatch.task.title }}
+                                                    </td>
+
                                                     {% if opis is defined %}
                                                         <td>
                                                             {% if stopwatch.category is not null %}
@@ -268,14 +284,11 @@
                                                         </td>
                                                     {% endif %}
                                                     {% if zaduzeni is defined %}
-                                                        <td>
-                                                            {% for user in stopwatch.users %}
-                                                                {{ user.fullName }}<br>
-                                                            {% endfor %}
-                                                        </td>
+                                                        <td>{{ stopwatch.zaduzeni.fullName }}</td>
                                                     {% endif %}
                                                 </tr>
                                             {% endfor %}
+
                                         {% endif %}
                                         </tbody>
 

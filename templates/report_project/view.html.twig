@@ -53,9 +53,53 @@
                                             {% endif %}
                                         </div>
                                     </div>
-
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-timer ph-2x text-primary me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ details.broj_elemenata }}</h4>
+                                                            <span class="text-muted">Ukupno dana</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-clock ph-2x text-primary me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ details.ukupno_vreme }}h</h4>
+                                                            <span class="text-muted">Ukupno vreme</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-timer ph-2x text-primary me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ details.prosek_vreme }}h</h4>
+                                                            <span class="text-muted">Prosečno vreme</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card">
                                             <table class="table table-hover table-bordered table_morecondensed">
                                                 <thead>
                                                 <tr class="table-light">
@@ -80,17 +124,17 @@
                                                         {% if datum is defined %}
                                                             <td>
                                                                 <div class="fw-semibold">
-                                                                    {{ key}}
+                                                                    {{ key}} ({{ value | length }})
                                                                 </div>
-{#                                                                <div>#}
-{#                                                                    {% if value[0].dan == 1 %}#}
-{#                                                                        <span class="badge bg-secondary text-primary">Praznik</span>#}
-{#                                                                    {% elseif value[0].dan  == 3 %}#}
-{#                                                                        <span class="badge bg-secondary text-primary">Nedelja</span>#}
-{#                                                                    {% elseif value[0].dan == 5 %}#}
-{#                                                                        <span class="badge bg-yellow text-white">Praznik i nedelja</span>#}
-{#                                                                    {% endif %}#}
-{#                                                                </div>#}
+                                                                <div>
+                                                                    {% if value[0].dan == 1 %}
+                                                                        <span class="badge bg-secondary text-primary">Praznik</span>
+                                                                    {% elseif value[0].dan  == 3 %}
+                                                                        <span class="badge bg-secondary text-primary">Neradni dan</span>
+                                                                    {% elseif value[0].dan == 5 %}
+                                                                        <span class="badge bg-secondary text-primary">Praznik i neradni dan</span>
+                                                                    {% endif %}
+                                                                </div>
                                                             </td>
                                                         {% endif %}
 
@@ -115,6 +159,9 @@
                                                                 <table class="table table_morecondensed table-bordered">
                                                                     <thead class="bg-light">
                                                                     <tr>
+                                                                        {% if opis is defined %}
+                                                                            <th>Zadatak</th>
+                                                                        {% endif %}
                                                                         {% if opis is defined %}
                                                                             <th>Kategorija</th>
                                                                         {% endif %}
@@ -153,8 +200,21 @@
                                                                     </thead>
                                                                     <tbody>
                                                                         {% if reports[2] is not empty %}
+                                                                            {% set prevTaskId = null %}
+                                                                            {% set toggleClass = false %}
+
                                                                             {% for stopwatch in reports[2][loop.index0] %}
-                                                                                <tr>
+                                                                                {% if prevTaskId is not null and prevTaskId != stopwatch.task.id %}
+                                                                                    {% set toggleClass = not toggleClass %}
+                                                                                {% endif %}
+                                                                                {% set prevTaskId = stopwatch.task.id %}
+
+                                                                                <tr class="{% if toggleClass %}bg-light{% endif %}">
+
+                                                                                        <td>
+                                                                                            {{ stopwatch.task.title }}
+                                                                                        </td>
+
                                                                                     {% if opis is defined %}
                                                                                         <td>
                                                                                             {% if stopwatch.category is not null %}
@@ -213,14 +273,11 @@
                                                                                         </td>
                                                                                     {% endif %}
                                                                                     {% if zaduzeni is defined %}
-                                                                                        <td>
-                                                                                            {% for user in stopwatch.users %}
-                                                                                                {{ user.fullName }}<br>
-                                                                                            {% endfor %}
-                                                                                        </td>
+                                                                                        <td>{{ stopwatch.zaduzeni.fullName }}</td>
                                                                                     {% endif %}
                                                                                 </tr>
                                                                             {% endfor %}
+
                                                                         {% endif %}
                                                                     </tbody>
 
@@ -275,7 +332,7 @@
                                             <h5 class="mb-0">{{ project.title }}: {{ period }} - interni zadaci</h5>
                                         </div>
                                         <div class="card-body">
-                                            <div class="table-responsive card">
+                                            <div class="card">
                                                 <table class="table table-hover table-bordered table_morecondensed">
                                                     <thead>
                                                     <tr class="table-light">
@@ -343,7 +400,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

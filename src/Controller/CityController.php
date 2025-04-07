@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TipOpremeData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Form\CityFormType;
@@ -29,6 +30,13 @@ class CityController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
     $search = [];
 
     $search['title'] = $request->query->get('title');
@@ -66,6 +74,13 @@ class CityController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
     $city->setEditBy($this->getUser());
 
     $form = $this->createForm(CityFormType::class, $city, ['attr' => ['action' => $this->generateUrl('app_city_form', ['id' => $city->getId()])]]);
@@ -107,6 +122,13 @@ class CityController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
     $args['city'] = $city;
 
     return $this->render('city/view.html.twig', $args);

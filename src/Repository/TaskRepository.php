@@ -224,7 +224,7 @@ class TaskRepository extends ServiceEntityRepository {
 
     $list = [];
 
-    $tasks = $this->getEntityManager()->getRepository(Task::class)->findBy(['project' => $project], ['isDeleted' => 'ASC', 'isClosed' => 'ASC', 'isPriority' => 'DESC', 'id' => 'DESC']);
+    $tasks = $this->getEntityManager()->getRepository(Task::class)->findBy(['project' => $project], ['isDeleted' => 'ASC', 'isClosed' => 'ASC', 'priority' => 'DESC', 'id' => 'DESC']);
     foreach ($tasks as $task) {
       $logs = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['task' => $task]);
       $assigners = [];
@@ -256,7 +256,7 @@ class TaskRepository extends ServiceEntityRepository {
 //      ->getQuery();
 //  }
 
-  public function getTasksByProjectPaginator($filterBy, User $user, Project $project){
+  public function getTasksByProjectPaginator($filterBy, User $user, Project $project, $admin){
     $company = $project->getCompany();
     $today = new DateTimeImmutable(); // Dohvati trenutni datum i vrijeme
 //    $endDate = $today->sub(new DateInterval('P1D')); // Trenutni datum
@@ -264,6 +264,8 @@ class TaskRepository extends ServiceEntityRepository {
 
 
     $qb = $this->createQueryBuilder('t');
+    $qb->andWhere('t.company = :company');
+    $qb->setParameter(':company', $company);
     if (!empty($filterBy['period'])) {
 
       $dates = explode(' - ', $filterBy['period']);
@@ -273,13 +275,10 @@ class TaskRepository extends ServiceEntityRepository {
       $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
       $stopDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
 
-      $qb->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'));
+      $qb->andWhere($qb->expr()->between('t.datumKreiranja', ':start', ':end'));
       $qb->setParameter('start', $startDate);
       $qb->setParameter('end', $stopDate);
 
-    } else {
-      $qb->where('t.datumKreiranja < :endDate');
-      $qb->setParameter('endDate', $endDate);
     }
 
     $qb->andWhere('t.company = :company');
@@ -297,15 +296,15 @@ class TaskRepository extends ServiceEntityRepository {
       $qb->setParameter('zaposleni', $filterBy['zaposleni']);
     }
 
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$admin) {
       $qb->join('t.assignedUsers', 'u'); // Zamijenite 'u' imenom koje odgovara vašoj entitetu za korisnike (user entity).
       $qb->andWhere($qb->expr()->in('u.id', ':zaposleni'));
       $qb->setParameter('zaposleni', $user->getId());
     }
 
 
-    $qb->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.datumKreiranja', 'DESC')
+    $qb->addOrderBy('t.datumKreiranja', 'DESC')
+      ->addOrderBy('t.deadline', 'ASC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery();
 
@@ -392,45 +391,161 @@ class TaskRepository extends ServiceEntityRepository {
 
   public function getTasksByUserPaginator(User $user) {
     $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
 
     return $this->createQueryBuilder('t')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
-      ->where('t.datumKreiranja >= :startDate')
+      ->where('t.deadline > :deadline OR t.deadline IS NULL')
       ->andWhere('tl.user = :userId')
+      ->andWhere('t.status <> :status')
       ->andWhere('t.isDeleted <> 1')
       ->setParameter(':userId', $user->getId())
-      ->setParameter(':startDate', $startDate)
-      ->addOrderBy('t.id', 'DESC')
+      ->setParameter(':deadline', $deadline)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
+      ->orderBy('t.priority', 'DESC')
+      ->addOrderBy('t.deadline', 'ASC')
+      ->addOrderBy('t.status', 'DESC')
       ->getQuery();
+  }
+
+  public function getTasksByUserHomePaginator(User $user) {
+    $currentTime = new DateTimeImmutable();
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
+
+    return $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+//      ->where('t.deadline >= :deadline OR t.deadline IS NULL')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.status <> :status')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':userId', $user->getId())
+//      ->setParameter(':deadline', $deadline)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
+      ->orderBy('t.priority', 'DESC')
+      ->addOrderBy('t.deadline', 'ASC')
+      ->addOrderBy('t.status', 'DESC')
+      ->getQuery();
+  }
+
+  public function getTasksByCompanyHomePaginator(Company $company) {
+    $currentTime = new DateTimeImmutable();
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
+
+    return $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+//      ->where('t.deadline >= :deadline OR t.deadline IS NULL')
+      ->andWhere('t.company = :company')
+      ->andWhere('t.status <> :status')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':company', $company)
+//      ->setParameter(':deadline', $deadline)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
+      ->orderBy('t.status', 'DESC')
+      ->addOrderBy('t.datumKreiranja', 'ASC')
+      ->addOrderBy('t.deadline', 'ASC')
+      ->addOrderBy('t.priority', 'ASC')
+      ->getQuery();
+  }
+
+  public function findByUser(User $user, DateTimeImmutable $datum): array {
+
+    $deadline = $datum->modify('+ 1 day')->format('Y-m-d 00:00:00');
+    $deadline1 = $datum->format('Y-m-d 00:00:00');
+
+
+
+    $tasks = $this->createQueryBuilder('t')
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.deadline BETWEEN :deadline1 AND :deadline')
+      ->andWhere('t.datumKreiranja BETWEEN :deadline1 AND :deadline')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.status <> :status')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':userId', $user->getId())
+      ->setParameter(':deadline', $deadline)
+      ->setParameter(':deadline1', $deadline1)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
+      ->orderBy('t.priority', 'DESC')
+      ->addOrderBy('t.deadline', 'ASC')
+      ->addOrderBy('t.status', 'DESC')
+      ->getQuery()
+      ->getResult();
+
+    $taskLogs = [];
+
+    if (!empty ($tasks)) {
+      foreach ($tasks as $task) {
+        $logs = $this->getEntityManager()->getRepository(TaskLog::class)->findBy(['user' => $user, 'task' => $task]);
+        foreach ($logs as $log) {
+          $car = null;
+          if (!is_null($task->getCar())) {
+            $car = $this->getEntityManager()->getRepository(Car::class)->find($task->getCar());
+          }
+          $logStatus = $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatusByLog($log);
+
+          $taskLogs[] = [$log, $car, $task->getTime(), $logStatus];
+          //          usort($taskLogs, function($a, $b) {
+          //            return $a[2] <=> $b[2];
+          //          });
+          usort($taskLogs, function ($a, $b) {
+            // Prvo sortiranje po $logStatus (0, 1, 2)
+            if ($a[3] != $b[3]) {
+              return $a[3] - $b[3];
+            } else {
+              // Ako su $logStatus isti, sortiranje po $task->getTime()
+              $timeA = $a[2]->format('Y-m-d H:i:s');
+              $timeB = $b[2]->format('Y-m-d H:i:s');
+
+              return strcmp($timeA, $timeB);
+            }
+          });
+        }
+      }
+    }
+
+
+    return $taskLogs;
   }
 
   public function countGetTasksByUser(User $user): int {
     $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
 
-    $count = 0;
-    $tasks =  $this->createQueryBuilder('t')
+//    $count = 0;
+//    $tasks =  $this->createQueryBuilder('t')
+//      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+//      ->where('t.deadline >= :startDate')
+//      ->andWhere('tl.user = :userId')
+//      ->andWhere('t.isDeleted <> 1')
+//      ->setParameter(':userId', $user->getId())
+//      ->setParameter(':startDate', $deadline)
+//      ->setParameter(':status', TaskStatusData::ZAVRSENO)
+//      ->addOrderBy('t.id', 'DESC')
+//      ->getQuery()
+//      ->getResult();
+    return $this->createQueryBuilder('t')
+      ->select('COUNT(t.id)') // Broji samo broj rezultata
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
-      ->where('t.datumKreiranja >= :startDate')
+      ->where('t.deadline > :startDate OR t.deadline IS NULL')
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.status <> :status')
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
       ->setParameter(':userId', $user->getId())
-      ->setParameter(':startDate', $startDate)
-      ->addOrderBy('t.id', 'DESC')
+      ->setParameter(':startDate', $deadline)
       ->getQuery()
-      ->getResult();
+      ->getSingleScalarResult(); // Vraća samo broj
 
 
-    foreach ($tasks as $task) {
-      $status = $this->taskStatus($task);
-
-      if ($status != TaskStatusData::ZAVRSENO ) {
-        $count++;
-      }
-    }
-
-    return $count;
+//    foreach ($tasks as $task) {
+//      $status = $this->taskStatus($task);
+//
+//      if ($status != TaskStatusData::ZAVRSENO ) {
+//        $count++;
+//      }
+//    }
+//
+//    return $count;
   }
 
   public function getTasksUnclosedByUser(User $user): array {
@@ -474,63 +589,49 @@ class TaskRepository extends ServiceEntityRepository {
 
   public function getTasksUnclosedByUserPaginator(User $user): array {
     $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
-    $endDate = $currentTime->sub(new DateInterval('P15D'))->format('Y-m-d 00:00:00');
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
+//    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
 
-
-    $list = [];
-    $tasks =  $this->createQueryBuilder('t')
+    return  $this->createQueryBuilder('t')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
-      ->where('t.datumKreiranja < :startDate')
-      ->andWhere('t.datumKreiranja > :endDate')
+      ->where('t.deadline <= :deadline')
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
-      ->setParameter(':startDate', $startDate)
-      ->setParameter(':endDate', $endDate)
+      ->andWhere('t.status <> :status')
+      ->setParameter(':deadline', $deadline)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
       ->setParameter(':userId', $user->getId())
-      ->addOrderBy('t.id', 'DESC')
+      ->orderBy('t.priority', 'DESC')
+      ->addOrderBy('t.deadline', 'ASC')
+      ->addOrderBy('t.status', 'DESC')
       ->getQuery()
       ->getResult();
-
-
-    foreach ($tasks as $task) {
-      $status = $this->taskStatus($task);
-
-      if ($status != TaskStatusData::ZAVRSENO ) {
-        $list[] = [
-          'task' => $task,
-        ];
-      }
-    }
-    return $list;
 
   }
 
   public function getTasksUnclosedLogsByUser(User $user): array {
     $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
-    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
 
     $list = [];
+
     $tasks =  $this->createQueryBuilder('t')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
-      ->where('t.datumKreiranja < :startDate')
-      ->andWhere('t.datumKreiranja > :endDate')
+      ->where('t.deadline <= :deadline')
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
-      ->setParameter(':startDate', $startDate)
-      ->setParameter(':endDate', $endDate)
+      ->andWhere('t.status <> :status')
+      ->setParameter(':deadline', $deadline)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
       ->setParameter(':userId', $user->getId())
-      ->addOrderBy('t.id', 'DESC')
+      ->orderBy('t.priority', 'DESC')
+      ->addOrderBy('t.deadline', 'ASC')
+      ->addOrderBy('t.status', 'DESC')
       ->getQuery()
       ->getResult();
 
 
     foreach ($tasks as $task) {
-      $status = $this->taskStatus($task);
-
-      if ($status != TaskStatusData::ZAVRSENO ) {
-
         $log = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['user' => $user, 'task' => $task]);
         $logStatus = $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatusByLog($log);
 
@@ -540,7 +641,6 @@ class TaskRepository extends ServiceEntityRepository {
             'logStatus' => $logStatus
           ];
         }
-      }
     }
 
     usort($list, function ($a, $b) {
@@ -564,7 +664,7 @@ class TaskRepository extends ServiceEntityRepository {
       ->setParameter(':company', $company)
       ->setParameter(':startDate', $startDate)
       ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.priority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
       ->getResult();
@@ -595,37 +695,32 @@ class TaskRepository extends ServiceEntityRepository {
   public function getTasksUnclosedLogsPaginator(): array {
     $company = $this->security->getUser()->getCompany();
     $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
-    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
 
     $list = [];
     $tasks =  $this->createQueryBuilder('t')
-      ->where('t.datumKreiranja < :startDate')
-      ->andWhere('t.datumKreiranja > :endDate')
+      ->where('t.deadline <= :deadline')
       ->andWhere('t.isDeleted <> 1')
       ->andWhere('t.company = :company')
+      ->andWhere('t.status <> :status')
       ->setParameter(':company', $company)
-      ->setParameter(':startDate', $startDate)
-      ->setParameter(':endDate', $endDate)
-      ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
-      ->addOrderBy('t.id', 'DESC')
+      ->setParameter(':deadline', $deadline)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
+      ->orderBy('t.priority', 'DESC')
+      ->addOrderBy('t.deadline', 'ASC')
+      ->addOrderBy('t.status', 'DESC')
       ->getQuery()
       ->getResult();
 
     foreach ($tasks as $task) {
-      $status = $this->taskStatus($task);
-      if ($status != TaskStatusData::ZAVRSENO ) {
-        foreach ($task->getTaskLogs() as $log) {
-          $logStatus = $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatusByLog($log);
-          if ($logStatus == 0) {
-            $list[] = [
-              'log' => $log,
-              'logStatus' => $logStatus
-            ];
-          }
+      foreach ($task->getTaskLogs() as $log) {
+        $logStatus = $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatusByLog($log);
+        if ($logStatus == 0) {
+          $list[] = [
+            'log' => $log,
+            'logStatus' => $logStatus
+          ];
         }
-
       }
     }
     usort($list, function ($a, $b) {
@@ -637,37 +732,31 @@ class TaskRepository extends ServiceEntityRepository {
 
   public function countGetTasksUnclosedLogsByUser(User $user): int {
     $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
-    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
 
 
     $count = 0;
     $tasks =  $this->createQueryBuilder('t')
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
-      ->where('t.datumKreiranja < :startDate')
-      ->andWhere('t.datumKreiranja > :endDate')
+      ->where('t.deadline <= :startDate')
+      ->andWhere('t.status <> :status')
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
-      ->setParameter(':startDate', $startDate)
-      ->setParameter(':endDate', $endDate)
       ->setParameter(':userId', $user->getId())
+      ->setParameter(':startDate', $deadline)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
       ->getResult();
 
 
     foreach ($tasks as $task) {
-      $status = $this->taskStatus($task);
-
-      if ($status != TaskStatusData::ZAVRSENO ) {
-
         $log = $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['user' => $user, 'task' => $task]);
         $logStatus = $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatusByLog($log);
 
         if ($logStatus == 0) {
           $count++;
         }
-      }
     }
 
     return $count;
@@ -689,7 +778,7 @@ class TaskRepository extends ServiceEntityRepository {
       ->setParameter(':startDate', $startDate)
       ->setParameter(':endDate', $endDate)
       ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.priority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
       ->getResult();
@@ -712,33 +801,24 @@ class TaskRepository extends ServiceEntityRepository {
   }
 
   public function countGetTasksUnclosedByUser(User $user): int {
+
     $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
-    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
 
-
-    $count = 0;
-    $tasks =  $this->createQueryBuilder('t')
+    return $this->createQueryBuilder('t')
+      ->select('COUNT(t.id)') // Broji samo broj rezultata
       ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
-      ->where('t.datumKreiranja < :startDate')
-      ->andWhere('t.datumKreiranja > :endDate')
+      ->where('t.deadline <= :startDate')
+      ->andWhere('t.status <> :status')
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
-      ->setParameter(':startDate', $startDate)
-      ->setParameter(':endDate', $endDate)
       ->setParameter(':userId', $user->getId())
-      ->addOrderBy('t.id', 'DESC')
+      ->setParameter(':startDate', $deadline)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
       ->getQuery()
-      ->getResult();
+      ->getSingleScalarResult(); // Vraća samo broj
 
-    foreach ($tasks as $task) {
-      $status = $this->taskStatus($task);
-      if ($status != TaskStatusData::ZAVRSENO ) {
-        $count++;
-      }
-    }
 
-    return $count;
   }
 
   public function getTasksArchiveByUser(User $user): array {
@@ -835,7 +915,7 @@ class TaskRepository extends ServiceEntityRepository {
       ->andWhere('t.isDeleted <> 1')
       ->setParameter(':startDate', $startDate)
       ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.priority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
       ->getResult();
@@ -860,48 +940,95 @@ class TaskRepository extends ServiceEntityRepository {
   public function getAllTasksPaginator() {
     $company = $this->security->getUser()->getCompany();
     $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
 
     return  $this->createQueryBuilder('t')
-      ->where('t.datumKreiranja >= :startDate')
+      ->where('t.deadline > :deadline OR t.deadline IS NULL')
       ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.status <> :status')
       ->andWhere('t.company = :company')
       ->setParameter(':company', $company)
-      ->setParameter(':startDate', $startDate)
-      ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
-      ->addOrderBy('t.id', 'DESC')
+      ->setParameter(':deadline', $deadline)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
+      ->orderBy('t.priority', 'DESC')
+      ->addOrderBy('t.deadline', 'ASC')
+      ->addOrderBy('t.status', 'DESC')
+      ->getQuery();
+  }
+
+  public function getAllTasksVerifyPaginator() {
+    $company = $this->security->getUser()->getCompany();
+
+    return  $this->createQueryBuilder('t')
+
+      ->where('t.isDeleted <> 1')
+      ->andWhere('t.status = :status')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
+      ->setParameter(':status', TaskStatusData::ZAVRSENO)
+      ->orderBy('t.priority', 'DESC')
+      ->addOrderBy('t.deadline', 'ASC')
+      ->addOrderBy('t.status', 'DESC')
       ->getQuery();
   }
 
   public function countGetTasks(): int {
     $company = $this->security->getUser()->getCompany();
     $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
 
-    $count = 0;
-    $tasks =  $this->createQueryBuilder('t')
-      ->where('t.datumKreiranja >= :startDate')
-      ->andWhere('t.isDeleted <> 1')
+//    $count = 0;
+//    $tasks =  $this->createQueryBuilder('t')
+//      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+//      ->where('t.deadline >= :startDate')
+//      ->andWhere('tl.user = :userId')
+//      ->andWhere('t.isDeleted <> 1')
+//      ->setParameter(':userId', $user->getId())
+//      ->setParameter(':startDate', $deadline)
+//      ->setParameter(':status', TaskStatusData::ZAVRSENO)
+//      ->addOrderBy('t.id', 'DESC')
+//      ->getQuery()
+//      ->getResult();
+    return $this->createQueryBuilder('t')
+      ->select('COUNT(t.id)') // Broji samo broj rezultata
+      ->where('t.deadline > :startDate OR t.deadline IS NULL')
       ->andWhere('t.company = :company')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.status <> :status')
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
       ->setParameter(':company', $company)
-      ->setParameter(':startDate', $startDate)
-      ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
-      ->addOrderBy('t.id', 'DESC')
+      ->setParameter(':startDate', $deadline)
       ->getQuery()
-      ->getResult();
+      ->getSingleScalarResult(); // Vraća samo broj
+  }
 
+  public function countGetTasksCommand($company): int {
+    $currentTime = new DateTimeImmutable();
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
 
-    foreach ($tasks as $task) {
-      $status = $this->taskStatus($task);
-
-      if ($status != TaskStatusData::ZAVRSENO ) {
-        $count++;
-      }
-    }
-
-    return $count;
+//    $count = 0;
+//    $tasks =  $this->createQueryBuilder('t')
+//      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+//      ->where('t.deadline >= :startDate')
+//      ->andWhere('tl.user = :userId')
+//      ->andWhere('t.isDeleted <> 1')
+//      ->setParameter(':userId', $user->getId())
+//      ->setParameter(':startDate', $deadline)
+//      ->setParameter(':status', TaskStatusData::ZAVRSENO)
+//      ->addOrderBy('t.id', 'DESC')
+//      ->getQuery()
+//      ->getResult();
+    return $this->createQueryBuilder('t')
+      ->select('COUNT(t.id)') // Broji samo broj rezultata
+      ->where('t.deadline > :startDate OR t.deadline IS NULL')
+      ->andWhere('t.company = :company')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.status <> :status')
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
+      ->setParameter(':company', $company)
+      ->setParameter(':startDate', $deadline)
+      ->getQuery()
+      ->getSingleScalarResult(); // Vraća samo broj
   }
 
   public function getTasksPaginator($filterBy, User $user){
@@ -934,6 +1061,7 @@ class TaskRepository extends ServiceEntityRepository {
     $qb->andWhere('t.company = :company');
     $qb->setParameter(':company', $company);
 
+
     if (!empty($filterBy['projekat'])) {
       $qb->andWhere('t.project = :projekat');
       $qb->setParameter('projekat', $filterBy['projekat']);
@@ -956,7 +1084,7 @@ class TaskRepository extends ServiceEntityRepository {
 
 
     $qb->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.priority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery();
 
@@ -978,6 +1106,79 @@ class TaskRepository extends ServiceEntityRepository {
     return $qb;
   }
 
+  public function getTasksPaginatorArchive($filterBy, User $user, $admin){
+    $company = $this->security->getUser()->getCompany();
+    $today = new DateTimeImmutable(); // Dohvati trenutni datum i vrijeme
+//    $endDate = $today->sub(new DateInterval('P1D')); // Trenutni datum
+    $endDate = $today; // Trenutni datum
+
+    $qb = $this->createQueryBuilder('t');
+    if (!empty($filterBy['period'])) {
+
+      $dates = explode(' - ', $filterBy['period']);
+
+      $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+      $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+      $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+      $stopDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+      $qb->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'));
+      $qb->setParameter('start', $startDate);
+      $qb->setParameter('end', $stopDate);
+
+    } else {
+      $qb->where('t.datumKreiranja < :endDate');
+      $qb->setParameter('endDate', $endDate);
+    }
+
+    $qb->andWhere('t.company = :company');
+    $qb->setParameter(':company', $company);
+    $qb->andWhere('t.status = :status');
+    $qb->setParameter(':status', TaskStatusData::VERIFIKOVANO);
+
+    if (!empty($filterBy['projekat'])) {
+      $qb->andWhere('t.project = :projekat');
+      $qb->setParameter('projekat', $filterBy['projekat']);
+    }
+    if (!empty($filterBy['kategorija'])) {
+      $qb->andWhere('t.category = :kategorija');
+      $qb->setParameter('kategorija', $filterBy['kategorija']);
+    }
+    if (!empty($filterBy['zaposleni'])) {
+      $qb->join('t.assignedUsers', 'u'); // Zamijenite 'u' imenom koje odgovara vašoj entitetu za korisnike (user entity).
+      $qb->andWhere($qb->expr()->in('u.id', ':zaposleni'));
+      $qb->setParameter('zaposleni', $filterBy['zaposleni']);
+    }
+
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$admin) {
+      $qb->join('t.assignedUsers', 'u'); // Zamijenite 'u' imenom koje odgovara vašoj entitetu za korisnike (user entity).
+      $qb->andWhere($qb->expr()->in('u.id', ':zaposleni'));
+      $qb->setParameter('zaposleni', $user->getId());
+    }
+
+
+    $qb->addOrderBy('t.isClosed', 'ASC')
+      ->addOrderBy('t.priority', 'DESC')
+      ->addOrderBy('t.id', 'DESC')
+      ->getQuery();
+
+//    foreach ($tasks as $task) {
+//      $status = $this->taskStatus($task);
+//
+//      if ($status == TaskStatusData::ZAVRSENO ) {
+//        $list[] = [
+//          'task' => $task,
+//          'status' => $status,
+//          'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($task)
+//        ];
+//      }
+//    }
+//    usort($list, function ($a, $b) {
+//      return $a['status'] <=> $b['status'];
+//    });
+
+    return $qb;
+  }
   public function getTasksArchive(): array {
 
 
@@ -993,14 +1194,14 @@ class TaskRepository extends ServiceEntityRepository {
       ->setParameter('startDate', $startDate)
       ->setParameter('endDate', $endDate)
       ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.priority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
       ->getResult();
 
 //    $tasks =  $this->createQueryBuilder('t')
 //      ->addOrderBy('t.isClosed', 'ASC')
-//      ->addOrderBy('t.isPriority', 'DESC')
+//      ->addOrderBy('t.priority', 'DESC')
 //      ->addOrderBy('t.id', 'DESC')
 //      ->getQuery()
 //      ->getResult();
@@ -1033,7 +1234,7 @@ class TaskRepository extends ServiceEntityRepository {
       ->where('t.created < :startDate')
       ->setParameter('startDate', $startDate)
       ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.priority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
       ->getResult();
@@ -1041,7 +1242,7 @@ class TaskRepository extends ServiceEntityRepository {
 
 //    $tasks =  $this->createQueryBuilder('t')
 //      ->addOrderBy('t.isClosed', 'ASC')
-//      ->addOrderBy('t.isPriority', 'DESC')
+//      ->addOrderBy('t.priority', 'DESC')
 //      ->addOrderBy('t.id', 'DESC')
 //      ->getQuery()
 //      ->getResult();
@@ -1068,7 +1269,7 @@ class TaskRepository extends ServiceEntityRepository {
     $count = 0;
     $tasks =  $this->createQueryBuilder('t')
       ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.priority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
       ->getResult();
@@ -1097,7 +1298,7 @@ class TaskRepository extends ServiceEntityRepository {
       ->setParameter(':startDate', $startDate)
       ->setParameter(':endDate', $endDate)
       ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
+      ->addOrderBy('t.priority', 'DESC')
       ->addOrderBy('t.id', 'DESC')
       ->getQuery()
       ->getResult();
@@ -1122,66 +1323,62 @@ class TaskRepository extends ServiceEntityRepository {
   public function getTasksUnclosedPaginator(): array {
     $company = $this->security->getUser()->getCompany();
     $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
-    $endDate = $currentTime->sub(new DateInterval('P15D'))->format('Y-m-d 00:00:00');
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
 
-    $list = [];
-    $tasks =  $this->createQueryBuilder('t')
-      ->where('t.datumKreiranja < :startDate')
-      ->andWhere('t.datumKreiranja > :endDate')
+    return $this->createQueryBuilder('t')
+      ->where('t.deadline <= :deadline')
       ->andWhere('t.isDeleted <> 1')
       ->andWhere('t.company = :company')
       ->setParameter(':company', $company)
-      ->setParameter(':startDate', $startDate)
-      ->setParameter(':endDate', $endDate)
-      ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
-      ->addOrderBy('t.id', 'DESC')
+      ->andWhere('t.status <> :status')
+      ->setParameter(':deadline', $deadline)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
+      ->orderBy('t.priority', 'DESC')
+      ->addOrderBy('t.deadline', 'ASC')
+      ->addOrderBy('t.status', 'DESC')
       ->getQuery()
       ->getResult();
 
-    foreach ($tasks as $task) {
-      $status = $this->taskStatus($task);
-
-      if ($status != TaskStatusData::ZAVRSENO ) {
-        $list[] = [
-          'task' => $task,
-        ];
-      }
-    }
-    return $list;
   }
 
   public function countGetTasksUnclosed(): int {
-    $company = $this->security->getUser()->getCompany();
-    $currentTime = new DateTimeImmutable();
-    $startDate = $currentTime->format('Y-m-d 00:00:00');
-    $endDate = $currentTime->sub(new DateInterval('P7D'))->format('Y-m-d 00:00:00');
 
-    $count = 0;
-    $tasks =  $this->createQueryBuilder('t')
-      ->where('t.datumKreiranja < :startDate')
-      ->andWhere('t.datumKreiranja > :endDate')
+
+      $company = $this->security->getUser()->getCompany();
+      $currentTime = new DateTimeImmutable();
+      $deadline = $currentTime->format('Y-m-d 00:00:00');
+
+      return $this->createQueryBuilder('t')
+        ->select('COUNT(t.id)') // Broji samo broj rezultata
+        ->where('t.deadline <= :deadline')
+        ->andWhere('t.isDeleted <> 1')
+        ->andWhere('t.company = :company')
+        ->setParameter(':company', $company)
+        ->andWhere('t.status <> :status')
+        ->setParameter(':deadline', $deadline)
+        ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
+        ->getQuery()
+        ->getSingleScalarResult(); // Vraća samo broj
+
+  }
+
+  public function countGetTasksUnclosedCommand($company): int {
+
+    $currentTime = new DateTimeImmutable();
+    $deadline = $currentTime->format('Y-m-d 00:00:00');
+
+    return $this->createQueryBuilder('t')
+      ->select('COUNT(t.id)') // Broji samo broj rezultata
+      ->where('t.deadline < :deadline')
       ->andWhere('t.isDeleted <> 1')
       ->andWhere('t.company = :company')
       ->setParameter(':company', $company)
-      ->setParameter(':startDate', $startDate)
-      ->setParameter(':endDate', $endDate)
-      ->addOrderBy('t.isClosed', 'ASC')
-      ->addOrderBy('t.isPriority', 'DESC')
-      ->addOrderBy('t.id', 'DESC')
+      ->andWhere('t.status <> :status')
+      ->setParameter(':deadline', $deadline)
+      ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
       ->getQuery()
-      ->getResult();
+      ->getSingleScalarResult(); // Vraća samo broj
 
-    foreach ($tasks as $task) {
-      $status = $this->taskStatus($task);
-
-      if ($status != TaskStatusData::ZAVRSENO ) {
-        $count++;
-      }
-    }
-
-    return $count;
   }
 
   public function saveTask(Task $task, User $user, ?string $history): Task  {
@@ -1325,6 +1522,7 @@ class TaskRepository extends ServiceEntityRepository {
       ->andWhere('t.project = :project')
       ->andWhere('t.isDeleted <> 1')
       ->andWhere('t.isFree = 1')
+      ->andWhere('t.status = 3')
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
       ->setParameter('project', $project->getId())
@@ -1339,8 +1537,9 @@ class TaskRepository extends ServiceEntityRepository {
       $lista[] = [
         'task' => $tsk,
         'datum' => $tsk->getDatumKreiranja(),
-        'status' => $this->taskStatus($tsk),
+        'status' => $tsk->getStatus(),
         'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $primaryUser]),
+        'logAll' => $tsk->getTaskLogs(),
       ];
     }
     return $lista;
@@ -1356,6 +1555,7 @@ class TaskRepository extends ServiceEntityRepository {
       ->andWhere('t.project = :project')
       ->andWhere('t.isDeleted <> 1')
       ->andWhere('t.isFree <> 1')
+      ->andWhere('t.status = 3')
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
       ->setParameter('project', $project->getId())
@@ -1370,8 +1570,9 @@ class TaskRepository extends ServiceEntityRepository {
       $lista[] = [
         'task' => $tsk,
         'datum' => $tsk->getDatumKreiranja(),
-        'status' => $this->taskStatus($tsk),
+        'status' => $tsk->getStatus(),
         'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $primaryUser]),
+        'logAll' => $tsk->getTaskLogs(),
       ];
     }
     return $lista;
@@ -1406,6 +1607,7 @@ class TaskRepository extends ServiceEntityRepository {
         'datum' => $tsk->getDatumKreiranja(),
         'status' => $this->taskStatus($tsk),
         'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $primaryUser]),
+        'logAll' => $tsk->getTaskLogs(),
       ];
     }
     return $lista;
@@ -1600,6 +1802,7 @@ class TaskRepository extends ServiceEntityRepository {
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
       ->andWhere('t.isFree = 1')
+      ->andWhere('t.status = 3')
       ->setParameter(':userId', $user->getId())
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
@@ -1614,7 +1817,7 @@ class TaskRepository extends ServiceEntityRepository {
       $lista[] = [
         'task' => $tsk,
         'datum' => $tsk->getDatumKreiranja(),
-        'status' => $this->taskStatus($tsk),
+        'status' => $tsk->getStatus(),
         'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $user]),
       ];
     }
@@ -1633,6 +1836,7 @@ class TaskRepository extends ServiceEntityRepository {
       ->andWhere('tl.user = :userId')
       ->andWhere('t.isDeleted <> 1')
       ->andWhere('t.isFree <> 1')
+      ->andWhere('t.status = 3')
       ->setParameter(':userId', $user->getId())
       ->setParameter('start', $startDate)
       ->setParameter('end', $endDate)
@@ -1647,27 +1851,58 @@ class TaskRepository extends ServiceEntityRepository {
       $lista[] = [
         'task' => $tsk,
         'datum' => $tsk->getDatumKreiranja(),
-        'status' => $this->taskStatus($tsk),
+        'status' => $tsk->getStatus(),
         'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $user])
       ];
     }
     return $lista;
   }
+  public function getTasksByStatusAndUser($status, User $user): array  {
+
+    $qb = $this->createQueryBuilder('t'); // Glavni entitet je TaskLog
+    $qb
+      ->innerJoin(TaskLog::class, 'tl', Join::WITH, 't = tl.task')
+      ->where('t.status = :status')
+      ->andWhere('tl.user = :userId')
+      ->andWhere('t.isDeleted <> 1')
+      ->setParameter(':userId', $user->getId())
+      ->setParameter(':status', $status);
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+    $tsk = [];
+    foreach ($taskovi as $task) {
+    foreach ($task->getTaskLogs() as $log) {
+
+      if (!is_null($log->getStopwatch()) && $log->getUser() == $user) {
+        foreach ($log->getStopwatch() as $stopWatch ) {
+          if (is_null($stopWatch->getStop())) {
+            $tsk[] = $task;
+          }
+        }
+      }
+
+    }
+    }
+
+    return $tsk;
+  }
 
 
   public function getTasksForMerge(Task $task): array  {
-    $startDate = $task->getDatumKreiranja()->format('Y-m-d 00:00:00'); // Početak dana
-    $endDate = $task->getDatumKreiranja()->format('Y-m-d 23:59:59'); // Kraj dana
+//    $startDate = $task->getDatumKreiranja()->format('Y-m-d 00:00:00'); // Početak dana
+//    $endDate = $task->getDatumKreiranja()->format('Y-m-d 23:59:59'); // Kraj dana
 
     $qb = $this->createQueryBuilder('t');
     $qb
-      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
-      ->andWhere('t.isDeleted <> 1')
+//      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->where('t.isDeleted <> 1')
       ->andWhere('t.project = :project')
       ->andWhere('t.id <> :id')
       ->setParameter(':project', $task->getProject())
-      ->setParameter('start', $startDate)
-      ->setParameter('end', $endDate)
+//      ->setParameter('start', $startDate)
+//      ->setParameter('end', $endDate)
       ->setParameter('id', $task->getId())
       ->orderBy('t.time', 'ASC');
 
@@ -1786,30 +2021,41 @@ class TaskRepository extends ServiceEntityRepository {
 
   }
 
-  public function getTasksByDate(DateTimeImmutable $date): array  {
+  public function getTasksAdminHome(): array  {
     $company = $this->security->getUser()->getCompany();
-    $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
-    $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
+//    $deadline = $datum->modify('+ 1 day')->format('Y-m-d 00:00:00');
+//    $deadline1 = $datum->format('Y-m-d 00:00:00');
+//
+//    $qb = $this->createQueryBuilder('t');
+//    $qb
+//      ->where('t.deadline BETWEEN :deadline1 AND :deadline')
+//      ->andWhere('t.datumKreiranja BETWEEN :deadline1 AND :deadline')
+//      ->andWhere('t.isDeleted <> 1')
+//      ->andWhere('t.company = :company')
+//      ->setParameter(':company', $company)
+//      ->setParameter('deadline', $deadline)
+//      ->setParameter('deadline1', $deadline1)
+//      ->orderBy('t.time', 'ASC');
 
     $qb = $this->createQueryBuilder('t');
     $qb
-      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
-      ->andWhere('t.isDeleted <> 1')
+      ->where('t.isDeleted <> 1')
       ->andWhere('t.company = :company')
+      ->andWhere('t.status = :status')
       ->setParameter(':company', $company)
-      ->setParameter('start', $startDate)
-      ->setParameter('end', $endDate)
+      ->setParameter(':status', TaskStatusData::ZAPOCETO)
       ->orderBy('t.time', 'ASC');
 
     $query = $qb->getQuery();
     $taskovi = $query->getResult();
+
     $lista = [];
     foreach ($taskovi as $tsk) {
 
       $lista[] = [
         'task' => $tsk,
 //         'sort' => $this->sortTask($tsk),
-        'status' => $this->taskStatus($tsk),
+        'status' => $tsk->getStatus(),
         'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($tsk),
         'car' => $this->getEntityManager()->getRepository(Car::class)->findBy(['id' => $tsk->getCar()]),
         'driver' => $this->getEntityManager()->getRepository(User::class)->findBy(['id' => $tsk->getDriver()])
@@ -1823,6 +2069,84 @@ class TaskRepository extends ServiceEntityRepository {
 
     return $lista;
   }
+
+  public function getTasksByDate(DateTimeImmutable $datum): array  {
+    $company = $this->security->getUser()->getCompany();
+    $deadline = $datum->modify('+ 1 day')->format('Y-m-d 00:00:00');
+    $deadline1 = $datum->format('Y-m-d 00:00:00');
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where('t.deadline BETWEEN :deadline1 AND :deadline')
+      ->andWhere('t.datumKreiranja BETWEEN :deadline1 AND :deadline')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
+      ->setParameter('deadline', $deadline)
+      ->setParameter('deadline1', $deadline1)
+      ->orderBy('t.time', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+    $lista = [];
+    foreach ($taskovi as $tsk) {
+
+      $lista[] = [
+        'task' => $tsk,
+//         'sort' => $this->sortTask($tsk),
+        'status' => $tsk->getStatus(),
+        'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($tsk),
+        'car' => $this->getEntityManager()->getRepository(Car::class)->findBy(['id' => $tsk->getCar()]),
+        'driver' => $this->getEntityManager()->getRepository(User::class)->findBy(['id' => $tsk->getDriver()])
+      ];
+    }
+//    dd($lista);
+
+//    usort($lista, function ($a, $b) {
+//      return $a['sort'] <=> $b['sort'];
+//    });
+
+    return $lista;
+  }
+
+  public function getTasksHome(): array  {
+    $company = $this->security->getUser()->getCompany();
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->andWhere('t.status == :status')
+      ->setParameter(':company', $company)
+      ->setParameter(':status', TaskStatusData::ZAPOCETO)
+      ->orderBy('t.time', 'ASC');
+
+    $query = $qb->getQuery();
+    //
+//    $lista = [];
+//    foreach ($taskovi as $tsk) {
+//
+//      $lista[] = [
+//        'task' => $tsk,
+////         'sort' => $this->sortTask($tsk),
+//        'status' => $tsk->getStatus(),
+//        'logStatus' => $this->getEntityManager()->getRepository(TaskLog::class)->getLogStatus($tsk),
+//        'car' => $this->getEntityManager()->getRepository(Car::class)->findBy(['id' => $tsk->getCar()]),
+//        'driver' => $this->getEntityManager()->getRepository(User::class)->findBy(['id' => $tsk->getDriver()])
+//      ];
+//    }
+////    dd($lista);
+//
+////    usort($lista, function ($a, $b) {
+////      return $a['sort'] <=> $b['sort'];
+////    });
+
+    return $query->getResult();
+  }
+
+
+
 
   public function sortTask(Task $task): int {
 
@@ -1926,6 +2250,7 @@ class TaskRepository extends ServiceEntityRepository {
     $task->setProject($checklist->getProject());
     $task->setCategory($checklist->getCategory());
     $task->setDatumKreiranja($checklist->getDatumKreiranja());
+    $task->setDeadline($checklist->getDeadline());
     $task->setTime($checklist->getTime());
     $task->setTitle($checklist->getProject()->getTitle() . ' - ' . $checklist->getDatumKreiranja()->format('d.m.Y'));
     $task->setDescription($checklist->getTask());
@@ -1946,7 +2271,7 @@ class TaskRepository extends ServiceEntityRepository {
 
     foreach ($checklist->getPdfs() as $pdf) {
       $task->addPdf($pdf);
-    };
+    }
 
     $this->save($task);
 
@@ -1964,6 +2289,7 @@ class TaskRepository extends ServiceEntityRepository {
         $task->setTitle($priprema->getProject()->getTitle() . ' - ' . $priprema->getVreme()->format('d.m.Y'));
         $task->setPriorityUserLog($priprema->getPriorityUserLog());
         $task->setDatumKreiranja($plan->getDatumKreiranja()->setTime(0,0));
+        $task->setDeadline($plan->getDatumKreiranja()->modify('+1 day')->setTime(0,0));
         $task->setTime($priprema->getVreme());
         $task->setDescription($priprema->getDescription());
 
@@ -1989,6 +2315,7 @@ class TaskRepository extends ServiceEntityRepository {
 
         $task->setCar($priprema->getCar());
         $task->setDriver($priprema->getDriver());
+        $task->setIsSeparate(true);
 
         $task = $this->saveTask($task, $plan->getCreatedBy(), null);
 
@@ -2008,6 +2335,7 @@ class TaskRepository extends ServiceEntityRepository {
           $task->setCreatedBy($plan->getCreatedBy());
           $task->setTask($priprema->getDescription());
           $task->setDatumKreiranja($priprema->getVreme());
+          $task->setDeadline($plan->getDatumKreiranja()->modify('+1 day')->setTime(0,0));
           $task->setUser($user);
 
           $task = $this->getEntityManager()->getRepository(ManagerChecklist::class)->save($task);
@@ -3204,7 +3532,21 @@ class TaskRepository extends ServiceEntityRepository {
     return count($zadaci);
   }
 
+  public function countActiveTasks(): int {
+    $company = $this->security->getUser()->getCompany();
 
+    $zadaci = $this->createQueryBuilder('t')
+      ->select('t.id')
+      ->where('t.status <> 4')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
+      ->getQuery()
+      ->getResult();
+
+    return count($zadaci);
+
+  }
   public function countTasksInMonth(Project $project, $start, $end): int {
 
     $startDate = $start->format('Y-m-d 00:00:00');
@@ -3224,7 +3566,38 @@ class TaskRepository extends ServiceEntityRepository {
     return count($zadaci);
 
   }
+  public function getDaysRemaining(Task $task): array {
+    $poruka = '';
+    $klasa = '';
+    $klasa1 = '';
+    $now = new DateTimeImmutable();
+    $now->setTime(0,0);
 
+    if (!is_null($task->getDeadline())) {
+      $contractEndDate = $task->getDeadline();
+      // Izračunavanje razlike između trenutnog datuma i datuma kraja ugovora
+      $days = (int) $now->diff($contractEndDate)->format('%R%a');
+
+      if ($days > 0 && $days < 7) {
+        $poruka = 'Rok za završetak zadatka ističe za ' . $days . ' dana.';
+        $klasa = 'bg-info bg-opacity-50';
+      } elseif ($days == 0) {
+        $poruka = 'Rok za završetak zadatka ističe danas.';
+        $klasa = 'bg-warning bg-opacity-50';
+        $klasa1 = 'bg-warning bg-opacity-10';
+      } elseif ($days < 0) {
+        $poruka = 'Rok za završetak zadatka je istekao pre ' . abs($days) . ' dana.';
+        $klasa = 'bg-danger bg-opacity-50';
+        $klasa1 = 'bg-danger bg-opacity-10';
+      }
+    }
+
+    return [
+      'klasa' => $klasa,
+      'poruka' => $poruka,
+      'klasa1' => $klasa1
+    ];
+  }
 
 //    /**
 //     * @return Task[] Returns an array of Task objects
@@ -3250,4 +3623,70 @@ class TaskRepository extends ServiceEntityRepository {
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+  public function getTasksByDateAndProjectFreeOther(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project): array  {
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('t.project = :project')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.isFree = 1')
+//      ->andWhere('t.status = 3')
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->setParameter('project', $project->getId())
+      ->orderBy('t.created', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+    $lista = [];
+    foreach ($taskovi as $tsk) {
+      $primaryUser = $this->getEntityManager()->getRepository(User::class)->find($tsk->getPriorityUserLog());
+      $lista[] = [
+        'task' => $tsk,
+        'datum' => $tsk->getDatumKreiranja(),
+        'status' => $tsk->getStatus(),
+        'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $primaryUser]),
+        'logAll' => $tsk->getTaskLogs(),
+      ];
+    }
+    return $lista;
+  }
+  public function getTasksByDateAndProjectOther(DateTimeImmutable $start, DateTimeImmutable $stop, Project $project): array  {
+
+    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere('t.project = :project')
+      ->andWhere('t.isDeleted <> 1')
+      ->andWhere('t.isFree <> 1')
+      ->setParameter('start', $startDate)
+      ->setParameter('end', $endDate)
+      ->setParameter('project', $project->getId())
+      ->orderBy('t.created', 'ASC');
+
+    $query = $qb->getQuery();
+    $taskovi = $query->getResult();
+
+    $lista = [];
+    foreach ($taskovi as $tsk) {
+      $primaryUser = $this->getEntityManager()->getRepository(User::class)->find($tsk->getPriorityUserLog());
+      $lista[] = [
+        'task' => $tsk,
+        'datum' => $tsk->getDatumKreiranja(),
+        'status' => $tsk->getStatus(),
+        'log' => $this->getEntityManager()->getRepository(TaskLog::class)->findOneBy(['task' => $tsk, 'user' => $primaryUser]),
+        'logAll' => $tsk->getTaskLogs(),
+      ];
+    }
+    return $lista;
+  }
 }

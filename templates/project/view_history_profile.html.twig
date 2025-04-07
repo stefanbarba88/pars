@@ -63,7 +63,7 @@
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Rok:</div>
-                                            <div class="col-8">{{ projectH.deadline ? projectH.deadline | date("d.m.Y") : '/' }}</div>
+                                            <div class="col-8">{{ projectH.deadline ? projectH.deadline | date("d.m.Y.") : '/' }}</div>
                                         </div>
                                         <div class="row p-2">
                                             <div class="col-4">Kategorija:</div>
@@ -113,7 +113,7 @@
 {#                                                        ){% if not loop.last %}<br>{% endif %}#}
 {#                                                    {% endfor %}#}
 {#                                                {% else %}#}
-{#                                                    Nema zaduženih timova na ovom projektu#}
+{#                                                    Nema Zaposlenih timova na ovom projektu#}
 {#                                                {% endif %}#}
 {#                                            </div>#}
 {#                                        </div>#}
@@ -266,7 +266,7 @@
                                             </div>
                                             <div class="row p-2">
                                                 <div class="col-4">Vreme:</div>
-                                                <div class="col-8">{{ projectHistory.created | date("d.m.Y") }} u {{ projectHistory.created | date("H:i:s") }}</div>
+                                                <div class="col-8">{{ projectHistory.created | date("d.m.Y.") }} u {{ projectHistory.created | date("H:i:s") }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -291,7 +291,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

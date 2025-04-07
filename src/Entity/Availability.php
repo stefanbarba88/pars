@@ -20,6 +20,9 @@ class Availability {
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
   private ?DateTimeImmutable $datum = null;
 
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $vreme = null;
+
   #[ORM\Column]
   private ?int $type = AvailabilityData::NEDOSTUPAN;
 
@@ -199,6 +202,19 @@ class Availability {
   }
 
 
+  /**
+   * @return string|null
+   */
+  public function getVreme(): ?string {
+    return $this->vreme;
+  }
+
+  /**
+   * @param string|null $vreme
+   */
+  public function setVreme(?string $vreme): void {
+    $this->vreme = $vreme;
+  }
 
 
 }

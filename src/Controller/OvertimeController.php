@@ -26,8 +26,11 @@ class OvertimeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_login'));
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $args = [];
 
@@ -53,8 +56,11 @@ class OvertimeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_login'));
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $args = [];
 
@@ -80,8 +86,14 @@ class OvertimeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_login'));
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $overtime->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     if ($request->isMethod('POST')) {
 
@@ -124,8 +136,10 @@ class OvertimeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getCompany() != $overtime->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     if ($request->isMethod('POST')) {
 
       $user = $this->em->getRepository(User::class)->find($request->request->get('overtime_zaduzeni'));
@@ -166,8 +180,14 @@ class OvertimeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_login'));
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $overtime->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['overtime'] = $overtime;
 
@@ -180,8 +200,14 @@ class OvertimeController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_login'));
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $overtime->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $overtime->setStatus(1);
     $this->em->getRepository(Overtime::class)->save($overtime);
@@ -194,6 +220,15 @@ class OvertimeController extends AbstractController {
   public function decline(Overtime $overtime): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $overtime->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $overtime->setStatus(2);
     $this->em->getRepository(Overtime::class)->save($overtime);

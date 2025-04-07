@@ -40,6 +40,15 @@ class PdfRepository extends ServiceEntityRepository {
     return $pdf;
   }
 
+  public function savePdf(Pdf $pdf): Pdf {
+
+    if (is_null($pdf->getId())) {
+      $this->getEntityManager()->persist($pdf);
+    }
+
+    $this->getEntityManager()->flush();
+    return $pdf;
+  }
 
   public function remove(Pdf $entity, bool $flush = false): void {
     $this->getEntityManager()->remove($entity);

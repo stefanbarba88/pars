@@ -30,7 +30,7 @@
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
                             <h5 class="mb-0">
-                                Lista nezadužene opreme
+                                Lista nezdužene opreme
                             </h5>
                         </div>
                         <form method="get" action="{{ path('app_tools_available') }}" class="form-validate-jquery" novalidation="novalidation">
@@ -66,7 +66,7 @@
                                                 &#8597;
                                             {% endif %}
                                         </th>
-                                        <th>Zaduženi</th>
+                                        <th>Zaposleni</th>
                                         <th  {% if pagination.isSorted('[c.isSuspended]') %} class="sorted"{% endif %}>
                                             {{ knp_pagination_sortable(pagination, 'Status ', ['c.isSuspended']) }}
                                             {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.isSuspended' %}
@@ -166,7 +166,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

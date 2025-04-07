@@ -32,9 +32,8 @@ class Settings {
   #[ORM\Column(nullable: true)]
   private ?int $minKm = 500;
 
-  #[ORM\Column(nullable: true)]
-  private ?int $workWeek = 6;
-
+  #[ORM\Column(type: Types::TEXT, nullable: true)]
+  private ?string $workWeek = null;
 
 
   #[ORM\ManyToOne]
@@ -63,16 +62,22 @@ class Settings {
   private bool $isWidgete = true;
 
   #[ORM\Column]
-  private bool $isPlanToday = true;
+  private bool $isPlanToday = false;
+
+  #[ORM\Column]
+  private bool $isAllUsers = true;
 
   #[ORM\Column]
   private bool $isPlanTomorrow = false;
 
   #[ORM\Column]
-  private bool $isPlanEmployee = true;
+  private bool $isPlanEmployee = false;
 
   #[ORM\Column]
   private bool $isTool = false;
+
+  #[ORM\Column(length: 255, nullable: true)]
+  private ?string $email = null;
 
   #[ORM\Column]
   private bool $isCalendar = false;
@@ -231,18 +236,14 @@ class Settings {
     return $this;
   }
 
-  /**
-   * @return int|null
-   */
-  public function getWorkWeek(): ?int {
-    return $this->workWeek;
+  public function getWorkWeek(): ?array {
+    return json_decode($this->workWeek, true);
   }
 
-  /**
-   * @param int|null $workWeek
-   */
-  public function setWorkWeek(?int $workWeek): void {
-    $this->workWeek = $workWeek;
+
+  public function setWorkWeek(?array $workWeek): self {
+    $this->workWeek = json_encode($workWeek);
+    return $this;
   }
 
   /**
@@ -439,6 +440,28 @@ class Settings {
    */
   public function setIsGeolocation(bool $isGeolocation): void {
     $this->isGeolocation = $isGeolocation;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isAllUsers(): bool {
+    return $this->isAllUsers;
+  }
+
+  /**
+   * @param bool $isAllUsers
+   */
+  public function setIsAllUsers(bool $isAllUsers): void {
+    $this->isAllUsers = $isAllUsers;
+  }
+
+  public function getEmail(): ?string {
+    return $this->email;
+  }
+
+  public function setEmail(?string $email): void {
+    $this->email = $email;
   }
 
 

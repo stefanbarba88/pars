@@ -58,12 +58,12 @@
                                         </div>
                                         <div class="row p-2">
                                             <div class="col-4">Datum registracije:</div>
-                                            <div class="col-8">{{ carH.datumRegistracije | date("d.m.Y")}}
+                                            <div class="col-8">{{ carH.datumRegistracije | date("d.m.Y.")}}
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Datum naredne registracije:</div>
-                                            <div class="col-8">{{ carH.datumNaredneRegistracije | date("d.m.Y")}}
+                                            <div class="col-8">{{ carH.datumNaredneRegistracije | date("d.m.Y.")}}
                                             </div>
                                         </div>
                                         <div class="row p-2">
@@ -117,7 +117,7 @@
                                             </div>
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Vreme:</div>
-                                                <div class="col-8">{{ carHistory.created | date("d.m.Y") }} u {{ carHistory.created | date("H:i:s") }}</div>
+                                                <div class="col-8">{{ carHistory.created | date("d.m.Y.") }} u {{ carHistory.created | date("H:i:s") }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -142,7 +142,7 @@
         </div>
         <!-- /main content -->
 
-        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

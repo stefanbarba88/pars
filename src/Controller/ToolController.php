@@ -48,8 +48,14 @@ class ToolController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
-    $args = [];
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
 
+    $args = [];
     $search = [];
 
     $search['naziv'] = $request->query->get('naziv');
@@ -84,6 +90,15 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $tool->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     $form = $this->createForm(ToolTypeFormType::class, $tool, ['attr' => ['action' => $this->generateUrl('app_tool_type_form', ['id' => $tool->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -114,7 +129,15 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $tool->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     if ($tool->isSuspended()) {
       $tool->setIsSuspended(false);
@@ -149,8 +172,15 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
 
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
+    $args = [];
     $search = [];
 
     $search['naziv'] = $request->query->get('naziv');
@@ -183,8 +213,14 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
 
+    $args = [];
     $search = [];
 
     $search['naziv'] = $request->query->get('naziv');
@@ -217,8 +253,14 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
 
+    $args = [];
     $search = [];
 
     $search['naziv'] = $request->query->get('naziv');
@@ -251,8 +293,14 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args = [];
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
 
+    $args = [];
     $search = [];
 
     $search['naziv'] = $request->query->get('naziv');
@@ -286,6 +334,15 @@ class ToolController extends AbstractController {
   public function form(Request $request, Tool $tool): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $tool->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $type = $request->query->getInt('type');
     $history = null;
@@ -332,6 +389,15 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $tool->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['tool'] = $tool;
 
     return $this->render('tool/view.html.twig', $args);
@@ -341,6 +407,15 @@ class ToolController extends AbstractController {
   public function delete(Tool $tool, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $tool->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $type = $request->query->getInt('type');
 
@@ -391,6 +466,15 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $tool->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args = [];
     $args['tool'] = $tool;
 
@@ -431,6 +515,15 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $tool->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args = [];
     $args['tool'] = $tool;
     $reservations = $this->em->getRepository(ToolReservation::class)->getReservationsByToolPaginator($tool);
@@ -461,11 +554,21 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $tool->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     $type = $request->query->getInt('type');
     $user = $this->getUser();
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $reservation->setUser($user);
-    }
+//    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$korisnik->isAdmin()) {
+//      $reservation->setUser($user);
+//    }
 
     $form = $this->createForm(ToolReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_tool_reservation_form', ['id' => $tool->getId(), 'type' => $type])]]);
     if ($request->isMethod('POST')) {
@@ -505,13 +608,16 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $type = $request->query->getInt('type');
     $user = $this->getUser();
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    $type = $request->query->getInt('type');
+
     $reservation = new ToolReservation();
     $reservation->setCompany($user->getCompany());
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $reservation->setUser($user);
-    }
+    $reservation->setUser($user);
 
     $form = $this->createForm(ToolReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_tool_reservation_user_form')]]);
     if ($request->isMethod('POST')) {
@@ -535,11 +641,7 @@ class ToolController extends AbstractController {
     }
     $args['form'] = $form->createView();
     $args['reservation'] = $reservation;
-    $mobileDetect = new MobileDetect();
 
-    if($mobileDetect->isMobile()) {
-      return $this->render('tool/phone/form_reservation_employee_details_form_user.html.twig', $args);
-    }
     return $this->render('tool/form_reservation_employee_details_form_user.html.twig', $args);
   }
 
@@ -548,7 +650,15 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $reservation->getTool()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $type = $request->query->getInt('type');
     $form = $this->createForm(ToolStopReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_tool_reservation_stop', ['id' => $reservation->getId(), 'type' => $type])]]);
     if ($request->isMethod('POST')) {
@@ -579,6 +689,15 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $reservation->getTool()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['reservation'] = $reservation;
 
     return $this->render('tool/view_reservation.html.twig', $args);
@@ -591,6 +710,9 @@ class ToolController extends AbstractController {
     }
 
     $user = $this->getUser();
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $form = $this->createForm(ToolStopReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_tool_employee_reservation_stop', ['id' => $reservation->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -609,10 +731,6 @@ class ToolController extends AbstractController {
     $args['tool'] = $reservation->getTool();
     $args['user'] = $user;
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('tool/phone/form_reservation_stop_employee.html.twig', $args);
-    }
     return $this->render('tool/form_reservation_stop_employee.html.twig', $args);
   }
 
@@ -622,12 +740,14 @@ class ToolController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $user = $this->getUser();
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['reservation'] = $reservation;
     $args['user'] = $this->getUser();
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('tool/phone/view_reservation_employee.html.twig', $args);
-    }
+
+
     return $this->render('tool/view_reservation_employee.html.twig', $args);
   }
 
@@ -712,6 +832,14 @@ class ToolController extends AbstractController {
     }
 
     $user = $this->getUser();
+
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    if ($user->getCompany() != $reservation->getTool()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $form = $this->createForm(ToolStopReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_tool_employee_reservation_stop_details', ['id' => $reservation->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -730,10 +858,6 @@ class ToolController extends AbstractController {
     $args['tool'] = $reservation->getTool();
     $args['user'] = $user;
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('tool/phone/form_reservation_stop_employee.html.twig', $args);
-    }
     return $this->render('tool/form_reservation_stop_employee.html.twig', $args);
   }
 
@@ -749,11 +873,15 @@ class ToolController extends AbstractController {
 
     $user = $this->getUser();
 
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $reservation->setUser($user);
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
 
+    if ($user->getCompany() != $reservation->getTool()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
+    $reservation->setUser($user);
 
     $form = $this->createForm(ToolReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_employee_reservation_details_tool_form', ['id' => $tool->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -778,10 +906,7 @@ class ToolController extends AbstractController {
     $args['form'] = $form->createView();
     $args['tool'] = $tool;
     $args['reservation'] = $reservation;
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('tool/phone/form_reservation_employee_details_form_user.html.twig', $args);
-    }
+
     return $this->render('tool/form_reservation_employee_details_form_user.html.twig', $args);
   }
 }

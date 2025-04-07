@@ -28,7 +28,7 @@
                     <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Nezatvoreni dnevnici u predhodnih 7 dana</h5>
+                            <h5 class="mb-0">Nezatvoreni dnevnici</h5>
                         </div>
                         <div class="card-body">
                             <div class="card">
@@ -37,9 +37,13 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Zadatak</th>
-                                        <th>Zaduženi</th>
+                                        <th>Kategorija</th>
                                         <th>Projekat</th>
                                         <th>Datum zadatka</th>
+                                        <th>Rok</th>
+                                        <th>Zaposleni</th>
+                                        <th>Status</th>
+                                        <th>Prioritet</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
@@ -50,15 +54,17 @@
                                             <td>{{ task.log.task.id }}</td>
                                             <td>
                                                 <div class="fw-semibold">
-                                                    {% if app.user.userType != 4 %}
-                                                        <a href="{{ path('app_task_view', { id: task.log.task.id}) }}">{{ task.log.task.title }}</a>
-                                                    {% else %}
+                                                    {% if app.user.userType == 4 and not admin %}
                                                         <a href="{{ path('app_task_view_user', { id: task.log.task.id}) }}">{{ task.log.task.title }}</a>
+                                                    {% else %}
+                                                        <a href="{{ path('app_task_view', { id: task.log.task.id}) }}">{{ task.log.task.title }}</a>
                                                     {% endif %}
                                                 </div>
                                             </td>
                                             <td>
-                                                {{ task.log.user.fullName }}
+                                                {% if task.log.task.category %}
+                                                    {{ task.log.task.category.title }}
+                                                {% endif %}
                                             </td>
                                             <td>
                                                 {% if task.log.task.project %}
@@ -68,9 +74,47 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ task.log.task.datumKreiranja | date("d.m.Y")}}
+                                                    {{ task.log.task.datumKreiranja | date("d.m.Y.")}}
                                                 </div>
                                             </td>
+                                            <td>
+                                                {% if task.log.task.deadline is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ task.log.task.deadline | date("d.m.Y.")}}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {{ task.log.user.fullName }}
+                                            </td>
+
+                                            <td>
+                                                {% if task.log.task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                    <span class="badge bg-secondary text-primary">Nije startovan</span>
+                                                {% endif %}
+                                                {% if task.log.task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                    <span class="badge bg-yellow text-primary">Otvoren</span>
+                                                {% endif %}
+                                                {% if task.log.task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                    <span class="badge bg-primary text-white">Zatvoren</span>
+                                                {% endif %}
+                                                {% if task.log.task.status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                                                    <span class="badge bg-success text-white">Verifikovano</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                {% if task.log.task.priority == 1 %}
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                {% elseif task.log.task.priority == 2 %}
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                {% elseif task.log.task.priority == 4 %}
+                                                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                {% elseif task.log.task.priority == 5 %}
+                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                {% endif %}
+                                            </td>
+
 
                                             <td class="text-center">
                                                 <div class="dropdown">
@@ -78,7 +122,7 @@
                                                         <i class="ph-gear"></i>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
-                                                        {% if is_granted('ROLE_EMPLOYEE') %}
+                                                        {% if is_granted('ROLE_EMPLOYEE') and not admin%}
                                                             {% if app.user in task.log.task.getAssignedUsers %}
                                                                 <a href="{{ path('app_task_view_user', { id: task.log.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                             {% endif %}
@@ -116,7 +160,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

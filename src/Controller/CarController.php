@@ -53,6 +53,12 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $search = [];
 
     $search['naziv'] = $request->query->get('naziv');
@@ -83,6 +89,12 @@ class CarController extends AbstractController {
   public function reserved(PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $search = [];
 
@@ -115,6 +127,12 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $search = [];
 
     $search['naziv'] = $request->query->get('naziv');
@@ -145,6 +163,12 @@ class CarController extends AbstractController {
   public function archive(PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $search = [];
 
@@ -178,6 +202,15 @@ class CarController extends AbstractController {
   public function form(Request $request, Car $car): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $car->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $type = $request->query->getInt('type');
     $history = null;
@@ -223,6 +256,15 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $car->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     $args['car'] = $car;
     $args['lastReservation'] = $car->getCarReservations()->last();
@@ -234,6 +276,15 @@ class CarController extends AbstractController {
   public function delete(Car $car, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $car->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $type = $request->query->getInt('type');
 
@@ -330,6 +381,15 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $car->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args = [];
 
     $cars = $this->em->getRepository(CarReservation::class)->getReservationsByCarPaginator($car);
@@ -362,6 +422,15 @@ class CarController extends AbstractController {
   public function formReservation(CarReservation $reservation, Car $car, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $car->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $type = $request->query->getInt('type');
     $user = $this->getUser();
@@ -407,16 +476,27 @@ class CarController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
 
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $car->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     $args['reservations'] = $car->getCarReservations();
+    $images = [];
+
+    foreach ($args['reservations'] as $res) {
+      $images[] = $res->getImage()->toArray();
+    }
+
+    $args['images'] = array_merge(...array_filter($images));
+
     $args['car'] = $car;
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('car/view_images.html.twig', $args);
-      }
-      return $this->render('car/phone/view_images.html.twig', $args);
-    }
     return $this->render('car/view_images.html.twig', $args);
   }
 
@@ -426,11 +506,10 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $user = $this->getUser();
-    if($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      if ($user != $reservation->getDriver()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
+    $korisnik = $this->getUser();
+
+    if ($korisnik->getCompany() != $reservation->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
 
     $form = $this->createForm(CarImageFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_image_form', ['id' => $reservation->getId()])]]);
@@ -462,7 +541,7 @@ class CarController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::CAR_ADD_IMAGE);
 
-        if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+        if ($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$korisnik->isAdmin()) {
           return $this->redirectToRoute('app_home');
         }
         return $this->redirectToRoute('app_car_images_view', ['id' => $reservation->getCar()->getId()]);
@@ -472,15 +551,7 @@ class CarController extends AbstractController {
     $args['form'] = $form->createView();
     $args['reservation'] = $reservation;
     $args['car'] = $reservation->getCar();
-    $args['user'] = $user;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      if($user->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('car/add_image_reservation.html.twig', $args);
-      }
-      return $this->render('car/phone/add_image_reservation.html.twig', $args);
-    }
+    $args['user'] = $korisnik;
 
     return $this->render('car/add_image_reservation.html.twig', $args);
   }
@@ -489,6 +560,16 @@ class CarController extends AbstractController {
   public function stopReservation(CarReservation $reservation, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $reservation->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
 
     $type = $request->query->getInt('type');
@@ -520,6 +601,15 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $reservation->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['reservation'] = $reservation;
 
     return $this->render('car/view_reservation.html.twig', $args);
@@ -529,6 +619,15 @@ class CarController extends AbstractController {
   public function listExpenses(Car $car, PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $car->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args = [];
     $cars = $this->em->getRepository(Expense::class)->getExpensesByCarPaginator($car);
@@ -558,6 +657,15 @@ class CarController extends AbstractController {
   public function formExpense(Expense $expense, Car $car, Request $request): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $car->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $type = $request->query->getInt('type');
 
@@ -594,6 +702,15 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $expense->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_expense_edit', ['id' => $expense->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -626,13 +743,22 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $expense->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['expense'] = $expense;
 
     return $this->render('car/view_expense.html.twig', $args);
   }
 
 
-
+//zaduzivanje vozila iz profila zaposlenog
   #[Route('/form-employee-reservation/{id}', name: 'app_car_employee_reservation_form', defaults: ['id' => 0])]
   #[Entity('reservation', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -643,13 +769,14 @@ class CarController extends AbstractController {
 
     $user = $this->getUser();
 
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      $reservation->setDriver($user);
-    } else {
-      if (!is_null($request->get('user'))) {
-        $reservation->setDriver($this->em->getRepository(User::class)->find($request->get('user')));
-      }
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
+
+    if ($user->getCompany() != $reservation->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
 
     $form = $this->createForm(CarReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_form', ['id' => $reservation->getId()])]]);
     if ($request->isMethod('POST')) {
@@ -675,14 +802,6 @@ class CarController extends AbstractController {
     $args['reservation'] = $reservation;
     $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
 
-    $mobileDetect = new MobileDetect();
-
-    if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('car/form_reservation.html.twig', $args);
-      }
-      return $this->render('car/phone/form_reservation_employee.html.twig', $args);
-    }
     return $this->render('car/form_reservation_employee.html.twig', $args);
   }
 
@@ -693,6 +812,14 @@ class CarController extends AbstractController {
     }
 
     $user = $this->getUser();
+
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    if ($user->getCompany() != $reservation->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $form = $this->createForm(CarStopReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_stop', ['id' => $reservation->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -711,13 +838,6 @@ class CarController extends AbstractController {
     $args['car'] = $reservation->getCar();
     $args['user'] = $user;
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('car/form_reservation_stop_employee.html.twig', $args);
-      }
-      return $this->render('car/phone/form_reservation_stop_employee.html.twig', $args);
-    }
     return $this->render('car/form_reservation_stop_employee.html.twig', $args);
   }
 
@@ -727,16 +847,18 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $user = $this->getUser();
+
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    if ($user->getCompany() != $reservation->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['reservation'] = $reservation;
     $args['user'] = $this->getUser();
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('car/view_reservation_employee.html.twig', $args);
-      }
-      return $this->render('car/phone/view_reservation_employee.html.twig', $args);
-    }
     return $this->render('car/view_reservation_employee.html.twig', $args);
   }
 
@@ -751,16 +873,20 @@ class CarController extends AbstractController {
     }
     $user = $this->getUser();
 
-    if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
       return $this->redirect($this->generateUrl('app_home'));
     }
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      $form = $this->createForm(PhoneExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_form', ['id' => $car->getId()])]]);
-    } else {
-      $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_form', ['id' => $car->getId()])]]);
+    if ($user->getCompany() != $expense->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
+
+//    $mobileDetect = new MobileDetect();
+//    if($mobileDetect->isMobile()) {
+//      $form = $this->createForm(PhoneExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_form', ['id' => $car->getId()])]]);
+//    } else {
+      $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_form', ['id' => $car->getId()])]]);
+//    }
 
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -784,9 +910,9 @@ class CarController extends AbstractController {
     $args['expense'] = $expense;
     $args['user'] = $user;
 
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/form_expense_employee.html.twig', $args);
-    }
+//    if($mobileDetect->isMobile()) {
+//      return $this->render('car/phone/form_expense_employee.html.twig', $args);
+//    }
     return $this->render('car/form_expense_employee.html.twig', $args);
   }
 
@@ -798,16 +924,15 @@ class CarController extends AbstractController {
     }
     $user = $this->getUser();
 
-    if ($user->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
       return $this->redirect($this->generateUrl('app_home'));
     }
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      $form = $this->createForm(PhoneExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_edit', ['id' => $expense->getId()])]]);
-    } else {
-      $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_edit', ['id' => $expense->getId()])]]);
+    if ($user->getCompany() != $expense->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
+
+    $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_edit', ['id' => $expense->getId()])]]);
 
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -831,9 +956,6 @@ class CarController extends AbstractController {
     $args['expense'] = $expense;
     $args['user'] = $user;
 
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/form_expense_employee.html.twig', $args);
-    }
     return $this->render('car/form_expense_employee.html.twig', $args);
   }
 
@@ -843,13 +965,18 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args['expense'] = $expense;
-    $args['user'] = $this->getUser();
+    $user = $this->getUser();
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/view_expense_employee.html.twig', $args);
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
+
+    if ($user->getCompany() != $expense->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+    $args['expense'] = $expense;
+    $args['user'] = $user;
+
     return $this->render('car/view_expense_employee.html.twig', $args);
   }
 
@@ -859,7 +986,16 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $user = $this->getUser();
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $expense->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
 
     $type = $request->query->getInt('type');
 
@@ -875,19 +1011,27 @@ class CarController extends AbstractController {
 
 
     if ($type == 1) {
-      return $this->redirectToRoute('app_employee_car_view', ['id' => $user->getId()]);
+      return $this->redirectToRoute('app_employee_car_view', ['id' => $korisnik->getId()]);
     }
     return $this->redirectToRoute('app_cars_expenses', ['id' => $expense->getCar()->getId()]);
 
   }
 
+
+  //zaduzivanje kroz zaduzivanje na pocetnoj strani
   #[Route('/view-details-car-tools/', name: 'app_car_tools_details_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function viewDetailsCarTools(): Response {
     if (!$this->isGranted('ROLE_USER') || (!$this->getUser()->getCompany()->getSettings()->isCar() && !$this->getUser()->getCompany()->getSettings()->isTool())) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args['user'] = $this->getUser();
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() == UserRolesData::ROLE_ADMIN) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    $args['user'] = $korisnik;
 
     $args['reservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $this->getUser()], ['id' => 'desc']);
     if (!is_null($args['reservation'])) {
@@ -908,9 +1052,9 @@ class CarController extends AbstractController {
     if($mobileDetect->isMobile()) {
       return $this->render('car/phone/view_details_car_tools.html.twig', $args);
     }
-
     return $this->render('car/view_details_car_tools.html.twig', $args);
   }
+
 
   #[Route('/stop-employee-reservation-details/{id}', name: 'app_car_employee_reservation_stop_details')]
   public function stopEmployeeReservationDetails(CarReservation $reservation, Request $request): Response {
@@ -919,6 +1063,15 @@ class CarController extends AbstractController {
     }
 
     $user = $this->getUser();
+
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    if ($user->getCompany() != $reservation->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     $form = $this->createForm(CarStopReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_stop_details', ['id' => $reservation->getId()])]]);
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -937,10 +1090,6 @@ class CarController extends AbstractController {
     $args['car'] = $reservation->getCar();
     $args['user'] = $user;
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/form_reservation_stop_employee.html.twig', $args);
-    }
     return $this->render('car/form_reservation_stop_employee.html.twig', $args);
   }
 
@@ -952,8 +1101,16 @@ class CarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-
     $user = $this->getUser();
+
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    if ($user->getCompany() != $reservation->getCar()->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
       $reservation->setDriver($user);
       $reservation->setKmStart($car->getKm());
@@ -984,12 +1141,19 @@ class CarController extends AbstractController {
     $args['reservation'] = $reservation;
     $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/form_reservation_employee.html.twig', $args);
-    }
     return $this->render('car/form_reservation_employee.html.twig', $args);
   }
+
+
+
+
+
+
+
+
+
+
+
 
 
   #[Route('/reports', name: 'app_car_reports')]

@@ -53,7 +53,7 @@ class PhoneTaskFormType extends AbstractType {
     $settings = $company->getSettings();
     $datum = $dataObject->getTask()->getDatumKreiranja();
 
-    if ($settings->isCalendar()) {
+    if (!$settings->isAllUsers()) {
       $builder->add('assignedUsers', EntityType::class, [
         'class' => User::class,
         'choices' => $this->em->getUsersAvailable($datum),
@@ -190,12 +190,13 @@ class PhoneTaskFormType extends AbstractType {
         'widget' => 'single_text',
         'input' => 'datetime_immutable',
       ])
-//      ->add('deadline', DateType::class, [
-//        'required' => false,
-//        'widget' => 'single_text',
-//        'input' => 'datetime_immutable',
-//        'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
-//      ])
+      ->add('deadline', DateType::class, [
+        'required' => false,
+        'widget' => 'single_text',
+        'input' => 'datetime_immutable',
+        'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
+      ])
+      ->add('title')
 //      ->add('datumKreiranja', DateType::class, [
 //        'required' => true,
 //        'widget' => 'single_text',
@@ -268,14 +269,22 @@ class PhoneTaskFormType extends AbstractType {
 //        'expanded' => false,
 //        'multiple' => false,
 //      ])
-//      ->add('isExpenses', ChoiceType::class, [
-//        'attr' => [
-//          'data-minimum-results-for-search' => 'Infinity',
-//        ],
-//        'choices' => PotvrdaData::form(),
-//        'expanded' => false,
-//        'multiple' => false,
-//      ])
+      ->add('isExpenses', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+      ->add('isSeparate', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
 
       ->add('isTimeRoundUp', ChoiceType::class, [
         'attr' => [
@@ -313,11 +322,12 @@ class PhoneTaskFormType extends AbstractType {
         'multiple' => false,
         'data' => $settings->getRoundingInterval(),
       ])
-      ->add('isPriority', ChoiceType::class, [
+      ->add('priority', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],
-        'choices' => PotvrdaData::form(),
+        'placeholder' => '--Izaberite nivo prioriteta--',
+        'choices' => PrioritetData::form(),
         'expanded' => false,
         'multiple' => false,
       ])
@@ -360,7 +370,7 @@ class PhoneTaskFormType extends AbstractType {
             new File([
               'mimeTypes' => 'application/pdf',
               'maxSize' => '5120k',
-              'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5Mb.',
+              'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5MB.',
               'mimeTypesMessage' => 'Molimo Vas postavite dokument u .pdf formatu.'
             ])
           ])

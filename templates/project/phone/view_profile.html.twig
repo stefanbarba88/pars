@@ -57,7 +57,7 @@
                                         </div>
                                         <div class="row p-2 bg">
                                             <div class="col-4">Rok:</div>
-                                            <div class="col-8">{{ project.deadline ? project.deadline | date("d.m.Y") : '/' }}</div>
+                                            <div class="col-8">{{ project.deadline ? project.deadline | date("d.m.Y.") : '/' }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Kategorija:</div>
@@ -114,7 +114,7 @@
                                                     {{ project.createdBy.getFullName() }}
                                                 {% else %}
                                                     <a href="{{ path('app_user_profile_view', { id: project.createdBy.id}) }}">{{ project.createdBy.getFullName() }}</a>
-                                                {% endif %} - {{ project.created | date("d.m.Y") }} u {{ project.created | date("H:i:s") }}
+                                                {% endif %} - {{ project.created | date("d.m.Y.") }} u {{ project.created | date("H:i:s") }}
                                             </div>
                                         </div>
                                     </div>
@@ -264,7 +264,7 @@
                                                 </div>
                                                 <div class="row p-2  bg-light">
                                                     <div class="col-4">Vreme:</div>
-                                                    <div class="col-8">{{ project.updated | date("d.m.Y") }} u {{ project.updated | date("H:i:s") }}</div>
+                                                    <div class="col-8">{{ project.updated | date("d.m.Y.") }} u {{ project.updated | date("H:i:s") }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -291,7 +291,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

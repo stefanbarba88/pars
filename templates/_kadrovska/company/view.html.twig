@@ -113,7 +113,7 @@
                                         </div>
                                         <div class="row p-2">
                                             <div class="col-4">Vreme:</div>
-                                            <div class="col-8">{{ company.created | date("d.m.Y") }} u {{ company.created | date("H:i:s") }}</div>
+                                            <div class="col-8">{{ company.created | date("d.m.Y.") }} u {{ company.created | date("H:i:s") }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -135,11 +135,11 @@
                                             <div class="col-8">{{ company.adresa }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
-                                            <div class="col-4">Telefon #1:</div>
+                                            <div class="col-4">Službeni telefon:</div>
                                             <div class="col-8">{{ company.telefon1 | default('/') }}</div>
                                         </div>
                                         <div class="row p-2">
-                                            <div class="col-4">Telefon #2:</div>
+                                            <div class="col-4">Privatni telefon:</div>
                                             <div class="col-8">{{ company.telefon2 | default('/') }}</div>
                                         </div>
                                         <div class="row p-2 bg-light">
@@ -160,7 +160,7 @@
                                             </div>
                                             <div class="row p-2 bg-light">
                                                 <div class="col-4">Vreme:</div>
-                                                <div class="col-8">{{ company.updated | date("d.m.Y") }} u {{ company.updated | date("H:i:s") }}</div>
+                                                <div class="col-8">{{ company.updated | date("d.m.Y.") }} u {{ company.updated | date("H:i:s") }}</div>
                                             </div>
                                         </div>
                                     </div>

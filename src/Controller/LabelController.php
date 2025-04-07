@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Classes\Data\ColorsData;
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\UserRolesData;
 use App\Classes\ResponseMessages;
 use App\Entity\Label;
 use App\Form\LabelFormType;
@@ -26,6 +27,13 @@ class LabelController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
     $args = [];
 
     $labels = $this->em->getRepository(Label::class)->getLabelsPaginator();
@@ -50,34 +58,18 @@ class LabelController extends AbstractController {
   public function form(Request $request, Label $label)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $label->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $label->setEditBy($this->getUser());
 
     $form = $this->createForm(LabelFormType::class, $label, ['attr' => ['action' => $this->generateUrl('app_label_form', ['id' => $label->getId()])]]);
-
-// ajax
-//    if ($request->isMethod('POST')) {
-//      $jsonArgs = [];
-//
-//      $form->handleRequest($request);
-//
-//      if ($form->isSubmitted() && $form->isValid()) {
-//        $label = $this->em->getRepository(label::class)->save($label);
-//        $jsonArgs['label'] = $label;
-//        $jsonArgs['success'] = ResponseMessages::SUCCESS;
-//      }
-//
-//      if (!$form->isValid()) {
-//        $jsonArgs['success'] = 0;
-//        $jsonArgs['error'] = ResponseMessages::ERROR_FORM_NOT_VALID;
-//
-//        $jsonArgs['errors'] = [];
-//        foreach ($form->getErrors(true) as $error) {
-//          $jsonArgs['errors'][] = $error->getMessage();
-//        }
-//      }
-//
-//      return $this->json($jsonArgs);
-//  }
 
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -108,6 +100,16 @@ class LabelController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function view(Label $label)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $label->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['label'] = $label;
 

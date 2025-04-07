@@ -40,22 +40,9 @@ class UserEditInfoFormType extends AbstractType {
 
     $userType = $dataObject->getUser()->getUserType();
     $builder
-//      ->add('slava', DateType::class, [
-//        'required' => false,
-//        'widget' => 'single_text',
-//        'format' => 'dd.MM.yyyy',
-//        'html5' => false,
-//        'input' => 'datetime_immutable'
-//      ])
+
       ->add('ime')
       ->add('prezime')
-      ->add('datumRodjenja', DateType::class, [
-        'required' => false,
-        'widget' => 'single_text',
-        'format' => 'dd.MM.yyyy',
-        'html5' => false,
-        'input' => 'datetime_immutable'
-      ])
       ->add('pol', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
@@ -64,8 +51,15 @@ class UserEditInfoFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ]);
-    if ($userType != 1 and $userType != 2) {
+    if ($userType != 1 and $userType != 2 and $userType != 5) {
       $builder
+        ->add('slava', DateType::class, [
+          'required' => false,
+          'widget' => 'single_text',
+          'format' => 'dd.MM.yyyy',
+          'html5' => false,
+          'input' => 'datetime_immutable'
+        ])
         ->add('isPrvaPomoc', ChoiceType::class, [
           'attr' => [
             'data-minimum-results-for-search' => 'Infinity',
@@ -90,7 +84,13 @@ class UserEditInfoFormType extends AbstractType {
           'expanded' => false,
           'multiple' => false,
         ])
-
+        ->add('datumRodjenja', DateType::class, [
+          'required' => false,
+          'widget' => 'single_text',
+          'format' => 'dd.MM.yyyy',
+          'html5' => false,
+          'input' => 'datetime_immutable'
+        ])
 //      ->add('jmbg', TextType::class, [
 //        'constraints' => [
 //          new Regex('/^\d{13}$/', 'JMBG morate uneti u odgovarajućem formatu'),
@@ -101,22 +101,22 @@ class UserEditInfoFormType extends AbstractType {
 //          'minlength' => '13',
 //        ],
 //      ])
-        ->add('isMobile', ChoiceType::class, [
-          'attr' => [
-            'data-minimum-results-for-search' => 'Infinity',
-          ],
-          'choices' => PotvrdaData::form(),
-          'expanded' => false,
-          'multiple' => false,
-        ])
-        ->add('isLaptop', ChoiceType::class, [
-          'attr' => [
-            'data-minimum-results-for-search' => 'Infinity',
-          ],
-          'choices' => PotvrdaData::form(),
-          'expanded' => false,
-          'multiple' => false,
-        ])
+//        ->add('isMobile', ChoiceType::class, [
+//          'attr' => [
+//            'data-minimum-results-for-search' => 'Infinity',
+//          ],
+//          'choices' => PotvrdaData::form(),
+//          'expanded' => false,
+//          'multiple' => false,
+//        ])
+//        ->add('isLaptop', ChoiceType::class, [
+//          'attr' => [
+//            'data-minimum-results-for-search' => 'Infinity',
+//          ],
+//          'choices' => PotvrdaData::form(),
+//          'expanded' => false,
+//          'multiple' => false,
+//        ])
         ->add('grad', EntityType::class, [
           'class' => City::class,
           'query_builder' => function (EntityRepository $em) {
@@ -133,26 +133,48 @@ class UserEditInfoFormType extends AbstractType {
         ->add('telefon1', TextType::class, [
           'required' => false,
           'constraints' => [
-            new Regex('/^\d{1,10}$/', 'Broj telefona#1 morate uneti u odgovarajućem formatu'),
+            new Regex('/^\d{1,10}$/', 'Broj službenog morate uneti u odgovarajućem formatu'),
           ],
           'attr' => [
             'maxlength' => '10'
           ],
         ])
-        ->add('neradniDan', ChoiceType::class, [
-          'required' => false,
-          'placeholder' => '--Izaberite neradni dan--',
-          'attr' => [
-            'data-minimum-results-for-search' => 'Infinity',
-          ],
-          'choices' => NeradniDanData::form(),
-          'expanded' => false,
-          'multiple' => false,
-        ])
+//        ->add('neradniDan', ChoiceType::class, [
+//          'required' => false,
+//          'placeholder' => '--Izaberite neradni dan--',
+//          'attr' => [
+//            'data-minimum-results-for-search' => 'Infinity',
+//          ],
+//          'choices' => NeradniDanData::form(),
+//          'expanded' => false,
+//          'multiple' => false,
+//        ])
         ->add('telefon2', TextType::class, [
           'required' => false,
           'constraints' => [
-            new Regex('/^\d{1,10}$/', 'Broj telefona#2 morate uneti u odgovarajućem formatu'),
+            new Regex('/^\d{1,10}$/', 'Broj službenog morate uneti u odgovarajućem formatu'),
+          ],
+          'attr' => [
+            'maxlength' => '10'
+          ],
+        ]);
+    }
+    if ($userType == 5) {
+      $builder
+        ->add('telefon1', TextType::class, [
+          'required' => false,
+          'constraints' => [
+            new Regex('/^\d{1,10}$/', 'Broj službenog morate uneti u odgovarajućem formatu'),
+          ],
+          'attr' => [
+            'maxlength' => '10'
+          ],
+        ])
+
+        ->add('telefon2', TextType::class, [
+          'required' => false,
+          'constraints' => [
+            new Regex('/^\d{1,10}$/', 'Broj službenog morate uneti u odgovarajućem formatu'),
           ],
           'attr' => [
             'maxlength' => '10'

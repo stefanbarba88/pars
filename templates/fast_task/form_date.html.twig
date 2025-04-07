@@ -35,7 +35,7 @@
                         <form name="task_quick_form" method="post" action="{{ path('app_quick_tasks_form_date') }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="task_quick_form">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-3">
                                         <div class="mb-1">
                                             <label class="form-label" for="task_form_datum">Datum:*</label>
                                             <div class="input-group">
@@ -47,6 +47,7 @@
                                             <span class="form-text">Format: 31.12.1900.</span>
                                         </div>
                                     </div>
+
                                 </div>
 
                                 <div class="text-end">
@@ -71,7 +72,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

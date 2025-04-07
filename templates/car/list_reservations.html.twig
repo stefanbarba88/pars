@@ -36,12 +36,20 @@
                                     {% if lastReservation is null %}
                                         <a href="{{ path('app_car_reservation_form', { id : car.id }) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
                                     {% else %}
-                                        {% if lastReservation.finished is not null %}
-                                            <a href="{{ path('app_car_reservation_form', { id : car.id }) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
-                                        {% else %}
-                                            <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Slike</a>
-                                            <a href="{{ path('app_car_reservation_stop', { id: lastReservation.id}) }}" class="btn btn-primary"> Razdužite</a>
-                                        {% endif %}
+                                        <div class="dropdown">
+                                            <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                <i class="ph-gear"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                {% if lastReservation.finished is not null %}
+                                                    <a href="{{ path('app_car_reservation_form', { id : car.id }) }}" class="dropdown-item"><i class="ph-plus me-2"></i> Dodajte</a>
+                                                {% else %}
+                                                    <a href="{{ path('app_car_image_form', {id:lastReservation.id}) }}" class="dropdown-item"><i class="ph-image me-2"></i> Slike</a>
+                                                    <a href="{{ path('app_car_reservation_stop', { id: lastReservation.id}) }}" class="dropdown-item"><i class="ph-minus me-2"></i> Razdužite</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
                                     {% endif %}
                                 {% endif %}
                             </div>
@@ -53,7 +61,7 @@
                                     <tr>
                                         <th>Vozač</th>
                                         <th  {% if pagination.isSorted('[u.created]') %} class="sorted"{% endif %}>
-                                            {{ knp_pagination_sortable(pagination, 'Zadužen ', 'u.created', {'alias': 'u'}) }}
+                                            {{ knp_pagination_sortable(pagination, 'Zaposleni ', 'u.created', {'alias': 'u'}) }}
                                             {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'u.created' %}
                                                 &#8595;
                                             {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'u.created' %}
@@ -84,14 +92,14 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ reservation.created | date("d.m.Y")}}
+                                                    {{ reservation.created | date("d.m.Y.")}}
                                                 </div>
                                             </td>
                                             <td>
                                                 {% if reservation.finished is not null %}
                                                     <div class="d-inline-flex align-items-center">
                                                         <i class="ph-calendar me-2"></i>
-                                                        {{ reservation.finished | date("d.m.Y")}}
+                                                        {{ reservation.finished | date("d.m.Y.")}}
                                                     </div>
                                                 {% endif %}
                                             </td>
@@ -136,7 +144,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

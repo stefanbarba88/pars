@@ -39,9 +39,31 @@ class CarStopReservationFormType extends AbstractType {
 
     };
 
-    $minKm = $dataObject->getReservation()->getKmStart();
-    $maxKm = $dataObject->getReservation()->getCar()->getCompany()->getSettings()->getMinKm();
 
+
+    $driver = $dataObject->getReservation()->getDriver();
+
+    if ($driver->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$driver->isAdmin()) {
+      $minKm = $dataObject->getReservation()->getKmStart();
+      $maxKm = $dataObject->getReservation()->getCar()->getCompany()->getSettings()->getMinKm();
+
+      $builder->add('kmStop', NumberType::class, [
+        'attr' => [
+          'min' => $minKm,
+          'max' => $minKm + $maxKm,
+        ],
+        'required' => true,
+        'html5' => true,
+      ]);
+    } else {
+      $builder->add('kmStop', NumberType::class, [
+        'attr' => [
+          'min' => 0,
+        ],
+        'required' => true,
+        'html5' => true,
+      ]);
+    }
 
     $builder
 
@@ -57,15 +79,7 @@ class CarStopReservationFormType extends AbstractType {
           'expanded' => false,
           'multiple' => false,
         ])
-        ->add('descStop')
-        ->add('kmStop', NumberType::class, [
-          'attr' => [
-            'min' => $minKm,
-            'max' => $minKm + $maxKm,
-          ],
-          'required' => true,
-          'html5' => true,
-        ]);
+        ->add('descStop');
   }
 
   public function configureOptions(OptionsResolver $resolver): void {

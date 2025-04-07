@@ -192,7 +192,7 @@
 {#                                <div class="row">#}
 {#                                    <div class="col-lg-6">#}
 {#                                        <div class="mb-3">#}
-{#                                            {{ form_label(form.assignedUsers, 'Zaduženi:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                            {{ form_label(form.assignedUsers, 'Zaposleni:*', {'label_attr': {'class': 'form-label'}}) }}#}
 {#                                            {{ form_widget(form.assignedUsers, {attr: { class: 'form-control select required' }}) }}#}
 {#                                            <span class="form-text">Morate dodati najmanje jednog zaposlenog sa liste kome dodeljujete zadatak.</span>#}
 {#                                        </div>#}
@@ -329,7 +329,7 @@
                                         <div class="mb-3">
                                             {{ form_label(form.pdf, 'Dokumenta:', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.pdf, {attr: { class: 'form-control file-input' }}) }}
-                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
+                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>
                                         </div>
                                     </div>
                                 </div>
@@ -375,7 +375,7 @@
                                 </div>
 
                                 <div class="text-end">
-                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk"></i></button>
                                 </div>
                             </div>
                         {{ form_end(form) }}
@@ -396,7 +396,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

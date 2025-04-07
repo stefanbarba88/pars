@@ -82,7 +82,7 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="phone_checklist_zaduzeni">Zaduženi:*</label>
+                                            <label class="form-label" for="phone_checklist_zaduzeni">Zaposleni:*</label>
                                             <select id="phone_checklist_zaduzeni" name="phone_checklist[zaduzeni][]" class="form-control required" required multiple>
                                                 {% if korisnik is defined %}
                                                     <option value="{{ korisnik.id }}" selected>{% if korisnik.pozicija is not null  %}{{ korisnik.getNameForForm }}{% else %}{{ korisnik.getFullName }}{% endif %}</option>
@@ -192,13 +192,13 @@
                                         <div class="mb-3">
                                             <label class="form-label" for="phone_checklist_pdf">Dokumenta:</label>
                                             <input type="file" id="phone_checklist_pdf" name="phone_checklist[pdf][]" accept=".pdf" data-show-upload="false" multiple="multiple" class="form-control file-input" />
-                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
+                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="text-end">
-                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk"></i></button>
                                 </div>
                             </div>
                         </form>
@@ -244,7 +244,7 @@
 {#                                <div class="row">#}
 {#                                    <div class="col-lg-6">#}
 {#                                        <div class="mb-3">#}
-{#                                            <label class="form-label" for="phone_checklist_zaduzeni">Zaduženi:*</label>#}
+{#                                            <label class="form-label" for="phone_checklist_zaduzeni">Zaposleni:*</label>#}
 {#                                            <select id="phone_checklist_zaduzeni" name="phone_checklist[zaduzeni][]" class="form-control required" required multiple>#}
 {#                                                {% for user in users %}#}
 {#                                                    {% if korisnik is defined %}#}
@@ -347,13 +347,13 @@
 {#                                        <div class="mb-3">#}
 {#                                            <label class="form-label" for="phone_checklist_pdf">Dokumenta:</label>#}
 {#                                            <input type="file" id="phone_checklist_pdf" name="phone_checklist[pdf][]" accept=".pdf" data-show-upload="false" multiple="multiple" class="form-control file-input" />#}
-{#                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>#}
+{#                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>#}
 {#                                        </div>#}
 {#                                    </div>#}
 {#                                </div>#}
 
 {#                                <div class="text-end">#}
-{#                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>#}
+{#                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk"></i></button>#}
 {#                                </div>#}
 {#                            </div>#}
 {#                        </form>#}
@@ -373,7 +373,7 @@
 
         </div>
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     <div id="modal_date_task" class="modal fade" tabindex="-1" >
         <div class="modal-dialog">

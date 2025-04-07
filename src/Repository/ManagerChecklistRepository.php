@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
+use App\Classes\CompanyInfo;
 use App\Classes\Data\InternTaskStatusData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Category;
+use App\Entity\Company;
 use App\Entity\ManagerChecklist;
 use App\Entity\Project;
 use App\Entity\User;
@@ -69,15 +71,17 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
     $company = $this->security->getUser()->getCompany();
 
-    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN || $user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN ) {
+    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN || $user->getUserType() == UserRolesData::ROLE_ADMIN || $user->isAdmin()) {
       if ($status == InternTaskStatusData::ZAVRSENO) {
         return $this->createQueryBuilder('c')
           ->where('c.company = :company')
           ->setParameter('company', $company)
-          ->andWhere('c.status = :status')
+          ->andWhere('c.status = :status or c.status = :status1')
           ->setParameter('status', $status)
+          ->setParameter('status1', InternTaskStatusData::KONVERTOVANO)
           ->orderBy('c.datumKreiranja', 'DESC')
           ->addOrderBy('c.priority', 'ASC')
+          ->addOrderBy('c.deadline', 'ASC')
           ->getQuery();
       } else {
         return $this->createQueryBuilder('c')
@@ -85,8 +89,9 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
           ->setParameter('company', $company)
           ->andWhere('c.status = :status')
           ->setParameter('status', $status)
-          ->orderBy('c.datumKreiranja', 'ASC')
+          ->orderBy('c.datumKreiranja', 'DESC')
           ->addOrderBy('c.priority', 'ASC')
+          ->addOrderBy('c.deadline', 'ASC')
           ->getQuery();
       }
     } else {
@@ -119,6 +124,56 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
   }
 
+
+  public function getDaysRemaining(ManagerChecklist $task): array {
+    $poruka = '';
+    $klasa = '';
+    $klasa1 = '';
+    $now = new DateTimeImmutable();
+    $now->setTime(0,0);
+
+    if (!is_null($task->getDeadline())) {
+      $contractEndDate = $task->getDeadline();
+      // Izračunavanje razlike između trenutnog datuma i datuma kraja ugovora
+      $days = (int) $now->diff($contractEndDate)->format('%R%a');
+
+      if ($days > 0 && $days < 7) {
+        $poruka = 'Rok za završetak zadatka ističe za ' . $days . ' dana.';
+        $klasa = 'bg-info bg-opacity-50';
+      } elseif ($days == 0) {
+        $poruka = 'Rok za završetak zadatka ističe danas.';
+        $klasa = 'bg-warning bg-opacity-50';
+        $klasa1 = 'bg-warning bg-opacity-10';
+      } elseif ($days < 0) {
+        $poruka = 'Rok za završetak zadatka je istekao pre ' . abs($days) . ' dana.';
+        $klasa = 'bg-danger bg-opacity-50';
+        $klasa1 = 'bg-danger bg-opacity-10';
+      }
+    }
+
+    return [
+      'klasa' => $klasa,
+      'poruka' => $poruka,
+      'klasa1' => $klasa1
+    ];
+  }
+
+  public function countInternTasks(Company $company): int{
+
+    $qb = $this->createQueryBuilder('c');
+
+    $qb->select($qb->expr()->count('c'))
+      ->andWhere('c.status = :status')
+      ->andWhere('c.company = :company')
+      ->setParameter(':company', $company)
+      ->setParameter(':status', InternTaskStatusData::NIJE_ZAPOCETO);
+
+    $query = $qb->getQuery();
+
+    return $query->getSingleScalarResult();
+
+  }
+
   public function getChecklistToDoPaginator(User $loggedUser) {
 
     return  $this->createQueryBuilder('c')
@@ -130,15 +185,46 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
         ->getQuery();
 
   }
+  public function getChecklistToDoHomePaginator(User $loggedUser) {
+
+    return  $this->createQueryBuilder('c')
+      ->andWhere('c.user = :user')
+      ->andWhere('c.status <> :status AND c.status <> :status1')
+      ->setParameter(':user', $loggedUser)
+      ->setParameter(':status', InternTaskStatusData::KONVERTOVANO)
+      ->setParameter(':status1', InternTaskStatusData::ZAVRSENO)
+      ->orderBy('c.status', 'ASC')
+      ->addOrderBy('c.datumKreiranja', 'ASC')
+      ->addOrderBy('c.priority', 'ASC')
+      ->getQuery();
+
+  }
+
+  public function getChecklistToDoHomeCompanyPaginator(Company $company) {
+
+    return  $this->createQueryBuilder('c')
+      ->andWhere('c.company = :company')
+      ->andWhere('c.status <> :status AND c.status <> :status1')
+      ->setParameter(':company', $company)
+      ->setParameter(':status', InternTaskStatusData::KONVERTOVANO)
+      ->setParameter(':status1', InternTaskStatusData::ZAVRSENO)
+      ->orderBy('c.status', 'DESC')
+      ->addOrderBy('c.datumKreiranja', 'ASC')
+      ->addOrderBy('c.deadline', 'ASC')
+      ->addOrderBy('c.priority', 'ASC')
+      ->getQuery();
+
+  }
 
   public function getInternTasksByDateUser(DateTimeImmutable $date, User $user): array  {
     $company = $this->security->getUser()->getCompany();
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
-    $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
+    $endDate = $date->modify('+ 1 day')->format('Y-m-d 00:00:00'); // Kraj dana
 
     $qb = $this->createQueryBuilder('t');
     $qb
       ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere($qb->expr()->between('t.deadline', ':start', ':end'))
       ->andWhere('t.status <> 4')
       ->andWhere('t.company = :company')
       ->andWhere('t.user = :user')
@@ -172,11 +258,12 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
   public function getInternTasksByDate(DateTimeImmutable $date): array  {
     $company = $this->security->getUser()->getCompany();
     $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
-    $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
+    $endDate = $date->modify('+ 1 day')->format('Y-m-d 00:00:00'); // Kraj dana
 
     $qb = $this->createQueryBuilder('t');
     $qb
       ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+      ->andWhere($qb->expr()->between('t.deadline', ':start', ':end'))
       ->andWhere('t.status <> 4')
       ->andWhere('t.company = :company')
       ->setParameter(':company', $company)
@@ -187,8 +274,20 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
     $query = $qb->getQuery();
     return $query->getResult();
   }
+  public function getInternTasksAdminHome(): Query {
+    $company = $this->security->getUser()->getCompany();
 
-  public function getTasksByProjectPaginator($filterBy, User $user, Project $project){
+    $qb = $this->createQueryBuilder('t');
+    $qb
+      ->where('t.status <> 4')
+      ->andWhere('t.company = :company')
+      ->setParameter(':company', $company)
+      ->orderBy('t.priority', 'ASC');
+
+    return $qb->getQuery();
+  }
+
+  public function getTasksByProjectPaginator($filterBy, User $user, Project $project, $admin){
     $company = $project->getCompany();
     $today = new DateTimeImmutable(); // Dohvati trenutni datum i vrijeme
 //    $endDate = $today->sub(new DateInterval('P1D')); // Trenutni datum
@@ -196,6 +295,8 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
 
     $qb = $this->createQueryBuilder('c');
+    $qb->where('c.company = :company');
+    $qb->setParameter(':company', $company);
     if (!empty($filterBy['period'])) {
 
       $dates = explode(' - ', $filterBy['period']);
@@ -209,13 +310,9 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
       $qb->setParameter('start', $startDate);
       $qb->setParameter('end', $stopDate);
 
-    } else {
-      $qb->where('c.datumKreiranja < :endDate');
-      $qb->setParameter('endDate', $endDate);
     }
 
-    $qb->andWhere('c.company = :company');
-    $qb->setParameter(':company', $company);
+
     $qb->andWhere('c.project = :projekat');
     $qb->setParameter('projekat', $project);
 
@@ -231,7 +328,7 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 //      $qb->setParameter('zaposleni', $filterBy['zaposleni']);
     }
 
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$admin) {
       $qb->andWhere('c.user = :zaposleni');
       $qb->setParameter('zaposleni', $user);
 //      $qb->join('c.assignedUsers', 'u'); // Zamijenite 'u' imenom koje odgovara vašoj entitetu za korisnike (user entity).
@@ -241,7 +338,7 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
 
     $qb->orderBy('c.status', 'ASC')
-      ->addOrderBy('c.datumKreiranja', 'ASC')
+      ->addOrderBy('c.datumKreiranja', 'DESC')
       ->addOrderBy('c.priority', 'ASC')
       ->getQuery();
 

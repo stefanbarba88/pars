@@ -91,6 +91,7 @@ class NotifyMessagesData {
 
   public const DOC_ADD = 'Uspešno ste dodali dokument.';
   public const DOC_DELETE = 'Uspešno ste obrisali dokument.';
+  public const DOC_ADD_ERROR = 'Niste uspešno dodali dokument. Premašuje veličinu od 2MB.';
 
   public const PIC_ADD = 'Uspešno ste dodali sliku.';
   public const PIC_DELETE = 'Uspešno ste obrisali sliku.';

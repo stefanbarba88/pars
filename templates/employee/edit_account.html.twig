@@ -41,9 +41,7 @@
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
-                        <!-- Left sidebar component -->
-                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
-                        <!-- /left sidebar component -->
+{{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
@@ -52,6 +50,7 @@
                                     <div class="card-header">
                                         <h5 class="mb-0">Izmena login podataka</h5>
                                     </div>
+
                                     {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
                                     <div class="card-body">
                                         <div class="row">
@@ -69,10 +68,105 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {% if user.userType() != 1 and user.userType() != 2 %}
+                                            {#                                            {% if not is_granted('ROLE_EMPLOYEE') %}#}
+
+                                            <div class="row">
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.userType, 'Tip korisnika:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.userType, {attr: { class: 'form-control select required role' }}) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 hide ROLE_EMPLOYEE">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.pozicija, 'Pozicija:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.pozicija, {attr: { class: 'form-control select pozicija' }}) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 hide ROLE_EMPLOYEE">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isAdmin, 'Administrator:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isAdmin, {attr: { class: 'form-control select pozicija' }}) }}
+                                                        <span class="form-text">Definišite da li korisnik ima administratorske priviliegije.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row KLIJENT ADMIN">
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.vrstaZaposlenja, 'Vrsta zaposlenja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.vrstaZaposlenja, {attr: { class: 'form-control select required klijentRemove adminRemove vrstaUgovora' }}) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.pocetakUgovora, 'Početak ugovora:', {'label_attr': {'class': 'form-label'}}) }}
+                                                        <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                                            {{ form_widget(form.pocetakUgovora, {attr: { class: 'form-control datepicker-date-format-custom2 ugovor1 required klijentRemove adminRemove', autocomplete : 'off' }}) }}
+                                                        </div>
+                                                        <span class="form-text">Format: 31.12.1900. Unesite datum početka radnog odnosa.</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.krajUgovora, 'Kraj ugovora:', {'label_attr': {'class': 'form-label'}}) }}
+                                                        <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                                            {{ form_widget(form.krajUgovora, {attr: { class: 'form-control datepicker-date-format-custom3 ugovor1 ugovor2 required klijentRemove adminRemove', autocomplete : 'off' }}) }}
+                                                        </div>
+                                                        <span class="form-text">Format: 31.12.1900. Unesite datum kraja radnog odnosa ukoliko se ne radi o ugovoru na neodređeno.</span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row KLIJENT ADMIN">
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.nivoObrazovanja, 'Nivo obrazovanja:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.nivoObrazovanja, {attr: { class: 'form-control select required klijentRemove adminRemove ' }}) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.zvanje, 'Zvanje:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.zvanje, {attr: { class: 'form-control select required klijentRemove adminRemove' }}) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {#                                            {% endif %}#}
+                                        {% endif %}
                                         <div class="text-end">
                                             <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                                         </div>
                                     </div>
+                                    {#                                    <div class="card-body">#}
+{#                                        <div class="row">#}
+{#                                            <div class="col-lg-6">#}
+{#                                                <div class="mb-3">#}
+{#                                                    {{ form_label(form.plainPassword, 'Lozinka:', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                    {{ form_widget(form.plainPassword, {attr: { class: 'form-control' }}) }}#}
+{#                                                    <span class="form-text">Format: Minimum 8 karaktera (obavezno jedno veliko slovo, jedno malo slovo, jedan specijalan karakter i jednu cifru). Ukoliko ne menjate lozinku ovo polje ostaje prazno </span>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                            <div class="col-lg-6">#}
+{#                                                <div class="mb-3">#}
+{#                                                    {{ form_label(form.email, 'Email:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                                    {{ form_widget(form.email, {attr: { class: 'form-control required' }}) }}#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="text-end">#}
+{#                                            <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>#}
+{#                                        </div>#}
+{#                                    </div>#}
                                     {{ form_end(form) }}
                                 </div>
                             </div>
@@ -90,7 +184,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -230,17 +324,148 @@
 {% block footerJavascript %}
 
     <script>
-        $(function () {
-            $(".role").change(function() {
-                if ($(this).val() == "4") {
+        $(document).ready(function() {
+            function updateRoleFields() {
+                let roleValue = $(".role").val();
+
+                // Resetovanje svih klasa i atributa na početno stanje
+                $('.ROLE_EMPLOYEE, .KLIJENT, .ADMIN').addClass('hide');
+                $('.pozicija, .klijentRemove, .adminRemove').removeClass('required');
+
+                if (roleValue == "4") {
                     $('.ROLE_EMPLOYEE').removeClass('hide');
-                    $('.ROLE_EMPLOYEE [input]').addClass('required');
+                    $('.pozicija').addClass('required');
+                    $('.KLIJENT').removeClass('hide');
+                    $('.klijentRemove').addClass('required');
+                } else if (roleValue == "2") {
+                    $('.ADMIN').addClass('hide');
+                    $('.adminRemove').removeClass('required');
+                } else if (roleValue == "1") {
+                    $('.ADMIN').addClass('hide');
+                    $('.adminRemove').removeClass('required');
+                } else if (roleValue == "5") {
+                    $('.KLIJENT').addClass('hide');
+                    $('.klijentRemove').removeClass('required');
                 } else {
                     $('.ROLE_EMPLOYEE').addClass('hide');
-                    $('.ROLE_EMPLOYEE [input]').removeClass('required');
+                    $('.pozicija').removeClass('required');
+                    $('.KLIJENT').removeClass('hide');
+                    $('.klijentRemove').addClass('required');
                 }
-            });
+            }
+
+            // Pokretanje funkcije pri učitavanju stranice
+            updateRoleFields();
+
+            // Pokretanje funkcije kada se promeni vrednost selekta
+            $(".role").change(updateRoleFields);
+            function updateUgovorFields() {
+                let vrstaUgovora = $(".vrstaUgovora").val();
+
+                if (vrstaUgovora == "0") {
+                    $('.ugovor1').removeClass('required');
+                    $('.ugovor2').removeClass('required');
+                    $('label[for="user_edit_account_form_pocetakUgovora"]').text(function(index, text) {
+                        return text.replace(' *', '');
+                    });
+                    $('label[for="user_edit_account_form_krajUgovora"]').text(function(index, text) {
+                        return text.replace(' *', '');
+                    });
+                } else if (vrstaUgovora == "6") {
+                    $('.ugovor1').addClass('required');
+                    $('.ugovor2').removeClass('required');
+                    $('label[for="user_edit_account_form_pocetakUgovora"]').text(function (index, text) {
+                        if (!text.includes('*')) {
+                            return text + ' *';
+                        }
+                        return text;
+                    });
+                    $('label[for="user_edit_account_form_krajUgovora"]').text(function (index, text) {
+                        return text.replace(' *', '');
+                    });
+                } else if (vrstaUgovora == "1") {
+                    $('.ugovor1').addClass('required');
+                    $('.ugovor2').removeClass('required');
+                    $('label[for="user_edit_account_form_pocetakUgovora"]').text(function(index, text) {
+                        if (!text.includes('*')) {
+                            return text + ' *';
+                        }
+                        return text;
+                    });
+                    $('label[for="user_edit_account_form_krajUgovora"]').text(function(index, text) {
+                        return text.replace(' *', '');
+                    });
+                } else {
+                    $('.ugovor1').addClass('required');
+                    $('.ugovor2').addClass('required');
+                    $('label[for="user_edit_account_form_pocetakUgovora"]').text(function(index, text) {
+                        if (!text.includes('*')) {
+                            return text + ' *';
+                        }
+                        return text;
+                    });
+                    $('label[for="user_edit_account_form_krajUgovora"]').text(function(index, text) {
+                        if (!text.includes('*')) {
+                            return text + ' *';
+                        }
+                        return text;
+                    });
+                }
+            }
+
+            // Pozivanje funkcije pri učitavanju stranice
+            updateUgovorFields();
+
+            // Pokretanje funkcije kada se promeni vrednost selekta
+            $(".vrstaUgovora").change(updateUgovorFields);
         });
+        const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom2');
+        if(dpDateCustomFormatElement2) {
+            const dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                maxDate: 'today',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
+        const dpDateCustomFormatElement3 = document.querySelector('.datepicker-date-format-custom3');
+        if(dpDateCustomFormatElement3) {
+            const dpDateCustomFormat3 = new Datepicker(dpDateCustomFormatElement3, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                minDate: 'today',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
+        // $(function () {
+        //     $(".role").change(function() {
+        //         if ($(this).val() == "4") {
+        //             $('.ROLE_EMPLOYEE').removeClass('hide');
+        //             $('.ROLE_EMPLOYEE [input]').addClass('required');
+        //             $('.zaposleni').removeClass('hide');
+        //             $('.zaposleni').addClass('required');
+        //         } else {
+        //             $('.ROLE_EMPLOYEE').addClass('hide');
+        //             $('.ROLE_EMPLOYEE [input]').removeClass('required');
+        //             $('.zaposleni').addClass('hide');
+        //             $('.zaposleni').removeClass('required');
+        //         }
+        //     });
+        // });
     </script>
 
 {% endblock footerJavascript %}

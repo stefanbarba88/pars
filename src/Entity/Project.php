@@ -18,11 +18,11 @@ use JsonSerializable;
 class Project implements JsonSerializable {
 
   public function getUploadPath(): ?string {
-    return $_ENV['PROJECT_IMAGE_PATH'] . $this->getCompany()->getId() . '/'. Slugify::slugify($this->title) . '/';
+    return $_ENV['PROJECT_IMAGE_PATH'] . $this->getCompany()->getId() . '/' . Slugify::slugify($this->title) . '/';
   }
 
   public function getThumbUploadPath(): ?string {
-    return $_ENV['PROJECT_THUMB_PATH'] . $this->getCompany()->getId() . '/'. Slugify::slugify($this->title) . '/';
+    return $_ENV['PROJECT_THUMB_PATH'] . $this->getCompany()->getId() . '/' . Slugify::slugify($this->title) . '/';
   }
 
   public function getNoProjectUploadPath(): ?string {
@@ -115,6 +115,15 @@ class Project implements JsonSerializable {
   #[ORM\Column(nullable: true)]
   private ?int $minEntry = null;
 
+  #[ORM\Column]
+  private ?bool $isExpenses = false;
+
+  #[ORM\Column]
+  private ?bool $isPhase = false;
+
+  #[ORM\Column]
+  private ?bool $isFollowing = true;
+
   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
   private ?DateTimeImmutable $deadline = null;
 
@@ -131,7 +140,8 @@ class Project implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Label::class, inversedBy: 'projects')]
   private Collection $label;
 
-  #[ORM\OneToMany(mappedBy: 'project', targetEntity: Pdf::class)]
+
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: Pdf::class, cascade: ["persist", "remove"])]
   private Collection $pdfs;
 
 //  #[ORM\ManyToMany(targetEntity: Team::class, inversedBy: 'projects')]
@@ -144,13 +154,14 @@ class Project implements JsonSerializable {
   #[ORM\OneToMany(mappedBy: 'project', targetEntity: ManagerChecklist::class)]
   private Collection $managerChecklists;
 
-  public function getCompany(): ?Company
-  {
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: Phase::class)]
+  private Collection $phase;
+
+  public function getCompany(): ?Company {
     return $this->company;
   }
 
-  public function setCompany(?Company $company): self
-  {
+  public function setCompany(?Company $company): self {
     $this->company = $company;
 
     return $this;
@@ -163,7 +174,8 @@ class Project implements JsonSerializable {
     $this->label = new ArrayCollection();
     $this->pdfs = new ArrayCollection();
 //    $this->team = new ArrayCollection();
-$this->managerChecklists = new ArrayCollection();
+    $this->managerChecklists = new ArrayCollection();
+    $this->phase = new ArrayCollection();
 
   }
 
@@ -254,7 +266,6 @@ $this->managerChecklists = new ArrayCollection();
   }
 
 
-
   /**
    * @return User|null
    */
@@ -263,7 +274,7 @@ $this->managerChecklists = new ArrayCollection();
   }
 
   public function getEditByJson(): string {
-    if(is_null($this->editBy)) {
+    if (is_null($this->editBy)) {
       return '';
     }
     return $this->editBy->getFullName();
@@ -536,7 +547,7 @@ $this->managerChecklists = new ArrayCollection();
   }
 
   public function getCurrencyJson(): string {
-    if(is_null($this->currency)) {
+    if (is_null($this->currency)) {
       return '';
     }
 
@@ -635,7 +646,7 @@ $this->managerChecklists = new ArrayCollection();
   }
 
   public function getCategoryJson(): string {
-    if(is_null($this->category)) {
+    if (is_null($this->category)) {
       return '';
     }
 
@@ -675,13 +686,11 @@ $this->managerChecklists = new ArrayCollection();
   /**
    * @return Collection<int, Pdf>
    */
-  public function getPdfs(): Collection
-  {
+  public function getPdfs(): Collection {
     return $this->pdfs;
   }
 
-  public function addPdf(Pdf $pdf): self
-  {
+  public function addPdf(Pdf $pdf): self {
     if (!$this->pdfs->contains($pdf)) {
       $this->pdfs->add($pdf);
       $pdf->setProject($this);
@@ -690,8 +699,7 @@ $this->managerChecklists = new ArrayCollection();
     return $this;
   }
 
-  public function removePdf(Pdf $pdf): self
-  {
+  public function removePdf(Pdf $pdf): self {
     if ($this->pdfs->removeElement($pdf)) {
       // set the owning side to null (unless already changed)
       if ($pdf->getProject() === $this) {
@@ -755,31 +763,90 @@ $this->managerChecklists = new ArrayCollection();
   /**
    * @return Collection<int, ManagerChecklist>
    */
-  public function getManagerChecklists(): Collection
-  {
-      return $this->managerChecklists;
+  public function getManagerChecklists(): Collection {
+    return $this->managerChecklists;
   }
 
-  public function addManagerChecklist(ManagerChecklist $managerChecklist): self
+  public function addManagerChecklist(ManagerChecklist $managerChecklist): self {
+    if (!$this->managerChecklists->contains($managerChecklist)) {
+      $this->managerChecklists->add($managerChecklist);
+      $managerChecklist->setProject($this);
+    }
+
+    return $this;
+  }
+
+  public function removeManagerChecklist(ManagerChecklist $managerChecklist): self {
+    if ($this->managerChecklists->removeElement($managerChecklist)) {
+      // set the owning side to null (unless already changed)
+      if ($managerChecklist->getProject() === $this) {
+        $managerChecklist->setProject(null);
+      }
+    }
+
+    return $this;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getIsExpenses(): ?bool {
+    return $this->isExpenses;
+  }
+
+  /**
+   * @param bool|null $isExpenses
+   */
+  public function setIsExpenses(?bool $isExpenses): void {
+    $this->isExpenses = $isExpenses;
+  }
+
+  /**
+   * @return Collection<int, Phase>
+   */
+  public function getPhase(): Collection
   {
-      if (!$this->managerChecklists->contains($managerChecklist)) {
-          $this->managerChecklists->add($managerChecklist);
-          $managerChecklist->setProject($this);
+      return $this->phase;
+  }
+
+  public function addPhase(Phase $phase): self
+  {
+      if (!$this->phase->contains($phase)) {
+          $this->phase->add($phase);
+          $phase->setProject($this);
       }
 
       return $this;
   }
 
-  public function removeManagerChecklist(ManagerChecklist $managerChecklist): self
+  public function removePhase(Phase $phase): self
   {
-      if ($this->managerChecklists->removeElement($managerChecklist)) {
+      if ($this->phase->removeElement($phase)) {
           // set the owning side to null (unless already changed)
-          if ($managerChecklist->getProject() === $this) {
-              $managerChecklist->setProject(null);
+          if ($phase->getProject() === $this) {
+              $phase->setProject(null);
           }
       }
 
       return $this;
   }
+
+  public function getIsPhase(): ?bool {
+    return $this->isPhase;
+  }
+
+  public function setIsPhase(?bool $isPhase): void {
+    $this->isPhase = $isPhase;
+  }
+
+  public function getIsFollowing(): ?bool {
+    return $this->isFollowing;
+  }
+
+  public function setIsFollowing(?bool $isFollowing): void {
+    $this->isFollowing = $isFollowing;
+  }
+
+
 
 }

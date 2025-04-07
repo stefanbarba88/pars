@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\UserRolesData;
 use App\Classes\ResponseMessages;
 use App\Entity\Category;
 use App\Form\CategoryFormType;
@@ -25,6 +26,13 @@ class CategoryController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
     $args = [];
 
     $categories = $this->em->getRepository(Category::class)->getCategoriesPaginator();
@@ -46,8 +54,18 @@ class CategoryController extends AbstractController {
   #[Route('/form/{id}', name: 'app_category_form', defaults: ['id' => 0])]
   #[Entity('category', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Category $category)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function form(Request $request, Category $category)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $category->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $category->setEditBy($this->getUser());
 
@@ -78,8 +96,18 @@ class CategoryController extends AbstractController {
 
   #[Route('/view/{id}', name: 'app_category_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(Category $category)    : Response { if (!$this->isGranted('ROLE_USER')) {
+  public function view(Category $category)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $category->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['category'] = $category;
 

@@ -1,0 +1,539 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content" xmlns="http://www.w3.org/1999/html">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Izveštaj o aktivnostima zaposlenih
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <div class="d-lg-flex align-items-lg-start">
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">{{ user.fullName }}: {{ period }}</h5>
+{#                                        <div class="my-auto ms-auto">#}
+{#                                            {% if reports[0] is not empty %}#}
+{#                                                <div class="dropdown">#}
+{#                                                    <a href="#" class="btn btn-light" data-bs-toggle="dropdown">#}
+{#                                                        <i class="ph-file-xls"></i>#}
+{#                                                    </a>#}
+{#                                                    <div class="dropdown-menu dropdown-menu-end">#}
+{#                                                        <a href="{{ path('app_employee_report_xls', {date: period, user: user.id, type:1}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Pun prikaz</a>#}
+{#                                                        #}{#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:2}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Složen prikaz</a>#}
+{#                                                        #}{#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:3}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Prost prikaz</a>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            {% endif %}#}
+{#                                        </div>#}
+                                        <div class="my-auto ms-auto">
+                                            {% if reports[0] is not empty %}
+                                                <a href="{{ path('app_employee_reports_pdf', {data: dataPdf}) }}" class="btn btn-light"><i class="ph-file-pdf me-2"></i> Izvezite</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-timer ph-2x text-primary me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ details.broj_elemenata }}</h4>
+                                                            <span class="text-muted">Broj merenja</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-clock ph-2x text-primary me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ details.ukupno_vreme }}h</h4>
+                                                            <span class="text-muted">Ukupno vreme</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="card card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-timer ph-2x text-primary me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ details.prosek_vreme }}h</h4>
+                                                            <span class="text-muted">Prosečno vreme</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card">
+                                            <table class="table table-hover table-bordered table_morecondensed">
+                                                <thead>
+                                                <tr class="table-light">
+                                                    {% if datum is defined %}
+                                                        <th>Datum</th>
+                                                    {% endif %}
+                                                    {% if opis is defined %}
+                                                        <th>Opis izvedenog posla</th>
+                                                    {% endif %}
+                                                    {% if ukupno is defined %}
+                                                        <th>Ukupno</th>
+                                                    {% endif %}
+                                                    {% if ukupnoz is defined %}
+                                                        <th>Ukupno*</th>
+                                                    {% endif %}
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% if reports is not empty %}
+                                                    {% for key, value in reports[0] %}
+                                                        <tr>
+                                                            {% if datum is defined %}
+                                                                <td>
+                                                                    <div class="fw-semibold">
+                                                                        {{ key}} ({{ value | length }})
+                                                                    </div>
+                                                                    {#                                                                <div>#}
+                                                                    {#                                                                    {% if value[0].dan == 1 %}#}
+                                                                    {#                                                                        <span class="badge bg-secondary text-primary">Praznik</span>#}
+                                                                    {#                                                                    {% elseif value[0].dan  == 3 %}#}
+                                                                    {#                                                                        <span class="badge bg-secondary text-primary">Neradni dan</span>#}
+                                                                    {#                                                                    {% elseif value[0].dan == 5 %}#}
+                                                                    {#                                                                        <span class="badge bg-secondary text-primary">Praznik i neradni dan</span>#}
+                                                                    {#                                                                    {% endif %}#}
+                                                                    {#                                                                </div>#}
+                                                                </td>
+                                                            {% endif %}
+
+                                                            {#                                                        {% if klijent is defined %}#}
+                                                            {#                                                            {% set newClient = [] %}#}
+                                                            {#                                                            <td>#}
+                                                            {#                                                                {% for report in value %}#}
+                                                            {#                                                                    {% if report.klijent |length != 0 %}#}
+                                                            {#                                                                        {% for klijent in report.klijent %}#}
+                                                            {#                                                                            {% if klijent not in newClient %}#}
+                                                            {#                                                                                {{ klijent.title }}<br>#}
+                                                            {#                                                                                {% set newClient = newClient|merge([klijent]) %}#}
+                                                            {#                                                                            {% endif %}#}
+                                                            {#                                                                        {% endfor %}#}
+                                                            {#                                                                    {% else %}#}
+                                                            {#                                                                        /#}
+                                                            {#                                                                    {% endif %}#}
+                                                            {#                                                                {% endfor %}#}
+                                                            {#                                                            </td>#}
+                                                            {#                                                        {% endif %}#}
+                                                            <td>
+                                                                <table class="table table_morecondensed table-bordered">
+                                                                    <thead class="bg-light">
+                                                                    <tr>
+                                                                        {% if opis is defined %}
+                                                                            <th>Zadatak</th>
+                                                                        {% endif %}
+                                                                        {% if opis is defined %}
+                                                                            <th>Kategorija</th>
+                                                                        {% endif %}
+                                                                        {% if opis is defined %}
+                                                                            <th>Aktivnosti</th>
+                                                                        {% endif %}
+                                                                        {% if opis is defined %}
+                                                                            <th>Obrada podataka*</th>
+                                                                        {% endif %}
+                                                                        {% if start is defined %}
+                                                                            <th>Start</th>
+                                                                        {% endif %}
+                                                                        {% if stop is defined %}
+                                                                            <th>Kraj</th>
+                                                                        {% endif %}
+                                                                        {% if razlika is defined %}
+                                                                            <th>Razlika</th>
+                                                                        {% endif %}
+                                                                        {% if razlikaz is defined %}
+                                                                            <th>Razlika*</th>
+                                                                        {% endif %}
+
+                                                                        {% if klijent is defined %}
+                                                                            <th>Klijent*</th>
+                                                                        {% endif %}
+
+                                                                        {% if napomena is defined %}
+                                                                            <th>Napomena</th>
+                                                                        {% endif %}
+
+                                                                        {% if zaduzeni is defined %}
+                                                                            <th>Izvršioci</th>
+                                                                        {% endif %}
+
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    {% if reports[2] is not empty %}
+                                                                        {% set prevTaskId = null %}
+                                                                        {% set toggleClass = false %}
+
+                                                                        {% for stopwatch in reports[2][loop.index0] %}
+                                                                            {% if prevTaskId is not null and prevTaskId != stopwatch.task.id %}
+                                                                                {% set toggleClass = not toggleClass %}
+                                                                            {% endif %}
+                                                                            {% set prevTaskId = stopwatch.task.id %}
+
+                                                                            <tr class="{% if toggleClass %}bg-light{% endif %}">
+
+                                                                                <td>
+                                                                                    {{ stopwatch.task.title }}
+                                                                                </td>
+
+                                                                                {% if opis is defined %}
+                                                                                    <td>
+                                                                                        {% if stopwatch.category is not null %}
+                                                                                            {{ stopwatch.category.title }}
+                                                                                        {% endif %}
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        {% for akt in stopwatch.activity %}
+                                                                                            {% if akt.id != constant('App\\Classes\\AppConfig::NOT_IN_LIST_ACTIVITY_ID') %}
+                                                                                                {{ akt.title }},
+                                                                                            {% endif %}
+                                                                                        {% endfor %}
+
+                                                                                        {% set sentences = stopwatch.additionalActivity|split('. ') %}
+
+                                                                                        {% for sentence in sentences %}
+                                                                                            {{ sentence }}{% if not loop.last %},{% endif %}
+                                                                                        {% endfor %}
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        {{ stopwatch.additionalDesc }}
+                                                                                    </td>
+                                                                                {% endif %}
+                                                                                {% if start is defined %}
+                                                                                    <td>
+                                                                                        {{ stopwatch.start | date("H:i")}}
+                                                                                    </td>
+                                                                                {% endif %}
+                                                                                {% if stop is defined %}
+                                                                                    <td>
+                                                                                        {{ stopwatch.stop | date("H:i")}}
+                                                                                    </td>
+                                                                                {% endif %}
+                                                                                {% if razlika is defined %}
+                                                                                    <td>
+                                                                                        {{ stopwatch.hoursReal }}:{{ stopwatch.minutesReal}}<br>
+                                                                                    </td>
+                                                                                {% endif %}
+                                                                                {% if razlikaz is defined %}
+                                                                                    <td>
+                                                                                        {{ stopwatch.hours }}:{{ stopwatch.minutes}}<br>
+                                                                                    </td>
+                                                                                {% endif %}
+
+                                                                                {% if klijent is defined %}
+                                                                                    <td>
+                                                                                        {% if stopwatch.client is not null %}{{ stopwatch.client.title }}{% endif %}
+                                                                                    </td>
+                                                                                {% endif %}
+
+                                                                                {% if napomena is defined %}
+                                                                                    <td>
+                                                                                        {% if stopwatch.description is not empty %}
+                                                                                            {{ stopwatch.description }}
+                                                                                        {% endif %}
+                                                                                    </td>
+                                                                                {% endif %}
+                                                                                {% if zaduzeni is defined %}
+
+                                                                                    <td>{{ stopwatch.user.fullName }}</td>
+                                                                                {% endif %}
+                                                                            </tr>
+                                                                        {% endfor %}
+
+                                                                    {% endif %}
+                                                                    </tbody>
+
+                                                                </table>
+                                                            </td>
+
+                                                            {% if ukupno is defined %}
+                                                                <td>
+                                                                    {{ reports[1][loop.index0]['vremeR'] }}
+                                                                    {#                                                                    {% set hoursRealTimePriority = 0 %}#}
+                                                                    {#                                                                    {% set minutesRealTimePriority = 0 %}#}
+                                                                    {#                                                                    {% for report in value %}#}
+                                                                    {#                                                                        {% set hoursRealTimePriority = hoursRealTimePriority + report.time.hoursRealTimePriority %}#}
+                                                                    {#                                                                        {% set minutesRealTimePriority = minutesRealTimePriority + report.time.minutesRealTimePriority %}#}
+                                                                    {#                                                                    {% endfor %}#}
+                                                                    {#                                                                {% if hoursRealTimePriority < 10 %}0{% endif %}{{ hoursRealTimePriority }}:{% if minutesRealTimePriority < 10 %}0{% endif %}{{minutesRealTimePriority}}#}
+                                                                </td>
+                                                            {% endif %}
+                                                            {% if ukupnoz is defined %}
+                                                                <td>
+                                                                    {{ reports[1][loop.index0]['vreme'] }}
+                                                                    {#                                                                    {% set hoursTimePriority = 0 %}#}
+                                                                    {#                                                                    {% set minutesTimePriority = 0 %}#}
+                                                                    {#                                                                    {% for report in value %}#}
+                                                                    {#                                                                        {% set hoursTimePriority = hoursTimePriority + report.time.hoursTimePriority %}#}
+                                                                    {#                                                                        {% set minutesTimePriority = minutesTimePriority + report.time.minutesTimePriority %}#}
+                                                                    {#                                                                    {% endfor %}#}
+                                                                    {#                                                                    {% if hoursTimePriority < 10 %}0{% endif %}{{ hoursTimePriority }}:{% if minutesTimePriority < 10 %}0{% endif %}{{minutesTimePriority}}#}
+                                                                </td>
+                                                            {% endif %}
+
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="9">
+                                                            <div class="text-body">
+                                                                Nema odrađenih zadataka u zadatom periodu
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if checklist is defined %}
+                                    <div class="card">
+                                        <div class="card-header d-flex align-items-center">
+                                            <h5 class="mb-0">{{ user.fullName }}: {{ period }} - interni zadaci</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="card">
+                                                <table class="table table-hover table-bordered table_morecondensed">
+                                                    <thead>
+                                                    <tr class="table-light">
+                                                        {% if datum is defined %}
+                                                            <th>Datum</th>
+                                                        {% endif %}
+
+                                                        <th>Projekat</th>
+                                                        <th>Zadatak</th>
+                                                        <th>Kategorija</th>
+
+                                                        {% if opis is defined %}
+                                                            <th>Opis izvedenog posla</th>
+                                                        {% endif %}
+
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                    {% if intern is not empty %}
+                                                        {% for check in intern %}
+                                                            <tr>
+                                                                {% if datum is defined %}
+                                                                    <td>
+                                                                        <div class="fw-semibold">
+                                                                            {{ check.datumKreiranja | date('d.m.Y.')}}
+                                                                        </div>
+                                                                    </td>
+                                                                {% endif %}
+                                                                <td>{{check.project.title }}</td>
+                                                                <td>{{check.task }}</td>
+                                                                <td>{{check.category.title }}</td>
+                                                                {% if opis is defined %}
+                                                                    <td>
+                                                                        <div>
+                                                                            {{ check.finishDesc }}
+                                                                        </div>
+                                                                    </td>
+                                                                {% endif %}
+                                                            </tr>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+
+{#{% block footerJavascript %}#}
+{#    <script type="text/javascript">#}
+{#        $(document).ready(function() {#}
+{#            var options = {#}
+{#                // target:        '#output1',   // target element(s) to be updated with server response#}
+{#                success:       editInfoResponse,  // post-submit callback#}
+{#                //         // target:        '#error',#}
+{#                //         // other available options:#}
+{#                //         //url:       url         // override for form's 'action' attribute#}
+{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#                //         //clearForm: true        // clear all form fields after successful submit#}
+{#                        resetForm: true,        // reset the form after successful submit#}
+{#                //         success:   editInfoResponse#}
+{#                //         // $.ajax options can be used here too, for example:#}
+{#                //         //timeout:   3000#}
+{#            };#}
+
+{#            // bind form using 'ajaxForm'#}
+{#            $('#infoForma').ajaxForm(options);#}
+{#        });#}
+{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
+{#        //     // for normal html responses, the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseText property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'xml' then the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseXML property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'json' then the first argument to the success callback#}
+{#        //     // is the json data object returned by the server#}
+{#        //#}
+{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
+{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
+{#        // }#}
+{#        // $(function () {#}
+{#        //     var options = {#}
+{#        //         // target:        '#error',#}
+{#        //         // other available options:#}
+{#        //         //url:       url         // override for form's 'action' attribute#}
+{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#        //         //clearForm: true        // clear all form fields after successful submit#}
+{#        //         resetForm: true,        // reset the form after successful submit#}
+{#        //         success:   editInfoResponse#}
+{#        //         // $.ajax options can be used here too, for example:#}
+{#        //         //timeout:   3000#}
+{#        //     };#}
+{#        //     // bind form using ajaxForm#}
+{#        //     $('#infoForma').submit(function() {#}
+{#        //         // inside event callbacks 'this' is the DOM element so we first#}
+{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
+{#        //         $(this).ajaxSubmit(options);#}
+{#        //#}
+{#        //         // !!! Important !!!#}
+{#        //         // always return false to prevent standard browser submit and page navigation#}
+{#        //         return false;#}
+{#        //     });#}
+{#        // });#}
+{#        //#}
+{#        function editInfoResponse(data) {#}
+{#            // 'data' is the json object returned from the server#}
+
+{#            if (data.success === 1) {#}
+{#                swal({#}
+{#                    type: 'success',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+{#            else {#}
+{#                var error = data.error_msg.toString();#}
+{#                swal({#}
+{#                    type: 'error',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+
+{#        }#}
+
+{#    </script>#}
+{#{% endblock footerJavascript %}#}

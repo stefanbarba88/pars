@@ -31,7 +31,7 @@
                         <form name="task_quick_form" method="post" action="{{ path('app_checklist_form') }}" class="form-validate-jquery" novalidation="novalidation" enctype="multipart/form-data" id="task_quick_form">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-3">
                                         <div class="mb-3">
                                             <label class="form-label" for="checklist_datum">Datum zadatka:*</label>
                                             <div class="input-group">
@@ -46,7 +46,7 @@
                                             <span class="form-text">Format: 31.12.1900. Definišete kada zadatak treba da se izvrši.</span>
                                         </div>
                                     </div>
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-3">
                                         <div class="mb-3">
                                             <label class="form-label" for="checklist_vreme">Vreme zadatka:</label>
                                             <div class="input-group">
@@ -59,7 +59,19 @@
                                             <span class="form-text">Definišete vreme kada zadatak treba da počne sa izvršavanjem.</span>
                                         </div>
                                     </div>
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="checklist_deadline">Rok:</label>
+                                            <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                                <input type="text" id="checklist_deadline" autocomplete="off" name="checklist[deadline]" class="form-control datepicker-date-format-custom-1"  />
+                                            </div>
+                                            <span class="form-text">Format: 31.12.1900. Možete definisati predviđeni kraj radova na zadatku. U suprotnom ostavite prazno.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
                                         <div class="mb-1">
                                             <label class="form-label" for="checklist[podsetnik]">Podsetnik:</label>
                                             <div class="input-group mb-1">
@@ -82,7 +94,7 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="checklist_zaduzeni">Zaduženi:*</label>
+                                            <label class="form-label" for="checklist_zaduzeni">Zaposleni:*</label>
                                             <select id="checklist_zaduzeni" name="checklist[zaduzeni][]" class="form-control required select" required multiple>
                                                 {% if korisnik is defined %}
                                                     <option value="{{ korisnik.id }}" selected>{% if korisnik.pozicija is not null  %}{{ korisnik.getNameForForm }}{% else %}{{ korisnik.getFullName }}{% endif %}</option>
@@ -191,7 +203,7 @@
                                         <div class="mb-3">
                                             <label class="form-label" for="checklist_pdf">Dokumenta:</label>
                                             <input type="file" id="checklist_pdf" name="checklist[pdf][]" accept=".pdf" data-show-upload="false" multiple="multiple" class="form-control file-input" />
-                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
+                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>
                                         </div>
                                     </div>
                                 </div>
@@ -243,7 +255,7 @@
 {#                                <div class="row">#}
 {#                                    <div class="col-lg-6">#}
 {#                                        <div class="mb-3">#}
-{#                                            <label class="form-label" for="checklist_zaduzeni">Zaduženi:*</label>#}
+{#                                            <label class="form-label" for="checklist_zaduzeni">Zaposleni:*</label>#}
 {#                                            <select id="checklist_zaduzeni" name="checklist[zaduzeni][]" class="form-control required select" required multiple>#}
 {#                                                {% for user in users %}#}
 {#                                                    {% if korisnik is defined %}#}
@@ -345,7 +357,7 @@
 {#                                        <div class="mb-3">#}
 {#                                            <label class="form-label" for="checklist_pdf">Dokumenta:</label>#}
 {#                                            <input type="file" id="checklist_pdf" name="checklist[pdf][]" accept=".pdf" data-show-upload="false" multiple="multiple" class="form-control file-input" />#}
-{#                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>#}
+{#                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>#}
 {#                                        </div>#}
 {#                                    </div>#}
 {#                                </div>#}
@@ -371,7 +383,7 @@
 
         </div>
 
-        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #} #}
+
     </div>
     <div id="modal_date_task" class="modal fade" tabindex="-1" >
         <div class="modal-dialog">
@@ -471,11 +483,29 @@
         });
     }
 
+
 {#    {% set minDate = noviDatum is defined ? noviDatum.modify('+1 day').format('d.m.Y') : (date_modify(date(), '+1 day')).format('d.m.Y') %}#}
     {% set minDate = noviDatum is defined ? noviDatum|date_modify('+1 day')|date('d.m.Y') : 'tomorrow'|date('d.m.Y') %}
     const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom-2');
     if(dpDateCustomFormatElement2) {
         const dpDateCustomFormat2 = new Datepicker(dpDateCustomFormatElement2, {
+            container: '.content-inner',
+            buttonClass: 'btn',
+            prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+            nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+            format: 'dd.mm.yyyy',
+            todayBtn: true,
+            weekStart: 1,
+            minDate: '{{ minDate }}',
+            daysOfWeekHighlighted: [0,6],
+            language: 'sr-latn',
+            // daysOfWeekDisabled: [0]
+        });
+    }
+
+    const dpDateCustomFormatElement3 = document.querySelector('.datepicker-date-format-custom-1');
+    if(dpDateCustomFormatElement3) {
+        const dpDateCustomFormat3 = new Datepicker(dpDateCustomFormatElement3, {
             container: '.content-inner',
             buttonClass: 'btn',
             prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',

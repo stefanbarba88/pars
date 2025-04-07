@@ -2,6 +2,7 @@
 
 {% block content %}
     {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
 
@@ -58,12 +59,13 @@
                             </h6>
                         </div>
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' , 'data-bs-target' : 'f2'}}) }}
-
+                        {% set minDate = task.datumKreiranja|date_modify('+1 day')|date('Y-m-d') %}
                             <div class="card-body">
                                 <div class="fw-bold border-bottom pb-2 mb-3">Datum zadatka</div>
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
+                                            <label class="form-label" for="task_form_date">Datum zadatka:</label>
                                             <div class="input-group">
 											<span class="input-group-text">
 												<i class="ph-calendar"></i>
@@ -73,25 +75,44 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.deadline, 'Rok:', {'label_attr': {'class': 'form-label'}}) }}
+                                            <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                                {{ form_widget(form.deadline, {attr: { class: 'form-control datepicker-date-format-custom1', autocomplete:'off' }}) }}
+                                            </div>
+                                            <span class="form-text">Format: 31.12.1900. Možete definisati predviđeni kraj radova na zadatku. U suprotnom ostavite prazno.</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="fw-bold border-bottom pb-2 mb-3">Osnovne informacije</div>
                                 <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            {{ form_label(form.title, 'Naziv zadatka:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.title, {attr: { class: 'form-control' }}) }}
+                                            <span class="form-text">Možete definisati naziv zadatka.</span>
+                                        </div>
+                                    </div>
                                     {% if task.project is null %}
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-4">
                                             <div class="mb-3">
                                                 {{ form_label(form.project, 'Projekat:*', {'label_attr': {'class': 'form-label'}}) }}
                                                 {{ form_widget(form.project, {attr: { class: 'form-control select required' }}) }}
                                             </div>
                                         </div>
                                     {% else %}
-                                        <div class="col-lg-6 d-none">
+                                        <div class="col-lg-4 d-none">
                                             <div class="mb-3">
                                                 {{ form_label(form.project, 'Projekat:*', {'label_attr': {'class': 'form-label'}}) }}
                                                 {{ form_widget(form.project, {attr: { class: 'form-control select required ' }}) }}
                                             </div>
                                         </div>
                                     {% endif %}
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-4">
                                         <div class="mb-3">
                                             {{ form_label(form.category, 'Kategorija:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.category, {attr: { class: 'form-control select required' }}) }}
@@ -123,7 +144,7 @@
                                         <div class="mb-3">
                                             {{ form_label(form.label, 'Oznaka:', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.label, {attr: { class: 'form-control select' }}) }}
-                                            <span class="form-text">Oznaka bliže opisuje projekat. Projekat može imati više oznaka.</span>
+                                            <span class="form-text">Oznaka bliže opisuje zadatak. Zadatak može imati više oznaka.</span>
                                         </div>
                                     </div>
                                 </div>
@@ -189,7 +210,7 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            {{ form_label(form.assignedUsers, 'Zaduženi:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_label(form.assignedUsers, 'Zaposleni:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.assignedUsers, {attr: { class: 'form-control select required' }}) }}
                                             <span class="form-text">Morate dodati najmanje jednog zaposlenog sa liste kome dodeljujete zadatak.</span>
                                         </div>
@@ -376,49 +397,43 @@
                                         <div class="mb-3">
                                             {{ form_label(form.pdf, 'Dokumenta:', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.pdf, {attr: { class: 'form-control file-input' }}) }}
-                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
+                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>
                                         </div>
                                     </div>
                                 </div>
 
 
                                 <div class="fw-bold border-bottom pb-2 mb-3" data-bs-toggle="collapse" data-bs-target="#collapse-other" aria-expanded="false">Ostala podešavanja</div>
-{#                                <div class="row collapse" id="collapse-other">#}
-{#                                    <div class="col-lg-6">#}
-{#                                        <div class="mb-3">#}
-{#                                            {{ form_label(form.deadline, 'Rok:', {'label_attr': {'class': 'form-label'}}) }}#}
-{#                                            <div class="input-group">#}
-{#											<span class="input-group-text">#}
-{#												<i class="ph-calendar"></i>#}
-{#											</span>#}
-{#                                                {{ form_widget(form.deadline, {attr: { class: 'form-control datepicker-date-format-custom1', autocomplete:'off' }}) }}#}
-{#                                            </div>#}
-{#                                            <span class="form-text">Format: 31.12.1900. Možete definisati predviđeni kraj radova na zadatku.</span>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
                                 <div class="row collapse" id="collapse-other">
-{#                                    <div class="col-lg-4">#}
-{#                                        <div class="mb-3">#}
-{#                                            {{ form_label(form.isExpenses, 'Praćenje troškova:*', {'label_attr': {'class': 'form-label'}}) }}#}
-{#                                            {{ form_widget(form.isExpenses, {attr: { class: 'form-control required select' }}) }}#}
-{#                                            <span class="form-text">Zaposleni u svom dnevniku može uneti troškove vezane za ovaj zadatak.</span>#}
-{#                                        </div>#}
-{#                                    </div>#}
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            {{ form_label(form.isExpenses, 'Praćenje troškova:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.isExpenses, {attr: { class: 'form-control required select' }}) }}
+                                            <span class="form-text">Zaposleni u svom dnevniku može uneti troškove vezane za ovaj zadatak.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
                                         <div class="mb-3">
                                             {{ form_label(form.isFree, 'Besplatan zadatak:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.isFree, {attr: { class: 'form-control required select' }}) }}
                                             <span class="form-text">Ovaj zadatak ne ulazi u obračun pri naplati.</span>
                                         </div>
                                     </div>
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-3">
                                         <div class="mb-3">
-                                            {{ form_label(form.isPriority, 'Visok prioritet:', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.isPriority, {attr: { class: 'form-control select' }}) }}
+                                            {{ form_label(form.priority, 'Prioritet:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.priority, {attr: { class: 'form-control select required' }}) }}
                                             <span class="form-text">Zadatak može biti visoko prioritetan. Takav zadatak se nalazi na vrhu liste.</span>
                                         </div>
                                     </div>
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            {{ form_label(form.isSeparate, 'Odvojeni dnevnici:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.isSeparate, {attr: { class: 'form-control select required zajedno' }}) }}
+                                            <span class="form-text">Pri odvojenim u obračun ulazi samo primarni dnevnik, u suprotnom ulazi zbir svih dnevnika. </span>
+                                        </div>
+                                    </div>
+
                                 </div>
 
                                 <input hidden="hidden" type="text" name="datumK" value="{{ task.datumKreiranja | date ('d.m.Y') }}">
@@ -446,7 +461,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% if project is defined %}
         {{ render(controller('App\\Controller\\TaskController::editDate', { task: task, project: project } )) }}
@@ -544,9 +559,9 @@
                 // Resetujemo opcije u drugom select elementu
                 $("#task_form_driver").empty();
 
-                // Proveravamo da li su izabrani zaduženi korisnici i vozilo
+                // Proveravamo da li su izabrani Zaposleni korisnici i vozilo
                 if (selectedAssignedUsers.length > 0 && selectedCar.val() !== "") {
-                    // Ako su izabrani zaduženi korisnici i vozilo, omogućujemo drugi select element i dodajemo opcije za vozače
+                    // Ako su izabrani Zaposleni korisnici i vozilo, omogućujemo drugi select element i dodajemo opcije za vozače
                     selectedAssignedUsers.each(function () {
                         var optionValue = $(this).val();
                         var optionText = $(this).text();
@@ -558,7 +573,7 @@
                     $('#task_form_driver').prop('required', true);
                     $('label[for="task_form_driver"]').text('Vozač:*');
                 } else {
-                    // Ako nisu izabrani zaduženi korisnici ili vozilo, onemogućujemo drugi select element, postavljamo opciju "--Izaberite vozača--" i vraćamo polje na neobavezno
+                    // Ako nisu izabrani Zaposleni korisnici ili vozilo, onemogućujemo drugi select element, postavljamo opciju "--Izaberite vozača--" i vraćamo polje na neobavezno
                     $("#task_form_driver").append('<option value="">--Izaberite vozača--</option>');
                     $("#task_form_driver").prop("disabled", true);
                     $('#task_form_driver').prop('required', false);
@@ -626,6 +641,22 @@
             });
         }
             {% set minDate = task.datumKreiranja|date_modify('+1 day')|date('d.m.Y') %}
+            const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom1');
+            if(dpDateCustomFormatElement1) {
+                const dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
+                    container: '.content-inner',
+                    buttonClass: 'btn',
+                    prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                    nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                    format: 'dd.mm.yyyy',
+                    todayBtn: true,
+                    weekStart: 1,
+                    minDate: '{{ minDate }}',
+                    daysOfWeekHighlighted: [0,6],
+                    language: 'sr-latn',
+                    // daysOfWeekDisabled: [0]
+                });
+            }
 
         const dpDateCustomFormatElement2 = document.querySelector('.datepicker-date-format-custom-2');
         if(dpDateCustomFormatElement2) {

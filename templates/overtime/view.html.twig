@@ -33,8 +33,32 @@
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
                                 <div class="card">
-                                    <div class="card-header">
+                                    <div class="card-header d-flex align-items-center">
                                         <h5 class="mb-0">{{ overtime.user.fullName }} - {{ overtime.datum | date('d.m.Y') }}</h5>
+                                        {% if app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_ADMIN') or app.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_SUPER_ADMIN') or app.user.isAdmin%}
+                                            <div class="my-auto ms-auto">
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-gear"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <a href="{{ path('app_overtime_view', { id: overtime.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+
+                                                            {% if overtime.status == 0  %}
+                                                                <a href="{{ path('app_overtime_allow', {id: overtime.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-check me-2"></i>
+                                                                    Dozvolite
+                                                                </a>
+                                                                <a href="{{ path('app_overtime_decline', {id: overtime.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-minus me-2"></i>
+                                                                    Odbijte
+                                                                </a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                        {% endif %}
                                     </div>
                                     <div class="card-body">
                                         <div class="row p-2">
@@ -43,7 +67,7 @@
                                         </div>
                                         <div class="row p-2 bg-light">
                                             <div class="col-4">Datum:</div>
-                                            <div class="col-8">{{ overtime.datum | date("d.m.Y")}}</div>
+                                            <div class="col-8">{{ overtime.datum | date("d.m.Y.")}}</div>
                                         </div>
                                         <div class="row p-2">
                                             <div class="col-4">Sati i minuti:</div>
@@ -104,7 +128,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

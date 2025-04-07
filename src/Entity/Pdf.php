@@ -28,6 +28,9 @@ class Pdf {
   #[ORM\ManyToOne(inversedBy: 'pdfs')]
   private ?Task $task = null;
 
+  #[ORM\Column(nullable: true)]
+  private ?int $type = null;
+
   #[ORM\Column]
   private DateTimeImmutable $created;
 
@@ -42,6 +45,9 @@ class Pdf {
 
   #[ORM\ManyToOne(inversedBy: 'pdfs')]
   private ?ManagerChecklist $managerChecklist = null;
+
+  #[ORM\ManyToOne(inversedBy: 'docs')]
+  private ?User $user = null;
 
   #[ORM\PrePersist]
   public function prePersist(): void {
@@ -146,4 +152,30 @@ class Pdf {
 
       return $this;
   }
+  public function getUser(): ?User
+  {
+    return $this->user;
+  }
+
+  public function setUser(?User $user): self
+  {
+    $this->user = $user;
+
+    return $this;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getType(): ?int {
+    return $this->type;
+  }
+
+  /**
+   * @param int|null $type
+   */
+  public function setType(?int $type): void {
+    $this->type = $type;
+  }
+
 }

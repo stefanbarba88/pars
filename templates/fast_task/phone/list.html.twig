@@ -49,7 +49,7 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ task.datumKreiranja | date("d.m.Y")}}
+                                                    {{ task.datumKreiranja | date("d.m.Y.")}}
                                                 </div>
                                             </td>
                                             <td>
@@ -85,54 +85,12 @@
                                                             <a href="{{ path('app_quick_task_edit', { id: task.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
                                                         {% endif %}
                                                         {% if task.status != constant('App\\Classes\\Data\\FastTaskData::FINAL') %}
-                                                            <a href="" data-bs-toggle="modal" data-bs-target="#modal_delete_task{{ task.id }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                            <a href="{{ path('app_quick_tasks_delete', {id: task.id} ) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
                                                         {% endif %}
                                                         {#                                                        {% if task.status != constant('App\\Classes\\Data\\FastTaskData::OPEN') and task.status != constant('App\\Classes\\Data\\FastTaskData::FINAL' ) %}#}
                                                         {#                                                            <a href="{{ path('app_email_timetable', { id: task.id}) }}" class="dropdown-item"><i class="ph-envelope me-2"></i> Pošaljite plan</a>#}
                                                         {#                                                        {% endif %}#}
                                                     </div>
-                                                    {#                                            <!-- delete task modal -->#}
-                                                    <div id="modal_delete_task{{ task.id }}" class="modal fade" tabindex="-1">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header bg-danger text-white border-0">
-                                                                    <h6 class="modal-title">Potvrda</h6>
-                                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                                </div>
-
-                                                                <div class="modal-body">
-                                                                    <p>Da li ste sigurni da želite da obrišete ovaj plan?</p>
-                                                                </div>
-
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                                                                    <a href="{{ path('app_quick_tasks_delete', {id: task.id} ) }}" id="link-stop" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- /delete task modal -->
-                                                    {#                                            <!-- close task modal -->#}
-                                                    {#                                            <div id="modal_close_task{{ task.task.id }}" class="modal fade" tabindex="-1">#}
-                                                    {#                                                <div class="modal-dialog">#}
-                                                    {#                                                    <div class="modal-content">#}
-                                                    {#                                                        <div class="modal-header bg-primary text-white border-0">#}
-                                                    {#                                                            <h6 class="modal-title">Potvrda</h6>#}
-                                                    {#                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-                                                    {#                                                        </div>#}
-
-                                                    {#                                                        <div class="modal-body">#}
-                                                    {#                                                            <p>Da li ste sigurni da želite da zatvorite otvorene dnevnike?</p>#}
-                                                    {#                                                        </div>#}
-
-                                                    {#                                                        <div class="modal-footer">#}
-                                                    {#                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>#}
-                                                    {#                                                            <a href="{{ path('app_task_close',{id: task.task.id} ) }}" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</a>#}
-                                                    {#                                                        </div>#}
-                                                    {#                                                    </div>#}
-                                                    {#                                                </div>#}
-                                                    {#                                            </div>#}
-                                                    {#                                            <!-- /close task modal -->#}
                                                 </div>
                                             </td>
                                         </tr>
@@ -164,7 +122,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

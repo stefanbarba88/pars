@@ -12,135 +12,159 @@
 
                 <!-- Content area -->
                 <div class="content">
-                    {% if  countTasksUnclosed > 0%}
+                    {% if countTasksUnclosed > 0%}
                         <div class="alert alert-danger alert-dismissible fade show">
-                            <span class="fw-semibold">Važno!</span> Imate <a href="{{ path('app_tasks_unclosed_logs') }}" class="alert-link">nezatvoren dnevnik</a> u predhodnih 7 dana. Morate prvo njega zatvoriti da bi pokrenuli današnje.
+                            <span class="fw-semibold">Važno!</span> Imate <a href="{{ path('app_tasks_unclosed_logs') }}" class="alert-link">nezatvoren dnevnik, kome je prošao rok za završetak.</a>
                         </div>
                     {% endif %}
 
-                    {% if car or tool %}
-                        <div class="my-auto ms-auto py-2">
-                            <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-squares-four me-2"></i> Zaduživanje</a>
+                    {% if (car or tool) and settings.isPlanToday %}
+                        <div class="d-flex justify-content-end pt-0 pb-2">
+                            <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary">
+                                <i class="ph-squares-four me-2"></i> Zaduživanje
+                            </a>
                         </div>
                     {% endif %}
+
                     {#                    <div class="alert alert-secondary alert-dismissible fade show">#}
 {#                        <span class="fw-semibold">Uputstvo je ažurirano 13.09.2023.</span> Preuzmite i pogledajte šta je <a href="{{ asset('/assets/manual/manual.pdf') }}" class="alert-link" download>novo</a> dodato.#}
 {#                    </div>#}
 
-{#                    {% if checklistActive is not empty %}#}
-{#                        <div class="col-xl-12">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsed_item1" aria-expanded="false" type="button">#}
-{#                                        <h5 class="mb-0">Interni zadaci</h5>#}
-{#                                        <div class="d-inline-flex ms-auto">#}
-{#                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{{ countChecklistActive }}</span>#}
-{#                                        </div>#}
-{#                                    </div>#}
+                    {% if activeStopwatch is defined %}
+                        {% set taskDays1 = getDaysRemainingTask(activeStopwatch.taskLog.task) %}
+                        <div class="row">
+                            <div class="col-sm-6 col-xl-4">
+                                <div class="card">
+                                    <div class="card-body {{ taskDays1.klasa1 }}">
+                                        <div class="d-flex mb-3">
+                                            <div class="d-inline-flex">
+                                                <span id="activeStopwatch" class="badge bg-yellow text-black me-2 " style="animation: pulse 5000ms infinite;">00:00</span>
+                                                <span class="badge bg-secondary text-primary me-2">{{ activeStopwatch.taskLog.task.category.title }}</span>
+                                                <span class="badge bg-yellow text-black me-2">Zadatak</span>
+                                                {% if activeStopwatch.taskLog.task.priority == 1 %}
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger me-2">Veoma visok</span>
+                                                {% elseif activeStopwatch.taskLog.task.priority == 2 %}
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning me-2">Visok</span>
+                                                {% elseif activeStopwatch.taskLog.task.priority == 4 %}
+                                                    <span class="badge bg-info bg-opacity-20 text-info me-2">Nizak</span>
+                                                {% elseif activeStopwatch.taskLog.task.priority == 5 %}
+                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary me-2">Veoma nizak</span>
+                                                {% endif %}
+                                                {% for labela in activeStopwatch.taskLog.task.label %}
+                                                    {{ labela.label | raw }}
+                                                {% endfor %}
+                                            </div>
 
-{#                                    <div id="collapsed_item1" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">#}
-{#                                        <div class="table-responsive">#}
-{#                                            <table class="table table-hover table-bordered table_morecondensed">#}
-{#                                                <tbody>#}
-{#                                                <tr class="table-light fw-semibold">#}
-{#                                                    <td colspan="3">Aktivni</td>#}
-{#                                                </tr>#}
-{#                                                {% for task in checklistActive | slice(0,5)%}#}
-{#                                                    <tr>#}
-{#                                                        <td>#}
-{#                                                            <div class="d-inline-flex align-items-center">#}
-{#                                                                <i class="ph-calendar me-2"></i>#}
-{#                                                                {{ task.created | date("d.m.Y")}}#}
-{#                                                            </div>#}
-{#                                                        </td>#}
-{#                                                        <td class="text-center">#}
-{#                                                            {% if task.priority == 1 %}#}
-{#                                                                <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>#}
-{#                                                            {% elseif task.priority == 2 %}#}
-{#                                                                <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>#}
-{#                                                            {% elseif task.priority == 4 %}#}
-{#                                                                <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>#}
-{#                                                            {% elseif task.priority == 5 %}#}
-{#                                                                <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>#}
-{#                                                            {% else %}#}
-{#                                                                <span class="badge bg-primary bg-opacity-50 text-white">Normalan</span>#}
-{#                                                            {% endif %}#}
-{#                                                        </td>#}
+                                            <div class="dropdown ms-auto">
+                                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                    <i class="ph-gear"></i>
+                                                </a>
 
-{#                                                        <td class="text-center">#}
-{#                                                            <a type="button" class="text-body collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ task.id }}" aria-expanded="false"><i class="ph-caret-down collapsible-indicator"></i></a>#}
-{#                                                        </td>#}
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <a href="{{ path('app_stopwatch_add_form_in_task', {id: activeStopwatch.id }) }}" class="dropdown-item"><i class="ph-plus me-2"></i> Dodajte aktivnost</a>
+                                                    <a href="{{ path('app_task_view_user', { id: activeStopwatch.taskLog.task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                    {% if activeStopwatch.taskLog.task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not activeStopwatch.taskLog.task.isDeleted and activeStopwatch.taskLog.task.createdBy == app.user %}
+                                                        <a href="{{ path('app_task_reassign', {id: activeStopwatch.taskLog.task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zaposlene</a>
+                                                    {% endif %}
+                                                    {% if not activeStopwatch.taskLog.task.isDeleted and activeStopwatch.taskLog.task.createdBy == app.user %}
+                                                        <a href="{{ path('app_task_edit_info', {id: activeStopwatch.taskLog.task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
 
-{#                                                    </tr>#}
+                                        <div>
+                                            <h6 class="mb-1"><a href="{{ path('app_task_view_user', {id: activeStopwatch.taskLog.task.id}) }}">#{{ activeStopwatch.taskLog.task.id }} - {{ activeStopwatch.taskLog.task.title }}</a></h6>
+                                            <p class="mb-2">{{ activeStopwatch.taskLog.task.description }}</p>
+                                        </div>
 
-{#                                                    <tr id="collapsed_item{{ task.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">#}
+                                        <div class="d-sm-flex align-items-sm-center flex-sm-wrap">
+                                            <div class="d-flex flex-wrap">
+                                                <div><span class="text-muted"><i class="ph-calendar me-1"></i> {{ activeStopwatch.taskLog.task.datumKreiranja | date('d.m.Y.') }}</span></div>
+                                                <div class="ms-3"><a href="{{ path('app_project_tasks_view', {id:activeStopwatch.taskLog.task.project.id}) }}"><i class="ph-circles-three me-1"></i> {{ activeStopwatch.taskLog.task.project.title }}</a></div>
+                                            </div>
 
-{#                                                        <td colspan="2">#}
-{#                                                            <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">#}
-{#                                                                {{ task.task | slice(0, 30) ~ (task.task | length > 30 ? '...' : '') }}#}
-{#                                                            </a>#}
-{#                                                        </td>#}
-{#                                                        <td class="text-center">#}
-{#                                                            {% if task.status == 0 %}#}
-{#                                                                <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="btn btn-primary">#}
-{#                                                                    <i class="ph-check"></i>#}
-{#                                                                </a>#}
-{#                                                            {% endif %}#}
-{#                                                        </td>#}
-{#                                                    </tr>#}
-{#                                                {% endfor %}#}
-{#                                                <tr class="table-light fw-semibold">#}
-{#                                                    <td colspan="2"></td>#}
-{#                                                    <td class="text-center">#}
-{#                                                        <div class="d-inline-flex mb-0">#}
-{#                                                            <a href="{{ path('app_checklist_to_do') }}" class="btn-sm btn-primary"> Vidi sve</a>#}
-{#                                                        </div>#}
-{#                                                    </td>#}
-{#                                                </tr>#}
+                                            <div class="d-inline-flex align-items-center mt-2 mt-sm-0 ms-sm-auto">
+                                                {% for assigned in activeStopwatch.taskLog.task.assignedUsers %}
+                                                    {% if app.user == assigned %}
+                                                        <a href="{{ path('app_project_tasks_view', {id:activeStopwatch.taskLog.task.project.id}) }}" class="me-1">
+                                                            <img src="{{ asset(assigned.image.thumbnail100) }}" class="rounded-circle" width="32" height="32" alt="">
+                                                        </a>
+                                                    {% else %}
+                                                        <a href="#" class="me-1">
+                                                            <img src="{{ asset(assigned.image.thumbnail100) }}" class="rounded-circle" width="32" height="32" alt="">
+                                                        </a>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% if activeStopwatch.taskLog.task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not activeStopwatch.taskLog.task.isDeleted and activeStopwatch.taskLog.task.createdBy == app.user %}
+                                                    <a href="{{ path('app_task_reassign', {id: activeStopwatch.taskLog.task.id} ) }}" class="text-body">&nbsp;<i class="ph-user-switch"></i></a>
+                                                {% endif %}
+                                                {% if activeStopwatch.taskLog.task.status != constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not activeStopwatch.taskLog.task.isDeleted and activeStopwatch.taskLog.task.createdBy == app.user %}
+                                                    <a href="{{ path('app_task_assign_add_user', {id: activeStopwatch.taskLog.task.id} ) }}"><i class="ph-plus"></i></a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
 
-{#                                                </tbody>#}
-{#                                            </table>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                    {% endif %}#}
+                                    <div class="card-footer d-flex align-items-center">
+                                                    <span>
+                                                        <i class="ph-bell-ringing me-1"></i>
+                                                        Rok: <span class="fw-semibold">
+                                                            {% if activeStopwatch.taskLog.task.deadline is not null %}
+                                                                {{ activeStopwatch.taskLog.task.deadline | date("d.m.Y.")}} {% if taskDays1.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ taskDays1.poruka }}" data-bs-original-title="{{ taskDays1.poruka }}"></i>{% endif %}
+                                                            {% endif %}
+                                                        </span>
+                                                    </span>
+
+                                        <div class="d-inline-flex mt-2 mt-sm-0 ms-auto">
+                                            <div class="dropdown d-inline-flex">
+                                                <i class="ph-lightbulb me-2"></i>
+                                                {% if activeStopwatch.taskLog.task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                    <span class="badge bg-secondary text-primary">Nije startovan</span>
+                                                {% endif %}
+                                                {% if activeStopwatch.taskLog.task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                    <span class="badge bg-yellow text-primary">Otvoren</span>
+                                                {% endif %}
+                                                {% if activeStopwatch.taskLog.task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                    <span class="badge bg-primary text-white">Zatvoren</span>
+                                                {% endif %}
+                                                {% if activeStopwatch.taskLog.task.status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                                                    <span class="badge bg-success text-white">Verifikovan</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
 
                     {% if settings.isWidgete %}
                         <div class="mb-3">
                             <div class="row row-tile g-0">
                                 <div class="col">
-                                    <a type="button" href="{{ path('app_projects') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-top-start py-2">
-                                        <i class="ph-folders bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
-                                        <h5 class="mb-0">&nbsp;
-                                        </h5>
-                                        <div class="fw-semibold">
-                                            Projekti
-                                        </div>
+                                    <a href="{{ path('app_projects') }}" class="btn btn-light btn-sm w-100 flex-column rounded-0 rounded-top-start py-1">
+                                        <i class="ph-folders bg-secondary text-primary lh-1 rounded-pill p-1 ph-2x"></i>
+                                        <h5 class="mb-0">&nbsp;</h5>
+                                        <div class="fw-semibold">Projekti</div>
                                     </a>
-                                    <a type="button" href="{{ path('app_tasks') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-start py-2">
-                                        <i class="ph-list-bullets bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                    <a href="{{ path('app_tasks') }}" class="btn btn-light btn-sm w-100 flex-column rounded-0 rounded-bottom-start py-1">
+                                        <i class="ph-list-bullets bg-secondary text-primary lh-1 rounded-pill p-1 ph-2x"></i>
                                         <h5 class="mb-0">{{ countTasksActiveByUser }}</h5>
-                                        <div class="fw-semibold">
-                                            Zadaci
-                                        </div>
+                                        <div class="fw-semibold">Zadaci</div>
                                     </a>
                                 </div>
                                 <div class="col">
-                                    <a type="button" href="{{ path('app_checklist_to_do') }}" class="btn btn-light w-100 flex-column rounded-0 rounded-top-end py-2">
-                                        <i class="ph-list-bullets bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                    <a href="{{ path('app_checklist_to_do') }}" class="btn btn-light btn-sm w-100 flex-column rounded-0 rounded-top-end py-1">
+                                        <i class="ph-list-bullets bg-secondary text-primary lh-1 rounded-pill p-1 ph-2x"></i>
                                         <h5 class="mb-0">{{ checklistActive }}</h5>
-                                        <div class="fw-semibold">
-                                            Interni
-                                        </div>
+                                        <div class="fw-semibold">Interni zadaci</div>
                                     </a>
                                     {% if calendar %}
-                                        <a type="button" href="{{ path('app_employee_calendar_view', {id:user.id}) }}" class="btn btn-light w-100 flex-column rounded-0 rounded-bottom-end py-2">
-                                            <i class="ph-calendar bg-secondary  text-primary lh-1 rounded-pill p-2 ph-2x"></i>
-                                            <h5 class="mb-0">&nbsp;
-                                            </h5>
-                                            <div class="fw-semibold">
-                                                Kalendar
-                                            </div>
+                                        <a href="{{ path('app_employee_calendar_view', {id:user.id}) }}" class="btn btn-light btn-sm w-100 flex-column rounded-0 rounded-bottom-end py-1">
+                                            <i class="ph-calendar bg-secondary text-primary lh-1 rounded-pill p-1 ph-2x"></i>
+                                            <h5 class="mb-0">{{ date('now') | date('d.m.Y.') }}</h5>
+                                            <div class="fw-semibold">Kalendar</div>
                                         </a>
                                     {% endif %}
                                 </div>
@@ -150,29 +174,25 @@
                             <div class="row row-tile g-0">
                                 <div class="col">
                                     {% if car %}
-                                        <a type="button" href="{{ path('app_employee_car_view', {id:user.id}) }}" class="btn btn-light w-100 flex-column rounded-0 rounded-start py-2">
-                                            <i class="ph-car bg-secondary bg-opacity-25 text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <a href="{{ path('app_employee_car_view', {id:user.id}) }}" class="btn btn-light btn-sm w-100 flex-column rounded-0 rounded-start py-1">
+                                            <i class="ph-car bg-secondary bg-opacity-25 text-primary lh-1 rounded-pill p-1 ph-2x"></i>
                                             <h5 class="mb-0">
                                                 {% if lastReservation is not null %}
                                                     {{ lastReservation.car.plate }}
                                                 {% else %}
-                                                &nbsp;
+                                                    &nbsp;
                                                 {% endif %}
                                             </h5>
-                                            <div class="fw-semibold">
-                                                Vozila
-                                            </div>
+                                            <div class="fw-semibold">Vozila</div>
                                         </a>
                                     {% endif %}
                                 </div>
                                 <div class="col">
                                     {% if tool %}
-                                        <a type="button" href="{{ path('app_employee_tools_view', {id:user.id}) }}" class="btn btn-light w-100 flex-column rounded-0 rounded-end py-2">
-                                            <i class="ph-wrench bg-secondary bg-opacity-25 text-primary lh-1 rounded-pill p-2 ph-2x"></i>
+                                        <a href="{{ path('app_employee_tools_view', {id:user.id}) }}" class="btn btn-light btn-sm w-100 flex-column rounded-0 rounded-end py-1">
+                                            <i class="ph-wrench bg-secondary bg-opacity-25 text-primary lh-1 rounded-pill p-1 ph-2x"></i>
                                             <h5 class="mb-0">{{ noTools }}</h5>
-                                            <div class="fw-semibold">
-                                                Oprema
-                                            </div>
+                                            <div class="fw-semibold">Oprema</div>
                                         </a>
                                     {% endif %}
                                 </div>
@@ -180,21 +200,27 @@
                         </div>
                     {% endif %}
 
-                    {% if settings.isPlanToday %}
-                        <div class="row ">
-                            <div class="col-xl-12">
 
-                                <!-- Marketing campaigns -->
-                                <div class="card">
-                                    <div class="card-header d-flex align-items-center">
-                                        <h5 class="mb-0">Zadaci {{ danas | date('d.m.Y') }}</h5>
-                                        {#                                    <div class="my-auto ms-auto">#}
-                                        {#                                        <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>#}
-                                        {#                                    </div>#}
+                    {% if settings.isPlanToday %}
+                        <div class="text-center text-muted content-divider mb-3">
+                            <span class="p-2">Plan rada za danas</span>
+                        </div>
+
+                        <div class="row">
+                        <div class="col-xl-12">
+                            <!-- Marketing campaigns -->
+                            <div class="card">
+
+                                <div class="card-header d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_plan1" aria-expanded="false" type="button">
+                                    <h5 class="mb-0">Zadaci {{ danas | date('d.m.Y.') }}</h5>
+
+                                    <div class="my-auto ms-auto">
+                                        <i class="ph-caret-down collapsible-indicator"></i>
                                     </div>
-                                    <div class="table-responsive card">
-                                        <table class="table table-hover table-bordered table_morecondensed">
-                                            <thead class="bg-light">
+                                </div>
+                                <div id="collapsed_plan1" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
+                                    <table class="table table-hover table-bordered table_morecondensed">
+                                          <thead class="bg-light">
                                             <tr>
                                                 <th>Projekat</th>
                                                 <th>Zaposleni</th>
@@ -215,16 +241,18 @@
                                                     {% if log[3] == 2 %}
                                                         <tr class="bg-secondary">
                                                     {% endif %}
-                                                    <td style="width: 40%;">
+                                                    <td class="bg-light" style="width: 40%;">
                                                         <div class="fw-semibold">
                                                             <div class="btn-group">
-                                                                <a href="#" class="fw-semibold d-inline-flex align-items-center ">
-                                                                    <a href="{{ path('app_project_tasks_view', { id: log[0].task.project.id }) }}" class="fw-semibold d-inline-flex align-items-center">
-                                                                        <span>{{ log[0].task.project.title }}{% if log[0].task.time|date('H:i') != '00:00' %} ({{ log[0].task.time|date('H:i') }}){% endif %}</span>
+                                                                <a href="#" class="d-inline-flex align-items-center">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <a href="{{ path('app_project_tasks_view', { id: log[0].task.project.id }) }}">
+                                                                            <span>{{ log[0].task.project.title }}{% if log[0].task.time|date('H:i') != '00:00' %} ({{ log[0].task.time|date('H:i') }}){% endif %}</span>
+                                                                        </a>
                                                                         {% if log[3] == 0 %}
                                                                             <div class="live p-1 mx-2"></div>
                                                                         {% endif %}
-                                                                    </a>
+                                                                    </div>
                                                                 </a>
                                                             </div>
                                                         </div>
@@ -241,26 +269,27 @@
                                                 {% endfor %}
                                             {% endif %}
                                             </tbody>
-                                        </table>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /marketing campaigns -->
+                        </div>
+                        </div>
+                        <div class="row">
+                        <div class="col-xl-12">
+                            <!-- Marketing campaigns -->
+                            <div class="card">
+
+                                <div class="card-header d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_plan2" aria-expanded="false" type="button">
+                                    <h5 class="mb-0">Interni {{ danas | date('d.m.Y.') }}</h5>
+                                    <div class="my-auto ms-auto">
+
+                                        <i class="ph-caret-down collapsible-indicator"></i>
                                     </div>
                                 </div>
-                                <!-- /marketing campaigns -->
-                            </div>
-                        </div>
-                        <div class="row ">
-                            <div class="col-xl-12">
-
-                                <!-- Marketing campaigns -->
-                                <div class="card">
-                                    <div class="card-header d-flex align-items-center">
-                                        <h5 class="mb-0">Interni zadaci {{ danas | date('d.m.Y') }}</h5>
-{#                                                                            <div class="my-auto ms-auto">#}
-{#                                                                                <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>#}
-{#                                                                            </div>#}
-                                    </div>
-                                    <div class="table-responsive card">
-                                        <table class="table table-hover table-bordered table_morecondensed">
-                                            <thead class="bg-light">
+                                <div id="collapsed_plan2" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
+                                    <table class="table table-hover table-bordered table_morecondensed">
+                                         <thead class="bg-light">
                                             <tr>
                                                 <th>Projekat</th>
                                                 <th>Zaposleni</th>
@@ -273,6 +302,421 @@
                                             {% if checklistToday is not empty %}
                                                 {% for task in checklistToday %}
                                                     {% if task.project is not null %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                            <tr>
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                            <tr class="bg-secondary">
+                                                        {% endif %}
+
+                                                        <td class="bg-light" style="width: 40%;">
+                                                            <div class="fw-semibold">
+                                                                <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.project.title }}</a>
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 50%;">
+                                                            <div class="fw-semibold">
+                                                                <div class="btn-group">
+                                                                    <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.getNameWithFirstLetter }}
+                                                                        {% if task.comment.count > 0 %}
+                                                                            <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
+                                                                        {% endif %}</a>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="test-center text-primary">
+                                                            <a href="{{ path('app_checklist_view', { id: task.id}) }}"><i class="ph-clipboard"></i></a>
+                                                        </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /marketing campaigns -->
+                        </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted content-divider mb-3">
+                            <span class="p-2">Zadaci</span>
+                        </div>
+                        <div class="row">
+                            {% for task in pagination %}
+                                {% set taskDays = getDaysRemainingTask(task) %}
+                                <div class="col-xl-4">
+                                    <div class="card">
+                                        <div class="card-body {{ taskDays.klasa1 }}">
+                                            <div class="d-flex mb-3">
+                                                <div class="d-inline-flex">
+                                                    <span class="badge bg-secondary text-primary me-2">{{ task.category.title }}</span>
+                                                    <span class="badge bg-yellow text-black me-2">Zadatak</span>
+                                                    {% if task.priority == 1 %}
+                                                        <span class="badge bg-danger bg-opacity-20 text-danger me-2">Veoma visok</span>
+                                                    {% elseif task.priority == 2 %}
+                                                        <span class="badge bg-warning bg-opacity-20 text-warning me-2">Visok</span>
+                                                    {% elseif task.priority == 4 %}
+                                                        <span class="badge bg-info bg-opacity-20 text-info me-2">Nizak</span>
+                                                    {% elseif task.priority == 5 %}
+                                                        <span class="badge bg-secondary bg-opacity-20 text-secondary me-2">Veoma nizak</span>
+                                                    {% endif %}
+                                                    {% for labela in task.label %}
+                                                        {{ labela.label | raw }}
+                                                    {% endfor %}
+                                                </div>
+
+                                                <div class="dropdown ms-auto">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_task_view_user', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted and task.createdBy == app.user %}
+                                                            <a href="{{ path('app_task_reassign', {id: task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zaposlene</a>
+                                                        {% endif %}
+                                                        {% if not task.isDeleted and task.createdBy == app.user %}
+                                                            <a href="{{ path('app_task_edit_info', {id: task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
+                                                        {% endif %}
+                                                        {#                                                        <div class="dropdown-divider"></div>#}
+                                                        {#                                                        <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>#}
+                                                        {#                                                        <a href="#" class="dropdown-item"><i class="ph-x me-2"></i> Remove</a>#}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <h6 class="mb-1"><a href="{{ path('app_task_view_user', {id: task.id}) }}">#{{ task.id }} - {{ task.title }}</a></h6>
+                                                <p class="mb-2">{{ task.description }}</p>
+                                            </div>
+
+                                            <div class="d-sm-flex align-items-sm-center flex-sm-wrap">
+                                                <div class="d-flex flex-wrap">
+                                                    <div><span class="text-muted"><i class="ph-calendar me-1"></i> {{ task.datumKreiranja | date('d.m.Y.') }}</span></div>
+                                                    <div class="ms-3"><a href="{{ path('app_project_tasks_view', {id:task.project.id}) }}"><i class="ph-circles-three me-1"></i> {{ task.project.title }}</a></div>
+                                                </div>
+
+                                                <div class="d-inline-flex align-items-center mt-2 mt-sm-0 ms-sm-auto">
+                                                    {% for assigned in task.assignedUsers %}
+                                                        {% if app.user == assigned %}
+                                                            <a href="{{ path('app_project_tasks_view', {id:task.project.id}) }}" class="me-1">
+                                                                <img src="{{ asset(assigned.image.thumbnail100) }}" class="rounded-circle" width="32" height="32" alt="">
+                                                            </a>
+                                                        {% else %}
+                                                            <a href="#" class="me-1">
+                                                                <img src="{{ asset(assigned.image.thumbnail100) }}" class="rounded-circle" width="32" height="32" alt="">
+                                                            </a>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted and task.createdBy == app.user %}
+                                                        <a href="{{ path('app_task_reassign', {id: task.id} ) }}" class="text-body">&nbsp;<i class="ph-user-switch"></i></a>
+                                                    {% endif %}
+                                                    {% if task.status != constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted and task.createdBy == app.user %}
+                                                        <a href="{{ path('app_task_assign_add_user', {id: task.id} ) }}"><i class="ph-plus"></i></a>
+                                                    {% endif %}
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-footer d-flex align-items-center">
+                                                <span>
+                                                    <i class="ph-bell-ringing me-1"></i>
+                                                    Rok: <span class="fw-semibold">
+                                                        {% if task.deadline is not null %}
+                                                            {{ task.deadline | date("d.m.Y.")}} {% if taskDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ taskDays.poruka }}" data-bs-original-title="{{ taskDays.poruka }}"></i>{% endif %}
+                                                        {% endif %}
+                                                    </span>
+                                                </span>
+
+                                            <div class="d-inline-flex mt-2 mt-sm-0 ms-auto">
+                                                <div class="dropdown d-inline-flex">
+                                                    <i class="ph-lightbulb me-2"></i>
+                                                    {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                        <span class="badge bg-secondary text-primary">Nije startovan</span>
+                                                    {% endif %}
+                                                    {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                        <span class="badge bg-yellow text-primary">Otvoren</span>
+                                                    {% endif %}
+                                                    {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                        <span class="badge bg-primary text-white">Zatvoren</span>
+                                                    {% endif %}
+                                                    {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                                                        <span class="badge bg-success text-white">Verifikovan</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="d-flex justify-content-center mt-3 mb-3">
+                            {{ knp_pagination_render(pagination) }}
+                        </div>
+                        <div class="text-center text-muted content-divider mb-3">
+                            <span class="p-2">Interni zadaci</span>
+                        </div>
+                        <div class="row">
+                            {% for task in pagination1 %}
+                                {% set taskDays = getDaysRemainingChecklist(task) %}
+                                <div class="col-xl-4">
+                                    <div class="card">
+                                        <div class="card-body {{ taskDays.klasa1 }}">
+                                            <div class="d-flex mb-3">
+                                                <div class="d-inline-flex">
+                                                    <span class="badge bg-secondary text-primary me-2">{{ task.category.title }}</span>
+                                                    <span class="badge bg-primary text-white me-2">Interni zadatak</span>
+                                                    {% if task.priority == 1 %}
+                                                        <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                    {% elseif task.priority == 2 %}
+                                                        <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                    {% elseif task.priority == 4 %}
+                                                        <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                    {% elseif task.priority == 5 %}
+                                                        <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                    {% endif %}
+                                                </div>
+
+                                                <div class="dropdown ms-auto">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="dropdown-item">
+                                                            <i class="ph-eye me-2"></i>
+                                                            Vidite
+                                                        </a>
+                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-play me-2"></i>
+                                                                Pokrenite
+                                                            </a>
+                                                            <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-check me-2"></i>
+                                                                Zatvorite
+                                                            </a>
+                                                            <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-note-pencil me-2"></i>
+                                                                Izmenite
+                                                            </a>
+                                                            <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-trash me-2"></i>
+                                                                Obrišite
+                                                            </a>
+                                                            {% if task.repeating == 1 %}
+                                                                <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-warning-circle me-2"></i>
+                                                                    Isključite ponavljanje
+                                                                </a>
+                                                            {% endif %}
+                                                            {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
+                                                                <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-magic-wand me-2"></i>
+                                                                    Konvertuj u zadatak sa merenjem
+                                                                </a>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                            <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-check me-2"></i>
+                                                                Zatvorite
+                                                            </a>
+                                                            <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-arrows-counter-clockwise me-2"></i>
+                                                                Ponovite
+                                                            </a>
+                                                            {% if task.repeating == 1 %}
+                                                                <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-warning-circle me-2"></i>
+                                                                    Isključite ponavljanje
+                                                                </a>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                            <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-arrows-counter-clockwise me-2"></i>
+                                                                Ponovite
+                                                            </a>
+                                                            {% if task.repeating == 1 %}
+                                                                <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-warning-circle me-2"></i>
+                                                                    Isključite ponavljanje
+                                                                </a>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <h6 class="mb-1"><a href="{{ path('app_checklist_view', {id: task.id}) }}">#{{ task.id }} - {{ task.project.title }}</a></h6>
+                                                <p class="mb-2">{{ task.task }}</p>
+                                            </div>
+
+                                            <div class="d-sm-flex align-items-sm-center flex-sm-wrap">
+                                                <div class="d-flex flex-wrap">
+                                                    <div><span class="text-muted"><i class="ph-calendar me-1"></i> {{ task.datumKreiranja | date('d.m.Y.') }}</span></div>
+                                                    <div class="ms-3"><a href="{{ path('app_project_tasks_view', {id:task.project.id}) }}"><i class="ph-circles-three me-1"></i> {{ task.project.title }}</a></div>
+                                                </div>
+
+                                                <div class="d-inline-flex align-items-center mt-2 mt-sm-0 ms-sm-auto">
+
+                                                    <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="me-1">
+                                                        <img src="{{ asset(task.user.image.thumbnail100) }}" class="rounded-circle" width="32" height="32" alt="">
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-footer d-flex align-items-center">
+                                                <span>
+                                                    <i class="ph-bell-ringing me-1"></i>
+                                                    Rok: <span class="fw-semibold">
+                                                        {% if task.deadline is not null %}
+                                                            {{ task.deadline | date("d.m.Y.")}} {% if taskDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ taskDays.poruka }}" data-bs-original-title="{{ taskDays.poruka }}"></i>{% endif %}
+                                                        {% endif %}
+                                                    </span>
+                                                </span>
+
+                                            <div class="d-inline-flex mt-2 mt-sm-0 ms-auto">
+                                                <div class="dropdown d-inline-flex">
+                                                    <i class="ph-lightbulb me-2"></i>
+                                                    {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                        <span class="badge bg-secondary text-primary">Nije startovan</span>
+                                                    {% endif %}
+                                                    {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                        <span class="badge bg-yellow text-primary">Otvoren</span>
+                                                    {% endif %}
+                                                    {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                        <span class="badge bg-primary text-white">Zatvoren</span>
+                                                    {% endif %}
+                                                    {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::KONVERTOVANO') %}
+                                                        <span class="badge bg-yellow text-primary">Konvertovan</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="d-flex justify-content-center mt-3 mb-3">
+                            {{ knp_pagination_render(pagination1) }}
+                        </div>
+                    {% endif %}
+
+                    {% if "now"|date("H:i") < settings.radnoVreme | date ("H:i") %}
+                        {% if settings.isPlanTomorrow %}
+                            <div class="text-center text-muted content-divider mb-3">
+                                <span class="p-2">Plan rada za sutra</span>
+                            </div>
+
+                            <div class="row ">
+                              <div class="col-xl-12">
+                                    <div class="card">
+
+                                    <div class="card-header d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_plan3" aria-expanded="false" type="button">
+                                        <h5 class="mb-0">Zadaci {{ sutra | date('d.m.Y.') }}</h5>
+                                        <div class="my-auto ms-auto">
+                                            <i class="ph-caret-down collapsible-indicator"></i>
+                                        </div>
+                                    </div>
+
+                                    <div id="collapsed_plan3" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
+                                        <table class="table table-hover table-bordered table_morecondensed">
+                                                            <thead class="bg-light">
+                                                <tr>
+                                                    <th>Projekat</th>
+                                                    <th>Zaposleni</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                {% if tomorrowTimetable is defined %}
+                                                    {% for task in tomorrowTimetable %}
+                                                        {% if task.task.project is not null %}
+                                                            <tr>
+                                                                <td class="bg-light" style="width: 40%;">
+                                                                    <div class="fw-semibold">
+                                                                        <a href="">{{ task.task.project.title }}</a>
+                                                                    </div>
+                                                                </td>
+                                                                <td >
+                                                                    {% for user in task.task.assignedUsers %}
+                                                                        <div class="fw-semibold">{{ user.getNameWithFirstLetter }}</div>
+                                                                    {% endfor %}
+                                                                </td>
+
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {% if planRadaSutra is defined %}
+                                                    {% for task in planRadaSutra.pripremaZadataks %}
+                                                        {% if task.taskType == 1 %}
+                                                            {% if task.project is not null %}
+                                                                <tr class="bg-light">
+                                                                    <td class="bg-light" style="width: 40%;">
+                                                                        <div class="fw-semibold">
+                                                                            <a href="">{{ task.project.title }}</a>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+
+                                                                            <div class="fw-semibold">
+                                                                                {% for user in task.assignedUsers %}
+                                                                                    <a href="">
+                                                                                        {{ user.getNameWithFirstLetter }}
+                                                                                    </a><br>
+                                                                                {% endfor %}
+                                                                            </div>
+
+                                                                    </td>
+
+                                                                </tr>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                </div>
+
+                            </div>
+                            <div class="row ">
+                                <div class="col-xl-12">
+                                    <!-- Marketing campaigns -->
+                                    <div class="card">
+
+                                        <div class="card-header d-flex align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#collapsed_plan4" aria-expanded="false" type="button">
+                                            <h5 class="mb-0">Interni zadaci {{ sutra | date('d.m.Y.') }}</h5>
+                                            <div class="my-auto ms-auto">
+                                                <i class="ph-caret-down collapsible-indicator"></i>
+                                            </div>
+                                        </div>
+
+                                        <div id="collapsed_plan4" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
+                                            <table class="table table-hover table-bordered table_morecondensed">
+                                                <thead class="bg-light">
+                                                <tr>
+                                                    <th>Projekat</th>
+                                                    <th>Zaposleni</th>
+
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% if checklistToday is defined and checklistToday is not empty %}
+                                                    {% for task in checklistToday %}
+                                                        {% if task.project is not null %}
                                                             {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
                                                                 <tr>
                                                             {% endif %}
@@ -283,220 +727,67 @@
                                                                 <tr class="bg-secondary">
                                                             {% endif %}
 
-                                                            <td style="width: 45%;">
+                                                            <td class="bg-light" style="width: 40%;">
                                                                 <div class="fw-semibold">
-                                                                    <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.project.title }}</a>
+                                                                    <a href="">{{ task.project.title }}</a>
                                                                 </div>
                                                             </td>
-                                                            <td style="width: 45%;">
+                                                            <td style="width: 50%;">
                                                                 <div class="fw-semibold">
                                                                     <div class="btn-group">
-                                                                        <a href="{{ path('app_checklist_view', {id:task.id}) }}">{{ task.user.getNameWithFirstLetter }}
+                                                                        <a href="">{{ task.user.getNameWithFirstLetter }}
                                                                             {% if task.comment.count > 0 %}
                                                                                 <span class="badge bg-yellow text-primary rounded-pill fw-semibold mx-2">{{ task.comment.count }}</span>
                                                                             {% endif %}</a>
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td class="test-center text-primary">
-                                                                <a href="{{ path('app_checklist_view', { id: task.id}) }}"><i class="ph-clipboard"></i></a>
-                                                            </td>
+
                                                             </tr>
                                                         {% endif %}
-                                                {% endfor %}
-                                            {% else %}
-                                                <tr>
-                                                    <td colspan="3">
-                                                        <div class="fw-semibold">
-                                                            Nema kreiranih internih zadataka za danas
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            </tbody>
-                                        </table>
+                                                    {% endfor %}
+                                                {% endif %}
+
+                                                {% if planRadaSutra is defined %}
+                                                    {% for task in planRadaSutra.pripremaZadataks %}
+                                                        {% if task.taskType == 2 %}
+                                                            {% if task.project is not null %}
+                                                                <tr class="bg-light">
+                                                                    <td class="bg-light" style="width: 40%;">
+                                                                        <div class="fw-semibold">
+                                                                            <a href="">{{ task.project.title }}</a>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="width: 50%;">
+
+                                                                        <div class="fw-semibold">
+                                                                            {% for user in task.assignedUsers %}
+                                                                                <a href="">
+                                                                                    {{ user.getNameWithFirstLetter }}
+                                                                                </a><br>
+                                                                            {% endfor %}
+                                                                        </div>
+
+                                                                    </td>
+
+                                                                </tr>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
+                                    <!-- /marketing campaigns -->
                                 </div>
-                                <!-- /marketing campaigns -->
+
                             </div>
-                        </div>
+                        {% endif %}
                     {% endif %}
 
-
-{#                    <div class="col-xl-12">#}
-
-{#                            <!-- Marketing campaigns -->#}
-{#                            <div class="card">#}
-{#                            <div class="card-header d-flex align-items-center">#}
-{#                            <h5 class="mb-0">{{ app.user.fullName }}, {{ danas | date('d.m.Y') }}</h5>#}
-{#                                    <div class="my-auto ms-auto">#}
-{#                                        <a href="{{ path('app_car_tools_details_view') }}" class="btn btn-primary"><i class="ph-gear me-2"></i> Zaduživanje</a>#}
-{#                                        <span class="badge bg-yellow rounded-pill">{{ countLogs }}</span>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <div class="table-responsive card">#}
-{#                                    <table class="table table-hover table-bordered table_morecondensed">#}
-{#                                        <thead class="bg-light">#}
-{#                                        <tr>#}
-{#                                            <th>Projekat</th>#}
-{#                                            <th>Kolege</th>#}
-{#                                            <th class="text-center" style="width: 10px;">#}
-{#                                                <i class="ph-dots-three"></i>#}
-{#                                            </th>#}
-{#                                        </tr>#}
-{#                                        </thead>#}
-{#                                        <tbody>#}
-{#                                        {% if logs is not empty %}#}
-{#                                            {% for log in logs %}#}
-{#                                                {% if log[2] == 1 %}#}
-{#                                                    <tr>#}
-{#                                                {% endif %}#}
-{#                                                {% if log[2] == 0 %}#}
-{#                                                    <tr>#}
-{#                                                {% endif %}#}
-{#                                                {% if log[2] == 2 %}#}
-{#                                                    <tr class="bg-secondary">#}
-{#                                                {% endif %}#}
-{#                                                <td style="width: 40%;">#}
-{#                                                    <div class="fw-semibold">#}
-{#                                                        <div class="btn-group">#}
-{#                                                            <a href="#" class="fw-semibold link-dark d-inline-flex align-items-center ">#}
-{#                                                                <a href="{{ path('app_project_tasks_view', { id: log[0].task.project.id }) }}">{{ log[0].task.project.title }} {% if log[0].task.time|date('H:i') != '00:00' %}#}
-{#                                                                        ({{ log[0].task.time|date('H:i') }})#}
-{#                                                                    {% endif %}</a>#}
-{#                                                                {% if log[2] == 0 %}<div class="live p-1 mx-2"></div>{% endif %}#}
-{#                                                            </a>#}
-{#                                                        </div>#}
-{#                                                    </div>#}
-{#                                                </td>#}
-{#                                                <td style="width: 50%;">#}
-{#                                                    {% for user in log[0].task.assignedUsers %}#}
-{#                                                        <div class="fw-semibold">{{ user.getNameWithFirstLetter }}</div>#}
-{#                                                    {% endfor %}#}
-{#                                                </td>#}
-{#                                                <td>#}
-{#                                                    <a href="{{ path('app_task_view_user', { id: log[0].task.id}) }}" class="btn btn-primary"><i class="ph-clipboard"></i></a>#}
-{#                                                </td>#}
-{#                                                </tr>#}
-{#                                            {% endfor %}#}
-{#                                        {% endif %}#}
-{#                                        </tbody>#}
-{#                                    </table>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                            <!-- /marketing campaigns -->#}
-{#                        </div>#}
-
-{#                    <div class="col-xl-12">#}
-{#                            <!-- Marketing campaigns -->#}
-{#                        <div class="card">#}
-
-{#                            <div class="card-header d-lg-flex py-lg-0">#}
-{#                                <h5 class="py-lg-3 mb-0">Raspored za {{ danas | date('d.m.Y') }}</h5>#}
-{#                            </div>#}
-{#                            <div class="table-responsive card">#}
-{#                                <table class="table table-hover table-bordered table_morecondensed">#}
-{#                                    <thead class="bg-light">#}
-{#                                    <tr>#}
-{#                                        <th>Projekat</th>#}
-{#                                        <th>Zaposleni</th>#}
-{#                                        <th class="text-center" style="width: 10px;">#}
-{#                                            <i class="ph-dots-three"></i>#}
-{#                                        </th>#}
-{#                                    </tr>#}
-{#                                    </thead>#}
-{#                                    <tbody>#}
-{#                                    {% if timetable is not empty %}#}
-{#                                        {% for task in timetable %}#}
-{#                                            {% if task.task.project is not null %}#}
-{#                                                {% if app.user in task.task.assignedUsers %}#}
-{#                                                    <tr class="table-active">#}
-{#                                                {% else %}#}
-{#                                                    <tr>#}
-{#                                                {% endif %}#}
-{#                                                <td style="width: 45%;">#}
-{#                                                    <div class="fw-semibold">#}
-{#                                                        {{ task.task.project.title }} {% if task.task.time|date('H:i') != '00:00' %}#}
-{#                                                            ({{ task.task.time|date('H:i') }})#}
-{#                                                        {% endif %}#}
-{#                                                    </div>#}
-{#                                                </td>#}
-{#                                                <td style="width: 45%;">#}
-{#                                                    <div class="fw-semibold">#}
-{#                                                        {% for user in task.task.assignedUsers %}#}
-{#                                                            {{ user.getNameWithFirstLetter }} <br>#}
-{#                                                        {% endfor %}#}
-{#                                                    </div>#}
-{#                                                </td>#}
-{#                                                <td>#}
-{#                                                    <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details_task{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>#}
-{#                                                </td>#}
-{#                                                </tr>#}
-{#                                            {% endif %}#}
-{#                                        {% endfor %}#}
-{#                                    {% endif %}#}
-{#                                    </tbody>#}
-{#                                </table>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                            <!-- /marketing campaigns -->#}
-{#                    </div>#}
-
-{#                    <div class="col-xl-12">#}
-{#                        <div class="card">#}
-
-{#                            <div class="card-header d-lg-flex py-lg-0">#}
-{#                                <h5 class="py-lg-3 mb-0">Raspored za {{ sutra | date('d.m.Y') }}</h5>#}
-{#                            </div>#}
-{#                            <div class="table-responsive card">#}
-{#                                <table class="table table-hover table-bordered table_morecondensed">#}
-{#                                    <thead class="bg-light">#}
-{#                                    <tr>#}
-{#                                        <th>Projekat</th>#}
-{#                                        <th>Zaposleni</th>#}
-{#                                        <th class="text-center" style="width: 10px;">#}
-{#                                            <i class="ph-dots-three"></i>#}
-{#                                        </th>#}
-{#                                    </tr>#}
-{#                                    </thead>#}
-{#                                    <tbody>#}
-{#                                    {% if tomorrowTimetable is not empty %}#}
-{#                                        {% for task in tomorrowTimetable %}#}
-{#                                            {% if task.task.project is not null %}#}
-{#                                                {% if app.user in task.task.assignedUsers %}#}
-{#                                                    <tr class="table-active">#}
-{#                                                {% else %}#}
-{#                                                    <tr>#}
-{#                                                {% endif %}#}
-{#                                                <td style="width: 45%;">#}
-{#                                                    <div class="fw-semibold">#}
-{#                                                        {{ task.task.project.title }} {% if task.task.time|date('H:i') != '00:00' %}#}
-{#                                                            ({{ task.task.time|date('H:i') }})#}
-{#                                                        {% endif %}#}
-{#                                                    </div>#}
-{#                                                </td>#}
-{#                                                <td style="width: 45%;">#}
-{#                                                    <div class="fw-semibold">#}
-{#                                                        {% for user in task.task.assignedUsers %}#}
-{#                                                            {{ user.getNameWithFirstLetter }} <br>#}
-{#                                                        {% endfor %}#}
-{#                                                    </div>#}
-{#                                                </td>#}
-{#                                                    <td>#}
-{#                                                        <a type="button" data-bs-toggle="modal" data-bs-target="#modal_details1_task{{ loop.index }}" class="fw-semibold"><i class="ph-info"></i></a>#}
-{#                                                    </td>#}
-{#                                                </tr>#}
-{#                                            {% endif %}#}
-{#                                        {% endfor %}#}
-{#                                    {% endif %}#}
-{#                                    </tbody>#}
-{#                                </table>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
-
                 </div>
+
                 <!-- /content area -->
 
                 <!-- Footer -->
@@ -508,173 +799,39 @@
 
         </div>
         <!-- /main content -->
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
-{#    {% if tomorrowTimetable is not empty %}#}
-{#        {% for task in tomorrowTimetable %}#}
-{#            {% if task.task.project is not null %}#}
-{#                <div id="modal_details1_task{{ loop.index }}" class="modal fade" tabindex="-1">#}
-{#                    <div class="modal-dialog">#}
-{#                        <div class="modal-content">#}
-{#                            <div class="modal-header bg-primary text-white border-0">#}
-{#                                <h6 class="modal-title">Detalji zadatka</h6>#}
-{#                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>#}
-{#                            </div>#}
-
-{#                            <div class="modal-body">#}
-{#                                <div class="card">#}
-{#                                    <div class="card-body">#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Projekat:</div>#}
-{#                                            <div class="col-8">{{ task.task.title }}</div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Zaposleni:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% for user in task.task.assignedUsers %}#}
-{#                                                    {{ user.getNameWithFirstLetter }} <br>#}
-{#                                                {% endfor %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Aktivnosti:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% for akt in task.task.activity %}#}
-{#                                                    {{ akt.title }} <br>#}
-{#                                                {% endfor %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        #}{#                                    <div class="row p-2 bg-light">#}
-{#                                        #}{#                                        <div class="col-4">Oprema:</div>#}
-{#                                        #}{#                                        <div class="col-8">#}
-{#                                        #}{#                                            {% for opt in task.task.oprema %}#}
-{#                                        #}{#                                                {{ opt.title }} <br>#}
-{#                                        #}{#                                            {% endfor %}#}
-{#                                        #}{#                                        </div>#}
-{#                                        #}{#                                    </div>#}
-{#                                        #}{#                                    <div class="row p-2">#}
-{#                                        #}{#                                        <div class="col-4">Vozilo:</div>#}
-{#                                        #}{#                                        <div class="col-8">#}
-{#                                        #}{#                                            {% if task.car is not empty %}#}
-{#                                        #}{#                                                {{ task.car[0].plate }}#}
-{#                                        #}{#                                            {% endif %}#}
-{#                                        #}{#                                        </div>#}
-{#                                        #}{#                                    </div>#}
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Vreme:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if task.task.time is not null %}#}
-{#                                                    {% if task.task.time|date('H:i') != '00:00' %}#}
-{#                                                        {{ task.task.time|date('H:i') }}#}
-{#                                                    {% else %}#}
-{#                                                        Vreme nije zadato#}
-{#                                                    {% endif %}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2">#}
-{#                                            <div class="col-4">Napomena:</div>#}
-{#                                            <div class="col-8">{{ task.task.description }}</div>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-
-{#                            <div class="modal-footer">#}
-{#                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            {% endif %}#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
-    {% if timetable is not empty %}
-        {% for task in timetable %}
-            <div id="modal_details_task{{ loop.index }}" class="modal fade" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary text-white border-0">
-                            <h6 class="modal-title">Detalji zadatka</h6>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                        </div>
-
-                        <div class="modal-body">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row p-2">
-                                        <div class="col-4">Projekat:</div>
-                                        <div class="col-8">{{ task.task.title }}</div>
-                                    </div>
-                                    <div class="row p-2 bg-light">
-                                        <div class="col-4">Zaposleni:</div>
-                                        <div class="col-8">
-                                            {% for user in task.task.assignedUsers %}
-                                                {{ user.getNameWithFirstLetter }} <br>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                    <div class="row p-2">
-                                        <div class="col-4">Aktivnosti:</div>
-                                        <div class="col-8">
-                                            {% for akt in task.task.activity %}
-                                                {{ akt.title }} <br>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                    {% if tool %}
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Oprema:</div>
-                                            <div class="col-8">
-                                                {% for opt in task.task.oprema %}
-                                                    {{ opt.title }} <br>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                    {% if car %}
-                                        <div class="row p-2">
-                                            <div class="col-4">Vozilo:</div>
-                                            <div class="col-8">
-                                                {% if task.car is not empty %}
-                                                    {{ task.car[0].plate }}
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                    <div class="row p-2 bg-light">
-                                        <div class="col-4">Vreme:</div>
-                                        <div class="col-8">
-                                            {% if task.task.time is not null %}
-                                                {% if task.task.time|date('H:i') != '00:00' %}
-                                                    {{ task.task.time|date('H:i') }}
-                                                {% else %}
-                                                    Vreme nije zadato
-                                                {% endif %}
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <div class="row p-2">
-                                        <div class="col-4">Napomena:</div>
-                                        <div class="col-8">{{ task.task.description }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    {% endif %}
 {% endblock content %}
 
 {% block includeJavascript %}
     {{ parent() }}
     <script src="{{ asset('assets/demo/pages/dashboard.js') }}"></script>
+    {% if app.user.isInTask %}
+        <script>
+            // Funkcija za osvežavanje vremena
+            function updateStopwatch() {
+                $.ajax({
+                    url: '{{ path("app_stopwatch_get_time_difference", {id: activeStopwatch.id}) }}',  // Putanja do endpointa
+                    method: 'GET',
+                    success: function(data) {
+                        if (data && data.timeDifference) {
+                            $('#activeStopwatch').text(data.timeDifference); // Osvežavanje vremena na stranici
+                        }
+                    },
+                    error: function() {
+                        console.error('Došlo je do greške pri osvežavanju vremena.');
+                    }
+                });
+            }
 
+            // Osveži odmah prilikom učitavanja stranice
+            $(document).ready(function() {
+                updateStopwatch(); // Poziv funkcije odmah
+            });
+
+            // Osvežavanje svakih 5000ms (5 sekundi)
+            setInterval(updateStopwatch, 5000);
+        </script>
+    {% endif %}
 {% endblock includeJavascript %}

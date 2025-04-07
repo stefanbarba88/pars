@@ -63,8 +63,6 @@ class TicketFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ]);
-
-    ;
   }
 
   public function configureOptions(OptionsResolver $resolver): void {

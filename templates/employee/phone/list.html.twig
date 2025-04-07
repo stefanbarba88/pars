@@ -97,7 +97,8 @@
                                     <tbody>
                                     {% for user in pagination %}
 
-                                        <tr>
+                                        {% set userDays = getDaysRemaining(user) %}
+                                        <tr class="{{ userDays.klasa }}">
                                             <td><div class="fw-semibold"><a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.prezime }}</a></div></td>
                                             <td><div class="fw-semibold"><a href="{{ path('app_employee_profile_view', { id: user.id}) }}">{{ user.ime }}</a></div></td>
                                             <td class="text-center">
@@ -108,7 +109,7 @@
 
                                         <tr id="collapsed_item{{ user.id }}" class="accordion-collapse collapse bg-light" data-bs-parent="#accordion_collapsed" style="">
                                             <td>
-                                                {{ user.pozicija.title }}
+                                                {{ user.pozicija.title }} {% if userDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ userDays.poruka }}" data-bs-original-title="{{ userDays.poruka }}"></i>{% endif %}
                                             </td>
                                             <td>
                                                 {{ user.getBadgeByStatus | raw }}
@@ -168,7 +169,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

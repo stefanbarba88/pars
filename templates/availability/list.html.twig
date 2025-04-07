@@ -76,7 +76,7 @@
                     </div>
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">Lista dostupnosti</h5>
+                            <h5 class="mb-0">Lista dostupnosti u narednom periodu</h5>
                         </div>
                         <div class="card-body">
                             <div class="card">
@@ -120,7 +120,7 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ dost.datum | date("d.m.Y")}}
+                                                    {{ dost.datum | date("d.m.Y.")}}
                                                 </div>
                                             </td>
 
@@ -164,7 +164,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -185,54 +185,71 @@
 {% endblock includeJavascript %}
 {% block footerJavascript %}
     <script type="text/javascript">
-        const eventColors =
-            [
-                {% for event in dostupnosti %}
-                    {% if event.id == '' %}
-                        {
-                            {#title: '{{ event.title }}',#}
-                            start: '{{ event.start }}',
-                            backgroundColor: '{{ event.color }}',
-                            text: '{{ event.text }}',
-                            display: 'background',
-                        },
-                    {% else %}
-                        {
-                            title: '{{ event.title }}',
-                            start: '{{ event.start }}',
-                            color: '{{ event.color }}',
-                            textColor: '{{ event.text }}',
-                        },
-                    {% endif %}
-                {% endfor %}
-            ]
         const initialLocaleCode = 'sr';
+
         // Define element
         const calendarEventColorsElement = document.querySelector('.fullcalendar-event-colors');
 
         // Initialize
-        if(calendarEventColorsElement) {
+        if (calendarEventColorsElement) {
             const calendarEventColorsInit = new FullCalendar.Calendar(calendarEventColorsElement, {
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,dayGridWeek,timeGridDay'
                 },
-                validRange: {
-                    start: '{{ "now"|date("Y") }}-{{ "now"|date("m") }}-01'
-                },
+
                 initialView: 'dayGridMonth',
                 locale: initialLocaleCode,
                 initialDate: new Date(),
-                navLinks: true, // can click day/week names to navigate views
-                businessHours: true, // display business hours
-                // editable: true,
-                // selectable: true,
-                // editable: true,
+                navLinks: true,
+                businessHours: true,
                 direction: document.dir == 'rtl' ? 'rtl' : 'ltr',
-                events: eventColors,
-                dayMaxEvents: true
-                // height: 500
+                dayMaxEvents: true,
+
+                // AJAX učitavanje događaja
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    $.ajax({
+                        url: '{{ path('ucitaj_dogadjaje') }}', // Ruta koja vraća JSON podatke
+                        method: 'GET',
+                        dataType: 'json',
+                        data: {
+                            start: fetchInfo.startStr,
+                            end: fetchInfo.endStr
+                        },
+                        success: function(response) {
+                            successCallback(response); // Ubacujemo evente u kalendar
+                        },
+                        error: function() {
+                            failureCallback();
+                        }
+                    });
+                },
+                eventContent: function(info) {
+                    const eventColor = info.event.backgroundColor || '#000'; // Boja eventa
+                    const eventTextColor = info.event.textColor || '#000'; // Boja teksta eventa
+                    const eventVreme = info.event.extendedProps.vreme || ''; // Provera da li postoji vreme u extendedProps
+
+                    // Ako je događaj samo za pozadinu, ne prikazuje se standardni sadržaj
+                    if (info.event.display === 'background') {
+                        return {
+                            html: `<span style="color: #00233F;">${info.event.title}</span>`
+                        };
+                    } else {
+                        // Ako postoji vreme, prikaži i vreme uz naslov
+                        if (eventVreme) {
+                            return {
+                                html: `<div style="color: ${eventTextColor}; background-color: ${eventColor}; font-size: 11px;">${info.event.title} (${eventVreme})</div>`
+
+                            };
+                        } else {
+                            // Ako nema vremena, samo prikaži naslov
+                            return {
+                                html: `<div style="color: ${eventTextColor}; background-color: ${eventColor}; font-size: 11px;">${info.event.title}</div>`
+                            };
+                        }
+                    }
+                },
             });
 
             // Init
@@ -245,6 +262,68 @@
                 })
             });
         }
+
+
+        {#const eventColors =#}
+        {#    [#}
+        {#        {% for event in dostupnosti %}#}
+        {#            {% if event.id == '' %}#}
+        {#                {#}
+        {#                    #}{#title: '{{ event.title }}',#}
+        {#                    start: '{{ event.start }}',#}
+        {#                    backgroundColor: '{{ event.color }}',#}
+        {#                    text: '{{ event.text }}',#}
+        {#                    display: 'background',#}
+        {#                },#}
+        {#            {% else %}#}
+        {#                {#}
+        {#                    title: '{{ event.title }}',#}
+        {#                    start: '{{ event.start }}',#}
+        {#                    color: '{{ event.color }}',#}
+        {#                    textColor: '{{ event.text }}',#}
+        {#                },#}
+        {#            {% endif %}#}
+        {#        {% endfor %}#}
+        {#    ]#}
+        {#const initialLocaleCode = 'sr';#}
+        {#// Define element#}
+        {#const calendarEventColorsElement = document.querySelector('.fullcalendar-event-colors');#}
+
+        {#// Initialize#}
+        {#if(calendarEventColorsElement) {#}
+        {#    const calendarEventColorsInit = new FullCalendar.Calendar(calendarEventColorsElement, {#}
+        {#        headerToolbar: {#}
+        {#            left: 'prev,next today',#}
+        {#            center: 'title',#}
+        {#            right: 'dayGridMonth,dayGridWeek,timeGridDay'#}
+        {#        },#}
+        {#        validRange: {#}
+        {#            start: '{{ "now"|date("Y") }}-{{ "now"|date("m") }}-01'#}
+        {#        },#}
+        {#        initialView: 'dayGridMonth',#}
+        {#        locale: initialLocaleCode,#}
+        {#        initialDate: new Date(),#}
+        {#        navLinks: true, // can click day/week names to navigate views#}
+        {#        businessHours: true, // display business hours#}
+        {#        // editable: true,#}
+        {#        // selectable: true,#}
+        {#        // editable: true,#}
+        {#        direction: document.dir == 'rtl' ? 'rtl' : 'ltr',#}
+        {#        events: eventColors,#}
+        {#        dayMaxEvents: true#}
+        {#        // height: 500#}
+        {#    });#}
+
+        {#    // Init#}
+        {#    calendarEventColorsInit.render();#}
+
+        {#    // Resize calendar when sidebar toggler is clicked#}
+        {#    document.querySelectorAll('.sidebar-control').forEach(function(sidebarToggle) {#}
+        {#        sidebarToggle.addEventListener('click', function() {#}
+        {#            calendarEventColorsInit.updateSize();#}
+        {#        })#}
+        {#    });#}
+        {#}#}
         $(".fc-daygrid-day-bg .fc-event-title").addClass("pozadinkiEvent");
 
     </script>

@@ -41,7 +41,7 @@
                         {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <div class="mb-3">
                                         <label class="form-label" for="checklist_datum">Datum zadatka:*</label>
                                         <div class="input-group">
@@ -53,7 +53,7 @@
                                         <span class="form-text">Ukoliko je potrebna izmena datuma zadatka, obrišite ga i ponovo kreirajte zbog ponovnog učitavanja dostupnosti zaposlenih.</span>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <div class="mb-3">
                                         <label class="form-label" for="manager_checklist_form_vreme">Vreme zadatka:</label>
                                         <div class="input-group">
@@ -66,7 +66,19 @@
                                         <span class="form-text">Definišete vreme kada zadatak treba da počne sa izvršavanjem.</span>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="manager_checklist_form_deadline">Rok:</label>
+                                        <div class="input-group">
+											<span class="input-group-text">
+												<i class="ph-calendar"></i>
+											</span>
+                                            <input type="text" id="manager_checklist_form_deadline" autocomplete="off" name="manager_checklist_form_deadline" class="form-control datepicker-date-format-custom-1"  value="{{ checklist.deadline | date('d.m.Y') }}">
+                                        </div>
+                                        <span class="form-text">Format: 31.12.1900. Možete definisati predviđeni kraj radova na zadatku. U suprotnom ostavite prazno.</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
                                     <div class="mb-1">
                                         <label class="form-label" for="manager_checklist_form_podsetnik">Podsetnik:</label>
                                         <div class="input-group mb-1">
@@ -90,7 +102,7 @@
                                 {% if app.user.userType != constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            {{ form_label(form.user, 'Zaduženi:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_label(form.user, 'Zaposleni:*', {'label_attr': {'class': 'form-label'}}) }}
                                             {{ form_widget(form.user, {attr: { class: 'form-control select required' }}) }}
                                         </div>
                                     </div>
@@ -170,7 +182,7 @@
                                     <div class="mb-3">
                                         <label class="form-label" for="checklist_pdf">Dokumenta:</label>
                                         <input type="file" id="checklist_pdf" name="checklist[pdf][]" accept=".pdf" data-show-upload="false" multiple="multiple" class="form-control file-input" />
-                                        <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
+                                        <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>
                                     </div>
                                 </div>
                             </div>
@@ -228,7 +240,7 @@
 {#                            <div class="row">#}
 {#                                <div class="col-lg-6">#}
 {#                                    <div class="mb-3">#}
-{#                                        {{ form_label(form.user, 'Zaduženi:*', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                                        {{ form_label(form.user, 'Zaposleni:*', {'label_attr': {'class': 'form-label'}}) }}#}
 {#                                        {{ form_widget(form.user, {attr: { class: 'form-control select required' }}) }}#}
 {#                                    </div>#}
 {#                                </div>#}
@@ -307,7 +319,7 @@
 {#                                    <div class="mb-3">#}
 {#                                        <label class="form-label" for="checklist_pdf">Dokumenta:</label>#}
 {#                                        <input type="file" id="checklist_pdf" name="checklist[pdf][]" accept=".pdf" data-show-upload="false" multiple="multiple" class="form-control file-input" />#}
-{#                                        <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>#}
+{#                                        <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>#}
 {#                                    </div>#}
 {#                                </div>#}
 {#                            </div>#}
@@ -332,7 +344,7 @@
 
         </div>
 
-        {# {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -398,6 +410,22 @@
             // daysOfWeekDisabled: [0]
         });
     }
+        const dpDateCustomFormatElement3 = document.querySelector('.datepicker-date-format-custom-1');
+        if(dpDateCustomFormatElement3) {
+            const dpDateCustomFormat3 = new Datepicker(dpDateCustomFormatElement3, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
+                minDate: '{{ minDate }}',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
     $(".repeat").change(function(e) {
         e.preventDefault();
         if ($(this).val() == "1") {

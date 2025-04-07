@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\ZaposleniPozicija;
 use App\Form\PositionFormType;
 use Detection\MobileDetect;
@@ -23,6 +24,13 @@ class PositionController extends AbstractController {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
     $args = [];
 
     $positions = $this->em->getRepository(ZaposleniPozicija::class)->getPositionsPaginator();
@@ -48,6 +56,15 @@ class PositionController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function form(Request $request, ZaposleniPozicija $pozicija)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $pozicija->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $pozicija->setEditBy($this->getUser());
 
@@ -79,6 +96,15 @@ class PositionController extends AbstractController {
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function view(ZaposleniPozicija $pozicija)    : Response { if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $pozicija->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['position'] = $pozicija;
 

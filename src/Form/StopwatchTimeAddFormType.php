@@ -43,35 +43,54 @@ class StopwatchTimeAddFormType extends AbstractType {
 
     };
     $company = $dataObject->getReservation()->getTaskLog()->getTask()->getCompany();
+    $task = $dataObject->getReservation()->getTaskLog()->getTask();
+    $client = $task->getProject()->getClient()->toArray();
+
+    if ($task->isIsExpenses()) {
+      $builder
+        ->add('expencesDesc', TextareaType::class, [
+          'required' => false
+        ])
+        ->add('expencesPrice', NumberType::class, [
+          'required' => false,
+          'html5' => true,
+          'attr' => [
+            'min' => '0.01',
+            'step' => '0.01'
+          ],
+        ]);
+    }
+    if (empty($client)) {
+      $builder
+        ->add('client', EntityType::class, [
+          'placeholder' => '--Izaberite klijenta--',
+          'required' => false,
+          'class' => Client::class,
+          'query_builder' => function (EntityRepository $em) use ($company) {
+            return $em->createQueryBuilder('a')
+              ->andWhere('a.isSuspended <> 1')
+              ->andWhere('a.company = :company')
+              ->setParameter(':company', $company)
+//            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
+              ->orderBy('a.id', 'ASC');
+          },
+          'choice_label' => 'title',
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+    }
 
     $builder
-
-
 
       ->add('description', TextareaType::class, [
         'required' => false
       ])
+
       ->add('additionalActivity', TextareaType::class, [
         'required' => false
       ])
       ->add('additionalDesc', TextareaType::class, [
         'required' => false
-      ])
-      ->add('client', EntityType::class, [
-        'placeholder' => '--Izaberite klijenta--',
-        'required' => false,
-        'class' => Client::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('a')
-            ->andWhere('a.isSuspended <> 1')
-            ->andWhere('a.company = :company')
-            ->setParameter(':company', $company)
-//            ->setParameter(':userType', UserRolesData::ROLE_EMPLOYEE)
-            ->orderBy('a.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => false,
       ])
 
       ->add('pdf', FileType::class, [
@@ -89,7 +108,7 @@ class StopwatchTimeAddFormType extends AbstractType {
             new File([
               'mimeTypes' => 'application/pdf',
               'maxSize' => '5120k',
-              'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5Mb.',
+              'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5MB.',
               'mimeTypesMessage' => 'Molimo Vas postavite dokument u .pdf formatu.'
             ])
           ])
@@ -109,8 +128,8 @@ class StopwatchTimeAddFormType extends AbstractType {
         'constraints' => [
           new All([
             new Image([
-            'maxSize' => '2048k',
-            'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 2Mb.',
+            'maxSize' => '5120k',
+            'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 5MB.',
             'mimeTypesMessage' => 'Molimo Vas postavite dokument u jednom od ponuđenih formata za sliku.'
           ])
           ])

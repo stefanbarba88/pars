@@ -63,6 +63,9 @@ class Plan {
   #[ORM\Column]
   private ?int $status = FastTaskData::OPEN;
 
+  #[ORM\Column(nullable: true)]
+  private ?int $allUsers = null;
+
 //  #[ORM\ManyToOne(inversedBy: 'plans')]
 //  private ?Project $project = null;
 //
@@ -377,5 +380,20 @@ class Plan {
 
       return $this;
   }
+
+  /**
+   * @return int|null
+   */
+  public function getAllUsers(): ?int {
+    return $this->allUsers;
+  }
+
+  /**
+   * @param int|null $allUsers
+   */
+  public function setAllUsers(?int $allUsers): void {
+    $this->allUsers = $allUsers;
+  }
+
 
 }

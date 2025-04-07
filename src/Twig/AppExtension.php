@@ -11,6 +11,7 @@ namespace App\Twig;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Availability;
 use App\Entity\Car;
+use App\Entity\ManagerChecklist;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\TaskLog;
@@ -55,7 +56,11 @@ class AppExtension extends AbstractExtension {
       new TwigFunction('getTekuciPoslovi', [$this, 'getTekuciPoslovi']),
       new TwigFunction('getCarById', [$this, 'getCarById']),
       new TwigFunction('getUserById', [$this, 'getUserById']),
+      new TwigFunction('getDaysRemainingProject', [$this, 'getDaysRemainingProject']),
       new TwigFunction('getDaysRemaining', [$this, 'getDaysRemaining']),
+      new TwigFunction('getDaysRemainingCar', [$this, 'getDaysRemainingCar']),
+      new TwigFunction('getDaysRemainingTask', [$this, 'getDaysRemainingTask']),
+      new TwigFunction('getDaysRemainingChecklist', [$this, 'getDaysRemainingChecklist']),
     ];
   }
 
@@ -120,8 +125,23 @@ class AppExtension extends AbstractExtension {
     $user = $this->entityManager->getRepository(User::class)->find($id);
     return $user->getFullName();
   }
+  public function getDaysRemainingProject(Project $project): array {
+    return $this->entityManager->getRepository(Project::class)->getDaysRemainingProject($project);
+  }
+
   public function getDaysRemaining(User $user): array {
     return $this->entityManager->getRepository(User::class)->getDaysRemaining($user);
+  }
+
+  public function getDaysRemainingCar(Car $car): array {
+    return $this->entityManager->getRepository(Car::class)->getDaysRemainingCar($car);
+  }
+
+  public function getDaysRemainingTask(Task $task): array {
+    return $this->entityManager->getRepository(Task::class)->getDaysRemaining($task);
+  }
+  public function getDaysRemainingChecklist(ManagerChecklist $task): array {
+    return $this->entityManager->getRepository(ManagerChecklist::class)->getDaysRemaining($task);
   }
 
 

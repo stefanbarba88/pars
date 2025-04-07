@@ -58,11 +58,12 @@ class TaskFormType extends AbstractType {
 
 
     $company = $dataObject->getTask()->getCompany();
+    $project = $dataObject->getTask()->getProject();
     $settings = $company->getSettings();
 
     $datum = $dataObject->getTask()->getDatumKreiranja();
 
-    if ($settings->isCalendar()) {
+    if (!$settings->isAllUsers()) {
       $builder->add('assignedUsers', EntityType::class, [
         'class' => User::class,
         'choices' => $this->em->getUsersAvailable($datum),
@@ -92,6 +93,61 @@ class TaskFormType extends AbstractType {
       ]);
     }
 
+    if (!is_null($project)) {
+      $builder
+        ->add('isExpenses', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => PotvrdaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+          'data' => $project->getIsExpenses()
+        ])
+        ->add('project', EntityType::class, [
+          'placeholder' => '--Izaberite projekat--',
+          'class' => Project::class,
+          'query_builder' => function (EntityRepository $em) use ($project) {
+            return $em->createQueryBuilder('g')
+              ->andWhere('g.isSuspended = :isSuspended')
+              ->andWhere('g.id = :project')
+              ->setParameter(':project', $project->getId())
+              ->setParameter(':isSuspended', 0)
+              ->orderBy('g.title', 'ASC');
+          },
+          'choice_label' => 'title',
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+    } else {
+      $builder
+        ->add('isExpenses', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+        ->add('project', EntityType::class, [
+          'placeholder' => '--Izaberite projekat--',
+          'class' => Project::class,
+          'query_builder' => function (EntityRepository $em) use ($company) {
+            return $em->createQueryBuilder('g')
+              ->andWhere('g.isSuspended = :isSuspended')
+              ->andWhere('g.company = :company')
+              ->setParameter(':company', $company)
+              ->setParameter(':isSuspended', 0)
+              ->orderBy('g.title', 'ASC');
+          },
+          'choice_label' => 'title',
+          'expanded' => false,
+          'multiple' => false,
+        ]);
+    }
+
+
+
 
      if ($settings->isTool()) {
        $builder
@@ -112,21 +168,7 @@ class TaskFormType extends AbstractType {
      }
 
     $builder
-      ->add('project', EntityType::class, [
-           'placeholder' => '--Izaberite projekat--',
-           'class' => Project::class,
-           'query_builder' => function (EntityRepository $em) use ($company) {
-             return $em->createQueryBuilder('g')
-               ->andWhere('g.isSuspended = :isSuspended')
-               ->andWhere('g.company = :company')
-               ->setParameter(':company', $company)
-               ->setParameter(':isSuspended', 0)
-               ->orderBy('g.title', 'ASC');
-           },
-           'choice_label' => 'title',
-           'expanded' => false,
-           'multiple' => false,
-         ])
+      ->add('title')
       ->add('description', TextareaType::class, [
         'required' => false
       ])
@@ -193,7 +235,14 @@ class TaskFormType extends AbstractType {
         'html5' => false,
         'input' => 'datetime_immutable'
       ])
-
+      ->add('deadline', DateType::class, [
+        'required' => false,
+        'widget' => 'single_text',
+        'format' => 'dd.MM.yyyy',
+        'input' => 'datetime_immutable',
+        'html5' => false,
+        'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
+      ])
 
 
       ->add('isTimeRoundUp', ChoiceType::class, [
@@ -241,14 +290,16 @@ class TaskFormType extends AbstractType {
 //        'expanded' => false,
 //        'multiple' => false,
 //      ])
-//      ->add('isExpenses', ChoiceType::class, [
-//        'attr' => [
-//          'data-minimum-results-for-search' => 'Infinity',
-//        ],
-//        'choices' => PotvrdaData::form(),
-//        'expanded' => false,
-//        'multiple' => false,
-//      ])
+
+      ->add('isSeparate', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
+
       ->add('activity', EntityType::class, [
         'required' => false,
         'class' => Activity::class,
@@ -266,11 +317,12 @@ class TaskFormType extends AbstractType {
         'expanded' => false,
         'multiple' => true,
       ])
-      ->add('isPriority', ChoiceType::class, [
+      ->add('priority', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
         ],
-        'choices' => PotvrdaData::form(),
+        'placeholder' => '--Izaberite nivo prioriteta--',
+        'choices' => PrioritetData::form(),
         'expanded' => false,
         'multiple' => false,
       ])
@@ -290,7 +342,7 @@ class TaskFormType extends AbstractType {
             new File([
               'mimeTypes' => 'application/pdf',
               'maxSize' => '5120k',
-              'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5Mb.',
+              'maxSizeMessage' => 'Veličina fajla je prevelika. Dozvoljena veličina je 5MB.',
               'mimeTypesMessage' => 'Molimo Vas postavite dokument u .pdf formatu.'
             ])
           ])

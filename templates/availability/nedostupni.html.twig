@@ -28,10 +28,10 @@
                     <!-- State saving -->
                     <div class="card">
                             <div class="card-header d-flex align-items-center">
-                                <h5 class="mb-0">Lista nedostupnih zaposlenih - {{ "now"|date("d.m.Y") }}</h5>
+                                <h5 class="mb-0">Lista nedostupnih zaposlenih - {{ "now"|date("d.m.Y.") }}</h5>
                             </div>
                             <div class="card-body">
-                                <div class="table-responsive card">
+                                <div class="card">
                                     <table class="table table-bordered table-hover table-responsive table-sm">
                                         <thead class="bg-light text-primary">
                                         <tr>
@@ -64,7 +64,7 @@
                                             <tr>
                                                 <td>
                                                     <div class="fw-semibold">
-                                                        <a href="{{ path('app_employee_profile_view', { id: calendar.id}) }}">{{ calendar.ime }} {{ calendar.prezime }}</a>
+                                                        <a href="{{ path('app_employee_profile_view', { id: calendar.id}) }}">{{ calendar.prezime }} {{ calendar.ime }}</a>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -126,7 +126,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

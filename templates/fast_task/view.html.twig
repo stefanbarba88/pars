@@ -34,11 +34,11 @@
                             <div class="tab-pane fade active show">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5 class="mb-0">Plan rada za {{ plan.datumKreiranja | date("d.m.Y") }}
+                                        <h5 class="mb-0">Plan rada za {{ plan.datumKreiranja | date("d.m.Y.") }}
                                         </h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table-sm" id="myTable">
                                                 <thead>
                                                 <tr class="bg-light text-primary">
@@ -141,7 +141,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="table-responsive card">
+                                        <div class="card">
                                             <table class="table table-bordered table-hover table-responsive table-sm">
                                                 <thead>
                                                 <tr class="bg-light text-primary">
@@ -194,7 +194,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-{#                                        <div class="table-responsive card">#}
+{#                                        <div class="card">#}
 {#                                            <table class="table table-bordered table-hover table-responsive table_morecondensed">#}
 {#                                                <thead>#}
 {#                                                <tr class="bg-light text-primary">#}
@@ -257,7 +257,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

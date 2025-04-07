@@ -43,8 +43,8 @@ class CarImageFormType extends AbstractType {
           'constraints' => [
             new All([
               new Image([
-                'maxSize' => '2048k',
-                'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 2Mb.',
+                'maxSize' => '5120k',
+                'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 5MB.',
                 'mimeTypesMessage' => 'Molimo Vas postavite dokument u jednom od ponuđenih formata za sliku.'
               ])
             ])

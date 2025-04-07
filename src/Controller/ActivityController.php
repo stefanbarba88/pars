@@ -3,8 +3,9 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
-use App\Entity\Country;
+
 use App\Form\ActivityFormType;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
@@ -22,9 +23,15 @@ class ActivityController extends AbstractController {
   }
 
   #[Route('/list/', name: 'app_activities')]
-  public function list(PaginatorInterface $paginator, Request $request)    : Response {
+  public function list(PaginatorInterface $paginator, Request $request): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
     }
     $search = [];
 
@@ -44,7 +51,7 @@ class ActivityController extends AbstractController {
     $args['pagination'] = $pagination;
 
     $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
+    if ($mobileDetect->isMobile()) {
       return $this->render('activity/phone/list.html.twig', $args);
     }
 
@@ -57,6 +64,15 @@ class ActivityController extends AbstractController {
   public function form(Request $request, Activity $activity): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $activity->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $activity->setEditBy($this->getUser());
 
@@ -89,6 +105,15 @@ class ActivityController extends AbstractController {
   public function view(Activity $activity): Response {
     if (!$this->isGranted('ROLE_USER')) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $activity->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
     $args['activity'] = $activity;
 

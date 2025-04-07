@@ -42,11 +42,12 @@
                                 <div class="card">
                                     <div class="card-header">
                                         <h5 class="mb-0">Osnovne informacije
-                                            {% if not is_granted('ROLE_EMPLOYEE')  %}
+                                            {% if not is_granted('ROLE_EMPLOYEE') or admin  %}
                                                 <a href="{{ path('app_project_form', {id: project.id}) }}"><i class="ph-note-pencil"></i></a>
                                             {% endif %}
                                         </h5>
                                     </div>
+                                    {% set projectDays = getDaysRemainingProject(project) %}
                                     <div class="card-body">
                                         <div class="row p-2">
                                             <div class="col-4">Naziv:</div>
@@ -58,32 +59,33 @@
                                         </div>
                                         <div class="row p-2 bg">
                                             <div class="col-4">Rok:</div>
-                                            <div class="col-8">{{ project.deadline ? project.deadline | date("d.m.Y") : '/' }}</div>
+                                            <div class="col-8">{{ project.deadline ? project.deadline | date("d.m.Y.") : '/' }}      {% if projectDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ projectDays.poruka }}" data-bs-original-title="{{ projectDays.poruka }}"></i>{% endif %}
+                                            </div>
                                         </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Kategorija:</div>
-                                            <div class="col-8">
-                                                {% if project.category is not null %}
+{#                                        <div class="row p-2 bg-light">#}
+{#                                            <div class="col-4">Kategorija:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% if project.category is not null %}#}
 {#                                                    {% if is_granted('ROLE_EMPLOYEE') %}#}
-                                                        {{ project.category.title }}
+{#                                                        {{ project.category.title }}#}
 {#                                                    {% else %}#}
 {#                                                        <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>#}
 {#                                                    {% endif %}#}
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 bg">
-                                            <div class="col-4">Oznaka:</div>
-                                            <div class="col-8">
-                                                {% for label in project.label  %}
-                                                    {% if is_granted('ROLE_EMPLOYEE') %}
-                                                        {{ label.label | raw}}
-                                                    {% else %}
-                                                        <a href="{{ path('app_label_view', { id: label.id}) }}">{{ label.label | raw}}</a>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </div>
-                                        </div>
+{#                                                {% endif %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="row p-2 bg">#}
+{#                                            <div class="col-4">Oznaka:</div>#}
+{#                                            <div class="col-8">#}
+{#                                                {% for label in project.label  %}#}
+{#                                                    {% if is_granted('ROLE_EMPLOYEE') %}#}
+{#                                                        {{ label.label | raw}}#}
+{#                                                    {% else %}#}
+{#                                                        <a href="{{ path('app_label_view', { id: label.id}) }}">{{ label.label | raw}}</a>#}
+{#                                                    {% endif %}#}
+{#                                                {% endfor %}#}
+{#                                            </div>#}
+{#                                        </div>#}
 {#                                        <div class="row p-2 bg-light">#}
 {#                                            <div class="col-4">Uvid u dnevnik:</div>#}
 {#                                            <div class="col-8">#}
@@ -115,13 +117,13 @@
                                                     {{ project.createdBy.getFullName() }}
                                                 {% else %}
                                                     <a href="{{ path('app_user_profile_view', { id: project.createdBy.id}) }}">{{ project.createdBy.getFullName() }}</a>
-                                                {% endif %} - {{ project.created | date("d.m.Y") }} u {{ project.created | date("H:i:s") }}
+                                                {% endif %} - {{ project.created | date("d.m.Y.") }} u {{ project.created | date("H:i:s") }}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {% if not is_granted('ROLE_EMPLOYEE') %}
+                                {% if not is_granted('ROLE_EMPLOYEE') or admin  %}
                                     <div class="card">
                                         <div class="card-header">
                                             <h5 class="mb-0">Informacije o klijentu</h5>
@@ -153,62 +155,89 @@
                                     </div>
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5 class="mb-0">Informacije o finansiranju</h5>
+                                            <h5 class="mb-0">Informacije o praćenju troškova</h5>
                                         </div>
                                         <div class="card-body">
-                                            {% if project.payment == 2 %}
-                                                <div class="row p-2">
-                                                    <div class="col-4">Tip finansiranja:</div>
-                                                    <div class="col-8">Fiksna cena</div>
+                                            <div class="row p-2">
+                                                <div class="col-4" >Troškovi:</div>
+                                                <div class="col-8">
+                                                    {% if project.isExpenses %}
+                                                        Zahteva se praćenje troškova
+                                                    {% else %}
+                                                        Ne zahteva se praćenje troškova
+                                                    {% endif %}
                                                 </div>
+                                            </div>
+                                            {#                                            <div class="row p-2 bg-light">#}
+                                            {#                                                <div class="col-4">Klijent ima uvid u projekat:</div>#}
+                                            {#                                                <div class="col-8">#}
+                                            {#                                                    {% if project.clientView %}#}
+                                            {#                                                        <i class="ph-eye"></i>#}
+                                            {#                                                    {% else %}#}
+                                            {#                                                        <i class="ph-eye-slash"></i>#}
+                                            {#                                                    {% endif %}#}
+                                            {#                                                </div>#}
+                                            {#                                            </div>#}
+                                        </div>
+                                    </div>
+{#                                    <div class="card">#}
+{#                                        <div class="card-header">#}
+{#                                            <h5 class="mb-0">Informacije o finansiranju</h5>#}
+{#                                        </div>#}
+{#                                        <div class="card-body">#}
+{#                                            {% if project.payment == 2 %}#}
+{#                                                <div class="row p-2">#}
+{#                                                    <div class="col-4">Tip finansiranja:</div>#}
+{#                                                    <div class="col-8">Fiksna cena</div>#}
+{#                                                </div>#}
 {#                                                <div class="row p-2 bg-light">#}
 {#                                                    <div class="col-4">Fiksna cena:</div>#}
 {#                                                    <div class="col-8">{{ project.price | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>#}
 {#                                                </div>#}
-                                            {% elseif project.payment == 3 %}
-                                                <div class="row p-2">
-                                                    <div class="col-4">Tip finansiranja:</div>
-                                                    <div class="col-8">Plaćanje po satu</div>
-                                                </div>
+{#                                            {% elseif project.payment == 3 %}#}
+{#                                                <div class="row p-2">#}
+{#                                                    <div class="col-4">Tip finansiranja:</div>#}
+{#                                                    <div class="col-8">Plaćanje po satu</div>#}
+{#                                                </div>#}
 {#                                                <div class="row p-2 bg-light">#}
 {#                                                    <div class="col-4">Cena po satu:</div>#}
 {#                                                    <div class="col-8">{{ project.pricePerHour | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>#}
 {#                                                </div>#}
-                                            {% elseif project.payment == 4 %}
-                                                <div class="row p-2">
-                                                    <div class="col-4">Tip finansiranja:</div>
-                                                    <div class="col-8">Plaćanje po zadatku</div>
-                                                </div>
+{#                                            {% elseif project.payment == 4 %}#}
+{#                                                <div class="row p-2">#}
+{#                                                    <div class="col-4">Tip finansiranja:</div>#}
+{#                                                    <div class="col-8">Plaćanje po zadatku</div>#}
+{#                                                </div>#}
 {#                                                <div class="row p-2 bg-light">#}
 {#                                                    <div class="col-4">Cena po satu:</div>#}
 {#                                                    <div class="col-8">{{ project.pricePerTask | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>#}
 {#                                                </div>#}
-                                            {% elseif project.payment == 5 %}
-                                                <div class="row p-2">
-                                                    <div class="col-4">Tip finansiranja:</div>
-                                                    <div class="col-8">Plaćanje po danu</div>
-                                                </div>
+{#                                            {% elseif project.payment == 5 %}#}
+{#                                                <div class="row p-2">#}
+{#                                                    <div class="col-4">Tip finansiranja:</div>#}
+{#                                                    <div class="col-8">Plaćanje po danu</div>#}
+{#                                                </div>#}
 {#                                                <div class="row p-2 bg-light">#}
 {#                                                    <div class="col-4">Cena po danu:</div>#}
 {#                                                    <div class="col-8">{{ project.pricePerDay | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>#}
 {#                                                </div>#}
-                                            {% elseif project.payment == 6 %}
-                                                <div class="row p-2">
-                                                    <div class="col-4">Tip finansiranja:</div>
-                                                    <div class="col-8">Plaćanje po mesecu</div>
-                                                </div>
+{#                                            {% elseif project.payment == 6 %}#}
+{#                                                <div class="row p-2">#}
+{#                                                    <div class="col-4">Tip finansiranja:</div>#}
+{#                                                    <div class="col-8">Plaćanje po mesecu</div>#}
+{#                                                </div>#}
 {#                                                <div class="row p-2 bg-light">#}
 {#                                                    <div class="col-4">Cena po mesecu:</div>#}
 {#                                                    <div class="col-8">{{ project.pricePerMonth | number_format(2, '.', ',') }} - {{ project.currency.getFormTitle() }}</div>#}
 {#                                                </div>#}
-                                            {% else %}
-                                                <div class="row p-2">
-                                                    <div class="col-4">Tip finansiranja:</div>
-                                                    <div class="col-8">Besplatno</div>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
+{#                                            {% else %}#}
+{#                                                <div class="row p-2">#}
+{#                                                    <div class="col-4">Tip finansiranja:</div>#}
+{#                                                    <div class="col-8">Besplatno</div>#}
+{#                                                </div>#}
+{#                                            {% endif %}#}
+{#                                        </div>#}
+{#                                    </div>#}
 {#                                    <div class="card">#}
 {#                                        <div class="card-header">#}
 {#                                            <h5 class="mb-0">Praćenje vremena</h5>#}
@@ -269,7 +298,7 @@
                                                 </div>
                                                 <div class="row p-2  bg-light">
                                                     <div class="col-4">Vreme:</div>
-                                                    <div class="col-8">{{ project.updated | date("d.m.Y") }} u {{ project.updated | date("H:i:s") }}</div>
+                                                    <div class="col-8">{{ project.updated | date("d.m.Y.") }} u {{ project.updated | date("H:i:s") }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -296,7 +325,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

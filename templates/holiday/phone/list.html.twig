@@ -50,7 +50,7 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ holiday.datum | date("d.m.Y")}}
+                                                    {{ holiday.datum | date("d.m.Y.")}}
                                                 </div>
                                             </td>
                                             <td class="text-center">
@@ -109,7 +109,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

@@ -84,14 +84,14 @@
                                             <td>
                                                 <div class="d-inline-flex align-items-center">
                                                     <i class="ph-calendar me-2"></i>
-                                                    {{ reservation.created | date("d.m.Y")}}
+                                                    {{ reservation.created | date("d.m.Y.")}}
                                                 </div>
                                             </td>
                                             <td>
                                                 {% if reservation.finished is not null %}
                                                     <div class="d-inline-flex align-items-center">
                                                         <i class="ph-calendar me-2"></i>
-                                                        {{ reservation.finished | date("d.m.Y")}}
+                                                        {{ reservation.finished | date("d.m.Y.")}}
                                                     </div>
                                                 {% endif %}
                                             </td>
@@ -136,7 +136,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}

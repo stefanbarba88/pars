@@ -46,9 +46,17 @@
                     <div class="d-flex align-items-stretch align-items-lg-start flex-column flex-lg-row">
                         <!-- Left content -->
                         <div class="flex-1 order-2 order-lg-1">
+                            {% set taskDays = getDaysRemainingTask(task) %}
+                            {% if task.status != constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                                {% if taskDays.poruka is not empty %}
+                                    <div class="alert alert-danger fade show">
+                                        {{ taskDays.poruka }}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
                             {% if task.isDeleted %}
                                 <div class="alert alert-danger fade show">
-                                    <span class="fw-semibold">Zadatak je obrisan.</span> Svi vremenski zapisi su obrisani, ali se mogu proveriti ulaskom u dnevnik zaduženog.
+                                    <span class="fw-semibold">Zadatak je obrisan.</span> Svi vremenski zapisi su obrisani, ali se mogu proveriti ulaskom u dnevnik zaposlenog.
                                 </div>
                             {% else %}
                                 {% if task.isClosed %}
@@ -58,14 +66,14 @@
                                 {% endif %}
                             {% endif %}
                             <div class="row">
-                                {% if not task.isDeleted and task.created > difference and not task.isClosed %}
+                                {% if not task.isDeleted and task.created > difference and task.status != constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') and task.status != constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
                                     <div class="col-sm-6 col-xl-4">
                                     <div class="card">
-                                        <div class="card-header d-flex">
+                                        <div class="card-header d-flex align-items-center">
                                             <h5 class="mb-0"><i class="ph-timer me-2"></i>Vremenski zapis</h5>
-                                            <div class="mt-1 ">
-                                                {% if stopwatch %} <div class="live p-1 mx-2"></div> {% endif %}
-                                            </div>
+                                            {% if stopwatch %}
+                                                <div class="live p-1 mx-2 ms-auto"></div>
+                                            {% endif %}
                                         </div>
                                         <div class="list-group list-group-borderless py-2">
                                             {% if not stopwatch %}
@@ -73,8 +81,8 @@
                                                     <div class="d-flex justify-content-center text-center">
                                                         <div>
                                                             {% if app.user.inTask %}
-                                                                <div class="alert alert-danger fade show">
-                                                                    <span class="fw-semibold">Imate otovoreno merenje.</span> Zaustavite predhodno merenje da bi mogli pokrenuti novo.
+                                                                <div class="alert alert-danger py-2 mx-3">
+                                                                    <span class="fw-semibold">Imate otvoreno merenje.</span> Zaustavite predhodno merenje da bi mogli pokrenuti novo.
                                                                 </div>
                                                             {% endif %}
                                                             <span class="display-5 lh-1 m-0 py-2">
@@ -125,40 +133,75 @@
                                                     Vreme
                                                 </h5>
                                             </div>
+                                           {% if task.isSeparate %}
+                                               <div class="list-group list-group-borderless py-2">
+                                                        <div class="d-flex list-group-item align-items-start">
+                                                            <div class="me-2">
+                                                                <i class="ph-timer"></i>
+                                                            </div>
 
-                                            <div class="list-group list-group-borderless py-2">
-                                                <div class="d-flex list-group-item align-items-start">
-                                                    <div class="me-2">
-                                                        <i class="ph-timer"></i>
-                                                    </div>
+                                                            <div class="flex-fill overflow-hidden">
+                                                                <div class="fw-semibold text-truncate">
+                                                                    Zaokruženo
+                                                                </div>
+                                                            </div>
 
-                                                    <div class="flex-fill overflow-hidden">
-                                                        <div class="fw-semibold text-truncate">
-                                                            Zaokruženo
+                                                            <div class="ms-3">
+                                                                <span class="badge bg-secondary text-primary me-2">{{ time1.hoursTimePriority }}:{{ time1.minutesTimePriority }}h</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex list-group-item align-items-start">
+                                                            <div class="me-2">
+                                                                <i class="ph-timer"></i>
+                                                            </div>
+
+                                                            <div class="flex-fill overflow-hidden">
+                                                                <div class="fw-semibold text-truncate">
+                                                                    Bez zaokruživanja
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div class="ms-3">
+                                                                <span class="badge bg-yellow text-primary me-2">{{ time1.hoursRealTimePriority }}:{{ time1.minutesRealTimePriority }}h</span>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                           {% else %}
+                                               <div class="list-group list-group-borderless py-2">
+                                                        <div class="d-flex list-group-item align-items-start">
+                                                            <div class="me-2">
+                                                                <i class="ph-timer"></i>
+                                                            </div>
 
-                                                    <div class="ms-3">
-                                                        <span class="badge bg-secondary text-primary me-2">{{ time1.hoursTimePriority }}:{{ time1.minutesTimePriority }}h</span>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex list-group-item align-items-start">
-                                                    <div class="me-2">
-                                                        <i class="ph-timer"></i>
-                                                    </div>
+                                                            <div class="flex-fill overflow-hidden">
+                                                                <div class="fw-semibold text-truncate">
+                                                                    Zaokruženo
+                                                                </div>
+                                                            </div>
 
-                                                    <div class="flex-fill overflow-hidden">
-                                                        <div class="fw-semibold text-truncate">
-                                                            Bez zaokruživanja
+                                                            <div class="ms-3">
+                                                                <span class="badge bg-secondary text-primary me-2">{{ totalTimes.hours }}:{{ totalTimes.minutes }}h</span>
+                                                            </div>
                                                         </div>
+                                                        <div class="d-flex list-group-item align-items-start">
+                                                            <div class="me-2">
+                                                                <i class="ph-timer"></i>
+                                                            </div>
 
-                                                    </div>
+                                                            <div class="flex-fill overflow-hidden">
+                                                                <div class="fw-semibold text-truncate">
+                                                                    Bez zaokruživanja
+                                                                </div>
 
-                                                    <div class="ms-3">
-                                                        <span class="badge bg-yellow text-primary me-2">{{ time1.hoursRealTimePriority }}:{{ time1.minutesRealTimePriority }}h</span>
+                                                            </div>
+
+                                                            <div class="ms-3">
+                                                                <span class="badge bg-yellow text-primary me-2">{{ totalTimes.hoursR }}:{{ totalTimes.minutesR }}h</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
+                                           {% endif %}
                                         </div>
                                     </div>
                                 {% endif %}
@@ -202,11 +245,11 @@
                                                             <span class="badge bg-secondary align-self-center rounded-pill ms-auto">{{ countStopwatches }}</span>
                                                         {% endif %}
 
-                                                        {% if countStopwatches == 0 and status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO')%}
+                                                        {% if countStopwatches == 0 and status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO')%}
                                                             <span class="badge bg-secondary align-self-center rounded-pill ms-auto">{{ countStopwatches }}</span>
                                                         {% endif %}
 
-                                                        {% if countStopwatches == 0 and status != constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO')%}
+                                                        {% if countStopwatches == 0 and status != constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO')%}
                                                             <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countStopwatches }}</span>
                                                         {% endif %}
 
@@ -236,6 +279,9 @@
                                             <h5 class="mb-0">
                                                 <i class="ph-files me-2"></i>
                                                 Dokumenta
+                                                {% if not task.isDeleted %}
+                                                    <a href="{{ path('app_task_add_docs', {id: task.id} ) }}"><i class="ph-plus-circle"></i></a>
+                                                {% endif %}
                                             </h5>
                                         </div>
 
@@ -270,31 +316,134 @@
 
                             <div class="card">
                             <div class="card-header d-flex align-items-center">
-                            <h5 class="mb-0">#{{ task.id }}: {{task.title }}
-                                        {% if not task.isDeleted and task.createdBy == app.user and task.created > difference %}
-                                            <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>
-                                        {% endif %}
-                                    </h5>
-                                </div>
+                                <h5 class="mb-0">Informacije o zadatku</h5>
+
+                                {% if task.priorityUserLog == app.user.id or task.createdBy == app.user %}
+                                    {% if stopwatchesRunning > 0 %}
+                                        <div class="my-auto ms-auto">
+                                            <a href="{{ path('app_task_close',{id: task.id} ) }}"><i class="ph-door me-2"></i></a>
+                                        </div>
+                                    {% else %}
+                                        <div class="my-auto ms-auto">
+
+                                            <div class="btn-group">
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                    <a href="#" class="link-primary d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <span class="badge bg-secondary text-primary">Nije startovan</span>
+                                                        <i class="ph-info me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Inicijalna promena statusa se dešava kada se pokrene prvo merenje na zadatku. Sve ostale se biraju ručno." data-bs-original-title="Promena statusa"></i>
+                                                    </a>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                    <a href="#" class="link-primary d-inline-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <span class="badge bg-yellow text-primary">Otvoren</span>
+                                                    </a>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                    <a href="#" class="link-primary d-inline-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <span class="badge bg-primary text-white">Zatvoren</span>
+                                                    </a>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                                                    <a href="#" class="link-primary d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <span class="badge bg-success text-white">Verifikovan</span>
+                                                    </a>
+                                                {% endif %}
+                                                {% if task.status != constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and task.status != constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                                                    <div class="dropdown-menu dropdown-menu-end" style="">
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                            <a href="{{ path('app_task_status', {id: task.id, status: constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO')}) }}" class="dropdown-item">
+                                                                <span class="bg-primary rounded-pill p-1 me-2"></span>
+                                                                Zatvoren
+                                                            </a>
+{#                                                            <a href="{{ path('app_task_status', {id: task.id, status: constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO')}) }}" class="dropdown-item">#}
+{#                                                                <span class="bg-success rounded-pill p-1 me-2"></span>#}
+{#                                                                Verifikovan#}
+{#                                                            </a>#}
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                            <a href="{{ path('app_task_status', {id: task.id, status: constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO')}) }}" class="dropdown-item">
+                                                                <span class="bg-yellow rounded-pill p-1 me-2"></span>
+                                                                Otvoren
+                                                            </a>
+{#                                                            <a href="{{ path('app_task_status', {id: task.id, status: constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO')}) }}" class="dropdown-item">#}
+{#                                                                <span class="bg-success rounded-pill p-1 me-2"></span>#}
+{#                                                                Verifikovan#}
+{#                                                            </a>#}
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="my-auto ms-auto">
+
+                                        <div class="btn-group">
+                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                <a href="#" class="link-primary d-inline-flex align-items-center">
+                                                    <span class="badge bg-secondary text-primary">Nije startovan</span>
+                                                    <i class="ph-info me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Inicijalna promena statusa se dešava kada se pokrene prvo merenje na zadatku. Sve ostale se biraju ručno." data-bs-original-title="Promena statusa"></i>
+                                                </a>
+                                            {% endif %}
+                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                <a href="#" class="link-primary d-inline-flex align-items-center">
+                                                    <span class="badge bg-yellow text-primary">Otvoren</span>
+                                                </a>
+                                            {% endif %}
+                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                <a href="#" class="link-primary d-inline-flex align-items-center">
+                                                    <span class="badge bg-primary text-white">Zatvoren</span>
+                                                </a>
+                                            {% endif %}
+                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                                                <a href="#" class="link-primary d-inline-flex align-items-center">
+                                                    <span class="badge bg-success text-white">Verifikovan</span>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+
 
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-xl-6">
                                             <div class="card">
                                                 <div class="card-header d-flex align-items-center py-lg-0">
-                                                    <h6 class="py-lg-3 mb-0">Informacije o zadatku</h6>
+                                                    <h6 class="py-lg-3 mb-0">
+                                                        #{{ task.id }}: {{task.title }}
+                                                        {% if not task.isDeleted and task.created > difference %}
+                                                            {% if task.createdBy == app.user %}
+                                                                <a href="{{ path('app_task_edit_info', {id: task.id} ) }}"><i class="ph-note-pencil"></i></a>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </h6>
                                                 </div>
                                                 <div class="card-body">
-                                                    <div class="fw-bold border-bottom pb-2 mb-3">Datum i vreme zadatka</div>
+                                                    <div class="fw-bold border-bottom pb-2 mb-3">Datum i rok za izvršenja zadatka</div>
                                                     <div class="row">
-                                                        <div class="col-lg-12 ">
+                                                        <div class="col-lg-6 ">
                                                             <div class="mb-3">
                                                                 <div class="d-inline-flex align-items-center">
                                                                     <i class="ph-calendar me-2"></i>
-                                                                    {{ task.time | date("d.m.Y H:i")}}
+                                                                    {{ task.time | date("d.m.Y. H:i")}}
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        {% if task.deadline is not null %}
+                                                            <div class="col-lg-6 ">
+                                                                <div class="mb-3">
+                                                                    <div class="d-inline-flex align-items-center">
+                                                                        <i class="ph-calendar-x me-2"></i>
+                                                                        {{ task.deadline | date("d.m.Y.")}} {% if taskDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ taskDays.poruka }}" data-bs-original-title="{{ taskDays.poruka }}"></i>{% endif %}
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
                                                     </div>
 
                                                     {% if task.repeating == 1 %}
@@ -320,15 +469,42 @@
                                                         </div>
                                                     {% endif %}
 
-                                                    <div class="fw-bold border-bottom pb-2 mb-3">Zaduženi</div>
+                                                    <div class="fw-bold border-bottom pb-2 mb-3">Zaposleni i resursi</div>
                                                     <div class="row">
-                                                        <div class="col-lg-12 ">
+                                                        <div class="col-lg-4">
                                                             <div class="mb-3">
                                                                 {% for log in task.taskLogs %}
-                                                                        <i class="ph-user me-2"></i>{{ log.user.fullName }}<br>
+                                                                    <i class="ph-user me-2"></i><a href="#" class="me-1 fw-semibold">
+                                                                    {{ log.user.fullName }}
+                                                                </a><br>
                                                                 {% endfor %}
                                                             </div>
                                                         </div>
+                                                        {% if isTool %}
+                                                            <div class="col-lg-4">
+                                                                <div class="mb-3">
+                                                                    {% if task.oprema is not empty %}
+                                                                        {% for oprema in task.oprema %}
+                                                                            <i class="ph-wrench me-2"></i>{{ oprema.title }}<br>
+                                                                        {% endfor %}
+                                                                    {% else %}
+                                                                        Nema dodeljene opreme za ovaj zadatak.
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+                                                        {% if isCar %}
+                                                            <div class="col-lg-4">
+                                                                <div class="mb-3">
+                                                                    {% if car is not null %}
+                                                                        <i class="ph-car me-2"></i>{{ car.carName }} <br>
+                                                                        <i class="ph-user me-2"></i>{{ driver.fullName  }}
+                                                                    {% else %}
+                                                                        Nema dodeljenog vozila za ovaj zadatak.
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
                                                     </div>
 
                                                     <div class="fw-bold border-bottom pb-2 mb-3">Aktivnosti</div>
@@ -355,273 +531,615 @@
                                                         <div class="col-lg-12">
                                                             <div class="mb-3">
                                                                 {% if task.description is not null %}
-                                                                    <i class="ph-note me-2"></i>{{ task.description }}
+                                                                    <i class="ph-note me-2"></i>{{ task.description}}
                                                                 {% else %}
                                                                     Nema posebne napomene za ovaj zadatak.
                                                                 {% endif %}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    {% if isTool %}
-                                                        <div class="fw-bold border-bottom pb-2 mb-3">Oprema</div>
-                                                        <div class="row">
-                                                            <div class="col-lg-12">
-                                                                <div class="mb-3">
-                                                                    {% if task.oprema is not empty %}
-                                                                        {% for oprema in task.oprema %}
-                                                                            <i class="ph-wrench me-2"></i>{{ oprema.title }}<br>
-                                                                        {% endfor %}
-                                                                    {% else %}
-                                                                        Nema dodeljene opreme za ovaj zadatak.
+
+                                                    <div class="fw-bold border-bottom pb-2 mb-3">Opšte</div>
+                                                    <div class="row">
+                                                        <div class="col-auto">
+                                                            <div class="mb-3">
+                                                                <div class="d-flex flex-wrap gap-1 align-items-center">
+                                                                    {% if not task.isFree %}
+                                                                        <span class="badge bg-primary text-white">Naplativ</span>
                                                                     {% endif %}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    {% endif %}
-                                                    {% if isCar %}
-                                                        <div class="fw-bold border-bottom pb-2 mb-3">Vozilo</div>
-                                                        <div class="row">
-                                                            <div class="col-lg-12">
-                                                                <div class="mb-3">
-                                                                    {% if car is not null %}
-                                                                        <i class="ph-car me-2"></i>{{ car.carName }} <br>
-                                                                        <i class="ph-user me-2"></i>{{ driver.fullName  }}
-                                                                    {% else %}
-                                                                        Nema dodeljenog vozila za ovaj zadatak.
+                                                                    {% if task.isExpenses %}
+                                                                        <span class="badge bg-primary text-white">Troškovnik</span>
                                                                     {% endif %}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-6">
-                                            <div class="card">
-                                                <div class="card-header d-flex align-items-center py-lg-0">
-                                                    <h6 class="py-lg-3 mb-0">Dnevnik: {{ taskLog.user.fullName}}</h6>
-                                                    <div class="my-auto ms-auto">
-                                                        <a href="{{ path('app_task_log_view',{id: taskLog.id} ) }}" class="btn btn-primary"><i class="ph-eye me-2"></i> Pogledajte</a>
-                                                    </div>
-                                                </div>
-                                                {% if stopwatchesActive is empty %}
-                                                    <div class="card-body">
-                                                        <div class="alert alert-info fade show">
-                                                            <span class="fw-semibold">Trenutno ne postoje vremenski zapisi za ovaj dnevnik.</span> Moguće je da je merenje u toku ili da još nije započeto.
-                                                        </div>
-                                                    </div>
-                                                {% else %}
-                                                    <div class="card-body">
-                                                        <div class="fw-bold border-bottom pb-2 mb-3">Vreme</div>
-                                                        <div class="row">
-                                                            <div class="col-lg-6">
-                                                                <div class="mb-3">
-                                                                    <div class="d-flex list-group-item align-items-start">
-                                                                        <div class="me-2">
-                                                                            <i class="ph-timer"></i>
-                                                                        </div>
+                                                                    {% if not task.isSeparate %}
+                                                                        <span class="badge bg-primary text-white">Ukupni rezultat</span>
+                                                                    {% else %}
+                                                                        <span class="badge bg-primary text-white">Odvojeni rezultati</span>
+                                                                    {% endif %}
 
-                                                                        <div class="flex-fill overflow-hidden">
-                                                                            <div class="fw-semibold text-truncate text-body">
-                                                                                Zaokruženo
-                                                                            </div>
-                                                                        </div>
+                                                                    {% if task.priority == 1 %}
+                                                                        <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                                    {% elseif task.priority == 2 %}
+                                                                        <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                                    {% elseif task.priority == 4 %}
+                                                                        <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                                    {% elseif task.priority == 5 %}
+                                                                        <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                                    {% endif %}
 
-                                                                        <div class="ms-3">
-                                                                            <span class="badge bg-secondary text-primary me-2">{{ time.hours }}:{{ time.minutes }}h</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-lg-6">
-                                                                <div class="mb-3">
-                                                                    <div class="d-flex list-group-item align-items-start">
-                                                                        <div class="me-2">
-                                                                            <i class="ph-timer"></i>
-                                                                        </div>
+                                                                    <span class="badge bg-primary text-white">{{ task.category.title }}</span>
 
-                                                                        <div class="flex-fill overflow-hidden">
-                                                                            <div class="fw-semibold text-truncate text-body">
-                                                                                Bez zaokruživanja
-                                                                            </div>
-
-                                                                        </div>
-
-                                                                        <div class="ms-3">
-                                                                            <span class="badge bg-yellow text-primary me-2">{{ time.hoursR }}:{{ time.minutesR }}h</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="fw-bold border-bottom pb-2 mb-3">Početak i kraj merenja</div>
-                                                        <div class="row">
-                                                            <div class="col-lg-12">
-                                                                <div class="mb-3">
-                                                                    {% for stopwatch in stopwatchesActive %}
-                                                                    <i class="ph-timer me-2"></i>{{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }}
-                                                                        {% set startLat = stopwatch.startLat %} {# Zamenite sa stvarnim vrednostima za start lat i lon #}
-                                                                        {% set startLon = stopwatch.startLon %}
-                                                                        {% set stopLat = stopwatch.stopLat %} {# Zamenite sa stvarnim vrednostima za stop lat i lon #}
-                                                                        {% set stopLon = stopwatch.stopLon %}
-
-                                                                        {%  if not (startLon starts with '123') and startLon is not null %}
-
-                                                                            <a href="https://yandex.ru/maps/?pt={{ startLon }},{{ startLat }}~{{ stopLon }},{{ stopLat }}&z=12&l=map&lang=sr_RU" target="_blank" data-bs-popup="tooltip" aria-label="Vidite na mapama" data-bs-original-title="Vidite na mapama">
-                                                                                <i class="ph-map-pin-line mx-2"></i>
-                                                                            </a>
-
-                                                                        {% endif %}
-                                                                        <br>
+                                                                    {% for labela in task.label %}
+                                                                        {{ labela.label | raw }}
                                                                     {% endfor %}
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                    </div>
 
-                                                        <div class="fw-bold border-bottom pb-2 mb-3">Odrađene aktivnosti</div>
-                                                        <div class="row">
-                                                            <div class="col-lg-12">
-                                                                <div class="mb-3">
-                                                                    {% set newActivity = [] %}
-                                                                    {% for stopwatch in stopwatchesActive %}
-                                                                        {% set activityExists = false %}
-                                                                        {% if stopwatch.activity is not empty %}
-                                                                            {% for activity in stopwatch.activity %}
-                                                                                {% if activity.id != constant('App\\Classes\\AppConfig::NOT_IN_LIST_ACTIVITY_ID') %}
-                                                                                    {% if activity not in newActivity %}
-                                                                                        <i class="ph-checks me-2"></i>{{ activity.title }}<br>
-                                                                                        {% set newActivity = newActivity|merge([activity]) %}
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6">
+
+                                            {% if task.isSeparate %}
+                                                <div class="card">
+
+                                                    <div class="card-header d-flex align-items-center py-lg-0">
+                                                        <h6 class="py-lg-3 mb-0">Dnevnik: {{ taskLog.user.fullName}}</h6>
+                                                        <div class="my-auto ms-auto">
+                                                            <a href="{{ path('app_task_log_view',{id: taskLog.id} ) }}" class="btn btn-primary"><i class="ph-eye me-2"></i> Pogledajte</a>
+                                                        </div>
+                                                {#                                                        <h6 class="py-lg-3 mb-0">Primarni dnevnik: {{ taskLog.user.fullName}} <a href="{{ path('app_task_reassign_primary_log', {id: task.id}) }}"><i class="ph-note-pencil"></i></a></h6>#}
+                                                    </div>
+                                                    {% if stopwatchesActive is empty %}
+                                                        <div class="card-body">
+                                                            <div class="alert alert-info fade show">
+                                                                <span class="fw-semibold">Trenutno ne postoje vremenski zapisi za ovaj dnevnik.</span> Moguće je da je merenje u toku, ili da još nije započeto. <a href="{{ path('app_task_reassign_primary_log', {id: task.id}) }}" class="alert-link">Ovde</a> promenite čiji je dnevnik primarni.
+                                                            </div>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="card-body">
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Utrošeno vreme</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
+                                                                    <div class="mb-3">
+                                                                        <div class="d-flex list-group-item align-items-start">
+                                                                            <div class="me-2">
+                                                                                <i class="ph-timer"></i>
+                                                                            </div>
+
+                                                                            <div class="flex-fill overflow-hidden">
+                                                                                <div class="fw-semibold text-truncate text-body">
+                                                                                    Zaokruženo
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="ms-3">
+                                                                                <span class="badge bg-secondary text-primary me-2">{{ time.hours }}:{{ time.minutes }}h</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-6">
+                                                                    <div class="mb-3">
+                                                                        <div class="d-flex list-group-item align-items-start">
+                                                                            <div class="me-2">
+                                                                                <i class="ph-timer"></i>
+                                                                            </div>
+
+                                                                            <div class="flex-fill overflow-hidden">
+                                                                                <div class="fw-semibold text-truncate text-body">
+                                                                                    Bez zaokruživanja
+                                                                                </div>
+
+                                                                            </div>
+
+                                                                            <div class="ms-3">
+                                                                                <span class="badge bg-yellow text-primary me-2">{{ time.hoursR }}:{{ time.minutesR }}h</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Početak i kraj merenja</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3" style="font-size: 13px">
+                                                                        {% for stopwatch in stopwatchesActive %}
+                                                                            <i class="ph-timer me-2"></i>{{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }}
+                                                                            {% set startLat = stopwatch.startLat %} {# Zamenite sa stvarnim vrednostima za start lat i lon #}
+                                                                            {% set startLon = stopwatch.startLon %}
+                                                                            {% set stopLat = stopwatch.stopLat %} {# Zamenite sa stvarnim vrednostima za stop lat i lon #}
+                                                                            {% set stopLon = stopwatch.stopLon %}
+
+                                                                            {%  if not (startLon starts with '123') and startLon is not null %}
+
+                                                                                <a href="https://www.google.com/maps/dir/?api=1&waypoints={{ startLat }},{{ startLon }}|{{ stopLat }},{{ stopLon }}" target="_blank" data-bs-popup="tooltip" aria-label="Vidite na Google mapama" data-bs-original-title="Vidite na Google mapama">
+                                                                                    <i class="ph-map-pin-line mx-2"></i>
+                                                                                </a>
+
+                                                                            {% endif %}
+
+                                                                            <br>
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            {% if task.isExpenses %}
+                                                                <div class="fw-bold border-bottom pb-2 mb-3">Troškovi</div>
+                                                                <div class="row">
+                                                                    <div class="col-lg-12">
+                                                                        <div class="mb-3">
+                                                                            {% for stopwatch in stopwatchesActive %}
+                                                                                {% if stopwatch.expencesPrice is not null %}
+                                                                                    <i class="ph-money me-2"></i>{{ stopwatch.expencesPrice | number_format(2, '.', ',') }} RSD - {{ stopwatch.expencesDesc }}
+                                                                                    <br>
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Odrađene aktivnosti</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+                                                                        {% set newActivity = [] %}
+                                                                        {% for stopwatch in stopwatchesActive %}
+                                                                            {% set activityExists = false %}
+                                                                            {% if stopwatch.activity is not empty %}
+                                                                                {% for activity in stopwatch.activity %}
+                                                                                    {% if activity.id != constant('App\\Classes\\AppConfig::NOT_IN_LIST_ACTIVITY_ID') %}
+                                                                                        {% if activity not in newActivity %}
+                                                                                            <i class="ph-checks me-2"></i>{{ activity.title }}<br>
+                                                                                            {% set newActivity = newActivity|merge([activity]) %}
+                                                                                        {% endif %}
+                                                                                    {% else %}
+                                                                                        {% set activityExists = true %}
+                                                                                        {% set sentences = stopwatch.additionalActivity|split('. ') %}
+                                                                                        {% for sentence in sentences %}
+                                                                                            <i class="ph-checks me-2"></i>{{ sentence }}<br>
+                                                                                        {% endfor %}
                                                                                     {% endif %}
-                                                                                {% else %}
-                                                                                    {% set activityExists = true %}
+                                                                                {% endfor %}
+
+                                                                                {% if not activityExists and stopwatch.additionalActivity is not empty%}
                                                                                     {% set sentences = stopwatch.additionalActivity|split('. ') %}
                                                                                     {% for sentence in sentences %}
                                                                                         <i class="ph-checks me-2"></i>{{ sentence }}<br>
                                                                                     {% endfor %}
                                                                                 {% endif %}
-                                                                            {% endfor %}
-
-                                                                            {% if not activityExists and stopwatch.additionalActivity is not empty%}
-                                                                                {% set sentences = stopwatch.additionalActivity|split('. ') %}
-                                                                                {% for sentence in sentences %}
-                                                                                    <i class="ph-checks me-2"></i>{{ sentence }}<br>
-                                                                                {% endfor %}
+                                                                        {#                                                                            {% if stopwatch.additionalActivity is not empty and  %}#}
                                                                             {% endif %}
-                                                                            {#                                                                            {% if stopwatch.additionalActivity is not empty and  %}#}
+                                                                    {#                                                                        {{ dump(stopwatch.additionalActivity) }}#}
+                                                                    {#                                                                        {% set sentences = stopwatch.additionalActivity|split('. ') %}#}
+
+                                                                    {#                                                                        {% for sentence in sentences %}#}
+                                                                    {#                                                                            <i class="ph-checks me-2"></i>{{ sentence }}<br>#}
+                                                                    {#                                                                        {% endfor %}#}
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Obrada podataka</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+                                                                        {% set hasDesc = false %}
+                                                                        {% for stopwatch in stopwatchesActive %}
+                                                                            {% if stopwatch.additionalDesc is not null %}
+                                                                                <i class="ph-note-blank me-2"></i>{{ stopwatch.additionalDesc }}<br>
+                                                                                {% set hasDesc = true %}
+                                                                            {% endif %}
+                                                                        {% endfor %}
+
+                                                                        {% if not hasDesc %}
+                                                                            Nema posebne napomene za obradu podataka na ovom zadataku.
                                                                         {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Napomena</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+                                                                        {% set hasDescription = false %}
+                                                                        {% for stopwatch in stopwatchesActive %}
+                                                                            {% if stopwatch.description is not null %}
+                                                                                <i class="ph-note me-2"></i>{{ stopwatch.description }}<br>
+                                                                                {% set hasDescription = true %}
+                                                                            {% endif %}
+                                                                        {% endfor %}
+
+                                                                        {% if not hasDescription %}
+                                                                            Nema posebne napomene na ovom zadataku.
+                                                                        {% endif %}
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Klijent</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+                                                                        <i class="ph-factory me-2"></i>
+                                                                        {% if task.project.client is not empty %}
+                                                                            {{ task.project.client.first.title }}
+                                                                            {% for stopwatch in stopwatchesActive %}
+                                                                                {% if stopwatch.client is not empty %}
+                                                                                    ({{ stopwatch.client.title }})
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                        {% else %}
+                                                                            Interni projekat
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Slike</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+<div class="row">
+                                                                        {% set hasImages = false %}
+                                                                        {% for stopwatch in stopwatchesActive %}
+                                                                            {% for image in stopwatch.images %}
+                                                                                <div class="col-2">
+                                                                                    <div class="card">
+                                                                                        <div class="card-img-actions">
+                                                                                            <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
+                                                                                            <div class="card-img-actions-overlay card-img">
+                                                                                                <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
+                                                                                                    <i class="ph-magnifying-glass-plus"></i>
+                                                                                                </a>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                {% set hasImages = true %}
+                                                                            {% endfor %}
+                                                                        {% endfor %}
+
+                                                                        {% if not hasImages %}
+                                                                            Nema dodatih slika u ovom dnevniku.
+                                                                        {% endif %}
+
+
+                                                                    </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Dokumenta</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+                                                                        {% set hasPdfs = false %}
+                                                                        {% for stopwatch in stopwatchesActive %}
+                                                                            {% for pdf in stopwatch.pdfs %}
+                                                                                <div class="d-flex align-items-start mb-3">
+                                                                                    <div class="me-2">
+                                                                                        <i class="ph-file-pdf"></i>
+                                                                                    </div>
+
+                                                                                    <div class="flex-fill overflow-hidden">
+                                                                                        <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+                                                                                    </div>
+
+                                                                                    <div class="ms-3">
+                                                                                        <a href="{{ asset(pdf.path) }}" download class="text-body">
+                                                                                            <i class="ph-download-simple"></i>
+                                                                                        </a>
+                                                                                    </div>
+                                                                                </div>
+                                                                                {% set hasPdfs = true %}
+                                                                            {% endfor %}
+                                                                        {% endfor %}
+
+                                                                        {% if not hasPdfs %}
+                                                                            Nema dodate dokumentacije u ovom dnevniku.
+                                                                        {% endif %}
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                <div class="card">
+                                                    <div class="card-header d-flex align-items-center py-lg-0">
+                                                        <h6 class="py-lg-3 mb-0">Ukupni rezultati merenja</h6>
+                                                    </div>
+                                                    {% if stopwatchesActive is empty %}
+                                                        <div class="card-body">
+                                                            <div class="alert alert-info fade show">
+                                                                <span class="fw-semibold">Trenutno ne postoje vremenski zapisi za ovaj dnevnik.</span> Moguće je da je merenje u toku, ili da još nije započeto. <a href="{{ path('app_task_reassign_primary_log', {id: task.id}) }}" class="alert-link">Ovde</a> promenite čiji je dnevnik primarni.
+                                                            </div>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="card-body">
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Utrošeno vreme</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
+                                                                    <div class="mb-3">
+                                                                        <div class="d-flex list-group-item align-items-start">
+                                                                            <div class="me-2">
+                                                                                <i class="ph-timer"></i>
+                                                                            </div>
+
+                                                                            <div class="flex-fill overflow-hidden">
+                                                                                <div class="fw-semibold text-truncate text-body">
+                                                                                    Zaokruženo
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="ms-3">
+                                                                                <span class="badge bg-secondary text-primary me-2">{{ totalTimes.hours }}:{{ totalTimes.minutes }}h</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-6">
+                                                                    <div class="mb-3">
+                                                                        <div class="d-flex list-group-item align-items-start">
+                                                                            <div class="me-2">
+                                                                                <i class="ph-timer"></i>
+                                                                            </div>
+
+                                                                            <div class="flex-fill overflow-hidden">
+                                                                                <div class="fw-semibold text-truncate text-body">
+                                                                                    Bez zaokruživanja
+                                                                                </div>
+
+                                                                            </div>
+
+                                                                            <div class="ms-3">
+                                                                                <span class="badge bg-yellow text-primary me-2">{{ totalTimes.hoursR }}:{{ totalTimes.minutesR }}h</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Početak i kraj merenja</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3" style="font-size: 13px">
+                                                                        {% for stop in times %}
+                                                                            {% for stopwatch in stop %}
+
+                                                                                <i class="ph-timer me-2"></i>{{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }}
+                                                                                {% set startLat = stopwatch.startLat %} {# Zamenite sa stvarnim vrednostima za start lat i lon #}
+                                                                                {% set startLon = stopwatch.startLon %}
+                                                                                {% set stopLat = stopwatch.stopLat %} {# Zamenite sa stvarnim vrednostima za stop lat i lon #}
+                                                                                {% set stopLon = stopwatch.stopLon %}
+
+                                                                                {%  if not (startLon starts with '123') and startLon is not null %}
+
+                                                                                    <a href="https://www.google.com/maps/dir/?api=1&waypoints={{ startLat }},{{ startLon }}|{{ stopLat }},{{ stopLon }}" target="_blank" data-bs-popup="tooltip" aria-label="Vidite na Google mapama" data-bs-original-title="Vidite na Google mapama">
+                                                                                        <i class="ph-map-pin-line mx-2"></i>
+                                                                                    </a>
+
+                                                                                {% endif %}
+
+                                                                                <br>
+                                                                            {% endfor %}
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            {% if task.isExpenses %}
+                                                                <div class="fw-bold border-bottom pb-2 mb-3">Troškovi</div>
+                                                                <div class="row">
+                                                                    <div class="col-lg-12">
+                                                                        <div class="mb-3">
+                                                                            {% for stop in times %}
+                                                                                {% for stopwatch in stop %}
+                                                                                    {% if stopwatch.expencesPrice is not null %}
+                                                                                        <i class="ph-money me-2"></i>{{ stopwatch.expencesPrice | number_format(2, '.', ',') }} RSD - {{ stopwatch.expencesDesc }}
+                                                                                        <br>
+                                                                                    {% endif %}
+                                                                                {% endfor %}
+                                                                            {% endfor %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Odrađene aktivnosti</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+                                                                        {% set newActivity = [] %}
+                                                                        {% for stop in times %}
+                                                                            {% for stopwatch in stop %}
+                                                                                {% set activityExists = false %}
+                                                                                {% if stopwatch.activity is not empty %}
+                                                                                    {% for activity in stopwatch.activity %}
+                                                                                        {% if activity.id != constant('App\\Classes\\AppConfig::NOT_IN_LIST_ACTIVITY_ID') %}
+                                                                                            {% if activity not in newActivity %}
+                                                                                                <i class="ph-checks me-2"></i>{{ activity.title }}<br>
+                                                                                                {% set newActivity = newActivity|merge([activity]) %}
+                                                                                            {% endif %}
+                                                                                        {% else %}
+                                                                                            {% set activityExists = true %}
+                                                                                            {% set sentences = stopwatch.additionalActivity|split('. ') %}
+                                                                                            {% for sentence in sentences %}
+                                                                                                <i class="ph-checks me-2"></i>{{ sentence }}<br>
+                                                                                            {% endfor %}
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+
+                                                                                    {% if not activityExists and stopwatch.additionalActivity is not empty%}
+                                                                                        {% set sentences = stopwatch.additionalActivity|split('. ') %}
+                                                                                        {% for sentence in sentences %}
+                                                                                            <i class="ph-checks me-2"></i>{{ sentence }}<br>
+                                                                                        {% endfor %}
+                                                                                    {% endif %}
+                                                                            {#                                                                            {% if stopwatch.additionalActivity is not empty and  %}#}
+                                                                                {% endif %}
                                                                         {#                                                                        {{ dump(stopwatch.additionalActivity) }}#}
                                                                         {#                                                                        {% set sentences = stopwatch.additionalActivity|split('. ') %}#}
 
                                                                         {#                                                                        {% for sentence in sentences %}#}
                                                                         {#                                                                            <i class="ph-checks me-2"></i>{{ sentence }}<br>#}
                                                                         {#                                                                        {% endfor %}#}
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="fw-bold border-bottom pb-2 mb-3">Obrada podataka</div>
-                                                        <div class="row">
-                                                            <div class="col-lg-12">
-                                                                <div class="mb-3">
-                                                                    {% for stopwatch in stopwatchesActive %}
-                                                                        {% if stopwatch.additionalDesc is not null %}
-                                                                            <i class="ph-note-blank me-2"></i>{{ stopwatch.additionalDesc }}<br>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="fw-bold border-bottom pb-2 mb-3">Napomena</div>
-                                                        <div class="row">
-                                                            <div class="col-lg-12">
-                                                                <div class="mb-3">
-                                                                    {% for stopwatch in stopwatchesActive %}
-                                                                        {% if stopwatch.description is not null %}
-                                                                            <i class="ph-note me-2"></i>{{ stopwatch.description }}<br>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="fw-bold border-bottom pb-2 mb-3">Klijent</div>
-                                                        <div class="row">
-                                                            <div class="col-lg-12">
-                                                                <div class="mb-3">
-                                                                    <i class="ph-factory me-2"></i>
-                                                                    {% if task.project.client is not empty %}
-                                                                        {{ task.project.client.first.title }}
-                                                                        {% for stopwatch in stopwatchesActive %}
-                                                                            {% if stopwatch.client is not empty %}
-                                                                                ({{ stopwatch.client.title }})
-                                                                            {% endif %}
+                                                                            {% endfor %}
                                                                         {% endfor %}
-                                                                    {% else %}
-                                                                        Interni projekat
-                                                                    {% endif %}
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
 
-                                                        <div class="fw-bold border-bottom pb-2 mb-3">Slike</div>
-                                                        <div class="row">
-                                                            <div class="col-lg-12">
-                                                                <div class="mb-3">
-                                                                    <div class="row">
-                                                                    {% for stopwatch in stopwatchesActive %}
-                                                                        {% for image in stopwatch.images %}
-                                                                            <div class="col-2">
-                                                                                <div class="card">
-                                                                                    <div class="card-img-actions">
-                                                                                        <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
-                                                                                        <div class="card-img-actions-overlay card-img">
-                                                                                            <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                                                                <i class="ph-magnifying-glass-plus"></i>
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Obrada podataka</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+                                                                        {% set hasDesc = false %}
+                                                                        {% for stop in times %}
+                                                                            {% for stopwatch in stop %}
+                                                                                {% if stopwatch.additionalDesc is not null %}
+                                                                                    <i class="ph-note-blank me-2"></i>{{ stopwatch.additionalDesc }}<br>
+                                                                                    {% set hasDesc = true %}
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                        {% endfor %}
+
+                                                                        {% if not hasDesc %}
+                                                                            Nema posebne napomene za obradu podataka na ovom zadataku.
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Napomena</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+                                                                        {% set hasDescription = false %}
+                                                                        {% for stop in times %}
+                                                                            {% for stopwatch in stop %}
+                                                                                {% if stopwatch.description is not null %}
+                                                                                    <i class="ph-note me-2"></i>{{ stopwatch.description }}<br>
+                                                                                    {% set hasDescription = true %}
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                        {% endfor %}
+
+                                                                        {% if not hasDescription %}
+                                                                            Nema posebne napomene na ovom zadataku.
+                                                                        {% endif %}
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Klijent</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+                                                                        <i class="ph-factory me-2"></i>
+                                                                        {% if task.project.client is not empty %}
+                                                                            {{ task.project.client.first.title }}
+                                                                            {% for stop in times %}
+                                                                                {% for stopwatch in stop %}
+                                                                                    {% if stopwatch.client is not empty %}
+                                                                                        ({{ stopwatch.client.title }})
+                                                                                    {% endif %}
+                                                                                {% endfor %}
+                                                                            {% endfor %}
+                                                                        {% else %}
+                                                                            Interni projekat
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Slike</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+<div class="row">
+                                                                        {% set hasImages = false %}
+                                                                        {% for stop in times %}
+                                                                            {% for stopwatch in stop %}
+                                                                                {% for image in stopwatch.images %}
+                                                                                    <div class="col-2">
+                                                                                        <div class="card">
+                                                                                            <div class="card-img-actions">
+                                                                                                <img class="card-img img-fluid" src="{{ asset(image.thumbnail100) }}" alt="">
+                                                                                                <div class="card-img-actions-overlay card-img">
+                                                                                                    <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
+                                                                                                        <i class="ph-magnifying-glass-plus"></i>
+                                                                                                    </a>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    {% set hasImages = true %}
+                                                                                {% endfor %}
+                                                                            {% endfor %}
+                                                                        {% endfor %}
+
+                                                                        {% if not hasImages %}
+                                                                            Nema dodatih slika u ovom dnevniku.
+                                                                        {% endif %}
+
+
+                                                                    </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="fw-bold border-bottom pb-2 mb-3">Dokumenta</div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12">
+                                                                    <div class="mb-3">
+                                                                        {% set hasPdfs = false %}
+                                                                        {% for stop in times %}
+                                                                            {% for stopwatch in stop %}
+                                                                                {% for pdf in stopwatch.pdfs %}
+                                                                                    <div class="d-flex align-items-start mb-3">
+                                                                                        <div class="me-2">
+                                                                                            <i class="ph-file-pdf"></i>
+                                                                                        </div>
+
+                                                                                        <div class="flex-fill overflow-hidden">
+                                                                                            <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+                                                                                        </div>
+
+                                                                                        <div class="ms-3">
+                                                                                            <a href="{{ asset(pdf.path) }}" download class="text-body">
+                                                                                                <i class="ph-download-simple"></i>
                                                                                             </a>
                                                                                         </div>
                                                                                     </div>
-                                                                                </div>
-                                                                            </div>
+                                                                                    {% set hasPdfs = true %}
+                                                                                {% endfor %}
+                                                                            {% endfor %}
                                                                         {% endfor %}
-                                                                    {% endfor %}
+
+                                                                        {% if not hasPdfs %}
+                                                                            Nema dodate dokumentacije u ovom dnevniku.
+                                                                        {% endif %}
+
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-
-                                                        <div class="fw-bold border-bottom pb-2 mb-3">Dokumenta</div>
-                                                        <div class="row">
-                                                            <div class="col-lg-12">
-                                                                <div class="mb-3">
-                                                                    {% for stopwatch in stopwatchesActive %}
-                                                                        {% for pdf in stopwatch.pdfs %}
-                                                                            <div class="d-flex align-items-start mb-3">
-                                                                                <div class="me-2">
-                                                                                    <i class="ph-file-pdf"></i>
-                                                                                </div>
-
-                                                                                <div class="flex-fill overflow-hidden">
-                                                                                    <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
-                                                                                </div>
-
-                                                                                <div class="ms-3">
-                                                                                    <a href="{{ asset(pdf.path) }}" download class="text-body">
-                                                                                        <i class="ph-download-simple"></i>
-                                                                                    </a>
-                                                                                </div>
-                                                                            </div>
-                                                                        {% endfor %}
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     </div>
 
@@ -631,18 +1149,23 @@
                                     {% if not task.isDeleted %}
                                         <div class="d-flex align-items-center">
                                             <i class="ph-lightbulb me-2"></i>
-                                            {% if status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
                                                 <span class="badge bg-secondary text-primary">Nije startovan</span>
-                                            {% elseif status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                            {% endif %}
+                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
                                                 <span class="badge bg-yellow text-primary">Otvoren</span>
-                                            {% else %}
+                                            {% endif %}
+                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
                                                 <span class="badge bg-primary text-white">Zatvoren</span>
+                                            {% endif %}
+                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                                                <span class="badge bg-success text-white">Verifikovan</span>
                                             {% endif %}
                                         </div>
 
                                         <div class="d-inline-flex mb-0">
                                             {% if task.createdBy == app.user and task.created > difference and status != constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO')%}
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_task" class="text-body ms-2">
+                                                <a href="{{ path('app_task_delete', {id: task.id} ) }}" class="text-danger ms-2">
                                                     <i class="ph-trash"></i>
                                                 </a>
                                             {% endif %}
@@ -673,7 +1196,7 @@
                                     {% for comment in comments %}
                                         <div class="d-flex flex-column flex-lg-row mb-3">
                                             <div class="me-lg-3 mb-2 mb-lg-0">
-                                            {% if not is_granted('ROLE_EMPLOYEE') or app.user == comment.user%}
+                                            {% if app.user == comment.user%}
                                                 <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}"><img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt="{{ comment.user.fullName }}" title="{{ comment.user.fullName }}"></a>
                                             {% else %}
                                                 <img src="{{ asset(comment.user.image.getThumbnail100()) }}" class="rounded-circle" width="40" height="40" alt="{{ comment.user.fullName }}" title="{{ comment.user.fullName }}">
@@ -681,7 +1204,7 @@
                                             </div>
 
                                             <div class="flex-fill">
-                                                {% if not is_granted('ROLE_EMPLOYEE') or app.user == comment.user%}
+                                                {% if app.user == comment.user%}
                                                     <a href="{{ path('app_employee_profile_view', { id: comment.user.id}) }}" class="fw-semibold">{{ comment.user.getFullName() }}</a>
                                                 {% else %}
                                                     <a href="#"  class="fw-semibold text-body">{{ comment.user.getFullName() }}</a>
@@ -696,7 +1219,7 @@
                                                             <a href="{{ path('app_comment_edit', { id: comment.id}) }}">Izmenite</a>
                                                         </li>
                                                         <li class="list-inline-item">
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_delete_comment{{ comment.id }}">Obrišite</a>
+                                                            <a href="{{ path('app_comment_delete', {id: comment.id} ) }}">Obrišite</a>
                                                         </li>
                                                     </ul>
 
@@ -708,7 +1231,7 @@
                                 </div>
                                 {% if task.isDeleted == 0 %}
                                     <div class="card-footer d-flex justify-content-between align-items-center">
-                                        {% if not is_granted('ROLE_EMPLOYEE') or app.user in task.assignedUsers%}
+                                        {% if not is_granted('ROLE_EMPLOYEE') or app.user in task.assignedUsers or admin%}
                                             <div class="d-flex align-items-center"></div>
                                             <div class="d-inline-flex mb-0">
                                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_form_comment"><i class="ph-plus me-2"></i> Dodajte</button>
@@ -737,53 +1260,10 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
-    {% if comments is empty %}
-        {% for comment in comments %}
-            <!-- delete note modal -->
-            <div id="modal_delete_comment{{ comment.id }}" class="modal fade" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header bg-danger text-white border-0">
-                            <h6 class="modal-title">Potvrda</h6>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                        </div>
 
-                        <div class="modal-body">
-                            <p>Da li ste sigurni da želite da obrišete ovaj komentar?</p>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                            <a href="{{ path('app_comment_delete', {id: comment.id} ) }}" class="btn btn-danger"><i class="ph-trash me-2"></i>Obrišite</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /delete note modal -->
-        {% endfor %}
-    {% endif %}
-    <div id="modal_delete_task" class="modal fade" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white border-0">
-                    <h6 class="modal-title">Potvrda</h6>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <p>Da li ste sigurni da želite da obrišete ovaj zadatak?</p>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Odustanite</button>
-                    <a href="{{ path('app_task_delete', {id: task.id} ) }}" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
-                </div>
-            </div>
-        </div>
-    </div>
     <div id="modal_form_vertical" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -964,7 +1444,7 @@
 
                 {% if stopwatch is not null  %}
                 let startDateTime = new Date({{ stopwatch ? stopwatch.start | date('Y, (m-1), d, H, i, s') : '2014,8,26,2,1,0,0' }});// YYYY (M-1) D H m s (start time and date from DB)
-                {#let startDateTime = new Date({{ stopwatch.start | date('Y, (m-1), d, H, i, s') }});// YYYY (M-1) D H m s (start time and date from DB)#}
+        {#let startDateTime = new Date({{ stopwatch.start | date('Y, (m-1), d, H, i, s') }});// YYYY (M-1) D H m s (start time and date from DB)#}
                 let startStamp = startDateTime.getTime();
 
                 let newDate = new Date();

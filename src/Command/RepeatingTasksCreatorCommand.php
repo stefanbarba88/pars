@@ -62,10 +62,11 @@ class RepeatingTasksCreatorCommand extends Command {
       $newTask->setIsDeleted($task->isIsDeleted());
       $newTask->setIsFree($task->getIsFree());
       $newTask->setIsEstimate($task->isIsEstimate());
+      $newTask->setIsExpenses($task->isIsExpenses());
       $newTask->setIsClientView($task->isIsClientView());
       $newTask->setIsTimeRoundUp($task->isIsTimeRoundUp());
       $newTask->setIsExpenses($task->isIsExpenses());
-      $newTask->setIsPriority($task->isIsPriority());
+      $newTask->setPriority($task->getPriority());
       $newTask->setMinEntry($task->getMinEntry());
       $newTask->setRoundingInterval($task->getRoundingInterval());
       $newTask->setStatus($task->getStatus());

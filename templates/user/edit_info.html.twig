@@ -69,6 +69,7 @@
                                             </div>
                                         </div>
                                         <div class="row">
+                                            {% if user.userType() != 1 and user.userType() != 2 and user.userType() != 5 %}
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     {{ form_label(form.datumRodjenja, 'Datum rođenja:*', {'label_attr': {'class': 'form-label'}}) }}
@@ -81,6 +82,7 @@
                                                     <span class="form-text">Format: 31.12.1900</span>
                                                 </div>
                                             </div>
+                                           {% endif %}
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     {{ form_label(form.pol, 'Pol:*', {'label_attr': {'class': 'form-label'}}) }}
@@ -88,79 +90,103 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        {% if user.userType() != 1 and user.userType() != 2 %}
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.grad, 'Grad:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.grad, {attr: { class: 'form-control select required' }}) }}
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.adresa, 'Ulica i broj:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.adresa, {attr: { class: 'form-control required' }}) }}
-                                                    <span class="form-text">Format: Bulevar Milutina Milankovića 1</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                {{ form_label(form.telefon1, 'Telefon #1:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                {{ form_widget(form.telefon1, {attr: { class: 'form-control required' }}) }}
-                                                <span class="form-text">Format: 0661111222</span>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.telefon2, 'Telefon #2:', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
-                                                    <span class="form-text">Format: 0661111222</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.vozacki, 'Vozačka dozvola:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.vozacki, {attr: { class: 'form-control select required' }}) }}
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.isLekarski, 'Lekarski pregled:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.isLekarski, {attr: { class: 'form-control select required' }}) }}
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.isPrvaPomoc, 'Prva pomoć:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.isPrvaPomoc, {attr: { class: 'form-control select required' }}) }}
-                                                </div>
-                                            </div>
-                                        </div>
+                                        {% if user.userType() != 1 and user.userType() != 2 and user.userType() != 5 %}
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <div class="mb-3">
-                                                        {{ form_label(form.neradniDan, 'Neradni dan:', {'label_attr': {'class': 'form-label'}}) }}
-                                                        {{ form_widget(form.neradniDan, {attr: { class: 'form-control select' }}) }}
-                                                        <span class="form-text">Ukoliko zaposleni ne radi određenog dana u sedmici. Potrebno je uneti i dan vikenda ako firma radi vikendom.</span>
+                                                        {{ form_label(form.grad, 'Grad:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.grad, {attr: { class: 'form-control select required' }}) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.adresa, 'Ulica i broj:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.adresa, {attr: { class: 'form-control required' }}) }}
+                                                        <span class="form-text">Format: Bulevar Milutina Milankovića 1</span>
                                                     </div>
                                                 </div>
                                             </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.isMobile, 'Mobilni telefon:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.isMobile, {attr: { class: 'form-control select required' }}) }}
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    {{ form_label(form.telefon1, 'Službeni telefon:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.telefon1, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Format: 0661111222</span>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.telefon2, 'Privatni telefon:', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
+                                                        <span class="form-text">Format: 0661111222</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    {{ form_label(form.isLaptop, 'Laptop:*', {'label_attr': {'class': 'form-label'}}) }}
-                                                    {{ form_widget(form.isLaptop, {attr: { class: 'form-control select required' }}) }}
+                                            <div class="row">
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.vozacki, 'Vozačka dozvola:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.vozacki, {attr: { class: 'form-control select required' }}) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isLekarski, 'Lekarski pregled:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isLekarski, {attr: { class: 'form-control select required' }}) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.isPrvaPomoc, 'Prva pomoć:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.isPrvaPomoc, {attr: { class: 'form-control select required' }}) }}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                            <div class="row">
+                                                    <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label class="form-label" for="user_registration_form_neradniDan">Neradni dani:</label>
+                                                                <select id="user_registration_form_neradniDan" name="user_registration_form[neradniDani][]" data-minimum-results-for-search="Infinity" class="form-control select" multiple="multiple">
+
+                                                                    <option value="1" {% if 1 in user.neradniDan %} selected {% endif %}>Ponedeljak</option>
+                                                                    <option value="2" {% if 2 in user.neradniDan %} selected {% endif %}>Utorak</option>
+                                                                    <option value="3" {% if 3 in user.neradniDan %} selected {% endif %}>Sreda</option>
+                                                                    <option value="4" {% if 4 in user.neradniDan %} selected {% endif %}>Četvrtak</option>
+                                                                    <option value="5" {% if 5 in user.neradniDan %} selected {% endif %}>Petak</option>
+                                                                    <option value="6" {% if 6 in user.neradniDan %} selected {% endif %}>Subota</option>
+                                                                    <option value="7" {% if 7 in user.neradniDan %} selected {% endif %}>Nedelja</option>
+
+                                                                </select>
+                                                                <span class="form-text">Ukoliko zaposleni ne radi određenim danima u sedmici. Potrebno je uneti i dan vikenda ako firma radi vikendom.</span>
+                                                            </div>
+                                                        </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            {{ form_label(form.slava, 'Slava:', {'label_attr': {'class': 'form-label'}}) }}
+                                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="ph-calendar"></i>
+                                                </span>
+                                                                {{ form_widget(form.slava, {attr: { class: 'form-control datepicker-date-format-custom1', autocomplete : 'off' }}) }}
+                                                            </div>
+                                                            <span class="form-text">Format: 31.12.1900</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                        {% endif %}
+                                        {% if user.userType() == 5 %}
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    {{ form_label(form.telefon1, 'Službeni telefon:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.telefon1, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Format: 0661111222</span>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="mb-3">
+                                                        {{ form_label(form.telefon2, 'Privatni telefon:', {'label_attr': {'class': 'form-label'}}) }}
+                                                        {{ form_widget(form.telefon2, {attr: { class: 'form-control' }}) }}
+                                                        <span class="form-text">Format: 0661111222</span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         {% endif %}
                                         <div class="text-end">
                                             <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
@@ -188,7 +214,7 @@
         </div>
         <!-- /main content -->
 
-        {# {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }} #}
+
     </div>
     {% include 'includes/notification.html.twig' %}
 {% endblock content %}
@@ -254,6 +280,22 @@
                 todayBtn: true,
                 weekStart: 1,
                 maxDate: 'today',
+                daysOfWeekHighlighted: [0,6],
+                language: 'sr-latn',
+                // daysOfWeekDisabled: [0]
+            });
+        }
+
+        const dpDateCustomFormatElement1 = document.querySelector('.datepicker-date-format-custom1');
+        if(dpDateCustomFormatElement) {
+            const dpDateCustomFormat1 = new Datepicker(dpDateCustomFormatElement1, {
+                container: '.content-inner',
+                buttonClass: 'btn',
+                prevArrow: document.dir == 'rtl' ? '&rarr;' : '&larr;',
+                nextArrow: document.dir == 'rtl' ? '&larr;' : '&rarr;',
+                format: 'dd.mm.yyyy',
+                todayBtn: true,
+                weekStart: 1,
                 daysOfWeekHighlighted: [0,6],
                 language: 'sr-latn',
                 // daysOfWeekDisabled: [0]

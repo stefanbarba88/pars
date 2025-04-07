@@ -232,21 +232,10 @@ class HolidayRepository extends ServiceEntityRepository {
   }
 
   //daje koliko je bilo radnih dana u firmi od pocetka godine
-  public function brojRadnihDanaDoJuce(): int {
+  public function brojRadnihDanaDoJuce($radniDaniFirma, $neradniDaniZaposleni): int {
 
     $company = $this->security->getUser()->getCompany();
-//    $danas = time();  // Trenutni timestamp
-//    $pocetakGodine = strtotime(date('Y-01-01'));  // Početak godine timestamp
-//
-//    $brojRadnihDana = 0;
-//
-//    // Petlja kroz svaki dan između početka godine i juče
-//    for ($dan = $pocetakGodine; $dan < $danas; $dan += 86400) {  // 86400 sekundi u danu
-//      // Proveri da li je trenutni dan radni dan i nije nedelja
-//      if (date('N', $dan) < 6) {
-//        $brojRadnihDana++;
-//      }
-//    }
+
     $danas = time();  // Trenutni timestamp
     $pocetakGodine = strtotime(date('Y-01-01'));  // Početak godine timestamp
 
@@ -265,19 +254,18 @@ class HolidayRepository extends ServiceEntityRepository {
 
     // Petlja kroz svaki dan između početka godine i juče
     for ($i = 0; $i < $brojDana; $i++) {
-      // Kreiraj DateTime objekat za trenutni dan
 
-      // Proveri da li je trenutni dan radni dan i nije nedelja
-      if ($pocetakGodineObj->format('N') < $company->getSettings()->getWorkWeek()) {
+      // Proveri da li je trenutni dan radni dan ili tog dana zaposleni ne radi
+      if (!in_array($pocetakGodineObj->format('N'), $neradniDaniZaposleni) && in_array($pocetakGodineObj->format('N'), $radniDaniFirma)) {
         $brojRadnihDana++;
       }
 
       $pocetakGodineObj = $pocetakGodineObj->modify("+1 day");
     }
 //dd($brojRadnihDana);
-    return $brojRadnihDana - $this->brojNeradnihDana();
+    return $brojRadnihDana - $this->brojNeradnihDana($radniDaniFirma, $neradniDaniZaposleni);
   }
-  public function brojNeradnihDana(): int {
+  public function brojNeradnihDana($radniDaniFirma, $neradniDaniZaposleni): int {
     $company = $this->security->getUser()->getCompany();
     $year = date('Y');
     $startDate = new DateTimeImmutable("$year-01-01");
@@ -299,17 +287,18 @@ class HolidayRepository extends ServiceEntityRepository {
 
     if (count($noPraznici) > 0 ) {
       foreach ($noPraznici as $praz) {
-        if ($praz->getDatum()->format('N') < $company->getSettings()->getWorkWeek()) {
+        if (!in_array($praz->getDatum()->format('N'), $neradniDaniZaposleni) && in_array($praz->getDatum()->format('N'), $radniDaniFirma)) {
           $praznici++;
         }
       }
     }
 
+
     return $praznici;
   }
 
   //daje koliko je bilo radnih dana u firmi od trenutka kada se user zaposlio
-  public function brojRadnihDanaDoJuceUser(User $user): int {
+  public function brojRadnihDanaDoJuceUser(User $user, $radniDaniFirma, $neradniDaniZaposleni): int {
 
     $company = $user->getCompany();
 
@@ -330,16 +319,16 @@ class HolidayRepository extends ServiceEntityRepository {
     // Petlja kroz svaki dan između početka godine i juče
     for ($i = 0; $i < $brojDana; $i++) {
       // Proveri da li je trenutni dan radni dan i nije nedelja
-      if ($pocetakGodineObj->format('N') < $company->getSettings()->getWorkWeek()) {
+      if (!in_array($pocetakGodineObj->format('N'), $neradniDaniZaposleni) && in_array($pocetakGodineObj->format('N'), $radniDaniFirma)) {
         $brojRadnihDana++;
       }
       $pocetakGodineObj = $pocetakGodineObj->modify("+1 day");
     }
 
 
-    return $brojRadnihDana - $this->brojNeradnihDanaUser($user);
+    return $brojRadnihDana - $this->brojNeradnihDanaUser($user, $radniDaniFirma, $neradniDaniZaposleni);
   }
-  public function brojNeradnihDanaUser(User $user): int {
+  public function brojNeradnihDanaUser(User $user, $radniDaniFirma, $neradniDaniZaposleni): int {
 
     $company = $user->getCompany();
 
@@ -362,7 +351,8 @@ class HolidayRepository extends ServiceEntityRepository {
 
     if (count($noPraznici) > 0 ) {
       foreach ($noPraznici as $praz) {
-        if ($praz->getDatum()->format('N') < $company->getsettings()->getWorkWeek()) {
+
+        if (!in_array($praz->getDatum()->format('N'), $neradniDaniZaposleni) && in_array($praz->getDatum()->format('N'), $radniDaniFirma)) {
           $praznici++;
         }
       }
@@ -375,7 +365,13 @@ class HolidayRepository extends ServiceEntityRepository {
   public function vrstaDana(DateTimeImmutable $datum, $company): int {
     $tip = 0;
 
-    if ($datum->format('N') == 7) {
+    $radniDaniFirma = [];
+
+    if (!is_null($company->getSettings()->getWorkWeek()) || !empty($company->getSettings()->getWorkWeek())) {
+      $radniDaniFirma = $company->getSettings()->getWorkWeek();
+    }
+
+    if (!in_array($datum->format('N'), $radniDaniFirma)) {
       $tip = TipNeradnihDanaData::NEDELJA;
     }
 
@@ -385,7 +381,7 @@ class HolidayRepository extends ServiceEntityRepository {
     if (!empty($dan)) {
       $tip = TipNeradnihDanaData::PRAZNIK;
     }
-    if (($datum->format('N') == 7) && (!empty($dan))) {
+    if (!in_array($datum->format('N'), $radniDaniFirma) && (!empty($dan))) {
       $tip = TipNeradnihDanaData::NEDELJA_PRAZNIK;
     }
 

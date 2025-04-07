@@ -32,10 +32,15 @@ class CalendarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $args = [];
-    $user = $this->getUser();
 
-    $calendars = $this->em->getRepository(Calendar::class)->getCalendarPaginator($user);
+    $calendars = $this->em->getRepository(Calendar::class)->getCalendarPaginator($korisnik);
 
     $pagination = $paginator->paginate(
       $calendars, /* query NOT result */
@@ -62,32 +67,36 @@ class CalendarController extends AbstractController {
     }
 
     $korisnik = $this->getUser();
+    if ($korisnik->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() == UserRolesData::ROLE_ADMIN && $korisnik->getUserType() == UserRolesData::ROLE_CLIENT) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    if ($korisnik->getCompany() != $calendar->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     $company = $calendar->getCompany();
     $args['disabledDates'] = [];
 
     if ($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
       $calendar->addUser($korisnik);
-//      $args['disabledDates'] = $this->em->getRepository(Calendar::class)->getDisabledDates($korisnik);
     } else {
       if (!is_null($request->get('user'))) {
         $koris = $this->em->getRepository(User::class)->find($request->get('user'));
         $calendar->addUser($koris);
-//        $args['disabledDates'] = $this->em->getRepository(Calendar::class)->getDisabledDates($koris);
       }
     }
 
-    $mobileDetect = new MobileDetect();
-
-    if($mobileDetect->isMobile()) {
-
-      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
-      } else {
-        $form = $this->createForm(PhoneCalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
-      }
-    } else {
-      $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
-    }
+//    if($mobileDetect->isMobile()) {
+//
+//      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+//        $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
+//      } else {
+//        $form = $this->createForm(PhoneCalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
+//      }
+//    } else {
+    $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_form', ['id' => $calendar->getId()])]]);
+//    }
 
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -125,44 +134,69 @@ class CalendarController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
-        //ako je bolovanje automatski se odobrava
+        //ako je bolovanje automatski se odobrava ili ako je kosrinsik admin
 
-        if ($calendar->getType() == 3) {
+        if ($calendar->getType() == 3 || $korisnik->isAdmin()) {
 
-            $calendar->setStatus(2);
+          $calendar->setStatus(2);
 
-            $start = $calendar->getStart();
-            $finish = $calendar->getFinish();
-            $datumi = [];
-            $current = clone $start;
+          $start = $calendar->getStart();
+          $finish = $calendar->getFinish();
+          $datumi = [];
+          $current = clone $start;
 
-            while ($current <= $finish) {
-              $datumi[] = clone $current;
-              $current = $current->add(new DateInterval('P1D'));
-            }
+          while ($current <= $finish) {
+            $datumi[] = clone $current;
+            $current = $current->add(new DateInterval('P1D'));
+          }
 
-            foreach ($datumi as $datum) {
-              if ($datum->format('N') < $company->getSettings()->getWorkWeek()) {
-                $check = $this->em->getRepository(Availability::class)->findBy(['User' => $calendar->getUser()->first(), 'datum' => $datum]);
-                if (empty($check)) {
-                  $checkPraznik = $this->em->getRepository(Holiday::class)->findBy(['company' => $company, 'datum' => $datum]);
-                  if (empty($checkPraznik)) {
-                    $dostupnost = new Availability();
-                    $dostupnost->setDatum($datum);
-                    $dostupnost->setUser($calendar->getUser()->first());
-                    $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
-                    $dostupnost->setZahtev($calendar->getType());
-                    $dostupnost->setCalendar($calendar->getId());
-                    $dostupnost->setCompany($calendar->getCompany());
-                    $this->em->getRepository(Availability::class)->save($dostupnost);
+          $radniDaniFirma = [];
+          $neradniDaniZaposleni = [];
+
+          if (!is_null($calendar->getCompany()->getSettings()->getWorkWeek()) || !empty($calendar->getCompany()->getSettings()->getWorkWeek())) {
+            $radniDaniFirma = $calendar->getCompany()->getSettings()->getWorkWeek();
+          }
+
+          if (!is_null($calendar->getUser()->first()->getNeradniDan()) || !empty($calendar->getUser()->first()->getNeradniDan())) {
+            $neradniDaniZaposleni = $calendar->getUser()->first()->getNeradniDan();
+          }
+
+          $brojDana = 0;
+
+          foreach ($datumi as $datum) {
+            if (!in_array($datum->format('N'), $neradniDaniZaposleni) && in_array($datum->format('N'), $radniDaniFirma)) {
+
+              $check = $this->em->getRepository(Availability::class)->findBy(['User' => $calendar->getUser()->first(), 'datum' => $datum]);
+              if (empty($check)) {
+                $checkPraznik = $this->em->getRepository(Holiday::class)->findBy(['company' => $company, 'datum' => $datum]);
+                if (empty($checkPraznik)) {
+                  $dostupnost = new Availability();
+                  $dostupnost->setDatum($datum);
+                  $dostupnost->setUser($calendar->getUser()->first());
+                  $dostupnost->setZahtev($calendar->getType());
+
+                  $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
+
+                  if ($calendar->getPart() == 1) {
+                    $dostupnost->setType(AvailabilityData::IZASAO);
+                    $dostupnost->setVreme($calendar->getVreme());
                   }
+                  $dostupnost->setCalendar($calendar->getId());
+                  $dostupnost->setCompany($calendar->getCompany());
+                  $this->em->getRepository(Availability::class)->save($dostupnost);
+                  $brojDana++;
                 }
               }
+
             }
+          }
 
-          $mailService->responseCalendar($calendar);
-
-          $this->em->getRepository(Calendar::class)->save($calendar);
+          if ($brojDana == 0) {
+            $this->em->getRepository(Calendar::class)->remove($calendar, true);
+          } else {
+            $mailService->responseCalendar($calendar);
+            $this->em->getRepository(Calendar::class)->save($calendar);
+          }
 
         }
 
@@ -174,13 +208,6 @@ class CalendarController extends AbstractController {
     $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false, 'company' => $korisnik->getCompany()],['isSuspended' => 'ASC', 'prezime' => 'ASC']);
 
 
-
-    if($mobileDetect->isMobile()) {
-      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('calendar/form.html.twig', $args);
-      }
-      return $this->render('calendar/phone/form.html.twig', $args);
-    }
     return $this->render('calendar/form.html.twig', $args);
   }
 
@@ -191,9 +218,14 @@ class CalendarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
     $company = $calendar->getCompany();
     $form = $this->createForm(CalendarFormType::class, $calendar, ['attr' => ['action' => $this->generateUrl('app_calendar_admin_form', ['id' => $calendar->getId()])]]);
-
 
     if ($request->isMethod('POST')) {
       $form->handleRequest($request);
@@ -218,7 +250,9 @@ class CalendarController extends AbstractController {
           $user = $this->em->getRepository(User::class)->find($data['form']['zaposleni']);
           $calendar->addUser($user);
         }
+
         $this->em->getRepository(Calendar::class)->save($calendar);
+
         $mailService->calendar($calendar, $company->getEmail());
 
 
@@ -232,20 +266,35 @@ class CalendarController extends AbstractController {
 
         //ako kreira admin automatski se odobrava
 
-          $calendar->setStatus(2);
+        $calendar->setStatus(2);
 
-          $start = $calendar->getStart();
-          $finish = $calendar->getFinish();
-          $datumi = [];
-          $current = clone $start;
+        $start = $calendar->getStart();
+        $finish = $calendar->getFinish();
+        $datumi = [];
+        $current = clone $start;
 
-          while ($current <= $finish) {
-            $datumi[] = clone $current;
-            $current = $current->add(new DateInterval('P1D'));
-          }
+        while ($current <= $finish) {
+          $datumi[] = clone $current;
+          $current = $current->add(new DateInterval('P1D'));
+        }
+
+        $radniDaniFirma = [];
+        $neradniDaniZaposleni = [];
+
+        if (!is_null($calendar->getCompany()->getSettings()->getWorkWeek()) || !empty($calendar->getCompany()->getSettings()->getWorkWeek())) {
+          $radniDaniFirma = $calendar->getCompany()->getSettings()->getWorkWeek();
+        }
+
+        if (!is_null($calendar->getUser()->first()->getNeradniDan()) || !empty($calendar->getUser()->first()->getNeradniDan())) {
+          $neradniDaniZaposleni = $calendar->getUser()->first()->getNeradniDan();
+        }
+
+
+        $brojDana = 0;
 
         foreach ($datumi as $datum) {
-          if ($datum->format('N') < $company->getSettings()->getWorkWeek()) {
+          if (!in_array($datum->format('N'), $neradniDaniZaposleni) && in_array($datum->format('N'), $radniDaniFirma)) {
+
             $check = $this->em->getRepository(Availability::class)->findBy(['User' => $calendar->getUser()->first(), 'datum' => $datum]);
             if (empty($check)) {
               $checkPraznik = $this->em->getRepository(Holiday::class)->findBy(['company' => $company, 'datum' => $datum]);
@@ -253,19 +302,30 @@ class CalendarController extends AbstractController {
                 $dostupnost = new Availability();
                 $dostupnost->setDatum($datum);
                 $dostupnost->setUser($calendar->getUser()->first());
-                $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
                 $dostupnost->setZahtev($calendar->getType());
+
+                $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
+
+                if ($calendar->getPart() == 1) {
+                  $dostupnost->setType(AvailabilityData::IZASAO);
+                  $dostupnost->setVreme($calendar->getVreme());
+                }
                 $dostupnost->setCalendar($calendar->getId());
                 $dostupnost->setCompany($calendar->getCompany());
                 $this->em->getRepository(Availability::class)->save($dostupnost);
+                $brojDana++;
               }
             }
+
           }
         }
 
+        if ($brojDana == 0) {
+          $this->em->getRepository(Calendar::class)->remove($calendar, true);
+        } else {
           $mailService->responseCalendar($calendar);
-
           $this->em->getRepository(Calendar::class)->save($calendar);
+        }
 
         return $this->redirectToRoute('app_calendar_list');
       }
@@ -284,11 +344,13 @@ class CalendarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
-    $args['calendar'] = $calendar;
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('calendar/phone/view.html.twig', $args);
+    $korisnik = $this->getUser();
+
+    if ($korisnik->getCompany() != $calendar->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
+    $args['calendar'] = $calendar;
+
     return $this->render('calendar/view.html.twig', $args);
   }
 
@@ -298,21 +360,45 @@ class CalendarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $calendar->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $calendar->setStatus(2);
     $company = $calendar->getCompany();
-
     $start = $calendar->getStart();
     $finish = $calendar->getFinish();
-      $datumi = [];
-      $current = clone $start;
+    $datumi = [];
+    $current = clone $start;
 
-      while ($current <= $finish) {
-        $datumi[] = clone $current;
-        $current = $current->add(new DateInterval('P1D'));
-      }
+    while ($current <= $finish) {
+      $datumi[] = clone $current;
+      $current = $current->add(new DateInterval('P1D'));
+    }
+
+
+    $radniDaniFirma = [];
+    $neradniDaniZaposleni = [];
+
+    if (!is_null($calendar->getCompany()->getSettings()->getWorkWeek()) || !empty($calendar->getCompany()->getSettings()->getWorkWeek())) {
+      $radniDaniFirma = $calendar->getCompany()->getSettings()->getWorkWeek();
+    }
+
+    if (!is_null($calendar->getUser()->first()->getNeradniDan()) || !empty($calendar->getUser()->first()->getNeradniDan())) {
+      $neradniDaniZaposleni = $calendar->getUser()->first()->getNeradniDan();
+    }
+
+
+    $brojDana = 0;
 
     foreach ($datumi as $datum) {
-      if ($datum->format('N') < $company->getSettings()->getWorkWeek()) {
+      if (!in_array($datum->format('N'), $neradniDaniZaposleni) && in_array($datum->format('N'), $radniDaniFirma)) {
+
         $check = $this->em->getRepository(Availability::class)->findBy(['User' => $calendar->getUser()->first(), 'datum' => $datum]);
         if (empty($check)) {
           $checkPraznik = $this->em->getRepository(Holiday::class)->findBy(['company' => $company, 'datum' => $datum]);
@@ -320,22 +406,29 @@ class CalendarController extends AbstractController {
             $dostupnost = new Availability();
             $dostupnost->setDatum($datum);
             $dostupnost->setUser($calendar->getUser()->first());
-            $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
             $dostupnost->setZahtev($calendar->getType());
+
+            $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
+
+            if ($calendar->getPart() == 1) {
+              $dostupnost->setType(AvailabilityData::IZASAO);
+              $dostupnost->setVreme($calendar->getVreme());
+            }
             $dostupnost->setCalendar($calendar->getId());
             $dostupnost->setCompany($calendar->getCompany());
             $this->em->getRepository(Availability::class)->save($dostupnost);
+            $brojDana++;
           }
         }
+
       }
     }
 
-    $mailService->responseCalendar($calendar);
-
-    $this->em->getRepository(Calendar::class)->save($calendar);
-
-    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirectToRoute('app_employee_calendar_view', ['id' => $this->getUser()->getId()]);
+    if ($brojDana == 0) {
+      $this->em->getRepository(Calendar::class)->remove($calendar, true);
+    } else {
+      $mailService->responseCalendar($calendar);
+      $this->em->getRepository(Calendar::class)->save($calendar);
     }
 
     return $this->redirectToRoute('app_calendar_list');
@@ -347,8 +440,18 @@ class CalendarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $calendar->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $calendar->setStatus(3);
     $mailService->responseCalendar($calendar);
+
     $this->em->getRepository(Calendar::class)->save($calendar);
 
     $dostupnosti = $this->em->getRepository(Availability::class)->findBy(['calendar' => $calendar->getId()]);
@@ -367,6 +470,16 @@ class CalendarController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $calendar->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
     $calendar->setStatus(0);
     $mailService->responseCalendar($calendar);
     $this->em->getRepository(Calendar::class)->save($calendar);

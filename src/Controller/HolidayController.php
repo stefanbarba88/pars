@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Classes\Data\AvailabilityData;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TipNeradnihDanaData;
+use App\Classes\Data\UserRolesData;
 use App\Entity\Availability;
 use App\Entity\Holiday;
 use App\Form\HolidayFormType;
@@ -29,6 +30,14 @@ class HolidayController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+
     $args = [];
 
     $year = date("Y");
@@ -53,6 +62,16 @@ class HolidayController extends AbstractController {
   public function form(Request $request, Holiday $holiday): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $holiday->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
 
     $form = $this->createForm(HolidayFormType::class, $holiday, ['attr' => ['action' => $this->generateUrl('app_holiday_form', ['id' => $holiday->getId()])]]);
@@ -86,6 +105,12 @@ class HolidayController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
 
     $args = [];
 
@@ -111,6 +136,14 @@ class HolidayController extends AbstractController {
 
       }
 
+      $radniDaniFirma = [];
+
+      if (!is_null($company->getSettings()->getWorkWeek()) || !empty($company->getSettings()->getWorkWeek())) {
+        $radniDaniFirma = $company->getSettings()->getWorkWeek();
+      }
+
+
+
       $datumi = [];
       $current = clone $startDatum;
 
@@ -121,7 +154,7 @@ class HolidayController extends AbstractController {
 
       foreach ($datumi as $datum) {
         //ako je datum manji od radne nedelje, tj ako je workweek sest dana, datum mora biti manji od nedelje
-        if ($datum->format('N') < $company->getSettings()->getWorkWeek()) {
+        if (in_array($datum->format('N'), $radniDaniFirma)) {
           $check = $this->em->getRepository(Holiday::class)->findBy( ['datum' => $datum, 'company' => $company]);
           if (empty($check)) {
             $odmor = new Holiday();
@@ -153,6 +186,15 @@ class HolidayController extends AbstractController {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
     }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $holiday->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
     $args['holiday'] = $holiday;
 
     return $this->render('holiday/view.html.twig', $args);
@@ -162,6 +204,15 @@ class HolidayController extends AbstractController {
   public function delete(Holiday $holiday): Response {
     if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
       return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+      if (!$korisnik->isAdmin()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $holiday->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
     }
 
     $this->em->getRepository(Holiday::class)->remove($holiday);

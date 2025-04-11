@@ -140,7 +140,7 @@
                                             <select id="checklist_project" name="checklist[project]" class="form-control required select" required>
                                                 <option value="">--Izaberite projekat--</option>
                                                 {% if project is defined %}
-                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                    <option value="{{ project.id }}" selected>{{ project.title }}</option>
                                                 {% else %}
                                                     {% for project in projects %}
                                                         <option value="{{ project.id }}">{{ project.title }}</option>
@@ -149,6 +149,7 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <input type="hidden" name="checklist[faza]" id="checklist[faza]" value="{{ faza }}">
                                     <div class="col-lg-6 ">
                                         <div class="mb-3">
                                             <label class="form-label" for="checklist_category">Kategorija:*</label>

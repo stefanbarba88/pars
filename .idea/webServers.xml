@@ -17,7 +17,7 @@
         </fileTransfer>
       </webServer>
       <webServer id="4eebe4f2-2e7e-4f76-a425-cbf3a0b22268" name="pars.epars.rs">
-        <fileTransfer rootFolder="/var/www/html/pars/pars" accessType="SFTP" host="178.62.221.187" port="22" sshConfigId="4e3234e0-8ee6-4fe1-ad95-9cacb158524c" sshConfig="epars aplikacija">
+        <fileTransfer rootFolder="/var/www/html/pars/pars" accessType="SFTP" host="142.93.231.54" port="22" sshConfigId="4e3234e0-8ee6-4fe1-ad95-9cacb158524c" sshConfig="epars aplikacija">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

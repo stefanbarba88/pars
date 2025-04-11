@@ -3,23 +3,30 @@
 namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
+use App\Classes\Data\RepeatingIntervalData;
 use App\Classes\Data\TipProjektaData;
 use App\Classes\Data\UserRolesData;
 use App\Classes\ProjectHelper;
 use App\Classes\ProjectHistoryHelper;
 use App\Classes\ResponseMessages;
 use App\Classes\Slugify;
+use App\Entity\Car;
 use App\Entity\Category;
 
 use App\Entity\ManagerChecklist;
+use App\Entity\Phase;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
 use App\Entity\Task;
 
 use App\Entity\User;
+use App\Form\PhaseFormType;
+use App\Form\PhoneTaskFormType;
 use App\Form\ProjectFormType;
 use App\Form\ProjectTeamListFormType;
+use App\Form\TaskFormType;
 use App\Repository\ProjectRepository;
+use App\Service\MailService;
 use App\Service\UploadService;
 use DateTimeImmutable;
 use Detection\MobileDetect;
@@ -1761,6 +1768,189 @@ class ProjectController extends AbstractController {
 //    return $this->render('report_project/view.html.twig', $args);
 //  }
 
+    #[Route('/view-phases/{id}', name: 'app_project_phases_view')]
+    public function viewPhases(Project $project, PaginatorInterface $paginator, Request $request, SessionInterface $session)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $project->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args = [];
+        $args['project'] = $project;
+        $args['phases'] = $this->em->getRepository(Phase::class)->findBy(['project' => $project], ['pozicija' => 'ASC']);
+        return $this->render('phase/list.html.twig', $args);
 
+        }
+
+    #[Route('/form-phases/{project}', name: 'app_project_phases_form')]
+    #[Entity('project', expr: 'repository.find(project)')]
+    #[Entity('phase', expr: 'repository.findForFormProject(project)')]
+    public function formPhases(Project $project, Phase $phase,  PaginatorInterface $paginator, Request $request, SessionInterface $session)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+
+        if ($korisnik->getCompany() != $phase->getProject()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args = [];
+
+        $form = $this->createForm(PhaseFormType::class, $phase, ['attr' => ['action' => $this->generateUrl('app_project_phases_form', ['project' => $project->getId()])]]);
+
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $phase->setPozicija(($project->getPhases()->count())+1);
+
+                $this->em->getRepository(Phase::class)->save($phase);
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+                return $this->redirectToRoute('app_project_phases_view', ['id' => $project->getId()]);
+            }
+
+        }
+
+        $args['project'] = $phase->getProject();
+        $args['phase'] = $phase;
+        $args['form'] = $form->createView();
+
+        return $this->render('phase/form.html.twig', $args);
+
+    }
+
+    #[Route('/edit-phases/{id}', name: 'app_project_phases_edit')]
+    public function editPhases(Phase $phase,  PaginatorInterface $paginator, Request $request, SessionInterface $session)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+
+        if ($korisnik->getCompany() != $phase->getProject()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args = [];
+
+        $form = $this->createForm(PhaseFormType::class, $phase, ['attr' => ['action' => $this->generateUrl('app_project_phases_edit', ['id' => $phase->getId()])]]);
+
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $phaseOrder = $request->get("phaseOrder");
+
+                $orderData = json_decode($phaseOrder, true);
+                foreach ($orderData as $item) {
+                    $phase = $this->em->getRepository(Phase::class)->find($item['id']);
+                    $phase->setPozicija($item['position']);
+                    $this->em->getRepository(Phase::class)->save($phase);
+                }
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+                return $this->redirectToRoute('app_project_phases_view', ['id' => $phase->getProject()->getId()]);
+            }
+
+        }
+
+        $args['project'] = $phase->getProject();
+        $args['phases'] = $this->em->getRepository(Phase::class)->findBy(['project' => $phase->getProject()], ['pozicija' => 'ASC']);
+        $args['phase'] = $phase;
+        $args['form'] = $form->createView();
+
+        return $this->render('phase/edit.html.twig', $args);
+
+    }
+
+
+    #[Route('/view-phase/{id}', name: 'app_project_phase_view')]
+    public function viewPhase(Phase $phase, PaginatorInterface $paginator, Request $request, SessionInterface $session)    : Response {
+
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+
+        if ($korisnik->getCompany() != $phase->getProject()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args = [];
+        $search = [];
+        $args['admin'] = false;
+        if ($session->has('admin')) {
+            $args['admin'] = true;
+        }
+
+        $args['project'] = $phase->getProject();
+        $args['phase'] = $phase;
+
+        $tasks1 = $this->em->getRepository(Task::class)->getTasksByProjectPhasePaginator($search, $korisnik, $phase->getProject(), $phase, $args['admin']);
+        $pagination1 = $paginator->paginate(
+            $tasks1, /* query NOT result */
+            $request->query->getInt('page1', 1), /*page number*/
+            5
+        );
+
+        $tasks2 = $this->em->getRepository(ManagerChecklist::class)->getTasksByProjectPhasePaginator($search, $korisnik, $phase->getProject(), $phase, $args['admin']);
+        $pagination2 = $paginator->paginate(
+            $tasks2, /* query NOT result */
+            $request->query->getInt('page2', 1), /*page number*/
+            5
+        );
+
+        $session = new Session();
+        $session->set('url', $request->getRequestUri());
+
+        $args['pagination2'] = $pagination2;
+        $args['pagination1'] = $pagination1;
+        $args['search'] = $search;
+
+        $args['napredakTasks'] = $this->em->getRepository(Task::class)->countTasksPhase($phase);
+        $args['napredakInterns'] = $this->em->getRepository(ManagerChecklist::class)->countTasksPhase($phase);
+
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('phase/mobile_view.html.twig', $args);
+        }
+
+        return $this->render('phase/view.html.twig', $args);
+    }
 
 }

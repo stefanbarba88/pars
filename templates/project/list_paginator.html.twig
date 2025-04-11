@@ -64,6 +64,10 @@
                                 </div>
 
                                 <div class="text-end">
+                                    <button type="button" class="btn btn-primary"
+                                            onclick="window.location.href = this.closest('form').action;">
+                                        <i class="ph-arrow-counter-clockwise me-2"></i> Reset
+                                    </button>
                                     <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
                                 </div>
                             </div>
@@ -110,13 +114,14 @@
                                         {% set noTasks = getCountTasksByProject(project)  %}
                                         {% set noTasksIntern = getCountTasksByProjectIntern(project) | length  %}
                                         {% set projectDays = getDaysRemainingProject(project) %}
+                                        {% set phaseEff = getUcinkovitostProject(project) %}
                                         <tr class="{{ projectDays.klasa }}">
                                             <td>
                                                 <div class="fw-semibold">
                                                         <a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a>
-{#                                                    {% if project.client.first.id == 5 %}#}
-{#                                                        <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Za Exing projekte uzima se period od 26-og predhodnog meseca." data-bs-original-title="Napomena"></i>#}
-{#                                                    {% endif %}#}
+                                                    <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ phaseEff}}%
+                                                </span>
                                                 </div>
                                                 {% if project.label is not empty %}
                                                     <div class="d-inline-flex">

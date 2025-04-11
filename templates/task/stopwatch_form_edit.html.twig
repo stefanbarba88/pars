@@ -84,6 +84,7 @@
                                 </div>
                             </div>
 
+                            {% if client is empty %}
                             <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-client" aria-expanded="false">Klijent</div>
                             <div class="row collapse" id="collapse-client">
                                 <div class="col-lg-12">
@@ -93,6 +94,7 @@
                                     </div>
                                 </div>
                             </div>
+                            {% endif %}
 
                             {% if task.isExpenses %}
                                 <div class="fw-bold border-bottom pb-2 mb-3 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapse-expences" aria-expanded="false">Trošak</div>

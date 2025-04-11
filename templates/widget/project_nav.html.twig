@@ -44,6 +44,16 @@
 {#                    </a>#}
 {#                </li>#}
                 {% endif %}
+                {% if project.phase %}
+                    <li class="nav-item me-1">
+                        <a href="{{ path('app_project_phases_view', {id : project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                            <div class="d-flex align-items-center mx-lg-1">
+                                <i class="ph-line-segments"></i>
+                                <span class="d-none d-lg-inline-block ms-2">Faze <span class="badge bg-yellow rounded-pill ms-1">{{ getUcinkovitostProject(project) }}%</span></span>
+                            </div>
+                        </a>
+                    </li>
+                {% endif %}
 {#                <li class="nav-item me-1">#}
 {#                    <a href="{{ path('app_project_time_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
 {#                        <div class="d-flex align-items-center mx-lg-1">#}

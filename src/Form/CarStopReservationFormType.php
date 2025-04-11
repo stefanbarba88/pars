@@ -26,65 +26,65 @@ use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Regex;
 
 class CarStopReservationFormType extends AbstractType {
-  public function buildForm(FormBuilderInterface $builder, array $options): void {
+    public function buildForm(FormBuilderInterface $builder, array $options): void {
 
-    $dataObject = new class($builder) {
+        $dataObject = new class($builder) {
 
-      public function __construct(private readonly FormBuilderInterface $builder) {
-      }
+            public function __construct(private readonly FormBuilderInterface $builder) {
+            }
 
-      public function getReservation(): ?CarReservation {
-        return $this->builder->getData();
-      }
+            public function getReservation(): ?CarReservation {
+                return $this->builder->getData();
+            }
 
-    };
+        };
 
 
 
-    $driver = $dataObject->getReservation()->getDriver();
+        $driver = $dataObject->getReservation()->getDriver();
 
-    if ($driver->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$driver->isAdmin()) {
-      $minKm = $dataObject->getReservation()->getKmStart();
-      $maxKm = $dataObject->getReservation()->getCar()->getCompany()->getSettings()->getMinKm();
+        if ($driver->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$driver->isAdmin()) {
+            $minKm = $dataObject->getReservation()->getKmStart();
+            $maxKm = $dataObject->getReservation()->getCar()->getCompany()->getSettings()->getMinKm();
 
-      $builder->add('kmStop', NumberType::class, [
-        'attr' => [
-          'min' => $minKm,
-          'max' => $minKm + $maxKm,
-        ],
-        'required' => true,
-        'html5' => true,
-      ]);
-    } else {
-      $builder->add('kmStop', NumberType::class, [
-        'attr' => [
-          'min' => 0,
-        ],
-        'required' => true,
-        'html5' => true,
-      ]);
+            $builder->add('kmStop', NumberType::class, [
+                'attr' => [
+                    'min' => $minKm,
+                    'max' => $minKm + $maxKm,
+                ],
+                'required' => true,
+                'html5' => true,
+            ]);
+        } else {
+            $builder->add('kmStop', NumberType::class, [
+                'attr' => [
+                    'min' => 0,
+                ],
+                'required' => true,
+                'html5' => true,
+            ]);
+        }
+
+        $builder
+
+            ->add('fuelStop', ChoiceType::class, [
+                'placeholder' => '--Izaberite nivo goriva--',
+                'choices' => FuelData::form(),
+                'expanded' => false,
+                'multiple' => false,
+            ])
+            ->add('cleanStop', ChoiceType::class, [
+                'placeholder' => '--Izaberite nivo čistoće--',
+                'choices' => CleanData::form(),
+                'expanded' => false,
+                'multiple' => false,
+            ])
+            ->add('descStop');
     }
 
-    $builder
-
-        ->add('fuelStop', ChoiceType::class, [
-          'placeholder' => '--Izaberite nivo goriva--',
-          'choices' => FuelData::form(),
-          'expanded' => false,
-          'multiple' => false,
-        ])
-        ->add('cleanStop', ChoiceType::class, [
-          'placeholder' => '--Izaberite nivo čistoće--',
-          'choices' => CleanData::form(),
-          'expanded' => false,
-          'multiple' => false,
-        ])
-        ->add('descStop');
-  }
-
-  public function configureOptions(OptionsResolver $resolver): void {
-    $resolver->setDefaults([
-      'data_class' => CarReservation::class,
-    ]);
-  }
+    public function configureOptions(OptionsResolver $resolver): void {
+        $resolver->setDefaults([
+            'data_class' => CarReservation::class,
+        ]);
+    }
 }

@@ -11,6 +11,7 @@ use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\ManagerChecklist;
 use App\Entity\Pdf;
+use App\Entity\Phase;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\User;
@@ -154,6 +155,13 @@ class CheckListController extends AbstractController {
       $args['project'] = $this->em->getRepository(Project::class)->find($request->get('project'));
     }
 
+    if (!is_null($request->get('faza'))) {
+      $args['faza'] = $this->em->getRepository(Phase::class)->find($request->get('faza'));
+      $args['faza'] = $args['faza']->getId();
+    } else {
+      $args['faza'] = 0;
+    }
+
     if (!is_null($request->get('datumCheck'))) {
       $args['noviDatum'] = DateTimeImmutable::createFromFormat('d.m.Y', $request->get('datumCheck'));
       $datum = $args['noviDatum'];
@@ -239,6 +247,7 @@ class CheckListController extends AbstractController {
           $task->setCreatedBy($this->getUser());
           $task->setUser($this->em->getRepository(User::class)->find($zaduzeni));
           $task->setProject($this->em->getRepository(Project::class)->find($data['checklist']['project']));
+          $task->setPhase($this->em->getRepository(Phase::class)->findOneBy(['id' => $data['checklist']['faza']]));
           $task->setCategory($this->em->getRepository(Category::class)->find($data['checklist']['category']));
           $task->setDatumKreiranja($datumKreiranja);
           $task->setDeadline($deadline);
@@ -339,6 +348,7 @@ class CheckListController extends AbstractController {
             ->dismissible(true)
             ->addError(NotifyMessagesData::DOC_ADD_ERROR);
 
+
           if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
             return $this->redirectToRoute('app_home');
           }
@@ -354,6 +364,7 @@ class CheckListController extends AbstractController {
           $task->setCreatedBy($this->getUser());
           $task->setUser($this->em->getRepository(User::class)->find($zaduzeni));
           $task->setProject($this->em->getRepository(Project::class)->find($data['phone_checklist']['project']));
+          $task->setPhase($this->em->getRepository(Phase::class)->findOneBy(['id' => $data['phone_checklist']['faza']]));
           $task->setCategory($this->em->getRepository(Category::class)->find($data['phone_checklist']['category']));
           $task->setDatumKreiranja($datumKreiranja);
           $task->setDeadline($deadline);
@@ -414,6 +425,11 @@ class CheckListController extends AbstractController {
         ->duration(5000)
         ->dismissible(true)
         ->addSuccess(NotifyMessagesData::CHECKLIST_ADD);
+
+
+      if (!is_null($task->getPhase())) {
+        return $this->redirectToRoute('app_project_phase_view', ['id' => $task->getPhase()->getId()]);
+      }
 
       if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
         return $this->redirectToRoute('app_home');

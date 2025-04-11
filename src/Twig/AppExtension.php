@@ -12,6 +12,7 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Availability;
 use App\Entity\Car;
 use App\Entity\ManagerChecklist;
+use App\Entity\Phase;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\TaskLog;
@@ -61,6 +62,10 @@ class AppExtension extends AbstractExtension {
       new TwigFunction('getDaysRemainingCar', [$this, 'getDaysRemainingCar']),
       new TwigFunction('getDaysRemainingTask', [$this, 'getDaysRemainingTask']),
       new TwigFunction('getDaysRemainingChecklist', [$this, 'getDaysRemainingChecklist']),
+      new TwigFunction('getDaysRemainingPhase', [$this, 'getDaysRemainingPhase']),
+      new TwigFunction('getUcinkovitost1', [$this, 'getUcinkovitost1']),
+      new TwigFunction('getUcinkovitost2', [$this, 'getUcinkovitost2']),
+      new TwigFunction('getUcinkovitostProject', [$this, 'getUcinkovitostProject']),
     ];
   }
 
@@ -142,6 +147,24 @@ class AppExtension extends AbstractExtension {
   }
   public function getDaysRemainingChecklist(ManagerChecklist $task): array {
     return $this->entityManager->getRepository(ManagerChecklist::class)->getDaysRemaining($task);
+  }
+
+  public function getDaysRemainingPhase(Phase $phase): array {
+    return $this->entityManager->getRepository(Phase::class)->getDaysRemainingPhase($phase);
+  }
+
+  public function getUcinkovitostProject(Project $project): float {
+    return $this->entityManager->getRepository(Phase::class)->calculateProjectEfficiency($project);
+
+  }
+
+  public function getUcinkovitost1(Phase $phase): array {
+    return $this->entityManager->getRepository(Task::class)->countTasksPhase($phase);
+
+  }
+
+  public function getUcinkovitost2(Phase $phase): array {
+    return $this->entityManager->getRepository(ManagerChecklist::class)->countTasksPhase($phase);
   }
 
 

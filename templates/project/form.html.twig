@@ -87,22 +87,24 @@
                                         </div>
                                     </div>
                                 </div>
-{#                                <div class="row">#}
-{#                                    <div class="col-lg-6">#}
-{#                                        <div class="mb-3">#}
-{#                                            {{ form_label(form.category, 'Kategorija:', {'label_attr': {'class': 'form-label'}}) }}#}
-{#                                            {{ form_widget(form.category, {attr: { class: 'form-control select' }}) }}#}
-{#                                            <span class="form-text">Kategorizacija pomaže u organizaciji.</span>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                    <div class="col-lg-6">#}
-{#                                        <div class="mb-3">#}
-{#                                            {{ form_label(form.label, 'Oznaka:', {'label_attr': {'class': 'form-label'}}) }}#}
-{#                                            {{ form_widget(form.label, {attr: { class: 'form-control select' }}) }}#}
-{#                                            <span class="form-text">Oznaka bliže opisuje projekat. Projekat može imati više oznaka.</span>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.category, 'Kategorija:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.category, {attr: { class: 'form-control select' }}) }}
+                                            <span class="form-text">Kategorizacija pomaže u organizaciji.</span>
+                                        </div>
+                                    </div>
+                                    {% if project.id is null %}
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.isPhase, 'Faze:', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.isPhase, {attr: { class: 'form-control select' }}) }}
+                                            <span class="form-text">Definišete da li želite da pratite razvoj projekta kroz faze.</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
 {#                                <div class="row">#}
 {#                                    <div class="col-lg-6">#}
 {#                                        <div class="mb-3">#}

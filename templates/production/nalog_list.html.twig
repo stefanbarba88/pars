@@ -1,0 +1,173 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Radni nalozi
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista radnih naloga</h5>
+
+                                <div class="my-auto ms-auto">
+                                    <a href="{{ path('app_production_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                </div>
+
+                        </div>
+                        <form method="get" action="{{ path('app_production_list') }}" class="form-validate-jquery" novalidation="novalidation">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            <div class="mb-3">
+                                                <label class="form-label" for="nalogKey">Šifra:</label>
+                                                <input id="nalogKey" name="nalogKey" class="form-control" type="text">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-primary"
+                                            onclick="window.location.href = this.closest('form').action;">
+                                        <i class="ph-arrow-counter-clockwise me-2"></i> Reset
+                                    </button>
+                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="card-body">
+                            <div class="card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light test-primary">
+                                    <tr>
+                                        <th>Šifra</th>
+                                        <th>Broj elemenata</th>
+                                        <th>Kreiran</th>
+                                        <th>Status</th>
+                                        <th>Aktivan</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for nalog in pagination %}
+                                        <tr>
+                                            <td>
+                                                <a href="{{ path('app_production_view', {id: nalog.id}) }}" class="fw-semibold">
+                                                    {{ nalog.nalogKey }}
+                                                </a>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ nalog.deo.count }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ nalog.created | date("d.m.Y.")}}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if nalog.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                    <span class="badge bg-secondary text-primary">Nije startovan</span>
+                                                {% endif %}
+                                                {% if nalog.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                    <span class="badge bg-yellow text-primary">Otvoren</span>
+                                                {% endif %}
+                                                {% if nalog.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                    <span class="badge bg-primary text-white">Zatvoren</span>
+                                                {% endif %}
+                                                {% if nalog.status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                                                    <span class="badge bg-success text-white">Verifikovan</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if nalog.isSuspended %}
+                                                    <span class="badge bg-yellow text-primary">Neaktivan</span>
+                                                {% else %}
+                                                    <span class="badge bg-primary text-white">Aktivan</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_production_view', {id: nalog.id}) }}" class="dropdown-item">
+                                                            <i class="ph-eye me-2"></i>
+                                                            Vidite
+                                                        </a>
+                                                        <a href="{{ path('app_production_edit', {id : nalog.id}) }}" class="dropdown-item">
+                                                            <i class="ph-note-pencil me-2"></i>
+                                                            Izmenite
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+{% endblock includeJavascript %}

@@ -10,6 +10,7 @@ use App\Entity\Car;
 use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\Pdf;
+use App\Entity\Phase;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -297,6 +298,14 @@ class TaskController extends AbstractController {
           }
         }
 
+
+        $faza = 0;
+        if (!is_null($request->query->get('faza'))) {
+          $faza = $request->query->get('faza');
+          $phase = $this->em->getRepository(Phase::class)->find($faza);
+          $task->setPhase($phase);
+        }
+
         $task->setCompany($task->getProject()->getCompany());
 
         $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumK'])->setTime(0, 0);
@@ -473,6 +482,9 @@ class TaskController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::TASK_ADD);
 
+        if (!is_null($task->getPhase())) {
+          return $this->redirectToRoute('app_project_phase_view', ['id' => $task->getPhase()->getId()]);
+        }
 
         if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
           return $this->redirectToRoute('app_home');
@@ -542,6 +554,7 @@ class TaskController extends AbstractController {
       $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumK']);
     }
 
+
     $task->setDatumKreiranja($datumKreiranja->setTime(0,0));
 
     $mobileDetect = new MobileDetect();
@@ -564,14 +577,32 @@ class TaskController extends AbstractController {
       $history = $history->getContent();
     }
 
+    $faza = 0;
+    if (!is_null($request->query->get('faza'))) {
+      $faza = $request->query->get('faza');
+    }
+
     if($mobileDetect->isMobile()) {
       if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
-        $form = $this->createForm(PhoneTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
+        if ($faza > 0) {
+          $form = $this->createForm(PhoneTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId(), 'faza' => $faza])]]);
+        } else {
+          $form = $this->createForm(PhoneTaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
+        }
+      } else {
+        if ($faza > 0) {
+          $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId(), 'faza' => $faza])]]);
+        } else {
+          $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
+        }
+      }
+    } else {
+      if ($faza > 0) {
+        $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId(), 'faza' => $faza])]]);
       } else {
         $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
       }
-    } else {
-      $form = $this->createForm(TaskFormType::class, $task, ['attr' => ['action' => $this->generateUrl('app_task_form', ['id' => $task->getId()])]]);
+
     }
 
     if ($request->isMethod('POST')) {
@@ -755,6 +786,7 @@ class TaskController extends AbstractController {
         }
 
 
+
         $task = $this->em->getRepository(Task::class)->saveTask($task, $user, $history);
         $mailService->task($task);
         notyf()
@@ -763,6 +795,7 @@ class TaskController extends AbstractController {
           ->duration(5000)
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::TASK_ADD);
+
 
         if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
           return $this->redirectToRoute('app_home');

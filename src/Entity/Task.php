@@ -160,6 +160,9 @@ class Task implements JsonSerializable {
   #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
 
+  #[ORM\ManyToOne(inversedBy: 'tasks')]
+  private ?Phase $phase = null;
+
   public function getCompany(): ?Company {
     return $this->company;
   }
@@ -872,6 +875,18 @@ class Task implements JsonSerializable {
    */
   public function setIsSeparate(?bool $isSeparate): void {
     $this->isSeparate = $isSeparate;
+  }
+
+  public function getPhase(): ?Phase
+  {
+      return $this->phase;
+  }
+
+  public function setPhase(?Phase $phase): static
+  {
+      $this->phase = $phase;
+
+      return $this;
   }
 
 

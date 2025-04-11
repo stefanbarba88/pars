@@ -1,0 +1,678 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ project.title }}
+                            </h4>
+                        </div>
+                    </div>
+                    {{ render(controller('App\\Controller\\WidgetController::projectProfilNavigation', { project: project } )) }}
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    {% if project.important is not null %}
+                        <div class="alert alert-info fade show">
+                            <span class="fw-semibold">{{ project.important }}
+                        </div>
+                    {% endif %}
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+
+                            <h5 class="mb-0">#{{ phase.pozicija }} - {{ phase.title }}
+                                {% if not is_granted('ROLE_EMPLOYEE') or admin  %}
+                                    <a href="{{ path('app_project_phases_edit', {id: phase.id}) }}"><i class="ph-note-pencil"></i></a>
+                                {% endif %}</h5>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xl-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Osnovne informacije </h5>
+                                        </div>
+                                        {% set phaseDays = getDaysRemainingPhase(phase) %}
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Naziv:</div>
+                                                <div class="col-8">{{ phase.title }}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Opis:</div>
+                                                <div class="col-8">{{ phase.description | raw }}</div>
+                                            </div>
+                                            <div class="row p-2 bg">
+                                                <div class="col-4">Rok:</div>
+                                                <div class="col-8">{{ phase.deadline ? phase.deadline | date("d.m.Y.") : '/' }}      {% if phaseDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ phaseDays.poruka }}" data-bs-original-title="{{ phaseDays.poruka }}"></i>{% endif %}
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Realizacija</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row p-2">
+                                                <div class="col-4">Procenat realizacije:</div>
+                                                <div class="col-8">
+                                                    {% set boja = 'bg-primary'%}
+                                                    {% set procenat = phase.percent %}
+                                                    {% if procenat < 26 %}
+                                                        {% set boja = 'bg-danger'%}
+                                                    {% endif %}
+                                                    {% if procenat > 25 and procenat < 76 %}
+                                                        {% set boja = 'bg-warning'%}
+                                                    {% endif %}
+                                                    {% if procenat > 75 and procenat < 99 %}
+                                                        {% set boja = 'bg-info'%}
+                                                    {% endif %}
+                                                    {% if procenat == 100 %}
+                                                        {% set boja = 'bg-success'%}
+                                                    {% endif %}
+
+                                                    <div class="progress">
+                                                        <div class="progress-bar {{ boja }}" role="progressbar" style="width: {{ procenat }}%" aria-valuenow="{{ procenat }}" aria-valuemin="0" aria-valuemax="100">
+                                                            {% if procenat > 0 %}
+                                                                {{ procenat }}%
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Zadaci:</div>
+                                                <div class="col-8"><span class="badge bg-primary text-white me-2">{{ getUcinkovitost1(phase)[1] }}/{{ getUcinkovitost1(phase)[0] }}</span></div>
+                                            </div>
+                                            <div class="row p-2 bg">
+                                                <div class="col-4">Interni zadaci:</div>
+                                                <div class="col-8"><span class="badge bg-secondary text-primary me-2">{{ getUcinkovitost2(phase)[1] }}/{{ getUcinkovitost2(phase)[0] }}</span></div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista zadataka</h5>
+                            {% if not project.suspended %}
+                                <div class="my-auto ms-auto">
+                                    <a href="{{ path('app_task_project_form', {project : project.id, faza: phase.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-body">
+                            <div class="card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light text-primary">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Zadatak</th>
+                                        <th>Kategorija</th>
+                                        <th>Datum zadatka</th>
+                                        <th>Rok</th>
+                                        <th>Zaposleni</th>
+                                        <th>Prioritet</th>
+                                        <th>Status</th>
+                                        <th>Kreirao</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for task in pagination1 %}
+                                        {% set taskDays = getDaysRemainingTask(task) %}
+                                        <tr>
+                                            <td>{{ task.id }}</td>
+                                            {% if is_granted('ROLE_EMPLOYEE') and not admin%}
+                                                {% if app.user in task.getAssignedUsers %}
+                                                    <td>
+                                                        <div class="fw-semibold">
+                                                            <a href="{{ path('app_task_view_user', { id: task.id}) }}">{{ task.title }}</a>
+                                                            {% if task.repeating == 1 %}
+                                                                <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Ovaj zadatak se ponavlja."></i>
+                                                            {% endif %}
+                                                        </div>
+                                                        {% if task.label is not empty %}
+                                                            <div class="d-inline-flex">
+                                                                {% for label in task.label %}
+                                                                    {{label.label | raw}}
+                                                                {% endfor %}
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                {% else %}
+                                                    <td>
+                                                        <div class="fw-semibold">
+                                                            {{ task.title }}
+                                                            {% if task.repeating == 1 %}
+                                                                <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Ovaj zadatak se ponavlja."></i>
+                                                            {% endif %}
+                                                        </div>
+                                                        {% if task.label is not empty %}
+                                                            <div class="d-inline-flex">
+                                                                {% for label in task.label %}
+                                                                    {{label.label | raw}}
+                                                                {% endfor %}
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                {% endif %}
+                                            {% else %}
+                                                <td>
+                                                    <div class="fw-semibold">
+                                                        <a href="{{ path('app_task_view', { id: task.id}) }}">{{ task.title }}</a>
+                                                        {% if task.repeating == 1 %}
+                                                            <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Ovaj zadatak se ponavlja."></i>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% if task.label is not empty %}
+                                                        <div class="d-inline-flex">
+                                                            {% for label in task.label %}
+                                                                {{label.label | raw}}
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% endif %}
+                                                </td>
+                                            {% endif %}
+                                            <td>
+                                                {% if task.category %}
+                                                    {{ task.category.title }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ task.datumKreiranja | date("d.m.Y.")}}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if task.deadline is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ task.deadline | date("d.m.Y.")}} {% if taskDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ taskDays.poruka }}" data-bs-original-title="{{ taskDays.poruka }}"></i>{% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+
+                                            <td>
+                                                <div class="text-body">
+                                                    {% if is_granted('ROLE_EMPLOYEE') and not admin %}
+                                                        {% for user in task.assignedUsers %}
+                                                            {% if getLogStatusByUser(task, user) == 1 %}
+                                                                <div class="btn-group">
+                                                                    <div class="fw-semibold d-inline-flex align-items-center ">
+                                                                        {{ user.fullName }}
+                                                                        <div class="live p-1 mx-2"></div>
+                                                                    </div>
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="fw-semibold d-inline-flex align-items-center ">
+                                                                    {{ user.fullName }}
+                                                                </div>
+                                                            {% endif %}<br>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {% for user in task.assignedUsers %}
+                                                            {% if getLogStatusByUser(task, user) == 1 %}
+                                                                <div class="btn-group">
+                                                                    <a href="{{ path('app_employee_activity_view', { id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">
+                                                                        {{ user.fullName }}
+                                                                        <div class="live p-1 mx-2"></div>
+                                                                    </a>
+                                                                </div>
+                                                            {% else %}
+                                                                <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">
+                                                                    {{ user.fullName }}
+                                                                </a>
+                                                            {% endif %}<br>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                {% if task.priority == 1 %}
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                {% elseif task.priority == 2 %}
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                {% elseif task.priority == 4 %}
+                                                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                {% elseif task.priority == 5 %}
+                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                    <span class="badge bg-secondary text-primary">Nije startovan</span>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                    <span class="badge bg-yellow text-primary">Otvoren</span>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                    <span class="badge bg-primary text-white">Zatvoren</span>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                                                    <span class="badge bg-success text-white">Verifikovano</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.createdBy is not null %}
+                                                    {{ task.createdBy.getFullName() }}
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                {% if not admin and app.user in task.getAssignedUsers %}
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-gear"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <a href="{{ path('app_task_view_user', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted and task.createdBy == app.user %}
+                                                                <a href="{{ path('app_task_reassign', {id: task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zaposlene</a>
+                                                            {% endif %}
+                                                            {% if not task.isDeleted and task.createdBy == app.user and task.created > difference %}
+                                                                <a href="{{ path('app_task_edit_info', {id: task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                                {% if not is_granted('ROLE_EMPLOYEE') or admin %}
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-gear"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <a href="{{ path('app_task_view', { id: task.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                            {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') and not task.isDeleted %}
+                                                                <a href="{{ path('app_task_reassign', {id: task.id} ) }}" class="dropdown-item"><i class="ph-user-switch me-2"></i> Promenite zaposlene</a>
+                                                            {% endif %}
+                                                            {% if not task.isDeleted %}
+                                                                <a href="{{ path('app_task_edit_info', {id: task.id} ) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Izmenite</a>
+                                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                                    <a href="{{ path('app_task_close', {id: task.id} ) }}" class="dropdown-item"><i class="ph-x me-2"></i> Zatvorite</a>
+                                                                {% endif %}
+                                                                {% if task.status != constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                                    <a href="{{ path('app_task_delete',{id: task.id} ) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        </div>
+
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination1) }}
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /state saving -->
+
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista internih zadataka</h5>
+                            {% if not project.suspended %}
+                                <div class="my-auto ms-auto">
+                                    <a href="{{ path('app_checklist_form', {project : project.id, faza: phase.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-body">
+                            <div class="card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light test-primary">
+
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Zadatak</th>
+                                        <th>Kategorija</th>
+                                        <th>Datum zadatka</th>
+                                        <th>Rok</th>
+                                        <th>Zaposleni</th>
+                                        <th>Prioritet</th>
+                                        <th>Status</th>
+                                        <th>Kreirao</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for task in pagination2 %}
+                                        {% set taskDays = getDaysRemainingChecklist(task) %}
+                                        <tr>
+                                            <td>{{ task.id }}</td>
+                                            <td>
+                                                <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="text-body">
+                                                    {{ task.task }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {% if task.category %}
+                                                    {{ task.category.title }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.datumKreiranja is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ task.datumKreiranja | date("d.m.Y.")}} {% if task.repeating == 1 %} <i class="ph-arrows-clockwise mx-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Zadatak se ponavlja"></i> {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.deadline is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ task.deadline | date("d.m.Y.")}} {% if taskDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ taskDays.poruka }}" data-bs-original-title="{{ taskDays.poruka }}"></i>{% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    {{ task.user.getFullName() }}
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                {% if task.priority == 1 %}
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                                                {% elseif task.priority == 2 %}
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                                                {% elseif task.priority == 4 %}
+                                                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                                                {% elseif task.priority == 5 %}
+                                                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                    <span class="badge bg-secondary text-primary">Nije startovan</span>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                    <span class="badge bg-yellow text-primary">Otvoren</span>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                    <span class="badge bg-primary text-white">Zatvoren</span>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::KONVERTOVANO') %}
+                                                    <span class="badge bg-yellow text-primary">Konvertovan</span>
+                                                {% endif %}
+                                            </td>
+
+
+
+                                            <td>
+                                                {{ task.createdBy.getFullName() }}
+                                            </td>
+
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                        <i class="ph-gear"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a href="{{ path('app_checklist_view', {id: task.id}) }}" class="dropdown-item">
+                                                            <i class="ph-eye me-2"></i>
+                                                            Vidite
+                                                        </a>
+                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::NIJE_ZAPOCETO') %}
+                                                            <a href="{{ path('app_checklist_start', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-play me-2"></i>
+                                                                Pokrenite
+                                                            </a>
+                                                            <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-check me-2"></i>
+                                                                Zatvorite
+                                                            </a>
+                                                            <a href="{{ path('app_checklist_edit', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-note-pencil me-2"></i>
+                                                                Izmenite
+                                                            </a>
+                                                            <a href="{{ path('app_checklist_delete', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-trash me-2"></i>
+                                                                Obrišite
+                                                            </a>
+                                                            {% if task.repeating == 1 %}
+                                                                <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-warning-circle me-2"></i>
+                                                                    Isključite ponavljanje
+                                                                </a>
+                                                            {% endif %}
+                                                            {#                                                                        {% if task.user.userType == constant('App\\Classes\\Data\\UserRolesData::ROLE_EMPLOYEE') %}#}
+                                                            <a href="{{ path('app_checklist_convert', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-magic-wand me-2"></i>
+                                                                Konvertuj u zadatak sa merenjem
+                                                            </a>
+                                                            {#                                                                        {% endif %}#}
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAPOCETO') %}
+                                                            <a href="{{ path('app_checklist_finish', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-check me-2"></i>
+                                                                Zatvorite
+                                                            </a>
+                                                            <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-arrows-counter-clockwise me-2"></i>
+                                                                Ponovite
+                                                            </a>
+                                                            {% if task.repeating == 1 %}
+                                                                <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-warning-circle me-2"></i>
+                                                                    Isključite ponavljanje
+                                                                </a>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        {% if task.status == constant('App\\Classes\\Data\\InternTaskStatusData::ZAVRSENO') %}
+                                                            <a href="{{ path('app_checklist_replay', {id: task.id}) }}" class="dropdown-item">
+                                                                <i class="ph-arrows-counter-clockwise me-2"></i>
+                                                                Ponovite
+                                                            </a>
+                                                            {% if task.repeating == 1 %}
+                                                                <a href="{{ path('app_checklist_turn_off_repeating', {id: task.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-warning-circle me-2"></i>
+                                                                    Isključite ponavljanje
+                                                                </a>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination2) }}
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /state saving -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+
+{#{% block footerJavascript %}#}
+{#    <script type="text/javascript">#}
+{#        $(document).ready(function() {#}
+{#            var options = {#}
+{#                // target:        '#output1',   // target element(s) to be updated with server response#}
+{#                success:       editInfoResponse,  // post-submit callback#}
+{#                //         // target:        '#error',#}
+{#                //         // other available options:#}
+{#                //         //url:       url         // override for form's 'action' attribute#}
+{#                //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#                        dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#                //         //clearForm: true        // clear all form fields after successful submit#}
+{#                        resetForm: true,        // reset the form after successful submit#}
+{#                //         success:   editInfoResponse#}
+{#                //         // $.ajax options can be used here too, for example:#}
+{#                //         //timeout:   3000#}
+{#            };#}
+
+{#            // bind form using 'ajaxForm'#}
+{#            $('#infoForma').ajaxForm(options);#}
+{#        });#}
+{#        // function showResponse(responseText, statusText, xhr, $form)  {#}
+{#        //     // for normal html responses, the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseText property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'xml' then the first argument to the success callback#}
+{#        //     // is the XMLHttpRequest object's responseXML property#}
+{#        //#}
+{#        //     // if the ajaxForm method was passed an Options Object with the dataType#}
+{#        //     // property set to 'json' then the first argument to the success callback#}
+{#        //     // is the json data object returned by the server#}
+{#        //#}
+{#        //     alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +#}
+{#        //         '\n\nThe output div should have already been updated with the responseText.');#}
+{#        // }#}
+{#        // $(function () {#}
+{#        //     var options = {#}
+{#        //         // target:        '#error',#}
+{#        //         // other available options:#}
+{#        //         //url:       url         // override for form's 'action' attribute#}
+{#        //         // type:      'post',        // 'get' or 'post', override for form's 'method' attribute#}
+{#        //         dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)#}
+{#        //         //clearForm: true        // clear all form fields after successful submit#}
+{#        //         resetForm: true,        // reset the form after successful submit#}
+{#        //         success:   editInfoResponse#}
+{#        //         // $.ajax options can be used here too, for example:#}
+{#        //         //timeout:   3000#}
+{#        //     };#}
+{#        //     // bind form using ajaxForm#}
+{#        //     $('#infoForma').submit(function() {#}
+{#        //         // inside event callbacks 'this' is the DOM element so we first#}
+{#        //         // wrap it in a jQuery object and then invoke ajaxSubmit#}
+{#        //         $(this).ajaxSubmit(options);#}
+{#        //#}
+{#        //         // !!! Important !!!#}
+{#        //         // always return false to prevent standard browser submit and page navigation#}
+{#        //         return false;#}
+{#        //     });#}
+{#        // });#}
+{#        //#}
+{#        function editInfoResponse(data) {#}
+{#            // 'data' is the json object returned from the server#}
+
+{#            if (data.success === 1) {#}
+{#                swal({#}
+{#                    type: 'success',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+{#            else {#}
+{#                var error = data.error_msg.toString();#}
+{#                swal({#}
+{#                    type: 'error',#}
+{#                    title: 'Correct!',#}
+{#                    html: 'All safe! Here is the answer from the tool:'#}
+{#                })#}
+{#            }#}
+
+{#        }#}
+
+{#    </script>#}
+{#{% endblock footerJavascript %}#}

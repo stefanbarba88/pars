@@ -91,6 +91,9 @@ class ManagerChecklist {
   #[ORM\OneToMany(mappedBy: 'managerChecklist', targetEntity: Pdf::class, cascade: ["persist", "remove"])]
   private Collection $pdfs;
 
+  #[ORM\ManyToOne(inversedBy: 'managerChecklists')]
+  private ?Phase $phase = null;
+
   public function __construct() {
     $this->pdfs = new ArrayCollection();
     $this->comment = new ArrayCollection();
@@ -418,6 +421,18 @@ class ManagerChecklist {
    */
   public function setIsNotify(?bool $isNotify): void {
     $this->isNotify = $isNotify;
+  }
+
+  public function getPhase(): ?Phase
+  {
+      return $this->phase;
+  }
+
+  public function setPhase(?Phase $phase): static
+  {
+      $this->phase = $phase;
+
+      return $this;
   }
 
 }

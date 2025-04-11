@@ -43,6 +43,29 @@ class ProjectFormType extends AbstractType {
 
     $company = $dataObject->getReservation()->getCompany();
 
+    if (is_null($dataObject->getReservation()->getId())) {
+       $builder
+       ->add('isPhase', ChoiceType::class, [
+         'attr' => [
+           'data-minimum-results-for-search' => 'Infinity',
+         ],
+         'choices' => PotvrdaData::form(),
+         'expanded' => false,
+         'multiple' => false,
+      ]);
+
+//      ->add('isFollowing', ChoiceType::class, [
+//        'attr' => [
+//          'data-minimum-results-for-search' => 'Infinity',
+//        ],
+//        'choices' => PotvrdaData::form(),
+//        'expanded' => false,
+//        'multiple' => false,
+//      ]);
+    }
+
+
+
     $builder
       ->add('title')
       ->add('description', TextareaType::class, [
@@ -66,22 +89,22 @@ class ProjectFormType extends AbstractType {
 //        'expanded' => false,
 //        'multiple' => true,
 //      ])
-//      ->add('category', EntityType::class, [
-//        'required' => false,
-//        'class' => Category::class,
-//        'placeholder' => '--Izaberite kategoriju--',
-//        'query_builder' => function (EntityRepository $em) use ($company) {
-//          return $em->createQueryBuilder('g')
-//            ->andWhere('g.isTaskCategory = :isTaskCategory')
-//            ->andWhere('g.company = :company')
-//            ->setParameter(':company', $company)
-//            ->setParameter(':isTaskCategory', 0)
-//            ->orderBy('g.id', 'ASC');
-//        },
-//        'choice_label' => 'title',
-//        'expanded' => false,
-//        'multiple' => false,
-//      ])
+      ->add('category', EntityType::class, [
+        'required' => false,
+        'class' => Category::class,
+        'placeholder' => '--Izaberite kategoriju--',
+        'query_builder' => function (EntityRepository $em) use ($company) {
+          return $em->createQueryBuilder('g')
+            ->andWhere('g.isTaskCategory = :isTaskCategory')
+            ->andWhere('g.company = :company')
+            ->setParameter(':company', $company)
+            ->setParameter(':isTaskCategory', 0)
+            ->orderBy('g.id', 'ASC');
+        },
+        'choice_label' => 'title',
+        'expanded' => false,
+        'multiple' => false,
+      ])
 
       ->add('client', EntityType::class, [
         'required' => false,

@@ -72,6 +72,7 @@ class RepeatingTasksCreatorCommand extends Command {
       $newTask->setStatus($task->getStatus());
       $newTask->setProject($task->getProject());
       $newTask->setCategory($task->getCategory());
+      $newTask->setPhase($task->getPhase());
       $newTask->setCompany($task->getCompany());
       $newTask->setPriorityUserLog($task->getPriorityUserLog());
       $activities = $task->getActivity();
@@ -132,6 +133,7 @@ class RepeatingTasksCreatorCommand extends Command {
       $newTask->setCategory($task->getCategory());
       $newTask->setCompany($task->getCompany());
       $newTask->setPriority($task->getPriority());
+      $newTask->setPhase($task->getPhase());
 
       $newTask->setDatumKreiranja($task->getDatumPonavljanja());
 

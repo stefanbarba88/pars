@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -14,30 +16,81 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Product[]    findAll()
  * @method Product[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProductRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Product::class);
+class ProductRepository extends ServiceEntityRepository {
+  private Security $security;
+  public function __construct(ManagerRegistry $registry, Security $security) {
+    parent::__construct($registry, Product::class);
+    $this->security = $security;
+  }
+
+
+  public function save(Product $product): Product {
+
+    if (is_null($product->getId())) {
+      $this->getEntityManager()->persist($product);
     }
 
-    public function save(Product $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
+    $this->getEntityManager()->flush();
+    return $product;
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+  }
+
+  public function remove(Product $entity, bool $flush = false): void {
+    $this->getEntityManager()->remove($entity);
+
+    if ($flush) {
+      $this->getEntityManager()->flush();
+    }
+  }
+
+  public function searchByTerm(string $term) {
+    return $this->createQueryBuilder('p')
+      ->select('p.id, p.title, p.productKey') // Include the root entity 'u'
+      ->where('p.title LIKE :term')
+      ->orWhere('p.productKey LIKE :term')
+      ->andWhere('p.isSuspended = 0')
+      ->setParameter('term', '%' . $term . '%')
+      ->getQuery()
+      ->getResult();
+  }
+
+  public function getProductsPaginator(array $filter): Query {
+    $company = $this->security->getUser()->getCompany();
+
+    $qb = $this->createQueryBuilder('c')
+      ->where('c.company = :company')
+      ->setParameter('company', $company);
+
+    if (!empty($filter['title'])) {
+      $qb->andWhere(
+        $qb->expr()->like('c.title', ':title')
+      )->setParameter('title', '%' . $filter['title'] . '%');
     }
 
-    public function remove(Product $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+    if (!empty($filter['productKey'])) {
+      $qb->andWhere(
+        $qb->expr()->like('c.productKey', ':productKey')
+      )->setParameter('productKey', '%' . $filter['productKey'] . '%');
     }
+
+    $qb->orderBy('c.isSuspended', 'ASC')
+      ->addOrderBy('c.title', 'ASC');
+
+    return $qb->getQuery();
+  }
+
+
+
+  public function findForForm(int $id = 0): Product {
+    if (empty($id)) {
+      $product =  new Product();
+      $product->setCompany($this->security->getUser()->getCompany());
+      return $product;
+    }
+    $product = $this->getEntityManager()->getRepository(Product::class)->find($id);
+
+    return $product;
+  }
 
 //    /**
 //     * @return Product[] Returns an array of Product objects

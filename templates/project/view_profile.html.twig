@@ -62,30 +62,26 @@
                                             <div class="col-8">{{ project.deadline ? project.deadline | date("d.m.Y.") : '/' }}      {% if projectDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ projectDays.poruka }}" data-bs-original-title="{{ projectDays.poruka }}"></i>{% endif %}
                                             </div>
                                         </div>
-{#                                        <div class="row p-2 bg-light">#}
-{#                                            <div class="col-4">Kategorija:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% if project.category is not null %}#}
-{#                                                    {% if is_granted('ROLE_EMPLOYEE') %}#}
-{#                                                        {{ project.category.title }}#}
-{#                                                    {% else %}#}
-{#                                                        <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>#}
-{#                                                    {% endif %}#}
-{#                                                {% endif %}#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                        <div class="row p-2 bg">#}
-{#                                            <div class="col-4">Oznaka:</div>#}
-{#                                            <div class="col-8">#}
-{#                                                {% for label in project.label  %}#}
-{#                                                    {% if is_granted('ROLE_EMPLOYEE') %}#}
-{#                                                        {{ label.label | raw}}#}
-{#                                                    {% else %}#}
-{#                                                        <a href="{{ path('app_label_view', { id: label.id}) }}">{{ label.label | raw}}</a>#}
-{#                                                    {% endif %}#}
-{#                                                {% endfor %}#}
-{#                                            </div>#}
-{#                                        </div>#}
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Kategorija:</div>
+                                            <div class="col-8">
+                                                {% if project.category is not null %}
+                                                    {% if is_granted('ROLE_EMPLOYEE') %}
+                                                        {{ project.category.title }}
+                                                    {% else %}
+                                                        <a href="{{ path('app_category_view', { id: project.category.id}) }}">{{ project.category.title }}</a>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg">
+                                            <div class="col-4">Faze:</div>
+                                            <div class="col-8">
+                                                {% if project.phase %}
+                                                Projekat se prati kroz faze
+                                                {% endif %}
+                                            </div>
+                                        </div>
 {#                                        <div class="row p-2 bg-light">#}
 {#                                            <div class="col-4">Uvid u dnevnik:</div>#}
 {#                                            <div class="col-8">#}

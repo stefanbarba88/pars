@@ -157,7 +157,7 @@
                                 <div class="col">
                                     <a href="{{ path('app_checklist_to_do') }}" class="btn btn-light btn-sm w-100 flex-column rounded-0 rounded-top-end py-1">
                                         <i class="ph-list-bullets bg-secondary text-primary lh-1 rounded-pill p-1 ph-2x"></i>
-                                        <h5 class="mb-0">{{ checklistActive }}</h5>
+                                        <h5 class="mb-0">{{ checklistActive}}({{ checklistActiveA | default(0) }})</h5>
                                         <div class="fw-semibold">Interni zadaci</div>
                                     </a>
                                     {% if calendar %}
@@ -658,7 +658,7 @@
                                                         {% endif %}
                                                     {% endfor %}
                                                 {% endif %}
-                                                {% if planRadaSutra is defined %}
+                                                {% if planRadaSutra is defined and planRadaSutra is not null%}
                                                     {% for task in planRadaSutra.pripremaZadataks %}
                                                         {% if task.taskType == 1 %}
                                                             {% if task.project is not null %}
@@ -747,8 +747,7 @@
                                                         {% endif %}
                                                     {% endfor %}
                                                 {% endif %}
-
-                                                {% if planRadaSutra is defined %}
+                                                {% if planRadaSutra is defined and planRadaSutra is not null%}
                                                     {% for task in planRadaSutra.pripremaZadataks %}
                                                         {% if task.taskType == 2 %}
                                                             {% if task.project is not null %}

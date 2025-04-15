@@ -468,9 +468,10 @@ class TaskRepository extends ServiceEntityRepository {
             ->setParameter(':userId', $user->getId())
 //      ->setParameter(':deadline', $deadline)
             ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
-            ->orderBy('t.priority', 'DESC')
+            ->orderBy('t.status', 'ASC')
+            ->addOrderBy('t.datumKreiranja', 'ASC')
             ->addOrderBy('t.deadline', 'ASC')
-            ->addOrderBy('t.status', 'DESC')
+            ->addOrderBy('t.priority', 'DESC')
             ->getQuery();
     }
 
@@ -487,10 +488,10 @@ class TaskRepository extends ServiceEntityRepository {
             ->setParameter(':company', $company)
 //      ->setParameter(':deadline', $deadline)
             ->setParameter(':status', TaskStatusData::VERIFIKOVANO)
-            ->orderBy('t.status', 'DESC')
+            ->orderBy('t.status', 'ASC')
             ->addOrderBy('t.datumKreiranja', 'ASC')
             ->addOrderBy('t.deadline', 'ASC')
-            ->addOrderBy('t.priority', 'ASC')
+            ->addOrderBy('t.priority', 'DESC')
             ->getQuery();
     }
 

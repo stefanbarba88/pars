@@ -7,6 +7,7 @@ use App\Entity\Availability;
 use App\Entity\Car;
 use App\Entity\CarReservation;
 use App\Entity\User;
+use Cassandra\Type\UserType;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Types\Types;
@@ -23,124 +24,130 @@ use Symfony\Bundle\SecurityBundle\Security;
  * @method CarReservation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class CarReservationRepository extends ServiceEntityRepository {
-  private Security $security;
-  public function __construct(ManagerRegistry $registry, Security $security) {
-    parent::__construct($registry, CarReservation::class);
-    $this->security = $security;
-  }
-
-  public function save(CarReservation $carReservation): CarReservation {
-
-    $car = $carReservation->getCar();
-    $driver = $carReservation->getDriver();
-
-    if (is_null($carReservation->getFinished())) {
-      $car->setIsReserved(true);
-      $driver->setCar($car->getId());
-    } else {
-      $car->setIsReserved(false);
-      $car->setKm($carReservation->getKmStop());
-      $driver->setCar(null);
+    private Security $security;
+    public function __construct(ManagerRegistry $registry, Security $security) {
+        parent::__construct($registry, CarReservation::class);
+        $this->security = $security;
     }
 
-    $this->getEntityManager()->getRepository(Car::class)->save($car);
-    $this->getEntityManager()->getRepository(User::class)->save($driver);
+    public function save(CarReservation $carReservation): CarReservation {
 
-    if (is_null($carReservation->getId())) {
-      $this->getEntityManager()->persist($carReservation);
+        $car = $carReservation->getCar();
+        $driver = $carReservation->getDriver();
+
+        if (is_null($carReservation->getFinished())) {
+            $car->setIsReserved(true);
+            $driver->setCar($car->getId());
+        } else {
+            $car->setIsReserved(false);
+            $car->setKm($carReservation->getKmStop());
+            $driver->setCar(null);
+        }
+
+        $this->getEntityManager()->getRepository(Car::class)->save($car);
+        $this->getEntityManager()->getRepository(User::class)->save($driver);
+
+        if (is_null($carReservation->getId())) {
+            $this->getEntityManager()->persist($carReservation);
+        }
+
+        $this->getEntityManager()->flush();
+
+        return $carReservation;
     }
 
-    $this->getEntityManager()->flush();
+    public function countReservationByCar(Car $car): int {
+        $qb = $this->createQueryBuilder('e');
 
-    return $carReservation;
-  }
+        $qb->select($qb->expr()->count('e'))
+            ->andWhere('e.car = :car')
+            ->setParameter(':car', $car);
 
-  public function countReservationByCar(Car $car): int {
-    $qb = $this->createQueryBuilder('e');
+        $query = $qb->getQuery();
 
-    $qb->select($qb->expr()->count('e'))
-      ->andWhere('e.car = :car')
-      ->setParameter(':car', $car);
+        return $query->getSingleScalarResult();
 
-    $query = $qb->getQuery();
-
-    return $query->getSingleScalarResult();
-
-  }
-
-  public function remove(CarReservation $entity, bool $flush = false): void {
-    $this->getEntityManager()->remove($entity);
-
-    if ($flush) {
-      $this->getEntityManager()->flush();
     }
-  }
 
+    public function remove(CarReservation $entity, bool $flush = false): void {
+        $this->getEntityManager()->remove($entity);
 
-  public function findForFormCar(Car $car = null): CarReservation {
-
-    $reservation = new CarReservation();
-    $reservation->setCar($car);
-    $reservation->setKmStart($car->getKm());
-    $reservation->setCompany($this->security->getUser()->getCompany());
-    return $reservation;
-
-  }
-
-  public function findForForm(int $id = 0): CarReservation {
-    if (empty($id)) {
-      $tool = new CarReservation();
-      $tool->setCompany($this->security->getUser()->getCompany());
-      return $tool;
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
-    return $this->getEntityManager()->getRepository(CarReservation::class)->find($id);
-
-  }
-
-  public function getReservationsByUserPaginator(User $user) {
-
-    return $this->createQueryBuilder('u')
-      ->where('u.driver = :driver')
-      ->setParameter('driver', $user)
-      ->orderBy('u.id', 'DESC')
-      ->getQuery();
-
-  }
-
-  public function getReservationsByCarPaginator(Car $car) {
-
-    return $this->createQueryBuilder('u')
-      ->where('u.car = :car')
-      ->setParameter('car', $car)
-      ->orderBy('u.id', 'DESC')
-      ->getQuery();
-
-  }
-
-  public function getReport(array $data): array {
-    $dates = explode(' - ', $data['period']);
-
-    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
-    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
 
 
-    $car = $this->getEntityManager()->getRepository(Car::class)->find($data['vozilo']);
+    public function findForFormCar(Car $car = null): CarReservation {
+
+        $reservation = new CarReservation();
+        $reservation->setCar($car);
+        $reservation->setKmStart($car->getKm());
+        $reservation->setCompany($this->security->getUser()->getCompany());
+        return $reservation;
+
+    }
+
+    public function findForForm(int $id = 0): CarReservation {
+        if (empty($id)) {
+            $tool = new CarReservation();
+            $tool->setCompany($this->security->getUser()->getCompany());
+            $driver = $this->security->getUser();
+
+            if ($driver->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$driver->isAdmin()) {
+                $tool->setDriver($driver);
+            }
+
+            return $tool;
+        }
+        return $this->getEntityManager()->getRepository(CarReservation::class)->find($id);
+
+    }
+
+    public function getReservationsByUserPaginator(User $user) {
+
+        return $this->createQueryBuilder('u')
+            ->where('u.driver = :driver')
+            ->setParameter('driver', $user)
+            ->orderBy('u.id', 'DESC')
+            ->getQuery();
+
+    }
+
+    public function getReservationsByCarPaginator(Car $car) {
+
+        return $this->createQueryBuilder('u')
+            ->where('u.car = :car')
+            ->setParameter('car', $car)
+            ->orderBy('u.id', 'DESC')
+            ->getQuery();
+
+    }
+
+    public function getReport(array $data): array {
+        $dates = explode(' - ', $data['period']);
+
+        $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+        $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
 
 
-    $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
-    $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+        $car = $this->getEntityManager()->getRepository(Car::class)->find($data['vozilo']);
 
-    return $this->createQueryBuilder('t')
-      ->where('t.created BETWEEN :startDate AND :endDate')
-      ->andWhere('t.car = :car')
-      ->setParameter('startDate', $startDate)
-      ->setParameter('endDate', $endDate)
-      ->setParameter('car', $car)
-      ->orderBy('t.created', 'DESC')
-      ->getQuery()
-      ->getResult();
 
-  }
+        $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+        $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+
+        return $this->createQueryBuilder('t')
+            ->where('t.created BETWEEN :startDate AND :endDate')
+            ->andWhere('t.car = :car')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->setParameter('car', $car)
+            ->orderBy('t.created', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+    }
 
 //    /**
 //     * @return CarReservation[] Returns an array of CarReservation objects

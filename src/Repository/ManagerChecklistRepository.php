@@ -173,10 +173,25 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
         $qb = $this->createQueryBuilder('c');
 
         $qb->select($qb->expr()->count('c'))
+            ->andWhere('c.status <> :status')
+            ->andWhere('c.company = :company')
+            ->setParameter(':company', $company)
+            ->setParameter(':status', InternTaskStatusData::KONVERTOVANO);
+
+        $query = $qb->getQuery();
+
+        return $query->getSingleScalarResult();
+
+    }
+    public function countInternTasksActive(Company $company): int{
+
+        $qb = $this->createQueryBuilder('c');
+
+        $qb->select($qb->expr()->count('c'))
             ->andWhere('c.status = :status')
             ->andWhere('c.company = :company')
             ->setParameter(':company', $company)
-            ->setParameter(':status', InternTaskStatusData::NIJE_ZAPOCETO);
+            ->setParameter(':status', InternTaskStatusData::ZAPOCETO);
 
         $query = $qb->getQuery();
 
@@ -205,7 +220,8 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
             ->setParameter(':status1', InternTaskStatusData::ZAVRSENO)
             ->orderBy('c.status', 'ASC')
             ->addOrderBy('c.datumKreiranja', 'ASC')
-            ->addOrderBy('c.priority', 'ASC')
+            ->addOrderBy('c.deadline', 'ASC')
+            ->addOrderBy('c.priority', 'DESC')
             ->getQuery();
 
     }
@@ -218,10 +234,10 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
             ->setParameter(':company', $company)
             ->setParameter(':status', InternTaskStatusData::KONVERTOVANO)
             ->setParameter(':status1', InternTaskStatusData::ZAVRSENO)
-            ->orderBy('c.status', 'DESC')
+            ->orderBy('c.status', 'ASC')
             ->addOrderBy('c.datumKreiranja', 'ASC')
             ->addOrderBy('c.deadline', 'ASC')
-            ->addOrderBy('c.priority', 'ASC')
+            ->addOrderBy('c.priority', 'DESC')
             ->getQuery();
 
     }
@@ -617,9 +633,9 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
         $qb = $this->createQueryBuilder('t');
         $qb->where('t.phase = :phase')
-          ->andWhere('t.status = :status')
-          ->setParameter(':status', InternTaskStatusData::ZAVRSENO)
-          ->setParameter('phase', $phase);
+            ->andWhere('t.status = :status')
+            ->setParameter(':status', InternTaskStatusData::ZAVRSENO)
+            ->setParameter('phase', $phase);
         $tasksVerify = $qb->getQuery()->getResult();
 
         $verifyCount = count($tasksVerify);

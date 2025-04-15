@@ -273,7 +273,10 @@
                                                                                         </td>
                                                                                     {% endif %}
                                                                                     {% if zaduzeni is defined %}
-                                                                                        <td>{{ stopwatch.zaduzeni.fullName }}</td>
+                                                                                        <td>{% for zaduzeni in stopwatch.users  %}
+                                                                                            {{ zaduzeni.fullName }} <br>
+                                                                                            {% endfor %}
+                                                                                        </td>
                                                                                     {% endif %}
                                                                                 </tr>
                                                                             {% endfor %}

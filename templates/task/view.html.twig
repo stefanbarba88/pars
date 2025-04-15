@@ -276,7 +276,7 @@
                             <h5 class="mb-0">Informacije o zadatku</h5>
                                     {% if stopwatchesRunning > 0 %}
                                         <div class="my-auto ms-auto">
-                                            <a href="{{ path('app_task_close',{id: task.id} ) }}"><i class="ph-door me-2"></i></a>
+                                            <a href="{{ path('app_task_close',{id: task.id} ) }}"><i class="ph-door me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Moguće je ručno zatvaranje zadatka ukoliko zaposleni ne može da zatvori merenje. Nakon toga je potrebno izmeniti merenja i promeniti status zadatku." data-bs-original-title="Ručno zatvaranje merenja na zadatku."></i></a>
                                         </div>
                                     {% else %}
                                         <div class="my-auto ms-auto">

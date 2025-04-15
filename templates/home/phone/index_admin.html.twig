@@ -223,7 +223,7 @@
                                     </a>
                                     <a href="{{ path('app_checklist_list') }}" class="btn btn-light btn-sm w-100 flex-column rounded-0 rounded-bottom-end py-1">
                                         <i class="ph-list-bullets bg-secondary text-primary lh-1 rounded-pill p-1 ph-2x"></i>
-                                        <h5 class="mb-0">{{ noInternTasks }}</h5>
+                                        <h5 class="mb-0">{{ noInternTasks }}({{ noInternTasksActive | default(0) }})</h5>
                                         <div class="fw-semibold">Broj internih zadataka</div>
                                     </a>
                                 </div>

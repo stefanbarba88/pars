@@ -469,6 +469,28 @@ class StopwatchController extends AbstractController {
 
             if ($form->isSubmitted() && $form->isValid()) {
 
+                if (isset($request->request->all()['image_delete'])) {
+                    $deleteImages = $request->request->all()['image_delete'];
+                    foreach ($deleteImages as $image) {
+                        if (isset($image['checked'])) {
+                            $image = $this->em->getRepository(Image::class)->find($image['value']);
+                            $stopwatch->removeImage($image);
+                        }
+                    }
+                }
+                if (isset($request->request->all()['pdf_delete'])) {
+                    $deletePdfs = $request->request->all()['pdf_delete'];
+                    foreach ($deletePdfs as $pdf) {
+                        if (isset($pdf['checked'])) {
+                            $pdf = $this->em->getRepository(Pdf::class)->find($pdf['value']);
+                            $stopwatch->removePdf($pdf);
+                            $pdf->setProject(null);
+                            $pdf->setTask(null);
+                            $pdf = $this->em->getRepository(Pdf::class)->savePdf($pdf);
+                        }
+                    }
+                }
+
                 $uploadFiles = $request->files->all()['stopwatch_time_add_form']['pdf'];
                 if (!empty ($uploadFiles)) {
                     foreach ($uploadFiles as $uploadFile) {
@@ -541,7 +563,8 @@ class StopwatchController extends AbstractController {
         $args['task'] = $stopwatch->getTaskLog()->getTask();
         $args['taskLog'] = $stopwatch->getTaskLog();
         $args['client'] = $stopwatch->getTaskLog()->getTask()->getProject()->getClient()->toArray();
-
+        $args['images'] = $stopwatch->getImage()->toArray();
+        $args['pdfs'] = $stopwatch->getPdf()->toArray();
 
         return $this->render('task/stopwatch_form_edit.html.twig', $args);
     }

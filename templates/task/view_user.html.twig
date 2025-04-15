@@ -319,11 +319,12 @@
                                 <h5 class="mb-0">Informacije o zadatku</h5>
 
                                 {% if task.priorityUserLog == app.user.id or task.createdBy == app.user %}
-                                    {% if stopwatchesRunning > 0 %}
+                                    {% if stopwatchesRunning > 0 and not app.user.inTask %}
                                         <div class="my-auto ms-auto">
-                                            <a href="{{ path('app_task_close',{id: task.id} ) }}"><i class="ph-door me-2"></i></a>
+                                            <a href="{{ path('app_task_close',{id: task.id} ) }}"><i class="ph-door me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Moguće je ručno zatvaranje merenja ukoliko kolega koji je zadužen sa Vama ne može da zatvori merenje." data-bs-original-title="Ručno zatvaranje merenja na zadatku."></i></a>
                                         </div>
-                                    {% else %}
+                                    {% endif %}
+                                    {% if stopwatchesRunning == 0 %}
                                         <div class="my-auto ms-auto">
 
                                             <div class="btn-group">
@@ -374,6 +375,33 @@
                                                 {% endif %}
                                             </div>
 
+                                        </div>
+                                    {% else %}
+                                        <div class="my-auto ms-auto">
+
+                                            <div class="btn-group">
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                                                    <a href="#" class="link-primary d-inline-flex align-items-center">
+                                                        <span class="badge bg-secondary text-primary">Nije startovan</span>
+                                                        <i class="ph-info me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Inicijalna promena statusa se dešava kada se pokrene prvo merenje na zadatku. Sve ostale se biraju ručno." data-bs-original-title="Promena statusa"></i>
+                                                    </a>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                                                    <a href="#" class="link-primary d-inline-flex align-items-center">
+                                                        <span class="badge bg-yellow text-primary">Otvoren</span>
+                                                    </a>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                                                    <a href="#" class="link-primary d-inline-flex align-items-center">
+                                                        <span class="badge bg-primary text-white">Zatvoren</span>
+                                                    </a>
+                                                {% endif %}
+                                                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                                                    <a href="#" class="link-primary d-inline-flex align-items-center">
+                                                        <span class="badge bg-success text-white">Verifikovan</span>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
                                         </div>
                                     {% endif %}
                                 {% else %}

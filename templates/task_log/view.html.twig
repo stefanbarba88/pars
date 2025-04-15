@@ -37,7 +37,7 @@
                             <h5 class="mb-0">{{ taskLog.user.getFullName() }}</h5>
                                     {% set difference = date()|date_modify(constant('App\\Classes\\AppConfig::TIME_DIFFERENCE')) %}
                                     {% if not task.isDeleted %}
-                                        {% if is_granted('ROLE_EMPLOYEE') and not admin and task.datumKreiranja > difference %}
+                                        {% if is_granted('ROLE_EMPLOYEE') and not admin and task.datumKreiranja > difference and task.status != 3 %}
                                             <div class="my-auto ms-auto">
                                                 <button type="button" class="btn btn-primary d-none d-sm-block" data-bs-toggle="modal" data-bs-target="#modal_form_vertical">
                                                     <i class="ph-plus me-2"></i> Dodajte
@@ -630,7 +630,7 @@
                                                                                         <div class="d-flex align-items-center">
                                                                                         </div>
                                                                                         {% if not stopwatch.deleted %}
-                                                                                            {% if is_granted('ROLE_EMPLOYEE') and not admin and task.datumKreiranja > difference %}
+                                                                                            {% if is_granted('ROLE_EMPLOYEE') and not admin and task.datumKreiranja > difference and task.status != 3 %}
                                                                                                 <div class="d-inline-flex mb-0">
                                                                                                     <a href="{{ path('app_stopwatch_edit_time_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-clock"></i></a>
                                                                                                     <a href="{{ path('app_stopwatch_edit_forma', {id:stopwatch.id}) }}" class="text-body ms-2"><i class="ph-note-pencil"></i></a>

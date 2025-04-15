@@ -43,1106 +43,1106 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/cars')]
 class CarController extends AbstractController {
-  private $knpSnappyPdf;
-  public function __construct(private readonly ManagerRegistry $em, Pdf $knpSnappyPdf) {
-    $this->knpSnappyPdf = $knpSnappyPdf;
-  }
-
-  #[Route('/list/', name: 'app_cars')]
-  public function list(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    $search = [];
-
-    $search['naziv'] = $request->query->get('naziv');
-    $search['registracija'] = $request->query->get('registracija');
-
-    $cars = $this->em->getRepository(Car::class)->getCarsPaginator($search, 0);
-
-    $pagination = $paginator->paginate(
-      $cars, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
-
-    $args['pagination'] = $pagination;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/list.html.twig', $args);
+    private $knpSnappyPdf;
+    public function __construct(private readonly ManagerRegistry $em, Pdf $knpSnappyPdf) {
+        $this->knpSnappyPdf = $knpSnappyPdf;
     }
 
-    return $this->render('car/list.html.twig', $args);
-  }
+    #[Route('/list/', name: 'app_cars')]
+    public function list(PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        $search = [];
 
-  #[Route('/list-reserved/', name: 'app_cars_reserved')]
-  public function reserved(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    $search = [];
+        $search['naziv'] = $request->query->get('naziv');
+        $search['registracija'] = $request->query->get('registracija');
 
-    $search['naziv'] = $request->query->get('naziv');
-    $search['registracija'] = $request->query->get('registracija');
+        $cars = $this->em->getRepository(Car::class)->getCarsPaginator($search, 0);
 
-    $cars = $this->em->getRepository(Car::class)->getCarsReservedPaginator($search, 1);
+        $pagination = $paginator->paginate(
+            $cars, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
 
-    $pagination = $paginator->paginate(
-      $cars, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
+        $session = new Session();
+        $session->set('url', $request->getRequestUri());
 
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
+        $args['pagination'] = $pagination;
 
-    $args['pagination'] = $pagination;
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('car/phone/list.html.twig', $args);
+        }
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/reserved.html.twig', $args);
-    }
-
-    return $this->render('car/reserved.html.twig', $args);
-  }
-
-  #[Route('/list-available/', name: 'app_cars_available')]
-  public function available(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    $search = [];
-
-    $search['naziv'] = $request->query->get('naziv');
-    $search['registracija'] = $request->query->get('registracija');
-
-    $cars = $this->em->getRepository(Car::class)->getCarsReservedPaginator($search, 0);
-
-    $pagination = $paginator->paginate(
-      $cars, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
-
-    $args['pagination'] = $pagination;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/available.html.twig', $args);
+        return $this->render('car/list.html.twig', $args);
     }
 
-    return $this->render('car/available.html.twig', $args);
-  }
+    #[Route('/list-reserved/', name: 'app_cars_reserved')]
+    public function reserved(PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        $search = [];
 
-  #[Route('/list-archive/', name: 'app_cars_archive')]
-  public function archive(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+        $search['naziv'] = $request->query->get('naziv');
+        $search['registracija'] = $request->query->get('registracija');
+
+        $cars = $this->em->getRepository(Car::class)->getCarsReservedPaginator($search, 1);
+
+        $pagination = $paginator->paginate(
+            $cars, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
+
+        $session = new Session();
+        $session->set('url', $request->getRequestUri());
+
+        $args['pagination'] = $pagination;
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('car/phone/reserved.html.twig', $args);
+        }
+
+        return $this->render('car/reserved.html.twig', $args);
     }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
+
+    #[Route('/list-available/', name: 'app_cars_available')]
+    public function available(PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        $search = [];
+
+        $search['naziv'] = $request->query->get('naziv');
+        $search['registracija'] = $request->query->get('registracija');
+
+        $cars = $this->em->getRepository(Car::class)->getCarsReservedPaginator($search, 0);
+
+        $pagination = $paginator->paginate(
+            $cars, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
+
+        $session = new Session();
+        $session->set('url', $request->getRequestUri());
+
+        $args['pagination'] = $pagination;
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('car/phone/available.html.twig', $args);
+        }
+
+        return $this->render('car/available.html.twig', $args);
     }
-    $search = [];
 
-    $search['naziv'] = $request->query->get('naziv');
-    $search['registracija'] = $request->query->get('registracija');
+    #[Route('/list-archive/', name: 'app_cars_archive')]
+    public function archive(PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        $search = [];
 
-    $cars = $this->em->getRepository(Car::class)->getCarsPaginator($search, 1);
+        $search['naziv'] = $request->query->get('naziv');
+        $search['registracija'] = $request->query->get('registracija');
 
-    $pagination = $paginator->paginate(
-      $cars, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
+        $cars = $this->em->getRepository(Car::class)->getCarsPaginator($search, 1);
 
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
+        $pagination = $paginator->paginate(
+            $cars, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
 
-    $args['pagination'] = $pagination;
+        $session = new Session();
+        $session->set('url', $request->getRequestUri());
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/archive.html.twig', $args);
+        $args['pagination'] = $pagination;
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('car/phone/archive.html.twig', $args);
+        }
+
+        return $this->render('car/archive.html.twig', $args);
     }
 
-    return $this->render('car/archive.html.twig', $args);
-  }
-
-  #[Route('/form/{id}', name: 'app_car_form', defaults: ['id' => 0])]
-  #[Entity('car', expr: 'repository.findForForm(id)')]
+    #[Route('/form/{id}', name: 'app_car_form', defaults: ['id' => 0])]
+    #[Entity('car', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function form(Request $request, Car $car): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $car->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $type = $request->query->getInt('type');
-    $history = null;
-    if($car->getId()) {
-      $history = $this->json($car, Response::HTTP_OK, [], [
-          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-            return $object->getId();
-          }
-        ]
-      );
-      $history = $history->getContent();
+    public function form(Request $request, Car $car): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $car->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $type = $request->query->getInt('type');
+        $history = null;
+        if($car->getId()) {
+            $history = $this->json($car, Response::HTTP_OK, [], [
+                    ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+                        return $object->getId();
+                    }
+                ]
+            );
+            $history = $history->getContent();
+        }
+
+        $form = $this->createForm(CarFormType::class, $car, ['attr' => ['action' => $this->generateUrl('app_car_form', ['id' => $car->getId(), 'type' => $type])]]);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $this->em->getRepository(Car::class)->save($car, $history);
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::CAR_ADD);
+
+                if ($type == 1) {
+                    return $this->redirectToRoute('app_cars');
+                }
+                return $this->redirectToRoute('app_car_view', ['id' => $car->getId()]);
+            }
+        }
+        $args['form'] = $form->createView();
+        $args['car'] = $car;
+
+        return $this->render('car/form.html.twig', $args);
     }
 
-    $form = $this->createForm(CarFormType::class, $car, ['attr' => ['action' => $this->generateUrl('app_car_form', ['id' => $car->getId(), 'type' => $type])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
+    #[Route('/view/{id}', name: 'app_car_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function view(Car $car): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $car->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
-      if ($form->isSubmitted() && $form->isValid()) {
+        $args['car'] = $car;
+        $args['lastReservation'] = $car->getCarReservations()->last();
+
+        return $this->render('car/view.html.twig', $args);
+    }
+
+    #[Route('/activate/{id}', name: 'app_car_activate')]
+    public function delete(Car $car, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $car->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $type = $request->query->getInt('type');
+
+        $history = null;
+        if($car->getId()) {
+            $history = $this->json($car, Response::HTTP_OK, [], [
+                    ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+                        return $object->getId();
+                    }
+                ]
+            );
+            $history = $history->getContent();
+        }
+
+        if ($car->isSuspended()) {
+            $car->setIsSuspended(false);
+            notyf()
+                ->position('x', 'right')
+                ->position('y', 'top')
+                ->duration(5000)
+                ->dismissible(true)
+                ->addSuccess(NotifyMessagesData::CAR_ACTIVATE);
+        } else {
+            $car->setIsSuspended(true);
+
+            $reservation = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'desc']);
+
+            if (!is_null($reservation)) {
+                $reservation->setFinished(new DateTimeImmutable());
+                $reservation->setKmStop($reservation->getKmStart());
+                $this->em->getRepository(CarReservation::class)->save($reservation);
+            }
+
+            notyf()
+                ->position('x', 'right')
+                ->position('y', 'top')
+                ->duration(5000)
+                ->dismissible(true)
+                ->addSuccess(NotifyMessagesData::CAR_DEACTIVATE);
+        }
+
 
         $this->em->getRepository(Car::class)->save($car, $history);
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD);
 
         if ($type == 1) {
-          return $this->redirectToRoute('app_cars');
+            return $this->redirectToRoute('app_cars');
         }
+
         return $this->redirectToRoute('app_car_view', ['id' => $car->getId()]);
-      }
     }
-    $args['form'] = $form->createView();
-    $args['car'] = $car;
 
-    return $this->render('car/form.html.twig', $args);
-  }
-
-  #[Route('/view/{id}', name: 'app_car_view')]
+    #[Route('/history-car-list/{id}', name: 'app_car_history_list')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function view(Car $car): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $car->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    $args['car'] = $car;
-    $args['lastReservation'] = $car->getCarReservations()->last();
-
-    return $this->render('car/view.html.twig', $args);
-  }
-
-  #[Route('/activate/{id}', name: 'app_car_activate')]
-  public function delete(Car $car, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $car->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $type = $request->query->getInt('type');
-
-    $history = null;
-    if($car->getId()) {
-      $history = $this->json($car, Response::HTTP_OK, [], [
-          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-            return $object->getId();
-          }
-        ]
-      );
-      $history = $history->getContent();
-    }
-
-    if ($car->isSuspended()) {
-      $car->setIsSuspended(false);
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::CAR_ACTIVATE);
-    } else {
-      $car->setIsSuspended(true);
-
-      $reservation = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'desc']);
-
-      if (!is_null($reservation)) {
-        $reservation->setFinished(new DateTimeImmutable());
-        $reservation->setKmStop($reservation->getKmStart());
-        $this->em->getRepository(CarReservation::class)->save($reservation);
-      }
-
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::CAR_DEACTIVATE);
-    }
-
-
-    $this->em->getRepository(Car::class)->save($car, $history);
-
-    if ($type == 1) {
-      return $this->redirectToRoute('app_cars');
-    }
-
-    return $this->redirectToRoute('app_car_view', ['id' => $car->getId()]);
-  }
-
-  #[Route('/history-car-list/{id}', name: 'app_car_history_list')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function listCarHistory(Car $car, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $args = [];
-    $args['car'] = $car;
-
-    $cars = $this->em->getRepository(CarHistory::class)->getCarsHistoryPaginator($car);
-
-    $pagination = $paginator->paginate(
-      $cars, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $args['pagination'] = $pagination;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/car_history_list.html.twig', $args);
-    }
-
-    return $this->render('car/car_history_list.html.twig', $args);
-  }
-
-  #[Route('/history-car-view/{id}', name: 'app_car_profile_history_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCarHistory(CarHistory $carHistory, SerializerInterface $serializer): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    $args['carH'] = $serializer->deserialize($carHistory->getHistory(), car::class, 'json');
-    $args['carHistory'] = $carHistory;
-
-    return $this->render('car/view_history_profile.html.twig', $args);
-  }
-
-  #[Route('/list-reservations/{id}', name: 'app_cars_reservations')]
-  public function listReservations(Car $car, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $car->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args = [];
-
-    $cars = $this->em->getRepository(CarReservation::class)->getReservationsByCarPaginator($car);
-
-    $pagination = $paginator->paginate(
-      $cars, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-
-    $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'desc']);
-
-    $args['car'] = $car;
-
-    $args['pagination'] = $pagination;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/list_reservations.html.twig', $args);
-    }
-
-    return $this->render('car/list_reservations.html.twig', $args);
-  }
-
-  #[Route('/form-reservation/{id}', name: 'app_car_reservation_form')]
-  #[Entity('car', expr: 'repository.find(id)')]
-  #[Entity('reservation', expr: 'repository.findForFormCar(car)')]
-//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReservation(CarReservation $reservation, Car $car, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $car->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $type = $request->query->getInt('type');
-    $user = $this->getUser();
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $reservation->setDriver($user);
-    }
-
-    $form = $this->createForm(CarReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_reservation_form', ['id' => $car->getId(), 'type' => $type])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $this->em->getRepository(CarReservation::class)->save($reservation);
-
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_RESERVE);
-        if ($type == 1) {
-          return $this->redirectToRoute('app_cars');
+    public function listCarHistory(Car $car, PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
         }
+        $args = [];
+        $args['car'] = $car;
+
+        $cars = $this->em->getRepository(CarHistory::class)->getCarsHistoryPaginator($car);
+
+        $pagination = $paginator->paginate(
+            $cars, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
+
+        $args['pagination'] = $pagination;
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('car/phone/car_history_list.html.twig', $args);
+        }
+
+        return $this->render('car/car_history_list.html.twig', $args);
+    }
+
+    #[Route('/history-car-view/{id}', name: 'app_car_profile_history_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function viewCarHistory(CarHistory $carHistory, SerializerInterface $serializer): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $args['carH'] = $serializer->deserialize($carHistory->getHistory(), car::class, 'json');
+        $args['carHistory'] = $carHistory;
+
+        return $this->render('car/view_history_profile.html.twig', $args);
+    }
+
+    #[Route('/list-reservations/{id}', name: 'app_cars_reservations')]
+    public function listReservations(Car $car, PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $car->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args = [];
+
+        $cars = $this->em->getRepository(CarReservation::class)->getReservationsByCarPaginator($car);
+
+        $pagination = $paginator->paginate(
+            $cars, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
+
+
+        $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $car], ['id' => 'desc']);
+
+        $args['car'] = $car;
+
+        $args['pagination'] = $pagination;
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('car/phone/list_reservations.html.twig', $args);
+        }
+
+        return $this->render('car/list_reservations.html.twig', $args);
+    }
+
+    #[Route('/form-reservation/{id}', name: 'app_car_reservation_form')]
+    #[Entity('car', expr: 'repository.find(id)')]
+    #[Entity('reservation', expr: 'repository.findForFormCar(car)')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function formReservation(CarReservation $reservation, Car $car, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $car->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $type = $request->query->getInt('type');
+        $user = $this->getUser();
+        if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+            $reservation->setDriver($user);
+        }
+
+        $form = $this->createForm(CarReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_reservation_form', ['id' => $car->getId(), 'type' => $type])]]);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $this->em->getRepository(CarReservation::class)->save($reservation);
+
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::CAR_RESERVE);
+                if ($type == 1) {
+                    return $this->redirectToRoute('app_cars');
+                }
 //        if ($type == 2) {
 //          return $this->redirectToRoute('app_car_tools_details_view');
 //        }
-        return $this->redirectToRoute('app_cars_reservations', ['id' => $car->getId()]);
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['car'] = $car;
-    $args['reservation'] = $reservation;
-    $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
+                return $this->redirectToRoute('app_cars_reservations', ['id' => $car->getId()]);
+            }
+        }
+        $args['form'] = $form->createView();
+        $args['car'] = $car;
+        $args['reservation'] = $reservation;
+        $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
 
-    return $this->render('car/form_reservation.html.twig', $args);
-  }
-  #[Route('/view-images/{id}', name: 'app_car_images_view')]
+        return $this->render('car/form_reservation.html.twig', $args);
+    }
+    #[Route('/view-images/{id}', name: 'app_car_images_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewImages(Car $car): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function viewImages(Car $car): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $car->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        $args['reservations'] = $car->getCarReservations();
+        $images = [];
+
+        foreach ($args['reservations'] as $res) {
+            $images[] = $res->getImage()->toArray();
+        }
+
+        $args['images'] = array_merge(...array_filter($images));
+
+        $args['car'] = $car;
+
+        return $this->render('car/view_images.html.twig', $args);
     }
 
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $car->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    $args['reservations'] = $car->getCarReservations();
-    $images = [];
-
-    foreach ($args['reservations'] as $res) {
-      $images[] = $res->getImage()->toArray();
-    }
-
-    $args['images'] = array_merge(...array_filter($images));
-
-    $args['car'] = $car;
-
-    return $this->render('car/view_images.html.twig', $args);
-  }
-
-  #[Route('/add-image-car/{id}', name: 'app_car_image_form')]
+    #[Route('/add-image-car/{id}', name: 'app_car_image_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function addImage(CarReservation $reservation, UploadService $uploadService, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-
-    if ($korisnik->getCompany() != $reservation->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    $form = $this->createForm(CarImageFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_image_form', ['id' => $reservation->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $uploadImages = $request->files->all()['car_image_form']['image'];
-        if (!empty ($uploadImages)) {
-          foreach ($uploadImages as $uploadFile) {
-            $path = $reservation->getCar()->getUploadPath();
-            $pathThumb = $reservation->getCar()->getThumbUploadPath();
-
-            $file = $uploadService->upload($uploadFile, $path);
-
-            $image = $this->em->getRepository(Image::class)->add($file, $pathThumb, $this->getParameter('kernel.project_dir'));
-
-            $reservation->addImage($image);
-          }
+    public function addImage(CarReservation $reservation, UploadService $uploadService, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
         }
-        $this->em->getRepository(CarReservation::class)->save($reservation);
+        $korisnik = $this->getUser();
 
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_ADD_IMAGE);
-
-        if ($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$korisnik->isAdmin()) {
-          return $this->redirectToRoute('app_home');
+        if ($korisnik->getCompany() != $reservation->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
         }
-        return $this->redirectToRoute('app_car_images_view', ['id' => $reservation->getCar()->getId()]);
 
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['reservation'] = $reservation;
-    $args['car'] = $reservation->getCar();
-    $args['user'] = $korisnik;
+        $form = $this->createForm(CarImageFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_image_form', ['id' => $reservation->getId()])]]);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
 
-    return $this->render('car/add_image_reservation.html.twig', $args);
-  }
+            if ($form->isSubmitted() && $form->isValid()) {
 
-  #[Route('/stop-reservation/{id}', name: 'app_car_reservation_stop')]
-  public function stopReservation(CarReservation $reservation, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+                $uploadImages = $request->files->all()['car_image_form']['image'];
+                if (!empty ($uploadImages)) {
+                    foreach ($uploadImages as $uploadFile) {
+                        $path = $reservation->getCar()->getUploadPath();
+                        $pathThumb = $reservation->getCar()->getThumbUploadPath();
 
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $reservation->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
+                        $file = $uploadService->upload($uploadFile, $path);
 
-    $type = $request->query->getInt('type');
-    $form = $this->createForm(CarStopReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_reservation_stop', ['id' => $reservation->getId(), 'type' => $type])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
+                        $image = $this->em->getRepository(Image::class)->add($file, $pathThumb, $this->getParameter('kernel.project_dir'));
 
-      if ($form->isSubmitted() && $form->isValid()) {
+                        $reservation->addImage($image);
+                    }
+                }
+                $this->em->getRepository(CarReservation::class)->save($reservation);
 
-        $reservation->setFinished(new DateTimeImmutable());
-        $this->em->getRepository(CarReservation::class)->save($reservation);
 
-        if ($type == 1) {
-          return $this->redirectToRoute('app_cars');
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::CAR_ADD_IMAGE);
+
+                if ($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$korisnik->isAdmin()) {
+                    return $this->redirectToRoute('app_home');
+                }
+                return $this->redirectToRoute('app_car_images_view', ['id' => $reservation->getCar()->getId()]);
+
+            }
         }
-        return $this->redirectToRoute('app_cars_reservations', ['id' => $reservation->getCar()->getId()]);
-      }
+        $args['form'] = $form->createView();
+        $args['reservation'] = $reservation;
+        $args['car'] = $reservation->getCar();
+        $args['user'] = $korisnik;
+
+        return $this->render('car/add_image_reservation.html.twig', $args);
     }
 
-    $args['form'] = $form->createView();
-    $args['reservation'] = $reservation;
-    $args['car'] = $reservation->getCar();
+    #[Route('/stop-reservation/{id}', name: 'app_car_reservation_stop')]
+    public function stopReservation(CarReservation $reservation, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
 
-    return $this->render('car/form_reservation_stop.html.twig', $args);
-  }
-  #[Route('/view-reservation/{id}', name: 'app_car_reservation_view')]
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $reservation->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        $type = $request->query->getInt('type');
+        $form = $this->createForm(CarStopReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_reservation_stop', ['id' => $reservation->getId(), 'type' => $type])]]);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $reservation->setFinished(new DateTimeImmutable());
+                $this->em->getRepository(CarReservation::class)->save($reservation);
+
+                if ($type == 1) {
+                    return $this->redirectToRoute('app_cars');
+                }
+                return $this->redirectToRoute('app_cars_reservations', ['id' => $reservation->getCar()->getId()]);
+            }
+        }
+
+        $args['form'] = $form->createView();
+        $args['reservation'] = $reservation;
+        $args['car'] = $reservation->getCar();
+
+        return $this->render('car/form_reservation_stop.html.twig', $args);
+    }
+    #[Route('/view-reservation/{id}', name: 'app_car_reservation_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewReservation(CarReservation $reservation): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $reservation->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args['reservation'] = $reservation;
-
-    return $this->render('car/view_reservation.html.twig', $args);
-  }
-
-  #[Route('/list-expenses/{id}', name: 'app_cars_expenses')]
-  public function listExpenses(Car $car, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $car->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args = [];
-    $cars = $this->em->getRepository(Expense::class)->getExpensesByCarPaginator($car);
-
-    $pagination = $paginator->paginate(
-      $cars, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $args['pagination'] = $pagination;
-
-    $args['car'] = $car;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/list_expenses.html.twig', $args);
-    }
-
-    return $this->render('car/list_expenses.html.twig', $args);
-  }
-
-  #[Route('/form-expense/{id}', name: 'app_car_expense_form')]
-  #[Entity('car', expr: 'repository.find(id)')]
-  #[Entity('expense', expr: 'repository.findForFormCar(car)')]
-//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formExpense(Expense $expense, Car $car, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $car->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $type = $request->query->getInt('type');
-
-    $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_expense_form', ['id' => $car->getId(), 'type' => $type])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $this->em->getRepository(Expense::class)->save($expense);
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
-        if ($type == 1) {
-          return $this->redirectToRoute('app_cars');
+    public function viewReservation(CarReservation $reservation): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
         }
-        return $this->redirectToRoute('app_cars_expenses', ['id' => $car->getId()]);
-      }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $reservation->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args['reservation'] = $reservation;
+
+        return $this->render('car/view_reservation.html.twig', $args);
     }
-    $args['form'] = $form->createView();
-    $args['car'] = $car;
-    $args['expense'] = $expense;
 
-    return $this->render('car/form_expense.html.twig', $args);
-  }
+    #[Route('/list-expenses/{id}', name: 'app_cars_expenses')]
+    public function listExpenses(Car $car, PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $car->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args = [];
+        $cars = $this->em->getRepository(Expense::class)->getExpensesByCarPaginator($car);
 
-  #[Route('/edit-expense/{id}', name: 'app_car_expense_edit')]
+        $pagination = $paginator->paginate(
+            $cars, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
+
+        $args['pagination'] = $pagination;
+
+        $args['car'] = $car;
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('car/phone/list_expenses.html.twig', $args);
+        }
+
+        return $this->render('car/list_expenses.html.twig', $args);
+    }
+
+    #[Route('/form-expense/{id}', name: 'app_car_expense_form')]
+    #[Entity('car', expr: 'repository.find(id)')]
+    #[Entity('expense', expr: 'repository.findForFormCar(car)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editExpense(Expense $expense, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function formExpense(Expense $expense, Car $car, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $car->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $type = $request->query->getInt('type');
+
+        $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_expense_form', ['id' => $car->getId(), 'type' => $type])]]);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $this->em->getRepository(Expense::class)->save($expense);
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
+                if ($type == 1) {
+                    return $this->redirectToRoute('app_cars');
+                }
+                return $this->redirectToRoute('app_cars_expenses', ['id' => $car->getId()]);
+            }
+        }
+        $args['form'] = $form->createView();
+        $args['car'] = $car;
+        $args['expense'] = $expense;
+
+        return $this->render('car/form_expense.html.twig', $args);
     }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
+
+    #[Route('/edit-expense/{id}', name: 'app_car_expense_edit')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function editExpense(Expense $expense, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $expense->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_expense_edit', ['id' => $expense->getId()])]]);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $this->em->getRepository(Expense::class)->save($expense);
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
+
+                return $this->redirectToRoute('app_cars_expenses', ['id' => $expense->getCar()->getId()]);
+            }
+        }
+        $args['form'] = $form->createView();
+        $args['car'] = $expense->getCar();
+        $args['expense'] = $expense;
+
+        return $this->render('car/form_expense.html.twig', $args);
     }
-    if ($korisnik->getCompany() != $expense->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
 
-    $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_expense_edit', ['id' => $expense->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $this->em->getRepository(Expense::class)->save($expense);
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
-
-        return $this->redirectToRoute('app_cars_expenses', ['id' => $expense->getCar()->getId()]);
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['car'] = $expense->getCar();
-    $args['expense'] = $expense;
-
-    return $this->render('car/form_expense.html.twig', $args);
-  }
-
-  #[Route('/view-expense/{id}', name: 'app_car_expense_view')]
+    #[Route('/view-expense/{id}', name: 'app_car_expense_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewExpense(Expense $expense): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $expense->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args['expense'] = $expense;
+    public function viewExpense(Expense $expense): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $expense->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args['expense'] = $expense;
 
-    return $this->render('car/view_expense.html.twig', $args);
-  }
+        return $this->render('car/view_expense.html.twig', $args);
+    }
 
 
 //zaduzivanje vozila iz profila zaposlenog
-  #[Route('/form-employee-reservation/{id}', name: 'app_car_employee_reservation_form', defaults: ['id' => 0])]
-  #[Entity('reservation', expr: 'repository.findForForm(id)')]
+    #[Route('/form-employee-reservation/{id}', name: 'app_car_employee_reservation_form', defaults: ['id' => 0])]
+    #[Entity('reservation', expr: 'repository.findForForm(id)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formEmployeeReservation(CarReservation $reservation, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function formEmployeeReservation(CarReservation $reservation, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $user = $this->getUser();
+
+        if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        if ($user->getCompany() != $reservation->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+
+        $form = $this->createForm(CarReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_form', ['id' => $reservation->getId()])]]);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $this->em->getRepository(CarReservation::class)->save($reservation);
+
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::CAR_RESERVE);
+
+                return $this->redirectToRoute('app_employee_car_view', ['id' => $reservation->getDriver()->getId()]);
+            }
+        }
+        $args['form'] = $form->createView();
+        $args['user'] = $this->em->getRepository(User::class)->find($request->get('user'));
+        $args['reservation'] = $reservation;
+        $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
+
+        return $this->render('car/form_reservation_employee.html.twig', $args);
     }
 
-    $user = $this->getUser();
+    #[Route('/stop-employee-reservation/{id}', name: 'app_car_employee_reservation_stop')]
+    public function stopEmployeeReservation(CarReservation $reservation, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
 
-    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
-      return $this->redirect($this->generateUrl('app_home'));
+        $user = $this->getUser();
+
+        if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        if ($user->getCompany() != $reservation->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $form = $this->createForm(CarStopReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_stop', ['id' => $reservation->getId()])]]);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $reservation->setFinished(new DateTimeImmutable());
+                $this->em->getRepository(CarReservation::class)->save($reservation);
+
+                return $this->redirectToRoute('app_employee_car_view', ['id' => $user->getId()]);
+            }
+        }
+
+        $args['form'] = $form->createView();
+        $args['reservation'] = $reservation;
+        $args['car'] = $reservation->getCar();
+        $args['user'] = $user;
+
+        return $this->render('car/form_reservation_stop_employee.html.twig', $args);
     }
 
-    if ($user->getCompany() != $reservation->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-
-    $form = $this->createForm(CarReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_form', ['id' => $reservation->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $this->em->getRepository(CarReservation::class)->save($reservation);
-
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_RESERVE);
-
-        return $this->redirectToRoute('app_employee_car_view', ['id' => $reservation->getDriver()->getId()]);
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['user'] = $this->em->getRepository(User::class)->find($request->get('user'));
-    $args['reservation'] = $reservation;
-    $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
-
-    return $this->render('car/form_reservation_employee.html.twig', $args);
-  }
-
-  #[Route('/stop-employee-reservation/{id}', name: 'app_car_employee_reservation_stop')]
-  public function stopEmployeeReservation(CarReservation $reservation, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    $user = $this->getUser();
-
-    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    if ($user->getCompany() != $reservation->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $form = $this->createForm(CarStopReservationFormType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_stop', ['id' => $reservation->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $reservation->setFinished(new DateTimeImmutable());
-        $this->em->getRepository(CarReservation::class)->save($reservation);
-
-        return $this->redirectToRoute('app_employee_car_view', ['id' => $user->getId()]);
-      }
-    }
-
-    $args['form'] = $form->createView();
-    $args['reservation'] = $reservation;
-    $args['car'] = $reservation->getCar();
-    $args['user'] = $user;
-
-    return $this->render('car/form_reservation_stop_employee.html.twig', $args);
-  }
-
-  #[Route('/view-employee-reservation/{id}', name: 'app_car_employee_reservation_view')]
+    #[Route('/view-employee-reservation/{id}', name: 'app_car_employee_reservation_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewEmployeeReservation(CarReservation $reservation): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function viewEmployeeReservation(CarReservation $reservation): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $user = $this->getUser();
+
+        if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        if ($user->getCompany() != $reservation->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args['reservation'] = $reservation;
+        $args['user'] = $this->getUser();
+
+        return $this->render('car/view_reservation_employee.html.twig', $args);
     }
-    $user = $this->getUser();
-
-    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    if ($user->getCompany() != $reservation->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args['reservation'] = $reservation;
-    $args['user'] = $this->getUser();
-
-    return $this->render('car/view_reservation_employee.html.twig', $args);
-  }
 
 
-  #[Route('/form-employee-expense/{id}', name: 'app_car_employee_expense_form')]
-  #[Entity('car', expr: 'repository.find(id)')]
-  #[Entity('expense', expr: 'repository.findForFormCar(car)')]
+    #[Route('/form-employee-expense/{id}', name: 'app_car_employee_expense_form')]
+    #[Entity('car', expr: 'repository.find(id)')]
+    #[Entity('expense', expr: 'repository.findForFormCar(car)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formEmployeeExpense(Expense $expense, Car $car, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $user = $this->getUser();
+    public function formEmployeeExpense(Expense $expense, Car $car, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $user = $this->getUser();
 
-    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
+        if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
-    if ($user->getCompany() != $expense->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
+        if ($user->getCompany() != $expense->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
 //    $mobileDetect = new MobileDetect();
 //    if($mobileDetect->isMobile()) {
 //      $form = $this->createForm(PhoneExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_form', ['id' => $car->getId()])]]);
 //    } else {
-      $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_form', ['id' => $car->getId()])]]);
+        $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_form', ['id' => $car->getId()])]]);
 //    }
 
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
 
-      if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->isSubmitted() && $form->isValid()) {
 
-        $this->em->getRepository(Expense::class)->save($expense);
+                $this->em->getRepository(Expense::class)->save($expense);
 
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
 
-        return $this->redirectToRoute('app_employee_car_view', ['id' => $user->getId()]);
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['car'] = $car;
-    $args['expense'] = $expense;
-    $args['user'] = $user;
+                return $this->redirectToRoute('app_employee_car_view', ['id' => $user->getId()]);
+            }
+        }
+        $args['form'] = $form->createView();
+        $args['car'] = $car;
+        $args['expense'] = $expense;
+        $args['user'] = $user;
 
 //    if($mobileDetect->isMobile()) {
 //      return $this->render('car/phone/form_expense_employee.html.twig', $args);
 //    }
-    return $this->render('car/form_expense_employee.html.twig', $args);
-  }
+        return $this->render('car/form_expense_employee.html.twig', $args);
+    }
 
-  #[Route('/edit-employee-expense/{id}', name: 'app_car_employee_expense_edit')]
+    #[Route('/edit-employee-expense/{id}', name: 'app_car_employee_expense_edit')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editEmployeeExpense(Expense $expense, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function editEmployeeExpense(Expense $expense, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $user = $this->getUser();
+
+        if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        if ($user->getCompany() != $expense->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_edit', ['id' => $expense->getId()])]]);
+
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $this->em->getRepository(Expense::class)->save($expense);
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
+
+                return $this->redirectToRoute('app_employee_car_view', ['id' => $user->getId()]);
+            }
+        }
+        $args['form'] = $form->createView();
+        $args['car'] = $expense->getCar();
+        $args['expense'] = $expense;
+        $args['user'] = $user;
+
+        return $this->render('car/form_expense_employee.html.twig', $args);
     }
-    $user = $this->getUser();
 
-    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
-      return $this->redirect($this->generateUrl('app_home'));
+    #[Route('/view-employee-expense/{id}', name: 'app_car_employee_expense_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function viewEmployeeExpense(Expense $expense): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $user = $this->getUser();
+
+        if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        if ($user->getCompany() != $expense->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args['expense'] = $expense;
+        $args['user'] = $user;
+
+        return $this->render('car/view_expense_employee.html.twig', $args);
     }
 
-    if ($user->getCompany() != $expense->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
+    #[Route('/delete-expense/{id}', name: 'app_car_expense_delete')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function deleteExpense(Expense $expense, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
 
-    $form = $this->createForm(ExpenseFormType::class, $expense, ['attr' => ['action' => $this->generateUrl('app_car_employee_expense_edit', ['id' => $expense->getId()])]]);
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $expense->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
+        $type = $request->query->getInt('type');
 
-      if ($form->isSubmitted() && $form->isValid()) {
-
+        $expense->setIsSuspended(true);
         $this->em->getRepository(Expense::class)->save($expense);
 
         notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_EXPENSE);
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addSuccess(NotifyMessagesData::CAR_DELETE_EXPENSE);
 
-        return $this->redirectToRoute('app_employee_car_view', ['id' => $user->getId()]);
-      }
+
+        if ($type == 1) {
+            return $this->redirectToRoute('app_employee_car_view', ['id' => $korisnik->getId()]);
+        }
+        return $this->redirectToRoute('app_cars_expenses', ['id' => $expense->getCar()->getId()]);
+
     }
-    $args['form'] = $form->createView();
-    $args['car'] = $expense->getCar();
-    $args['expense'] = $expense;
-    $args['user'] = $user;
 
-    return $this->render('car/form_expense_employee.html.twig', $args);
-  }
 
-  #[Route('/view-employee-expense/{id}', name: 'app_car_employee_expense_view')]
+    //zaduzivanje kroz zaduzivanje na pocetnoj strani
+    #[Route('/view-details-car-tools/', name: 'app_car_tools_details_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewEmployeeExpense(Expense $expense): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $user = $this->getUser();
+    public function viewDetailsCarTools(): Response {
+        if (!$this->isGranted('ROLE_USER') || (!$this->getUser()->getCompany()->getSettings()->isCar() && !$this->getUser()->getCompany()->getSettings()->isTool())) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
 
-    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() == UserRolesData::ROLE_ADMIN) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
-    if ($user->getCompany() != $expense->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args['expense'] = $expense;
-    $args['user'] = $user;
+        $args['user'] = $korisnik;
 
-    return $this->render('car/view_expense_employee.html.twig', $args);
-  }
+        $args['reservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $this->getUser()], ['id' => 'desc']);
+        if (!is_null($args['reservation'])) {
+            $car = $args['reservation']->getCar();
+            $args['whereCarShouldGo'] = $this->em->getRepository(Plan::class)->whereCarShouldGo($car);
+        }
+        $args['toolsReservation'] = $this->em->getRepository(Tool::class)->findReservedToolsBy($this->getUser());
 
-  #[Route('/delete-expense/{id}', name: 'app_car_expense_delete')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function deleteExpense(Expense $expense, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
 
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $expense->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
+        $args['carToReserve'] = $this->em->getRepository(Plan::class)->findCarToReserve($this->getUser());
+        $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $args['carToReserve'], 'finished' => null], ['id' => 'desc']);
+        $args['toolsToReserve'] = $this->em->getRepository(Plan::class)->findToolsToReserve($this->getUser());
+
+        $args['car'] = $this->getUser()->getCompany()->getSettings()->isCar();
+        $args['tool'] = $this->getUser()->getCompany()->getSettings()->isTool();
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('car/phone/view_details_car_tools.html.twig', $args);
+        }
+        return $this->render('car/view_details_car_tools.html.twig', $args);
     }
 
-    $type = $request->query->getInt('type');
 
-    $expense->setIsSuspended(true);
-    $this->em->getRepository(Expense::class)->save($expense);
+    #[Route('/stop-employee-reservation-details/{id}', name: 'app_car_employee_reservation_stop_details')]
+    public function stopEmployeeReservationDetails(CarReservation $reservation, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
 
-    notyf()
-      ->position('x', 'right')
-      ->position('y', 'top')
-      ->duration(5000)
-      ->dismissible(true)
-      ->addSuccess(NotifyMessagesData::CAR_DELETE_EXPENSE);
+        $user = $this->getUser();
 
+        if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
-    if ($type == 1) {
-      return $this->redirectToRoute('app_employee_car_view', ['id' => $korisnik->getId()]);
-    }
-    return $this->redirectToRoute('app_cars_expenses', ['id' => $expense->getCar()->getId()]);
+        if ($user->getCompany() != $reservation->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
-  }
+        $form = $this->createForm(CarStopReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_stop_details', ['id' => $reservation->getId()])]]);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
 
+            if ($form->isSubmitted() && $form->isValid()) {
 
-  //zaduzivanje kroz zaduzivanje na pocetnoj strani
-  #[Route('/view-details-car-tools/', name: 'app_car_tools_details_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewDetailsCarTools(): Response {
-    if (!$this->isGranted('ROLE_USER') || (!$this->getUser()->getCompany()->getSettings()->isCar() && !$this->getUser()->getCompany()->getSettings()->isTool())) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+                $reservation->setFinished(new DateTimeImmutable());
+                $this->em->getRepository(CarReservation::class)->save($reservation);
 
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() == UserRolesData::ROLE_ADMIN) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
+                return $this->redirectToRoute('app_car_tools_details_view');
+            }
+        }
 
-    $args['user'] = $korisnik;
+        $args['form'] = $form->createView();
+        $args['reservation'] = $reservation;
+        $args['car'] = $reservation->getCar();
+        $args['user'] = $user;
 
-    $args['reservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $this->getUser()], ['id' => 'desc']);
-    if (!is_null($args['reservation'])) {
-      $car = $args['reservation']->getCar();
-      $args['whereCarShouldGo'] = $this->em->getRepository(Plan::class)->whereCarShouldGo($car);
-    }
-    $args['toolsReservation'] = $this->em->getRepository(Tool::class)->findReservedToolsBy($this->getUser());
-
-
-    $args['carToReserve'] = $this->em->getRepository(Plan::class)->findCarToReserve($this->getUser());
-    $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['car' => $args['carToReserve'], 'finished' => null], ['id' => 'desc']);
-    $args['toolsToReserve'] = $this->em->getRepository(Plan::class)->findToolsToReserve($this->getUser());
-
-    $args['car'] = $this->getUser()->getCompany()->getSettings()->isCar();
-    $args['tool'] = $this->getUser()->getCompany()->getSettings()->isTool();
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('car/phone/view_details_car_tools.html.twig', $args);
-    }
-    return $this->render('car/view_details_car_tools.html.twig', $args);
-  }
-
-
-  #[Route('/stop-employee-reservation-details/{id}', name: 'app_car_employee_reservation_stop_details')]
-  public function stopEmployeeReservationDetails(CarReservation $reservation, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
+        return $this->render('car/form_reservation_stop_employee.html.twig', $args);
     }
 
-    $user = $this->getUser();
-
-    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    if ($user->getCompany() != $reservation->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    $form = $this->createForm(CarStopReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_stop_details', ['id' => $reservation->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $reservation->setFinished(new DateTimeImmutable());
-        $this->em->getRepository(CarReservation::class)->save($reservation);
-
-        return $this->redirectToRoute('app_car_tools_details_view');
-      }
-    }
-
-    $args['form'] = $form->createView();
-    $args['reservation'] = $reservation;
-    $args['car'] = $reservation->getCar();
-    $args['user'] = $user;
-
-    return $this->render('car/form_reservation_stop_employee.html.twig', $args);
-  }
-
-  #[Route('/form-employee-reservation-details/{id}', name: 'app_car_employee_reservation_details_form', defaults: ['id' => 0])]
-  #[Entity('car', expr: 'repository.find(id)')]
-  #[Entity('reservation', expr: 'repository.findForFormCar(car)')]
+    #[Route('/form-employee-reservation-details/{id}', name: 'app_car_employee_reservation_details_form', defaults: ['id' => 0])]
+    #[Entity('car', expr: 'repository.find(id)')]
+    #[Entity('reservation', expr: 'repository.findForFormCar(car)')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formEmployeeReservationDetails(CarReservation $reservation, Car $car, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function formEmployeeReservationDetails(CarReservation $reservation, Car $car, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $user = $this->getUser();
+
+        if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        if ($user->getCompany() != $reservation->getCar()->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
+            $reservation->setDriver($user);
+            $reservation->setKmStart($car->getKm());
+        }
+
+        $form = $this->createForm(CarReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_details_form', ['id' => $car->getId()])]]);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $this->em->getRepository(CarReservation::class)->save($reservation);
+
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::CAR_RESERVE);
+
+                return $this->redirectToRoute('app_car_tools_details_view');
+
+            }
+        }
+        $args['form'] = $form->createView();
+        $args['car'] = $car;
+        $args['reservation'] = $reservation;
+        $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
+
+        return $this->render('car/form_reservation_employee.html.twig', $args);
     }
-    $user = $this->getUser();
-
-    if ($user->getUserType() == UserRolesData::ROLE_SUPER_ADMIN && $user->getUserType() == UserRolesData::ROLE_ADMIN && $user->getUserType() == UserRolesData::ROLE_CLIENT) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    if ($user->getCompany() != $reservation->getCar()->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
-      $reservation->setDriver($user);
-      $reservation->setKmStart($car->getKm());
-    }
-
-    $form = $this->createForm(CarReservationFormDetailsType::class, $reservation, ['attr' => ['action' => $this->generateUrl('app_car_employee_reservation_details_form', ['id' => $car->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $this->em->getRepository(CarReservation::class)->save($reservation);
-
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::CAR_RESERVE);
-
-        return $this->redirectToRoute('app_car_tools_details_view');
-
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['car'] = $car;
-    $args['reservation'] = $reservation;
-    $args['minKm'] = $this->em->getRepository(Car::class)->getCarsKm();
-
-    return $this->render('car/form_reservation_employee.html.twig', $args);
-  }
 
 
 
@@ -1156,104 +1156,104 @@ class CarController extends AbstractController {
 
 
 
-  #[Route('/reports', name: 'app_car_reports')]
+    #[Route('/reports', name: 'app_car_reports')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReport(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function formReport(Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        if ($request->isMethod('POST')) {
+
+            $data = $request->request->all();
+
+
+            $args['reports'] = $this->em->getRepository(CarReservation::class)->getReport($data['report_form']);
+            $args['car'] = $this->em->getRepository(Car::class)->find($data['report_form']['vozilo']);
+            $args['period'] = $data['report_form']['period'];
+
+
+            if (isset($data['report_form']['vozac'])){
+                $args['vozac'] = 1;
+            }
+            if (isset($data['report_form']['start'])){
+                $args['start'] = 1;
+            }
+            if (isset($data['report_form']['stop'])){
+                $args['stop'] = 1;
+            }
+            if (isset($data['report_form']['dstart'])){
+                $args['dstart'] = 1;
+            }
+            if (isset($data['report_form']['dstop'])){
+                $args['dstop'] = 1;
+            }
+
+            $args['dataPdf'] = $data;
+
+            return $this->render('report_car/view.html.twig', $args);
+
+        }
+
+        $args = [];
+
+        $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false],['id' => 'ASC']);
+
+        return $this->render('report_car/control.html.twig', $args);
     }
 
-    if ($request->isMethod('POST')) {
-
-      $data = $request->request->all();
-
-
-      $args['reports'] = $this->em->getRepository(CarReservation::class)->getReport($data['report_form']);
-      $args['car'] = $this->em->getRepository(Car::class)->find($data['report_form']['vozilo']);
-      $args['period'] = $data['report_form']['period'];
-
-
-      if (isset($data['report_form']['vozac'])){
-        $args['vozac'] = 1;
-      }
-      if (isset($data['report_form']['start'])){
-        $args['start'] = 1;
-      }
-      if (isset($data['report_form']['stop'])){
-        $args['stop'] = 1;
-      }
-      if (isset($data['report_form']['dstart'])){
-        $args['dstart'] = 1;
-      }
-      if (isset($data['report_form']['dstop'])){
-        $args['dstop'] = 1;
-      }
-
-      $args['dataPdf'] = $data;
-
-      return $this->render('report_car/view.html.twig', $args);
-
-    }
-
-    $args = [];
-
-    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false],['id' => 'ASC']);
-
-    return $this->render('report_car/control.html.twig', $args);
-  }
-
-  #[Route('/reports-pdf', name: 'app_car_reports_pdf')]
+    #[Route('/reports-pdf', name: 'app_car_reports_pdf')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReportPdf(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function formReportPdf(Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+
+        $data = $request->query->all();
+
+
+        $args['reports'] = $this->em->getRepository(CarReservation::class)->getReport($request->query->all()['data']['report_form']);
+        $args['car'] = $this->em->getRepository(Car::class)->find($request->query->all()['data']['report_form']['vozilo']);
+        $args['period'] = $request->query->all()['data']['report_form']['period'];
+
+
+        if (isset($request->query->all()['data']['report_form']['vozac'])){
+            $args['vozac'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['start'])){
+            $args['start'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['stop'])){
+            $args['stop'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['dstart'])){
+            $args['dstart'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['dstop'])){
+            $args['dstop'] = 1;
+        }
+
+        $args['dataPdf'] = $data;
+        $args['company'] = $this->getUser()->getCompany();
+
+        $html = $this->renderView('report_car/pdf.html.twig', $args);
+
+        $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
+
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="car_' . $args['period'] . '.pdf"',
+        ]);
+
     }
 
-
-      $data = $request->query->all();
-
-
-      $args['reports'] = $this->em->getRepository(CarReservation::class)->getReport($request->query->all()['data']['report_form']);
-      $args['car'] = $this->em->getRepository(Car::class)->find($request->query->all()['data']['report_form']['vozilo']);
-      $args['period'] = $request->query->all()['data']['report_form']['period'];
-
-
-      if (isset($request->query->all()['data']['report_form']['vozac'])){
-        $args['vozac'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['start'])){
-        $args['start'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['stop'])){
-        $args['stop'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['dstart'])){
-        $args['dstart'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['dstop'])){
-        $args['dstop'] = 1;
-      }
-
-      $args['dataPdf'] = $data;
-      $args['company'] = $this->getUser()->getCompany();
-
-    $html = $this->renderView('report_car/pdf.html.twig', $args);
-
-    $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
-
-    return new Response($pdfContent, 200, [
-      'Content-Type' => 'application/pdf',
-      'Content-Disposition' => 'inline; filename="car_' . $args['period'] . '.pdf"',
-    ]);
-
-  }
-
-  #[Route('/reports-archive', name: 'app_car_reports_archive')]
+    #[Route('/reports-archive', name: 'app_car_reports_archive')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReportArchive(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    public function formReportArchive(Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
 
 //    if ($request->isMethod('POST')) {
 //
@@ -1285,86 +1285,86 @@ class CarController extends AbstractController {
 //
 //    }
 
-    $args = [];
+        $args = [];
 
-    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true],['id' => 'ASC']);
+        $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true],['id' => 'ASC']);
 
-    return $this->render('report_car/control.html.twig', $args);
-  }
+        return $this->render('report_car/control.html.twig', $args);
+    }
 
-  #[Route('/reports-expense', name: 'app_car_reports_expense')]
+    #[Route('/reports-expense', name: 'app_car_reports_expense')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReportExpense(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function formReportExpense(Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        if ($request->isMethod('POST')) {
+
+            $data = $request->request->all();
+
+
+            $args['reports'] = $this->em->getRepository(Expense::class)->getReport($data['report_form']);
+            $args['car'] = $this->em->getRepository(Car::class)->find($data['report_form']['vozilo']);
+            $args['period'] = $data['report_form']['period'];
+
+            $args['dataPdf'] = $data;
+
+            return $this->render('report_car/view_expense.html.twig', $args);
+
+        }
+
+        $args = [];
+
+        $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false],['id' => 'ASC']);
+        $args['types'] =  TipTroskovaData::TIP_TROSKOVA;
+
+        return $this->render('report_car/control_expense.html.twig', $args);
     }
 
-    if ($request->isMethod('POST')) {
-
-      $data = $request->request->all();
-
-
-      $args['reports'] = $this->em->getRepository(Expense::class)->getReport($data['report_form']);
-      $args['car'] = $this->em->getRepository(Car::class)->find($data['report_form']['vozilo']);
-      $args['period'] = $data['report_form']['period'];
-
-      $args['dataPdf'] = $data;
-
-      return $this->render('report_car/view_expense.html.twig', $args);
-
-    }
-
-    $args = [];
-
-    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false],['id' => 'ASC']);
-    $args['types'] =  TipTroskovaData::TIP_TROSKOVA;
-
-    return $this->render('report_car/control_expense.html.twig', $args);
-  }
-
-  #[Route('/reports-expense-pdf', name: 'app_car_reports_expense_pdf')]
+    #[Route('/reports-expense-pdf', name: 'app_car_reports_expense_pdf')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReportExpensePdf(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function formReportExpensePdf(Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+
+
+        $data = $request->query->all();
+
+
+        $args['reports'] = $this->em->getRepository(Expense::class)->getReport($request->query->all()['data']['report_form']);
+        $args['car'] = $this->em->getRepository(Car::class)->find($request->query->all()['data']['report_form']['vozilo']);
+        $args['period'] = $request->query->all()['data']['report_form']['period'];
+
+        $args['dataPdf'] = $data;
+        $args['company'] = $this->getUser()->getCompany();
+
+
+        $html = $this->renderView('report_car/view_expense_pdf.html.twig', $args);
+
+        $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
+
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="car_' . $args['period'] . '.pdf"',
+        ]);
+
     }
 
-
-
-      $data = $request->query->all();
-
-
-      $args['reports'] = $this->em->getRepository(Expense::class)->getReport($request->query->all()['data']['report_form']);
-      $args['car'] = $this->em->getRepository(Car::class)->find($request->query->all()['data']['report_form']['vozilo']);
-      $args['period'] = $request->query->all()['data']['report_form']['period'];
-
-      $args['dataPdf'] = $data;
-      $args['company'] = $this->getUser()->getCompany();
-
-
-    $html = $this->renderView('report_car/view_expense_pdf.html.twig', $args);
-
-    $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
-
-    return new Response($pdfContent, 200, [
-      'Content-Type' => 'application/pdf',
-      'Content-Disposition' => 'inline; filename="car_' . $args['period'] . '.pdf"',
-    ]);
-
-  }
-
-  #[Route('/reports-expense-archive', name: 'app_car_reports_expense_archive')]
+    #[Route('/reports-expense-archive', name: 'app_car_reports_expense_archive')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReportExpenseArchive(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function formReportExpenseArchive(Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $args = [];
+
+        $args['types'] =  TipTroskovaData::TIP_TROSKOVA;
+        $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true],['id' => 'ASC']);
+
+        return $this->render('report_car/control_expense.html.twig', $args);
     }
-
-    $args = [];
-
-    $args['types'] =  TipTroskovaData::TIP_TROSKOVA;
-    $args['cars'] =  $this->em->getRepository(Car::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => true],['id' => 'ASC']);
-
-    return $this->render('report_car/control_expense.html.twig', $args);
-  }
 }

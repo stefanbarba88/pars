@@ -25,17 +25,16 @@
 
                 <!-- Content area -->
                 <div class="content">
-                    <!-- State saving -->
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
                             <h5 class="mb-0">Lista radnih naloga</h5>
 
-                                <div class="my-auto ms-auto">
-                                    <a href="{{ path('app_production_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
-                                </div>
+{#                                <div class="my-auto ms-auto">#}
+{#                                    <a href="{{ path('app_production_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>#}
+{#                                </div>#}
 
                         </div>
-                        <form method="get" action="{{ path('app_production_list') }}" class="form-validate-jquery" novalidation="novalidation">
+                        <form method="get" action="{{ path('app_productions') }}" class="form-validate-jquery" novalidation="novalidation">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-lg-3">
@@ -63,8 +62,10 @@
                                     <thead class="bg-light test-primary">
                                     <tr>
                                         <th>Šifra</th>
-                                        <th>Broj elemenata</th>
+                                        <th>Broj proizvoda</th>
                                         <th>Kreiran</th>
+                                        <th>Projekat</th>
+                                        <th>Realizacija</th>
                                         <th>Status</th>
                                         <th>Aktivan</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
@@ -75,7 +76,7 @@
                                         <tr>
                                             <td>
                                                 <a href="{{ path('app_production_view', {id: nalog.id}) }}" class="fw-semibold">
-                                                    {{ nalog.nalogKey }}
+                                                    {{ nalog.productKey }}
                                                 </a>
                                             </td>
                                             <td class="text-center">
@@ -90,6 +91,36 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                <a href="{{ path('app_project_profile_view', {id: nalog.project.id}) }}" class="fw-semibold">
+                                                    {{ nalog.project.title }}
+                                                </a>
+                                            </td>
+                                            <td class="fw-semibold">
+                                                {% set boja = 'bg-primary'%}
+                                                {% set procenat = nalog.percent %}
+                                                {% if procenat < 26 %}
+                                                    {% set boja = 'bg-danger'%}
+                                                {% endif %}
+                                                {% if procenat > 25 and procenat < 76 %}
+                                                    {% set boja = 'bg-warning'%}
+                                                {% endif %}
+                                                {% if procenat > 75 and procenat < 99 %}
+                                                    {% set boja = 'bg-info'%}
+                                                {% endif %}
+                                                {% if procenat == 100 %}
+                                                    {% set boja = 'bg-success'%}
+                                                {% endif %}
+
+                                                <div class="progress">
+                                                    <div class="progress-bar {{ boja }}" role="progressbar" style="width: {{ procenat }}%" aria-valuenow="{{ procenat }}" aria-valuemin="0" aria-valuemax="100">
+                                                        {% if procenat > 0 %}
+                                                            {{ procenat }}%
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+
+                                            </td>
+                                            <td>
                                                 {% if nalog.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
                                                     <span class="badge bg-secondary text-primary">Nije startovan</span>
                                                 {% endif %}
@@ -98,9 +129,6 @@
                                                 {% endif %}
                                                 {% if nalog.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
                                                     <span class="badge bg-primary text-white">Zatvoren</span>
-                                                {% endif %}
-                                                {% if nalog.status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
-                                                    <span class="badge bg-success text-white">Verifikovan</span>
                                                 {% endif %}
                                             </td>
                                             <td>
@@ -120,10 +148,16 @@
                                                             <i class="ph-eye me-2"></i>
                                                             Vidite
                                                         </a>
-                                                        <a href="{{ path('app_production_edit', {id : nalog.id}) }}" class="dropdown-item">
-                                                            <i class="ph-note-pencil me-2"></i>
-                                                            Izmenite
-                                                        </a>
+                                                        {% if nalog.tasks.count == 0 %}
+                                                            <a href="{{ path('app_production_edit', {id : nalog.id}) }}" class="dropdown-item">
+                                                                <i class="ph-note-pencil me-2"></i>
+                                                                Izmenite
+                                                            </a>
+                                                            <a href="{{ path('app_production_delete', {id: nalog.id}) }}" class="dropdown-item">
+                                                                <i class="ph-trash me-2"></i>
+                                                                Obrišite
+                                                            </a>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </td>

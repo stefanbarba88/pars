@@ -3,12 +3,14 @@
 namespace App\Repository;
 
 use App\Classes\Data\AvailabilityData;
+use App\Classes\Data\TaskStatusData;
 use App\Classes\Data\TipNeradnihDanaData;
 use App\Entity\Availability;
 use App\Entity\Category;
 use App\Entity\Client;
 use App\Entity\Holiday;
 use App\Entity\ManagerChecklist;
+use App\Entity\Production;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -1860,6 +1862,30 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
         $stopwatch->setDeletedBy($user);
         $stopwatch->setEditedBy($user);
 
+        $production = $stopwatch->getTaskLog()->getTask()->getProduction();
+        if (!is_null($production)) {
+
+            $productionProgres = $production->getProgres();
+            $elem = $this->getEntityManager()->getRepository(Production::class)->saberiPoProductu($stopwatch->getProgres());
+
+            if (isset($productionProgres['datum'])) {
+                $noviStatus = $this->getEntityManager()->getRepository(Production::class)->azurirajProgres2($productionProgres, $elem);
+            } else {
+                $noviStatus = $this->getEntityManager()->getRepository(Production::class)->azurirajProgres2(end($productionProgres), $elem);
+            }
+
+            $progres[] = $production->getProgres();
+            $progres[] = $noviStatus;
+            $production->setProgres($progres);
+            $production->setPercent($noviStatus['percent']);
+            if ($noviStatus['percent'] > 0 && $noviStatus['percent'] < 100) {
+                $production->setStatus(TaskStatusData::ZAPOCETO);
+            }
+            if ($noviStatus['percent'] == 100) {
+                $production->setStatus(TaskStatusData::ZAVRSENO);
+            }
+            $this->getEntityManager()->getRepository(Production::class)->save($production);
+        }
         return $this->save($stopwatch);
 
     }
@@ -2360,6 +2386,123 @@ class StopwatchTimeRepository extends ServiceEntityRepository {
 
 
         return [$groupedTasks, $ukupnoVreme, $noviStopwatchesNiz, $project->getTitle()];
+    }
+
+    public function getStopwatchesByProduction($start, $stop, Production $production, int $free = 0 ): array {
+        $startDate = $start->format('Y-m-d 00:00:00'); // Početak dana
+        $endDate = $stop->format('Y-m-d 23:59:59'); // Kraj dana
+        $projectStopwatches = [];
+
+        if ($free == 0) {
+            $qb = $this->createQueryBuilder('s');
+
+            $qb
+                ->join('s.taskLog', 'tl')  // Povezivanje sa TaskLog
+                ->join('tl.task', 't')  // Povezivanje sa Task
+                ->where('s.start BETWEEN :od AND :do')  // Filtriranje po vremenu
+                ->andWhere('t.production = :production')  // Filtriranje po projektu
+                ->andWhere('t.isDeleted <> 1')
+                ->andWhere('t.isFree = 1')
+                ->andWhere('s.isDeleted = 0')
+                ->andWhere('s.diff is NOT NULL')
+                ->setParameter('od', $startDate)
+                ->setParameter('do', $endDate)
+                ->setParameter('production', $production);
+
+            $projectStopwatches = $qb->getQuery()->getResult();
+        } else {
+            $qb = $this->createQueryBuilder('s');
+
+            $qb
+                ->join('s.taskLog', 'tl')  // Povezivanje sa TaskLog
+                ->join('tl.task', 't')  // Povezivanje sa Task
+                ->where('s.start BETWEEN :od AND :do')  // Filtriranje po vremenu
+                ->andWhere('t.production = :production')  // Filtriranje po projektu
+                ->andWhere('t.isDeleted <> 1')
+                ->andWhere('t.isFree = 0')
+                ->andWhere('s.isDeleted = 0')
+                ->andWhere('s.diff is NOT NULL')
+                ->setParameter('od', $startDate)
+                ->setParameter('do', $endDate)
+                ->setParameter('production', $production);
+
+            $projectStopwatches = $qb->getQuery()->getResult();
+        }
+
+
+        $groupedTasks = [];
+        $stopwatchesNiz = [];
+        foreach ($projectStopwatches as $item) {
+            $datum = $item->getStart()->format('d.m.Y.');
+            if (!isset($groupedTasks[$datum])) {
+                $groupedTasks[$datum] = [];
+            }
+            $groupedTasks[$datum][] = $item;
+        }
+
+
+        foreach ($projectStopwatches as $item) {
+            $datum = $item->getStart()->format('d.m.Y.');
+            if (!isset($stopwatchesNiz[$datum])) {
+                $stopwatchesNiz[$datum] = [];
+            }
+            $vreme = $this->getStopwatch($item);
+            $stopwatchesNiz[$datum][] = $vreme;
+            usort($stopwatchesNiz[$datum], function ($a, $b) {
+                return $a['start'] <=> $b['start'];
+            });
+        }
+
+        $noviStopwatchesNiz = [];
+        $brojac = 0;
+
+// Iterirajte kroz postojeći niz i kopirajte podatke sa numeričkim ključem
+        foreach ($stopwatchesNiz as $kljuc => $podaci) {
+            $noviStopwatchesNiz[$brojac++] = $podaci;
+        }
+
+        $countActivities = [];
+
+        foreach ($projectStopwatches as $item) {
+            $datum = $item->getStart()->format('d.m.Y.');
+            if (!isset($countActivities[$datum])) {
+                $countActivities[$datum] = [];
+            }
+            $countActivities[$datum][] = $this->getStopwatchVreme($item);
+        }
+
+
+        $ukupnoVreme = [];
+
+        foreach ($countActivities as $kljuc => $vreme) {
+            $ukupnoSati = 0;
+            $ukupnoMinuta = 0;
+            $ukupnoSatiR = 0;
+            $ukupnoMinutaR = 0;
+
+            foreach ($vreme as $time) {
+
+                $ukupnoSati += (int)$time['hours'];
+                $ukupnoMinuta += (int)$time['minutes'];
+                $ukupnoSatiR += (int)$time['hoursReal'];
+                $ukupnoMinutaR += (int)$time['minutesReal'];
+
+            }
+
+            $ukupnoSati += floor($ukupnoMinuta / 60);
+            $ukupnoMinuta = $ukupnoMinuta % 60;
+
+            $ukupnoSatiR += floor($ukupnoMinutaR / 60);
+            $ukupnoMinutaR = $ukupnoMinutaR % 60;
+
+            $ukupnoVreme[] = [
+                'vreme' => sprintf("%02d:%02d", $ukupnoSati, $ukupnoMinuta),
+                'vremeR' => sprintf("%02d:%02d", $ukupnoSatiR, $ukupnoMinutaR)
+            ];
+        }
+
+
+        return [$groupedTasks, $ukupnoVreme, $noviStopwatchesNiz, $production->getProductKey()];
     }
 
 

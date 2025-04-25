@@ -111,6 +111,13 @@
                                                 {{ form_widget(form.project, {attr: { class: 'form-control select required ' }}) }}
                                             </div>
                                         </div>
+                                        <div class="col-lg-4">
+                                            <div class="mb-3">
+                                                {{ form_label(form.production, 'Radni nalog:', {'label_attr': {'class': 'form-label'}}) }}
+                                                {{ form_widget(form.production, {attr: { class: 'form-control select' }}) }}
+                                                <span class="form-text">Možete zadatak povezati sa već kreiranim radnim nalogom.</span>
+                                            </div>
+                                        </div>
                                     {% endif %}
                                     <div class="col-lg-4">
                                         <div class="mb-3">

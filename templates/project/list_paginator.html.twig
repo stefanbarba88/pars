@@ -119,9 +119,11 @@
                                             <td>
                                                 <div class="fw-semibold">
                                                         <a href="{{ path('app_project_tasks_view', { id: project.id}) }}">{{ project.title }}</a>
+                                                    {% if project.isPhase %}
                                                     <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
                                                     {{ phaseEff}}%
-                                                </span>
+                                                    </span>
+                                                    {% endif %}
                                                 </div>
                                                 {% if project.label is not empty %}
                                                     <div class="d-inline-flex">

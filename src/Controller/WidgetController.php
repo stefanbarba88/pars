@@ -12,10 +12,13 @@ use App\Entity\CarReservation;
 use App\Entity\Client;
 use App\Entity\Comment;
 use App\Entity\Company;
+use App\Entity\Element;
 use App\Entity\Expense;
 use App\Entity\ManagerChecklist;
 use App\Entity\Overtime;
 use App\Entity\Plan;
+use App\Entity\Product;
+use App\Entity\Production;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -134,6 +137,11 @@ class WidgetController extends AbstractController {
             $args['countChecklistActive'] = count($args['checklistActive']);
             $args['countChecklistOnline'] = count($args['checklistOnline']);
             $args['countVerify'] = count($args['verify']);
+
+
+            $args['countElements'] = count($this->em->getRepository(Element::class)->findBy(['isSuspended' => false, 'company' => $loggedUser->getCompany()]));
+            $args['countProducts'] = count($this->em->getRepository(Product::class)->findBy(['isSuspended' => false, 'company' => $loggedUser->getCompany()]));
+            $args['countProduction'] = count($this->em->getRepository(Production::class)->findBy(['isSuspended' => false, 'company' => $loggedUser->getCompany()]));
 
         }
 

@@ -65,12 +65,14 @@
                             </div>
                             <div class="fw-bold border-bottom pb-2 mb-3">Osnovne informacije</div>
                             <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.project, 'Projekat:*', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.project, {attr: { class: 'form-control select required' }}) }}
+                                {% if task.production is null %}
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            {{ form_label(form.project, 'Projekat:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.project, {attr: { class: 'form-control select required' }}) }}
+                                        </div>
                                     </div>
-                                </div>
+                                {% endif %}
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         {{ form_label(form.category, 'Kategorija:*', {'label_attr': {'class': 'form-label'}}) }}

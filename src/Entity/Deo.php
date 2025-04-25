@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\DeoRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -19,6 +21,8 @@ class Deo {
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true,)]
+    private ?string $archive = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
     private ?string $kolicina = null;
@@ -28,6 +32,13 @@ class Deo {
 
     #[ORM\Column]
     private DateTimeImmutable $updated;
+
+    #[ORM\ManyToOne(inversedBy: 'deo')]
+    private ?Production $production = null;
+
+
+
+
 
     #[ORM\PrePersist]
     public function prePersist(): void {
@@ -78,4 +89,31 @@ class Deo {
         $this->updated = $updated;
     }
 
+
+    /**
+     * @return array|null
+     */
+    public function getArchive(): ?array {
+        return json_decode($this->archive, true);
+    }
+
+    /**
+     * @param array|null $archive
+     */
+    public function setArchive(?array $archive): self {
+        $this->archive = json_encode($archive);
+        return $this;
+    }
+
+    public function getProduction(): ?Production
+    {
+        return $this->production;
+    }
+
+    public function setProduction(?Production $production): static
+    {
+        $this->production = $production;
+
+        return $this;
+    }
 }

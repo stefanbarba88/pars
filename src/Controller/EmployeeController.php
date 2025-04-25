@@ -52,116 +52,116 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 #[Route('/employees')]
 class EmployeeController extends AbstractController {
 
-  private $knpSnappyPdf;
-  public function __construct(private readonly ManagerRegistry $em, Pdf $knpSnappyPdf) {
-    $this->knpSnappyPdf = $knpSnappyPdf;
-  }
-
-
-  #[Route('/list/', name: 'app_employees')]
-  public function list(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
+    private $knpSnappyPdf;
+    public function __construct(private readonly ManagerRegistry $em, Pdf $knpSnappyPdf) {
+        $this->knpSnappyPdf = $knpSnappyPdf;
     }
 
-    $args = [];
-    $search = [];
 
-    $search['ime'] = $request->query->get('ime');
-    $search['prezime'] = $request->query->get('prezime');
-    $search['pozicija'] = $request->query->get('pozicija');
-    $search['vrsta'] = $request->query->get('vrsta');
+    #[Route('/list/', name: 'app_employees')]
+    public function list(PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
 
-    $users = $this->em->getRepository(User::class)->getEmployeesPaginator($korisnik, $search, 0);
+        $args = [];
+        $search = [];
+
+        $search['ime'] = $request->query->get('ime');
+        $search['prezime'] = $request->query->get('prezime');
+        $search['pozicija'] = $request->query->get('pozicija');
+        $search['vrsta'] = $request->query->get('vrsta');
+
+        $users = $this->em->getRepository(User::class)->getEmployeesPaginator($korisnik, $search, 0);
 //    $users = $this->em->getRepository(User::class)->getEmployeesPaginator($type);
 
-    $pagination = $paginator->paginate(
-      $users, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
+        $pagination = $paginator->paginate(
+            $users, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
 
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
+        $session = new Session();
+        $session->set('url', $request->getRequestUri());
 
-    $args['pagination'] = $pagination;
-    $args['pozicije'] = $this->em->getRepository(ZaposleniPozicija::class)->findBy(['company' => $korisnik->getCompany(), 'isSuspended' => false]);
+        $args['pagination'] = $pagination;
+        $args['pozicije'] = $this->em->getRepository(ZaposleniPozicija::class)->findBy(['company' => $korisnik->getCompany(), 'isSuspended' => false]);
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('employee/phone/list.html.twig', $args);
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('employee/phone/list.html.twig', $args);
+        }
+
+        return $this->render('employee/list.html.twig', $args);
     }
+    #[Route('/list-archive/', name: 'app_employees_archive')]
+    public function archive(PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
 
-    return $this->render('employee/list.html.twig', $args);
-  }
-  #[Route('/list-archive/', name: 'app_employees_archive')]
-  public function archive(PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
+        $args = [];
+        $search = [];
 
-    $args = [];
-    $search = [];
+        $search['ime'] = $request->query->get('ime');
+        $search['prezime'] = $request->query->get('prezime');
+        $search['pozicija'] = $request->query->get('pozicija');
+        $search['vrsta'] = $request->query->get('vrsta');
 
-    $search['ime'] = $request->query->get('ime');
-    $search['prezime'] = $request->query->get('prezime');
-    $search['pozicija'] = $request->query->get('pozicija');
-    $search['vrsta'] = $request->query->get('vrsta');
-
-    $type = $request->query->getInt('type');
-    $users = $this->em->getRepository(User::class)->getEmployeesPaginator($korisnik, $search, 1);
+        $type = $request->query->getInt('type');
+        $users = $this->em->getRepository(User::class)->getEmployeesPaginator($korisnik, $search, 1);
 //    $users = $this->em->getRepository(User::class)->getEmployeesPaginator($type);
 
-    $pagination = $paginator->paginate(
-      $users, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
+        $pagination = $paginator->paginate(
+            $users, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
 
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
+        $session = new Session();
+        $session->set('url', $request->getRequestUri());
 
-    $args['pagination'] = $pagination;
-    $args['pozicije'] = $this->em->getRepository(ZaposleniPozicija::class)->findBy(['company' => $korisnik->getCompany(), 'isSuspended' => false]);
+        $args['pagination'] = $pagination;
+        $args['pozicije'] = $this->em->getRepository(ZaposleniPozicija::class)->findBy(['company' => $korisnik->getCompany(), 'isSuspended' => false]);
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('employee/phone/archive.html.twig', $args);
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('employee/phone/archive.html.twig', $args);
+        }
+
+        return $this->render('employee/archive.html.twig', $args);
     }
 
-    return $this->render('employee/archive.html.twig', $args);
-  }
-
-  #[Route('/view-profile/{id}', name: 'app_employee_profile_view')]
+    #[Route('/view-profile/{id}', name: 'app_employee_profile_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewProfile(User $usr): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
+    public function viewProfile(User $usr): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
-    if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
+        if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
 
 
-    $args['user'] = $usr;
+        $args['user'] = $usr;
 //    $mobileDetect = new MobileDetect();
 //    if($mobileDetect->isMobile()) {
 //      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE || $korisnik->isAdmin()) {
@@ -169,410 +169,410 @@ class EmployeeController extends AbstractController {
 //      }
 //      return $this->render('employee/phone/view_profile.html.twig', $args);
 //    }
-    return $this->render('employee/view_profile.html.twig', $args);
-  }
+        return $this->render('employee/view_profile.html.twig', $args);
+    }
 
-  #[Route('/view-activity/{id}', name: 'app_employee_activity_view')]
+    #[Route('/view-activity/{id}', name: 'app_employee_activity_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewActivity(User $usr, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args = [];
-    $args['user'] = $usr;
+    public function viewActivity(User $usr, PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args = [];
+        $args['user'] = $usr;
 //    $tasks = $this->em->getRepository(Task::class)->getTasksArchiveByUser($usr);
-    $tasks = $this->em->getRepository(Task::class)->getTasksArchiveByUserPaginator($usr);
+        $tasks = $this->em->getRepository(Task::class)->getTasksArchiveByUserPaginator($usr);
 
-    $pagination = $paginator->paginate(
-      $tasks, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      10
-    );
+        $pagination = $paginator->paginate(
+            $tasks, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            10
+        );
 
-    $args['pagination'] = $pagination;
+        $args['pagination'] = $pagination;
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('employee/phone/admin_view_activity.html.twig', $args);
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('employee/phone/admin_view_activity.html.twig', $args);
+        }
+        return $this->render('employee/view_activity.html.twig', $args);
     }
-    return $this->render('employee/view_activity.html.twig', $args);
-  }
 
-  #[Route('/view-checklist/{id}', name: 'app_employee_checklist_view')]
+    #[Route('/view-checklist/{id}', name: 'app_employee_checklist_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewChecklist(User $usr, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args = [];
-    $args['user'] = $usr;
+    public function viewChecklist(User $usr, PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args = [];
+        $args['user'] = $usr;
 //    $tasks = $this->em->getRepository(Task::class)->getTasksArchiveByUser($usr);
-    $tasks = $this->em->getRepository(ManagerChecklist::class)->getChecklistToDoPaginator($usr);
-    $pagination = $paginator->paginate(
-      $tasks, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      10
-    );
+        $tasks = $this->em->getRepository(ManagerChecklist::class)->getChecklistToDoPaginator($usr);
+        $pagination = $paginator->paginate(
+            $tasks, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            10
+        );
 
-    $args['pagination'] = $pagination;
+        $args['pagination'] = $pagination;
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('employee/phone/admin_view_checklist.html.twig', $args);
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('employee/phone/admin_view_checklist.html.twig', $args);
+        }
+        return $this->render('employee/view_checklist.html.twig', $args);
     }
-    return $this->render('employee/view_checklist.html.twig', $args);
-  }
 
-  #[Route('/view-calendar/{id}', name: 'app_employee_calendar_view')]
+    #[Route('/view-calendar/{id}', name: 'app_employee_calendar_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCalendar(User $usr, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    public function viewCalendar(User $usr, PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
 
-    $korisnik = $this->getUser();
+        $korisnik = $this->getUser();
 
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $calendars = $usr->getCalendars()->toArray();
-    $compareFunction = function ($a, $b) {
-      return $b->getId() - $a->getId();
-    };
-    usort($calendars, $compareFunction);
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $calendars = $usr->getCalendars()->toArray();
+        $compareFunction = function ($a, $b) {
+            return $b->getId() - $a->getId();
+        };
+        usort($calendars, $compareFunction);
 
-    $pagination = $paginator->paginate(
-      $calendars, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      10
-    );
+        $pagination = $paginator->paginate(
+            $calendars, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            10
+        );
 
-    $args['pagination'] = $pagination;
+        $args['pagination'] = $pagination;
 
-    $args['user'] = $usr;
-    $year = date('Y');
+        $args['user'] = $usr;
+        $year = date('Y');
 
-    $radniDaniFirma = [];
-    $neradniDaniZaposleni = [];
+        $radniDaniFirma = [];
+        $neradniDaniZaposleni = [];
 
-    if (!is_null($usr->getCompany()->getSettings()->getWorkWeek()) || !empty($usr->getCompany()->getSettings()->getWorkWeek())) {
-      $radniDaniFirma = $usr->getCompany()->getSettings()->getWorkWeek();
-    }
+        if (!is_null($usr->getCompany()->getSettings()->getWorkWeek()) || !empty($usr->getCompany()->getSettings()->getWorkWeek())) {
+            $radniDaniFirma = $usr->getCompany()->getSettings()->getWorkWeek();
+        }
 
-    if (!is_null($usr->getNeradniDan()) || !empty($usr->getNeradniDan())) {
-      $neradniDaniZaposleni = $usr->getNeradniDan();
-    }
+        if (!is_null($usr->getNeradniDan()) || !empty($usr->getNeradniDan())) {
+            $neradniDaniZaposleni = $usr->getNeradniDan();
+        }
 
-    //proverava da li je zaposlen u ovoj godini
-    if ($usr->getCreated()->format('Y') != $year) {
-      $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuce($radniDaniFirma, $neradniDaniZaposleni);
-      $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUser($usr, $year);
-    } else {
-      $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuceUser($usr, $radniDaniFirma, $neradniDaniZaposleni);
-      $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUserUser($usr, $year);
-    }
+        //proverava da li je zaposlen u ovoj godini
+        if ($usr->getCreated()->format('Y') != $year) {
+            $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuce($radniDaniFirma, $neradniDaniZaposleni);
+            $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUser($usr, $year);
+        } else {
+            $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuceUser($usr, $radniDaniFirma, $neradniDaniZaposleni);
+            $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUserUser($usr, $year);
+        }
 
-    $args['overtime'] = $this->em->getRepository(Overtime::class)->getOvertimeByUser($usr);
-    $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUser($usr, $year);
+        $args['overtime'] = $this->em->getRepository(Overtime::class)->getOvertimeByUser($usr);
+        $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUser($usr, $year);
 //    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostByUser($usr);
 
 
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('employee/phone/admin_view_calendar.html.twig', $args);
-    }
-    return $this->render('employee/view_calendar.html.twig', $args);
-  }
-
-  #[Route('/ucitaj-dogadjaje-user', name: 'ucitaj_dogadjaje_user')]
-  public function ucitajDogadjajeUser(Request $request): JsonResponse {
-
-    $start = new DateTimeImmutable($request->query->get('start')); // Datum početka iz AJAX zahteva
-    $end = new DateTimeImmutable($request->query->get('end')); // Datum kraja iz AJAX zahteva
-    $user = $request->query->get('user'); // Datum kraja iz AJAX zahteva
-
-    $company = $this->getUser()->getCompany();
-
-    $dogadjaji = $this->em->getRepository(Availability::class)->createQueryBuilder('e')
-      ->where('e.datum >= :start AND e.datum <= :end')
-      ->andWhere('e.type <> 3')
-      ->andWhere('e.typeDay = 0')
-      ->andWhere('e.company = :company')
-      ->andWhere('e.User = :user')
-      ->setParameter(':user', $user)
-      ->setParameter(':company', $company)
-      ->setParameter('start', $start)
-      ->setParameter('end', $end)
-      ->getQuery()
-      ->getResult();
-
-
-    $dogadjaji1 = $this->em->getRepository(Holiday::class)->createQueryBuilder('c')
-      ->where('c.datum >= :start AND c.datum <= :end')
-      ->andWhere('c.company = :company')
-      ->setParameter('company', $company)
-      ->setParameter('start', $start)
-      ->setParameter('end', $end)
-      ->getQuery()
-      ->getResult();
-
-
-    $response = [];
-
-    foreach ($dogadjaji as $dost) {
-      $response[] = [
-        "title" => $dost->getUser()->getFullName(),
-        "start" => $dost->getDatum()->format('Y-m-d'),
-        "datum" => $dost->getDatum()->format('d.m.Y'),
-        "color" => CalendarColorsData::getColorByType($dost->getZahtev()),
-        "name" => $dost->getUser()->getFullName(),
-        "id" => $dost->getUser()->getId(),
-        "zahtev" => $dost->getZahtev(),
-        "razlog" => CalendarColorsData::getTitleByType($dost->getZahtev()),
-        "textColor" => CalendarColorsData::getTextByType($dost->getZahtev()),
-        "vreme" => $dost->getVreme()
-      ];
-    }
-    foreach ($dogadjaji1 as $dost) {
-      $color = '#c4dfea';
-      $title = 'Praznik';
-      if($dost->getType() == TipNeradnihDanaData::KOLEKTIVNI_ODMOR) {
-        $color = '#00233d';
-        $title = 'Kolektvni odmor';
-      }
-
-      $response[] = [
-        "start" => $dost->getDatum()->format('Y-m-d'),
-        "backgroundColor" => $color,
-        "title" => $title,
-        "text" => '#00233F',
-        "display" => 'background'
-      ];
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('employee/phone/admin_view_calendar.html.twig', $args);
+        }
+        return $this->render('employee/view_calendar.html.twig', $args);
     }
 
-    return new JsonResponse($response);
-  }
+    #[Route('/ucitaj-dogadjaje-user', name: 'ucitaj_dogadjaje_user')]
+    public function ucitajDogadjajeUser(Request $request): JsonResponse {
 
-  #[Route('/view-calendar-days/{id}', name: 'app_employee_calendar_days')]
+        $start = new DateTimeImmutable($request->query->get('start')); // Datum početka iz AJAX zahteva
+        $end = new DateTimeImmutable($request->query->get('end')); // Datum kraja iz AJAX zahteva
+        $user = $request->query->get('user'); // Datum kraja iz AJAX zahteva
+
+        $company = $this->getUser()->getCompany();
+
+        $dogadjaji = $this->em->getRepository(Availability::class)->createQueryBuilder('e')
+            ->where('e.datum >= :start AND e.datum <= :end')
+            ->andWhere('e.type <> 3')
+            ->andWhere('e.typeDay = 0')
+            ->andWhere('e.company = :company')
+            ->andWhere('e.User = :user')
+            ->setParameter(':user', $user)
+            ->setParameter(':company', $company)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
+
+
+        $dogadjaji1 = $this->em->getRepository(Holiday::class)->createQueryBuilder('c')
+            ->where('c.datum >= :start AND c.datum <= :end')
+            ->andWhere('c.company = :company')
+            ->setParameter('company', $company)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
+
+
+        $response = [];
+
+        foreach ($dogadjaji as $dost) {
+            $response[] = [
+                "title" => $dost->getUser()->getFullName(),
+                "start" => $dost->getDatum()->format('Y-m-d'),
+                "datum" => $dost->getDatum()->format('d.m.Y'),
+                "color" => CalendarColorsData::getColorByType($dost->getZahtev()),
+                "name" => $dost->getUser()->getFullName(),
+                "id" => $dost->getUser()->getId(),
+                "zahtev" => $dost->getZahtev(),
+                "razlog" => CalendarColorsData::getTitleByType($dost->getZahtev()),
+                "textColor" => CalendarColorsData::getTextByType($dost->getZahtev()),
+                "vreme" => $dost->getVreme()
+            ];
+        }
+        foreach ($dogadjaji1 as $dost) {
+            $color = '#c4dfea';
+            $title = 'Praznik';
+            if($dost->getType() == TipNeradnihDanaData::KOLEKTIVNI_ODMOR) {
+                $color = '#00233d';
+                $title = 'Kolektvni odmor';
+            }
+
+            $response[] = [
+                "start" => $dost->getDatum()->format('Y-m-d'),
+                "backgroundColor" => $color,
+                "title" => $title,
+                "text" => '#00233F',
+                "display" => 'background'
+            ];
+        }
+
+        return new JsonResponse($response);
+    }
+
+    #[Route('/view-calendar-days/{id}', name: 'app_employee_calendar_days')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function daysCalendar(User $usr, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function daysCalendar(User $usr, PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCalendar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args = [];
+        $search = [];
+        $search['tip'] = $request->query->get('tip');
+        $search['period'] = $request->query->get('period');
+
+        $days = $this->em->getRepository(Availability::class)->getDays($search, $usr);
+
+        $pagination = $paginator->paginate(
+            $days, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
+
+        $session = new Session();
+        $session->set('url', $request->getRequestUri());
+
+        $args['pagination'] = $pagination;
+        $args['search'] = $search;
+        $args['user'] = $usr;
+        $args['tipovi'] = AvailabilityData::TIPOVI;
+
+
+        return $this->render('employee/days_calendar.html.twig', $args);
     }
 
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args = [];
-    $search = [];
-    $search['tip'] = $request->query->get('tip');
-    $search['period'] = $request->query->get('period');
-
-    $days = $this->em->getRepository(Availability::class)->getDays($search, $usr);
-
-    $pagination = $paginator->paginate(
-      $days, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      15
-    );
-
-    $session = new Session();
-    $session->set('url', $request->getRequestUri());
-
-    $args['pagination'] = $pagination;
-    $args['search'] = $search;
-    $args['user'] = $usr;
-    $args['tipovi'] = AvailabilityData::TIPOVI;
-
-
-    return $this->render('employee/days_calendar.html.twig', $args);
-  }
-
-  #[Route('/view-cars/{id}', name: 'app_employee_car_view')]
+    #[Route('/view-cars/{id}', name: 'app_employee_car_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCar(User $usr, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function viewCar(User $usr, PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isCar()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args['user'] = $usr;
+        $reservations = $this->em->getRepository(CarReservation::class)->getReservationsByUserPaginator($usr);
+        $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $usr], ['id' => 'desc']);
+        $expenses = $this->em->getRepository(Expense::class)->getExpensesByUserPaginator($usr);
+
+
+        $pagination = $paginator->paginate(
+            $reservations, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            5,
+            [
+                'pageName' => 'page',  // Menjamo naziv parametra za stranicu
+                'pageParameterName' => 'page',  // Menjamo naziv parametra za stranicu
+                'sortFieldParameterName' => 'sort',  // Menjamo naziv parametra za sortiranje
+            ]
+        );
+
+        $pagination1 = $paginator->paginate(
+            $expenses, /* query NOT result */
+            $request->query->getInt('page1', 1), /*page number*/
+            5,
+            [
+                'pageName' => 'page1',  // Menjamo naziv parametra za stranicu
+                'pageParameterName' => 'page1',  // Menjamo naziv parametra za stranicu
+                'sortFieldParameterName' => 'sort1',  // Menjamo naziv parametra za sortiranje
+            ]
+        );
+
+        $args['pagination'] = $pagination;
+        $args['pagination1'] = $pagination1;
+
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('employee/phone/admin_view_cars.html.twig', $args);
+        }
+
+        return $this->render('employee/view_cars.html.twig', $args);
     }
-    $korisnik = $this->getUser();
 
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args['user'] = $usr;
-    $reservations = $this->em->getRepository(CarReservation::class)->getReservationsByUserPaginator($usr);
-    $args['lastReservation'] = $this->em->getRepository(CarReservation::class)->findOneBy(['driver' => $usr], ['id' => 'desc']);
-    $expenses = $this->em->getRepository(Expense::class)->getExpensesByUserPaginator($usr);
-
-
-    $pagination = $paginator->paginate(
-      $reservations, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      5,
-      [
-        'pageName' => 'page',  // Menjamo naziv parametra za stranicu
-        'pageParameterName' => 'page',  // Menjamo naziv parametra za stranicu
-        'sortFieldParameterName' => 'sort',  // Menjamo naziv parametra za sortiranje
-    ]
-    );
-
-    $pagination1 = $paginator->paginate(
-      $expenses, /* query NOT result */
-      $request->query->getInt('page1', 1), /*page number*/
-      5,
-      [
-        'pageName' => 'page1',  // Menjamo naziv parametra za stranicu
-        'pageParameterName' => 'page1',  // Menjamo naziv parametra za stranicu
-        'sortFieldParameterName' => 'sort1',  // Menjamo naziv parametra za sortiranje
-      ]
-    );
-
-    $args['pagination'] = $pagination;
-    $args['pagination1'] = $pagination1;
-
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('employee/phone/admin_view_cars.html.twig', $args);
-    }
-
-    return $this->render('employee/view_cars.html.twig', $args);
-  }
-
-  #[Route('/view-tools/{id}', name: 'app_employee_tools_view')]
+    #[Route('/view-tools/{id}', name: 'app_employee_tools_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewTools(User $usr, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function viewTools(User $usr, PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER') || !$this->getUser()->getCompany()->getSettings()->isTool()) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args['user'] = $usr;
+        $reservations = $this->em->getRepository(ToolReservation::class)->getReservationsByUserPaginator($usr);
+
+        $pagination = $paginator->paginate(
+            $reservations, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            10
+        );
+
+        $args['pagination'] = $pagination;
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('employee/phone/admin_view_tools.html.twig', $args);
+        }
+
+        return $this->render('employee/view_tools.html.twig', $args);
     }
-    $korisnik = $this->getUser();
 
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args['user'] = $usr;
-    $reservations = $this->em->getRepository(ToolReservation::class)->getReservationsByUserPaginator($usr);
-
-    $pagination = $paginator->paginate(
-      $reservations, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      10
-    );
-
-    $args['pagination'] = $pagination;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('employee/phone/admin_view_tools.html.twig', $args);
-    }
-
-    return $this->render('employee/view_tools.html.twig', $args);
-  }
-
-  #[Route('/view-docs/{id}', name: 'app_employee_docs_view')]
+    #[Route('/view-docs/{id}', name: 'app_employee_docs_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewDocs(User $usr): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
+    public function viewDocs(User $usr): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
 
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args['user'] = $usr;
-    $args['pdfs'] = $this->em->getRepository(User::class)->getPdfsByUser($usr);
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args['user'] = $usr;
+        $args['pdfs'] = $this->em->getRepository(User::class)->getPdfsByUser($usr);
 
-    return $this->render('employee/view_docs.html.twig', $args);
-  }
+        return $this->render('employee/view_docs.html.twig', $args);
+    }
 
-  #[Route('/view-images/{id}', name: 'app_employee_images_view')]
+    #[Route('/view-images/{id}', name: 'app_employee_images_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewImages(User $usr): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
+    public function viewImages(User $usr): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
 
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args['user'] = $usr;
-    $args['images'] = $this->em->getRepository(User::class)->getImagesByUser($usr);
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args['user'] = $usr;
+        $args['images'] = $this->em->getRepository(User::class)->getImagesByUser($usr);
 
-    return $this->render('employee/view_images.html.twig', $args);
-  }
+        return $this->render('employee/view_images.html.twig', $args);
+    }
 
-  #[Route('/view-comments/{id}', name: 'app_employee_comments_view')]
+    #[Route('/view-comments/{id}', name: 'app_employee_comments_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewComments(User $usr, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function viewComments(User $usr, PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args['user'] = $usr;
+        $reservations = $this->em->getRepository(Comment::class)->getCommentsByUserPaginator($korisnik, $usr);
+
+        $pagination = $paginator->paginate(
+            $reservations, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            10
+        );
+
+        $args['pagination'] = $pagination;
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('employee/phone/admin_view_comments.html.twig', $args);
+        }
+
+        return $this->render('employee/view_comments.html.twig', $args);
     }
-    $korisnik = $this->getUser();
-
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    if ($usr->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $args['user'] = $usr;
-    $reservations = $this->em->getRepository(Comment::class)->getCommentsByUserPaginator($korisnik, $usr);
-
-    $pagination = $paginator->paginate(
-      $reservations, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      10
-    );
-
-    $args['pagination'] = $pagination;
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      return $this->render('employee/phone/admin_view_comments.html.twig', $args);
-    }
-
-    return $this->render('employee/view_comments.html.twig', $args);
-  }
 
 //  #[Route('/view-notes/{id}', name: 'app_employee_notes_view')]
 ////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -616,417 +616,417 @@ class EmployeeController extends AbstractController {
 //
 //  }
 
-  #[Route('/reports', name: 'app_employee_reports')]
+    #[Route('/reports', name: 'app_employee_reports')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReport(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function formReport(Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        if ($request->isMethod('POST')) {
+            $data = $request->request->all();
+
+
+            if (isset($data['report_form']['zatvoren'])) {
+
+                $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
+                $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($data['report_form']);
+
+                $brojElemenata = isset($args['reports'][0]) ? count($args['reports'][0]) : 0;
+
+                // Sabiranje vremena iz drugog podniza
+                $ukupnoMinuta = 0;
+                $brojVremeR = 0;
+
+                foreach ($args['reports'][1] as $podniz) {
+                    if (isset($podniz['vremeR'])) {
+                        $brojVremeR++;
+                        list($sati, $minuti) = explode(':', $podniz['vremeR']);
+                        $ukupnoMinuta += (int)$sati * 60 + (int)$minuti;
+                    }
+                }
+
+                // Računanje proseka u minutima
+                $prosekMinuta = $brojVremeR > 0 ? intdiv($ukupnoMinuta, $brojVremeR) : 0;
+
+                // Konvertovanje minuta u sate i minute za ukupno vreme i prosek
+                $ukupnoSati = intdiv($ukupnoMinuta, 60);
+                $ukupnoOstatakMinuta = $ukupnoMinuta % 60;
+
+                $prosekSati = intdiv($prosekMinuta, 60);
+                $prosekOstatakMinuta = $prosekMinuta % 60;
+
+                // Povratni rezultat
+                $args['details'] = [
+                    'broj_elemenata' => $brojElemenata,
+                    'ukupno_vreme' => sprintf('%02d:%02d', $ukupnoSati, $ukupnoOstatakMinuta),
+                    'prosek_vreme' => sprintf('%02d:%02d', $prosekSati, $prosekOstatakMinuta),
+                ];
+
+            } else {
+                $args['reports'] = $this->em->getRepository(User::class)->getReportOther($data['report_form']);
+                $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($data['report_form']);
+
+                $brojElemenata = isset($args['reports'][2]) ? array_sum(array_map('count', $args['reports'][2])) : 0;
+
+                // Sabiranje vremena iz drugog podniza
+                $ukupnoMinuta = 0;
+                $brojVremeR = 0;
+
+                foreach ($args['reports'][1] as $podniz) {
+                    if (isset($podniz['vremeR'])) {
+                        $brojVremeR++;
+                        list($sati, $minuti) = explode(':', $podniz['vremeR']);
+                        $ukupnoMinuta += (int)$sati * 60 + (int)$minuti;
+                    }
+                }
+
+                // Računanje proseka u minutima
+                $prosekMinuta = $brojVremeR > 0 ? intdiv($ukupnoMinuta, $brojElemenata) : 0;
+
+                // Konvertovanje minuta u sate i minute za ukupno vreme i prosek
+                $ukupnoSati = intdiv($ukupnoMinuta, 60);
+                $ukupnoOstatakMinuta = $ukupnoMinuta % 60;
+
+                $prosekSati = intdiv($prosekMinuta, 60);
+                $prosekOstatakMinuta = $prosekMinuta % 60;
+
+                // Povratni rezultat
+                $args['details'] = [
+                    'broj_elemenata' => $brojElemenata,
+                    'ukupno_vreme' => sprintf('%02d:%02d', $ukupnoSati, $ukupnoOstatakMinuta),
+                    'prosek_vreme' => sprintf('%02d:%02d', $prosekSati, $prosekOstatakMinuta),
+                ];
+
+            }
+            $args['period'] = $data['report_form']['period'];
+            $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
+
+
+            if (isset($data['report_form']['datum'])) {
+                $args['datum'] = 1;
+            }
+            if (isset($data['report_form']['opis'])) {
+                $args['opis'] = 1;
+            }
+            if (isset($data['report_form']['klijent'])) {
+                $args['klijent'] = 1;
+            }
+            if (isset($data['report_form']['start'])) {
+                $args['start'] = 1;
+            }
+            if (isset($data['report_form']['stop'])) {
+                $args['stop'] = 1;
+            }
+            if (isset($data['report_form']['razlika'])) {
+                $args['razlika'] = 1;
+            }
+            if (isset($data['report_form']['razlikaz'])) {
+                $args['razlikaz'] = 1;
+            }
+            if (isset($data['report_form']['ukupno'])) {
+                $args['ukupno'] = 1;
+            }
+            if (isset($data['report_form']['ukupnoz'])) {
+                $args['ukupnoz'] = 1;
+            }
+            if (isset($data['report_form']['zaduzeni'])) {
+                $args['zaduzeni'] = 1;
+            }
+            if (isset($data['report_form']['napomena'])) {
+                $args['napomena'] = 1;
+            }
+            if (isset($data['report_form']['checklist'])) {
+                $args['checklist'] = 1;
+            }
+
+            $args['dataPdf'] = $data;
+            if (isset($data['report_form']['zatvoren'])) {
+                return $this->render('report_employee/view.html.twig', $args);
+            } else {
+                return $this->render('report_employee/view_other.html.twig', $args);
+            }
+        }
+
+        $args = [];
+
+        $args['users'] =  $this->em->getRepository(User::class)->getUsersForChecklist();
+        $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
+        return $this->render('report_employee/control.html.twig', $args);
     }
 
-    if ($request->isMethod('POST')) {
-      $data = $request->request->all();
-
-
-      if (isset($data['report_form']['zatvoren'])) {
-
-        $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
-        $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($data['report_form']);
-
-        $brojElemenata = isset($args['reports'][0]) ? count($args['reports'][0]) : 0;
-
-        // Sabiranje vremena iz drugog podniza
-        $ukupnoMinuta = 0;
-        $brojVremeR = 0;
-
-        foreach ($args['reports'][1] as $podniz) {
-          if (isset($podniz['vremeR'])) {
-            $brojVremeR++;
-            list($sati, $minuti) = explode(':', $podniz['vremeR']);
-            $ukupnoMinuta += (int)$sati * 60 + (int)$minuti;
-          }
-        }
-
-        // Računanje proseka u minutima
-        $prosekMinuta = $brojVremeR > 0 ? intdiv($ukupnoMinuta, $brojVremeR) : 0;
-
-        // Konvertovanje minuta u sate i minute za ukupno vreme i prosek
-        $ukupnoSati = intdiv($ukupnoMinuta, 60);
-        $ukupnoOstatakMinuta = $ukupnoMinuta % 60;
-
-        $prosekSati = intdiv($prosekMinuta, 60);
-        $prosekOstatakMinuta = $prosekMinuta % 60;
-
-        // Povratni rezultat
-        $args['details'] = [
-          'broj_elemenata' => $brojElemenata,
-          'ukupno_vreme' => sprintf('%02d:%02d', $ukupnoSati, $ukupnoOstatakMinuta),
-          'prosek_vreme' => sprintf('%02d:%02d', $prosekSati, $prosekOstatakMinuta),
-        ];
-
-      } else {
-        $args['reports'] = $this->em->getRepository(User::class)->getReportOther($data['report_form']);
-        $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($data['report_form']);
-
-        $brojElemenata = isset($args['reports'][2]) ? array_sum(array_map('count', $args['reports'][2])) : 0;
-
-        // Sabiranje vremena iz drugog podniza
-        $ukupnoMinuta = 0;
-        $brojVremeR = 0;
-
-        foreach ($args['reports'][1] as $podniz) {
-          if (isset($podniz['vremeR'])) {
-            $brojVremeR++;
-            list($sati, $minuti) = explode(':', $podniz['vremeR']);
-            $ukupnoMinuta += (int)$sati * 60 + (int)$minuti;
-          }
-        }
-
-        // Računanje proseka u minutima
-        $prosekMinuta = $brojVremeR > 0 ? intdiv($ukupnoMinuta, $brojElemenata) : 0;
-
-        // Konvertovanje minuta u sate i minute za ukupno vreme i prosek
-        $ukupnoSati = intdiv($ukupnoMinuta, 60);
-        $ukupnoOstatakMinuta = $ukupnoMinuta % 60;
-
-        $prosekSati = intdiv($prosekMinuta, 60);
-        $prosekOstatakMinuta = $prosekMinuta % 60;
-
-        // Povratni rezultat
-        $args['details'] = [
-          'broj_elemenata' => $brojElemenata,
-          'ukupno_vreme' => sprintf('%02d:%02d', $ukupnoSati, $ukupnoOstatakMinuta),
-          'prosek_vreme' => sprintf('%02d:%02d', $prosekSati, $prosekOstatakMinuta),
-        ];
-
-      }
-        $args['period'] = $data['report_form']['period'];
-        $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
-
-
-        if (isset($data['report_form']['datum'])) {
-          $args['datum'] = 1;
-        }
-        if (isset($data['report_form']['opis'])) {
-          $args['opis'] = 1;
-        }
-        if (isset($data['report_form']['klijent'])) {
-          $args['klijent'] = 1;
-        }
-        if (isset($data['report_form']['start'])) {
-          $args['start'] = 1;
-        }
-        if (isset($data['report_form']['stop'])) {
-          $args['stop'] = 1;
-        }
-        if (isset($data['report_form']['razlika'])) {
-          $args['razlika'] = 1;
-        }
-        if (isset($data['report_form']['razlikaz'])) {
-          $args['razlikaz'] = 1;
-        }
-        if (isset($data['report_form']['ukupno'])) {
-          $args['ukupno'] = 1;
-        }
-        if (isset($data['report_form']['ukupnoz'])) {
-          $args['ukupnoz'] = 1;
-        }
-        if (isset($data['report_form']['zaduzeni'])) {
-          $args['zaduzeni'] = 1;
-        }
-        if (isset($data['report_form']['napomena'])) {
-          $args['napomena'] = 1;
-        }
-        if (isset($data['report_form']['checklist'])) {
-          $args['checklist'] = 1;
-        }
-
-        $args['dataPdf'] = $data;
-      if (isset($data['report_form']['zatvoren'])) {
-        return $this->render('report_employee/view.html.twig', $args);
-      } else {
-        return $this->render('report_employee/view_other.html.twig', $args);
-      }
-    }
-
-    $args = [];
-
-    $args['users'] =  $this->em->getRepository(User::class)->getUsersForChecklist();
-    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
-    return $this->render('report_employee/control.html.twig', $args);
-  }
-
-  #[Route('/reports-pdf', name: 'app_employee_reports_pdf')]
+    #[Route('/reports-pdf', name: 'app_employee_reports_pdf')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReportPdf(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function formReportPdf(Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+
+        $data = $request->query->all()['data'];
+
+        $args['company'] = $this->getUser()->getCompany();
+
+        if (isset($data['report_form']['zatvoren'])) {
+            $args['reports'] = $this->em->getRepository(User::class)->getReport($request->query->all()['data']['report_form']);
+            $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($request->query->all()['data']['report_form']);
+        } else {
+            $args['reports'] = $this->em->getRepository(User::class)->getReportOther($request->query->all()['data']['report_form']);
+            $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($request->query->all()['data']['report_form']);
+        }
+        $args['period'] = $request->query->all()['data']['report_form']['period'];
+        $args['user'] = $this->em->getRepository(User::class)->find($request->query->all()['data']['report_form']['zaposleni']);
+
+        if (isset($request->query->all()['data']['report_form']['datum'])){
+            $args['datum'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['opis'])){
+            $args['opis'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['klijent'])){
+            $args['klijent'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['start'])){
+            $args['start'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['stop'])){
+            $args['stop'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['razlika'])){
+            $args['razlika'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['razlikaz'])){
+            $args['razlikaz'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['ukupno'])){
+            $args['ukupno'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['ukupnoz'])){
+            $args['ukupnoz'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['zaduzeni'])){
+            $args['zaduzeni'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['napomena'])){
+            $args['napomena'] = 1;
+        }
+        if (isset($request->query->all()['data']['report_form']['checklist'])){
+            $args['checklist'] = 1;
+        }
+
+        $args['dataPdf'] = $request->query->all()['data']['report_form'];
+
+        if (isset($data['report_form']['zatvoren'])) {
+            $html = $this->renderView('report_employee/activity_pdf.html.twig', $args);
+        } else {
+            $html = $this->renderView('report_employee/activity_other_pdf.html.twig', $args);
+        }
+
+
+        $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
+
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="activity_' . $args['period'] . '.pdf"',
+        ]);
+
     }
 
-
-      $data = $request->query->all()['data'];
-
-    $args['company'] = $this->getUser()->getCompany();
-
-    if (isset($data['report_form']['zatvoren'])) {
-      $args['reports'] = $this->em->getRepository(User::class)->getReport($request->query->all()['data']['report_form']);
-      $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($request->query->all()['data']['report_form']);
-    } else {
-      $args['reports'] = $this->em->getRepository(User::class)->getReportOther($request->query->all()['data']['report_form']);
-      $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($request->query->all()['data']['report_form']);
-    }
-      $args['period'] = $request->query->all()['data']['report_form']['period'];
-      $args['user'] = $this->em->getRepository(User::class)->find($request->query->all()['data']['report_form']['zaposleni']);
-
-      if (isset($request->query->all()['data']['report_form']['datum'])){
-        $args['datum'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['opis'])){
-        $args['opis'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['klijent'])){
-        $args['klijent'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['start'])){
-        $args['start'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['stop'])){
-        $args['stop'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['razlika'])){
-        $args['razlika'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['razlikaz'])){
-        $args['razlikaz'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['ukupno'])){
-        $args['ukupno'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['ukupnoz'])){
-        $args['ukupnoz'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['zaduzeni'])){
-        $args['zaduzeni'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['napomena'])){
-        $args['napomena'] = 1;
-      }
-      if (isset($request->query->all()['data']['report_form']['checklist'])){
-        $args['checklist'] = 1;
-      }
-
-      $args['dataPdf'] = $request->query->all()['data']['report_form'];
-
-    if (isset($data['report_form']['zatvoren'])) {
-      $html = $this->renderView('report_employee/activity_pdf.html.twig', $args);
-    } else {
-      $html = $this->renderView('report_employee/activity_other_pdf.html.twig', $args);
-    }
-
-
-    $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
-
-    return new Response($pdfContent, 200, [
-      'Content-Type' => 'application/pdf',
-      'Content-Disposition' => 'inline; filename="activity_' . $args['period'] . '.pdf"',
-    ]);
-
-  }
-
-  #[Route('/reports-availability', name: 'app_employee_availability_reports')]
+    #[Route('/reports-availability', name: 'app_employee_availability_reports')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReportAvailability(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
+    public function formReportAvailability(Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
 
-    if ($request->isMethod('POST')) {
-      $data = $request->request->all();
+        if ($request->isMethod('POST')) {
+            $data = $request->request->all();
 
 //      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
-      $args['reports'] = $this->em->getRepository(Availability::class)->getReport($data['report_form'], $this->getUser()->getCompany());
+            $args['reports'] = $this->em->getRepository(Availability::class)->getReport($data['report_form'], $this->getUser()->getCompany());
 //      $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
-      $args['period'] = $data['report_form']['period'];
-      $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
-      $args['dataPdf'] = $data;
+            $args['period'] = $data['report_form']['period'];
+            $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
+            $args['dataPdf'] = $data;
 
 
-      return $this->render('report_employee/view_availability.html.twig', $args);
+            return $this->render('report_employee/view_availability.html.twig', $args);
 
+        }
+
+        $args = [];
+
+        $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $this->getUser()->getCompany(), 'userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
+        $args['categories'] = AvailabilityData::TIPOVI;
+        return $this->render('report_employee/control_availability.html.twig', $args);
     }
 
-    $args = [];
-
-    $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $this->getUser()->getCompany(), 'userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
-    $args['categories'] = AvailabilityData::TIPOVI;
-    return $this->render('report_employee/control_availability.html.twig', $args);
-  }
-
-  #[Route('/reports-availability-pdf', name: 'app_employee_availability_reports_pdf')]
+    #[Route('/reports-availability-pdf', name: 'app_employee_availability_reports_pdf')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReportAvailabilityPdf(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-      $company = $this->getUser()->getCompany();
+    public function formReportAvailabilityPdf(Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $company = $this->getUser()->getCompany();
 
 //      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
-      $args['reports'] = $this->em->getRepository(Availability::class)->getReport($request->query->all()['data']['report_form'], $company);
+        $args['reports'] = $this->em->getRepository(Availability::class)->getReport($request->query->all()['data']['report_form'], $company);
 //      $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
-      $args['period'] = $request->query->all()['data']['report_form']['period'];
-      $args['company'] = $company;
+        $args['period'] = $request->query->all()['data']['report_form']['period'];
+        $args['company'] = $company;
 
 
-    $html = $this->renderView('report_employee/pdf.html.twig', $args);
+        $html = $this->renderView('report_employee/pdf.html.twig', $args);
 
-    $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
+        $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
 
-    return new Response($pdfContent, 200, [
-      'Content-Type' => 'application/pdf',
-      'Content-Disposition' => 'inline; filename="availability_' . $args['period'] . '.pdf"',
-    ]);
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="availability_' . $args['period'] . '.pdf"',
+        ]);
 
-  }
+    }
 
-  #[Route('/reports-archive', name: 'app_employee_archive_reports')]
+    #[Route('/reports-archive', name: 'app_employee_archive_reports')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function formReportArchive(Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    if ($request->isMethod('POST')) {
-      $data = $request->request->all();
-
-      if (isset($data['report_form']['zatvoren'])) {
-
-        $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
-        $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($data['report_form']);
-
-        $brojElemenata = isset($args['reports'][0]) ? count($args['reports'][0]) : 0;
-
-        // Sabiranje vremena iz drugog podniza
-        $ukupnoMinuta = 0;
-        $brojVremeR = 0;
-
-        foreach ($args['reports'][1] as $podniz) {
-          if (isset($podniz['vremeR'])) {
-            $brojVremeR++;
-            list($sati, $minuti) = explode(':', $podniz['vremeR']);
-            $ukupnoMinuta += (int)$sati * 60 + (int)$minuti;
-          }
+    public function formReportArchive(Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
         }
 
-        // Računanje proseka u minutima
-        $prosekMinuta = $brojVremeR > 0 ? intdiv($ukupnoMinuta, $brojVremeR) : 0;
+        if ($request->isMethod('POST')) {
+            $data = $request->request->all();
 
-        // Konvertovanje minuta u sate i minute za ukupno vreme i prosek
-        $ukupnoSati = intdiv($ukupnoMinuta, 60);
-        $ukupnoOstatakMinuta = $ukupnoMinuta % 60;
+            if (isset($data['report_form']['zatvoren'])) {
 
-        $prosekSati = intdiv($prosekMinuta, 60);
-        $prosekOstatakMinuta = $prosekMinuta % 60;
+                $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
+                $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($data['report_form']);
 
-        // Povratni rezultat
-        $args['details'] = [
-          'broj_elemenata' => $brojElemenata,
-          'ukupno_vreme' => sprintf('%02d:%02d', $ukupnoSati, $ukupnoOstatakMinuta),
-          'prosek_vreme' => sprintf('%02d:%02d', $prosekSati, $prosekOstatakMinuta),
-        ];
+                $brojElemenata = isset($args['reports'][0]) ? count($args['reports'][0]) : 0;
 
-      } else {
-        $args['reports'] = $this->em->getRepository(User::class)->getReportOther($data['report_form']);
-        $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($data['report_form']);
+                // Sabiranje vremena iz drugog podniza
+                $ukupnoMinuta = 0;
+                $brojVremeR = 0;
 
-        $brojElemenata = isset($args['reports'][2]) ? array_sum(array_map('count', $args['reports'][2])) : 0;
+                foreach ($args['reports'][1] as $podniz) {
+                    if (isset($podniz['vremeR'])) {
+                        $brojVremeR++;
+                        list($sati, $minuti) = explode(':', $podniz['vremeR']);
+                        $ukupnoMinuta += (int)$sati * 60 + (int)$minuti;
+                    }
+                }
 
-        // Sabiranje vremena iz drugog podniza
-        $ukupnoMinuta = 0;
-        $brojVremeR = 0;
+                // Računanje proseka u minutima
+                $prosekMinuta = $brojVremeR > 0 ? intdiv($ukupnoMinuta, $brojVremeR) : 0;
 
-        foreach ($args['reports'][1] as $podniz) {
-          if (isset($podniz['vremeR'])) {
-            $brojVremeR++;
-            list($sati, $minuti) = explode(':', $podniz['vremeR']);
-            $ukupnoMinuta += (int)$sati * 60 + (int)$minuti;
-          }
+                // Konvertovanje minuta u sate i minute za ukupno vreme i prosek
+                $ukupnoSati = intdiv($ukupnoMinuta, 60);
+                $ukupnoOstatakMinuta = $ukupnoMinuta % 60;
+
+                $prosekSati = intdiv($prosekMinuta, 60);
+                $prosekOstatakMinuta = $prosekMinuta % 60;
+
+                // Povratni rezultat
+                $args['details'] = [
+                    'broj_elemenata' => $brojElemenata,
+                    'ukupno_vreme' => sprintf('%02d:%02d', $ukupnoSati, $ukupnoOstatakMinuta),
+                    'prosek_vreme' => sprintf('%02d:%02d', $prosekSati, $prosekOstatakMinuta),
+                ];
+
+            } else {
+                $args['reports'] = $this->em->getRepository(User::class)->getReportOther($data['report_form']);
+                $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasks($data['report_form']);
+
+                $brojElemenata = isset($args['reports'][2]) ? array_sum(array_map('count', $args['reports'][2])) : 0;
+
+                // Sabiranje vremena iz drugog podniza
+                $ukupnoMinuta = 0;
+                $brojVremeR = 0;
+
+                foreach ($args['reports'][1] as $podniz) {
+                    if (isset($podniz['vremeR'])) {
+                        $brojVremeR++;
+                        list($sati, $minuti) = explode(':', $podniz['vremeR']);
+                        $ukupnoMinuta += (int)$sati * 60 + (int)$minuti;
+                    }
+                }
+
+                // Računanje proseka u minutima
+                $prosekMinuta = $brojVremeR > 0 ? intdiv($ukupnoMinuta, $brojElemenata) : 0;
+
+                // Konvertovanje minuta u sate i minute za ukupno vreme i prosek
+                $ukupnoSati = intdiv($ukupnoMinuta, 60);
+                $ukupnoOstatakMinuta = $ukupnoMinuta % 60;
+
+                $prosekSati = intdiv($prosekMinuta, 60);
+                $prosekOstatakMinuta = $prosekMinuta % 60;
+
+                // Povratni rezultat
+                $args['details'] = [
+                    'broj_elemenata' => $brojElemenata,
+                    'ukupno_vreme' => sprintf('%02d:%02d', $ukupnoSati, $ukupnoOstatakMinuta),
+                    'prosek_vreme' => sprintf('%02d:%02d', $prosekSati, $prosekOstatakMinuta),
+                ];
+
+            }
+
+            $args['period'] = $data['report_form']['period'];
+            $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
+
+            if (isset($data['report_form']['datum'])){
+                $args['datum'] = 1;
+            }
+            if (isset($data['report_form']['opis'])){
+                $args['opis'] = 1;
+            }
+            if (isset($data['report_form']['klijent'])){
+                $args['klijent'] = 1;
+            }
+            if (isset($data['report_form']['start'])){
+                $args['start'] = 1;
+            }
+            if (isset($data['report_form']['stop'])){
+                $args['stop'] = 1;
+            }
+            if (isset($data['report_form']['razlika'])){
+                $args['razlika'] = 1;
+            }
+            if (isset($data['report_form']['razlikaz'])){
+                $args['razlikaz'] = 1;
+            }
+            if (isset($data['report_form']['ukupno'])){
+                $args['ukupno'] = 1;
+            }
+            if (isset($data['report_form']['ukupnoz'])){
+                $args['ukupnoz'] = 1;
+            }
+            if (isset($data['report_form']['zaduzeni'])){
+                $args['zaduzeni'] = 1;
+            }
+            if (isset($data['report_form']['napomena'])){
+                $args['napomena'] = 1;
+            }
+            if (isset($data['report_form']['checklist'])){
+                $args['checklist'] = 1;
+            }
+
+            $args['dataPdf'] = $data;
+
+            $args['dataPdf'] = $data;
+            if (isset($data['report_form']['zatvoren'])) {
+                return $this->render('report_employee/view.html.twig', $args);
+            } else {
+                return $this->render('report_employee/view_other.html.twig', $args);
+            }
+
         }
 
-        // Računanje proseka u minutima
-        $prosekMinuta = $brojVremeR > 0 ? intdiv($ukupnoMinuta, $brojElemenata) : 0;
+        $args = [];
 
-        // Konvertovanje minuta u sate i minute za ukupno vreme i prosek
-        $ukupnoSati = intdiv($ukupnoMinuta, 60);
-        $ukupnoOstatakMinuta = $ukupnoMinuta % 60;
-
-        $prosekSati = intdiv($prosekMinuta, 60);
-        $prosekOstatakMinuta = $prosekMinuta % 60;
-
-        // Povratni rezultat
-        $args['details'] = [
-          'broj_elemenata' => $brojElemenata,
-          'ukupno_vreme' => sprintf('%02d:%02d', $ukupnoSati, $ukupnoOstatakMinuta),
-          'prosek_vreme' => sprintf('%02d:%02d', $prosekSati, $prosekOstatakMinuta),
-        ];
-
-      }
-
-      $args['period'] = $data['report_form']['period'];
-      $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
-
-      if (isset($data['report_form']['datum'])){
-        $args['datum'] = 1;
-      }
-      if (isset($data['report_form']['opis'])){
-        $args['opis'] = 1;
-      }
-      if (isset($data['report_form']['klijent'])){
-        $args['klijent'] = 1;
-      }
-      if (isset($data['report_form']['start'])){
-        $args['start'] = 1;
-      }
-      if (isset($data['report_form']['stop'])){
-        $args['stop'] = 1;
-      }
-      if (isset($data['report_form']['razlika'])){
-        $args['razlika'] = 1;
-      }
-      if (isset($data['report_form']['razlikaz'])){
-        $args['razlikaz'] = 1;
-      }
-      if (isset($data['report_form']['ukupno'])){
-        $args['ukupno'] = 1;
-      }
-      if (isset($data['report_form']['ukupnoz'])){
-        $args['ukupnoz'] = 1;
-      }
-      if (isset($data['report_form']['zaduzeni'])){
-        $args['zaduzeni'] = 1;
-      }
-      if (isset($data['report_form']['napomena'])){
-        $args['napomena'] = 1;
-      }
-      if (isset($data['report_form']['checklist'])){
-        $args['checklist'] = 1;
-      }
-
-      $args['dataPdf'] = $data;
-
-      $args['dataPdf'] = $data;
-      if (isset($data['report_form']['zatvoren'])) {
-        return $this->render('report_employee/view.html.twig', $args);
-      } else {
-        return $this->render('report_employee/view_other.html.twig', $args);
-      }
-
+        $args['users'] =  $this->em->getRepository(User::class)->getUsersForChecklistArchive();
+        $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
+        return $this->render('report_employee/control.html.twig', $args);
     }
-
-    $args = [];
-
-    $args['users'] =  $this->em->getRepository(User::class)->getUsersForChecklistArchive();
-    $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
-    return $this->render('report_employee/control.html.twig', $args);
-  }
 
 //  #[Route('/report-xls', name: 'app_employee_report_xls')]
 ////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -1440,125 +1440,125 @@ class EmployeeController extends AbstractController {
 //  }
 
 
-  #[Route('/edit-info/{id}', name: 'app_employee_edit_info_form')]
+    #[Route('/edit-info/{id}', name: 'app_employee_edit_info_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editInfo(User $usr, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        if (!$korisnik->getId() != $usr->getId()) {
-          return $this->redirect($this->generateUrl('app_home'));
+    public function editInfo(User $usr, Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
         }
-      }
-    }
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    $history = null;
-    if($usr->getId()) {
-      $history = $this->json($usr, Response::HTTP_OK, [], [
-          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-            return $object->getId();
-          }
-        ]
-      );
-      $history = $history->getContent();
-    }
-
-    $form = $this->createForm(UserEditInfoFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_employee_edit_info_form', ['id' => $usr->getId()])]]);
-    if ($request->isMethod('POST')) {
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-        if (isset($request->request->all()['user_registration_form']['neradniDani'])) {
-          $usr->setNeradniDan($request->request->all()['user_registration_form']['neradniDani']);
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                if ($korisnik->getId() != $usr->getId()) {
+                    return $this->redirect($this->generateUrl('app_home'));
+                }
+            }
         }
-        $this->em->getRepository(User::class)->save($usr, $history);
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
+        $history = null;
+        if($usr->getId()) {
+            $history = $this->json($usr, Response::HTTP_OK, [], [
+                    ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+                        return $object->getId();
+                    }
+                ]
+            );
+            $history = $history->getContent();
+        }
 
-        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
-      }
+        $form = $this->createForm(UserEditInfoFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_employee_edit_info_form', ['id' => $usr->getId()])]]);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                if (isset($request->request->all()['user_registration_form']['neradniDani'])) {
+                    $usr->setNeradniDan($request->request->all()['user_registration_form']['neradniDani']);
+                }
+                $this->em->getRepository(User::class)->save($usr, $history);
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
+
+                return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
+            }
+        }
+        $args['form'] = $form->createView();
+
+        $args['user'] = $usr;
+
+        return $this->render('employee/edit_info.html.twig', $args);
     }
-    $args['form'] = $form->createView();
-
-    $args['user'] = $usr;
-
-    return $this->render('employee/edit_info.html.twig', $args);
-  }
-  #[Route('/edit-account/{id}', name: 'app_employee_edit_account_form')]
+    #[Route('/edit-account/{id}', name: 'app_employee_edit_account_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editAccount(User $usr, Request $request)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        if (!$korisnik->getId() != $usr->getId()) {
-          return $this->redirect($this->generateUrl('app_home'));
+    public function editAccount(User $usr, Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
         }
-      }
-    }
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                if ($korisnik->getId() != $usr->getId()) {
+                    return $this->redirect($this->generateUrl('app_home'));
+                }
+            }
+        }
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
-    $type = $request->query->getInt('type');
-    $usr->setPlainUserType($this->getUser()->getUserType());
-    $history = null;
-    if($usr->getId()) {
-      $history = $this->json($usr, Response::HTTP_OK, [], [
-          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-            return $object->getId();
-          }
-        ]
-      );
-      $history = $history->getContent();
-    }
+        $type = $request->query->getInt('type');
+        $usr->setPlainUserType($this->getUser()->getUserType());
+        $history = null;
+        if($usr->getId()) {
+            $history = $this->json($usr, Response::HTTP_OK, [], [
+                    ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+                        return $object->getId();
+                    }
+                ]
+            );
+            $history = $history->getContent();
+        }
 
 //    if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
 //      $form = $this->createForm(UserEditSelfAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_employee_edit_account_form', ['id' => $usr->getId()])]]);
 //    } else {
-      $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_employee_edit_account_form', ['id' => $usr->getId()])]]);
+        $form = $this->createForm(UserEditAccountFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_employee_edit_account_form', ['id' => $usr->getId()])]]);
 //    }
 
-    if ($request->isMethod('POST')) {
+        if ($request->isMethod('POST')) {
 
-      $form->handleRequest($request);
+            $form->handleRequest($request);
 
-      if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->isSubmitted() && $form->isValid()) {
 
-        if (isset($request->request->all()['user_edit_account_form']['isAdmin'])) {
-          $usr->setIsAdmin($request->request->all()['user_edit_account_form']['isAdmin']);
+                if (isset($request->request->all()['user_edit_account_form']['isAdmin'])) {
+                    $usr->setIsAdmin($request->request->all()['user_edit_account_form']['isAdmin']);
+                }
+                $this->em->getRepository(User::class)->save($usr, $history);
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
+
+
+                return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
+            }
         }
-        $this->em->getRepository(User::class)->save($usr, $history);
+        $args['form'] = $form->createView();
+        $args['user'] = $usr;
+        $args['type'] = $type;
 
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
-
-
-        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['user'] = $usr;
-    $args['type'] = $type;
-
-    return $this->render('employee/edit_account.html.twig', $args);
+        return $this->render('employee/edit_account.html.twig', $args);
 //    $mobileDetect = new MobileDetect();
 //    if($mobileDetect->isMobile()) {
 //      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE || $korisnik->isAdmin()) {
@@ -1571,242 +1571,248 @@ class EmployeeController extends AbstractController {
 //    }
 //    return $this->render('employee/manager_edit_account.html.twig', $args);
 
-  }
-  #[Route('/edit-image/{id}', name: 'app_employee_edit_image_form')]
+    }
+    #[Route('/edit-image/{id}', name: 'app_employee_edit_image_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function editImage(User $usr, Request $request, UploadService $uploadService)    : Response {
-    if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        if (!$korisnik->getId() != $usr->getId()) {
-          return $this->redirect($this->generateUrl('app_home'));
+    public function editImage(User $usr, Request $request, UploadService $uploadService)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
         }
-      }
-    }
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-    $type = $request->query->getInt('type');
-
-    $usr->setEditBy($this->getUser());
-
-    $form = $this->createForm(UserEditImageFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_employee_edit_image_form', ['id' => $usr->getId(), 'type' => $type])]]);
-    if ($request->isMethod('POST')) {
-      $history = null;
-      if($usr->getId()) {
-        $history = $this->json($usr, Response::HTTP_OK, [], [
-            ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
-              return $object->getId();
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                if ($korisnik->getId() != $usr->getId()) {
+                    return $this->redirect($this->generateUrl('app_home'));
+                }
             }
-          ]
-        );
-        $history = $history->getContent();
-      }
-
-      $form->handleRequest($request);
-
-      if ($form->isSubmitted() && $form->isValid()) {
-
-        $file = $request->files->all()['user_edit_image_form']['slika'];
-        $file = $uploadService->upload($file, $usr->getImageUploadPath());
-
-        $image = $this->em->getRepository(Image::class)->addImage($file, $usr->getThumbUploadPath(), $this->getParameter('kernel.project_dir'));
-        $usr->setImage($image);
-
-        $this->em->getRepository(User::class)->save($usr, $history);
-
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addSuccess(NotifyMessagesData::EDIT_USER_IMAGE_SUCCESS);
-
-        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
-      }
-    }
-    $args['form'] = $form->createView();
-    $args['user'] = $usr;
-    $args['type'] = $type;
-
-    return $this->render('employee/edit_image.html.twig', $args);
-
-  }
-
-  #[Route('/view-documents/{id}', name: 'app_employee_documents_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewDocuments(User $usr, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    if ($request->isMethod('POST')) {
-
-      if (isset($request->request->all()['pdf_delete'])) {
-        $deletePdfs = $request->request->all()['pdf_delete'];
-        foreach ($deletePdfs as $pdf) {
-          if (isset($pdf['checked'])) {
-            $pdf = $this->em->getRepository(\App\Entity\Pdf::class)->find($pdf['value']);
-            $usr->removeDoc($pdf);
-          }
         }
-      }
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $type = $request->query->getInt('type');
 
-      $this->em->getRepository(User::class)->save($usr);
+        $usr->setEditBy($this->getUser());
+
+        $form = $this->createForm(UserEditImageFormType::class, $usr, ['attr' => ['action' => $this->generateUrl('app_employee_edit_image_form', ['id' => $usr->getId(), 'type' => $type])]]);
+        if ($request->isMethod('POST')) {
+            $history = null;
+            if($usr->getId()) {
+                $history = $this->json($usr, Response::HTTP_OK, [], [
+                        ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+                            return $object->getId();
+                        }
+                    ]
+                );
+                $history = $history->getContent();
+            }
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $file = $request->files->all()['user_edit_image_form']['slika'];
+                $file = $uploadService->upload($file, $usr->getImageUploadPath());
+
+                $image = $this->em->getRepository(Image::class)->addImage($file, $usr->getThumbUploadPath(), $this->getParameter('kernel.project_dir'));
+                $usr->setImage($image);
+
+                $this->em->getRepository(User::class)->save($usr, $history);
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::EDIT_USER_IMAGE_SUCCESS);
+
+                return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
+            }
+        }
+        $args['form'] = $form->createView();
+        $args['user'] = $usr;
+        $args['type'] = $type;
+
+        return $this->render('employee/edit_image.html.twig', $args);
+
+    }
+
+    #[Route('/view-documents/{id}', name: 'app_employee_documents_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function viewDocuments(User $usr, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $korisnik = $this->getUser();
+
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                if ($korisnik->getId() != $usr->getId()) {
+                    return $this->redirect($this->generateUrl('app_home'));
+                }
+            }
+        }
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        if ($request->isMethod('POST')) {
+
+            if (isset($request->request->all()['pdf_delete'])) {
+                $deletePdfs = $request->request->all()['pdf_delete'];
+                foreach ($deletePdfs as $pdf) {
+                    if (isset($pdf['checked'])) {
+                        $pdf = $this->em->getRepository(\App\Entity\Pdf::class)->find($pdf['value']);
+                        $usr->removeDoc($pdf);
+                    }
+                }
+            }
+
+            $this->em->getRepository(User::class)->save($usr);
 
 //        $this->em->getRepository(Task::class)->changeStatus($stopwatch->getTaskLog()->getTask(), TaskStatusData::ZAVRSENO);
 
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+            notyf()
+                ->position('x', 'right')
+                ->position('y', 'top')
+                ->duration(5000)
+                ->dismissible(true)
+                ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
 //        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
-      return $this->redirectToRoute('app_employee_documents_view', ['id' => $usr->getId()]);
+            return $this->redirectToRoute('app_employee_documents_view', ['id' => $usr->getId()]);
+        }
+
+        $args['user'] = $usr;
+        $args['pdfs'] = $usr->getDocs();
+
+        return $this->render('employee/view_documents.html.twig', $args);
     }
 
-    $args['user'] = $usr;
-    $args['pdfs'] = $usr->getDocs();
-
-    return $this->render('employee/view_documents.html.twig', $args);
-  }
-
-  #[Route('/add-documents/{id}', name: 'app_employee_documents_add')]
+    #[Route('/add-documents/{id}', name: 'app_employee_documents_add')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function addDocuments(User $usr, Request $request, UploadService $uploadService): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
-      if (!$korisnik->isAdmin()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    if ($request->isMethod('POST')) {
-
-      if (isset($request->request->all()['pdf_delete'])) {
-        $deletePdfs = $request->request->all()['pdf_delete'];
-        foreach ($deletePdfs as $pdf) {
-          if (isset($pdf['checked'])) {
-            $pdf = $this->em->getRepository(\App\Entity\Pdf::class)->find($pdf['value']);
-            $usr->removeDoc($pdf);
-          }
+    public function addDocuments(User $usr, Request $request, UploadService $uploadService): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
         }
-      }
-
-      $uploadFiles = $request->files->all()['pdf_form']['pdf'];
-
-      $title = $request->request->all()['pdf_form']['title'];
-      $type = $request->request->all()['pdf_form']['type'];
-
-      if (!empty ($uploadFiles)) {
-        foreach ($uploadFiles as $uploadFile) {
-
-          if (!$uploadFile->getSize()) { // 5MB u bajtima
-            $errors[] = "Fajl premašuje dozvoljenu veličinu od 5MB.";
-            continue;
-          }
-
-
-          $pdf = new \App\Entity\Pdf();
-          $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
-          $pdf->setTitle($title);
-          $pdf->setPath($file->getAssetPath());
-          $pdf->setType($type);
-
-          $usr->addDoc($pdf);
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                if ($korisnik->getId() != $usr->getId()) {
+                    return $this->redirect($this->generateUrl('app_home'));
+                }
+            }
         }
-      }
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
 
-      if (!empty($errors)) {
+        if ($request->isMethod('POST')) {
 
-        notyf()
-          ->position('x', 'right')
-          ->position('y', 'top')
-          ->duration(5000)
-          ->dismissible(true)
-          ->addError(NotifyMessagesData::DOC_ADD_ERROR);
+            if (isset($request->request->all()['pdf_delete'])) {
+                $deletePdfs = $request->request->all()['pdf_delete'];
+                foreach ($deletePdfs as $pdf) {
+                    if (isset($pdf['checked'])) {
+                        $pdf = $this->em->getRepository(\App\Entity\Pdf::class)->find($pdf['value']);
+                        $usr->removeDoc($pdf);
+                    }
+                }
+            }
 
-        return $this->redirectToRoute('app_employee_documents_view', ['id' => $usr->getId()]);
+            $uploadFiles = $request->files->all()['pdf_form']['pdf'];
 
-      }
+            $title = $request->request->all()['pdf_form']['title'];
+            $type = $request->request->all()['pdf_form']['type'];
+
+            if (!empty ($uploadFiles)) {
+                foreach ($uploadFiles as $uploadFile) {
+
+                    if (!$uploadFile->getSize()) { // 5MB u bajtima
+                        $errors[] = "Fajl premašuje dozvoljenu veličinu od 5MB.";
+                        continue;
+                    }
+
+
+                    $pdf = new \App\Entity\Pdf();
+                    $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+                    $pdf->setTitle($title);
+                    $pdf->setPath($file->getAssetPath());
+                    $pdf->setType($type);
+
+                    $usr->addDoc($pdf);
+                }
+            }
+
+            if (!empty($errors)) {
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addError(NotifyMessagesData::DOC_ADD_ERROR);
+
+                return $this->redirectToRoute('app_employee_documents_view', ['id' => $usr->getId()]);
+
+            }
 
 
 
-      $this->em->getRepository(User::class)->save($usr);
+            $this->em->getRepository(User::class)->save($usr);
 
 //        $this->em->getRepository(Task::class)->changeStatus($stopwatch->getTaskLog()->getTask(), TaskStatusData::ZAVRSENO);
 
-      notyf()
-        ->position('x', 'right')
-        ->position('y', 'top')
-        ->duration(5000)
-        ->dismissible(true)
-        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+            notyf()
+                ->position('x', 'right')
+                ->position('y', 'top')
+                ->duration(5000)
+                ->dismissible(true)
+                ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
 //        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
-      return $this->redirectToRoute('app_employee_documents_view', ['id' => $usr->getId()]);
+            return $this->redirectToRoute('app_employee_documents_view', ['id' => $usr->getId()]);
+        }
+
+
+        $args['user'] = $usr;
+        $args['pdfs'] = $usr->getDocs()->toArray();
+        $args['types'] = DocTypeData::TIP;
+
+        return $this->render('employee/add_documents.html.twig', $args);
     }
-
-
-    $args['user'] = $usr;
-    $args['pdfs'] = $usr->getDocs()->toArray();
-    $args['types'] = DocTypeData::TIP;
-
-    return $this->render('employee/add_documents.html.twig', $args);
-  }
-  #[Route('/switch-role/', name: 'app_employee_switch_role')]
+    #[Route('/switch-role/', name: 'app_employee_switch_role')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function switch(SessionInterface $session, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
+    public function switch(SessionInterface $session, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $korisnik = $this->getUser();
+        if (!$korisnik->isAdmin()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+        $adminParam = $request->query->get('admin');
+        $employeeParam = $request->query->get('employee');
+
+        if ($session->has('admin')) {
+
+            if ($employeeParam !== null) {
+                $session->remove('admin');
+            }
+        } else {
+
+            if ($adminParam !== null) {
+                $session->set('admin', $adminParam);
+            }
+        }
+
+        // Dobijanje URL-a sa kog je korisnik došao
+        $referer = $request->headers->get('referer');
+
+        return $this->redirect($referer);
+
     }
-
-    $korisnik = $this->getUser();
-    if (!$korisnik->isAdmin()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    $adminParam = $request->query->get('admin');
-    $employeeParam = $request->query->get('employee');
-
-    if ($session->has('admin')) {
-
-      if ($employeeParam !== null) {
-        $session->remove('admin');
-      }
-    } else {
-
-      if ($adminParam !== null) {
-        $session->set('admin', $adminParam);
-      }
-    }
-
-    // Dobijanje URL-a sa kog je korisnik došao
-    $referer = $request->headers->get('referer');
-
-    return $this->redirect($referer);
-
-  }
 
 
 }

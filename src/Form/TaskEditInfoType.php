@@ -42,26 +42,32 @@ TaskEditInfoType extends AbstractType {
     $task = $dataObject->getTask();
     $company = $dataObject->getTask()->getCompany();
 
+    $production = $task->getProduction();
+
+    if (is_null($production)) {
+        $builder
+            ->add('project', EntityType::class, [
+                'placeholder' => '--Izaberite projekat--',
+                'class' => Project::class,
+                'query_builder' => function (EntityRepository $em) use ($company) {
+                    return $em->createQueryBuilder('g')
+                        ->andWhere('g.isSuspended = :isSuspended')
+                        ->andWhere('g.company = :company')
+                        ->setParameter(':company', $company)
+                        ->setParameter(':isSuspended', 0)
+                        ->orderBy('g.title', 'ASC');
+                },
+                'choice_label' => 'title',
+                'expanded' => false,
+                'multiple' => false,
+            ]);
+    }
 
     $builder
       ->add('description', TextareaType::class, [
         'required' => false
       ])
-      ->add('project', EntityType::class, [
-        'placeholder' => '--Izaberite projekat--',
-        'class' => Project::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.isSuspended = :isSuspended')
-            ->andWhere('g.company = :company')
-            ->setParameter(':company', $company)
-            ->setParameter(':isSuspended', 0)
-            ->orderBy('g.title', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => false,
-      ])
+
       ->add('label', EntityType::class, [
         'required' => false,
         'class' => Label::class,

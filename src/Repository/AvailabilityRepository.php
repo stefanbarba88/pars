@@ -473,7 +473,7 @@ class AvailabilityRepository extends ServiceEntityRepository {
     $dostupnosti = $this->createQueryBuilder('t')
       ->where('t.datum BETWEEN :startDate AND :endDate')
       ->andWhere('t.User = :user')
-      ->andWhere('t.type <> :type')
+      ->andWhere('t.type = :type')
       ->setParameter('startDate', $startDate)
       ->setParameter('endDate', $endDate)
       ->setParameter('user', $user)

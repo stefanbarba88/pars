@@ -34,11 +34,14 @@ class Product {
   #[ORM\Column]
   private DateTimeImmutable $updated;
 
-  #[ORM\OneToMany(mappedBy: 'product', targetEntity: Sastavnica::class)]
+  #[ORM\OneToMany(mappedBy: 'product', targetEntity: Sastavnica::class, cascade: ['persist'])]
   private Collection $sastavnica;
 
   #[ORM\OneToMany(mappedBy: 'product', targetEntity: Deo::class)]
   private Collection $deos;
+
+  #[ORM\ManyToOne(inversedBy: 'products')]
+  private ?Company $company = null;
 
   public function __construct()
   {
@@ -168,6 +171,18 @@ class Product {
               $deo->setProduct(null);
           }
       }
+
+      return $this;
+  }
+
+  public function getCompany(): ?Company
+  {
+      return $this->company;
+  }
+
+  public function setCompany(?Company $company): static
+  {
+      $this->company = $company;
 
       return $this;
   }

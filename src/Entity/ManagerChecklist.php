@@ -94,6 +94,9 @@ class ManagerChecklist {
   #[ORM\ManyToOne(inversedBy: 'managerChecklists')]
   private ?Phase $phase = null;
 
+  #[ORM\ManyToOne(inversedBy: 'managerChecklists')]
+  private ?Production $production = null;
+
   public function __construct() {
     $this->pdfs = new ArrayCollection();
     $this->comment = new ArrayCollection();
@@ -431,6 +434,18 @@ class ManagerChecklist {
   public function setPhase(?Phase $phase): static
   {
       $this->phase = $phase;
+
+      return $this;
+  }
+
+  public function getProduction(): ?Production
+  {
+      return $this->production;
+  }
+
+  public function setProduction(?Production $production): static
+  {
+      $this->production = $production;
 
       return $this;
   }

@@ -16,6 +16,8 @@ class AppConfig {
   public const NOT_IN_LIST_ACTIVITY_ID = 1;
   public const OSTALO_ACTIVITY_ID = 2;
   public const OBRADA_ACTIVITY_ID = 3;
+  public const RADNI_NALOG_ACTIVITY_ID = 4;
+
 
   public const TEREN_CAT_ID = 1;
   public const KUCA_CAT_ID = 2;

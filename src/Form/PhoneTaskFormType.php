@@ -10,6 +10,7 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Activity;
 use App\Entity\Category;
 use App\Entity\Label;
+use App\Entity\Production;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\Tool;
@@ -51,6 +52,7 @@ class PhoneTaskFormType extends AbstractType {
 
     $company = $dataObject->getTask()->getCompany();
     $settings = $company->getSettings();
+    $project = $dataObject->getTask()->getProject();
     $datum = $dataObject->getTask()->getDatumKreiranja();
 
     if (!$settings->isAllUsers()) {
@@ -100,103 +102,83 @@ class PhoneTaskFormType extends AbstractType {
           'multiple' => true,
         ]);
     }
+
+      if (!is_null($project)) {
+
+
+          $builder
+              ->add('isExpenses', ChoiceType::class, [
+                  'attr' => [
+                      'data-minimum-results-for-search' => 'Infinity',
+                  ],
+                  'choices' => PotvrdaData::form(),
+                  'expanded' => false,
+                  'multiple' => false,
+                  'data' => $project->getIsExpenses()
+              ])
+              ->add('production', EntityType::class, [
+                  'placeholder' => '--Izaberite radni nalog--',
+                  'class' => Production::class,
+                  'query_builder' => function (EntityRepository $em) use ($company) {
+                      return $em->createQueryBuilder('g')
+                          ->andWhere('g.isSuspended = :isSuspended')
+                          ->andWhere('g.company = :company')
+                          ->setParameter(':company', $company)
+                          ->setParameter(':isSuspended', 0)
+                          ->orderBy('g.productKey', 'ASC');
+                  },
+                  'choice_label' => 'productKey',
+                  'expanded' => false,
+                  'multiple' => false,
+              ])
+              ->add('project', EntityType::class, [
+                  'attr' => [
+                      'data-minimum-results-for-search' => 'Infinity',
+                  ],
+                  'class' => Project::class,
+                  'query_builder' => function (EntityRepository $em) use ($project) {
+                      return $em->createQueryBuilder('g')
+                          ->andWhere('g.isSuspended = :isSuspended')
+                          ->andWhere('g.id = :project')
+                          ->setParameter(':project', $project->getId())
+                          ->setParameter(':isSuspended', 0)
+                          ->orderBy('g.title', 'ASC');
+                  },
+                  'choice_label' => 'title',
+                  'expanded' => false,
+                  'multiple' => false,
+              ]);
+      } else {
+          $builder
+              ->add('isExpenses', ChoiceType::class, [
+                  'attr' => [
+                      'data-minimum-results-for-search' => 'Infinity',
+                  ],
+                  'choices' => PotvrdaData::form(),
+                  'expanded' => false,
+                  'multiple' => false,
+              ])
+              ->add('project', EntityType::class, [
+                  'placeholder' => '--Izaberite projekat--',
+                  'class' => Project::class,
+                  'query_builder' => function (EntityRepository $em) use ($company) {
+                      return $em->createQueryBuilder('g')
+                          ->andWhere('g.isSuspended = :isSuspended')
+                          ->andWhere('g.company = :company')
+                          ->setParameter(':company', $company)
+                          ->setParameter(':isSuspended', 0)
+                          ->orderBy('g.title', 'ASC');
+                  },
+                  'choice_label' => 'title',
+                  'expanded' => false,
+                  'multiple' => false,
+              ]);
+      }
+
+
     $builder
 
-      ->add('project', EntityType::class, [
-        'placeholder' => '--Izaberite projekat--',
-        'class' => Project::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.isSuspended = :isSuspended')
-            ->andWhere('g.company = :company')
-            ->setParameter(':company', $company)
-            ->setParameter(':isSuspended', 0)
-            ->orderBy('g.title', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('description', TextareaType::class, [
-        'required' => false
-      ])
-//      ->add('isFree', ChoiceType::class, [
-//        'attr' => [
-//          'data-minimum-results-for-search' => 'Infinity',
-//        ],
-//        'choices' => PotvrdaData::form(),
-//        'expanded' => false,
-//        'multiple' => false,
-//      ])
 
-      ->add('label', EntityType::class, [
-        'required' => false,
-        'class' => Label::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.isTaskLabel = :isTaskLabel')
-            ->andWhere('g.company = :company')
-            ->andWhere('g.isSuspended = 0')
-            ->setParameter(':company', $company)
-            ->setParameter(':isTaskLabel', 1)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => true,
-      ])
-      ->add('category', EntityType::class, [
-        'placeholder' => '--Izaberite kategoriju--',
-        'required' => false,
-        'class' => Category::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.isTaskCategory = :isTaskCategory')
-            ->andWhere('g.company = :company')
-            ->orWhere('g.company IS NULL')
-            ->andWhere('g.isSuspended = 0')
-            ->setParameter(':company', $company)
-            ->setParameter(':isTaskCategory', 1)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => false,
-      ])
-
-
-      ->add('repeating', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-
-      ->add('repeatingInterval', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'required' => false,
-        'placeholder' => '--Izaberite period--',
-        'choices' => RepeatingIntervalData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-
-      ->add('datumPonavljanja',  DateType::class, [
-        'required' => false,
-        'widget' => 'single_text',
-        'input' => 'datetime_immutable',
-      ])
-      ->add('deadline', DateType::class, [
-        'required' => false,
-        'widget' => 'single_text',
-        'input' => 'datetime_immutable',
-        'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
-      ])
-      ->add('title')
 //      ->add('datumKreiranja', DateType::class, [
 //        'required' => true,
 //        'widget' => 'single_text',
@@ -269,83 +251,7 @@ class PhoneTaskFormType extends AbstractType {
 //        'expanded' => false,
 //        'multiple' => false,
 //      ])
-      ->add('isExpenses', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('isSeparate', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
 
-      ->add('isTimeRoundUp', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-        'data' => $settings->getIsTimeRoundUp()
-      ])
-      ->add('isFree', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('minEntry', IntegerType::class, [
-        'required' => false,
-        'attr' => [
-          'min' => '1',
-          'max' => '60'
-        ],
-        'data' => $settings->getMinEntry()
-      ])
-      ->add('roundingInterval', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'required' => false,
-        'placeholder' => '--Izaberite model zaokruživanja--',
-        'choices' => RoundingIntervalData::form(),
-        'expanded' => false,
-        'multiple' => false,
-        'data' => $settings->getRoundingInterval(),
-      ])
-      ->add('priority', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'placeholder' => '--Izaberite nivo prioriteta--',
-        'choices' => PrioritetData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('activity', EntityType::class, [
-        'required' => false,
-        'class' => Activity::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('a')
-            ->andWhere('a.company = :company')
-            ->andWhere('a.isSuspended = 0')
-            ->orWhere('a.company IS NULL')
-            ->setParameter(':company', $company)
-            ->orderBy('a.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => true,
-      ])
 //      ->add('isPriority', ChoiceType::class, [
 //        'attr' => [
 //          'data-minimum-results-for-search' => 'Infinity',
@@ -354,7 +260,142 @@ class PhoneTaskFormType extends AbstractType {
 //        'expanded' => false,
 //        'multiple' => false,
 //      ])
+        ->add('description', TextareaType::class, [
+            'required' => false
+        ])
+        ->add('label', EntityType::class, [
+            'required' => false,
+            'class' => Label::class,
+            'query_builder' => function (EntityRepository $em) use ($company) {
+                return $em->createQueryBuilder('g')
+                    ->andWhere('g.isTaskLabel = :isTaskLabel')
+                    ->andWhere('g.company = :company')
+                    ->andWhere('g.isSuspended = 0')
+                    ->setParameter(':company', $company)
+                    ->setParameter(':isTaskLabel', 1)
+                    ->orderBy('g.id', 'ASC');
+            },
+            'choice_label' => 'title',
+            'expanded' => false,
+            'multiple' => true,
+        ])
+        ->add('category', EntityType::class, [
+            'placeholder' => '--Izaberite kategoriju--',
+            'required' => false,
+            'class' => Category::class,
+            'query_builder' => function (EntityRepository $em) use ($company) {
+                return $em->createQueryBuilder('g')
+                    ->andWhere('g.isTaskCategory = :isTaskCategory')
+                    ->andWhere('g.company = :company')
+                    ->orWhere('g.company IS NULL')
+                    ->andWhere('g.isSuspended = 0')
+                    ->setParameter(':company', $company)
+                    ->setParameter(':isTaskCategory', 1)
+                    ->orderBy('g.id', 'ASC');
+            },
+            'choice_label' => 'title',
+            'expanded' => false,
+            'multiple' => false,
+        ])
+        ->add('repeating', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'choices' => PotvrdaData::form(),
+            'expanded' => false,
+            'multiple' => false,
+        ])
+        ->add('repeatingInterval', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'required' => false,
+            'placeholder' => '--Izaberite period--',
+            'choices' => RepeatingIntervalData::form(),
+            'expanded' => false,
+            'multiple' => false,
+        ])
+        ->add('datumPonavljanja',  DateType::class, [
+            'required' => false,
+            'widget' => 'single_text',
+            'input' => 'datetime_immutable',
+        ])
+        ->add('deadline', DateType::class, [
+            'required' => false,
+            'widget' => 'single_text',
+            'input' => 'datetime_immutable',
+            'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
+        ])
+        ->add('title')
 
+        ->add('isSeparate', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'choices' => PotvrdaData::form(),
+            'expanded' => false,
+            'multiple' => false,
+        ])
+        ->add('isTimeRoundUp', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'choices' => PotvrdaData::form(),
+            'expanded' => false,
+            'multiple' => false,
+            'data' => $settings->getIsTimeRoundUp()
+        ])
+        ->add('isFree', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'choices' => PotvrdaData::form(),
+            'expanded' => false,
+            'multiple' => false,
+        ])
+        ->add('minEntry', IntegerType::class, [
+            'required' => false,
+            'attr' => [
+                'min' => '1',
+                'max' => '60'
+            ],
+            'data' => $settings->getMinEntry()
+        ])
+        ->add('roundingInterval', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'required' => false,
+            'placeholder' => '--Izaberite model zaokruživanja--',
+            'choices' => RoundingIntervalData::form(),
+            'expanded' => false,
+            'multiple' => false,
+            'data' => $settings->getRoundingInterval(),
+        ])
+        ->add('priority', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'placeholder' => '--Izaberite nivo prioriteta--',
+            'choices' => PrioritetData::form(),
+            'expanded' => false,
+            'multiple' => false,
+        ])
+        ->add('activity', EntityType::class, [
+            'required' => false,
+            'class' => Activity::class,
+            'query_builder' => function (EntityRepository $em) use ($company) {
+                return $em->createQueryBuilder('a')
+                    ->andWhere('a.company = :company')
+                    ->andWhere('a.isSuspended = 0')
+                    ->orWhere('a.company IS NULL')
+                    ->setParameter(':company', $company)
+                    ->orderBy('a.id', 'ASC');
+            },
+            'choice_label' => 'title',
+            'expanded' => false,
+            'multiple' => true,
+        ])
       ->add('pdf', FileType::class, [
         'attr' => ['accept' => '.pdf', 'data-show-upload' => 'false'],
         'multiple' => true,

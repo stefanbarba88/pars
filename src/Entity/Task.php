@@ -163,6 +163,9 @@ class Task implements JsonSerializable {
   #[ORM\ManyToOne(inversedBy: 'tasks')]
   private ?Phase $phase = null;
 
+  #[ORM\ManyToOne(inversedBy: 'tasks')]
+  private ?Production $production = null;
+
   public function getCompany(): ?Company {
     return $this->company;
   }
@@ -885,6 +888,18 @@ class Task implements JsonSerializable {
   public function setPhase(?Phase $phase): static
   {
       $this->phase = $phase;
+
+      return $this;
+  }
+
+  public function getProduction(): ?Production
+  {
+      return $this->production;
+  }
+
+  public function setProduction(?Production $production): static
+  {
+      $this->production = $production;
 
       return $this;
   }

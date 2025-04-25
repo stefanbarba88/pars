@@ -398,6 +398,19 @@
                                                         </div>
                                                     {% endif %}
 
+                                                    {% if task.production is not null %}
+                                                        <div class="fw-bold border-bottom pb-2 mb-3">Radni nalog</div>
+                                                        <div class="row">
+                                                            <div class="col-lg-4">
+                                                                <div class="mb-3">
+                                                                    <i class="ph-clipboard-text me-2"></i><a href="{{ path('app_production_view',{id: task.production.id} ) }}" class="me-1 fw-semibold">
+                                                                        {{ task.production.productKey }}
+                                                                    </a> <a href="{{ path('app_production_view_pdf',{id: task.production.id} ) }}"><i class="ph-file-pdf"></i></a>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    {% endif %}
                                                     <div class="fw-bold border-bottom pb-2 mb-3">Zaposleni i resursi</div>
                                                     <div class="row">
                                                         <div class="col-lg-4">

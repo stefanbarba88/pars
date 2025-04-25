@@ -15,6 +15,7 @@ use App\Entity\Category;
 
 use App\Entity\ManagerChecklist;
 use App\Entity\Phase;
+use App\Entity\Production;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
 use App\Entity\Task;
@@ -1788,6 +1789,46 @@ class ProjectController extends AbstractController {
         return $this->render('phase/list.html.twig', $args);
 
         }
+
+    #[Route('/view-productions/{id}', name: 'app_project_productions_view')]
+    public function viewProductions(Project $project, PaginatorInterface $paginator, Request $request, SessionInterface $session)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN) {
+            if (!$korisnik->isAdmin()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $project->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+        $args = [];
+        $search = [];
+
+        $search['key'] = $request->query->get('nalogKey');
+        $search['project'] = $project->getId();
+
+
+        $categories = $this->em->getRepository(Production::class)->getProductionsPaginator($korisnik->getCompany(), $search);
+
+        $pagination = $paginator->paginate(
+            $categories, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
+
+        $args['pagination'] = $pagination;
+        $args['project'] = $project;
+
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('project/phone/view_production.html.twig', $args);
+        }
+        return $this->render('project/view_production.html.twig', $args);
+
+    }
 
     #[Route('/form-phases/{project}', name: 'app_project_phases_form')]
     #[Entity('project', expr: 'repository.find(project)')]

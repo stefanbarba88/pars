@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Radni nalog #{{ production.productKey }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            padding: 10px;
+            page-break-inside: avoid; /* Sprečava razbijanje kartice */
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            page-break-after: avoid; /* Sprečava razbijanje kartice */
+        }
+        .card-body {
+            padding: 10px;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -10px;
+            page-break-inside: avoid; /* Sprečava razbijanje redova unutar kartice */
+        }
+        .col-6 {
+            flex: 1;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .bg-light {
+            background-color: #f8f9fa;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            page-break-inside: auto; /* Omogućava prelaz stranice unutar tabele */
+            font-size: 12px; /* Smanjuje veličinu fonta za kompaktniji prikaz */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px; /* Smanjena vrednost paddinga */
+            text-align: left;
+            page-break-inside: avoid; /* Sprečava razbijanje redova unutar tabele */
+            page-break-after: auto;
+        }
+
+        th {
+            background-color: #f8f9fa; /* Neutralna boja za zaglavlje */
+            color: #333; /* Tamnija boja za tekst zaglavlja */
+            font-weight: bold;
+        }
+
+        thead {
+            display: table-header-group; /* Prikazuje zaglavlje tabele na svakoj novoj stranici */
+        }
+
+        tbody {
+            display: table-row-group; /* Standardno ponašanje za telo tabele */
+        }
+
+        img {
+            max-width: 100px; /* Ograničava veličinu slike u tabeli */
+            height: auto; /* Čuva proporcije slike */
+        }
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .header-logo img {
+            max-width: none; /* Uklanja ograničenje veličine za logotip */
+            max-height: 100px; /* Podesite visinu logotipa na željenu vrednost */
+        }
+        .company-details {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="header-row">
+{#    <div class="header-logo">#}
+{#        <img src="{{ absolute_url(asset('assets/images/logo/logo1.png')) }}" alt="Logo">#}
+{#    </div>#}
+    <div class="company-details">
+        <div>{{ company.title() }}</div>
+        <div>{{ company.grad.ptt }} {{ company.grad.title }}, {{ company.adresa }}</div>
+        <div>Tel: {{ company.telefon1 }}</div>
+        <div>E-mail: {{ company.email }}</div>
+    </div>
+</div>
+<div class="container">
+
+    <h5 class="mb-3">Osnovne informacije</h5>
+
+    <table class="card table table-bordered table-sm">
+                <thead class="table-primary">
+                <tr>
+                    <th colspan="2">#{{ production.productKey }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><strong>Projekat:</strong></td>
+                    <td>{{ production.project.title }}</td>
+                </tr>
+                <tr class="table-light">
+                    <td><strong>Šifra:</strong></td>
+                    <td>{{ production.productKey }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Rok:</strong></td>
+                    <td>{{ production.deadline | date('d.m.Y.') }}</td>
+                </tr>
+                <tr class="table-light">
+                    <td><strong>Procenat realizacija:</strong></td>
+                    <td>
+                        {% set boja = 'bg-primary'%}
+                        {% set procenat = production.percent %}
+                        {% if procenat < 26 %}
+                            {% set boja = 'bg-danger'%}
+                        {% elseif procenat < 76 %}
+                            {% set boja = 'bg-warning'%}
+                        {% elseif procenat < 99 %}
+                            {% set boja = 'bg-info'%}
+                        {% elseif procenat == 100 %}
+                            {% set boja = 'bg-success'%}
+                        {% endif %}
+
+                        <div class="progress">
+                            <div class="progress-bar {{ boja }}" role="progressbar" style="width: {{ procenat }}%;" aria-valuenow="{{ procenat }}" aria-valuemin="0" aria-valuemax="100">
+                                {% if procenat > 0 %}
+                                    {{ procenat }}%
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Status:</strong></td>
+                    <td>
+                        {% if production.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                            <span class="badge bg-secondary text-primary">Nije startovan</span>
+                        {% elseif production.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                            <span class="badge bg-yellow text-primary">Otvoren</span>
+                        {% elseif production.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                            <span class="badge bg-primary text-white">Zatvoren</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr class="table-light">
+                    <td><strong>Aktivnost:</strong></td>
+                    <td>
+                        {% if production.isSuspended %}
+                            <span class="badge bg-yellow text-primary">Deaktivirano</span>
+                        {% else %}
+                            <span class="badge bg-primary text-white">Aktivno</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+    <h5 class="mb-3">Lista proizvoda u radnom nalogu</h5>
+
+    <table class="card table table-bordered table-sm">
+        <thead class="table-light text-primary">
+        <tr>
+            <th rowspan="2">Šifra</th>
+            <th rowspan="2">Naziv</th>
+            <th rowspan="2">Količina</th>
+            <th colspan="4" class="text-center">Elementi</th>
+        </tr>
+        <tr>
+            <th>Šifra</th>
+            <th>Naziv</th>
+            <th>Sastav</th>
+            <th>Količina</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for deo in production.deo %}
+            {% set sastavnicaCount = deo.product.sastavnica|length %}
+            {% set i = loop.index0 %}
+            {% if sastavnicaCount > 0 %}
+                {% for element in deo.product.sastavnica %}
+                    {% set x = loop.index0 %}
+                    <tr>
+                        {% if loop.first %}
+                            <td rowspan="{{ sastavnicaCount }}">{{ deo.product.productKey }}</td>
+                            <td rowspan="{{ sastavnicaCount }}" class="fw-semibold text-dark text-decoration-none">
+                                {{ deo.product.title }}
+
+                            </td>
+                            <td rowspan="{{ sastavnicaCount }}" class="text-center">{{ deo.kolicina }}</td>
+                        {% endif %}
+                        <td>{{ element.element.productKey }}</td>
+                        <td  class="fw-semibold text-dark text-decoration-none">
+                            {{ element.element.title }}
+                        </td>
+                        <td class="text-center">{{ archive[i][x]['sastav'] }}</td>
+                        <td class="text-center">
+                            {{ (archive[i][x]['sastav'] * deo.kolicina)|number_format(3, '.', '') }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td>{{ deo.product.productKey }}</td>
+                    <td class="fw-semibold text-dark text-decoration-none">
+                        {{ deo.product.title }}
+                    </td>
+                    <td class="text-center">{{ product.kolicina }}</td>
+                    <td colspan="4" class="text-center text-muted">Nema elemenata</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h5 class="mb-3">Istorija izmena</h5>
+
+    <table class=" card table table-bordered table-sm">
+        <thead class="table-light">
+        <tr>
+            <th>Datum</th>
+            <th>Realizacija</th>
+            <th>Količina</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for istorija in progres %}
+            <tr>
+                <td>
+                    <i class="ph-calendar me-1"></i>{{ istorija.datum }}
+                </td>
+                <td>
+                    {% set boja = 'bg-primary' %}
+                    {% set procenat = istorija.percent %}
+                    {% if procenat < 26 %}
+                        {% set boja = 'bg-danger' %}
+                    {% elseif procenat < 76 %}
+                        {% set boja = 'bg-warning' %}
+                    {% elseif procenat < 99 %}
+                        {% set boja = 'bg-info' %}
+                    {% elseif procenat == 100 %}
+                        {% set boja = 'bg-success' %}
+                    {% endif %}
+
+                    <div class="progress">
+                        <div class="progress-bar {{ boja }}" role="progressbar"
+                             style="width: {{ procenat }}%;" aria-valuenow="{{ procenat }}"
+                             aria-valuemin="0" aria-valuemax="100">
+                            {% if procenat > 0 %}
+                                {{ procenat }}%
+                            {% endif %}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge bg-yellow text-primary">{{ istorija.kolicinaTren }}/{{ istorija.kolicina }}</span>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
+    <h5 class="mb-3">Lista zadataka u radnom nalogu</h5>
+
+    <table class="card table table-bordered table-sm">
+        <thead class="table-primary">
+        <tr>
+            <th>#</th>
+            <th>Zadatak</th>
+            <th>Kategorija</th>
+            <th>Datum zadatka</th>
+            <th>Rok</th>
+            <th>Zaposleni</th>
+            <th>Prioritet</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>#{{ task.id }}</td>
+            <td>{{ task.title }}</td>
+            <td>{{ task.category.title }}</td>
+            <td>{{ task.datumKreiranja | date('d.m.Y.') }}</td>
+            <td>{{ task.deadline | date('d.m.Y.') }}</td>
+            <td>
+                {% for user in task.assignedUsers %}
+                    {{ user.fullName }}<br>
+                {% endfor %}
+            </td>
+            <td>
+                {% if task.priority == 1 %}
+                    <span class="badge bg-danger bg-opacity-20 text-danger">Veoma visok</span>
+                {% elseif task.priority == 2 %}
+                    <span class="badge bg-warning bg-opacity-20 text-warning">Visok</span>
+                {% elseif task.priority == 4 %}
+                    <span class="badge bg-info bg-opacity-20 text-info">Nizak</span>
+                {% elseif task.priority == 5 %}
+                    <span class="badge bg-secondary bg-opacity-20 text-secondary">Veoma nizak</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::NIJE_ZAPOCETO') %}
+                    <span class="badge bg-secondary text-primary">Nije startovan</span>
+                {% endif %}
+                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAPOCETO') %}
+                    <span class="badge bg-yellow text-primary">Otvoren</span>
+                {% endif %}
+                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::ZAVRSENO') %}
+                    <span class="badge bg-primary text-white">Zatvoren</span>
+                {% endif %}
+                {% if task.status == constant('App\\Classes\\Data\\TaskStatusData::VERIFIKOVANO') %}
+                    <span class="badge bg-success text-white">Verifikovano</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

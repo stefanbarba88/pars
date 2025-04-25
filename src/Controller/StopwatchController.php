@@ -9,6 +9,7 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Image;
 use App\Entity\Overtime;
 use App\Entity\Pdf;
+use App\Entity\Production;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
@@ -132,6 +133,35 @@ class StopwatchController extends AbstractController {
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+
+                if (isset($request->request->all()['element'])) {
+                    $progresStop = $stopwatch->getProgres();
+                    $elements = $request->request->all()['element'];
+                    $progresStop[] = $elements;
+
+                    $stopwatch->setProgres($progresStop);
+
+                    $production = $stopwatch->getTaskLog()->getTask()->getProduction();
+                    $productionProgres = $production->getProgres();
+                    if (isset($productionProgres['datum'])) {
+                        $noviStatus = $this->em->getRepository(Production::class)->azurirajProgres($productionProgres, $elements);
+                    } else {
+                        $noviStatus = $this->em->getRepository(Production::class)->azurirajProgres(end($productionProgres), $elements);
+                    }
+
+
+                    $progres[] = $production->getProgres();
+                    $progres[] = $noviStatus;
+                    $production->setProgres($progres);
+                    $production->setPercent($noviStatus['percent']);
+                    if ($noviStatus['percent'] > 0 && $noviStatus['percent'] < 100) {
+                        $production->setStatus(TaskStatusData::ZAPOCETO);
+                    }
+                    if ($noviStatus['percent'] == 100) {
+                        $production->setStatus(TaskStatusData::ZAVRSENO);
+                    }
+                    $this->em->getRepository(Production::class)->save($production);
+                }
 
                 if (isset($request->request->all()['image_delete'])) {
                     $deleteImages = $request->request->all()['image_delete'];
@@ -272,6 +302,17 @@ class StopwatchController extends AbstractController {
         $args['images'] = $stopwatch->getImage()->toArray();
         $args['pdfs'] = $stopwatch->getPdf()->toArray();
 
+        if (!is_null($stopwatch->getTaskLog()->getTask()->getProduction())) {
+            $production = $stopwatch->getTaskLog()->getTask()->getProduction()->getProgres();
+
+            if (isset($production['progres'])) {
+                $args['production'] = $production;
+            } else {
+                $args['production'] = end($production);
+            }
+        }
+
+
         if ($args['hours'] < 10) {
             $args['hours'] = '0' . $args['hours'];
         }
@@ -326,6 +367,35 @@ class StopwatchController extends AbstractController {
                         ->addError(NotifyMessagesData::STOPWATCH_ADD_ERROR);
 
                     return $this->redirectToRoute('app_task_log_view', ['id' => $taskLog->getId()]);
+                }
+
+                if (isset($request->request->all()['element'])) {
+
+                    $elements = $request->request->all()['element'];
+                    $progresStop = [];
+                    $progresStop[] = $elements;
+                    $stopwatch->setProgres($progresStop);
+
+
+                    $production = $stopwatch->getTaskLog()->getTask()->getProduction();
+                    $productionProgres = $production->getProgres();
+                    if (isset($productionProgres['datum'])) {
+                        $noviStatus = $this->em->getRepository(Production::class)->azurirajProgres($productionProgres, $elements);
+                    } else {
+                        $noviStatus = $this->em->getRepository(Production::class)->azurirajProgres(end($productionProgres), $elements);
+                    }
+
+                    $progres[] = $production->getProgres();
+                    $progres[] = $noviStatus;
+                    $production->setProgres($progres);
+                    $production->setPercent($noviStatus['percent']);
+                    if ($noviStatus['percent'] > 0 && $noviStatus['percent'] < 100) {
+                        $production->setStatus(TaskStatusData::ZAPOCETO);
+                    }
+                    if ($noviStatus['percent'] == 100) {
+                        $production->setStatus(TaskStatusData::ZAVRSENO);
+                    }
+                    $this->em->getRepository(Production::class)->save($production);
                 }
 
                 $stopwatch = $this->em->getRepository(StopwatchTime::class)->setTimeManual($stopwatch, $request->request->get('stopwatch_time_add_form_period'));
@@ -436,7 +506,15 @@ class StopwatchController extends AbstractController {
 
         $stopwatch->setMin($args['min']);
 
+        if (!is_null($stopwatch->getTaskLog()->getTask()->getProduction())) {
+            $production = $stopwatch->getTaskLog()->getTask()->getProduction()->getProgres();
 
+            if (isset($production['progres'])) {
+                $args['production'] = $production;
+            } else {
+                $args['production'] = end($production);
+            }
+        }
 
         return $this->render('task/stopwatch_form_modal.html.twig', $args);
     }
@@ -468,6 +546,38 @@ class StopwatchController extends AbstractController {
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+
+
+                if (isset($request->request->all()['element'])) {
+                    $progresStop = $stopwatch->getProgres();
+                    $elements = $request->request->all()['element'];
+
+                    $production = $stopwatch->getTaskLog()->getTask()->getProduction();
+                    $productionProgres = $production->getProgres();
+                    $elem = $this->em->getRepository(Production::class)->saberiPoProductu($progresStop);
+
+                    if (isset($productionProgres['datum'])) {
+                        $noviStatus = $this->em->getRepository(Production::class)->azurirajProgres1($productionProgres, $elements, $elem);
+                    } else {
+                        $noviStatus = $this->em->getRepository(Production::class)->azurirajProgres1(end($productionProgres), $elements, $elem);
+                    }
+                    $progresStop = [];
+                    $progresStop[] = $elements;
+                    $stopwatch->setProgres($progresStop);
+
+                    $progres[] = $production->getProgres();
+                    $progres[] = $noviStatus;
+                    $production->setProgres($progres);
+                    $production->setPercent($noviStatus['percent']);
+                    if ($noviStatus['percent'] > 0 && $noviStatus['percent'] < 100) {
+                        $production->setStatus(TaskStatusData::ZAPOCETO);
+                    }
+                    if ($noviStatus['percent'] == 100) {
+                        $production->setStatus(TaskStatusData::ZAVRSENO);
+                    }
+                    $this->em->getRepository(Production::class)->save($production);
+                }
+
 
                 if (isset($request->request->all()['image_delete'])) {
                     $deleteImages = $request->request->all()['image_delete'];
@@ -565,6 +675,17 @@ class StopwatchController extends AbstractController {
         $args['client'] = $stopwatch->getTaskLog()->getTask()->getProject()->getClient()->toArray();
         $args['images'] = $stopwatch->getImage()->toArray();
         $args['pdfs'] = $stopwatch->getPdf()->toArray();
+
+        if (!is_null($stopwatch->getTaskLog()->getTask()->getProduction())) {
+            $production = $stopwatch->getTaskLog()->getTask()->getProduction()->getProgres();
+            if (isset($production['progres'])) {
+                $args['production'] = $production;
+            } else {
+                $args['production'] = end($production);
+            }
+
+            $args['elem'] = $this->em->getRepository(Production::class)->saberiPoProductu($stopwatch->getProgres());
+        }
 
         return $this->render('task/stopwatch_form_edit.html.twig', $args);
     }
@@ -780,10 +901,6 @@ class StopwatchController extends AbstractController {
         }
         $args = [];
 
-        $history = null;
-
-        $mobileDetect = new MobileDetect();
-
         $form = $this->createForm(ActiveStopwatchTimeFormType::class, $stopwatch, ['attr' => ['action' => $this->generateUrl('app_stopwatch_add_form_in_task', ['id' => $stopwatch->getId()])]]);
 
         if ($request->isMethod('POST')) {
@@ -791,6 +908,35 @@ class StopwatchController extends AbstractController {
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+
+                if (isset($request->request->all()['element'])) {
+                    $progresStop = $stopwatch->getProgres();
+                    $elements = $request->request->all()['element'];
+                    $progresStop[] = $elements;
+
+                    $stopwatch->setProgres($progresStop);
+
+                    $production = $stopwatch->getTaskLog()->getTask()->getProduction();
+                    $productionProgres = $production->getProgres();
+                    if (isset($productionProgres['datum'])) {
+                        $noviStatus = $this->em->getRepository(Production::class)->azurirajProgres($productionProgres, $elements);
+                    } else {
+                        $noviStatus = $this->em->getRepository(Production::class)->azurirajProgres(end($productionProgres), $elements);
+                    }
+
+                    $progres[] = $production->getProgres();
+                    $progres[] = $noviStatus;
+                    $production->setProgres($progres);
+                    $production->setPercent($noviStatus['percent']);
+                    if ($noviStatus['percent'] > 0 && $noviStatus['percent'] < 100) {
+                        $production->setStatus(TaskStatusData::ZAPOCETO);
+                    }
+                    if ($noviStatus['percent'] == 100) {
+                        $production->setStatus(TaskStatusData::ZAVRSENO);
+                    }
+                    $this->em->getRepository(Production::class)->save($production);
+                }
+
 
 
                 if (isset($request->request->all()['image_delete'])) {
@@ -900,6 +1046,17 @@ class StopwatchController extends AbstractController {
         $args['images'] = $stopwatch->getImage()->toArray();
         $args['pdfs'] = $stopwatch->getPdf()->toArray();
 
+        if (!is_null($stopwatch->getTaskLog()->getTask()->getProduction())) {
+            $production = $stopwatch->getTaskLog()->getTask()->getProduction()->getProgres();
+
+            if (isset($production['progres'])) {
+                $args['production'] = $production;
+                } else {
+                $args['production'] = end($production);
+            }
+        }
+
+
         $args['task'] = $stopwatch->getTaskLog()->getTask();
 
         return $this->render('task/stopwatch_form_in_task.html.twig', $args);
@@ -958,5 +1115,6 @@ class StopwatchController extends AbstractController {
 //
 //    return $this->render('task/time_task_form.html.twig', $args);
 //  }
+
 
 }

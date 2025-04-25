@@ -8,6 +8,7 @@ use App\Entity\Client;
 use App\Entity\Element;
 use App\Entity\Nalog;
 use App\Entity\Product;
+use App\Entity\Production;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\Ticket;
@@ -33,7 +34,7 @@ class NalogFormType extends AbstractType {
       public function __construct(private readonly FormBuilderInterface $builder) {
       }
 
-      public function getNalog(): ?Nalog {
+      public function getNalog(): ?Production {
         return $this->builder->getData();
       }
 
@@ -47,6 +48,9 @@ class NalogFormType extends AbstractType {
       $builder
         ->add('project', EntityType::class, [
           'class' => Project::class,
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
           'query_builder' => function (EntityRepository $em) use ($project) {
             return $em->createQueryBuilder('g')
               ->andWhere('g.id = :project')
@@ -85,12 +89,12 @@ class NalogFormType extends AbstractType {
         'input' => 'datetime_immutable',
         'html5' => false,
       ])
-      ->add('nalogKey');
+      ->add('productKey');
   }
 
   public function configureOptions(OptionsResolver $resolver): void {
     $resolver->setDefaults([
-      'data_class' => Nalog::class,
+      'data_class' =>Production::class,
       'allow_extra_fields' => true,
     ]);
   }

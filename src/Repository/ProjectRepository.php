@@ -11,6 +11,7 @@ use App\Entity\Company;
 use App\Entity\Image;
 use App\Entity\ManagerChecklist;
 use App\Entity\Pdf;
+use App\Entity\Production;
 use App\Entity\Project;
 use App\Entity\ProjectHistory;
 use App\Entity\StopwatchTime;
@@ -379,6 +380,22 @@ class ProjectRepository extends ServiceEntityRepository {
 
     return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProjectOther($start, $stop, $project, $kategorija);
   }
+
+    public function getReportProduction(array $data): array {
+        $dates = explode(' - ', $data['period']);
+
+        $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+        $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+        $production = $this->getEntityManager()->getRepository(Production::class)->find($data['production']);
+
+        if (isset($data['naplativ'])) {
+            $naplativ = $data['naplativ'];
+            return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProduction($start, $stop, $production, $naplativ);
+        }
+
+        return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByProduction($start, $stop, $production);
+    }
 
   public function getDaysRemainingProject(Project $project): array {
     $poruka = '';

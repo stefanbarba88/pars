@@ -20,6 +20,7 @@ use App\Entity\Pdf;
 use App\Entity\Phase;
 use App\Entity\Plan;
 use App\Entity\PripremaZadatak;
+use App\Entity\Production;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -325,6 +326,21 @@ class TaskRepository extends ServiceEntityRepository {
         return $qb;
     }
 
+    public function getTasksByProductionPaginator(Production $production): \Doctrine\ORM\QueryBuilder {
+
+        $qb = $this->createQueryBuilder('t');
+
+
+        $qb->andWhere('t.production = :production');
+        $qb->setParameter('production', $production);
+
+        $qb->addOrderBy('t.datumKreiranja', 'DESC')
+            ->addOrderBy('t.deadline', 'ASC')
+            ->addOrderBy('t.id', 'DESC')
+            ->getQuery();
+
+        return $qb;
+    }
 
     public function getTasksByProjectPhasePaginator($filterBy, User $user, Project $project, Phase $phase, $admin){
         $company = $project->getCompany();
@@ -454,6 +470,8 @@ class TaskRepository extends ServiceEntityRepository {
             ->addOrderBy('t.status', 'DESC')
             ->getQuery();
     }
+
+
 
     public function getTasksByUserHomePaginator(User $user) {
         $currentTime = new DateTimeImmutable();

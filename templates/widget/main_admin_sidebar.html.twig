@@ -239,7 +239,43 @@
                                 <span>Arhiva</span>
                             </a>
                         </li>
-
+                        <li class="nav-item-header">
+                            <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Proizvodnja</div>
+                            <i class="ph-dots-three sidebar-resize-show"></i>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_productions') }}" class="nav-link {{ current_route == 'app_productions' ? 'active' : '' }}">
+                                <i class="ph-clipboard-text"></i>
+                                <span>Radni nalozi</span>
+                                {% if countProduction > 0 %}
+                                    <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProduction }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_production_products') }}" class="nav-link {{ current_route == 'app_production_products' ? 'active' : '' }}">
+                                <i class="ph-stack"></i>
+                                <span>Sastavnice</span>
+                                {% if countProducts > 0 %}
+                                    <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProducts }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_production_elements') }}" class="nav-link {{ current_route == 'app_production_elements' ? 'active' : '' }}">
+                                <i class="ph-stack-simple"></i>
+                                <span>Elementi</span>
+                                {% if countElements > 0 %}
+                                    <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countElements }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_production_reports') }}" class="nav-link {{ current_route == 'app_production_reports' ? 'active' : '' }}">
+                                <i class="ph-file-text"></i>
+                                <span>Izveštaji</span>
+                            </a>
+                        </li>
                         <!-- Kalendar -->
                         {% if user.company.settings.isCalendar %}
                             <li class="nav-item-header">
@@ -1116,36 +1152,36 @@
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="" class="nav-link {{ current_route == 'app_checklist_active' ? 'active' : '' }}">
+                        <a href="{{ path('app_productions') }}" class="nav-link {{ current_route == 'app_productions' ? 'active' : '' }}">
                             <i class="ph-clipboard-text"></i>
                             <span>Radni nalozi</span>
-                            {% if countChecklistOnline > 0 %}
-                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistOnline }}</span>
+                            {% if countProduction > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProduction }}</span>
                             {% endif %}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="" class="nav-link {{ current_route == 'app_checklist_list' ? 'active' : '' }}">
+                        <a href="{{ path('app_production_products') }}" class="nav-link {{ current_route == 'app_production_products' ? 'active' : '' }}">
                             <i class="ph-stack"></i>
                             <span>Sastavnice</span>
-                            {% if countChecklistActive > 0 %}
-                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistActive }}</span>
+                            {% if countProducts > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProducts }}</span>
                             {% endif %}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="" class="nav-link {{ current_route == 'app_checklist_list' ? 'active' : '' }}">
+                        <a href="{{ path('app_production_elements') }}" class="nav-link {{ current_route == 'app_production_elements' ? 'active' : '' }}">
                             <i class="ph-stack-simple"></i>
                             <span>Elementi</span>
-                            {% if countChecklistActive > 0 %}
-                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistActive }}</span>
+                            {% if countElements > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countElements }}</span>
                             {% endif %}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="" class="nav-link {{ current_route == 'app_checklist_archive' ? 'active' : '' }}">
-                            <i class="ph-archive"></i>
-                            <span>Arhiva</span>
+                        <a href="{{ path('app_production_reports') }}" class="nav-link {{ current_route == 'app_production_reports' ? 'active' : '' }}">
+                            <i class="ph-file-text"></i>
+                            <span>Izveštaji</span>
                         </a>
                     </li>
 

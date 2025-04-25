@@ -407,7 +407,7 @@
                                                                                         <div class="row">
                                                                                             <div class="col-lg-12">
                                                                                                 <div class="mb-3" style="font-size: 13px">
-                                                                                                    {% for stopwatch in stopwatchesActive %}
+
                                                                                                         <i class="ph-timer me-2"></i>{{ stopwatch.start | date ('d.m.Y H:i') }} - {{ stopwatch.stop | date ('d.m.Y H:i') }}
                                                                                                         {% set startLat = stopwatch.startLat %} {# Zamenite sa stvarnim vrednostima za start lat i lon #}
                                                                                                         {% set startLon = stopwatch.startLon %}
@@ -423,8 +423,8 @@
 
                                                                                                         {% endif %}
 
-                                                                                                        <br>
-                                                                                                    {% endfor %}
+
+
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -788,6 +788,14 @@
                     // Ako nije, učini polje za unos dodatnih aktivnosti neobaveznim i nevidljivim
                     $('#stopwatch_time_add_form_additionalActivity').prop('required', false).hide();
                     $('.dodAkt').prop('required', false).hide();
+                }
+
+                if ($('#stopwatch_time_add_form_activity').val().includes('{{constant('App\\Classes\\AppConfig::RADNI_NALOG_ACTIVITY_ID')}}')) {
+                    // Ako jeste, učini polje za unos dodatnih aktivnosti obaveznim i vidljivim
+                    $('.RADNI').show();
+                } else {
+                    // Ako nije, učini polje za unos dodatnih aktivnosti neobaveznim i nevidljivim
+                    $('.RADNI').hide();
                 }
             }
         });

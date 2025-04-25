@@ -54,6 +54,14 @@
                         </a>
                     </li>
                 {% endif %}
+                <li class="nav-item me-1">
+                    <a href="{{ path('app_project_productions_view', {id : project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                        <div class="d-flex align-items-center mx-lg-1">
+                            <i class="ph-clipboard-text"></i>
+                            <span class="d-none d-lg-inline-block ms-2">Radni nalozi</span>
+                        </div>
+                    </a>
+                </li>
 {#                <li class="nav-item me-1">#}
 {#                    <a href="{{ path('app_project_time_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
 {#                        <div class="d-flex align-items-center mx-lg-1">#}

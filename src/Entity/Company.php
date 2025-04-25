@@ -91,6 +91,18 @@ class Company {
     #[ORM\OneToOne(mappedBy: 'company', cascade: ['persist', 'remove'])]
     private ?Settings $settings = null;
 
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Product::class)]
+    private Collection $products;
+
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Production::class)]
+    private Collection $productions;
+
+    public function __construct()
+    {
+        $this->products = new ArrayCollection();
+        $this->productions = new ArrayCollection();
+    }
+
     #[ORM\PrePersist]
     public function prePersist(): void {
         $this->created = new DateTimeImmutable();
@@ -371,6 +383,66 @@ class Company {
      */
     public function setMb(?string $mb): void {
         $this->mb = $mb;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): static
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+            $product->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): static
+    {
+        if ($this->products->removeElement($product)) {
+            // set the owning side to null (unless already changed)
+            if ($product->getCompany() === $this) {
+                $product->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Production>
+     */
+    public function getProductions(): Collection
+    {
+        return $this->productions;
+    }
+
+    public function addProduction(Production $production): static
+    {
+        if (!$this->productions->contains($production)) {
+            $this->productions->add($production);
+            $production->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduction(Production $production): static
+    {
+        if ($this->productions->removeElement($production)) {
+            // set the owning side to null (unless already changed)
+            if ($production->getCompany() === $this) {
+                $production->setCompany(null);
+            }
+        }
+
+        return $this;
     }
 
 

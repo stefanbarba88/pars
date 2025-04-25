@@ -2,7 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Company;
+use App\Entity\Deo;
 use App\Entity\Product;
+use App\Entity\Production;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
@@ -45,7 +49,7 @@ class ProductRepository extends ServiceEntityRepository {
 
   public function searchByTerm(string $term) {
     return $this->createQueryBuilder('p')
-      ->select('p.id, p.title, p.productKey') // Include the root entity 'u'
+//      ->select('p.id, p.title, p.productKey') // Include the root entity 'u'
       ->where('p.title LIKE :term')
       ->orWhere('p.productKey LIKE :term')
       ->andWhere('p.isSuspended = 0')
@@ -54,8 +58,7 @@ class ProductRepository extends ServiceEntityRepository {
       ->getResult();
   }
 
-  public function getProductsPaginator(array $filter): Query {
-    $company = $this->security->getUser()->getCompany();
+  public function getProductsPaginator(Company $company, array $filter): Query {
 
     $qb = $this->createQueryBuilder('c')
       ->where('c.company = :company')
@@ -80,6 +83,46 @@ class ProductRepository extends ServiceEntityRepository {
   }
 
 
+    public function getChartData(?Company $company, $start, $stop): array {
+
+        $productions = $this->getEntityManager()->getRepository(Production::class)->getProductionByDate($company, $start, $stop);
+
+
+
+        $productQuantities = [];
+
+        if (!empty($productions)) {
+            foreach ($productions as $production) {
+                foreach ($production->getDeo()->toArray() as $item) {
+
+                        $productId = $item->getProduct()->getId();
+                        $productName = $item->getProduct()->getTitle();
+                        $productKey = $item->getProduct()->getProductKey();
+                        $quantity = $item->getKolicina();
+
+                        if (!isset($productQuantities[$productId])) {
+                            $productQuantities[$productId] = [
+                                'title' => $productName,
+                                'productKey' => $productKey,
+                                'quantity' => 0,
+                            ];
+                        }
+
+                        $productQuantities[$productId]['quantity'] += $quantity;
+
+
+                };
+            }
+        }
+
+        usort($productQuantities, function ($a, $b) {
+            return $b['quantity'] <=> $a['quantity'];
+        });
+
+        return array_slice($productQuantities, 0, 5);
+
+
+    }
 
   public function findForForm(int $id = 0): Product {
     if (empty($id)) {

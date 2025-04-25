@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Deo;
+use App\Entity\Sastavnica;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Deo>
@@ -16,10 +19,29 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class DeoRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    private Security $security;
+    public function __construct(ManagerRegistry $registry, Security $security) {
         parent::__construct($registry, Deo::class);
+        $this->security = $security;
     }
+
+    public function save(Deo $sastavnica): Deo {
+        if (is_null($sastavnica->getId())) {
+            $this->getEntityManager()->persist($sastavnica);
+        }
+
+        $this->getEntityManager()->flush();
+        return $sastavnica;
+    }
+
+    public function remove(Deo $entity, bool $flush = false): void {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
 
 //    /**
 //     * @return Deo[] Returns an array of Deo objects

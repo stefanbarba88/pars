@@ -154,6 +154,9 @@ class Project implements JsonSerializable {
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Phase::class)]
     private Collection $phases;
 
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Production::class)]
+    private Collection $productions;
+
     public function getCompany(): ?Company {
         return $this->company;
     }
@@ -173,6 +176,7 @@ class Project implements JsonSerializable {
 //    $this->team = new ArrayCollection();
         $this->managerChecklists = new ArrayCollection();
         $this->phases = new ArrayCollection();
+        $this->productions = new ArrayCollection();
 
     }
 
@@ -836,6 +840,36 @@ class Project implements JsonSerializable {
     public function setIsPhase(bool $isPhase): void
     {
         $this->isPhase = $isPhase;
+    }
+
+    /**
+     * @return Collection<int, Production>
+     */
+    public function getProductions(): Collection
+    {
+        return $this->productions;
+    }
+
+    public function addProduction(Production $production): static
+    {
+        if (!$this->productions->contains($production)) {
+            $this->productions->add($production);
+            $production->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduction(Production $production): static
+    {
+        if ($this->productions->removeElement($production)) {
+            // set the owning side to null (unless already changed)
+            if ($production->getProject() === $this) {
+                $production->setProject(null);
+            }
+        }
+
+        return $this;
     }
 
 

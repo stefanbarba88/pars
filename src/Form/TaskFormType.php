@@ -11,6 +11,7 @@ use App\Entity\Activity;
 use App\Entity\Availability;
 use App\Entity\Category;
 use App\Entity\Label;
+use App\Entity\Production;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\Tool;
@@ -104,8 +105,25 @@ class TaskFormType extends AbstractType {
           'multiple' => false,
           'data' => $project->getIsExpenses()
         ])
+          ->add('production', EntityType::class, [
+              'placeholder' => '--Izaberite radni nalog--',
+              'class' => Production::class,
+              'query_builder' => function (EntityRepository $em) use ($company) {
+                  return $em->createQueryBuilder('g')
+                      ->andWhere('g.isSuspended = :isSuspended')
+                      ->andWhere('g.company = :company')
+                      ->setParameter(':company', $company)
+                      ->setParameter(':isSuspended', 0)
+                      ->orderBy('g.productKey', 'ASC');
+              },
+              'choice_label' => 'productKey',
+              'expanded' => false,
+              'multiple' => false,
+          ])
         ->add('project', EntityType::class, [
-          'placeholder' => '--Izaberite projekat--',
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
           'class' => Project::class,
           'query_builder' => function (EntityRepository $em) use ($project) {
             return $em->createQueryBuilder('g')
@@ -168,119 +186,7 @@ class TaskFormType extends AbstractType {
      }
 
     $builder
-      ->add('title')
-      ->add('description', TextareaType::class, [
-        'required' => false
-      ])
 
-      ->add('label', EntityType::class, [
-        'required' => false,
-        'class' => Label::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.isTaskLabel = :isTaskLabel')
-            ->andWhere('g.company = :company')
-            ->andWhere('g.isSuspended = 0')
-            ->setParameter(':company', $company)
-            ->setParameter(':isTaskLabel', 1)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => true,
-      ])
-      ->add('category', EntityType::class, [
-        'placeholder' => '--Izaberite kategoriju--',
-        'required' => false,
-        'class' => Category::class,
-        'query_builder' => function (EntityRepository $em) use ($company) {
-          return $em->createQueryBuilder('g')
-            ->andWhere('g.isTaskCategory = :isTaskCategory')
-            ->andWhere('g.company = :company')
-            ->orWhere('g.company IS NULL')
-            ->andWhere('g.isSuspended = 0')
-            ->setParameter(':company', $company)
-            ->setParameter(':isTaskCategory', 1)
-            ->orderBy('g.id', 'ASC');
-        },
-        'choice_label' => 'title',
-        'expanded' => false,
-        'multiple' => false,
-      ])
-
-      ->add('repeating', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-
-      ->add('repeatingInterval', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'required' => false,
-        'placeholder' => '--Izaberite period--',
-        'choices' => RepeatingIntervalData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-
-      ->add('datumPonavljanja', DateType::class, [
-        'required' => false,
-        'widget' => 'single_text',
-        'format' => 'dd.MM.yyyy',
-        'html5' => false,
-        'input' => 'datetime_immutable'
-      ])
-      ->add('deadline', DateType::class, [
-        'required' => false,
-        'widget' => 'single_text',
-        'format' => 'dd.MM.yyyy',
-        'input' => 'datetime_immutable',
-        'html5' => false,
-        'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
-      ])
-
-
-      ->add('isTimeRoundUp', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-        'data' => $settings->getIsTimeRoundUp()
-      ])
-      ->add('isFree', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'choices' => PotvrdaData::form(),
-        'expanded' => false,
-        'multiple' => false,
-      ])
-      ->add('minEntry', IntegerType::class, [
-        'required' => false,
-        'attr' => [
-          'min' => '1',
-          'max' => '60'
-        ],
-        'data' => $settings->getMinEntry()
-      ])
-      ->add('roundingInterval', ChoiceType::class, [
-        'attr' => [
-          'data-minimum-results-for-search' => 'Infinity',
-        ],
-        'required' => false,
-        'placeholder' => '--Izaberite model zaokruživanja--',
-        'choices' => RoundingIntervalData::form(),
-        'expanded' => false,
-        'multiple' => false,
-        'data' => $settings->getRoundingInterval(),
-      ])
 
 //      ->add('isEstimate', ChoiceType::class, [
 //        'attr' => [
@@ -290,7 +196,113 @@ class TaskFormType extends AbstractType {
 //        'expanded' => false,
 //        'multiple' => false,
 //      ])
-
+        ->add('title')
+        ->add('description', TextareaType::class, [
+            'required' => false
+        ])
+        ->add('label', EntityType::class, [
+            'required' => false,
+            'class' => Label::class,
+            'query_builder' => function (EntityRepository $em) use ($company) {
+                return $em->createQueryBuilder('g')
+                    ->andWhere('g.isTaskLabel = :isTaskLabel')
+                    ->andWhere('g.company = :company')
+                    ->andWhere('g.isSuspended = 0')
+                    ->setParameter(':company', $company)
+                    ->setParameter(':isTaskLabel', 1)
+                    ->orderBy('g.id', 'ASC');
+            },
+            'choice_label' => 'title',
+            'expanded' => false,
+            'multiple' => true,
+        ])
+        ->add('category', EntityType::class, [
+            'placeholder' => '--Izaberite kategoriju--',
+            'required' => false,
+            'class' => Category::class,
+            'query_builder' => function (EntityRepository $em) use ($company) {
+                return $em->createQueryBuilder('g')
+                    ->andWhere('g.isTaskCategory = :isTaskCategory')
+                    ->andWhere('g.company = :company')
+                    ->orWhere('g.company IS NULL')
+                    ->andWhere('g.isSuspended = 0')
+                    ->setParameter(':company', $company)
+                    ->setParameter(':isTaskCategory', 1)
+                    ->orderBy('g.id', 'ASC');
+            },
+            'choice_label' => 'title',
+            'expanded' => false,
+            'multiple' => false,
+        ])
+        ->add('repeating', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'choices' => PotvrdaData::form(),
+            'expanded' => false,
+            'multiple' => false,
+        ])
+        ->add('repeatingInterval', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'required' => false,
+            'placeholder' => '--Izaberite period--',
+            'choices' => RepeatingIntervalData::form(),
+            'expanded' => false,
+            'multiple' => false,
+        ])
+        ->add('datumPonavljanja', DateType::class, [
+            'required' => false,
+            'widget' => 'single_text',
+            'format' => 'dd.MM.yyyy',
+            'html5' => false,
+            'input' => 'datetime_immutable'
+        ])
+        ->add('deadline', DateType::class, [
+            'required' => false,
+            'widget' => 'single_text',
+            'format' => 'dd.MM.yyyy',
+            'input' => 'datetime_immutable',
+            'html5' => false,
+            'attr' => ['min' => date('Y-m-d')] // Postavljamo minimalni datum na trenutni datum
+        ])
+        ->add('isTimeRoundUp', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'choices' => PotvrdaData::form(),
+            'expanded' => false,
+            'multiple' => false,
+            'data' => $settings->getIsTimeRoundUp()
+        ])
+        ->add('isFree', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'choices' => PotvrdaData::form(),
+            'expanded' => false,
+            'multiple' => false,
+        ])
+        ->add('minEntry', IntegerType::class, [
+            'required' => false,
+            'attr' => [
+                'min' => '1',
+                'max' => '60'
+            ],
+            'data' => $settings->getMinEntry()
+        ])
+        ->add('roundingInterval', ChoiceType::class, [
+            'attr' => [
+                'data-minimum-results-for-search' => 'Infinity',
+            ],
+            'required' => false,
+            'placeholder' => '--Izaberite model zaokruživanja--',
+            'choices' => RoundingIntervalData::form(),
+            'expanded' => false,
+            'multiple' => false,
+            'data' => $settings->getRoundingInterval(),
+        ])
       ->add('isSeparate', ChoiceType::class, [
         'attr' => [
           'data-minimum-results-for-search' => 'Infinity',
@@ -299,7 +311,6 @@ class TaskFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-
       ->add('activity', EntityType::class, [
         'required' => false,
         'class' => Activity::class,
@@ -326,7 +337,6 @@ class TaskFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
-
       ->add('pdf', FileType::class, [
         'attr' => ['accept' => '.pdf', 'data-show-upload' => 'false'],
         'multiple' => true,

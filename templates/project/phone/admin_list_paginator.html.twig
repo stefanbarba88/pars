@@ -101,6 +101,7 @@
                                         {% set noTasksIntern = getCountTasksByProjectIntern(project) | length  %}
                                         {% set noTasks = getCountTasksByProject(project)  %}
                                         {% set projectDays = getDaysRemainingProject(project) %}
+                                        {% set phaseEff = getUcinkovitostProject(project) %}
                                         <tr class="{{ projectDays.klasa }}">
                                             <td>
                                                 <div class="fw-semibold">
@@ -108,6 +109,11 @@
 {#                                                    {% if project.client.first.id == 5 %}#}
 {#                                                        <i class="ph-info" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="Za Exing projekte uzima se period od 26-og predhodnog meseca." data-bs-original-title="Napomena"></i>#}
 {#                                                    {% endif %}#}
+                                                    {% if project.isPhase %}
+                                                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ phaseEff}}%
+                                                    </span>
+                                                    {% endif %}
                                                 </div>
                                             </td>
                                             <td>

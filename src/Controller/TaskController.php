@@ -11,6 +11,7 @@ use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\Pdf;
 use App\Entity\Phase;
+use App\Entity\Production;
 use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -30,6 +31,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -38,7 +40,9 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 #[Route('/tasks')]
 class TaskController extends AbstractController {
-  public function __construct(private readonly ManagerRegistry $em) {
+    private RequestStack $requestStack;
+  public function __construct(private readonly ManagerRegistry $em, RequestStack $requestStack) {
+      $this->requestStack = $requestStack;
   }
 
   #[Route('/list/', name: 'app_tasks')]
@@ -249,6 +253,12 @@ class TaskController extends AbstractController {
       $datumKreiranja = DateTimeImmutable::createFromFormat('d.m.Y', $data['datumK']);
     }
 
+    if (isset($request->request->all('task_form')['production'])) {
+        $prod = $request->request->all('task_form')['production'];
+        $production = $this->em->getRepository(Production::class)->find($prod);
+        $task->setProduction($production);
+    }
+
     $task->setDatumKreiranja($datumKreiranja->setTime(0,0));
 
     $mobileDetect = new MobileDetect();
@@ -283,6 +293,9 @@ class TaskController extends AbstractController {
 
       $form->handleRequest($request);
       if ($form->isSubmitted() && $form->isValid()) {
+
+
+
 
         if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE ) {
           if ($this->em->getRepository(Task::class)->getTaskByUserCheck($user)) {
@@ -829,13 +842,12 @@ class TaskController extends AbstractController {
     }
 
 
-    if($mobileDetect->isMobile()) {
-      if($this->getUser()->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        if($mobileDetect->isMobile()) {
+            if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {
+                return $this->render('task/phone/mobile_form.html.twig', $args);
+            }
+        }
         return $this->render('task/form.html.twig', $args);
-      }
-      return $this->render('task/phone/mobile_form.html.twig', $args);
-    }
-    return $this->render('task/form.html.twig', $args);
   }
 
   #[Route('/edit-info/{id}', name: 'app_task_edit_info')]
@@ -912,7 +924,6 @@ class TaskController extends AbstractController {
     return $this->render('task/edit_info.html.twig', $args);
   }
 
-
   public function editDate(Task $task, int $project = 0): Response {
 
     $args['task'] = $task;
@@ -920,6 +931,14 @@ class TaskController extends AbstractController {
     if ($project != 0) {
       $args['project'] = $project;
     }
+
+      $session = $this->requestStack->getSession();
+      $args['admin'] = false;
+      if ($session->has('admin')) {
+          $args['admin'] = true;
+      }
+
+
     $mobileDetect = new MobileDetect();
     if($mobileDetect->isMobile()) {
       if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE && !$args['admin']) {

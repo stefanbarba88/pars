@@ -24,6 +24,9 @@ class StopwatchTime {
   #[ORM\Column(nullable: true)]
   private ?DateTimeImmutable $stop = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true,)]
+    private ?string $progres = null;
+
   #[ORM\Column(nullable: true)]
   private ?int $diff = null;
 
@@ -147,7 +150,20 @@ class StopwatchTime {
 
     return $this;
   }
+    /**
+     * @return array|null
+     */
+    public function getProgres(): ?array {
+        return json_decode($this->progres, true);
+    }
 
+    /**
+     * @param array|null $progres
+     */
+    public function setProgres(?array $progres): self {
+        $this->progres = json_encode($progres);
+        return $this;
+    }
   public function getStop(): ?\DateTimeImmutable {
     return $this->stop;
   }

@@ -232,6 +232,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ path('app_employee_documents_view', {id:user.id}) }}" class="nav-link {{ current_route == 'app_employee_documents_view' ? 'active' : '' }}">
+                            <i class="ph-files"></i>
+                            <span>Dokumentacija</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ path('app_users_contacts') }}" class="nav-link {{ current_route == 'app_users_contacts' ? 'active' : '' }}">
                             <i class="ph-address-book"></i>
                             <span>Kontakti</span>

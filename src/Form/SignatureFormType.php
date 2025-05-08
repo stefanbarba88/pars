@@ -136,8 +136,8 @@ class SignatureFormType extends AbstractType {
         // in the associated entity, so you can use the PHP constraint classes
         'constraints' => [
           new Image([
-            'maxSize' => '5120k',
-            'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 5Mb'
+            'maxSize' => '10240k',
+            'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 10Mb'
           ])
         ],
       ]);

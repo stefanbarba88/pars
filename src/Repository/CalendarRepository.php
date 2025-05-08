@@ -53,6 +53,49 @@ class CalendarRepository extends ServiceEntityRepository {
 
   }
 
+  public function getRequestByUserMesec(User $user, DateTimeImmutable $date): array {
+//    $startDate = $date->modify('first day of this month')->setTime(0, 0);
+//    $endDate = $date->modify('last day of this month')->setTime(23, 59);
+
+    $startDate = $date->modify('first day of last month')->setTime(0, 0);
+    $endDate = $date->modify('last day of last month')->setTime(23, 59);
+
+    $dan = 0;
+    $odmor = 0;
+    $slava = 0;
+    $bolovanje = 0;
+
+    $requests = $user->getCalendars()->toArray();
+
+    foreach ($requests as $req) {
+      if($req->getStart() >= $startDate && $req->getStart() <= $endDate) {
+        if ($req->getStatus() != 0) {
+          if ($req->getType() == CalendarColorsData::DAN) {
+            $dan++;
+          }
+          if ($req->getType() == CalendarColorsData::ODMOR) {
+            $odmor++;
+          }
+          if ($req->getType() == CalendarColorsData::BOLOVANJE) {
+            $bolovanje++;
+          }
+          if ($req->getType() == CalendarColorsData::SLAVA) {
+            $slava++;
+          }
+
+        }
+      }
+    }
+
+    return  [
+      'dan' => $dan,
+      'odmor' => $odmor,
+      'bolovanje' => $bolovanje,
+      'slava' => $slava,
+      'ukupno' => $dan + $odmor + $bolovanje + $slava
+    ];
+
+  }
   public function getRequestByUser(User $user, $year): array {
     $startDate = new DateTimeImmutable("$year-01-01");
 

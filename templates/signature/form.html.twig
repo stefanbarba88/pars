@@ -1,0 +1,177 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Dozvole gradilišta
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <div class="content">
+                    {% if not form.vars.valid %}
+                        {% for child in form.children %}
+                            {%for error in child.vars.errors%}
+                                <div class="alert alert-danger alert-dismissible fade show">
+                                    <span class="fw-semibold">{{error.message}}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {%endfor%}
+                        {%endfor%}
+                    {%endif%}
+                    <!-- Wizard with validation -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                {% if signature.id is not null %}
+                                    Izmena dozvole
+                                {% else %}
+                                    Dodavanje dozvole
+                                {% endif %}
+                            </h6>
+                        </div>
+                        {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'signature_form' }}) }}
+                        <div class="card-body">
+                            {% if app.user.userType == 4 %}
+                                <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.relation, 'Projekat:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.relation, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.employee, 'Zaposleni:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.employee, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 hide">
+                                    <div class="mb-3">
+                                        {{ form_label(form.isApproved, 'Dozvola:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.isApproved, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            {{ form_label(form.relation, 'Projekat:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.relation, {attr: { class: 'form-control select required' }}) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            {{ form_label(form.employee, 'Zaposleni:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.employee, {attr: { class: 'form-control select required' }}) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            {{ form_label(form.isApproved, 'Dozvola:*', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.isApproved, {attr: { class: 'form-control select required' }}) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if app.user.userType != 4 %}
+                                <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        {{ form_label(form.image, 'Slika potpisanog dokumenta:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.image, {attr: { class: 'form-control file-input' }}) }}
+                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 5Mb.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                                <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        {{ form_label(form.image, 'Slika potpisanog dokumenta:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.image, {attr: { class: 'form-control file-input required' }}) }}
+                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 5Mb.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                            </div>
+                        </div>
+                        {{ form_end(form) }}
+
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+
+{% endblock includeJavascript %}

@@ -102,6 +102,10 @@
                                             </div>
                                         </div>
                                         <div class="row p-2">
+                                            <div class="col-4">Oštećenje:</div>
+                                            <div class="col-8"> {% if reservation.crashStart %} Ima oštećenje {% else %} Nema oštećenje{% endif %}</div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
                                             <div class="col-4">Napomena:</div>
                                             <div class="col-8"> {{ reservation.descStart }}</div>
                                         </div>
@@ -186,6 +190,10 @@
                                                 </div>
                                             </div>
                                             <div class="row p-2">
+                                                <div class="col-4">Oštećenje:</div>
+                                                <div class="col-8"> {% if reservation.crashStop %} Ima oštećenje {% else %} Nema oštećenje{% endif %}</div>
+                                            </div>
+                                            <div class="row p-2 bg-light">
                                                 <div class="col-4">Napomena:</div>
                                                 <div class="col-8"> {{ reservation.descStop }}</div>
                                             </div>

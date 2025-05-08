@@ -851,7 +851,9 @@
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
     {% include 'includes/notification.html.twig' %}
-
+{#    {% if not vote %}#}
+{#        {% include 'includes/survey.html.twig' %}#}
+{#    {% endif %}#}
     {% if tomorrowTimetable is not empty %}
         {% for task in tomorrowTimetable %}
             {% if task['projekat'] is not null %}
@@ -1070,22 +1072,24 @@
                                                 {% endif %}
                                             </div>
                                         </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Ponavljanje:</div>
-                                            <div class="col-8">
-                                                Zadatak se ponavlja
-                                                {% if task.repeatingInterval == 1 %}
-                                                    svakog dana, sledeći zadatak će biti dostupan
-                                                {% elseif  task.repeatingInterval == 2 %}
-                                                    svake sedmice, sledeći zadatak će biti dostupan
-                                                {% elseif  task.repeatingInterval == 3 %}
-                                                    svakog meseca, sledeći zadatak će biti dostupan
-                                                {% elseif  task.repeatingInterval == 4 %}
-                                                    svake godine, sledeći zadatak će biti dostupan
-                                                {% endif %}
-                                                {{ task.datumPonavljanja | date("d.m.Y.")}}
+                                        {% if task.repeating == 1 %}
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Ponavljanje:</div>
+                                                <div class="col-8">
+
+                                                    {% if task.repeatingInterval == 1 %}
+                                                        svakog dana, sledeći zadatak će biti dostupan
+                                                    {% elseif  task.repeatingInterval == 2 %}
+                                                        svake sedmice, sledeći zadatak će biti dostupan
+                                                    {% elseif  task.repeatingInterval == 3 %}
+                                                        svakog meseca, sledeći zadatak će biti dostupan
+                                                    {% elseif  task.repeatingInterval == 4 %}
+                                                        svake godine, sledeći zadatak će biti dostupan
+                                                    {% endif %}
+                                                    {{ task.datumPonavljanja | date("d.m.Y.")}}
+                                                </div>
                                             </div>
-                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -1177,22 +1181,24 @@
                                                 {% endif %}
                                             </div>
                                         </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Ponavljanje:</div>
-                                            <div class="col-8">
-                                                Zadatak se ponavlja
-                                                {% if task.repeatingInterval == 1 %}
-                                                    svakog dana, sledeći zadatak će biti dostupan
-                                                {% elseif  task.repeatingInterval == 2 %}
-                                                    svake sedmice, sledeći zadatak će biti dostupan
-                                                {% elseif  task.repeatingInterval == 3 %}
-                                                    svakog meseca, sledeći zadatak će biti dostupan
-                                                {% elseif  task.repeatingInterval == 4 %}
-                                                    svake godine, sledeći zadatak će biti dostupan
-                                                {% endif %}
-                                                {{ task.datumPonavljanja | date("d.m.Y.")}}
+                                        {% if task.repeating == 1 %}
+                                            <div class="row p-2 bg-light">
+                                                <div class="col-4">Ponavljanje:</div>
+                                                <div class="col-8">
+
+                                                    {% if task.repeatingInterval == 1 %}
+                                                        svakog dana, sledeći zadatak će biti dostupan
+                                                    {% elseif  task.repeatingInterval == 2 %}
+                                                        svake sedmice, sledeći zadatak će biti dostupan
+                                                    {% elseif  task.repeatingInterval == 3 %}
+                                                        svakog meseca, sledeći zadatak će biti dostupan
+                                                    {% elseif  task.repeatingInterval == 4 %}
+                                                        svake godine, sledeći zadatak će biti dostupan
+                                                    {% endif %}
+                                                    {{ task.datumPonavljanja | date("d.m.Y.")}}
+                                                </div>
                                             </div>
-                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -1704,3 +1710,13 @@
     <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
 
 {% endblock includeJavascript %}
+{% block footerJavascript %}
+{#    <script type="text/javascript">#}
+{#        {% if not vote %}#}
+{#        document.addEventListener('DOMContentLoaded', function() {#}
+{#            var modal = new bootstrap.Modal(document.getElementById('modal_form_survey'));#}
+{#            modal.show();#}
+{#        });#}
+{#        {% endif %}#}
+{#    </script>#}
+{% endblock footerJavascript %}

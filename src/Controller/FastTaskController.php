@@ -26,8 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/quick-tasks')]
-class
-FastTaskController extends AbstractController {
+class FastTaskController extends AbstractController {
   public function __construct(private readonly ManagerRegistry $em) {
   }
   #[Route('/list', name: 'app_quick_tasks')]

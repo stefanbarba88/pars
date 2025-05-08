@@ -1,0 +1,175 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::headerUser' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ user.getFullName() }}
+                            </h4>
+                        </div>
+                    </div>
+
+                    {{ render(controller('App\\Controller\\WidgetController::employeeProfilNavigation', { user: user } )) }}
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Left sidebar component -->
+                        {{ render(controller('App\\Controller\\WidgetController::employeeProfilSidebar', { user: user } )) }}
+                        <!-- /left sidebar component -->
+
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                        <div class="card-header d-flex align-items-center">
+                                            <h5 class="mb-0">Dodata dokumenta o zaposlenom</h5>
+                                            <div class="my-auto ms-auto">
+                                                {% if pdfs is not empty %}
+                                                <a href="#" id="delete-doc-btn" class="btn btn-danger"><i class="ph-trash me-2"></i> Obrišite</a>
+                                                {% endif %}
+                                                <a href="{{ path('app_employee_documents_add', {id: user.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-4">
+                                                <div class="row">
+                                                    {% if pdfs is empty %}
+                                                        <div class="d-flex align-items-start mb-3">
+                                                            <div class="list-group-item">
+                                                                <div class="fw-semibold text-truncate">Nema dokumenata</div>
+                                                            </div>
+                                                        </div>
+                                                    {% else %}
+                                                        <form name="add_doc" method="post" action="{{ path('app_employee_documents_view', {id: user.id}) }}" id="task_form">
+                                                            <div class="row">
+                                                                {% for pdf in pdfs %}
+                                                                    <div class="col-xl-4 col-sm-6">
+                                                                        <div class="card card-body">
+                                                                            <div class="d-flex list-group-item align-items-start">
+                                                                                <div class="me-3">
+                                                                                    <a href="{{ asset(pdf.path) }}" download><i class="ph-file-pdf text-danger ph-2x mt-1"></i></a>
+                                                                                </div>
+                                                                                <div class="flex-fill overflow-hidden">
+                                                                                    <div class="fw-semibold text-truncate">{{ pdf.title }}</div>
+
+                                                                                </div>
+                                                                                <div class="ms-3">
+                                                                                    <a href="{{ asset(pdf.path) }}" download class="text-body">
+                                                                                        <i class="ph-download-simple"></i>
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="d-flex align-items-start flex-nowrap">
+                                                                                <div>
+                                                                                    <div class="fw-semibold me-2">Označiti za brisanje</div>
+                                                                                </div>
+
+                                                                                <div class="d-inline-flex ms-auto">
+                                                                                    <input type="checkbox" name="pdf_delete[{{ loop.index }}][checked]" class="form-check-input">
+                                                                                    <input type="text" hidden="hidden" value="{{ pdf.id }}" name="pdf_delete[{{ loop.index }}][value]" class="form-check-input">
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+    <script>
+        document.getElementById('delete-doc-btn').addEventListener('click', function(event) {
+            event.preventDefault(); // Sprečava default ponašanje <a> taga
+            document.getElementById('task_form').submit(); // Submita formu
+        });
+    </script>
+{% endblock includeJavascript %}
+

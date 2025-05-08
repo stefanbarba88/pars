@@ -28,7 +28,7 @@ class ResetPasswordController extends AbstractController {
   public function __construct(
     private ResetPasswordHelperInterface $resetPasswordHelper,
     private EntityManagerInterface       $entityManager,
-    private MailService $mail
+    private MailService                  $mail
   ) {
   }
 
@@ -36,7 +36,7 @@ class ResetPasswordController extends AbstractController {
    * Display & process form to request a password reset.
    */
   #[Route('', name: 'app_forgot_password_request')]
-  public function request(Request $request, MailerInterface $mailer, TranslatorInterface $translator)    : Response {
+  public function request(Request $request, MailerInterface $mailer, TranslatorInterface $translator): Response {
 //    if (!$this->isGranted('ROLE_ADMIN')) {
 //      return $this->redirect($this->generateUrl('app_login'));
 //    }
@@ -60,7 +60,8 @@ class ResetPasswordController extends AbstractController {
    * Confirmation page after a user has requested a password reset.
    */
   #[Route('/check-email', name: 'app_check_email')]
-  public function checkEmail()    : Response { if ($this->isGranted('ROLE_ADMIN')) {
+  public function checkEmail(): Response {
+    if ($this->isGranted('ROLE_ADMIN')) {
       return $this->redirect($this->generateUrl('app_home'));
     }
     // Generate a fake token if the user does not exist or someone hit this page directly.
@@ -78,7 +79,7 @@ class ResetPasswordController extends AbstractController {
    * Validates and process the reset URL that the user clicked in their email.
    */
   #[Route('/reset/{token}', name: 'app_reset_password')]
-  public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator, string $token = null)    : Response {
+  public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator, string $token = null): Response {
     if ($this->isGranted('ROLE_ADMIN')) {
       return $this->redirect($this->generateUrl('app_home'));
     }

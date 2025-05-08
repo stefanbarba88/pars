@@ -51,6 +51,9 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\Column(length: 13, nullable: true)]
   private ?string $jmbg = null;
 
+  #[ORM\Column(length: 13, nullable: true)]
+  private ?string $lk = null;
+
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $adresa = null;
 
@@ -192,6 +195,20 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\OneToMany(mappedBy: 'user', targetEntity: TimeTask::class)]
   private Collection $timeTasks;
 
+  #[ORM\ManyToMany(targetEntity: Elaborat::class, mappedBy: 'employee')]
+  private Collection $elaborats;
+
+  #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Signature::class)]
+  private Collection $signatures;
+
+  #[ORM\OneToMany(mappedBy: 'user', targetEntity: Pdf::class, cascade: ["persist", "remove"])]
+  private Collection $docs;
+
+  #[ORM\ManyToOne(inversedBy: 'users')]
+  private ?Project $project = null;
+
+
+
   public function getCompany(): ?Company {
     return $this->company;
   }
@@ -215,6 +232,9 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     $this->toolReservations = new ArrayCollection();
     $this->overtimes = new ArrayCollection();
     $this->timeTasks = new ArrayCollection();
+    $this->elaborats = new ArrayCollection();
+    $this->signatures = new ArrayCollection();
+    $this->docs = new ArrayCollection();
 
   }
 
@@ -1098,5 +1118,113 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   public function setNeradniDan(?int $neradniDan): void {
     $this->neradniDan = $neradniDan;
   }
+
+  /**
+   * @return Collection<int, Elaborat>
+   */
+  public function getElaborats(): Collection
+  {
+      return $this->elaborats;
+  }
+
+  public function addElaborat(Elaborat $elaborat): self
+  {
+      if (!$this->elaborats->contains($elaborat)) {
+          $this->elaborats->add($elaborat);
+          $elaborat->addEmployee($this);
+      }
+
+      return $this;
+  }
+
+  public function removeElaborat(Elaborat $elaborat): self
+  {
+      if ($this->elaborats->removeElement($elaborat)) {
+          $elaborat->removeEmployee($this);
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Signature>
+   */
+  public function getSignatures(): Collection
+  {
+      return $this->signatures;
+  }
+
+  public function addSignature(Signature $signature): self
+  {
+      if (!$this->signatures->contains($signature)) {
+          $this->signatures->add($signature);
+          $signature->setEmployee($this);
+      }
+
+      return $this;
+  }
+
+  public function removeSignature(Signature $signature): self
+  {
+      if ($this->signatures->removeElement($signature)) {
+          // set the owning side to null (unless already changed)
+          if ($signature->getEmployee() === $this) {
+              $signature->setEmployee(null);
+          }
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Pdf>
+   */
+  public function getDocs(): Collection
+  {
+      return $this->docs;
+  }
+
+  public function addDoc(Pdf $doc): self
+  {
+      if (!$this->docs->contains($doc)) {
+          $this->docs->add($doc);
+          $doc->setUser($this);
+      }
+
+      return $this;
+  }
+
+  public function removeDoc(Pdf $doc): self
+  {
+      if ($this->docs->removeElement($doc)) {
+          // set the owning side to null (unless already changed)
+          if ($doc->getUser() === $this) {
+              $doc->setUser(null);
+          }
+      }
+
+      return $this;
+  }
+
+  public function getLk(): ?string {
+    return $this->lk;
+  }
+
+  public function setLk(?string $lk): void {
+    $this->lk = $lk;
+  }
+
+  public function getProject(): ?Project
+  {
+      return $this->project;
+  }
+
+  public function setProject(?Project $project): self
+  {
+      $this->project = $project;
+
+      return $this;
+  }
+
 
 }

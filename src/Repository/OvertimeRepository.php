@@ -141,6 +141,52 @@ class OvertimeRepository extends ServiceEntityRepository {
     return sprintf("%02d:%02d", $sati, $minuti);
 
   }
+  public function getOvertimeByUserMesec(User $user, DateTimeImmutable $date): array {
+
+//    $startDate = $date->modify('first day of this month')->setTime(0, 0);
+//    $endDate = $date->modify('last day of this month')->setTime(23, 59);
+
+    $startDate = $date->modify('first day of last month')->setTime(0, 0);
+    $endDate = $date->modify('last day of last month')->setTime(23, 59);
+
+    $sati = 0;
+    $minuti = 0;
+    $overtimes = $this->createQueryBuilder('c')
+      ->where('c.status = :status')
+      ->andWhere('c.user = :user')
+      ->andWhere('c.datum BETWEEN :startDate AND :endDate')  // Dodajte uvjet za datum
+      ->setParameter('status', 1)
+      ->setParameter('user', $user)
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->getQuery()
+      ->getResult();
+
+//
+//
+//    $overtimes = $this->createQueryBuilder('c')
+//      ->where('c.status = :status')
+//      ->andWhere('c.user = :user')
+//      ->setParameter('status', 1)
+//      ->setParameter('user', $user)
+//      ->getQuery()
+//      ->getResult();
+
+    if (!empty($overtimes)) {
+      foreach ($overtimes as $over) {
+        $sati = $sati + ($over->getHours() * 60);
+        $minuti = $minuti + $over->getMinutes();
+      }
+    }
+
+    $ukupno = $sati + $minuti;
+
+    $sati = floor($ukupno / 60);
+    $minuti = $ukupno % 60;
+
+    return [sprintf("%02d:%02d", $sati, $minuti), $overtimes];
+
+  }
 
 //    /**
 //     * @return Overtime[] Returns an array of Overtime objects

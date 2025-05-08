@@ -68,6 +68,14 @@ class RepeatingTasksCreatorCommand extends Command {
 
         $newTask->setDatumKreiranja($task->getDatumPonavljanja());
 
+        if (!is_null($task->getTime())) {
+          $time = $task->getTime();
+          $datum = $newTask->getDatumKreiranja();
+          $newTime = $datum->setTime($time->format('H'), $time->format('i'));
+          $newTask->setTime($newTime);
+        }
+
+
         if ($task->getRepeatingInterval() == RepeatingIntervalData::TACAN_DATUM) {
           $newTask->setDatumPonavljanja(null);
           $newTask->setRepeating(null);

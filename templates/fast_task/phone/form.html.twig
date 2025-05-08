@@ -59,6 +59,9 @@
                                                                                 {% if member.car is not null %}
                                                                                     <i class="ph-car me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{ member.car.plate }}" data-bs-original-title="Zaduženo vozilo"></i>
                                                                                 {% endif %}
+                                                                                {% if member.oprema is not empty %}
+                                                                                    <i class="ph-wrench me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{% for alat in member.oprema %}{{ alat }}{% if not loop.last %}, {% endif %}{% endfor %}" data-bs-original-title="Zadužena oprema"></i>
+                                                                                {% endif %}
                                                                                 {% if member.vreme is not empty %}
                                                                                     <i class="ph-coffee me-2" data-bs-popup="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{ member.vreme }}" data-bs-original-title="Nedostupan"></i>
                                                                                 {% endif %}

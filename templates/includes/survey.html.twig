@@ -1,0 +1,51 @@
+<div id="modal_form_survey" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white border-0 ">
+                <h5 class="modal-title ">Proslava Nove godine 🎉</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form action="{{ path('app_survey_form', {id:1}) }}" method="post">
+                <div class="modal-body">
+                    <p>Pozdrav kolege/koleginice,</p>
+                    <strong>Kako se nekolicina kolega preodmislila, onima koji su glasali da neće ili ne znaju da li će prisustvovati su poništeni glasovi pa se mole da se ponovo izjasne. Rok je do 9.12.2024.</strong>
+                    <p>Obaveštavam vas da će se u subotu, 21.decembra u 16:00h organizovati okupljanje povodom proslave Nove godine u novoj kancelariji (Bulevar Arsenija Čarnojevića br.53)!</p>
+                    <p>Kako bismo učinili proslavu zabavnijom, organizovaćemo "Secret Santa" igru razmene poklona među zaposlenima.</p>
+                    <p>Pravila su jednostavna: svi koji žele da učestvuju dobiće mejl na kome će pisati ime kolege/koleginice kome će pripremiti mali poklon iznenađenja (vrednost poklona da bude u rasponu 1000-1500din).</p>
+                    <p>Učešće u igri nije obavezno, tako da možete prisustvovati proslavi i bez uključivanja u razmenu poklona.</p>
+                    <hr>
+                    <h6 class="fw-semibold">Da li dolazite na proslavu?</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="attendance" id="attend_yes" value="1" required>
+                        <label class="form-check-label" for="attend_yes">Da</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="attendance" id="attend_no" value="0" required>
+                        <label class="form-check-label" for="attend_no">Ne</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="attendance" id="attend_maybe" value="2" required>
+                        <label class="form-check-label" for="attend_maybe">Ne znam</label>
+                    </div>
+                    <hr>
+                    <!-- Pitanje: Da li učestvujete u igri? -->
+                    <h6 class="fw-semibold">Da li učestvujete u igri?</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="secret_santa" id="santa_yes" value="1" required>
+                        <label class="form-check-label" for="santa_yes">Da</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="secret_santa" id="santa_no" value="0" required>
+                        <label class="form-check-label" for="santa_no">Ne</label>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i> Zatvorite</button>
+                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

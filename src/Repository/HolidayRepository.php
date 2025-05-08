@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Classes\Data\CalendarColorsData;
 use App\Classes\Data\TipNeradnihDanaData;
+use App\Entity\Company;
 use App\Entity\Holiday;
 use App\Entity\User;
 use DateInterval;
@@ -234,6 +235,73 @@ class HolidayRepository extends ServiceEntityRepository {
     return $praznici;
   }
 
+  public function brojRadnihDanaMesec(DateTimeImmutable $date): int {
+    $company = $this->getEntityManager()->getRepository(Company::class)->find(1);
+
+    $firstDay = $date->modify('first day of last month')->setTime(0, 0);
+    $lastDay = $date->modify('last day of last month')->setTime(0, 0);
+
+
+    // Izračunaj razliku između današnjeg datuma i početka godine
+    $razlika = date_diff($firstDay, $lastDay);
+
+    // Uzmi broj dana iz razlike
+    $brojDana = $razlika->days;
+
+    // Inicijalizuj broj radnih dana
+    $brojRadnihDana = 0;
+
+    // Petlja kroz svaki dan između početka godine i juče
+    for ($i = 0; $i <= $brojDana; $i++) {
+      // Kreiraj DateTime objekat za trenutni dan
+
+      // Proveri da li je trenutni dan radni dan i nije nedelja
+      if ($firstDay->format('N') < $company->getWorkWeek()) {
+        $brojRadnihDana++;
+      }
+
+      $firstDay = $firstDay->modify("+1 day");
+    }
+
+
+    return $brojRadnihDana - $this->brojNeradnihDanaMesec($date);
+
+  }
+  public function brojNeradnihDanaMesec(DateTimeImmutable $date): int {
+    $company = $this->getEntityManager()->getRepository(Company::class)->find(1);
+
+//    $startDate = $date->modify('first day of this month')->setTime(0, 0, 0);
+    $startDate = $date->modify('first day of last month')->setTime(0, 0, 0);
+
+    // Poslednji dan meseca
+//    $endDate = $date->modify('last day of this month')->setTime(23, 59, 59);
+    $endDate = $date->modify('last day of last month')->setTime(23, 59, 59);
+
+//    $endDate = $endDate->sub(new DateInterval('P1D'));
+
+    $noPraznici = $this->createQueryBuilder('c')
+      ->where('c.datum BETWEEN :startDate AND :endDate')
+      ->andWhere('c.type = :praznik')
+      ->andWhere('c.company = :company')
+      ->setParameter('company', $company)
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
+      ->setParameter('praznik', TipNeradnihDanaData::PRAZNIK)
+      ->getQuery()
+      ->getResult();
+
+    $praznici = 0;
+
+    if (count($noPraznici) > 0 ) {
+      foreach ($noPraznici as $praz) {
+        if ($praz->getDatum()->format('N') < $company->getWorkWeek()) {
+          $praznici++;
+        }
+      }
+    }
+
+    return $praznici;
+  }
 
   public function brojRadnihDanaDoJuce(): int {
 
@@ -277,7 +345,7 @@ class HolidayRepository extends ServiceEntityRepository {
 
       $pocetakGodineObj = $pocetakGodineObj->modify("+1 day");
     }
-//dd($brojRadnihDana);
+
     return $brojRadnihDana - $this->brojNeradnihDana();
   }
   public function brojNeradnihDana(): int {

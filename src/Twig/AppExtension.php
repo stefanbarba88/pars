@@ -10,6 +10,7 @@ namespace App\Twig;
 
 use App\Classes\Data\UserRolesData;
 use App\Entity\Availability;
+use App\Entity\Elaborat;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\TaskLog;
@@ -52,6 +53,7 @@ class AppExtension extends AbstractExtension {
       new TwigFunction('getCountTasksByProject', [$this, 'getCountTasksByProject']),
       new TwigFunction('getCountDaysTasksByProject', [$this, 'getCountDaysTasksByProject']),
       new TwigFunction('getTekuciPoslovi', [$this, 'getTekuciPoslovi']),
+      new TwigFunction('getDeadlineCounter', [$this, 'getDeadlineCounter']),
     ];
   }
 
@@ -112,6 +114,9 @@ class AppExtension extends AbstractExtension {
       'code' => $check['code'],
       'tasks' => $check['task']
     ];
+  }
+  public function getDeadlineCounter(int $id): array {
+    return $this->entityManager->getRepository(Elaborat::class)->getDeadlineCounter($id);
   }
 
 }

@@ -91,8 +91,11 @@ class NotifyMessagesData {
   public const DOC_ADD = 'Uspešno ste dodali dokument.';
   public const DOC_DELETE = 'Uspešno ste obrisali dokument.';
 
+  public const DOC_ADD_ERROR = 'Niste dodali dokument. Premašuje veličinu od 2Mb.';
+
   public const PIC_ADD = 'Uspešno ste dodali sliku.';
   public const PIC_DELETE = 'Uspešno ste obrisali sliku.';
+
 
 
   public const DELETE_ERROR = 'Nije moguće obrisati zadatak jer je kreiran kroz plan. Izmenite plan.';
@@ -115,9 +118,18 @@ class NotifyMessagesData {
   public const TICKET_FINISH = 'Uspešno ste rešili tiket.';
   public const TICKET_DELETE = 'Uspešno ste obrisali tiket.';
 
+  public const ELABORAT_ADD = 'Uspešno ste kreirali/izmenili elaborat.';
+  public const ELABORAT_DELETE = 'Uspešno ste obrisali elaborat.';
+
 
   public const VERIFY_ACTIVITY_CHECKED = 'Prihvatili aktivnost.';
   public const VERIFY_ACTIVITY_UNCHECKED = 'Odbili ste aktivnost.';
   public const VERIFY_ACTIVITY_DELETE = 'Obrisali ste aktivnost.';
+
+  public const VERIFY_SURVEY_ADD = 'Uspešno je zabeležen Vaš glas.';
+  public const VERIFY_SURVEY_ERROR = 'Došlo je do greške prilikom glasanja. Moguće je da ste već glasali.';
+
+
+  public const SIGNATURE_ERROR = 'Nije moguće dodati novi zahtev. Već je kreiran za traženo gradilište.';
 
 }

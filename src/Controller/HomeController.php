@@ -7,13 +7,17 @@ use App\Classes\Data\UserRolesData;
 use App\Classes\JMBGcheck\JMBGcheck;
 use App\Entity\Availability;
 use App\Entity\Car;
+use App\Entity\Elaborat;
 use App\Entity\FastTask;
 use App\Entity\ManagerChecklist;
+use App\Entity\StopwatchTime;
+use App\Entity\Survey;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\TimeTask;
 use App\Entity\User;
 use App\Entity\VerifyActivity;
+use App\Entity\Vote;
 use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
@@ -34,6 +38,14 @@ class HomeController extends AbstractController {
     }
     $args = [];
     $user = $this->getUser();
+    $args['vote'] = false;
+
+    $args['elaborats'] = $this->em->getRepository(Elaborat::class)->getElaboratsByUserPaginatorHome($user);
+
+    $vot = $this->em->getRepository(Vote::class)->findOneBy(['user'=>$user, 'survey' => 1]);
+    if (!is_null($vot)) {
+      $args['vote'] = true;
+    }
 
     $args['sleganjeStatus'] = $this->em->getRepository(VerifyActivity::class)->getStatusByUser($user);
 
@@ -70,6 +82,7 @@ class HomeController extends AbstractController {
 //      $args['countTasksUnclosed'] = $this->em->getRepository(Task::class)->countGetTasksUnclosedLogsByUser($user);
       $args['logs'] = $this->em->getRepository(TaskLog::class)->findByUser($user);
       $args['countLogs'] = $this->em->getRepository(TaskLog::class)->countLogsByUser($user);
+
       $mobileDetect = new MobileDetect();
       if($mobileDetect->isMobile()) {
         return $this->render('home/phone/index_employee.html.twig', $args);

@@ -47,6 +47,9 @@
                                                             </td>
                                                             <td>
                                                                 {{ task.user.fullName }}
+                                                                {% if task.comment.count > 0 %}
+                                                                    <span class="badge bg-yellow text-primary rounded-pill fw-semibold">{{ task.comment.count }}</span>
+                                                                {% endif %}
                                                             </td>
                                                             <td class="text-center">
                                                                 {% if task.priority == 1 %}
@@ -676,8 +679,6 @@
                             {% endif %}
                         </div>
                     </div>
-
-
                     <div class="row ">
                         <div class="col-xl-12">
                             <!-- Marketing campaigns -->
@@ -1261,12 +1262,54 @@
                             </div>
                         </div>
                     {% endif %}
-                </div>
-                <!-- /content area -->
 
+                    <div class="row">
+                        <div class="col-lg-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-header d-flex align-items-center">
+                                    <h5 class="mb-0">Kancelarija - elaborati</h5>
+
+                                    <div class="ms-auto">
+                                        <a href="{{ path('app_elaborats') }}" class="btn btn-primary"><i class="ph-eye me-2"></i> Sve</a>
+                                    </div>
+                                </div>
+
+                                <div class="card-body">
+                                    {% for elaborat in elaborats %}
+                                    {% set boja = 'bg-primary'%}
+                                    {% set procenat = elaborat.percent%}
+                                    {% if procenat < 26 %}
+                                        {% set boja = 'bg-danger'%}
+                                    {% endif %}
+                                    {% if procenat > 25 and procenat < 76 %}
+                                        {% set boja = 'bg-warning'%}
+                                    {% endif %}
+                                    {% if procenat > 75 and procenat < 99 %}
+                                        {% set boja = 'bg-info'%}
+                                    {% endif %}
+                                    {% if procenat == 100 %}
+                                        {% set boja = 'bg-success'%}
+                                    {% endif %}
+                                    <div class="mb-3">
+                                        <div class="d-flex align-items-center mb-1">{{ elaborat.project.title}} <span class="text-muted ms-auto">{% if procenat > 0 %}{{ procenat }}%{% endif %}</span></div>
+                                        <div class="progress" style="height: 0.375rem;">
+                                            <div class="progress-bar {{ boja }}" role="progressbar" style="width: {{ procenat }}%" aria-valuenow="{{ procenat }}" aria-valuemin="0" aria-valuemax="100">
+                                                <div class="progress-bar bg-info" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- /content area -->
+                </div>
                 <!-- Footer -->
                 {% include 'includes/footer.html.twig' %}
                 <!-- /footer -->
+
 
             </div>
             <!-- /inner content -->
@@ -1276,6 +1319,9 @@
         {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
     </div>
     {% include 'includes/notification.html.twig' %}
+{#    {% if not vote %}#}
+{#    {% include 'includes/survey.html.twig' %}#}
+{#    {% endif %}#}
 
     {% if tomorrowTimetable is not empty %}
         {% for task in tomorrowTimetable %}
@@ -1915,3 +1961,14 @@
     <script src="{{ asset('assets/demo/pages/components_modals.js') }}"></script>
 
 {% endblock includeJavascript %}
+
+{% block footerJavascript %}
+{#    <script type="text/javascript">#}
+{#        {% if not vote %}#}
+{#            document.addEventListener('DOMContentLoaded', function() {#}
+{#                var modal = new bootstrap.Modal(document.getElementById('modal_form_survey'));#}
+{#                modal.show();#}
+{#            });#}
+{#        {% endif %}#}
+{#    </script>#}
+{% endblock footerJavascript %}

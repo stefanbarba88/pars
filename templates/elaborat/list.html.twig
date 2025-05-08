@@ -1,0 +1,320 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Kancelarija - elaborati
+                            </h4>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista elaborata</h5>
+{#                            {% if not is_granted('ROLE_EMPLOYEE') %}#}
+                                <div class="my-auto ms-auto">
+                                    <a href="{{ path('app_elaborat_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                </div>
+{#                            {% endif %}#}
+                        </div>
+                        <div class="card-body">
+                            <div class="card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light text-primary">
+{#                                    <tr>#}
+{#                                        <th>Projekat</th>#}
+{#                                        <th>Realizacija</th>#}
+{#                                        <th  {% if pagination.isSorted('[c.deadline]') %} class="sorted"{% endif %}>#}
+{#                                            {{ knp_pagination_sortable(pagination, 'Rok predaje ', ['c.deadline']) }}#}
+{#                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.deadline' %}#}
+{#                                                &#8595;#}
+{#                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.deadline' %}#}
+{#                                                &#8593;#}
+{#                                            {% else %}#}
+{#                                                &#8597;#}
+{#                                            {% endif %}#}
+{#                                        </th>#}
+{#                                        <th  {% if pagination.isSorted('[c.priority]') %} class="sorted"{% endif %}>#}
+{#                                            {{ knp_pagination_sortable(pagination, 'Prioritet ', ['c.priority']) }}#}
+{#                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.priority' %}#}
+{#                                                &#8595;#}
+{#                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.priority' %}#}
+{#                                                &#8593;#}
+{#                                            {% else %}#}
+{#                                                &#8597;#}
+{#                                            {% endif %}#}
+{#                                        </th>#}
+{#                                        <th>Zaduženi</th>#}
+
+{#                                        <th  {% if pagination.isSorted('[c.status]') %} class="sorted"{% endif %}>#}
+{#                                            {{ knp_pagination_sortable(pagination, 'Status ', ['c.status']) }}#}
+{#                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.status' %}#}
+{#                                                &#8595;#}
+{#                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.status' %}#}
+{#                                                &#8593;#}
+{#                                            {% else %}#}
+{#                                                &#8597;#}
+{#                                            {% endif %}#}
+{#                                        </th>#}
+{#                                        <th  {% if pagination.isSorted('[c.send]') %} class="sorted"{% endif %}>#}
+{#                                            {{ knp_pagination_sortable(pagination, 'Poslato ', ['c.send']) }}#}
+{#                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.send' %}#}
+{#                                                &#8595;#}
+{#                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.send' %}#}
+{#                                                &#8593;#}
+{#                                            {% else %}#}
+{#                                                &#8597;#}
+{#                                            {% endif %}#}
+{#                                        </th>#}
+{#                                        <th  {% if pagination.isSorted('[c.updated]') %} class="sorted"{% endif %}>#}
+{#                                            {{ knp_pagination_sortable(pagination, 'Izmena / Kontrola ', ['c.updated']) }}#}
+{#                                            {% if pagination.getDirection() == 'desc' and pagination.getSort() == 'c.updated' %}#}
+{#                                                &#8595;#}
+{#                                            {% elseif pagination.getDirection() == 'asc' and pagination.getSort() == 'c.updated' %}#}
+{#                                                &#8593;#}
+{#                                            {% else %}#}
+{#                                                &#8597;#}
+{#                                            {% endif %}#}
+{#                                        </th>#}
+{#                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>#}
+{#                                    </tr>#}
+                                    <tr>
+                                        <th>Zadatak</th>
+                                        <th>Realizacija</th>
+                                        <th>Rok predaje</th>
+                                        <th>Prioritet</th>
+                                        <th>Zaduženi</th>
+                                        <th>Status</th>
+                                        <th>Poslato</th>
+                                        <th>Izmena / Kontrola</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for elaborat in pagination %}
+                                        {% set userDays = getDeadlineCounter(elaborat.id) %}
+                                        {% if elaborat.status != 4 %}
+                                            <tr class="{{ userDays.klasa }}">
+                                        {% else %}
+                                            <tr>
+                                        {% endif %}
+                                            <td>
+                                                <div class="text-body">
+                                                    <a href="{{ path('app_elaborat_view', {id:elaborat.id}) }}" class="fw-semibold">
+                                                        {{ elaborat.project.title }}
+                                                    </a>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                {% set boja = 'bg-primary'%}
+                                                {% set procenat = elaborat.percent%}
+                                                {% if procenat < 26 %}
+                                                    {% set boja = 'bg-danger'%}
+                                                {% endif %}
+                                                {% if procenat > 25 and procenat < 76 %}
+                                                    {% set boja = 'bg-warning'%}
+                                                {% endif %}
+                                                {% if procenat > 75 and procenat < 99 %}
+                                                    {% set boja = 'bg-info'%}
+                                                {% endif %}
+                                                {% if procenat == 100 %}
+                                                    {% set boja = 'bg-success'%}
+                                                {% endif %}
+
+                                                <div class="progress">
+                                                    <div class="progress-bar {{ boja }}" role="progressbar" style="width: {{ procenat }}%" aria-valuenow="{{ procenat }}" aria-valuemin="0" aria-valuemax="100">
+                                                        {% if procenat > 0 %}
+                                                            {{ procenat }}%
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                {% if elaborat.deadline is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        {{ elaborat.deadline | date("d.m.Y")}}
+                                                        {% if userDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ userDays.poruka }}" data-bs-original-title="{{ userDays.poruka }}"></i>{% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if elaborat.priority == 1 %}
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Visok</span>
+                                                {% elseif elaborat.priority == 2 %}
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Standardan</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="text-body">
+                                                    {% if is_granted('ROLE_EMPLOYEE')%}
+                                                        {% for user in elaborat.employee %}
+                                                            <div class="fw-semibold d-inline-flex align-items-center ">
+                                                                {{ user.fullName }}
+                                                            </div><br>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {% for user in elaborat.employee %}
+                                                            <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">
+                                                                {{ user.fullName }}
+                                                            </a><br>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                {% if elaborat.status == 1 %}
+                                                    <span class="badge bg-danger text-white">Nema dokumentacije</span>
+                                                {% endif %}
+                                                {% if elaborat.status == 2 %}
+                                                    <span class="badge bg-warning text-white">Nekompletna / neproverena</span>
+                                                {% endif %}
+                                                {% if elaborat.status == 3 %}
+                                                    <span class="badge bg-success text-white">Kompletna i proverena</span>
+                                                {% endif %}
+                                                {% if elaborat.status == 4 %}
+                                                    <span class="badge bg-yellow text-primary">Zatvoreno</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if elaborat.send is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ elaborat.send | date("d.m.Y")}}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if elaborat.updated is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ elaborat.updated | date("d.m.Y")}}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-gear"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <a href="{{ path('app_elaborat_view', {id:elaborat.id}) }}" class="dropdown-item">
+                                                                <i class="ph-eye me-2"></i>
+                                                                Vidite
+                                                            </a>
+                                                            {% if not is_granted('ROLE_EMPLOYEE') or app.user == elaborat.createdBy %}
+                                                                <a href="{{ path('app_elaborat_edit', {id:elaborat.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-note-pencil me-2"></i>
+                                                                    Izmenite
+                                                                </a>
+                                                                <a href="{{ path('app_elaborat_delete', {id:elaborat.id}) }}" class="dropdown-item">
+                                                                    <i class="ph-trash me-2"></i>
+                                                                    Obrišite
+                                                                </a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/media/glightbox.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}

@@ -43,6 +43,12 @@ class CarReservation {
   #[ORM\Column(nullable: true)]
   private ?int $cleanStart = null;
 
+  #[ORM\Column]
+  private bool $isCrashStart = false;
+
+  #[ORM\Column]
+  private bool $isCrashStop = false;
+
   #[ORM\Column(nullable: true)]
   private ?int $fuelStop = null;
 
@@ -291,6 +297,35 @@ class CarReservation {
 
     return $this;
   }
+
+  /**
+   * @return bool
+   */
+  public function isCrashStart(): bool {
+    return $this->isCrashStart;
+  }
+
+  /**
+   * @param bool $isCrashStart
+   */
+  public function setIsCrashStart(bool $isCrashStart): void {
+    $this->isCrashStart = $isCrashStart;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isCrashStop(): bool {
+    return $this->isCrashStop;
+  }
+
+  /**
+   * @param bool $isCrashStop
+   */
+  public function setIsCrashStop(bool $isCrashStop): void {
+    $this->isCrashStop = $isCrashStop;
+  }
+
 
 
 }

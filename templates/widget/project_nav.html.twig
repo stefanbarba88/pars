@@ -34,14 +34,17 @@
                         </div>
                     </a>
                 </li>
-{#                <li class="nav-item me-1">#}
-{#                    <a href="{{ path('app_project_calendar_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
-{#                        <div class="d-flex align-items-center mx-lg-1">#}
-{#                            <i class="ph-calendar"></i>#}
-{#                            <span class="d-none d-lg-inline-block ms-2">Raspored<span class="badge bg-success rounded-pill ms-auto ms-lg-2">32</span></span>#}
-{#                        </div>#}
-{#                    </a>#}
-{#                </li>#}
+                {% if project.elaboratSigned %}
+                    <li class="nav-item me-1">
+                        <a href="{{ path('app_project_signature_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">
+                            <div class="d-flex align-items-center mx-lg-1">
+                                <i class="ph-thumbs-up"></i>
+                                <span class="d-none d-lg-inline-block ms-2">Dozvole<span class="badge bg-yellow rounded-pill ms-auto ms-lg-2">{{ dozvole.odobren }}/{{ dozvole.ukupno }}</span></span>
+                            </div>
+                        </a>
+                    </li>
+                {% endif %}
+
 {#                <li class="nav-item me-1">#}
 {#                    <a href="{{ path('app_project_time_view', { id: project.id}) }}" class="navbar-nav-link navbar-nav-link-icon rounded">#}
 {#                        <div class="d-flex align-items-center mx-lg-1">#}

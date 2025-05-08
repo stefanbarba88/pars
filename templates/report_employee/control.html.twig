@@ -51,6 +51,18 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
+                                            <label class="form-label required" for="report_form_project">Projekat:</label>
+                                            <select id="report_form_project" name="report_form[project]" class="form-control select">
+                                                <option value="">--Izaberite projekat--</option>
+                                                {% for project in projects %}
+                                                    <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <span class="form-text">Možete da izaberte konkretan projekat, u suprotnom uzeće se u obzir svi projekti.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
                                             <label class="form-label required" for="report_form_cat">Kategorija:</label>
                                             <select id="report_form_cat" name="report_form[category][]" class="form-control select" multiple>
                                                 <option value="">Nekategorizovan</option>

@@ -445,6 +445,32 @@ class ManagerChecklistRepository extends ServiceEntityRepository {
 
     return $qb;
   }
+  public function getInternTasksMesec(User $user, DateTimeImmutable $date): array {
+
+//    $startDate = $date->modify('first day of this month')->setTime(0, 0);
+//    $stopDate = $date->modify('last day of this month')->setTime(23, 59);
+
+    $startDate = $date->modify('first day of last month')->setTime(0, 0);
+    $stopDate = $date->modify('last day of last month')->setTime(23, 59);
+
+      $qb = $this->createQueryBuilder('c');
+      $qb->where($qb->expr()->between('c.datumKreiranja', ':start', ':end'));
+      $qb->setParameter('start', $startDate);
+      $qb->setParameter('end', $stopDate);
+
+      $qb->andWhere('c.status = :status');
+      $qb->setParameter('status', InternTaskStatusData::ZAVRSENO);
+
+      $qb->andWhere('c.user = :zaposleni');
+      $qb->setParameter('zaposleni', $user);
+
+      $qb->addOrderBy('c.datumKreiranja', 'ASC');
+
+      $query = $qb->getQuery();
+
+      return $query->getResult();
+
+  }
   public function getInternTasks($data): array {
 
     $tasks = [];

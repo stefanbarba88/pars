@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classes\AppConfig;
 use App\Classes\Data\AvailabilityData;
 use App\Classes\Data\CalendarData;
 use App\Classes\Data\NotifyMessagesData;
@@ -19,22 +20,27 @@ use App\Entity\Image;
 use App\Entity\ManagerChecklist;
 use App\Entity\Notes;
 use App\Entity\Overtime;
-use App\Entity\Pdf;
+
+use App\Entity\Project;
+use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\ToolReservation;
 use App\Entity\User;
-use App\Entity\UserHistory;
+
 use App\Entity\ZaposleniPozicija;
-use App\Form\ProjectFormType;
+
+use App\Form\ActiveStopwatchTimeFormType;
+use App\Form\DocsFormType;
 use App\Form\UserEditAccountFormType;
 use App\Form\UserEditImageFormType;
 use App\Form\UserEditInfoFormType;
 use App\Form\UserEditSelfAccountFormType;
-use App\Form\UserSuspendedFormType;
+
 use App\Service\UploadService;
+use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
-
+use Knp\Snappy\Pdf;
 use Exception;
 use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -43,18 +49,22 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use setasign\Fpdi\Fpdi;
+use setasign\Fpdi\TcpdfFpdi;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
+
 
 #[Route('/employees')]
 class EmployeeController extends AbstractController {
 
-  public function __construct(private readonly ManagerRegistry $em) {
+  private $knpSnappyPdf;
+  public function __construct(private readonly ManagerRegistry $em, Pdf $knpSnappyPdf) {
+    $this->knpSnappyPdf = $knpSnappyPdf;
   }
 
   #[Route('/list/', name: 'app_employees')]
@@ -118,6 +128,7 @@ class EmployeeController extends AbstractController {
     if ($request->isMethod('POST')) {
 
       $data = $request->request->all();
+
       if (isset($data['users'])) {
         $sviZaposleni = $this->em->getRepository(User::class)->getZaposleniNotMix();
         foreach ($sviZaposleni as $zaposleni) {
@@ -134,11 +145,53 @@ class EmployeeController extends AbstractController {
 
     }
 
+    $stalni = $this->em->getRepository(User::class)->getStalniPaginator();
+    $args['projekti'] = $this->em->getRepository(Project::class)->findBy(['type' => TipProjektaData::FIKSNO, 'isSuspended' => false, 'company' => $korisnik->getCompany()], ['title' => 'ASC']);
+
+    $pagination = $paginator->paginate(
+      $stalni, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      10,
+      [
+        'pageName' => 'page',  // Menjamo naziv parametra za stranicu
+        'pageParameterName' => 'page',  // Menjamo naziv parametra za stranicu
+        'sortFieldParameterName' => 'sort',  // Menjamo naziv parametra za sortiranje
+      ]
+    );
+
+    $args['pagination'] = $pagination;
+
+
+
 //    $mobileDetect = new MobileDetect();
 //    if($mobileDetect->isMobile()) {
 //      return $this->render('employee/phone/list.html.twig', $args);
 //    }
     return $this->render('employee/list_project_control.html.twig', $args);
+  }
+
+  #[Route('/fixed-project-type/', name: 'app_employees_project_fixed')]
+  public function fixedProjectType(PaginatorInterface $paginator, Request $request): Response {
+
+    if ($request->isMethod('POST')) {
+
+      $data = $request->request->all();
+
+      if (isset($data['zap'])) {
+        foreach ($data['zap'] as $zap) {
+          if (intval($zap['proj']) != 0) {
+            $user = $this->em->getRepository(User::class)->find(intval($zap['id']));
+            $project = $this->em->getRepository(Project::class)->find(intval($zap['proj']));
+            $user->setProject($project);
+            $this->em->getRepository(User::class)->save($user);
+          }
+        }
+      }
+    }
+
+    return $this->redirectToRoute('app_employees_project_type');
+
+
   }
 
   #[Route('/list-archive/', name: 'app_employees_archive')]
@@ -287,61 +340,6 @@ class EmployeeController extends AbstractController {
     return $this->render('employee/view_checklist.html.twig', $args);
   }
 
-  #[Route('/view-calendar/{id}', name: 'app_employee_calendar_view')]
-//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-  public function viewCalendar(User $usr, PaginatorInterface $paginator, Request $request): Response {
-    if (!$this->isGranted('ROLE_USER')) {
-      return $this->redirect($this->generateUrl('app_login'));
-    }
-
-    $korisnik = $this->getUser();
-    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
-      if ($korisnik->getId() != $usr->getId()) {
-        return $this->redirect($this->generateUrl('app_home'));
-      }
-    }
-    if ($korisnik->getCompany() != $usr->getCompany()) {
-      return $this->redirect($this->generateUrl('app_home'));
-    }
-
-    $calendars = $usr->getCalendars()->toArray();
-    $compareFunction = function ($a, $b) {
-      return $b->getId() - $a->getId();
-    };
-    usort($calendars, $compareFunction);
-
-    $pagination = $paginator->paginate(
-      $calendars, /* query NOT result */
-      $request->query->getInt('page', 1), /*page number*/
-      10
-    );
-
-    $args['pagination'] = $pagination;
-
-    $args['user'] = $usr;
-    $year = date('Y');
-
-    if ($usr->getCreated()->format('Y') != $year) {
-      $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuce();
-      $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUser($usr, $year);
-    } else {
-      $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuceUser($usr);
-      $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUserUser($usr, $year);
-    }
-
-    $args['overtime'] = $this->em->getRepository(Overtime::class)->getOvertimeByUser($usr);
-    $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUser($usr, $year);
-    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostByUser($usr);
-
-    $mobileDetect = new MobileDetect();
-    if($mobileDetect->isMobile()) {
-      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
-        return $this->render('employee/phone/admin_view_calendar.html.twig', $args);
-      }
-      return $this->render('employee/phone/view_calendar.html.twig', $args);
-    }
-    return $this->render('employee/view_calendar.html.twig', $args);
-  }
 
   #[Route('/view-cars/{id}', name: 'app_employee_car_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
@@ -372,7 +370,7 @@ class EmployeeController extends AbstractController {
         'pageName' => 'page',  // Menjamo naziv parametra za stranicu
         'pageParameterName' => 'page',  // Menjamo naziv parametra za stranicu
         'sortFieldParameterName' => 'sort',  // Menjamo naziv parametra za sortiranje
-    ]
+      ]
     );
 
     $pagination1 = $paginator->paginate(
@@ -464,6 +462,161 @@ class EmployeeController extends AbstractController {
     }
 
     return $this->render('employee/view_docs.html.twig', $args);
+  }
+
+  #[Route('/view-documents/{id}', name: 'app_employee_documents_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewDocuments(User $usr, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    if ($request->isMethod('POST')) {
+
+      if (isset($request->request->all()['pdf_delete'])) {
+        $deletePdfs = $request->request->all()['pdf_delete'];
+        foreach ($deletePdfs as $pdf) {
+          if (isset($pdf['checked'])) {
+            $pdf = $this->em->getRepository(\App\Entity\Pdf::class)->find($pdf['value']);
+            $usr->removeDoc($pdf);
+          }
+        }
+      }
+
+      $this->em->getRepository(User::class)->save($usr);
+
+//        $this->em->getRepository(Task::class)->changeStatus($stopwatch->getTaskLog()->getTask(), TaskStatusData::ZAVRSENO);
+
+      notyf()
+        ->position('x', 'right')
+        ->position('y', 'top')
+        ->duration(5000)
+        ->dismissible(true)
+        ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+//        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
+      return $this->redirectToRoute('app_employee_documents_view', ['id' => $usr->getId()]);
+    }
+
+
+
+
+    $args['user'] = $usr;
+    $args['pdfs'] = $usr->getDocs();
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/view_documents.html.twig', $args);
+      }
+      return $this->render('employee/phone/view_documents.html.twig', $args);
+    }
+
+    return $this->render('employee/view_documents.html.twig', $args);
+  }
+
+  #[Route('/add-documents/{id}', name: 'app_employee_documents_add')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function addDocuments(User $usr, Request $request, UploadService $uploadService): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+
+    if ($request->isMethod('POST')) {
+
+      if (isset($request->request->all()['pdf_delete'])) {
+        $deletePdfs = $request->request->all()['pdf_delete'];
+        foreach ($deletePdfs as $pdf) {
+          if (isset($pdf['checked'])) {
+            $pdf = $this->em->getRepository(\App\Entity\Pdf::class)->find($pdf['value']);
+            $usr->removeDoc($pdf);
+          }
+        }
+      }
+
+      $uploadFiles = $request->files->all()['pdf_form']['pdf'];
+
+      $title = $request->request->all()['pdf_form']['title'];
+
+      if (!empty ($uploadFiles)) {
+        foreach ($uploadFiles as $uploadFile) {
+
+          if (!$uploadFile->getSize()) { // 2MB u bajtima
+            $errors[] = "Fajl premašuje dozvoljenu veličinu od 2Mb.";
+            continue;
+          }
+
+
+          $pdf = new \App\Entity\Pdf();
+          $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+          $pdf->setTitle($title);
+          $pdf->setPath($file->getAssetPath());
+
+          $usr->addDoc($pdf);
+        }
+      }
+
+      if (!empty($errors)) {
+
+          notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addError(NotifyMessagesData::DOC_ADD_ERROR);
+
+        return $this->redirectToRoute('app_employee_documents_view', ['id' => $usr->getId()]);
+
+      }
+
+
+        $this->em->getRepository(User::class)->save($usr);
+
+//        $this->em->getRepository(Task::class)->changeStatus($stopwatch->getTaskLog()->getTask(), TaskStatusData::ZAVRSENO);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+//        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
+        return $this->redirectToRoute('app_employee_documents_view', ['id' => $usr->getId()]);
+      }
+
+
+    $args['user'] = $usr;
+    $args['pdfs'] = $usr->getDocs()->toArray();
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/add_documents.html.twig', $args);
+      }
+      return $this->render('employee/phone/add_documents.html.twig', $args);
+    }
+
+    return $this->render('employee/add_documents.html.twig', $args);
   }
 
   #[Route('/view-images/{id}', name: 'app_employee_images_view')]
@@ -583,7 +736,6 @@ class EmployeeController extends AbstractController {
 
     if ($request->isMethod('POST')) {
       $data = $request->request->all();
-//      dd($data);
 //      $args['reports'] = $this->em->getRepository(Project::class)->getReport($data['report_form']);
       $args['reports'] = $this->em->getRepository(User::class)->getReport($data['report_form']);
 
@@ -591,6 +743,39 @@ class EmployeeController extends AbstractController {
 
       $args['period'] = $data['report_form']['period'];
       $args['user'] = $this->em->getRepository(User::class)->find($data['report_form']['zaposleni']);
+
+
+      $brojElemenata = isset($args['reports'][0]) ? count($args['reports'][0]) : 0;
+
+      // Sabiranje vremena iz drugog podniza
+      $ukupnoMinuta = 0;
+      $brojVremeR = 0;
+
+      foreach ($args['reports'][1] as $podniz) {
+        if (isset($podniz['vremeR'])) {
+          $brojVremeR++;
+          list($sati, $minuti) = explode(':', $podniz['vremeR']);
+          $ukupnoMinuta += (int)$sati * 60 + (int)$minuti;
+        }
+      }
+
+      // Računanje proseka u minutima
+      $prosekMinuta = $brojVremeR > 0 ? intdiv($ukupnoMinuta, $brojVremeR) : 0;
+
+      // Konvertovanje minuta u sate i minute za ukupno vreme i prosek
+      $ukupnoSati = intdiv($ukupnoMinuta, 60);
+      $ukupnoOstatakMinuta = $ukupnoMinuta % 60;
+
+      $prosekSati = intdiv($prosekMinuta, 60);
+      $prosekOstatakMinuta = $prosekMinuta % 60;
+
+      // Povratni rezultat
+      $args['details'] = [
+        'broj_elemenata' => $brojElemenata,
+        'ukupno_vreme' => sprintf('%02d:%02d', $ukupnoSati, $ukupnoOstatakMinuta),
+        'prosek_vreme' => sprintf('%02d:%02d', $prosekSati, $prosekOstatakMinuta),
+      ];
+
 
       if (isset($data['report_form']['datum'])){
         $args['datum'] = 1;
@@ -641,6 +826,7 @@ class EmployeeController extends AbstractController {
 
     $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $this->getUser()->getCompany(), 'isSuspended' => false],['prezime' => 'ASC']);
     $args['categories'] = $this->em->getRepository(Category::class)->getCategoriesTask();
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
     return $this->render('report_employee/control.html.twig', $args);
   }
 
@@ -892,7 +1078,7 @@ class EmployeeController extends AbstractController {
         $font = $sheet->getStyle('N')->getFont();
         $font->setSize(14); // Postavite veličinu fonta na 14
 
-
+        $dani = [];
 
         $start = 4;
         $start1 = 4;
@@ -932,12 +1118,15 @@ class EmployeeController extends AbstractController {
 
           if ($item[0]['dan'] == 1) {
             $dan = '(Praznik)';
+            $dani[] = $row;
           }
           if ($item[0]['dan'] == 3) {
             $dan = '(Nedelja)';
+            $dani[] = $row;
           }
           if ($item[0]['dan'] == 5) {
             $dan = '(Praznik i nedelja)';
+            $dani[] = $row;
           }
 
           $start = $rows[$row];
@@ -958,12 +1147,26 @@ class EmployeeController extends AbstractController {
         foreach ($report[3] as $item) {
           $start = $rows[$row];
 
+          if (in_array($row, $dani)) {
+            $dan = true;
+          } else {
+            $dan = false;
+          }
+
           $hR = 0;
           $mR = 0;
           $h = 0;
           $m = 0;
 
           foreach ($item as $stopwatch) {
+
+            if ($dan) {
+
+              $range = 'A' . $startAktivnosti . ':N' . $startAktivnosti;
+              $sheet->getStyle($range)->getFill()->setFillType(Fill::FILL_SOLID);
+              $sheet->getStyle($range)->getFill()->getStartColor()->setARGB('FFC0C0C0');
+            }
+
             $robotika = '';
             if ($stopwatch['robotika'] == 1) {
               $robotika = 'Da';
@@ -1017,7 +1220,11 @@ class EmployeeController extends AbstractController {
             $sheet->getStyle('I' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('I' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-            $sheet->setCellValue('L' . $startAktivnosti, $stopwatch['description']);
+            if ($dan) {
+              $sheet->setCellValue('L' . $startAktivnosti, $stopwatch['description'] . "\n" . '(PRAZNIK)');
+            } else {
+              $sheet->setCellValue('L' . $startAktivnosti, $stopwatch['description']);
+            }
             $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setWrapText(true);
             $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
             $sheet->getStyle('L' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
@@ -1143,8 +1350,8 @@ class EmployeeController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editInfo(User $usr, Request $request)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $korisnik = $this->getUser();
     if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
       if ($korisnik->getId() != $usr->getId()) {
@@ -1271,8 +1478,8 @@ class EmployeeController extends AbstractController {
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
   public function editImage(User $usr, Request $request, UploadService $uploadService)    : Response {
     if (!$this->isGranted('ROLE_USER')) {
-    return $this->redirect($this->generateUrl('app_login'));
-  }
+      return $this->redirect($this->generateUrl('app_login'));
+    }
     $korisnik = $this->getUser();
     if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
       if ($korisnik->getId() != $usr->getId()) {
@@ -1414,6 +1621,279 @@ class EmployeeController extends AbstractController {
     return $this->render('employee/days_calendar.html.twig', $args);
   }
 
+  #[Route('/view-calendar/{id}', name: 'app_employee_calendar_view')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function viewCalendar(User $usr, PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $korisnik = $this->getUser();
+    if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+      if ($korisnik->getId() != $usr->getId()) {
+        return $this->redirect($this->generateUrl('app_home'));
+      }
+    }
+    if ($korisnik->getCompany() != $usr->getCompany()) {
+      return $this->redirect($this->generateUrl('app_home'));
+    }
+
+    $calendars = $usr->getCalendars()->toArray();
+    $compareFunction = function ($a, $b) {
+      return $b->getId() - $a->getId();
+    };
+    usort($calendars, $compareFunction);
+
+    $pagination = $paginator->paginate(
+      $calendars, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      5
+    );
+
+    $args['pagination'] = $pagination;
+
+    $args['user'] = $usr;
+    $year = date('Y');
+
+    if ($usr->getCreated()->format('Y') != $year) {
+      $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuce();
+      $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUser($usr, $year);
+    } else {
+      $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaDoJuceUser($usr);
+      $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUserUser($usr, $year);
+    }
+
+    $args['overtime'] = $this->em->getRepository(Overtime::class)->getOvertimeByUser($usr);
+    $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUser($usr, $year);
+    $args['dostupnosti'] = $this->em->getRepository(Availability::class)->getDostupnostByUser($usr);
+
+    $mobileDetect = new MobileDetect();
+    if($mobileDetect->isMobile()) {
+      if($korisnik->getUserType() != UserRolesData::ROLE_EMPLOYEE) {
+        return $this->render('employee/phone/admin_view_calendar.html.twig', $args);
+      }
+      return $this->render('employee/phone/view_calendar.html.twig', $args);
+    }
+    return $this->render('employee/view_calendar.html.twig', $args);
+  }
+
+
+  #[Route('/pdf-calendar/{id}', name: 'app_employee_calendar_pdf')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function pdfCalendar(User $usr, PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+
+    putenv('QT_QPA_PLATFORM=offscreen');
+    $projectDir = $this->getParameter('kernel.project_dir');
+    $reportsPath = $projectDir . '/public/assets/employee/';
+
+    $currentYear = date('Y');
+    $currentMonth = date('m');
+
+    $reportMonthPath = "$reportsPath$currentYear/$currentMonth";
+
+    if (!is_dir($reportMonthPath)) {
+      mkdir($reportMonthPath, 0777, true);
+    }
+
+
+    $args['user'] = $usr;
+    $args['image'] = $usr->getImage();
+    $args['logo'] = 'assets/images/logo/logoXls.png';
+
+    $datum = new DateTimeImmutable();
+
+    $args['prviDan'] = $datum->modify('first day of last month')->setTime(0, 0);
+    $args['poslednjiDan'] = $datum->modify('last day of last month')->setTime(23, 59, 59);
+
+
+    $args['noRadnihDana'] = $this->em->getRepository(Holiday::class)->brojRadnihDanaMesec($datum);
+    $args['noDays'] = $this->em->getRepository(Availability::class)->getDaysByUserMesec($usr, $datum);
+    $args['overtime'] = $this->em->getRepository(Overtime::class)->getOvertimeByUserMesec($usr, $datum);
+    $args['noRequests'] = $this->em->getRepository(Calendar::class)->getRequestByUserMesec($usr, $datum);
+
+    $args['reports'] = $this->em->getRepository(User::class)->getReportMesec($usr, $datum);
+    $args['intern'] = $this->em->getRepository(ManagerChecklist::class)->getInternTasksMesec($usr, $datum);
+
+
+
+
+    $brojElemenata = isset($args['reports'][0]) ? count($args['reports'][0]) : 0;
+
+    // Sabiranje vremena iz drugog podniza
+    $ukupnoMinuta = 0;
+    $brojVremeR = 0;
+
+    foreach ($args['reports'][1] as $podniz) {
+      if (isset($podniz['vremeR'])) {
+        $brojVremeR++;
+        list($sati, $minuti) = explode(':', $podniz['vremeR']);
+        $ukupnoMinuta += (int)$sati * 60 + (int)$minuti;
+      }
+    }
+
+    // Računanje proseka u minutima
+    $prosekMinuta = $brojVremeR > 0 ? intdiv($ukupnoMinuta, $brojVremeR) : 0;
+
+    // Konvertovanje minuta u sate i minute za ukupno vreme i prosek
+    $ukupnoSati = intdiv($ukupnoMinuta, 60);
+    $ukupnoOstatakMinuta = $ukupnoMinuta % 60;
+
+    $prosekSati = intdiv($prosekMinuta, 60);
+    $prosekOstatakMinuta = $prosekMinuta % 60;
+
+    // Povratni rezultat
+    $args['details'] = [
+      'broj_elemenata' => $brojElemenata,
+      'ukupno_vreme' => sprintf('%02d:%02d', $ukupnoSati, $ukupnoOstatakMinuta),
+      'prosek_vreme' => sprintf('%02d:%02d', $prosekSati, $prosekOstatakMinuta),
+    ];
+
+//    dd($args);
+
+
+//    return $this->render('report_employee/pdf.html.twig', $args);
+//    return $this->render('report_employee/pdf_view.html.twig', $args);
+
+    $html = $this->renderView('report_employee/pdf.html.twig', $args);
+
+    $pdfContent = $this->knpSnappyPdf->getOutputFromHtml($html);
+    $ime = Slugify::slugify($usr->getFullName(), '_');
+    $fileName = $reportMonthPath . '/report_' . $ime . '.pdf';
+    file_put_contents($fileName, $pdfContent);
+
+// Vraćanje odgovora sa putanjom fajla (ako je potrebno)
+    return new Response(
+      'PDF saved successfully at: ' . $fileName,
+      200
+    );
+
+//    return new Response($pdfContent, 200, [
+//      'Content-Type' => 'application/pdf',
+//      'Content-Disposition' => 'inline; filename="report_' . $usr->getId() . '.pdf"',
+//    ]);
+
+  }
+
+
+  #[Route('/pdf-reports', name: 'app_employee_reports_pdf')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function pdfReports(PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $projectDir = $this->getParameter('kernel.project_dir');
+    $reportsPath = $projectDir . '/public/assets/employee/';
+
+
+    // Učitavamo sve foldere unutar $reportsPath
+    $folders = array_filter(scandir($reportsPath), function ($folder) use ($reportsPath) {
+      return $folder !== '.' && $folder !== '..' && is_dir($reportsPath . '/' . $folder);
+    });
+    $putanje = [];
+
+    foreach ($folders as $folder) {
+      $putanje[] = [
+        'ime' => $folder,
+        'putanja' => $reportsPath . $folder
+      ];
+    }
+
+    $args['folderi'] = $putanje;
+    $args['title'] = 'Godine';
+    $args['type'] = 1;
+    return $this->render('report_employee/view_files.html.twig', $args);
+  }
+
+  #[Route('/pdf-reports-year', name: 'app_employee_reports_year_pdf')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function pdfReportsYear(PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $godina = (int)$request->query->get('year');
+
+    $projectDir = $this->getParameter('kernel.project_dir');
+    $reportsPath = $projectDir . '/public/assets/employee/' . $godina;
+
+
+    // Učitavamo sve foldere unutar $reportsPath
+    $folders = array_filter(scandir($reportsPath), function ($folder) use ($reportsPath) {
+      return $folder !== '.' && $folder !== '..' && is_dir($reportsPath . '/' . $folder);
+    });
+    $putanje = [];
+
+    foreach ($folders as $folder) {
+      $putanje[] = [
+        'ime' => $folder,
+        'putanja' => $reportsPath . $folder
+      ];
+    }
+
+    $args['folderi'] = $putanje;
+    $args['title'] = $godina;
+    $args['type'] = 2;
+    return $this->render('report_employee/view_files.html.twig', $args);
+  }
+
+  #[Route('/pdf-reports-month', name: 'app_employee_reports_month_pdf')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+  public function pdfReportsMonth(PaginatorInterface $paginator, Request $request): Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+
+    $godina = $request->query->get('year', date('Y'));
+    $mesec = $request->query->get('month', date('m'));
+
+    $projectDir = $this->getParameter('kernel.project_dir');
+    $reportsPath = $projectDir . '/public/assets/employee/' . $godina . '/' . $mesec;
+    $reportPath = 'assets/employee/' . $godina . '/' . $mesec;
+
+    $pdfFiles = array_filter(scandir($reportsPath), function ($file) use ($reportsPath) {
+      return is_file($reportsPath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'pdf';
+    });
+
+    // Pravimo listu fajlova sa ID-jem
+    $pdfReports = [];
+    foreach ($pdfFiles as $file) {
+      $parts = explode('_', $file);
+      if (isset($parts[0]) && is_numeric($parts[0])) {
+        $pdfReports[] = [
+          'id' => (int) $parts[0],
+          'file' => $file
+        ];
+      }
+    }
+
+
+    $putanje = [];
+
+    foreach ($pdfReports as $file) {
+      $putanje[] = [
+        'user' => $this->em->getRepository(User::class)->find($file['id']),
+        'putanja' => $reportPath . '/'. $file['file']
+      ];
+    }
+
+    $args['folderi'] = $putanje;
+    $args['type'] = 3;
+    $args['title'] = $mesec;
+    $args['year'] = $godina;
+    $args['month'] = $mesec;
+
+
+
+
+    return $this->render('report_employee/view_files.html.twig', $args);
+  }
+
+
 //  #[Route('/settings/{id}', name: 'app_employee_settings_form')]
 ////  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
 //  public function settings(User $usr, Request $request)    : Response { if (!$this->isGranted('ROLE_USER')) {
@@ -1471,8 +1951,80 @@ class EmployeeController extends AbstractController {
 //    $args['user'] = $usr;
 //    return $this->render('user/settings.html.twig', $args);
 //  }
+  #[Route('/pdf/upis', name: 'pdf_fill')]
+  public function fillPdf(): Response {
+    $pdf = new TcpdfFpdi();
+
+// Dodavanje nove stranice
+    $pdf->AddPage();
+
+// Putanja do PDF šablona
+    $templatePath = $this->getParameter('kernel.project_dir') . '/var/pdf/pdf_template.pdf';
+
+// Učitajte šablon
+    $pageCount = $pdf->setSourceFile($templatePath); // Broj stranica u šablonu
+    $templateId = $pdf->importPage(1); // Importuj prvu stranicu iz šablona
+
+// Koristite šablon na aktuelnoj stranici
+    $pdf->useTemplate($templateId);
+
+    $pdf->SetFont('dejavusans', '', 15);
 
 
+    $meseci = [
+      1 => 'januar', 2 => 'februar', 3 => 'mart', 4 => 'april',
+      5 => 'maj', 6 => 'jun', 7 => 'jul', 8 => 'avgust',
+      9 => 'septembar', 10 => 'oktobar', 11 => 'novembar', 12 => 'decembar'
+    ];
+
+    $datum = [
+      'dan' => (new \DateTime())->format('d.'),
+      'mesec' => $meseci[(int)(new \DateTime())->format('m')],
+      'godina' => (new \DateTime())->format('Y.'),
+    ];
+
+    // Datum
+    $pdf->SetXY(16, 88); // X, Y koordinata gde ide datum
+    $pdf->Write(0, ($datum['mesec']));
+
+    $pdf->SetXY(62, 88); // X, Y koordinata gde ide datum
+    $pdf->Write(0, ($datum['dan']));
+
+    $pdf->SetXY(128, 88); // X, Y koordinata gde ide datum
+    $pdf->Write(0, ($datum['godina']));
+
+    $pdf->SetXY(62, 47);
+    $pdf->Write(0, 'Pars Doo');
+
+    // Firma
+    $pdf->SetXY(62, 60);
+    $pdf->Write(0, 'Pars Doo');
+
+    // Matični broj
+    $pdf->SetXY(62, 70);
+    $pdf->Write(0, '21360031');
 
 
+    // Lista korisnika
+    $users = [
+      ['ime' => 'Petar', 'prezime' => 'Petrović', 'lk' => '123456789'],
+      ['ime' => 'Marko', 'prezime' => 'Marković', 'lk' => '987654321'],
+      ['ime' => 'Ivana', 'prezime' => 'Ivić', 'lk' => '456123789'],
+      // Dodaj do 12 korisnika
+    ];
+
+    $startY = 115;
+    foreach ($users as $index => $user) {
+
+      $pdf->SetXY(33, $startY + ($index * 13));
+      $pdf->Write(0, $user['ime'] . ' ' . $user['prezime']);
+
+      $pdf->SetXY(158, $startY + ($index * 13));
+      $pdf->Write(0, $user['lk']);
+    }
+
+
+// Ispišite PDF u browser
+    $pdf->Output('dnevni_spisak.pdf', 'I');
+  }
 }

@@ -39,6 +39,16 @@
                         </a>
                     </li>
 
+                    {% if app.user.isInTask %}
+                        <li class="nav-item">
+                            <a href="{{ path('app_stopwatch_add_form_in_task', {id: activeStopwatch.id}) }}" class="nav-link {{ current_route == 'app_stopwatch_add_form_in_task' ? 'active' : '' }}">
+                                <i class="ph-timer"></i>
+                                <span>Merenje u toku</span>
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto" id="activeStopwatch">00:00</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
                     <!-- taskovi -->
                     <li class="nav-item-header">
                         <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Zadaci</div>
@@ -78,6 +88,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ path('app_signatures') }}" class="nav-link {{ current_route == 'app_signatures' ? 'active' : '' }}">
+                            <i class="ph-thumbs-up"></i>
+                            <span>Potvrda dozvola</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ path('app_tasks_arhiva') }}" class="nav-link {{ current_route == 'app_tasks_arhiva' ? 'active' : '' }}">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
@@ -102,6 +118,12 @@
                             {% if countChecklistActive > 0 %}
                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countChecklistActive }}</span>
                             {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_elaborats') }}" class="nav-link {{ current_route == 'app_elaborats' ? 'active' : '' }}">
+                            <i class="ph-list-bullets"></i>
+                            <span>Elaborati - kancelarija</span>
                         </a>
                     </li>
 
@@ -211,7 +233,7 @@
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('app_users_contacts') }}" class="nav-link {{ current_route == 'app_users_contacts' ? 'active' : '' }}">
-                            <i class="ph-chats"></i>
+                            <i class="ph-address-book"></i>
                             <span>Kontakti</span>
                         </a>
                     </li>
@@ -230,7 +252,27 @@
         <!-- /sidebar content -->
 
     </div>
+    {% if app.user.isInTask %}
+        <script>
+            function updateStopwatch() {
+                $.ajax({
+                    url: '{{ path("app_stopwatch_get_time_difference", {id: activeStopwatch.id}) }}',  // Putanja do endpointa
+                    method: 'GET',
+                    success: function(data) {
+                        if (data && data.timeDifference) {
+                            $('#activeStopwatch').text(data.timeDifference); // Osvežavanje vremena na stranici
+                        }
+                    },
+                    error: function() {
+                        console.error('Došlo je do greške pri osvežavanju vremena.');
+                    }
+                });
+            }
 
+            // Osvežavanje svakih 1000ms (1 sekunda)
+            setInterval(updateStopwatch, 1000);
+        </script>
+    {% endif %}
     <!-- /main sidebar -->
 {% else %}
     <!-- Main sidebar admin -->
@@ -308,7 +350,7 @@
                         </li>
                     <li class="nav-item">
                         <a href="{{ path('app_users_contacts') }}" class="nav-link {{ current_route == 'app_users_contacts' ? 'active' : '' }}">
-                            <i class="ph-chats"></i>
+                            <i class="ph-address-book"></i>
                             <span>Kontakti</span>
                         </a>
                     </li>
@@ -361,17 +403,34 @@
                             {# <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}/{{ countComments }}</span> #}
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_employee_availability_reports') }}" class="nav-link {{ current_route == 'app_employee_availability_reports' ? 'active' : '' }}">
+{#                    <li class="nav-item">#}
+{#                        <a href="{{ path('app_employee_availability_reports') }}" class="nav-link {{ current_route == 'app_employee_availability_reports' ? 'active' : '' }}">#}
+{#                            <i class="ph-file-text"></i>#}
+{#                            <span>Izveštaji o dostupnosti</span>#}
+{#                        </a>#}
+{#                    </li>#}
+{#                    <li class="nav-item">#}
+{#                        <a href="{{ path('app_employee_reports') }}" class="nav-link {{ current_route == 'app_employee_reports' ? 'active' : '' }}">#}
+{#                            <i class="ph-file-text"></i>#}
+{#                            <span>Izveštaji o aktivnostima</span>#}
+{#                        </a>#}
+{#                    </li>#}
+                    <li class="nav-item nav-item-submenu {{ current_route starts with 'app_' and current_route matches '/app_(employee_reports|employee_availability_reports|app_employee_reports_pdf)/' ? 'nav-item-open' : '' }}">
+                        <a href="#" class="nav-link {{ current_route starts with 'app_' and current_route matches '/app_(employee_reports|employee_availability_reports|app_employee_reports_pdf)/' ? 'active' : '' }}">
                             <i class="ph-file-text"></i>
-                            <span>Izveštaji o dostupnosti</span>
+                            <span>Izveštaji</span>
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_employee_reports') }}" class="nav-link {{ current_route == 'app_employee_reports' ? 'active' : '' }}">
-                            <i class="ph-file-text"></i>
-                            <span>Izveštaji o aktivnostima</span>
-                        </a>
+                        <ul class="nav-group-sub collapse {{ current_route starts with 'app_' and current_route matches '/app_(employee_availability_reports|employee_reports|app_employee_reports_pdf)/' ? 'show' : '' }}">
+                            <li class="nav-item">
+                                <a href="{{ path('app_employee_availability_reports') }}" class="nav-link {{ current_route == 'app_employee_availability_reports' ? 'active' : '' }}">Dostupnost</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_employee_reports') }}" class="nav-link {{ current_route == 'app_employee_reports' ? 'active' : '' }}">Aktivnosti</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_employee_reports_pdf') }}" class="nav-link {{ current_route == 'app_employee_reports_pdf' ? 'active' : '' }}">Fajlovi</a>
+                            </li>
+                        </ul>
                     </li>
 
                     <li class="nav-item nav-item-submenu {{ current_route starts with 'app_' and current_route matches '/app_(employees_archive|employee_archive_reports)/' ? 'nav-item-open' : '' }}">
@@ -431,24 +490,38 @@
                             {% endif %}
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_project_izlasci_reports') }}" class="nav-link {{ current_route == 'app_project_izlasci_reports' ? 'active' : '' }}">
-                            <i class="ph-file-text"></i>
-                            <span>Broj zadataka po projektu</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_projects_fakture') }}" class="nav-link {{ current_route == 'app_projects_fakture' ? 'active' : '' }}">
-                            <i class="ph-file-text"></i>
-                            <span>Projekti za fakturisanje</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_project_reports') }}" class="nav-link {{ current_route == 'app_project_reports' ? 'active' : '' }}">
+
+                    <li class="nav-item nav-item-submenu {{ current_route starts with 'app_' and current_route matches '/app_(project_izlasci_reports|projects_fakture|project_reports|project_robots_reports)/' ? 'nav-item-open' : '' }}">
+                        <a href="#" class="nav-link {{ current_route starts with 'app_' and current_route matches '/app_(project_izlasci_reports|projects_fakture|project_reports|project_robots_reports)/' ? 'active' : '' }}">
                             <i class="ph-file-text"></i>
                             <span>Izveštaji</span>
                         </a>
+                        <ul class="nav-group-sub collapse {{ current_route starts with 'app_' and current_route matches '/app_(project_izlasci_reports|projects_fakture|project_reports|project_robots_reports)/' ? 'show' : '' }}">
+                            <li class="nav-item">
+                                <a href="{{ path('app_project_izlasci_reports') }}" class="nav-link {{ current_route == 'app_project_izlasci_reports' ? 'active' : '' }}">
+                                    <span>Broj zadataka po projektu</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_projects_fakture') }}" class="nav-link {{ current_route == 'app_projects_fakture' ? 'active' : '' }}">
+                                    <span>Projekti za fakturisanje</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_project_reports') }}" class="nav-link {{ current_route == 'app_project_reports' ? 'active' : '' }}">
+                                    <span>Izveštaji</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_project_robots_reports') }}" class="nav-link {{ current_route == 'app_project_robots_reports' ? 'active' : '' }}">
+                                    <span>Izveštaji o robotici</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
+
+
+
                     <li class="nav-item nav-item-submenu {{ current_route starts with 'app_' and current_route matches '/app_(projects_archive|project_reports_archive)/' ? 'nav-item-open' : '' }}">
                         <a href="#" class="nav-link {{ current_route starts with 'app_' and current_route matches '/app_(projects_archive|project_reports_archive)/' ? 'active' : '' }}">
                             <i class="ph-archive"></i>
@@ -510,24 +583,34 @@
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="{{ path('app_stopwatch_verify_activity_list') }}" class="nav-link {{ current_route == 'app_stopwatch_verify_activity_list' ? 'active' : '' }}">
+                    <li class="nav-item nav-item-submenu {{ current_route starts with 'app_' and current_route matches '/app_(stopwatch_verify_activity_list|signatures|stopwatch_list)/' ? 'nav-item-open' : '' }}">
+                        <a href="#" class="nav-link {{ current_route starts with 'app_' and current_route matches '/app_(stopwatch_verify_activity_list|signatures|stopwatch_list)/' ? 'active' : '' }}">
                             <i class="ph-archive-box"></i>
-                            <span>Prijemi za potvrdu</span>
-                            {% if countVerifyCheck > 0 %}
-                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countVerifyCheck }}</span>
-                            {% endif %}
+                            <span>Provere i dozvole</span>
                         </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="{{ path('app_stopwatch_list') }}" class="nav-link {{ current_route == 'app_stopwatch_list' ? 'active' : '' }}">
-                            <i class="ph-list-checks"></i>
-                            <span>Zapisi za proveru</span>
-                            {% if countLogCheck > 0 %}
-                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countLogCheck }}</span>
-                            {% endif %}
-                        </a>
+                        <ul class="nav-group-sub collapse {{ current_route starts with 'app_' and current_route matches '/app_(stopwatch_verify_activity_list|signatures|stopwatch_list)/' ? 'show' : '' }}">
+                            <li class="nav-item">
+                                <a href="{{ path('app_stopwatch_verify_activity_list') }}" class="nav-link {{ current_route == 'app_stopwatch_verify_activity_list' ? 'active' : '' }}">
+                                    <span>Prijemi za potvrdu</span>
+                                    {% if countVerifyCheck > 0 %}
+                                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countVerifyCheck }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_signatures') }}" class="nav-link {{ current_route == 'app_signatures' ? 'active' : '' }}">
+                                    <span>Potvrda dozvola</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_stopwatch_list') }}" class="nav-link {{ current_route == 'app_stopwatch_list' ? 'active' : '' }}">
+                                    <span>Zapisi za proveru</span>
+                                    {% if countLogCheck > 0 %}
+                                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countLogCheck }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
                     <li class="nav-item">
@@ -598,6 +681,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ path('app_elaborats') }}" class="nav-link {{ current_route == 'app_elaborats' ? 'active' : '' }}">
+                            <i class="ph-list-bullets"></i>
+                            <span>Elaborati - kancelarija</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ path('app_checklist_archive') }}" class="nav-link {{ current_route == 'app_checklist_archive' ? 'active' : '' }}">
                             <i class="ph-archive"></i>
                             <span>Arhiva</span>
@@ -634,18 +723,27 @@
                             {% endif %}
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_car_reports') }}" class="nav-link {{ current_route == 'app_car_reports' ? 'active' : '' }}">
+
+                    <li class="nav-item nav-item-submenu {{ current_route starts with 'app_' and current_route matches '/app_(car_reports|car_reports_expense)/' ? 'nav-item-open' : '' }}">
+                        <a href="#" class="nav-link {{ current_route starts with 'app_' and current_route matches '/app_(car_reports|car_reports_expense)/' ? 'active' : '' }}">
                             <i class="ph-file-text"></i>
                             <span>Izveštaji</span>
                         </a>
+                        <ul class="nav-group-sub collapse {{ current_route starts with 'app_' and current_route matches '/app_(car_reports|car_reports_expense)/' ? 'show' : '' }}">
+                            <li class="nav-item">
+                                <a href="{{ path('app_car_reports') }}" class="nav-link {{ current_route == 'app_car_reports' ? 'active' : '' }}">
+                                    <span>Izveštaji</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_car_reports_expense') }}" class="nav-link {{ current_route == 'app_car_reports_expense' ? 'active' : '' }}">
+                                    <span>Troškovi</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a href="{{ path('app_car_reports_expense') }}" class="nav-link {{ current_route == 'app_car_reports_expense' ? 'active' : '' }}">
-                            <i class="ph-file-text"></i>
-                            <span>Izveštaji trošak</span>
-                        </a>
-                    </li>
+
+
                     <li class="nav-item nav-item-submenu {{ current_route starts with 'app_' and current_route matches '/app_(cars_archive|car_reports_archive|car_reports_expense_archive)/' ? 'nav-item-open' : '' }}">
                         <a href="#" class="nav-link {{ current_route starts with 'app_' and current_route matches '/app_(cars_archive|car_reports_archive|car_reports_expense_archive)/' ? 'active' : '' }}">
                             <i class="ph-archive"></i>
@@ -821,6 +919,9 @@
                                 <a href="{{ path('app_holiday_vacation_form') }}" class="nav-link {{ current_route == 'app_holiday_vacation_form' ? 'active' : '' }}">Kolektivni odmor</a>
                             </li>
                             <li class="nav-item">
+                                <a href="{{ path('app_survey_view') }}" class="nav-link {{ current_route == 'app_survey_view' ? 'active' : '' }}">Rezultati ankete</a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ asset('/assets/manual/manual.pdf') }}" class="nav-link download">Uputstvo korisnik</a>
                             </li>
                             <li class="nav-item">
@@ -845,8 +946,6 @@
     </div>
     <!-- /main sidebar -->
 {% endif %}
-
-
 
 
 

@@ -18,6 +18,7 @@ use App\Entity\ManagerChecklist;
 use App\Entity\Notes;
 use App\Entity\Overtime;
 use App\Entity\Project;
+use App\Entity\Signature;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\Team;
@@ -47,6 +48,9 @@ class WidgetController extends AbstractController {
 
       $args['checklistActive'] = $this->em->getRepository(ManagerChecklist::class)->findBy(['user' => $this->getUser(), 'status' => InternTaskStatusData::NIJE_ZAPOCETO]);
       $args['countChecklistActive'] = count($args['checklistActive']);
+      if ($loggedUser->isInTask()) {
+        $args['activeStopwatch'] = $this->em->getRepository(StopwatchTime::class)->findActiveStopwatchByUser($loggedUser);
+      }
 
     } else {
       $args['countPlanRada'] = $this->em->getRepository(FastTask::class)->countPlanRadaActive();
@@ -185,6 +189,8 @@ class WidgetController extends AbstractController {
   public function projectProfilNavigation(Project $project): Response {
 
     $args['project'] = $project;
+
+    $args['dozvole'] = $this->em->getRepository(Signature::class)->getCountSignatures($project);
 
     return $this->render('widget/project_nav.html.twig', $args);
   }

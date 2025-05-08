@@ -1,0 +1,1130 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            padding: 10px;
+            page-break-inside: avoid; /* Sprečava razbijanje kartice */
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            page-break-after: avoid; /* Sprečava razbijanje kartice */
+        }
+        .card-body {
+            padding: 10px;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -10px;
+            page-break-inside: avoid; /* Sprečava razbijanje redova unutar kartice */
+        }
+        .col-6 {
+            flex: 1;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .bg-light {
+            background-color: #f8f9fa;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            page-break-inside: auto; /* Omogućava prelaz stranice unutar tabele */
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            page-break-inside: avoid; /* Sprečava razbijanje redova unutar tabele */
+            page-break-after: auto;
+        }
+
+        thead {
+            display: table-header-group; /* Prikazuje zaglavlje tabele na svakoj novoj stranici */
+        }
+        img {
+            max-width: 100px; /* Ograničava veličinu slike u tabeli */
+        }
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .header-logo img {
+            max-width: none; /* Uklanja ograničenje veličine za logotip */
+            max-height: 100px; /* Podesite visinu logotipa na željenu vrednost */
+        }
+        .company-details {
+            text-align: right;
+        }
+
+    </style>
+    <div class="page-content">
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+                <div class="header-row">
+                    <div class="header-logo">
+                        <img src="{{ absolute_url(asset('assets/images/logo/logoXls.png')) }}" alt="Logo">
+                    </div>
+                    <div class="company-details">
+                        <div>PARS DOO AGENCIJA  ZA KONSALTING PROJEKTOVANJE I GEODETSKE  POSLOVE</div>
+                        <div>11211 Beograd   Put za Crvenku broj 56e</div>
+                        <div>Tel/fax:+381 (0)63 289026. +381 (0)64 1598100</div>
+                        <div>e-mail:vladapars@gmail.com</div>
+                    </div>
+                </div>
+                <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Periodični izveštaj za {{ user.fullName }} u periodu od {{ prviDan | date('d.m.Y') }} - {{ poslednjiDan | date('d.m.Y') }}</h5>
+                        </div>
+                    </div>
+
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <h5 class="mb-0">Produktivno vreme</h5>
+                    </div>
+                    <div class="card-body">
+                            <div class="row mt-2">
+                                <table class="table table-hover table-bordered">
+                                    <thead>
+                                    <tr class="table-light">
+                                        <th>Broj radnih dana</th>
+                                        <th>Ukupno vreme</th>
+                                        <th>Prosečno vreme</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    {{ details.broj_elemenata }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    {{ details.ukupno_vreme }}h
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {{ details.prosek_vreme }}h
+                                            </td>
+
+                                        </tr>
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                </div>
+
+{#                <div class="card">#}
+{#                        <div class="row mt-2">#}
+{#                            <div class="col-sm-6 col-xl-4">#}
+{#                                <div class="card card-body">#}
+{#                                    <div class="d-flex align-items-center">#}
+{#                                        <i class="ph-calendar-check ph-2x text-primary me-3"></i>#}
+
+{#                                        <div class="flex-fill text-end">#}
+{#                                            <h4 class="mb-0">{{ details.broj_elemenata }}</h4>#}
+{#                                            <span class="text-muted">Broj radnih dana</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+
+{#                            <div class="col-sm-6 col-xl-4">#}
+{#                                <div class="card card-body">#}
+{#                                    <div class="d-flex align-items-center">#}
+{#                                        <i class="ph-clock ph-2x text-primary me-3"></i>#}
+
+{#                                        <div class="flex-fill text-end">#}
+{#                                            <h4 class="mb-0">{{ details.ukupno_vreme }}h</h4>#}
+{#                                            <span class="text-muted">Ukupno vreme</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+
+{#                            <div class="col-sm-6 col-xl-4">#}
+{#                                <div class="card card-body">#}
+{#                                    <div class="d-flex align-items-center">#}
+{#                                        <i class="ph-timer ph-2x text-primary me-3"></i>#}
+
+{#                                        <div class="flex-fill text-end">#}
+{#                                            <h4 class="mb-0">{{ details.prosek_vreme }}h</h4>#}
+{#                                            <span class="text-muted">Prosečno vreme</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+
+
+
+{#                        </div>#}
+{#                    </div>#}
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <h5 class="mb-0">Prosutnost - {% if noRadnihDana > 0 %} {{ (noDays['dostupan'] / noRadnihDana) |number_format(2, '.', ',') }} {% endif %}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mt-2">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                <tr class="table-light">
+                                    <th>Vrsta dana</th>
+                                    <th>Broj dana</th>
+                                    <th>Vrsta dana</th>
+                                    <th>Broj dana</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Broj radnih dana
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['dostupan'] }}/{{ noRadnihDana }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Rad na praznik
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['praznik'] }}
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Rad na kolektivni odmor
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['kolektivniOdmor'] }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Rad nedeljom
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['nedelja'] }}
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <h5 class="mb-0">Odsutnost - {% if noRadnihDana > 0 %} {{ (noDays['dostupan'] / noRadnihDana) |number_format(2, '.', ',') }} {% endif %}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mt-2">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                <tr class="table-light">
+                                    <th>Vrsta dana</th>
+                                    <th>Broj dana</th>
+                                    <th>Vrsta dana</th>
+                                    <th>Broj dana</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Broj dana odsustva
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['nedostupanProfil'] }}/{{ noRadnihDana }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Slobodni dani
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['dan'] }}
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Odmor
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['odmor'] }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Bolovanje
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['bolovanje'] }}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Slava
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['slava'] }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Kolektivni odmor
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['neradniKolektivniOdmor'] }}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Izlasci (parcijalni slobodan dan)
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['izasao'] }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Zahtevi
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noRequests['ukupno'] }}
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            Nema merenje
+
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ noDays['nemaMerenje'] }}
+                                        </div>
+                                    </td>
+
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="card">
+
+                    <div class="card-header d-flex align-items-center">
+
+                        <h5 class="mb-0">Prekovremeni sati - {{ overtime[0] }}</h5>
+
+                    </div>
+
+                    {% if overtime[1] is not empty %}
+                        <div class="card-body">
+                            <div class="row mt-2">
+                                <table class="table table-hover table-bordered">
+                                    <thead>
+                                    <tr class="table-light">
+                                        <th>Datum</th>
+                                        <th>Zadatak</th>
+                                        <th>Sati</th>
+                                        <th>Minuti</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for overtime in overtime[1] %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    {{ overtime.datum | date('d.m.Y') }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    {% if overtime.task is not null %}
+                                                        {{ overtime.task.title }}
+                                                    {% else %}
+                                                        Prekovremeno vreme nije povezano sa zadatkom
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    {{ overtime.hours < 10 ? '0' ~ overtime.hours : overtime.hours }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">
+                                                    {{ overtime.minutes < 10 ? '0' ~ overtime.minutes : overtime.minutes }}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor%}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Zadaci</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover table-bordered ">
+                            <thead>
+                            <tr class="table-light">
+
+                                <th>Datum</th>
+
+                                <th>Projekat</th>
+
+                                <th>Ukupno</th>
+
+                                {#                                    <th>Ukupno*</th>#}
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if reports is not empty %}
+                                {% for key, value in reports[0] %}
+                                    {% if value[0].dan == 1 or value[0].dan  == 3 or value[0].dan  == 5%}
+                                        <tr style="background-color: #C0C0C0">
+                                    {% else  %}
+                                        <tr>
+                                    {% endif %}
+
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ key}}
+                                        </div>
+                                        <div>
+                                            {% if value[0].dan == 1 %}
+                                                <span class="badge bg-secondary text-primary">Praznik</span>
+                                            {% elseif value[0].dan  == 3 %}
+                                                <span class="badge bg-secondary text-primary">Nedelja</span>
+                                            {% elseif value[0].dan == 5 %}
+                                                <span class="badge bg-yellow text-white">Praznik i nedelja</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                    {% if reports[2] is not empty %}
+                                        {% for stopwatch in reports[2][loop.index0] %}
+
+                                                    {% if stopwatch.project is not null %}
+                                                        {{ stopwatch.project.title }}
+                                                    {% endif %}
+
+                                        {% endfor %}
+                                    {% endif %}
+                                    </td>
+{#                                    <td>#}
+{#                                        <table class="table table_morecondensed table-bordered">#}
+{#                                            <thead class="bg-light">#}
+{#                                            <tr>#}
+
+{#                                                <th>Projekat</th>#}
+{#                                                <th>Kategorija</th>#}
+{#                                                <th>Aktivnosti</th>#}
+{#                                                <th>Start</th>#}
+{#                                                <th>Kraj</th>#}
+{#                                                <th>Razlika</th>#}
+{#                                                #}{#                                                    <th>Razlika*</th>#}
+
+
+
+{#                                            </tr>#}
+{#                                            </thead>#}
+{#                                            <tbody>#}
+
+{#                                            {% if reports[2] is not empty %}#}
+{#                                                {% for stopwatch in reports[2][loop.index0] %}#}
+{#                                                    <tr>#}
+
+{#                                                        <td>#}
+{#                                                            {% if stopwatch.project is not null %}#}
+{#                                                                {{ stopwatch.project.title }}#}
+{#                                                            {% endif %}#}
+{#                                                        </td>#}
+{#                                                        <td>#}
+{#                                                            {% if stopwatch.category is not null %}#}
+{#                                                                {{ stopwatch.category.title }}#}
+{#                                                            {% endif %}#}
+{#                                                        </td>#}
+{#                                                        <td>#}
+{#                                                            {% for akt in stopwatch.activity %}#}
+{#                                                                {% if akt.id != constant('App\\Classes\\AppConfig::NEMA_U_LISTI_ID') and akt.id != constant('App\\Classes\\AppConfig::OSTALO_ID')%}#}
+{#                                                                    {{ akt.title }},#}
+{#                                                                {% endif %}#}
+{#                                                            {% endfor %}#}
+
+{#                                                            {% set sentences = stopwatch.additionalActivity|split('. ') %}#}
+
+{#                                                            {% for sentence in sentences %}#}
+{#                                                                {{ sentence }}{% if not loop.last %},{% endif %}#}
+{#                                                            {% endfor %}#}
+{#                                                        </td>#}
+
+
+
+{#                                                        <td>#}
+{#                                                            {{ stopwatch.start | date("H:i")}}#}
+{#                                                        </td>#}
+
+
+{#                                                        <td>#}
+{#                                                            {{ stopwatch.stop | date("H:i")}}#}
+{#                                                        </td>#}
+
+
+{#                                                        <td>#}
+{#                                                            {{ stopwatch.hoursReal }}:{{ stopwatch.minutesReal}}<br>#}
+{#                                                        </td>#}
+
+{#                                                        #}{#                                                            <td>#}
+{#                                                        #}{#                                                                {{ stopwatch.hours }}:{{ stopwatch.minutes}}<br>#}
+{#                                                        #}{#                                                            </td>#}
+
+
+
+{#                                                    </tr>#}
+{#                                                {% endfor %}#}
+{#                                            {% endif %}#}
+{#                                            </tbody>#}
+
+{#                                        </table>#}
+{#                                    </td>#}
+
+
+                                    <td>
+                                        {{ reports[1][loop.index0]['vremeR'] }}
+                                        {#                                                                    {% set hoursRealTimePriority = 0 %}#}
+                                        {#                                                                    {% set minutesRealTimePriority = 0 %}#}
+                                        {#                                                                    {% for report in value %}#}
+                                        {#                                                                        {% set hoursRealTimePriority = hoursRealTimePriority + report.time.hoursRealTimePriority %}#}
+                                        {#                                                                        {% set minutesRealTimePriority = minutesRealTimePriority + report.time.minutesRealTimePriority %}#}
+                                        {#                                                                    {% endfor %}#}
+                                        {#                                                                {% if hoursRealTimePriority < 10 %}0{% endif %}{{ hoursRealTimePriority }}:{% if minutesRealTimePriority < 10 %}0{% endif %}{{minutesRealTimePriority}}#}
+                                    </td>
+
+                                    {#                                        <td>#}
+                                    {#                                            {{ reports[1][loop.index0]['vreme'] }}#}
+                                    {#                                            #}{#                                                                    {% set hoursTimePriority = 0 %}#}
+                                    {#                                            #}{#                                                                    {% set minutesTimePriority = 0 %}#}
+                                    {#                                            #}{#                                                                    {% for report in value %}#}
+                                    {#                                            #}{#                                                                        {% set hoursTimePriority = hoursTimePriority + report.time.hoursTimePriority %}#}
+                                    {#                                            #}{#                                                                        {% set minutesTimePriority = minutesTimePriority + report.time.minutesTimePriority %}#}
+                                    {#                                            #}{#                                                                    {% endfor %}#}
+                                    {#                                            #}{#                                                                    {% if hoursTimePriority < 10 %}0{% endif %}{{ hoursTimePriority }}:{% if minutesTimePriority < 10 %}0{% endif %}{{minutesTimePriority}}#}
+                                    {#                                        </td>#}
+
+
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="text-body">
+                                            Nema odrađenih zadataka u zadatom periodu
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    </div>
+                <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Interni zadaci</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-hover table-bordered ">
+                                    <thead>
+                                    <tr class="table-light">
+
+                                        <th>Datum</th>
+
+
+                                        <th>Projekat</th>
+                                        <th>Zadatak</th>
+                                        <th>Kategorija</th>
+
+{#                                        {% if opis is defined %}#}
+{#                                            <th>Opis izvedenog posla</th>#}
+{#                                        {% endif %}#}
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% if intern is not empty %}
+                                        {% for check in intern %}
+                                            <tr>
+
+                                                    <td>
+                                                        <div class="fw-semibold">
+                                                            {{ check.datumKreiranja | date('d.m.Y.')}}
+                                                        </div>
+                                                    </td>
+
+                                                <td>{{check.project.title }}</td>
+                                                <td>{{check.task }}</td>
+                                                <td>{{check.category.title }}</td>
+{#                                                {% if opis is defined %}#}
+{#                                                    <td>#}
+{#                                                        <div>#}
+{#                                                            {{ check.finishDesc }}#}
+{#                                                        </div>#}
+{#                                                    </td>#}
+{#                                                {% endif %}#}
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                        </div>
+                    </div>
+            </div>
+
+
+        </div>
+        <!-- /main content -->
+
+
+    </div>
+
+
+
+{% endblock content %}
+
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>Periodični izveštaj za {{ user.fullName }} u periodu od {{ prviDan | date('d.m.Y') }} - {{ poslednjiDan | date('d.m.Y') }}</title>#}
+{#    <style>#}
+{#        body {#}
+{#            font-family: Arial, sans-serif;#}
+{#            margin: 0;#}
+{#            padding: 0;#}
+{#        }#}
+{#        .container {#}
+{#            padding: 20px;#}
+{#        }#}
+{#        .card {#}
+{#            border: 1px solid #ddd;#}
+{#            margin-bottom: 20px;#}
+{#            border-radius: 4px;#}
+{#            padding: 10px;#}
+{#            page-break-inside: avoid; /* Sprečava razbijanje kartice */#}
+{#        }#}
+{#        .card-header {#}
+{#            background-color: #f8f9fa;#}
+{#            padding: 10px;#}
+{#            font-size: 16px;#}
+{#            font-weight: bold;#}
+{#            page-break-after: avoid; /* Sprečava razbijanje kartice */#}
+{#        }#}
+{#        .card-body {#}
+{#            padding: 10px;#}
+{#        }#}
+{#        .row {#}
+{#            display: flex;#}
+{#            flex-wrap: wrap;#}
+{#            margin: -10px;#}
+{#            page-break-inside: avoid; /* Sprečava razbijanje redova unutar kartice */#}
+{#        }#}
+{#        .col-6 {#}
+{#            flex: 1;#}
+{#            padding: 10px;#}
+{#            box-sizing: border-box;#}
+{#        }#}
+{#        .bg-light {#}
+{#            background-color: #f8f9fa;#}
+{#        }#}
+{#        table {#}
+{#            width: 100%;#}
+{#            border-collapse: collapse;#}
+{#            margin-top: 10px;#}
+{#            page-break-inside: auto; /* Omogućava prelaz stranice unutar tabele */#}
+{#        }#}
+{#        th, td {#}
+{#            border: 1px solid #ddd;#}
+{#            padding: 8px;#}
+{#            text-align: left;#}
+{#            page-break-inside: avoid; /* Sprečava razbijanje redova unutar tabele */#}
+{#            page-break-after: auto;#}
+{#        }#}
+{#        th {#}
+{#            background-color: #f8f9fa;#}
+{#            color: #F45C2C;#}
+{#        }#}
+{#        thead {#}
+{#            display: table-header-group; /* Prikazuje zaglavlje tabele na svakoj novoj stranici */#}
+{#        }#}
+{#        img {#}
+{#            max-width: 100px; /* Ograničava veličinu slike u tabeli */#}
+{#        }#}
+{#        .header-row {#}
+{#            display: flex;#}
+{#            justify-content: space-between;#}
+{#            align-items: center;#}
+{#            border-bottom: 1px solid #ddd;#}
+{#            padding: 10px;#}
+{#            margin-bottom: 20px;#}
+{#        }#}
+{#        .header-logo img {#}
+{#            max-width: none; /* Uklanja ograničenje veličine za logotip */#}
+{#            max-height: 100px; /* Podesite visinu logotipa na željenu vrednost */#}
+{#        }#}
+{#        .company-details {#}
+{#            text-align: right;#}
+{#        }#}
+{#    </style>#}
+{#</head>#}
+{#<body>#}
+
+{#    <div class="header-row">#}
+{#        <div class="header-logo">#}
+{#            <img src="{{ absolute_url(asset('assets/images/logo/logoXls.png')) }}" alt="Logo">#}
+{#        </div>#}
+{#        <div class="company-details">#}
+{#            <div>PARS DOO AGENCIJA  ZA KONSALTING PROJEKTOVANJE I GEODETSKE  POSLOVE</div>#}
+{#            <div>11211 Beograd   Put za Crvenku broj 56e</div>#}
+{#            <div>Tel/fax:+381 (0)63 289026. +381 (0)64 1598100</div>#}
+{#            <div>e-mail:vladapars@gmail.com</div>#}
+{#        </div>#}
+{#    </div>#}
+
+{#<div class="container">#}
+
+{#    <div class="card">#}
+{#        <div class="card-header d-flex align-items-center">#}
+{#            <h5 class="mb-0">{{ user.fullName }}: </h5>#}
+{#            <div class="my-auto ms-auto">#}
+{#                {% if reports[0] is not empty %}#}
+{#                    <div class="dropdown">#}
+{#                        <a href="#" class="btn btn-light" data-bs-toggle="dropdown">#}
+{#                            <i class="ph-file-xls"></i>#}
+{#                        </a>#}
+{#                        <div class="dropdown-menu dropdown-menu-end">#}
+{#                            <a href="{{ path('app_employee_report_xls', {date: period, user: user.id, type:1}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Pun prikaz</a>#}
+{#                            #}{#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:2}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Složen prikaz</a>#}
+{#                            #}{#                                                        <a href="{{ path('app_project_report_xls', {date: period, projekat: project.id, type:3}) }}" class="dropdown-item"><i class="ph-download-simple mx-2"></i>Prost prikaz</a>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                {% endif %}#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <div class="card-body">#}
+{#        <div class="row">#}
+{#            <div class="col-sm-6 col-xl-4">#}
+{#                <div class="card card-body">#}
+{#                    <div class="d-flex align-items-center">#}
+{#                        <i class="ph-calendar-check ph-2x text-primary me-3"></i>#}
+
+{#                        <div class="flex-fill text-end">#}
+{#                            <h4 class="mb-0">{{ details.broj_elemenata }}</h4>#}
+{#                            <span class="text-muted">Broj radnih dana</span>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <div class="col-sm-6 col-xl-4">#}
+{#                <div class="card card-body">#}
+{#                    <div class="d-flex align-items-center">#}
+{#                        <i class="ph-clock ph-2x text-primary me-3"></i>#}
+
+{#                        <div class="flex-fill text-end">#}
+{#                            <h4 class="mb-0">{{ details.ukupno_vreme }}h</h4>#}
+{#                            <span class="text-muted">Ukupno vreme</span>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <div class="col-sm-6 col-xl-4">#}
+{#                <div class="card card-body">#}
+{#                    <div class="d-flex align-items-center">#}
+{#                        <i class="ph-timer ph-2x text-primary me-3"></i>#}
+
+{#                        <div class="flex-fill text-end">#}
+{#                            <h4 class="mb-0">{{ details.prosek_vreme }}h</h4>#}
+{#                            <span class="text-muted">Prosečno vreme</span>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+
+
+
+{#        </div>#}
+{#    </div>#}
+{#    <div class="card">#}
+{#        <div class="card-header">Kontakt</div>#}
+
+{#        {% if order.diler %}#}
+{#            <div class="card-body">#}
+{#                <div class="row p-2 bg-light">#}
+{#                    <div class="col-6">Diler:</div>#}
+{#                    <div class="col-6">#}
+{#                        {{ order.member.fullName }}#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="row p-2">#}
+{#                    <div class="col-6">Kreirana:</div>#}
+{#                    <div class="col-6">{{ order.created | date('d.m.Y. H:i') }}</div>#}
+{#                </div>#}
+{#                <div class="row p-2 bg-light">#}
+{#                    <div class="col-6">Kupac:</div>#}
+{#                    <div class="col-6">#}
+{#                        {{ order.prezime }} {{ order.ime }}#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="row p-2">#}
+{#                    <div class="col-6">Email:</div>#}
+{#                    <div class="col-6">#}
+{#                        {% if order.email is not null %}#}
+{#                            {{ order.email }}#}
+{#                        {% endif %}#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="row p-2 bg-light">#}
+{#                    <div class="col-6">Adresa:</div>#}
+{#                    <div class="col-6">#}
+{#                        {% if order.adresa is not null and order.grad is not null %}#}
+{#                            {{ order.adresa }}, {{ order.grad.ptt }} {{ order.grad.title }}#}
+{#                        {% endif %}#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="row p-2 ">#}
+{#                    <div class="col-6">Telefon:</div>#}
+{#                    <div class="col-6">{{ order.telefon1 }}</div>#}
+{#                </div>#}
+{#                <div class="row p-2 bg-light">#}
+{#                    <div class="col-6">Napomena:</div>#}
+{#                    <div class="col-6">{{ order.description }}</div>#}
+{#                </div>#}
+{#            </div>#}
+{#        {% else %}#}
+{#            <div class="card-body">#}
+{#                <div class="row p-2">#}
+{#                    <div class="col-6">Kreirana:</div>#}
+{#                    <div class="col-6">{{ order.created | date('d.m.Y. H:i') }}</div>#}
+{#                </div>#}
+{#                <div class="row p-2 bg-light">#}
+{#                    <div class="col-6">Kupac:</div>#}
+{#                    <div class="col-6">#}
+{#                        {% if order.member is not null %}#}
+{#                            {{ order.member.fullName }}#}
+{#                        {% else %}#}
+{#                            {{ order.prezime }} {{ order.ime }}#}
+{#                        {% endif %}#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="row p-2">#}
+{#                    <div class="col-6">Email:</div>#}
+{#                    <div class="col-6">#}
+{#                        {% if order.email is not null %}#}
+{#                            {{ order.email }}#}
+{#                        {% endif %}#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="row p-2 bg-light">#}
+{#                    <div class="col-6">Adresa:</div>#}
+{#                    <div class="col-6">#}
+{#                        {% if order.adresa is not null and order.grad is not null %}#}
+{#                            {{ order.adresa }}, {{ order.grad.ptt }} {{ order.grad.title }}#}
+{#                        {% endif %}#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="row p-2 ">#}
+{#                    <div class="col-6">Telefon:</div>#}
+{#                    <div class="col-6">{{ order.telefon1 }}</div>#}
+{#                </div>#}
+{#                <div class="row p-2 bg-light">#}
+{#                    <div class="col-6">Napomena:</div>#}
+{#                    <div class="col-6">{{ order.description }}</div>#}
+{#                </div>#}
+{#            </div>#}
+{#        {% endif %}#}
+
+{#    </div>#}
+
+{#    <div class="card">#}
+{#        <div class="card-header">Vrednost u RSD</div>#}
+{#        <div class="card-body">#}
+{#            <div class="row">#}
+{#                <div class="col-6">Ukupna cena bez popusta:</div>#}
+{#                <div class="col-6">{{ order.priceTotal | number_format(2, '.', ',') }}</div>#}
+{#            </div>#}
+{#            <div class="row bg-light">#}
+{#                <div class="col-6">Procenat popusta:</div>#}
+{#                <div class="col-6">{{ order.percentDiscount | number_format(2, '.', ',') }}%</div>#}
+{#            </div>#}
+{#            <div class="row">#}
+{#                <div class="col-6">Ukupna cena sa popustom:</div>#}
+{#                <div class="col-6">{{ order.priceTotalWithoutDelivery | number_format(2, '.', ',') }}</div>#}
+{#            </div>#}
+{#            <div class="row bg-light">#}
+{#                <div class="col-6">Cena dostave:</div>#}
+{#                <div class="col-6">{{ order.priceDelivery | number_format(2, '.', ',') }}</div>#}
+{#            </div>#}
+{#            <div class="row">#}
+{#                <div class="col-6">Konačna vrednost porudžbine:</div>#}
+{#                <div class="col-6">{{ order.priceTotalPDV | number_format(2, '.', ',') }}</div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+{#    <div class="card">#}
+{#        <div class="card-header">Način plaćanja</div>#}
+{#        <div class="card-body">#}
+{#            <div class="row bg-light">#}
+{#                <div class="col-6">Plaćanje:</div>#}
+{#                <div class="col-6">#}
+{#                    {% if order.placanje == constant('App\\Classes\\Data\\OrderPaymentData::CEK')%}#}
+{#                        Ček#}
+{#                    {% elseif order.placanje == constant('App\\Classes\\Data\\OrderPaymentData::KES')%}#}
+{#                        Gotovina po prijemu#}
+{#                    {% elseif order.placanje == constant('App\\Classes\\Data\\OrderPaymentData::KREDIT')%}#}
+{#                        Kredit#}
+{#                    {% elseif order.placanje == constant('App\\Classes\\Data\\OrderPaymentData::ONLINE')%}#}
+{#                        Plaćanje platnom karticom#}
+{#                    {% elseif order.placanje == constant('App\\Classes\\Data\\OrderPaymentData::UPLATA_NA_RACUN')%}#}
+{#                        Uplata na račun#}
+{#                    {% endif %}#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+{#    <div class="card">#}
+{#        <div class="card-header">Način dostave</div>#}
+{#        <div class="card-body">#}
+{#            <div class="row bg-light">#}
+{#                <div class="col-6">Dostava:</div>#}
+{#                <div class="col-6">#}
+{#                    {% if order.dostava == constant('App\\Classes\\Data\\OrderDeliveryData::RADNJA')%}#}
+{#                        Preuzimanje u radnji#}
+{#                    {% elseif order.dostava == constant('App\\Classes\\Data\\OrderDeliveryData::POST_EXPRESS')%}#}
+{#                        Post Express#}
+{#                    {% elseif order.dostava == constant('App\\Classes\\Data\\OrderDeliveryData::AKS_EXPRESS')%}#}
+{#                        Aks Express#}
+{#                    {% elseif order.dostava == constant('App\\Classes\\Data\\OrderDeliveryData::CITY_EXPRESS')%}#}
+{#                        City Express#}
+{#                    {% elseif order.dostava == constant('App\\Classes\\Data\\OrderDeliveryData::BEKS_EXPRESS')%}#}
+{#                        Bex Express#}
+{#                    {% elseif order.dostava == constant('App\\Classes\\Data\\OrderDeliveryData::D_EXPRESS')%}#}
+{#                        D Express#}
+{#                    {% endif %}#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+{#    <div class="card">#}
+{#        <div class="card-header">Status porudžbine</div>#}
+{#        <div class="card-body">#}
+{#            <div class="row bg-light">#}
+{#                <div class="col-6">Status:</div>#}
+{#                <div class="col-6">#}
+{#                    {% if order.status == constant('App\\Classes\\Data\\OrderStatusData::PENDING')%}#}
+{#                        Na čekanju#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::PROCESSING')%}#}
+{#                        U obradi#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::COMPLETED')%}#}
+{#                        Završena#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::CANCELLED')%}#}
+{#                        Otkazana#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::SHIPPED')%}#}
+{#                        Poslata#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::DELIVERED')%}#}
+{#                        Uručena#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::RETURNED')%}#}
+{#                        Vraćena#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::REFUNDED')%}#}
+{#                        Refundirana#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::FAILED')%}#}
+{#                        Neuspela#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::COURIER_RECEIVED')%}#}
+{#                        Kurir preuzeo#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::IN_TRANSIT')%}#}
+{#                        U tranzitu#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::OUT_FOR_DELIVERY')%}#}
+{#                        Spremna za isporuku#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::COURIER_DELIVERED')%}#}
+{#                        Kurir isporučio#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::COURIER_FAILED')%}#}
+{#                        Kurir nije isporučio#}
+{#                    {% elseif order.status == constant('App\\Classes\\Data\\OrderStatusData::PROFAKTURA')%}#}
+{#                        Profaktura#}
+{#                    {% endif %}#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+{#    <div class="card">#}
+{#        <div class="card-header">Proizvodi</div>#}
+{#        <div class="card-body">#}
+{#            <table>#}
+{#                <thead>#}
+{#                <tr>#}
+{#                    <th>Slika</th>#}
+{#                    <th>Naziv</th>#}
+{#                    <th>Opis</th>#}
+{#                    <th>Cena sa PDV</th>#}
+{#                    <th>Količina</th>#}
+{#                    <th>Ukupna cena sa PDV</th>#}
+{#                </tr>#}
+{#                </thead>#}
+{#                <tbody>#}
+{#                 Filtriramo proizvode: prvo one koji ne zadovoljavaju uslov, pa one koji ga zadovoljavaju #}
+{#                {% set regular_products = order.product|filter(product => product.product.id != 999999) %}#}
+{#                {% set special_products = order.product|filter(product => product.product.id == 999999) %}#}
+
+{#                 Prikazujemo proizvode koji ne zadovoljavaju uslov #}
+{#                {% for product in regular_products %}#}
+{#                    <tr>#}
+{#                        <td>#}
+{#                            {% if product.image is not null %}#}
+{#                                <img src="{{ absolute_url(asset(product.image)) }}" height="60" alt="{{ product.title }}">#}
+{#                            {% else %}#}
+{#                                <img src="{{ absolute_url(asset(product.product.mainImage.thumbnail100)) }}" height="60" alt="{{ product.title }}">#}
+{#                            {% endif %}#}
+{#                        </td>#}
+{#                        <td>{{ product.title }}</td>#}
+{#                        <td>{{ product.description }}</td>#}
+{#                        <td>{{ product.pricePDV | number_format(2, '.', ',') }}</td>#}
+{#                        <td>{{ product.kolicina }} {{ product.product.jedinicaMere | default('KOM') }}</td>#}
+{#                        <td>{{ product.priceTotalPDV | number_format(2, '.', ',') }}</td>#}
+{#                    </tr>#}
+{#                {% endfor %}#}
+
+{#                 Prikazujemo proizvode koji zadovoljavaju uslov (na kraju) #}
+{#                {% for product in special_products %}#}
+{#                    <tr class="bg-light">#}
+{#                        <td colspan="3">{{ product.title }}</td>#}
+{#                        <td>{{ product.pricePDV | number_format(2, '.', ',') }}</td>#}
+{#                        <td>{{ product.kolicina }}</td>#}
+{#                        <td>{{ product.priceTotalPDV | number_format(2, '.', ',') }}</td>#}
+{#                    </tr>#}
+{#                {% endfor %}#}
+{#                                    {% for product in order.product %}#}
+{#                                        {% if product.product.id != 999999 %}#}
+{#                                            <tr>#}
+{#                                                <td>#}
+{#                                                    {% if product.image is not null %}#}
+{#                                                        <img src="{{ absolute_url(asset(product.image)) }}" height="60" alt="{{ product.title }}">#}
+{#                                                    {% else %}#}
+{#                                                        <img src="{{ absolute_url(asset(product.product.mainImage.thumbnail100)) }}" height="60" alt="{{ product.title }}">#}
+{#                                                    {% endif %}#}
+{#                                                </td>#}
+{#                                                <td>{{ product.title }}</td>#}
+{#                                                <td>{{ product.description }}</td>#}
+{#                                                <td>{{ product.pricePDV | number_format(2, '.', ',') }}</td>#}
+{#                                                <td>{{ product.kolicina }} {{ product.product.jedinicaMere }}</td>#}
+{#                                                <td>{{ product.priceTotalPDV | number_format(2, '.', ',') }}</td>#}
+{#                                            </tr>#}
+{#                                        {% else %}#}
+{#                                            <tr class="bg-light">#}
+{#                                                <td colspan="3">{{ product.title }}</td>#}
+{#                                                <td>{{ product.pricePDV | number_format(2, '.', ',') }}</td>#}
+{#                                                <td>{{ product.kolicina }}</td>#}
+{#                                                <td>{{ product.priceTotalPDV | number_format(2, '.', ',') }}</td>#}
+{#                                            </tr>#}
+{#                                        {% endif %}#}
+{#                                    {% endfor %}#}
+{#                </tbody>#}
+{#            </table>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+{#</body>#}
+{#</html>#}
+{#{% endblock %}#}

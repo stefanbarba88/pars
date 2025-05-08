@@ -122,6 +122,42 @@
                 downloadNextReport();
             });
 
+            {#function downloadNextReport() {#}
+            {#    if (currentIndex < reports.length) {#}
+            {#        let fileName = reports[currentIndex];#}
+
+            {#        $.ajax({#}
+            {#            url: '{{ path('download_report') }}',#}
+            {#            type: 'POST',#}
+            {#            data: { fileName: fileName },#}
+            {#            xhrFields: {#}
+            {#                responseType: 'blob'  // Obezbeđuje da se odgovor tretira kao datoteka#}
+            {#            },#}
+            {#            success: function (data, status, xhr) {#}
+            {#                // Kreiraj link za preuzimanje datoteke#}
+            {#                let blob = new Blob([data]);#}
+            {#                let link = document.createElement('a');#}
+            {#                let url = window.URL.createObjectURL(blob);#}
+            {#                link.href = url;#}
+            {#                link.download = fileName;#}
+            {#                document.body.appendChild(link);#}
+            {#                link.click();#}
+            {#                window.URL.revokeObjectURL(url);#}
+            {#                link.remove();#}
+
+            {#                // Pređi na sledeći fajl#}
+            {#                currentIndex++;#}
+            {#                downloadNextReport();#}
+            {#            },#}
+            {#            error: function () {#}
+            {#                alert('Došlo je do greške pri preuzimanju: ' + fileName);#}
+            {#            }#}
+            {#        });#}
+            {#    } else {#}
+            {#        alert('Svi izveštaji su preuzeti.');#}
+            {#        window.location.href = '{{ path('app_project_reports') }}';#}
+            {#    }#}
+            {#}#}
             function downloadNextReport() {
                 if (currentIndex < reports.length) {
                     let fileName = reports[currentIndex];
@@ -131,10 +167,9 @@
                         type: 'POST',
                         data: { fileName: fileName },
                         xhrFields: {
-                            responseType: 'blob'  // Obezbeđuje da se odgovor tretira kao datoteka
+                            responseType: 'blob'
                         },
                         success: function (data, status, xhr) {
-                            // Kreiraj link za preuzimanje datoteke
                             let blob = new Blob([data]);
                             let link = document.createElement('a');
                             let url = window.URL.createObjectURL(blob);
@@ -145,12 +180,13 @@
                             window.URL.revokeObjectURL(url);
                             link.remove();
 
-                            // Pređi na sledeći fajl
                             currentIndex++;
-                            downloadNextReport();
+                            setTimeout(downloadNextReport, 500); // Pauza od 500ms između preuzimanja
                         },
                         error: function () {
                             alert('Došlo je do greške pri preuzimanju: ' + fileName);
+                            currentIndex++;
+                            setTimeout(downloadNextReport, 500); // Nastavi sledeći fajl
                         }
                     });
                 } else {

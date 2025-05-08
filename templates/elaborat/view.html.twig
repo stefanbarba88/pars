@@ -1,0 +1,450 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Kancelarija - elaborati
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                {% set userDays = getDeadlineCounter(elaborat.id) %}
+                                {% if userDays.poruka is not empty and elaborat.status != 4%}
+                                    <div class="{{ userDays.klasa1 }}">
+                                    <span class="fw-semibold">{{ userDays.poruka }}
+                                    </div>
+                                {% endif %}
+                                <div class="card">
+
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">{{ elaborat.title }}
+                                            {% if not is_granted('ROLE_EMPLOYEE') or app.user == elaborat.createdBy %}
+                                                <a href="{{ path('app_elaborat_edit', {id:elaborat.id}) }}"><i class="ph-note-pencil"></i></a>
+                                            {% endif %}</h5>
+                                        <div class="my-auto ms-auto">
+                                            <a href="{{ path('app_elaborat_input_form', {id:elaborat.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Naziv:</div>
+                                            <div class="col-8">{{ elaborat.title() }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Prioritet:</div>
+                                            <div class="col-8">
+                                                {% if elaborat.priority == 1 %}
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger">Visok</span>
+                                                {% elseif elaborat.priority == 2 %}
+                                                    <span class="badge bg-warning bg-opacity-20 text-warning">Standardan</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Projekat:</div>
+                                            <div class="col-8">{{ elaborat.project.title }} ({{ elaborat.project.client.first.title }})</div>
+                                        </div>
+                                        <div class="row p-2 bg">
+                                            <div class="col-4">Status:</div>
+                                            <div class="col-8">
+                                                {% if elaborat.status == 1 %}
+                                                    <span class="badge bg-danger text-white">Nema dokumentacije</span>
+                                                {% endif %}
+                                                {% if elaborat.status == 2 %}
+                                                    <span class="badge bg-warning text-white">Nekompletna / neproverena</span>
+                                                {% endif %}
+                                                {% if elaborat.status == 3 %}
+                                                    <span class="badge bg-success text-white">Kompletna i proverena</span>
+                                                {% endif %}
+                                                {% if elaborat.status == 4 %}
+                                                    <span class="badge bg-yellow text-primary">Zatvoreno</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Realizacija:</div>
+                                            <div class="col-8">
+                                                {% set boja = 'bg-primary'%}
+                                                {% set procenat = elaborat.percent%}
+                                                {% if procenat < 26 %}
+                                                    {% set boja = 'bg-danger'%}
+                                                {% endif %}
+                                                {% if procenat > 25 and procenat < 76 %}
+                                                    {% set boja = 'bg-warning'%}
+                                                {% endif %}
+                                                {% if procenat > 75 and procenat < 99 %}
+                                                    {% set boja = 'bg-info'%}
+                                                {% endif %}
+                                                {% if procenat == 100 %}
+                                                    {% set boja = 'bg-success'%}
+                                                {% endif %}
+                                                <div class="progress">
+                                                    <div class="progress-bar {{ boja }}" role="progressbar" style="width: {{ procenat }}%" aria-valuenow="{{ procenat }}" aria-valuemin="0" aria-valuemax="100">
+                                                        {% if procenat > 0 %}
+                                                            {{ procenat }}%
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg">
+                                            <div class="col-4">Zaduženi:</div>
+                                            <div class="col-8">
+                                                {% if is_granted('ROLE_EMPLOYEE')%}
+                                                    {% for user in elaborat.employee %}
+                                                        <div class="fw-semibold d-inline-flex align-items-center ">
+                                                            {{ user.fullName }}
+                                                        </div><br>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% for user in elaborat.employee %}
+                                                        <a href="{{ path('app_employee_activity_view', {id: user.id }) }}" class="fw-semibold d-inline-flex align-items-center ">
+                                                            {{ user.fullName }}
+                                                        </a><br>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Kreirano:</div>
+                                            <div class="col-8">
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ elaborat.created | date("d.m.Y")}} - {{ elaborat.createdBy.fullName }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg">
+                                            <div class="col-4">Procena:</div>
+                                            <div class="col-8">
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ elaborat.estimate | date("d.m.Y")}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Obavezna predaja:</div>
+                                            <div class="col-8">
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ elaborat.deadline | date("d.m.Y")}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg">
+                                            <div class="col-4">Poslednja izmena/kontrola:</div>
+                                            <div class="col-8">
+                                                {% if elaborat.updated is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ elaborat.updated | date("d.m.Y")}}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Poslato:</div>
+                                            <div class="col-8">
+                                                {% if elaborat.send is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ elaborat.send | date("d.m.Y")}}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Zapisi</h5>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="accordion" id="accordion_collapsed">
+                                            {% for input in inputs %}
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item{{ loop.index }}">
+                                                        {{ input.created | date('d.m.Y.') }} - {{ input.createdBy.fullName }}
+                                                            {% if input.status == 1 %}
+                                                                <span class="badge bg-danger text-white mx-2">Nema dokumentacije</span>
+                                                            {% endif %}
+                                                            {% if input.status == 2 %}
+                                                                <span class="badge bg-warning text-white mx-2">Nekompletna / neproverena</span>
+                                                            {% endif %}
+                                                            {% if input.status == 3 %}
+                                                                <span class="badge bg-success text-white mx-2">Kompletna i proverena</span>
+                                                            {% endif %}
+                                                            {% if input.status == 4 %}
+                                                                <span class="badge bg-yellow text-primary mx-2">Zatvoreno</span>
+                                                            {% endif %}
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapsed_item{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
+                                                        <div class="accordion-body">
+                                                            <div class="row">
+                                                                <div class="col-xl-12 col-sm-12">
+                                                                    <div class="card">
+                                                                        <div class="card-body">
+
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Status</div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-6">
+                                                                                    <div class="mb-3">
+                                                                                        <div class="d-flex list-group-item align-items-start">
+                                                                                            {% if input.status == 1 %}
+                                                                                                <span class="badge bg-danger text-white mx-2">Nema dokumentacije</span>
+                                                                                            {% endif %}
+                                                                                            {% if input.status == 2 %}
+                                                                                                <span class="badge bg-warning text-white mx-2">Nekompletna / neproverena</span>
+                                                                                            {% endif %}
+                                                                                            {% if input.status == 3 %}
+                                                                                                <span class="badge bg-success text-white mx-2">Kompletna i proverena</span>
+                                                                                            {% endif %}
+                                                                                            {% if input.status == 4 %}
+                                                                                                <span class="badge bg-yellow text-primary mx-2">Zatvoreno</span>
+                                                                                            {% endif %}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Realizacija</div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-6">
+                                                                                    <div class="mb-3">
+                                                                                        {% set boja = 'bg-primary'%}
+                                                                                        {% set procenat = input.percent%}
+                                                                                        {% if procenat < 26 %}
+                                                                                            {% set boja = 'bg-danger'%}
+                                                                                        {% endif %}
+                                                                                        {% if procenat > 25 and procenat < 76 %}
+                                                                                            {% set boja = 'bg-warning'%}
+                                                                                        {% endif %}
+                                                                                        {% if procenat > 75 and procenat < 99 %}
+                                                                                            {% set boja = 'bg-info'%}
+                                                                                        {% endif %}
+                                                                                        {% if procenat == 100 %}
+                                                                                            {% set boja = 'bg-success'%}
+                                                                                        {% endif %}
+                                                                                        <div class="progress">
+                                                                                            <div class="progress-bar {{ boja }}" role="progressbar" style="width: {{ procenat }}%" aria-valuenow="{{ procenat }}" aria-valuemin="0" aria-valuemax="100">
+                                                                                                {% if procenat > 0 %}
+                                                                                                    {{ procenat }}%
+                                                                                                {% endif %}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Obavezna predaja</div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-12">
+                                                                                    <div class="mb-3">
+                                                                                        <div class="d-inline-flex align-items-center">
+                                                                                            <i class="ph-calendar me-2"></i>
+                                                                                            {{ input.deadline | date("d.m.Y")}}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Procena</div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-12">
+                                                                                    <div class="mb-3">
+                                                                                        <div class="d-inline-flex align-items-center">
+                                                                                            <i class="ph-calendar me-2"></i>
+                                                                                            {{ input.estimate | date("d.m.Y")}}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Poslato</div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-12">
+                                                                                    <div class="mb-3">
+                                                                                        {% if input.send is not null %}
+                                                                                            <div class="d-inline-flex align-items-center">
+                                                                                                <i class="ph-calendar me-2"></i>
+                                                                                                {{ input.send | date("d.m.Y")}}
+                                                                                            </div>
+                                                                                        {% endif %}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Napomena</div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-12">
+                                                                                    <div class="mb-3">
+
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Kreirano</div>
+                                                                            <div class="row">
+                                                                                <div class="col-lg-12">
+                                                                                    <div class="mb-3">
+                                                                                        <div class="d-inline-flex align-items-center">
+                                                                                            <i class="ph-calendar me-2"></i>
+                                                                                            {{ input.created | date("d.m.Y")}} - {{ input.createdBy.fullName }}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+{#                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Slike</div>#}
+{#                                                                            <div class="row">#}
+{#                                                                                <div class="col-lg-12">#}
+{#                                                                                    <div class="mb-3">#}
+{#                                                                                        <div class="row">#}
+{#                                                                                            {% for image in stopwatch.images %}#}
+{#                                                                                                <div class="col-2">#}
+{#                                                                                                    <div class="card">#}
+{#                                                                                                        <div class="card-img-actions">#}
+{#                                                                                                            <img class="card-img img-fluid" src="{{ asset(image.thumbnail500) }}" alt="">#}
+{#                                                                                                            <div class="card-img-actions-overlay card-img">#}
+{#                                                                                                                <a href="{{ asset(image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">#}
+{#                                                                                                                    <i class="ph-magnifying-glass-plus"></i>#}
+{#                                                                                                                </a>#}
+{#                                                                                                            </div>#}
+{#                                                                                                        </div>#}
+{#                                                                                                    </div>#}
+{#                                                                                                </div>#}
+{#                                                                                            {% endfor %}#}
+{#                                                                                        </div>#}
+{#                                                                                    </div>#}
+{#                                                                                </div>#}
+{#                                                                            </div>#}
+
+{#                                                                            <div class="fw-bold border-bottom pb-2 mb-3">Dokumenta</div>#}
+{#                                                                            <div class="row">#}
+{#                                                                                <div class="col-lg-12">#}
+{#                                                                                    <div class="mb-3">#}
+{#                                                                                        {% for pdf in stopwatch.pdfs %}#}
+{#                                                                                            <div class="d-flex align-items-start mb-3">#}
+{#                                                                                                <div class="me-2">#}
+{#                                                                                                    <i class="ph-file-pdf"></i>#}
+{#                                                                                                </div>#}
+
+{#                                                                                                <div class="flex-fill overflow-hidden">#}
+{#                                                                                                    <div class="fw-semibold text-truncate">{{ pdf.title }}</div>#}
+{#                                                                                                </div>#}
+
+{#                                                                                                <div class="ms-3">#}
+{#                                                                                                    <a href="{{ asset(pdf.path) }}" download class="text-body">#}
+{#                                                                                                        <i class="ph-download-simple"></i>#}
+{#                                                                                                    </a>#}
+{#                                                                                                </div>#}
+{#                                                                                            </div>#}
+{#                                                                                        {% endfor %}#}
+{#                                                                                    </div>#}
+{#                                                                                </div>#}
+{#                                                                            </div>#}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                        </div>
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+

@@ -1,0 +1,345 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ survey.title }}
+                            </h4>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Da li dolazite na proslavu?</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-primary text-white">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ vote.total_votes }}</h4>
+                                                            Ukupno glasova
+                                                        </div>
+
+                                                        <i class="ph-users-three ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ vote.value1[1].count }}</h4>
+                                                            Da
+                                                        </div>
+
+                                                        <i class="ph-check-circle ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-danger text-white">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-minus-circle ph-2x opacity-75 me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ vote.value1[0].count }}</h4>
+                                                            Ne
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-yellow text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-question ph-2x opacity-75 me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ vote.value1[2].count }}</h4>
+                                                            Ne znam
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="accordion" id="accordion_collapsed">
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item1" aria-expanded="false">
+                                                            Da
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapsed_item1" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
+                                                        <div class="accordion-body">
+                                                            <table class="table table-hover table-bordered">
+                                                                <tbody>
+                                                                    {% if vote.value1[1].users is not empty %}
+                                                                        {% for user in vote.value1[1].users %}
+                                                                            <tr>
+                                                                                {{ user.fullName }}
+                                                                            </tr>
+                                                                        {% endfor %}
+                                                                    {% else %}
+                                                                        Nema glasova
+                                                                    {% endif %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item2" aria-expanded="false">
+                                                            Ne
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapsed_item2" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
+                                                        <div class="accordion-body">
+                                                            <table class="table table-hover table-bordered">
+                                                                <tbody>
+                                                                    {% if vote.value1[0].users is not empty %}
+                                                                        {% for user in vote.value1[0].users %}
+                                                                            <tr>
+                                                                                {{ user.fullName }}
+                                                                            </tr>
+                                                                        {% endfor %}
+                                                                    {% else %}
+                                                                        Nema glasova
+                                                                    {% endif %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item3" aria-expanded="false">
+                                                            Ne znam
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapsed_item3" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed">
+                                                        <div class="accordion-body">
+                                                            <table class="table table-hover table-bordered">
+                                                                <tbody>
+                                                                    {% if vote.value1[2].users is not empty %}
+                                                                        {% for user in vote.value1[2].users %}
+                                                                            <tr>
+                                                                                {{ user.fullName }}
+                                                                            </tr>
+                                                                        {% endfor %}
+                                                                    {% else %}
+                                                                        Nema glasova
+                                                                    {% endif %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Da li učestvujete u igri?</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-primary text-white">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ vote.total_votes }}</h4>
+                                                            Ukupno glasova
+                                                        </div>
+
+                                                        <i class="ph-users-three ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-secondary text-primary">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-fill">
+                                                            <h4 class="mb-0">{{ vote.value2[1].count }}</h4>
+                                                            Da
+                                                        </div>
+
+                                                        <i class="ph-check-circle ph-2x opacity-75 ms-3"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-xl-3">
+                                                <div class="card card-body bg-danger text-white">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ph-minus-circle ph-2x opacity-75 me-3"></i>
+
+                                                        <div class="flex-fill text-end">
+                                                            <h4 class="mb-0">{{ vote.value2[0].count }}</h4>
+                                                            Ne
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="accordion" id="accordion_collapsed1">
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item4" aria-expanded="false">
+                                                            Da
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapsed_item4" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed1" style="">
+                                                        <div class="accordion-body">
+                                                            <table class="table table-hover table-bordered">
+                                                                <tbody>
+                                                                    {% if vote.value2[1].users is not empty %}
+                                                                        {% for user in vote.value2[1].users %}
+                                                                            <tr>
+                                                                                {{ user.fullName }}
+                                                                            </tr>
+                                                                        {% endfor %}
+                                                                    {% else %}
+                                                                        Nema glasova
+                                                                    {% endif %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item5" aria-expanded="false">
+                                                            Ne
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapsed_item5" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed1">
+                                                        <div class="accordion-body">
+                                                            <table class="table table-hover table-bordered">
+                                                                <tbody>
+                                                                    {% if vote.value2[0].users is not empty %}
+                                                                        {% for user in vote.value2[0].users %}
+                                                                            <tr>
+                                                                                {{ user.fullName }}
+                                                                            </tr>
+                                                                        {% endfor %}
+                                                                    {% else %}
+                                                                        Nema glasova
+                                                                    {% endif %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>#}
+{#    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>#}
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+

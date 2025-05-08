@@ -74,16 +74,31 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.fuelStart, 'Nivo goriva:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.fuelStart, {attr: { class: 'form-control select required' }}) }}
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-4">
                                     <div class="mb-3">
                                         {{ form_label(form.cleanStart, 'Nivo čistoće:*', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.cleanStart, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        {{ form_label(form.isCrashStart, 'Oštećenje:*', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.isCrashStart, {attr: { class: 'form-control select required' }}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        {{ form_label(form.image, 'Slike:', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.image, {attr: { class: 'form-control file-input' }}) }}
+                                        <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
                                     </div>
                                 </div>
                             </div>

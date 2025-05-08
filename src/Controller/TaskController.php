@@ -11,6 +11,7 @@ use App\Entity\Comment;
 use App\Entity\FastTask;
 use App\Entity\Pdf;
 use App\Entity\Project;
+use App\Entity\Signature;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
 use App\Entity\TaskLog;
@@ -26,6 +27,7 @@ use DateTimeImmutable;
 use Detection\MobileDetect;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sign;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -275,7 +277,7 @@ class TaskController extends AbstractController {
               $pdf = new Pdf();
               $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
               $pdf->setTitle($file->getFileName());
-              $pdf->setPath($file->getUrl());
+              $pdf->setPath($file->getAssetPath());
               if (!is_null($task->getProject())) {
                 $pdf->setProject($task->getProject());
               }
@@ -319,7 +321,7 @@ class TaskController extends AbstractController {
                 $pdf = new Pdf();
                 $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
                 $pdf->setTitle($file->getFileName());
-                $pdf->setPath($file->getUrl());
+                $pdf->setPath($file->getAssetPath());
                 if (!is_null($task->getProject())) {
                   $pdf->setProject($task->getProject());
                 }
@@ -362,7 +364,7 @@ class TaskController extends AbstractController {
                 $pdf = new Pdf();
                 $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
                 $pdf->setTitle($file->getFileName());
-                $pdf->setPath($file->getUrl());
+                $pdf->setPath($file->getAssetPath());
                 if (!is_null($task->getProject())) {
                   $pdf->setProject($task->getProject());
                 }
@@ -521,7 +523,7 @@ class TaskController extends AbstractController {
               $pdf = new Pdf();
               $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
               $pdf->setTitle($file->getFileName());
-              $pdf->setPath($file->getUrl());
+              $pdf->setPath($file->getAssetPath());
               if (!is_null($task->getProject())) {
                 $pdf->setProject($task->getProject());
               }
@@ -563,7 +565,7 @@ class TaskController extends AbstractController {
               $pdf = new Pdf();
               $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
               $pdf->setTitle($file->getFileName());
-              $pdf->setPath($file->getUrl());
+              $pdf->setPath($file->getAssetPath());
               if (!is_null($task->getProject())) {
                 $pdf->setProject($task->getProject());
               }
@@ -856,7 +858,7 @@ class TaskController extends AbstractController {
             $pdf = new Pdf();
             $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
             $pdf->setTitle($file->getFileName());
-            $pdf->setPath($file->getUrl());
+            $pdf->setPath($file->getAssetPath());
             if (!is_null($task->getProject())) {
               $pdf->setProject($task->getProject());
             }
@@ -1304,6 +1306,13 @@ class TaskController extends AbstractController {
 
     $args['status'] = $this->em->getRepository(Task::class)->taskStatus($task);
     $args['sleganjeStatus'] = $this->em->getRepository(VerifyActivity::class)->getStatusByUser($user);
+    $args['elaboratStatus'] = $this->em->getRepository(Signature::class)->getStatusByUserProject($user, $task->getProject());
+    $args['catStatus'] = false;
+
+    if ($task->getCategory()->getId() == 5) {
+      $args['catStatus'] = true;
+    }
+
 
     $args['task'] = $task;
     $args['revision'] = $task->getTaskHistories()->count();

@@ -72,7 +72,11 @@
                                                 <tbody>
                                                 {% if reports is not empty %}
                                                     {% for key, value in reports[0] %}
-                                                        <tr>
+                                                        {% if value[0].dan == 1 or value[0].dan  == 3 or value[0].dan  == 5%}
+                                                            <tr style="background-color: #C0C0C0">
+                                                        {% else  %}
+                                                            <tr>
+                                                        {% endif %}
                                                         {% if datum is defined %}
                                                             <td>
                                                                 <div class="fw-semibold">

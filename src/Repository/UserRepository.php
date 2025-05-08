@@ -26,8 +26,11 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+use setasign\Fpdi\TcpdfFpdi;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -480,6 +483,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     return $usersList;
   }
 
+  public function getReportMesec(User $user, DateTimeImmutable $date): array {
+
+//    $start = $date->modify('first day of this month')->setTime(0, 0);
+//    $stop = $date->modify('last day of this month')->setTime(23, 59);
+
+    $start = $date->modify('first day of last month')->setTime(0, 0);
+    $stop = $date->modify('last day of last month')->setTime(23, 59);
+
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUserMesec($start, $stop, $user);
+
+  }
+
+
   public function getReport(array $data): array {
     $dates = explode(' - ', $data['period']);
 
@@ -496,6 +512,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       $kategorija [] = 0;
     }
 
+    $project = $this->getEntityManager()->getRepository(Project::class)->findOneBy(['id' => $data['project']]);
     $robotika1 = 0;
 
     if (isset($data['robotika1'])) {
@@ -504,10 +521,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     if (isset($data['naplativ'])) {
       $naplativ = $data['naplativ'];
-      return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUser($start, $stop, $user, $robotika1, $kategorija, $naplativ);
+      return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUser($start, $stop, $user, $robotika1, $kategorija, $naplativ, $project);
     }
 
-    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUser($start, $stop, $user, $robotika1, $kategorija);
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUser($start, $stop, $user, $robotika1, $kategorija, $project);
   }
 
   public function getReportXls(string $datum, User $user): array {
@@ -518,6 +535,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
 
     return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUserXls($start, $stop, $user);
+
+  }
+
+  public function getReportXlsRobotika(string $datum, User $user): array {
+
+    $dates = explode(' - ', $datum);
+
+    $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0]);
+    $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1]);
+
+    return $this->getEntityManager()->getRepository(StopwatchTime::class)->getStopwatchesByUserXlsRobotika($start, $stop, $user);
 
   }
 
@@ -568,6 +596,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
           $vreme = '';
         }
 
+        $reservations = $user->getToolReservations()->toArray();
+        $tools = [];
+        if (!empty($reservations)) {
+          foreach ($reservations as $res) {
+            if (is_null($res->getFinished())) {
+              $tools[] = $res->getTool()->getTitle();
+            }
+          }
+        }
+
         $usersList [] = [
           'id' => $user->getId(),
           'ime' => $ime,
@@ -575,7 +613,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
           'user' => $user,
           'slika' => $user->getImage()->getThumbnail100(),
           'pozicija' => $user->getPozicija()->getTitle(),
-          'vreme' => $vreme
+          'vreme' => $vreme,
+          'oprema' => $tools
         ];
       }
     }
@@ -607,6 +646,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
           $vreme = '';
         }
 
+        $reservations = $user->getToolReservations()->toArray();
+        $tools = [];
+        if (!empty($reservations)) {
+          foreach ($reservations as $res) {
+            if (is_null($res->getFinished())) {
+              $tools[] = $res->getTool()->getTitle();
+            }
+          }
+        }
+
         $usersList [] = [
           'id' => $user->getId(),
           'ime' => $ime,
@@ -614,7 +663,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
           'user' => $user,
           'slika' => $user->getImage()->getThumbnail100(),
           'pozicija' => $user->getPozicija()->getTitle(),
-          'vreme' => $vreme
+          'vreme' => $vreme,
+          'oprema' => $tools
         ];
       }
     }
@@ -1307,6 +1357,24 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       ->getQuery()
       ->getResult();
   }
+
+  public function getStalniPaginator(): Query {
+    $company = $this->security->getUser()->getCompany();
+
+    return $this->createQueryBuilder('u')
+      ->where('u.userType = :role')
+      ->andWhere('u.isSuspended = false')
+      ->andWhere('u.company = :company')
+      ->andWhere('u.ProjectType = :tip')
+      ->orderBy('u.project', 'ASC')
+      ->addOrderBy('u.prezime', 'ASC')
+      ->setParameter('role', UserRolesData::ROLE_EMPLOYEE)
+      ->setParameter('company', $company)
+      ->setParameter('tip', TipProjektaData::FIKSNO)
+      ->getQuery();
+  }
+
+
 
 //    /**
 //     * @return User[] Returns an array of User objects

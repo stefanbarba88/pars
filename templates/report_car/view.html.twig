@@ -63,6 +63,7 @@
                                                     {% if dstart is defined %}
                                                         <th>Čistoća</th>
                                                         <th>Gorivo</th>
+                                                        <th>Oštećenje</th>
                                                         <th>Napomena</th>
                                                     {% endif %}
                                                     {% if stop is defined %}
@@ -71,6 +72,7 @@
                                                     {% if dstop is defined %}
                                                         <th>Čistoća</th>
                                                         <th>Gorivo</th>
+                                                        <th>Oštećenje</th>
                                                         <th>Napomena</th>
                                                     {% endif %}
                                                 </tr>
@@ -143,6 +145,15 @@
                                                                 </td>
                                                                 <td>
                                                                     <div>
+                                                                        {% if res.crashStart %}
+                                                                            Ima oštečenje
+                                                                            {% else %}
+                                                                            Nema oštećenje
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div>
                                                                   {{ res.descStart }}
                                                                     </div>
                                                                 </td>
@@ -205,6 +216,15 @@
                                                                 </td>
                                                                 <td>
                                                                     <div>
+                                                                        {% if res.crashStop %}
+                                                                            Ima oštečenje
+                                                                        {% else %}
+                                                                            Nema oštećenje
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div>
                                                                         {{ res.descStop }}
                                                                     </div>
                                                                 </td>
@@ -213,7 +233,7 @@
                                                     {% endfor %}
                                                 {% else %}
                                                     <tr>
-                                                        <td colspan="9">
+                                                        <td colspan="11">
                                                             <div class="text-body">
                                                                 Nema rezervacija u zadatom periodu
                                                             </div>

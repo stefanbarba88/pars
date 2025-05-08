@@ -56,6 +56,10 @@ class Image {
   #[ORM\ManyToOne(inversedBy: 'image')]
   private ?CarReservation $carReservation = null;
 
+//  #[ORM\ManyToOne(inversedBy: 'image')]
+//  private ?Signature $signature = null;
+
+
   public function __construct() {
     $this->users = new ArrayCollection();
     $this->clients = new ArrayCollection();
@@ -260,6 +264,19 @@ class Image {
 
       return $this;
   }
+
+//  public function getSignature(): ?Signature
+//  {
+//      return $this->signature;
+//  }
+//
+//  public function setSignature(?Signature $signature): self
+//  {
+//      $this->signature = $signature;
+//
+//      return $this;
+//  }
+
 
 
 }

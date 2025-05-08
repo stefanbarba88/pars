@@ -125,7 +125,11 @@
                                                     <option value="{{ project.id }}">{{ project.title }}</option>
                                                 {% else %}
                                                     {% for project in projects %}
-                                                        <option value="{{ project.id }}">{{ project.title }}</option>
+                                                        {% if project.id == 195 %}
+                                                            <option value="{{ project.id }}" selected>{{ project.title }}</option>
+                                                        {% else %}
+                                                            <option value="{{ project.id }}">{{ project.title }}</option>
+                                                        {% endif %}
                                                     {% endfor %}
                                                 {% endif %}
                                             </select>
@@ -185,7 +189,7 @@
                                         <div class="mb-3">
                                             <label class="form-label" for="checklist_pdf">Dokumenta:</label>
                                             <input type="file" id="checklist_pdf" name="checklist[pdf][]" accept=".pdf" data-show-upload="false" multiple="multiple" class="form-control file-input" />
-                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5Mb.</span>
+                                            <span class="form-text">Format: .pdf. Maksimalna veličina fajla 5MB.</span>
                                         </div>
                                     </div>
                                 </div>

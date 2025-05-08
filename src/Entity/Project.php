@@ -71,6 +71,9 @@ class Project implements JsonSerializable {
   private bool $isEstimate = false;
 
   #[ORM\Column]
+  private bool $isElaboratSigned = false;
+
+  #[ORM\Column]
   private DateTimeImmutable $created;
 
   #[ORM\Column]
@@ -131,7 +134,7 @@ class Project implements JsonSerializable {
   #[ORM\ManyToMany(targetEntity: Label::class, inversedBy: 'projects')]
   private Collection $label;
 
-  #[ORM\OneToMany(mappedBy: 'project', targetEntity: Pdf::class)]
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: Pdf::class, cascade: ["persist", "remove"])]
   private Collection $pdfs;
 
   #[ORM\ManyToMany(targetEntity: Team::class, inversedBy: 'projects')]
@@ -146,6 +149,15 @@ class Project implements JsonSerializable {
 
   #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectFaktura::class, orphanRemoval: true)]
   private Collection $projectFakturas;
+
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: Elaborat::class)]
+  private Collection $elaborats;
+
+  #[ORM\OneToMany(mappedBy: 'relation', targetEntity: Signature::class)]
+  private Collection $signatures;
+
+  #[ORM\OneToMany(mappedBy: 'project', targetEntity: User::class)]
+  private Collection $users;
   public function getCompany(): ?Company
   {
     return $this->company;
@@ -167,6 +179,9 @@ class Project implements JsonSerializable {
     $this->team = new ArrayCollection();
     $this->projectFakturas = new ArrayCollection();
     $this->managerChecklists = new ArrayCollection();
+    $this->elaborats = new ArrayCollection();
+    $this->signatures = new ArrayCollection();
+    $this->users = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -812,6 +827,110 @@ class Project implements JsonSerializable {
     }
 
     return $this;
+  }
+
+  /**
+   * @return Collection<int, Elaborat>
+   */
+  public function getElaborats(): Collection
+  {
+      return $this->elaborats;
+  }
+
+  public function addElaborat(Elaborat $elaborat): self
+  {
+      if (!$this->elaborats->contains($elaborat)) {
+          $this->elaborats->add($elaborat);
+          $elaborat->setProject($this);
+      }
+
+      return $this;
+  }
+
+  public function removeElaborat(Elaborat $elaborat): self
+  {
+      if ($this->elaborats->removeElement($elaborat)) {
+          // set the owning side to null (unless already changed)
+          if ($elaborat->getProject() === $this) {
+              $elaborat->setProject(null);
+          }
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isElaboratSigned(): bool {
+    return $this->isElaboratSigned;
+  }
+
+  /**
+   * @param bool $isElaboratSigned
+   */
+  public function setIsElaboratSigned(bool $isElaboratSigned): void {
+    $this->isElaboratSigned = $isElaboratSigned;
+  }
+
+  /**
+   * @return Collection<int, Signature>
+   */
+  public function getSignatures(): Collection
+  {
+      return $this->signatures;
+  }
+
+  public function addSignature(Signature $signature): self
+  {
+      if (!$this->signatures->contains($signature)) {
+          $this->signatures->add($signature);
+          $signature->setRelation($this);
+      }
+
+      return $this;
+  }
+
+  public function removeSignature(Signature $signature): self
+  {
+      if ($this->signatures->removeElement($signature)) {
+          // set the owning side to null (unless already changed)
+          if ($signature->getRelation() === $this) {
+              $signature->setRelation(null);
+          }
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, User>
+   */
+  public function getUsers(): Collection
+  {
+      return $this->users;
+  }
+
+  public function addUser(User $user): self
+  {
+      if (!$this->users->contains($user)) {
+          $this->users->add($user);
+          $user->setProject($this);
+      }
+
+      return $this;
+  }
+
+  public function removeUser(User $user): self
+  {
+      if ($this->users->removeElement($user)) {
+          // set the owning side to null (unless already changed)
+          if ($user->getProject() === $this) {
+              $user->setProject(null);
+          }
+      }
+
+      return $this;
   }
 
 

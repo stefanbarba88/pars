@@ -1,0 +1,427 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                Google Kalendar
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Kalendar</h5>
+{#                            <div class="my-auto ms-auto">#}
+{#                                <a href="{{ path('app_google_calendar_logout') }}" class="btn btn-primary"><i class="ph-sign-out me-2"></i> Odjavite se</a>#}
+{#                            </div>#}
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form id="eventForm" class="form-validate-jquery" novalidation="novalidation">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="eventModalLabel">Dodajte novi događaj</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zatvori"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="eventTitle" class="form-label">Naslov:*</label>
+                                                        <input type="text" class="form-control required" id="eventTitle" name="title">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="eventDescription" class="form-label">Opis:*</label>
+                                                        <textarea class="form-control required" id="eventDescription" name="description" rows="3"></textarea>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="eventStart" class="form-label">Početak</label>
+                                                                <div class="input-group">
+                                                                <span class="input-group-text">
+                                                                    <i class="ph-calendar"></i>
+                                                                </span>
+                                                                    <input type="text" class="form-control" id="eventStart1" readonly>
+                                                                    <input type="text" class="form-control" id="eventStart" hidden="hidden" name="start">
+                                                                </div>
+                                                                <span class="form-text text-muted" id="celodnevni"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="eventStart" class="form-label">Kraj</label>
+                                                                <div class="input-group">
+                                                                <span class="input-group-text">
+                                                                    <i class="ph-calendar"></i>
+                                                                </span>
+                                                                    <input type="text" class="form-control" id="eventEnd1" readonly>
+                                                                    <input type="text" class="form-control" id="eventEnd" hidden="hidden" name="end">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="eventRecurrence" class="form-label">Ponavljanje:*</label>
+                                                                <select class="form-control select" id="eventRecurrence" name="recurrence">
+                                                                    <option value="">Bez ponavljanja</option>
+                                                                    <option value="RRULE:FREQ=DAILY">Dnevno</option>
+                                                                    <option value="RRULE:FREQ=WEEKLY">Nedeljno</option>
+                                                                    <option value="RRULE:FREQ=MONTHLY">Mesečno</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="eventRecurrenceTime" class="form-label">Broj ponavljanja:</label>
+                                                                <input type="number" class="form-control" id="eventRecurrenceTime" name="recurrenceTime" min="2" step="1">
+                                                                <span class="form-text">Uneti koliko puta se ovaj događaj ponavlja.</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="eventReminder" class="form-label">Podsetnik:*</label>
+                                                        <select class="form-control select" id="eventReminder" name="reminder" >
+                                                            <option value="">Bez podsetnika</option>
+                                                            <option value="email|60">Email 60 minuta pre</option>
+                                                            <option value="email|30">Email 30 minuta pre</option>
+                                                            <option value="popup|15">Popup 15 minuta pre</option>
+                                                            <option value="popup|5">Popup 5 minuta pre</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="eventDetailsModalLabel">Detalji događaja</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zatvori"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="card">
+                                                    <div class="card-body border-top-0">
+                                                        <div class="d-sm-flex flex-sm-wrap mb-3">
+                                                            <div class="fw-semibold">Naslov:</div>
+                                                            <div class="ms-sm-auto mt-1 mt-sm-0"><span id="detailsTitle"></span></div>
+                                                        </div>
+
+                                                        <div class="d-sm-flex flex-sm-wrap mb-3">
+                                                            <div class="fw-semibold">Opis:</div>
+                                                            <div class="ms-sm-auto mt-1 mt-sm-0"><span id="detailsDescription"></span></div>
+                                                        </div>
+
+                                                        <div class="d-sm-flex flex-sm-wrap mb-3">
+                                                            <div class="fw-semibold">Početak:</div>
+                                                            <div class="ms-sm-auto mt-1 mt-sm-0"><span id="detailsStart"></span></div>
+                                                        </div>
+
+                                                        <div class="d-sm-flex flex-sm-wrap mb-3">
+                                                            <div class="fw-semibold">Kraj:</div>
+                                                            <div class="ms-sm-auto mt-1 mt-sm-0"><span id="detailsEnd"></span></div>
+                                                        </div>
+                                                        <div class="d-sm-flex flex-sm-wrap">
+                                                            <div class="fw-semibold">Podsetnik</div>
+                                                            <div class="ms-sm-auto mt-1 mt-sm-0"><span id="detailsReminder"></span></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" id="deleteEvent"><i class="ph-trash me-2"></i>Obrišite</button>
+                                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="ph-x me-2"></i>Zatvorite</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                    <div id="calendar" class="fullcalendar-event-colors1"></div>
+                                <span class="form-text">Na mobilnim uređajima pri selektovanju je potrebno zadržati klik.</span>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/locales/custom.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+{% block footerJavascript %}
+    <script type="text/javascript">
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Pozivanje funkcije nakon inicijalizacije kalendara
+
+            const calendarEl = document.getElementById('calendar');
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                firstDay: 1,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,timeGridDay'
+                },
+                locale: 'custom',
+                eventOverlap: true,
+                allowOver
+                slotDuration: '00:10:00',
+                selectable: true,
+                selectMirror: true,
+                navLinks: true,
+                dayMaxEvents: true,
+                timeZone: 'Europe/Belgrade',
+                events: '{{ path('app_google_calendar_events') }}',
+                eventContent: function(info) {
+                    if (info.view.type !== 'timeGridDay') {
+                        // Provera da li je događaj celodnevni
+                        if (info.event.allDay === true) {
+                            return {
+                                html: '<span class="dot"></span>' // Klasa 'dot' za celodnevne događaje
+                            };
+                        } else {
+                            return {
+                                html: '<span class="dot1"></span>' // Klasa 'dot1' za događaje koji nisu celodnevni
+                            };
+                        }
+                    }
+                    // Defaultni sadržaj za druge prikaze
+                    return {
+                        html: `<div>${info.event.title}</div>`
+                    };
+                },
+                // viewDidChange događaj
+                datesSet: function (info) {
+                    adjustCalendarWidth();
+                },
+                select: function (info) {
+                    const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+                    modal.show();
+
+                    const startDate = info.start;
+                    const endDate = info.end;
+
+                    const startDateFormatted = formatDateTime(startDate.toISOString().slice(0, 19));
+                    const endDateFormatted = formatDateTime(endDate.toISOString().slice(0, 19));
+
+                    document.getElementById('eventStart').value = startDate.toISOString().slice(0, 19);
+                    document.getElementById('eventEnd').value = endDate.toISOString().slice(0, 19);
+
+                    document.getElementById('eventStart1').value = startDateFormatted;
+                    document.getElementById('eventEnd1').value = endDateFormatted;
+
+                    if (
+                        startDate.toISOString().endsWith('T00:00:00.000Z') &&
+                        endDate.toISOString().endsWith('T00:00:00.000Z')
+                    ) {
+                        document.getElementById('celodnevni').innerText = 'Celodnevni događaj';
+                    } else {
+                        document.getElementById('celodnevni').innerText = '';
+                    }
+
+                    function formatDateTime(isoString) {
+                        const [datePart, timePart] = isoString.split('T');
+                        const [year, month, day] = datePart.split('-');
+                        const formattedDate = `${day}.${month}.${year}`;
+                        const [hour, minute] = timePart.split(':');
+                        const formattedTime = `${hour}:${minute}`;
+                        return `${formattedDate} ${formattedTime}`;
+                    }
+                },
+                eventClick: function (info) {
+                    const detailsModal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
+                    detailsModal.show();
+
+                    // Popuni modal sa detaljima događaja
+                    document.getElementById('detailsTitle').textContent = info.event.title;
+                    document.getElementById('detailsDescription').textContent = info.event.extendedProps.description;
+                    document.getElementById('detailsStart').textContent = formatDateTime(info.event.start.toISOString().slice(0, 19));
+                    document.getElementById('detailsEnd').textContent =formatDateTime(info.event.end.toISOString().slice(0, 19));
+
+                    // document.getElementById('detailsRecurrence').textContent = info.event.extendedProps.recurrence || 'Bez ponavljanja';
+                    document.getElementById('detailsReminder').textContent = info.event.extendedProps.reminder || 'Bez podsetnika';
+
+                    function formatDateTime(isoString) {
+                        const [datePart, timePart] = isoString.split('T');
+                        const [year, month, day] = datePart.split('-');
+                        const formattedDate = `${day}.${month}.${year}`;
+                        const [hour, minute] = timePart.split(':');
+                        const formattedTime = `${hour}:${minute}`;
+                        return `${formattedDate} ${formattedTime}`;
+                    }
+
+                    // Dodaj funkcionalnost za brisanje događaja
+                    const deleteButton = document.getElementById('deleteEvent');
+                    deleteButton.onclick = function () {
+                        if (confirm('Da li ste sigurni da želite da obrišete ovaj događaj?')) {
+                            fetch("{{ path('app_google_calendar_delete_event') }}", {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ id: info.event.id }) // Slanje ID-a događaja kao JSON u telo zahteva
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        calendar.refetchEvents();
+                                        const modal = bootstrap.Modal.getInstance(document.getElementById('eventDetailsModal'));
+                                        modal.hide();
+                                    } else {
+                                        console.error('Greška: ' + data.error);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Greška pri slanju zahteva:', error);
+                                    const modal = bootstrap.Modal.getInstance(document.getElementById('eventDetailsModal'));
+                                    modal.hide();
+                                });
+                        }
+                    };
+                }
+            });
+
+            calendar.render();
+
+
+            adjustCalendarWidth();
+            const form = document.getElementById('eventForm');
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+                let isValid = true;
+
+                // Proveri sva obavezna polja
+                form.querySelectorAll('.required').forEach(function (input) {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.classList.add('is-invalid');
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+
+                if (isValid) {
+                    const eventData = {};
+                    formData.forEach((value, key) => (eventData[key] = value));
+
+                    fetch('{{ path('app_google_calendar_add_event') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(eventData),
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.status === 'success') {
+                                calendar.refetchEvents();
+                                const modal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
+                                modal.hide();
+                            } else {
+                                alert('Greška prilikom dodavanja događaja.');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Greška:', error);
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
+                            modal.hide();
+                        });
+                }
+            });
+
+            function adjustCalendarWidth() {
+                const screenWidth = window.innerWidth; // Trenutna širina ekrana
+                const calendarElement = document.querySelector('.fullcalendar-event-colors1');
+                const tableElement = document.querySelector('.fullcalendar-event-colors1 .fc-view > table');
+
+                if (screenWidth <= 767) {
+                    const dynamicWidth = screenWidth - 50;
+                    const dynamicWidth1 = screenWidth - 80;
+                    if (calendarElement) calendarElement.style.width = dynamicWidth + 'px';
+                    if (tableElement) tableElement.style.width = dynamicWidth1 + 'px';
+                } else {
+                    // Resetuj na podrazumevane vrednosti za veće ekrane
+                    if (calendarElement) calendarElement.style.width = '';
+                    if (tableElement) tableElement.style.width = '';
+                }
+            }
+
+// Pozovi funkciju na učitavanje stranice i prilikom promene veličine prozora
+            window.addEventListener('load', adjustCalendarWidth);
+            window.addEventListener('resize', adjustCalendarWidth);
+
+        });
+
+    </script>
+{% endblock footerJavascript %}

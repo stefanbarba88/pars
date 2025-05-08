@@ -43,6 +43,9 @@ class Pdf {
   #[ORM\ManyToOne(inversedBy: 'pdfs')]
   private ?ManagerChecklist $managerChecklist = null;
 
+  #[ORM\ManyToOne(inversedBy: 'docs')]
+  private ?User $user = null;
+
   #[ORM\PrePersist]
   public function prePersist(): void {
     $this->created = new DateTimeImmutable();
@@ -145,4 +148,17 @@ class Pdf {
 
     return $this;
   }
+
+  public function getUser(): ?User
+  {
+      return $this->user;
+  }
+
+  public function setUser(?User $user): self
+  {
+      $this->user = $user;
+
+      return $this;
+  }
+
 }

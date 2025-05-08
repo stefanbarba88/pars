@@ -22,6 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Regex;
 
@@ -81,6 +82,34 @@ class CarReservationFormType extends AbstractType {
           'expanded' => false,
           'multiple' => false,
         ])
+        ->add('isCrashStart', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => PotvrdaData::form(),
+          'expanded' => false,
+          'multiple' => false,
+        ])
+        ->add('image', FileType::class, [
+          'attr' => ['accept' => 'image/jpeg,image/png,image/jpg,image-gif', 'data-show-upload' => 'false'],
+          // unmapped means that this field is not associated to any entity property
+          'multiple' => true,
+          'mapped' => false,
+          // make it optional so you don't have to re-upload the PDF file
+          // every time you edit the Product details
+          'required' => false,
+          // unmapped fields can't define their validation using annotations
+          // in the associated entity, so you can use the PHP constraint classes
+          'constraints' => [
+            new All([
+              new Image([
+                'maxSize' => '2048k',
+                'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 2Mb.',
+                'mimeTypesMessage' => 'Molimo Vas postavite dokument u jednom od ponuđenih formata za sliku.'
+              ])
+            ])
+          ],
+        ])
         ->add('descStart')
         ->add('kmStart', NumberType::class, [
           'attr' => [
@@ -109,6 +138,34 @@ class CarReservationFormType extends AbstractType {
           'expanded' => false,
           'multiple' => false,
           'data' => $car
+        ])
+        ->add('image', FileType::class, [
+          'attr' => ['accept' => 'image/jpeg,image/png,image/jpg,image-gif', 'data-show-upload' => 'false'],
+          // unmapped means that this field is not associated to any entity property
+          'multiple' => true,
+          'mapped' => false,
+          // make it optional so you don't have to re-upload the PDF file
+          // every time you edit the Product details
+          'required' => false,
+          // unmapped fields can't define their validation using annotations
+          // in the associated entity, so you can use the PHP constraint classes
+          'constraints' => [
+            new All([
+              new Image([
+                'maxSize' => '2048k',
+                'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 2Mb.',
+                'mimeTypesMessage' => 'Molimo Vas postavite dokument u jednom od ponuđenih formata za sliku.'
+              ])
+            ])
+          ],
+        ])
+        ->add('isCrashStart', ChoiceType::class, [
+          'attr' => [
+            'data-minimum-results-for-search' => 'Infinity',
+          ],
+          'choices' => PotvrdaData::form(),
+          'expanded' => false,
+          'multiple' => false,
         ])
         ->add('fuelStart', ChoiceType::class, [
           'placeholder' => '--Izaberite nivo goriva--',

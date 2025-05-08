@@ -9,6 +9,7 @@ use App\Entity\Client;
 use App\Entity\Comment;
 use App\Entity\Email;
 use App\Entity\ManagerChecklist;
+use App\Entity\Signature;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Entity\VerifyActivity;
@@ -47,6 +48,33 @@ class MailService {
     $mail = Email::create($to, $subject, $body, $file, $function, $line);
     $this->em->getRepository(Email::class)->save($mail);
 
+  }
+
+  private function sendMailWithAttachments(string $to, string $subject, string $from, string $sender, string $template, array $args, array $attachments): void {
+    $message = (new TemplatedEmail())
+      ->from(new Address($from, $sender))
+      ->to($to)
+      ->subject($subject)
+      ->htmlTemplate($template)
+      ->context($args);
+
+    // Add attachments
+    foreach ($attachments as $attachment) {
+      $message->attachFromPath($attachment);
+    }
+
+    $this->mailer->send($message);
+
+    $backtrace = debug_backtrace();
+
+    $line = $backtrace[0]['line'];
+    $function = $backtrace[1]['function'];
+    $file = $backtrace[0]['file'];
+
+    $body = $this->twig->render($template, $args);
+
+    $mail = Email::create($to, $subject, $body, $file, $function, $line);
+    $this->em->getRepository(Email::class)->save($mail);
   }
 
   public function registration(User $user): void {
@@ -298,6 +326,39 @@ class MailService {
 
   }
 
+  public function signatureApprove(Signature $signature): void {
+
+    $args = [];
+
+    $subject = 'Potvrda zahteva ' . $signature->getEmployee()->getFullName() . ' za rad na projektu ' . $signature->getRelation()->getTitle();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/signature_approve.html.twig';
+    $args['user'] = $signature->getEmployee()->getFullName();
+    $args['signature'] = $signature;
+
+
+    $this->sendMail($signature->getEmployee()->getEmail(), $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function signature(Signature $signature, $to): void {
+
+    $args = [];
+
+    $subject = 'Prijem zahteva od ' . $signature->getEmployee()->getFullName() . ' za rad na projektu ' . $signature->getRelation()->getTitle();
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/signature.html.twig';
+    $args['user'] = $signature->getEmployee()->getFullName();
+    $args['signature'] = $signature;
+
+    $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
 //  public function checklistTask(ManagerChecklist $checklist): void {
 //
 //    $args = [];
@@ -452,6 +513,125 @@ class MailService {
     $to = $mail;
 
     $this->sendMail($to, $subject, $from, $sender, $template, $args);
+
+  }
+
+  public function reportsGenerator($mail, $client, $prethodniMesecDatum, $datum, $attachments, $projects): void {
+
+    $args = [];
+
+    if (is_null($client)) {
+      $subject = 'Izveštaji za period ' . $prethodniMesecDatum->format('d.m.Y') . ' - ' . $datum->format('d.m.Y');
+    } else {
+      $subject = 'Izveštaji za klijenta ' . $client->getTitle() . ' za period ' . $prethodniMesecDatum->format('d.m.Y') . ' - ' . $datum->format('d.m.Y');
+
+    }
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/download_files.html.twig';
+    $args['client'] = $client;
+    $args['date'] = $datum;
+    $args['prethodniMesecDatum'] = $prethodniMesecDatum;
+    $args['projects'] = $projects;
+    $to = $mail;
+
+    $this->sendMailWithAttachments($to, $subject, $from, $sender, $template, $args, $attachments);
+
+  }
+
+  public function reportsDailyExing($mail, $client, $datum, $attachments, $projects): void {
+
+    $args = [];
+
+    $subject = 'Dnevni spisak za Exing gradilišta za datum ' . $datum->format('d.m.Y.');
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/exing_files.html.twig';
+    $args['client'] = $client;
+    $args['datum'] = $datum;
+    $args['projects'] = $projects;
+    $to = $mail;
+
+    $this->sendMailWithAttachments($to, $subject, $from, $sender, $template, $args, $attachments);
+
+  }
+  public function reportsDailyUrban($mail, $project, $datum, $attachments, $projects): void {
+
+    $args = [];
+
+    $subject = 'Dnevni spisak za '. $project->getTitle() .' za datum ' . $datum->format('d.m.Y.');
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/exing_files.html.twig';
+    $args['project'] = $project;
+    $args['datum'] = $datum;
+    $args['projects'] = $projects;
+    $to = $mail;
+
+    $this->sendMailWithAttachments($to, $subject, $from, $sender, $template, $args, $attachments);
+
+  }
+
+    public function reportsDailyPlato($mail, $project, $datum, $attachments, $projects, $ukupno): void {
+
+        $args = [];
+
+        $subject = 'Dnevni izveštaj broja zaposlenih prisutnih na gradilištu / Daily Report of the Number of Employees Present on the Construction Site';
+
+        $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+        $sender = CompanyInfo::ORGANIZATION_TITLE;
+        $template = 'email/plato_files.html.twig';
+        $args['project'] = $project;
+        $args['datum'] = $datum;
+        $args['projects'] = $projects;
+        $args['ukupno'] = $ukupno;
+        $to = $mail;
+
+        $this->sendMailWithAttachments($to, $subject, $from, $sender, $template, $args, $attachments);
+
+    }
+
+  public function reportsGeneratorExpo($mail, $client, $prethodniMesecDatum, $datum, $attachments, $projects): void {
+
+    $args = [];
+
+
+    $subject = 'Izveštaji EXPO projekte za period ' . $prethodniMesecDatum->format('d.m.Y') . ' - ' . $datum->format('d.m.Y');
+
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/download_files_expo.html.twig';
+    $args['client'] = $client;
+    $args['date'] = $datum;
+    $args['prethodniMesecDatum'] = $prethodniMesecDatum;
+    $args['projects'] = $projects;
+    $to = $mail;
+
+    $this->sendMailWithAttachments($to, $subject, $from, $sender, $template, $args, $attachments);
+
+  }
+
+  public function reportsUserGenerator($mail, $user, $prviDan, $poslednjiDan, $attachments): void {
+
+    $args = [];
+
+    $subject = 'Periodični izveštaj za ' . $user->getFullName() . ' za period ' . $prviDan->format('d.m.Y') . ' - ' . $poslednjiDan->format('d.m.Y');
+
+
+
+    $from = CompanyInfo::SUPPORT_MAIL_ADDRESS;
+    $sender = CompanyInfo::ORGANIZATION_TITLE;
+    $template = 'email/report_user.html.twig';
+    $args['user'] = $user;
+    $args['prviDan'] = $prviDan;
+    $args['poslednjiDan'] = $poslednjiDan;
+    $to = $mail;
+
+    $this->sendMailWithAttachments($to, $subject, $from, $sender, $template, $args, $attachments);
 
   }
 

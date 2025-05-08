@@ -117,6 +117,43 @@
                 </li>
             </ul>
         </div>
+            <div class="sidebar-section">
+            <div class="sidebar-section-header border-bottom">
+                <span class="fw-semibold">Google kalendar</span>
+            </div>
+
+{#            <div class="sidebar-section-body">#}
+{#                {% for user in checklistUsers %}#}
+{#                    <div class="d-flex mb-3">#}
+{#                        <div class="me-3">#}
+{#                            <img src="{{ asset(user.image.thumbnail100) }}" class="rounded-circle" width="40" height="40" alt="">#}
+{#                        </div>#}
+
+{#                        <div class="flex-fill">#}
+{#                            <a href="{{ path('app_checklist_form', {user: user.id}) }}" class="fw-semibold">{{ user.fullName }}</a>#}
+{#                            <div class="fs-sm text-muted">{{ user.getRoleTitleByType() }}</div>#}
+{#                        </div>#}
+
+{#                        <div class="align-self-center">#}
+{#                            {% if user.inTask == 1 %}#}
+{#                                <div class="bg-danger border-danger rounded-pill p-1"></div>#}
+{#                            {% else %}#}
+{#                                <div class="bg-success border-success rounded-pill p-1"></div>#}
+{#                            {% endif %}#}
+{#                        </div>#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{#            </div>#}
+
+            <ul class="nav nav-sidebar" data-nav-type="accordion">
+                <li class="nav-item">
+                    <a href="{{ path('google_calendar') }}" class="nav-link">
+                        <i class="ph-calendar me-2"></i>
+                        Kalendar
+                    </a>
+                </li>
+            </ul>
+        </div>
         {% else %}
             <div class="sidebar-section">
                 <div class="sidebar-section-header border-bottom">
@@ -181,6 +218,43 @@
                             </div>
                         {% endif %}
                     </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-header border-bottom">
+                    <span class="fw-semibold">Google kalendar</span>
+                </div>
+
+                {#            <div class="sidebar-section-body">#}
+                {#                {% for user in checklistUsers %}#}
+                {#                    <div class="d-flex mb-3">#}
+                {#                        <div class="me-3">#}
+                {#                            <img src="{{ asset(user.image.thumbnail100) }}" class="rounded-circle" width="40" height="40" alt="">#}
+                {#                        </div>#}
+
+                {#                        <div class="flex-fill">#}
+                {#                            <a href="{{ path('app_checklist_form', {user: user.id}) }}" class="fw-semibold">{{ user.fullName }}</a>#}
+                {#                            <div class="fs-sm text-muted">{{ user.getRoleTitleByType() }}</div>#}
+                {#                        </div>#}
+
+                {#                        <div class="align-self-center">#}
+                {#                            {% if user.inTask == 1 %}#}
+                {#                                <div class="bg-danger border-danger rounded-pill p-1"></div>#}
+                {#                            {% else %}#}
+                {#                                <div class="bg-success border-success rounded-pill p-1"></div>#}
+                {#                            {% endif %}#}
+                {#                        </div>#}
+                {#                    </div>#}
+                {#                {% endfor %}#}
+                {#            </div>#}
+
+                <ul class="nav nav-sidebar" data-nav-type="accordion">
+                    <li class="nav-item">
+                        <a href="{{ path('google_calendar') }}" class="nav-link">
+                            <i class="ph-calendar me-2"></i>
+                            Kalendar
+                        </a>
+                    </li>
+                </ul>
             </div>
         {% endif %}
         <!-- /sub navigation -->

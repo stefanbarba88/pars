@@ -79,6 +79,10 @@ class ImageRepository extends ServiceEntityRepository {
     $image->setThumbnail500(str_replace("/public","",$thumbnailPath . '500' .$file->getFileName()));
     $image->setThumbnail1024(str_replace("/public","",$thumbnailPath . '1024' .$file->getFileName()));
 
+    if (file_exists($file->getUploadPath() . $file->getFileName())) {
+      unlink($file->getUploadPath() . $file->getFileName());
+    }
+
     return $image;
   }
 

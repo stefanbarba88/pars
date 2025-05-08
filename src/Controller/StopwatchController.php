@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classes\AppConfig;
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\TaskStatusData;
 use App\Classes\Data\UserRolesData;
@@ -13,6 +14,8 @@ use App\Entity\TaskLog;
 use App\Entity\TimeTask;
 use App\Entity\User;
 use App\Entity\VerifyActivity;
+use App\Form\ActiveStopwatchTimeAddFormType;
+use App\Form\ActiveStopwatchTimeFormType;
 use App\Form\StopwatchTimeAddFormType;
 use App\Form\StopwatchTimeFormType;
 use App\Service\MailService;
@@ -23,6 +26,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -129,6 +133,41 @@ class StopwatchController extends AbstractController {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
+
+        if (isset($request->request->all()['image_delete'])) {
+          $deleteImages = $request->request->all()['image_delete'];
+          foreach ($deleteImages as $image) {
+            if (isset($image['checked'])) {
+              $image = $this->em->getRepository(Image::class)->find($image['value']);
+              $stopwatch->removeImage($image);
+            }
+          }
+        }
+        if (isset($request->request->all()['pdf_delete'])) {
+          $deletePdfs = $request->request->all()['pdf_delete'];
+          foreach ($deletePdfs as $pdf) {
+            if (isset($pdf['checked'])) {
+              $pdf = $this->em->getRepository(Pdf::class)->find($pdf['value']);
+              $stopwatch->removePdf($pdf);
+              $pdf->setProject(null);
+              $pdf->setTask(null);
+              $pdf = $this->em->getRepository(Pdf::class)->savePdf($pdf);
+            }
+          }
+        }
+
+
+        $actIds = [];
+        foreach ($stopwatch->getActivity() as $act) {
+          $actIds[] = $act->getId();
+        }
+
+        if (!in_array(AppConfig::NEMA_U_LISTI_ID, $actIds)) {
+          $stopwatch->setAdditionalActivity(null);
+        }
+        if (!in_array(AppConfig::OBRADA_ID, $actIds)) {
+          $stopwatch->setAdditionalDesc(null);
+        }
 
        if (isset($request->request->all()['stopwatch_time_form']['robotika'])) {
          $stopwatch->setIsRobotika(true);
@@ -246,6 +285,8 @@ class StopwatchController extends AbstractController {
     $args['hours'] = intdiv($stopwatch->getDiffRounded(), 60);
     $args['minutes'] = $stopwatch->getDiffRounded() % 60;
     $args['task'] = $stopwatch->getTaskLog()->getTask();
+    $args['images'] = $stopwatch->getImage()->toArray();
+    $args['pdfs'] = $stopwatch->getPdf()->toArray();
 
     if ($args['hours'] < 10) {
       $args['hours'] = '0' . $args['hours'];
@@ -370,10 +411,10 @@ class StopwatchController extends AbstractController {
             if ($activity->getId() == 42) {
               $verify = new VerifyActivity();
               $verify->setStopwatch($stopwatch);
-              $verify->setCompany($stopwatch->getCompany());
+              $verify->setCompany($stopwatch->getTaskLog()->getUser()->getCompany());
               $verify->setZaduzeni($stopwatch->getTaskLog()->getUser());
               $this->em->getRepository(VerifyActivity::class)->save($verify);
-              $mailService->activityVerify($verify, $stopwatch->getCompany()->getEmail());
+              $mailService->activityVerify($verify, $stopwatch->getTaskLog()->getUser()->getCompany()->getEmail());
             }
           }
         }
@@ -826,4 +867,161 @@ class StopwatchController extends AbstractController {
     return $this->redirectToRoute('app_stopwatch_verify_activity_list');
   }
 
+
+  #[Route('/form-add-in-task/{id}', name: 'app_stopwatch_add_form_in_task')]
+  public function addInTask(StopwatchTime $stopwatch, Request $request, UploadService $uploadService, MailService $mailService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+
+    $history = null;
+
+    $mobileDetect = new MobileDetect();
+
+    $form = $this->createForm(ActiveStopwatchTimeFormType::class, $stopwatch, ['attr' => ['action' => $this->generateUrl('app_stopwatch_add_form_in_task', ['id' => $stopwatch->getId()])]]);
+
+    if ($request->isMethod('POST')) {
+
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+
+
+        if (isset($request->request->all()['image_delete'])) {
+          $deleteImages = $request->request->all()['image_delete'];
+          foreach ($deleteImages as $image) {
+            if (isset($image['checked'])) {
+              $image = $this->em->getRepository(Image::class)->find($image['value']);
+              $stopwatch->removeImage($image);
+            }
+          }
+        }
+        if (isset($request->request->all()['pdf_delete'])) {
+          $deletePdfs = $request->request->all()['pdf_delete'];
+          foreach ($deletePdfs as $pdf) {
+            if (isset($pdf['checked'])) {
+              $pdf = $this->em->getRepository(Pdf::class)->find($pdf['value']);
+              $stopwatch->removePdf($pdf);
+              $pdf->setProject(null);
+              $pdf->setTask(null);
+              $pdf = $this->em->getRepository(Pdf::class)->savePdf($pdf);
+            }
+          }
+        }
+
+        $actIds = [];
+        foreach ($stopwatch->getActivity() as $act) {
+          $actIds[] = $act->getId();
+        }
+
+        if (!in_array(AppConfig::NEMA_U_LISTI_ID, $actIds)) {
+          $stopwatch->setAdditionalActivity(null);
+        }
+        if (!in_array(AppConfig::OBRADA_ID, $actIds)) {
+          $stopwatch->setAdditionalDesc(null);
+        }
+
+
+        $uploadFiles = $request->files->all()['active_stopwatch_time_form']['pdf'];
+        if (!empty ($uploadFiles)) {
+          foreach ($uploadFiles as $uploadFile) {
+            $pdf = new Pdf();
+            $file = $uploadService->upload($uploadFile, $pdf->getPdfUploadPath());
+
+            $pdf->setTitle($file->getFileName());
+            $pdf->setPath($file->getAssetPath());
+            if (!is_null($stopwatch->getTaskLog()->getTask()->getProject())) {
+              $pdf->setProject($stopwatch->getTaskLog()->getTask()->getProject());
+            }
+            if (!is_null($stopwatch->getTaskLog()->getTask()->getProject())) {
+              $pdf->setProject($stopwatch->getTaskLog()->getTask()->getProject());
+            }
+            $pdf->setTask($stopwatch->getTaskLog()->getTask());
+
+            $stopwatch->addPdf($pdf);
+          }
+        }
+
+        $uploadImages = $request->files->all()['active_stopwatch_time_form']['image'];
+        if (!empty ($uploadImages)) {
+          foreach ($uploadImages as $uploadFile) {
+
+            if (!is_null($stopwatch->getTaskLog()->getTask()->getProject())) {
+              $path = $stopwatch->getTaskLog()->getUploadPath();
+              $pathThumb = $stopwatch->getTaskLog()->getThumbUploadPath();
+            } else {
+              $path = $stopwatch->getTaskLog()->getNoProjectUploadPath();
+              $pathThumb = $stopwatch->getTaskLog()->getNoProjectThumbUploadPath();
+            }
+            $file = $uploadService->upload($uploadFile, $path);
+            $image = $this->em->getRepository(Image::class)->add($file, $pathThumb, $this->getParameter('kernel.project_dir'));
+            $stopwatch->addImage($image);
+          }
+        }
+
+
+        $text = trim($stopwatch->getAdditionalActivity());
+        $sentences = preg_split('/[.,;]\s*/', $text);
+        // Iteriraj kroz svaku rečenicu
+        foreach ($sentences as &$sentence) {
+          // Učini svaku rečenicu da počinje velikim slovom
+          $sentence = ucfirst(trim($sentence));
+        }
+
+        // Spoji rečenice nazad u jedan string
+//        $processedText = implode('. ', $sentences) . '.';
+        $processedText = implode('. ', $sentences);
+
+        $stopwatch->setAdditionalActivity($processedText);
+
+        $this->em->getRepository(StopwatchTime::class)->save($stopwatch);
+
+//        $this->em->getRepository(Task::class)->changeStatus($stopwatch->getTaskLog()->getTask(), TaskStatusData::ZAVRSENO);
+
+        notyf()
+          ->position('x', 'right')
+          ->position('y', 'top')
+          ->duration(5000)
+          ->dismissible(true)
+          ->addSuccess(NotifyMessagesData::STOPWATCH_ADD);
+
+//        return $this->redirectToRoute('app_task_log_view', ['id' => $stopwatch->getTaskLog()->getId()]);
+        return $this->redirectToRoute('app_home');
+      }
+    }
+    $args['form'] = $form->createView();
+    $args['stopwatch'] = $stopwatch;
+    $args['images'] = $stopwatch->getImage()->toArray();
+    $args['pdfs'] = $stopwatch->getPdf()->toArray();
+
+    $args['task'] = $stopwatch->getTaskLog()->getTask();
+
+
+
+    if ($mobileDetect->isMobile()) {
+      return $this->render('task/mobile_stopwatch_form_in_task.html.twig', $args);
+    }
+
+    return $this->render('task/stopwatch_form_in_task.html.twig', $args);
+  }
+
+
+  #[Route('/time-difference/{id}', name: 'app_stopwatch_get_time_difference')]
+  public function getTimeDifference(StopwatchTime $stopwatch): JsonResponse {
+    if (!$stopwatch || !$stopwatch->getStart()) {
+      return new JsonResponse(['error' => 'Stopwatch not found or not started'], 404);
+    }
+
+    // Izračunaj razliku u vremenu
+    $start = $stopwatch->getStart();
+    $now = new DateTimeImmutable();
+    $interval = $start->diff($now);
+
+    // Ukupni sati računajući i preko 24h
+    $totalHours = ($interval->days * 24) + $interval->h;
+    $timeDifference = sprintf('%d:%02d', $totalHours, $interval->i);
+
+    return new JsonResponse(['timeDifference' => $timeDifference]);
+  }
 }

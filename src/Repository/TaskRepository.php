@@ -3006,10 +3006,12 @@ class TaskRepository extends ServiceEntityRepository {
         if ($createdAt < $today || $createdAt > $tomorrow) {
             return $task; // Task nije kreiran danas
         }
-        if (!$task->getProject()->isElaboratSigned() && $task->getCategory()->getId() != 5) {
+        if (!$task->getProject()->isElaboratSigned()) {
             return $task; // Ne treba potpisivanje elaborata ili nije teren
         }
-
+        if ($task->getCategory()->getId() > 5) {
+            return $task; // Ne treba potpisivanje elaborata ili nije teren
+        }
 
         $projectId = $task->getProject()->getId();
 

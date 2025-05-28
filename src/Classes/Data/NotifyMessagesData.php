@@ -11,6 +11,8 @@ class NotifyMessagesData {
   public const USER_SUSPENDED_QUESTION = 'Da li zaista želite da deaktivirate nalog?';
 
 
+  public const DELETE_ERROR_PROJEKAT = 'Nije moguće obrisati stavku, potrebno je predhodno obrisati sve stavke koje se nalaze u njoj.';
+
 
   public const EDIT_SUCCESS = 'Uspešno ste kreirali/izmenili stavku.';
   public const DELETE_SUCCESS = 'Uspešno ste obrisali stavku.';

@@ -1,0 +1,208 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                               Prostorije sa nepotpunim merenjem
+                            </h4>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <!-- State saving -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h5 class="mb-0">Lista prostorija</h5>
+{#                            {% if not is_granted('ROLE_EMPLOYEE') %}#}
+                                <div class="my-auto ms-auto">
+{#                                    <a href="{{ path('app_projekat_form') }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>#}
+                                </div>
+{#                            {% endif %}#}
+                        </div>
+                        <form method="get" action="{{ path('app_prostorije_check') }}" class="form-validate-jquery" novalidation="novalidation">
+                            <div class="card-body">
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        <label class="form-label required" for="company">Projekat:</label>
+                                        <select id="company" name="projekat" class="form-control select">
+                                            <option value="">--Izaberite projekat--</option>
+                                            {% for projekat in projekti %}
+                                                <option value="{{ projekat.id }}">{{ projekat.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="card-body">
+                            <div class="card">
+                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                    <thead class="bg-light text-primary">
+                                    <tr>
+                                        <th>Prostorija</th>
+                                        <th>Stan</th>
+                                        <th>Projekat</th>
+                                        <th>Odstupanje</th>
+                                        <th>Kreiran</th>
+                                        <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for prostorija in pagination %}
+
+                                            <tr>
+
+                                            <td>
+                                                <div class="text-body">
+                                                    <a href="{{ path('app_prostorija_view', {id: prostorija.id}) }}" class="fw-semibold">
+                                                        {{ prostorija.title }}
+                                                    </a>
+                                                </div>
+                                            </td>
+                                                <td>
+                                                    <div class="text-body">
+                                                        <a href="{{ path('app_stan_view', {id: prostorija.stan.id}) }}" class="fw-semibold">
+                                                            {{ prostorija.stan.title }}
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="text-body">
+                                                        <a href="{{ path('app_projekat_view', {id: prostorija.stan.sprat.lamela.projekat.id}) }}" class="fw-semibold">
+                                                            {{ prostorija.stan.sprat.lamela.projekat.title }}
+                                                        </a>
+                                                    </div>
+                                                </td>
+
+                                                <td>
+                                                    <div class="text-body">
+                                                        <a href="{{ path('app_prostorija_view', {id: prostorija.id}) }}" class="fw-semibold">
+                                                            {{ prostorija.odstupanje }}
+                                                        </a>
+                                                    </div>
+                                                </td>
+
+
+                                        <td>
+                                            <div class="d-inline-flex align-items-center">
+                                                <i class="ph-calendar me-2"></i>
+                                                {{ prostorija.unos1['time']}}
+                                            </div>
+                                        </td>
+
+                                            <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-gear"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            {% if prostorija.isEdit %}
+                                                                <a href="{{ path('app_prostorija_admin', { id: prostorija.id}) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Admin izmena</a>
+                                                            {% endif %}
+                                                            <a href="{{ path('app_prostorija_view', { id: prostorija.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="navigation float-end">
+                                {{ knp_pagination_render(pagination) }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /state saving -->
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/echarts/bars/tornado_negative_stack.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/balance_stats.js') }}"></script>
+    <script src="{{ asset('assets/demo/charts/pages/profile/available_hours.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/media/glightbox.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/task_manager_detailed.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}

@@ -1,0 +1,327 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+        <!-- Main content -->
+
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ stan.title }}: {{ prostorija.title }}
+                            </h4>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                {% if not form.vars.valid %}
+                                    {% for child in form.children %}
+                                        {%for error in child.vars.errors%}
+                                            <div class="alert alert-danger alert-dismissible fade show">
+                                                <span class="fw-semibold">{{error.message}}</span>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                        {%endfor%}
+                                    {%endfor%}
+                                {%endif%}
+
+                                <!-- Wizard with validation -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            {% if stan.id is not null %}
+                                                Izmena prostorije
+                                            {% else %}
+                                                Dodavanje prostorije
+                                            {% endif %}
+                                        </h6>
+                                    </div>
+                                    {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Ako želite da promenite naziv, izaberite drugu prostoriju. Osim u situacijama kada ste sigurni da želite ručno da promenite.</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.code, 'Šifra:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.code, {attr: { class: 'form-control required select' }}) }}
+                                                    <span class="form-text">Koristi nazive već kreirane u šifarniku.</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                    <div class="mb-3">
+                                                        <div class="fw-bold  pb-2 ">Zidovi</div>
+                                                        <div class="table-responsive card">
+                                                            <table class="table table-hover table-bordered table_morecondensed">
+                                                                <tbody id="tbody">
+
+                                                                    {% for zid in prostorija.archive %}
+                                                                    <tr class="sub-row" id="zid_{{loop.index}}">
+                                                                        <td class="bg-light" style="width: 600px;">
+                                                                            <div class="row align-items-end">
+                                                                                <div class="col-md-4">
+                                                                                    <div class="mb-3">
+                                                                                        <label class="form-label">Zid:</label>
+                                                                                        <input type="text" class="form-control disable-input zid-oznaka" value="{{ zid['zid'] }}">
+                                                                                        <input type="hidden" class="zid-title" value="{{ zid['zid'] }}">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    <div class="mb-3">
+                                                                                        <label class="form-label">Unos:</label>
+                                                                                        <input class="form-control disable-input" type="number" min="0.01" step="0.01" value="{{ zid['unos'] }}">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-6 mb-3">
+                                                                                            <div class="form-check ">
+                                                                                                <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_s" value="1" {% if zid['dir'] == 1 %} checked {% endif %}>
+                                                                                                <label class="form-check-label" for="cr_l_i_s">H+</label>
+                                                                                            </div>
+                                                                                            <div class="form-check ">
+                                                                                                <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_u" value="2" {% if zid['dir'] == 2 %} checked {% endif %}>
+                                                                                                <label class="form-check-label" for="cr_l_i_u">H-</label>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="col-md-6">
+                                                                                            <div class="form-check ">
+                                                                                                <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_s" value="3" {% if zid['dir'] == 3 %} checked {% endif %}>
+                                                                                                <label class="form-check-label" for="cr_l_i_s">V+</label>
+                                                                                            </div>
+                                                                                            <div class="form-check ">
+                                                                                                <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_u" value="4" {% if zid['dir'] == 4 %} checked {% endif %}>
+                                                                                                <label class="form-check-label" for="cr_l_i_u">V-</label>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="text-center text-muted" style="width: 30px;"> <a class="btn-sm remove-subrow-btn mt-2" href="#"><i class="ph-trash text-danger"></i></a></td>
+                                                                    </tr>
+                                                                    {% endfor %}
+
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <a class="btn btn-primary add-subrow-btn" id="addZidBtn">
+                                                                <i class="ph-plus me-2"></i> Dodajte
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+
+                                        </div>
+
+
+
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.description, 'Napomena:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.description, {attr: { class: 'form-control ' }}) }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                        </div>
+                                    </div>
+                                    {{ form_end(form) }}
+
+                                </div>
+                                <!-- /wizard with validation -->
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    {#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+{% block footerJavascript %}
+
+    <script>
+        $(document).ready(function() {
+            $('#prostorija_form_code').on('change', function() {
+                // Uzmemo selektovani tekst iz <option>
+                var selectedText = $(this).find('option:selected').text();
+
+                // Ako nije defaultni option
+                if ($(this).val() !== '') {
+                    $('#prostorija_form_title').val(selectedText);
+                } else {
+                    $('#prostorija_form_title').val('');
+                }
+            });
+
+                function renumerisiZidove() {
+                    $('#tbody tr').each(function (index) {
+                        // const oznaka = `${index + 1}`;
+                        const oznaka = `${String({{ prostorijaRed }}).padStart(2, '0')}-${String(index + 1).padStart(2, '0')}`;
+
+                        const $row = $(this);
+
+                        $row.find('.zid-oznaka').val(oznaka);
+                        $row.find('.zid-title').val(oznaka).attr('name', `zid[0][${index}][zid]`);
+                        $row.find('input[type="number"]').attr('name', `zid[0][${index}][unos]`);
+                        $row.find('input[type="radio"]').each(function () {
+                            const val = $(this).val();
+                            $(this).attr('name', `zid[0][${index}][dir]`);
+                        });
+                    });
+                }
+
+                $('#addZidBtn').on('click', function (e, index) {
+                    e.preventDefault();
+                    const zidCount = $('#tbody tr').length;
+                    const oznaka = `${String({{ prostorijaRed }}).padStart(2, '0')}-${String(index + 1).padStart(2, '0')}`;
+
+                    const newRow = `
+            <tr class="sub-row">
+                <td class="bg-light">
+                    <div class="row align-items-end">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Zid:</label>
+                                <input type="text" class="form-control zid-oznaka" value="${oznaka}" readonly>
+                                <input type="hidden" class="zid-title" name="zid[0][${zidCount}][zid]" value="${oznaka}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Unos:</label>
+                                <input name="zid[0][${zidCount}][unos]" class="form-control" type="number" min="0.01" step="0.01">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" name="zid[0][${zidCount}][dir]" value="1" required>
+                                        <label class="form-check-label">H+</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" name="zid[0][${zidCount}][dir]" value="2" required>
+                                        <label class="form-check-label">H-</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" name="zid[0][${zidCount}][dir]" value="3" required>
+                                        <label class="form-check-label">V+</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" name="zid[0][${zidCount}][dir]" value="4" required>
+                                        <label class="form-check-label">V-</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-center text-muted" style="width: 30px;">
+                    <a class="btn-sm remove-subrow-btn mt-2" href="#"><i class="ph-trash text-danger"></i></a>
+                </td>
+            </tr>
+        `;
+
+                    $('#tbody').append(newRow);
+                    renumerisiZidove();
+                });
+
+                $('#tbody').on('click', '.remove-subrow-btn', function (e) {
+                    e.preventDefault();
+                    $(this).closest('tr').remove();
+                    renumerisiZidove();
+                });
+            });
+
+    </script>
+{% endblock footerJavascript %}

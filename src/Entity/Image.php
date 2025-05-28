@@ -56,6 +56,9 @@ class Image {
   #[ORM\ManyToOne(inversedBy: 'image')]
   private ?CarReservation $carReservation = null;
 
+  #[ORM\OneToMany(mappedBy: 'image', targetEntity: Stan::class)]
+  private Collection $stans;
+
 //  #[ORM\ManyToOne(inversedBy: 'image')]
 //  private ?Signature $signature = null;
 
@@ -63,6 +66,7 @@ class Image {
   public function __construct() {
     $this->users = new ArrayCollection();
     $this->clients = new ArrayCollection();
+    $this->stans = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -276,6 +280,36 @@ class Image {
 //
 //      return $this;
 //  }
+
+/**
+ * @return Collection<int, Stan>
+ */
+public function getStans(): Collection
+{
+    return $this->stans;
+}
+
+public function addStan(Stan $stan): self
+{
+    if (!$this->stans->contains($stan)) {
+        $this->stans->add($stan);
+        $stan->setImage($this);
+    }
+
+    return $this;
+}
+
+public function removeStan(Stan $stan): self
+{
+    if ($this->stans->removeElement($stan)) {
+        // set the owning side to null (unless already changed)
+        if ($stan->getImage() === $this) {
+            $stan->setImage(null);
+        }
+    }
+
+    return $this;
+}
 
 
 

@@ -1,0 +1,291 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ lamela.projekat.title }}: {{ lamela.title }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                {% set lamelaDays = getDeadlineCounterLamela(lamela.id) %}
+
+                                <div class="card">
+
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">{{ lamela.title }}
+{#                                            {% if not is_granted('ROLE_EMPLOYEE') %}#}
+                                                <a href="{{ path('app_lamela_edit', {id:lamela.id}) }}"><i class="ph-note-pencil"></i></a>
+{#                                            {% endif %}#}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Naziv:</div>
+                                            <div class="col-8">{{ lamela.title() }}</div>
+                                        </div>
+                                        <div class="row p-2">
+                                            <div class="col-4">Tip prostora:</div>
+                                            <div class="col-8">
+                                                {% if lamela.prostor == 1 %} Stambeni prostor{% endif %}
+                                                {% if lamela.prostor == 2 %} Poslovni prostor{% endif %}
+                                                {% if lamela.prostor == 3 %} Garažni prostor{% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Progres:</div>
+                                            <div class="col-8">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ lamela.stanje }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg">
+                                            <div class="col-4">Realizacija:</div>
+                                            <div class="col-8">
+                                                {% set boja = 'bg-primary'%}
+                                                {% set procenat = lamela.percent%}
+                                                {% if procenat < 26 %}
+                                                    {% set boja = 'bg-danger'%}
+                                                {% endif %}
+                                                {% if procenat > 25 and procenat < 76 %}
+                                                    {% set boja = 'bg-warning'%}
+                                                {% endif %}
+                                                {% if procenat > 75 and procenat < 99 %}
+                                                    {% set boja = 'bg-info'%}
+                                                {% endif %}
+                                                {% if procenat == 100 %}
+                                                    {% set boja = 'bg-success'%}
+                                                {% endif %}
+                                                <div class="progress">
+                                                    <div class="progress-bar {{ boja }}" role="progressbar" style="width: {{ procenat }}%" aria-valuenow="{{ procenat }}" aria-valuemin="0" aria-valuemax="100">
+                                                        {% if procenat > 0 %}
+                                                            {{ procenat }}%
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Rok:</div>
+                                            <div class="col-8">
+                                                {% if lamela.deadline is not null %}
+                                                    <div class="d-inline-flex align-items-center">
+                                                        <i class="ph-calendar me-2"></i>
+                                                        {{ lamela.deadline | date("d.m.Y")}}
+                                                        {% if lamelaDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ lamelaDays.poruka }}" data-bs-original-title="{{ lamelaDays.poruka }}"></i>{% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 ">
+                                            <div class="col-4">Napomena:</div>
+                                            <div class="col-8">
+                                                {{ lamela.description }}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 bg-light">
+                                            <div class="col-4">Kreirano:</div>
+                                            <div class="col-8">
+                                                <div class="d-inline-flex align-items-center">
+                                                    <i class="ph-calendar me-2"></i>
+                                                    {{ lamela.created | date("d.m.Y")}}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <h5 class="mb-0">Spratovi</h5>
+                                        <div class="my-auto ms-auto">
+                                            <a href="{{ path('app_sprat_form', {lamela: lamela.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="row">
+                                            {% for sprat in spratovi %}
+                                                {% set spratDays = getDeadlineCounterSprat(sprat.id) %}
+                                                <div class="col-xl-4">
+                                                    <div class="card">
+                                                        <div class="card-body {{ spratDays.klasa }}">
+                                                            <div class="d-flex mb-3">
+                                                                <div class="d-inline-flex">
+                                                                    <span class="badge bg-secondary text-primary me-2">{{ sprat.stanje }}</span>
+                                                                    <span class="me-2 d-block">
+    {% set boja = 'bg-primary'%}
+                                                        {% set procenat = sprat.percent %}
+                                                        {% if procenat < 26 %}
+                                                            {% set boja = 'bg-danger'%}
+                                                        {% endif %}
+                                                        {% if procenat > 25 and procenat < 76 %}
+                                                            {% set boja = 'bg-warning'%}
+                                                        {% endif %}
+                                                        {% if procenat > 75 and procenat < 99 %}
+                                                            {% set boja = 'bg-info'%}
+                                                        {% endif %}
+                                                        {% if procenat == 100 %}
+                                                            {% set boja = 'bg-success'%}
+                                                        {% endif %}
+
+                                                            <div class="progress w-100" style="height: 1.5rem;">
+                                                                <div class="progress-bar {{ boja }}" role="progressbar" style="width: {{ procenat }}%; font-size: 0.9rem;" aria-valuenow="{{ procenat }}" aria-valuemin="0" aria-valuemax="100">
+                                                                    {% if procenat > 0 %}
+                                                                        {{ procenat }}%
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        </span>
+                                                                </div>
+
+                                                                <div class="dropdown ms-auto">
+                                                                    <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                                        <i class="ph-gear"></i>
+                                                                    </a>
+
+                                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                                        <a href="{{ path('app_sprat_view', {id: sprat.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-eye me-2"></i>
+                                                                            Vidite
+                                                                        </a>
+                                                                        <a href="{{ path('app_sprat_edit', {id: sprat.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-note-pencil me-2"></i>
+                                                                            Izmenite
+                                                                        </a>
+                                                                        <a href="{{ path('app_sprat_delete', {id: sprat.id}) }}" class="dropdown-item">
+                                                                            <i class="ph-trash me-2"></i>
+                                                                            Obrišite
+                                                                        </a>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div>
+                                                                <h6 class="mb-1">
+                                                                    <a href="{{ path('app_sprat_view', {id: sprat.id}) }}">#{{ sprat.title }}
+
+                                                                    </a>
+                                                                </h6>
+                                                                <p class="mb-2">{{ sprat.lamela.title }}</p>
+                                                            </div>
+
+                                                            <div class="d-sm-flex align-items-sm-center flex-sm-wrap">
+                                                                <div class="d-flex flex-wrap">
+                                                                    <div><span class="text-muted"><i class="ph-calendar me-1"></i> {{ sprat.created | date('d.m.Y.') }}</span></div>
+                                                                    <div class="ms-3"><a href="{{ path('app_projekat_view', {id:sprat.lamela.projekat.id}) }}"><i class="ph-circles-three me-1"></i> {{ sprat.lamela.projekat.title }}</a></div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="card-footer d-flex align-items-center">
+                                                            <span>
+                                                    <i class="ph-bell-ringing me-1"></i>
+                                                    Rok: <span class="fw-semibold">
+                                                        {% if sprat.deadline is not null %}
+                                                            {{ sprat.deadline | date("d.m.Y.")}} {% if spratDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ spratDays.poruka }}" data-bs-original-title="{{ spratDays.poruka }}"></i>{% endif %}
+                                                        {% endif %}
+                                                    </span>
+                                                </span>
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                        </div>
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+        <!-- /main content -->
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/select.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/datatables_extension_colvis.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/visualization/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/notifications/sweet_alert.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/fullcalendar/main.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/user_pages_profile_tabbed.js') }}"></script>
+
+
+    <script src="{{ asset('assets/demo/pages/extra_sweetalert.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+

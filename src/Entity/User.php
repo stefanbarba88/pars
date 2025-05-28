@@ -207,6 +207,8 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   #[ORM\ManyToOne(inversedBy: 'users')]
   private ?Project $project = null;
 
+  #[ORM\ManyToMany(targetEntity: Projekat::class, mappedBy: 'assigned')]
+  private Collection $projekats;
 
 
   public function getCompany(): ?Company {
@@ -235,6 +237,7 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
     $this->elaborats = new ArrayCollection();
     $this->signatures = new ArrayCollection();
     $this->docs = new ArrayCollection();
+    $this->projekats = new ArrayCollection();
 
   }
 
@@ -1222,6 +1225,33 @@ class User implements UserInterface, JsonSerializable, PasswordAuthenticatedUser
   public function setProject(?Project $project): self
   {
       $this->project = $project;
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Projekat>
+   */
+  public function getProjekats(): Collection
+  {
+      return $this->projekats;
+  }
+
+  public function addProjekat(Projekat $projekat): self
+  {
+      if (!$this->projekats->contains($projekat)) {
+          $this->projekats->add($projekat);
+          $projekat->addAssigned($this);
+      }
+
+      return $this;
+  }
+
+  public function removeProjekat(Projekat $projekat): self
+  {
+      if ($this->projekats->removeElement($projekat)) {
+          $projekat->removeAssigned($this);
+      }
 
       return $this;
   }

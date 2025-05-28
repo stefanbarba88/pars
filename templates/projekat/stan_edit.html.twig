@@ -1,0 +1,758 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\WidgetController::header' )) }}
+    <div class="page-content">
+        {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
+        <!-- Main content -->
+
+        <div class="content-wrapper">
+
+            <!-- Inner content -->
+            <div class="content-inner">
+
+                <!-- Page header -->
+                <div class="page-header mobile-padding-sm page-header-light shadow">
+                    <div class="page-header-content d-lg-flex">
+                        <div class="d-flex">
+                            <h4 class="page-title mb-0">
+                                {{ stan.sprat.title }}: {{ stan.title }}
+                            </h4>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /page header -->
+
+                <!-- Content area -->
+                <div class="content">
+
+                    <!-- Inner container -->
+                    <div class="d-lg-flex align-items-lg-start">
+
+                        <!-- Right content -->
+                        <div class="tab-content flex-fill">
+                            <div class="tab-pane fade active show">
+                                {% if not form.vars.valid %}
+                                    {% for child in form.children %}
+                                        {%for error in child.vars.errors%}
+                                            <div class="alert alert-danger alert-dismissible fade show">
+                                                <span class="fw-semibold">{{error.message}}</span>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                        {%endfor%}
+                                    {%endfor%}
+                                {%endif%}
+
+                                <!-- Wizard with validation -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            {% if stan.id is not null %}
+                                                Izmena stana
+                                            {% else %}
+                                                Dodavanje stana
+                                            {% endif %}
+                                        </h6>
+                                    </div>
+                                    {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
+                                                </div>
+                                            </div>
+                                            </div>
+                                        <div class="row">
+
+
+                                            <div class="col-lg-12">
+                                                    <div class="mb-3">
+                                                        <div class="fw-bold  pb-2 ">Prostorije</div>
+                                                        <div class="table-responsive card">
+                                                            <table class="table table-hover table-bordered table_morecondensed">
+                                                                <tbody id="tbody">
+
+                                                                {% for prostorija in prostorije %}
+                                                                    <tr id="prostorija_{{ loop.index }}" class="main-row">
+                                                                        <td colspan="3" style="width: 600px;">
+                                                                            <div class="row">
+                                                                                <div class="col-lg-12">
+                                                                                    <div class="mb-3">
+
+                                                                                        <label class="form-label required" for="order_form_product_{{loop.index}}">Prostorija:*</label>
+                                                                                        <select id="order_form_product_{{loop.index}}" class="form-control disable-input">
+                                                                                            <option>{{ prostorija.title }}</option>
+                                                                                        </select>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    {% for zid in prostorija.archive %}
+                                                                    <tr class="sub-row">
+                                                                        <td colspan="3" class="bg-light">
+                                                                            <div class="row align-items-end">
+                                                                                <div class="col-md-4">
+                                                                                    <div class="mb-3">
+                                                                                        <label class="form-label">Zid:</label>
+                                                                                        <input type="text" class="form-control disable-input" value="{{ zid['zid'] }}" readonly>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    <div class="mb-3">
+                                                                                        <label class="form-label">Unos:</label>
+                                                                                        <input class="form-control disable-input" type="number" min="0.01" step="0.01" value="{{ zid['unos'] }}">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-6 mb-3">
+                                                                                            <div class="form-check ">
+                                                                                                <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_s" value="1" {% if zid['dir'] == 1 %} checked {% endif %}>
+                                                                                                <label class="form-check-label" for="cr_l_i_s">H+</label>
+                                                                                            </div>
+                                                                                            <div class="form-check ">
+                                                                                                <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_u" value="2" {% if zid['dir'] == 2 %} checked {% endif %}>
+                                                                                                <label class="form-check-label" for="cr_l_i_u">H-</label>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="col-md-6">
+                                                                                            <div class="form-check ">
+                                                                                                <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_s" value="3" {% if zid['dir'] == 3 %} checked {% endif %}>
+                                                                                                <label class="form-check-label" for="cr_l_i_s">V+</label>
+                                                                                            </div>
+                                                                                            <div class="form-check ">
+                                                                                                <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_u" value="4" {% if zid['dir'] == 4 %} checked {% endif %}>
+                                                                                                <label class="form-check-label" for="cr_l_i_u">V-</label>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+
+                                                                    </tr>
+                                                                    {% endfor %}
+                                                                {% endfor %}
+
+
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <a class="btn btn-primary" id="addBtn"> <i class="ph-plus me-2"></i> Dodajte</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+
+                                        </div>
+
+
+
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.description, 'Napomena:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.description, {attr: { class: 'form-control ' }}) }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                        </div>
+                                    </div>
+                                    {{ form_end(form) }}
+
+                                </div>
+                                <!-- /wizard with validation -->
+                            </div>
+                        </div>
+                        <!-- /right content -->
+
+                    </div>
+                    <!-- /inner container -->
+
+                </div>
+                <!-- /content area -->
+
+                <!-- Footer -->
+                {% include 'includes/footer.html.twig' %}
+                <!-- /footer -->
+
+            </div>
+            <!-- /inner content -->
+
+        </div>
+
+        {{ render(controller('App\\Controller\\WidgetController::rightSidebar')) }}
+    </div>
+    {% include 'includes/notification.html.twig' %}
+{% endblock content %}
+
+{% block includeJavascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/wizards/steps.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+
+    <script src="{{ asset('assets/demo/pages/form_wizard.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/ui/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/pickers/datepicker.min.js') }}"></script>
+    {#    <script src="{{ asset('assets/demo/pages/picker_date.js') }}"></script>#}
+    <script src="{{ asset('assets/js/vendor/pickers/sr-latn.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_select2.js') }}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/inputs/imask.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/autosize.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/passy.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/forms/inputs/maxlength.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/form_controls_extended.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/fileinput.min.js')}}"></script>
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/plugins/sortable.min.js')}}"></script>
+    <script src="{{ asset('assets/demo/pages/uploader_bootstrap.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/uploaders/fileinput/sr-latin.js')}}"></script>
+
+    <script src="{{ asset('assets/js/vendor/forms/validation/validate.min.js') }}"></script>
+    <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
+    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>
+    {% if app.request.locale == 'sr-RS' %}
+        <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
+    {% endif %}
+
+{% endblock includeJavascript %}
+{% block footerJavascript %}
+
+    <script>
+        $(document).ready(function () {
+
+            var rowIdx = {{ prostorije | length }};
+
+            // Dodavanje novog reda - prostorije
+            $('#addBtn').on('click', function(e) {
+                e.preventDefault();
+                let currentRowIdx = ++rowIdx;
+
+                $('#tbody').append(`
+            <tr id="prostorija_${currentRowIdx}" class="main-row">
+                <td style="width: 600px;">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label required" for="order_form_product_${currentRowIdx}">Prostorija:*</label>
+                                <select id="order_form_product_${currentRowIdx}" name="edit_order_products_form[product][${currentRowIdx}][product]" class="form-control select-remote-data required">
+                                    <option value="">--Izaberite prostoriju--</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-center text-muted" style="width: 30px;"><a class="btn-sm mt-2 add-subrow-btn"><i class="ph-plus text-success"></i></a></td>
+                <td class="text-center text-muted" style="width: 30px;"><a class="btn-sm remove mt-2"><i class="ph-trash text-danger"></i></a></td>
+            </tr>
+        `);
+
+                $(`#order_form_product_${currentRowIdx}`).select2({
+                    ajax: {
+                        url: "{{ path('get_prostorije_by_name') }}",
+                        type: "GET",
+                        dataType: 'json',
+                        delay: 50,
+                        data: function(params) {
+                            return {
+                                q: params.term,
+                                page: params.page
+                            };
+                        },
+                        processResults: function(data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: (params.page * 30) < data.total_count
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    escapeMarkup: function(markup) { return markup; },
+                    minimumInputLength: 3,
+                    templateResult: formatRepo,
+                    templateSelection: formatRepoSelection,
+                    language: {
+                        searching: function() { return "Pretraživanje..."; },
+                        inputTooShort: function(args) {
+                            var remainingChars = args.minimum - args.input.length;
+                            return "Molimo vas unesite još " + remainingChars + " znakova";
+                        },
+                        noResults: function() { return "Nema rezultata"; },
+                        loadingMore: function() { return "Učitavanje još rezultata..."; },
+                        errorLoading: function() { return "Greška pri učitavanju rezultata"; },
+                        maximumSelected: function(args) { return "Možete izabrati samo " + args.maximum + " stavki"; }
+                    },
+                });
+            });
+
+            // Dodavanje sub-row reda (zidova)
+            $('#tbody').on('click', '.add-subrow-btn', function(e) {
+                e.preventDefault();
+                let mainRow = $(this).closest('tr');
+                let mainRowId = mainRow.attr('id');
+
+                // Pronađi poslednji zid ispod trenutne prostorije
+                let lastSubRow = $(`tr.sub-row[data-parent='${mainRowId}']`).last();
+
+                let subRow = `
+            <tr class="sub-row" data-parent="${mainRowId}">
+                <td class="bg-light" colspan="2">
+                    <div class="row align-items-end">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Zid:</label>
+                                <input type="text" class="form-control zid-oznaka" value="" readonly>
+                                <input type="hidden" class="zid-title" name="" value="">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Unos:</label>
+                                <input name="" class="form-control" type="number" min="0.01" step="0.01">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row">
+								<div class="col-md-6 mb-3">
+		                            <div class="form-check ">
+									    <input type="radio" class="form-check-input" name="" id="cr_l_i_s" value="1">
+										<label class="form-check-label" for="cr_l_i_s">H+</label>
+									</div>
+                                    <div class="form-check ">
+                                        <input type="radio" class="form-check-input" name="" id="cr_l_i_u" value="2">
+                                        <label class="form-check-label" for="cr_l_i_u">H-</label>
+                                    </div>
+								</div>
+                                <div class="col-md-6">
+									<div class="form-check ">
+                                        <input type="radio" class="form-check-input" name="" id="cr_l_i_s" value="3">
+                                        <label class="form-check-label" for="cr_l_i_s">V+</label>
+								    </div>
+                                    <div class="form-check ">
+                                        <input type="radio" class="form-check-input" name="" id="cr_l_i_u" value="4">
+                                        <label class="form-check-label" for="cr_l_i_u">V-</label>
+                                    </div>
+								</div>
+							</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-center text-muted" style="width: 30px;">
+                    <a class="btn-sm remove-subrow-btn mt-2"><i class="ph-trash text-danger"></i></a>
+                </td>
+            </tr>
+        `;
+
+                // Ako postoji subrow, dodaj ispod njega, inače odmah ispod glavnog reda
+                if (lastSubRow.length) {
+                    lastSubRow.after(subRow);
+                } else {
+                    mainRow.after(subRow);
+                }
+
+                renumerisiZidove();
+            });
+
+            // Brisanje prostorije i njenih zidova
+            $('#tbody').on('click', '.remove', function(e) {
+                e.preventDefault();
+                let mainRow = $(this).closest('tr');
+                let mainRowId = mainRow.attr('id');
+                $(`tr.sub-row[data-parent="${mainRowId}"]`).remove();
+                mainRow.remove();
+                renumerisiZidove();
+            });
+
+            // Brisanje zida
+            $('#tbody').on('click', '.remove-subrow-btn', function(e) {
+                e.preventDefault();
+                $(this).closest('tr').remove();
+                renumerisiZidove();
+            });
+
+            // Ponovno numerisanje zidova
+            function renumerisiZidove() {
+                $('#tbody tr').each(function() {
+                    let $row = $(this);
+                    if ($row.hasClass('main-row')) {
+                        let prostorijaIndex = $('.main-row').index($row) + 1;
+                        let prostorijaId = $row.attr('id');
+
+                        let zidovi = $(`tr.sub-row[data-parent="${prostorijaId}"]`);
+                        zidovi.each(function(i) {
+                            let oznaka = `${String(prostorijaIndex).padStart(2, '0')}-${String(i + 1).padStart(2, '0')}`;
+                            $(this).find('.zid-oznaka').val(oznaka);
+                            $(this).find('input[type="number"]').attr('name', `zid[${prostorijaId}][${i + 1}][unos]`);
+                            $(this).find('input[type="radio"]').attr('name', `zid[${prostorijaId}][${i + 1}][dir]`).attr('required', true);
+                            $(this).find('.zid-title').attr('name', `zid[${prostorijaId}][${i + 1}][title]`).val(oznaka);
+                        });
+                    }
+                });
+            }
+
+            function formatRepo(repo) {
+                if (repo.loading) return repo.text;
+
+                let strukturaText = '';
+                if (repo.struktura !== undefined && repo.struktura !== null && repo.struktura !== '') {
+                    let broj = parseFloat(repo.struktura);
+                    if (!isNaN(broj)) {
+                        strukturaText = ' ( ' + broj.toFixed(1) + ' )';
+                    }
+                }
+
+                let shortText = '';
+                if (repo.short !== undefined && repo.short !== null && repo.short !== '') {
+                    shortText = repo.short + ' - ';
+                }
+
+                return '<div class="select2-result-repository clearfix">' +
+                    '<div class="select2-result-repository__title">' +
+                    shortText + repo.text + strukturaText +
+                    '</div></div>';
+            }
+
+            function formatRepoSelection(repo) {
+                return repo.text || repo.id;
+            }
+        });
+{#        $(document).ready(function () {#}
+
+{#            var rowIdx = 0;#}
+
+{#            // Dodavanje novog reda - prostorije#}
+{#            $('#addBtn').on('click', function(e) {#}
+{#                e.preventDefault();#}
+{#                let currentRowIdx = ++rowIdx;#}
+
+{#                $('#tbody').append(`#}
+{#            <tr id="prostorija_${currentRowIdx}" class="main-row">#}
+{#                <td style="width: 600px;">#}
+{#                    <div class="row">#}
+{#                        <div class="col-lg-12">#}
+{#                            <div class="mb-3">#}
+{#                                <label class="form-label required" for="order_form_product_${currentRowIdx}">Prostorija:*</label>#}
+{#                                <select id="order_form_product_${currentRowIdx}" name="edit_order_products_form[product][${currentRowIdx}][product]" class="form-control select-remote-data required">#}
+{#                                    <option value="">--Izaberite prostoriju--</option>#}
+{#                                </select>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </td>#}
+{#                <td class="text-center text-muted" style="width: 30px;"><a class="btn-sm mt-2 add-subrow-btn"><i class="ph-plus text-success"></i></a></td>#}
+{#                <td class="text-center text-muted" style="width: 30px;"><a class="btn-sm remove mt-2"><i class="ph-trash text-danger"></i></a></td>#}
+{#            </tr>#}
+{#        `);#}
+
+{#                $(`#order_form_product_${currentRowIdx}`).select2({#}
+{#                    ajax: {#}
+{#                        url: "{{ path('get_prostorije_by_name') }}",#}
+{#                        type: "GET",#}
+{#                        dataType: 'json',#}
+{#                        delay: 50,#}
+{#                        data: function(params) {#}
+{#                            return {#}
+{#                                q: params.term,#}
+{#                                page: params.page#}
+{#                            };#}
+{#                        },#}
+{#                        processResults: function(data, params) {#}
+{#                            params.page = params.page || 1;#}
+{#                            return {#}
+{#                                results: data.results,#}
+{#                                pagination: {#}
+{#                                    more: (params.page * 30) < data.total_count#}
+{#                                }#}
+{#                            };#}
+{#                        },#}
+{#                        cache: true#}
+{#                    },#}
+{#                    escapeMarkup: function(markup) { return markup; },#}
+{#                    minimumInputLength: 3,#}
+{#                    templateResult: formatRepo,#}
+{#                    templateSelection: formatRepoSelection,#}
+{#                    language: {#}
+{#                        searching: function() { return "Pretraživanje..."; },#}
+{#                        inputTooShort: function(args) {#}
+{#                            var remainingChars = args.minimum - args.input.length;#}
+{#                            return "Molimo vas unesite još " + remainingChars + " znakova";#}
+{#                        },#}
+{#                        noResults: function() { return "Nema rezultata"; },#}
+{#                        loadingMore: function() { return "Učitavanje još rezultata..."; },#}
+{#                        errorLoading: function() { return "Greška pri učitavanju rezultata"; },#}
+{#                        maximumSelected: function(args) { return "Možete izabrati samo " + args.maximum + " stavki"; }#}
+{#                    },#}
+{#                });#}
+{#            });#}
+
+{#            // Dodavanje sub-row reda (zidova)#}
+{#            $('#tbody').on('click', '.add-subrow-btn', function(e) {#}
+{#                e.preventDefault();#}
+{#                let mainRow = $(this).closest('tr');#}
+{#                let mainRowId = mainRow.attr('id');#}
+
+{#                let subRow = `#}
+{#            <tr class="sub-row" data-parent="${mainRowId}">#}
+{#               <td class="bg-light" colspan="2">#}
+{#           <div class="row align-items-end">#}
+{#                    <div class="col-md-5">#}
+{#                       <div class="mb-3">#}
+{#                                <label class="form-label">Zid:</label>#}
+{#                                <input type="text" class="form-control zid-oznaka" value="" readonly>#}
+{#                            </div>#}
+{#                    </div>#}
+{#                    <div class="col-md-7">#}
+{#                         <div class="mb-3">#}
+{#                                <label class="form-label">Unos:</label>#}
+{#                                <input name="" class="form-control" type="number" min="0.01" step="0.01">#}
+{#                            </div>#}
+{#                    </div>#}
+
+
+
+{#                    </div>#}
+{#                </td>#}
+{#<!--                <td>-->#}
+{#<!--                    <div class="row">-->#}
+{#<!--                        <div class="col-lg-12">-->#}
+{#<!--                            <div class="mb-3">-->#}
+{#<!--                                <label class="form-label">Unos:</label>-->#}
+{#<!--                                <input name="" class="form-control" type="number" min="0.01" step="0.01">-->#}
+{#<!--                            </div>-->#}
+{#<!--                        </div>-->#}
+{#<!--                    </div>-->#}
+{#<!--                </td>-->#}
+
+{#                <td class="text-center text-muted" style="width: 30px;">#}
+{#                    <a class="btn-sm remove-subrow-btn mt-2"><i class="ph-trash text-danger"></i></a>#}
+{#                </td>#}
+{#            </tr>#}
+{#        `;#}
+
+{#                mainRow.after(subRow);#}
+{#                renumerisiZidove();#}
+{#            });#}
+
+{#            // Brisanje prostorije i njenih zidova#}
+{#            $('#tbody').on('click', '.remove', function(e) {#}
+{#                e.preventDefault();#}
+{#                let mainRow = $(this).closest('tr');#}
+{#                let mainRowId = mainRow.attr('id');#}
+{#                $(`tr.sub-row[data-parent="${mainRowId}"]`).remove();#}
+{#                mainRow.remove();#}
+{#                renumerisiZidove();#}
+{#            });#}
+
+{#            // Brisanje zida#}
+{#            $('#tbody').on('click', '.remove-subrow-btn', function(e) {#}
+{#                e.preventDefault();#}
+{#                $(this).closest('tr').remove();#}
+{#                renumerisiZidove();#}
+{#            });#}
+
+{#            // Ponovno numerisanje zidova#}
+{#            function renumerisiZidove() {#}
+{#                $('#tbody tr').each(function() {#}
+{#                    let $row = $(this);#}
+{#                    if ($row.hasClass('main-row')) {#}
+{#                        let prostorijaIndex = $('.main-row').index($row) + 1;#}
+{#                        let prostorijaId = $row.attr('id');#}
+
+{#                        let zidovi = $(`tr.sub-row[data-parent="${prostorijaId}"]`);#}
+{#                        zidovi.each(function(i) {#}
+{#                            let oznaka = `P${String(prostorijaIndex).padStart(2, '0')}-${String(i + 1).padStart(2, '0')}`;#}
+{#                            $(this).find('.zid-oznaka').val(oznaka);#}
+{#                            $(this).find('input[type="number"]').attr('name', `zid[${prostorijaId}][${i + 1}][unos]`);#}
+{#                        });#}
+{#                    }#}
+{#                });#}
+{#            }#}
+
+{#            function formatRepo(repo) {#}
+{#                if (repo.loading) return repo.text;#}
+{#                return '<div class="select2-result-repository clearfix"><div class="select2-result-repository__title">' + repo.text + '</div></div>';#}
+{#            }#}
+
+{#            function formatRepoSelection(repo) {#}
+{#                return repo.text || repo.id;#}
+{#            }#}
+{#        });#}
+    {#    $(document).ready(function () {#}
+
+    {#    var rowIdx = 0;#}
+    {#    // Dodavanje novog reda#}
+    {#    $('#addBtn').on('click', function(e) {#}
+    {#        e.preventDefault();#}
+    {#        let currentRowIdx = ++rowIdx; // Čuvamo trenutnu vrednost rowIdx#}
+    {#        $('#tbody').append(`#}
+    {#        <tr id="prostorija_${currentRowIdx}">#}
+    {#            <td style="width: 600px;">#}
+    {#                <div class="row">#}
+    {#                    <div class="col-lg-12">#}
+    {#                        <div class="mb-3">#}
+    {#                            <label class="form-label required" for="order_form_product_${currentRowIdx}">Prostorija:*</label>#}
+    {#                            <select id="order_form_product_${currentRowIdx}" name="edit_order_products_form[product][${currentRowIdx}][product]" class="form-control select-remote-data required">#}
+    {#                                <option value="">--Izaberite prostoriju--</option>#}
+    {#                            </select>#}
+    {#                        </div>#}
+    {#                    </div>#}
+    {#                </div>#}
+    {#            </td>#}
+
+
+
+    {#            <td class="text-center text-muted" style="width: 30px;"><a class="btn-sm mt-2 add-subrow-btn"><i class="ph-plus text-success"></i></a></td>#}
+    {#            <td class="text-center text-muted" style="width: 30px;"><a class="btn-sm remove mt-2" id="removeBtn"><i class="ph-trash text-danger"></i></a></td>#}
+    {#        </tr>#}
+    {#    `);#}
+    {#        $(`#order_form_product_${currentRowIdx}`).select2({#}
+    {#            ajax: {#}
+    {#                url: "{{ path('get_prostorije_by_name') }}",#}
+    {#                type: "GET",#}
+    {#                dataType: 'json',#}
+    {#                delay: 50,#}
+    {#                data: function(params) {#}
+    {#                    return {#}
+    {#                        q: params.term, // search term#}
+    {#                        page: params.page#}
+    {#                    };#}
+    {#                },#}
+    {#                processResults: function(data, params) {#}
+    {#                    params.page = params.page || 1;#}
+    {#                    return {#}
+    {#                        results: data.results,#}
+    {#                        pagination: {#}
+    {#                            more: (params.page * 30) < data.total_count#}
+    {#                        }#}
+    {#                    };#}
+    {#                },#}
+    {#                cache: true#}
+    {#            },#}
+    {#            escapeMarkup: function(markup) { return markup; },#}
+    {#            minimumInputLength: 3,#}
+    {#            templateResult: formatRepo,#}
+    {#            templateSelection: formatRepoSelection,#}
+    {#            language: {#}
+    {#                searching: function() {#}
+    {#                    return "Pretraživanje...";#}
+    {#                },#}
+    {#                inputTooShort: function(args) {#}
+    {#                    var remainingChars = args.minimum - args.input.length;#}
+    {#                    return "Molimo vas unesite još " + remainingChars + " znakova";#}
+    {#                },#}
+    {#                noResults: function() {#}
+    {#                    return "Nema rezultata";#}
+    {#                },#}
+    {#                loadingMore: function() {#}
+    {#                    return "Učitavanje još rezultata...";#}
+    {#                },#}
+    {#                errorLoading: function() {#}
+    {#                    return "Greška pri učitavanju rezultata";#}
+    {#                },#}
+    {#                maximumSelected: function(args) {#}
+    {#                    return "Možete izabrati samo " + args.maximum + " stavki";#}
+    {#                }#}
+    {#            },#}
+    {#        });#}
+
+    {#    });#}
+
+    {#        $('#tbody').on('click', '.remove', function(e) {#}
+    {#            e.preventDefault();#}
+
+    {#            // Pronađi glavni red#}
+    {#            let mainRow = $(this).closest('tr');#}
+    {#            let mainRowId = mainRow.attr('id');#}
+
+    {#            // Ukloni sve sub-row redove koji imaju data-parent = ID glavnog reda#}
+    {#            $(`tr.sub-row[data-parent="${mainRowId}"]`).remove();#}
+
+    {#            // Ukloni i glavni red#}
+    {#            mainRow.remove();#}
+    {#        });#}
+
+
+    {#        function formatRepo(repo) {#}
+    {#            if (repo.loading) return repo.text;#}
+
+    {#            var markup = '<div class="select2-result-repository clearfix">' +#}
+    {#                '<div class="select2-result-repository__title">' +#}
+    {#                repo.text +#}
+    {#                '</div>' +#}
+    {#                '</div>';#}
+
+    {#            return markup;#}
+    {#        }#}
+
+
+    {#        function formatRepoSelection(repo) {#}
+    {#            return repo.text || repo.id;#}
+    {#        }#}
+
+    {#        $('#tbody').on('click', '.add-subrow-btn', function(e) {#}
+    {#            e.preventDefault();#}
+    {#            let mainRow = $(this).closest('tr');#}
+    {#            let mainRowId = mainRow.attr('id');#}
+
+    {#            let subRow = `#}
+    {#    <tr class="sub-row" data-parent="${mainRowId}">#}
+    {#        <td>#}
+    {#            <div class="row">#}
+    {#                <div class="col-lg-12">#}
+    {#                    <div class="mb-3">#}
+    {#                        <label class="form-label">Zid:</label>#}
+    {#                        <input id="zid_${mainRowId}" name="zid[${mainRowId}][title]" class="form-control disable-input" type="text" value="">#}
+    {#                    </div>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#        </td>#}
+    {#        <td>#}
+    {#            <div class="row">#}
+    {#                <div class="col-lg-12">#}
+    {#                    <div class="mb-3">#}
+    {#                        <label class="form-label">Unos:</label>#}
+    {#                        <input id="zid_${mainRowId}" name="zid[${mainRowId}][unos]" class="form-control" type="number" min="0.01" step="0.01">#}
+    {#                    </div>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#        </td>#}
+
+
+    {#        <td class="text-center text-muted" style="width: 30px;"><a class="btn btn-danger btn-sm remove-subrow-btn mt-2" id="removeBtn"><i class="ph-trash text-danger"></i></a></td>#}
+
+    {#    </tr>#}
+    {#`;#}
+
+    {#            // Ubaci podred ispod glavnog reda#}
+    {#            mainRow.after(subRow);#}
+    {#        });#}
+    {#        $('#tbody').on('click', '.remove-subrow-btn', function(e) {#}
+    {#            e.preventDefault();#}
+    {#            $(this).closest('tr').remove();#}
+    {#        });#}
+
+    {#    });#}
+    </script>
+{% endblock footerJavascript %}

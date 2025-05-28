@@ -11,7 +11,10 @@ namespace App\Twig;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Availability;
 use App\Entity\Elaborat;
+use App\Entity\Lamela;
 use App\Entity\Project;
+use App\Entity\Projekat;
+use App\Entity\Sprat;
 use App\Entity\Task;
 use App\Entity\TaskLog;
 use App\Entity\TimeTask;
@@ -47,6 +50,7 @@ class AppExtension extends AbstractExtension {
       new TwigFunction('getLogStatus', [$this, 'getLogStatus']),
       new TwigFunction('getTaskStatus', [$this, 'getTaskStatus']),
       new TwigFunction('getLogStatusByUser', [$this, 'getLogStatusByUser']),
+      new TwigFunction('getUserById', [$this, 'getUserById']),
       new TwigFunction('getDostupnostByUserSutra', [$this, 'getDostupnostByUserSutra']),
       new TwigFunction('getDostupnostByUser', [$this, 'getDostupnostByUser']),
       new TwigFunction('getDostupnostByUserId', [$this, 'getDostupnostByUserId']),
@@ -54,6 +58,9 @@ class AppExtension extends AbstractExtension {
       new TwigFunction('getCountDaysTasksByProject', [$this, 'getCountDaysTasksByProject']),
       new TwigFunction('getTekuciPoslovi', [$this, 'getTekuciPoslovi']),
       new TwigFunction('getDeadlineCounter', [$this, 'getDeadlineCounter']),
+      new TwigFunction('getDeadlineCounterProjekat', [$this, 'getDeadlineCounterProjekat']),
+      new TwigFunction('getDeadlineCounterLamela', [$this, 'getDeadlineCounterLamela']),
+      new TwigFunction('getDeadlineCounterSprat', [$this, 'getDeadlineCounterSprat']),
     ];
   }
 
@@ -84,6 +91,11 @@ class AppExtension extends AbstractExtension {
   public function getDostupnostByUser(User $user): ?int {
     return $this->entityManager->getRepository(Availability::class)->getDostupnostByUserTwig($user);
   }
+
+    public function getUserById(int $id): ?string {
+        $user = $this->entityManager->getRepository(User::class)->find($id);
+        return $user->getFullName();
+    }
 
   public function getTekuciPoslovi(User $user): bool {
     $task = $this->entityManager->getRepository(TimeTask::class)->findOneBy(['user' => $user, 'finish' => null]);
@@ -118,5 +130,16 @@ class AppExtension extends AbstractExtension {
   public function getDeadlineCounter(int $id): array {
     return $this->entityManager->getRepository(Elaborat::class)->getDeadlineCounter($id);
   }
+
+    public function getDeadlineCounterLamela(int $id): array {
+        return $this->entityManager->getRepository(Lamela::class)->getDeadlineCounter($id);
+    }
+
+    public function getDeadlineCounterProjekat(int $id): array {
+        return $this->entityManager->getRepository(Projekat::class)->getDeadlineCounter($id);
+    }
+    public function getDeadlineCounterSprat(int $id): array {
+        return $this->entityManager->getRepository(Sprat::class)->getDeadlineCounter($id);
+    }
 
 }

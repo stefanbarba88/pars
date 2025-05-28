@@ -18,6 +18,8 @@ use App\Entity\ManagerChecklist;
 use App\Entity\Notes;
 use App\Entity\Overtime;
 use App\Entity\Project;
+use App\Entity\Projekat;
+use App\Entity\Prostorija;
 use App\Entity\Signature;
 use App\Entity\StopwatchTime;
 use App\Entity\Task;
@@ -114,6 +116,9 @@ class WidgetController extends AbstractController {
     }
 
 
+      $args['countProjekti'] = $this->em->getRepository(Projekat::class)->count([]);
+      $args['countAdminMerenja'] = $this->em->getRepository(Prostorija::class)->count(['isEdit' => true]);
+      $args['countZaMerenje'] = 0;
 
 
     $args['user'] = $loggedUser;

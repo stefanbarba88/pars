@@ -86,6 +86,9 @@ class Client implements JsonSerializable {
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: true)]
   private ?Company $company = null;
+
+  #[ORM\OneToMany(mappedBy: 'client', targetEntity: Projekat::class)]
+  private Collection $projekats;
   public function getCompany(): ?Company
   {
     return $this->company;
@@ -102,6 +105,7 @@ class Client implements JsonSerializable {
     $this->clientHistories = new ArrayCollection();
     $this->contact = new ArrayCollection();
     $this->stopwatchTimes = new ArrayCollection();
+    $this->projekats = new ArrayCollection();
   }
 
   #[ORM\PrePersist]
@@ -386,6 +390,36 @@ class Client implements JsonSerializable {
           // set the owning side to null (unless already changed)
           if ($stopwatchTime->getClient() === $this) {
               $stopwatchTime->setClient(null);
+          }
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Projekat>
+   */
+  public function getProjekats(): Collection
+  {
+      return $this->projekats;
+  }
+
+  public function addProjekat(Projekat $projekat): self
+  {
+      if (!$this->projekats->contains($projekat)) {
+          $this->projekats->add($projekat);
+          $projekat->setClient($this);
+      }
+
+      return $this;
+  }
+
+  public function removeProjekat(Projekat $projekat): self
+  {
+      if ($this->projekats->removeElement($projekat)) {
+          // set the owning side to null (unless already changed)
+          if ($projekat->getClient() === $this) {
+              $projekat->setClient(null);
           }
       }
 

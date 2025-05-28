@@ -140,8 +140,8 @@ class EmployeeController extends AbstractController {
                     $this->em->getRepository(User::class)->save($zaposleni);
                 }
             }
-
-            return $this->render('employee/list_project_control.html.twig', $args);
+            return $this->redirectToRoute('app_employees_project_type');
+//      return $this->render('employee/list_project_control.html.twig', $args);
 
         }
 

@@ -139,6 +139,38 @@
                         </a>
                     </li>
 
+                    <li class="nav-item-header">
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Projekti elaborati</div>
+                        <i class="ph-dots-three sidebar-resize-show"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_projekats') }}" class="nav-link {{ current_route == 'app_projekats' ? 'active' : '' }}">
+                            <i class="ph-clipboard-text"></i>
+                            <span>Lista</span>
+                            {% if countProjekti > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjekti }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{{ path('app_prostorije_check') }}" class="nav-link {{ current_route == 'app_prostorije_check' ? 'active' : '' }}">
+                            <i class="ph-warning-circle"></i>
+                            <span>Nepotpuna merenja</span>
+                            {% if countAdminMerenja > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countAdminMerenja }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{{ path('app_prostorije_merenje') }}" class="nav-link {{ current_route == 'app_prostorije_merenje' ? 'active' : '' }}">
+                            <i class="ph-spinner-gap"></i>
+                            <span>Neizmerene prostorija</span>
+                            {% if countZaMerenje > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countZaMerenje }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{{ path('app_codes') }}" class="nav-link {{ current_route == 'app_codes' ? 'active' : '' }}">
+                            <i class="ph-barcode"></i>
+                            <span>Šifarnik prostorija</span>
+
+                        </a>
+                    </li>
                     <!-- /taskovi -->
 
                     <li class="nav-item-header">
@@ -885,6 +917,41 @@
                             {% if countCommentsActive > 0 %}
                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countCommentsActive }}</span>
                             {% endif %}
+                        </a>
+                    </li>
+
+
+                    <!-- Komentari -->
+                    <li class="nav-item-header">
+                        <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Projekti elaborati</div>
+                        <i class="ph-dots-three sidebar-resize-show"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_projekats') }}" class="nav-link {{ current_route == 'app_projekats' ? 'active' : '' }}">
+                            <i class="ph-clipboard-text"></i>
+                            <span>Lista</span>
+                            {% if countProjekti > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjekti }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{{ path('app_prostorije_check') }}" class="nav-link {{ current_route == 'app_prostorije_check' ? 'active' : '' }}">
+                            <i class="ph-warning-circle"></i>
+                            <span>Nepotpuna merenja</span>
+                            {% if countAdminMerenja > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countAdminMerenja }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{{ path('app_prostorije_merenje') }}" class="nav-link {{ current_route == 'app_prostorije_merenje' ? 'active' : '' }}">
+                            <i class="ph-spinner-gap"></i>
+                            <span>Neizmerene prostorije</span>
+                            {% if countZaMerenje > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countZaMerenje }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{{ path('app_codes') }}" class="nav-link {{ current_route == 'app_codes' ? 'active' : '' }}">
+                            <i class="ph-barcode"></i>
+                            <span>Šifarnik prostorija</span>
+
                         </a>
                     </li>
 

@@ -25,7 +25,16 @@ class Stan {
 
     #[ORM\Column(nullable: true)]
     private ?float $percent = null;
+    #[ORM\Column(nullable: true)]
+    private ?float $povrsina = null;
 
+    public function getPovrsina(): ?float {
+        return $this->povrsina;
+    }
+
+    public function setPovrsina(?float $povrsina): void {
+        $this->povrsina = $povrsina;
+    }
 
     #[ORM\Column(type: Types::TEXT, nullable: true,)]
     private ?string $description = null;
@@ -40,15 +49,18 @@ class Stan {
     #[ORM\JoinColumn(nullable: false)]
     private ?Sprat $sprat = null;
 
-    #[ORM\ManyToOne(inversedBy: 'stans')]
-    private ?Image $image = null;
+
 
     #[ORM\OneToMany(mappedBy: 'stan', targetEntity: Prostorija::class, cascade: ['persist'])]
     private Collection $prostorijas;
 
+    #[ORM\OneToMany(mappedBy: 'stan', targetEntity: Image::class, cascade: ["persist", "remove"])]
+    private Collection $image;
+
     public function __construct()
     {
         $this->prostorijas = new ArrayCollection();
+        $this->image = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -76,15 +88,6 @@ class Stan {
         return $this;
     }
 
-    public function getImage(): ?Image {
-        return $this->image;
-    }
-
-    public function setImage(?Image $image): self {
-        $this->image = $image;
-
-        return $this;
-    }
 
     public function getTitle(): ?string {
         return $this->title;
@@ -158,6 +161,36 @@ class Stan {
             // set the owning side to null (unless already changed)
             if ($prostorija->getStan() === $this) {
                 $prostorija->setStan(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getImage(): Collection
+    {
+        return $this->image;
+    }
+
+    public function addImage(Image $image): self
+    {
+        if (!$this->image->contains($image)) {
+            $this->image->add($image);
+            $image->setStan($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): self
+    {
+        if ($this->image->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getStan() === $this) {
+                $image->setStan(null);
             }
         }
 

@@ -95,6 +95,33 @@ class ProjekatController extends AbstractController {
       return $this->render('projekat/prostorije_check_list.html.twig', $args);
     }
 
+    #[Route('/list-plan/', name: 'app_prostorije_plan')]
+    public function listPlan(PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $korisnik = $this->getUser();
+        $search = [];
+        $search['projekat'] = $request->query->get('projekat');
+        $projekti = $this->em->getRepository(Prostorija::class)->getProstorijePlan($search, $korisnik);
+
+        $pagination = $paginator->paginate(
+            $projekti, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            15
+        );
+        $session = new Session();
+        $session->set('url', $request->getRequestUri());
+        $args['pagination'] = $pagination;
+        $args['projekti'] = $this->em->getRepository(Projekat::class)->findBy([],['title' => 'ASC']);
+        $mobileDetect = new MobileDetect();
+        if($mobileDetect->isMobile()) {
+            return $this->render('projekat/phone/prostorije_plan_list.html.twig', $args);
+        }
+
+        return $this->render('projekat/prostorije_plan_list.html.twig', $args);
+    }
     #[Route('/list-prostorija/', name: 'app_prostorije_merenje')]
     public function listMerenje(PaginatorInterface $paginator, Request $request): Response {
         if (!$this->isGranted('ROLE_USER')) {
@@ -198,6 +225,7 @@ class ProjekatController extends AbstractController {
     $args['projekat'] = $projekat;
     $args['lamele'] = $projekat->getLamelas()->toArray();
     $args['obrada'] = [];
+    $args['povrsina'] = $this->em->getRepository(Prostorija::class)->getProjekatPovrsina($projekat);
 
     if (!is_null($projekat->getZaposleni())) {
         foreach ($projekat->getZaposleni() as $id) {
@@ -318,8 +346,8 @@ class ProjekatController extends AbstractController {
 
         $args['spratovi'] = $lamela->getSprats()->toArray();
         $args['lamela'] = $lamela;
+        $args['povrsina'] = $this->em->getRepository(Prostorija::class)->getLamelaPovrsina($lamela);
 
-        $mobileDetect = new MobileDetect();
 
         return $this->render('projekat/lamela_view.html.twig', $args);
 
@@ -377,7 +405,6 @@ class ProjekatController extends AbstractController {
 
 
     }
-
 
     #[Route('/form-sprat/{id}', name: 'app_sprat_form', defaults: ['id' => 0])]
     #[Entity('sprat', expr: 'repository.findForForm(id)')]
@@ -500,7 +527,7 @@ class ProjekatController extends AbstractController {
 
         $args['sprat'] = $sprat;
         $args['stanovi'] = $sprat->getStans()->toArray();
-
+        $args['povrsina'] = $this->em->getRepository(Prostorija::class)->getSpratPovrsina($sprat);
 
         return $this->render('projekat/sprat_view.html.twig', $args);
 
@@ -575,7 +602,6 @@ class ProjekatController extends AbstractController {
             }
         }
 
-        $sprat = $this->em->getRepository(Sprat::class)->find($request->get('sprat'));
 
         $form = $this->createForm(StanFormType::class, $stan, ['attr' => ['action' => $this->generateUrl('app_stan_form', ['id' => $stan->getId(), 'sprat' => $sprat->getId()])]]);
         if ($request->isMethod('POST')) {
@@ -589,7 +615,7 @@ class ProjekatController extends AbstractController {
                 $zidovi = $request->get('zid') ?? [];
                 $rezultat = [];
                 $i = 0;
-//                dd($products, $zidovi);
+
                 foreach ($products as $prostorijaIndex => $productData) {
 
                     $zidKey = "prostorija_$prostorijaIndex";
@@ -604,30 +630,41 @@ class ProjekatController extends AbstractController {
 
                         }
                     }
+                    $rezultat[$i]['povrsina'] = $productData['povrsina'];
                     $i++;
                 }
 
+                $pros = 0;
+
                 foreach ($rezultat as $key1 => $value1) {
                     foreach ($value1 as $key => $value) {
-                        $code = $this->em->getRepository(Sifarnik::class)->find($key);
-                        $prostorija = new Prostorija();
-                        $prostorija->setStan($stan);
-                        $prostorija->setCode($code);
-                        $prostorija->setTitle($code->getTitle());
-                        $prostorija->setArchive($value);
-                        $stan->addProstorija($prostorija);
+                        if (is_array($value)) {
+                            $code = $this->em->getRepository(Sifarnik::class)->find($key);
+                            $prostorija = new Prostorija();
+                            $prostorija->setStan($stan);
+                            $prostorija->setCode($code);
+                            $prostorija->setTitle($code->getTitle());
+                            $prostorija->setArchive($value);
+                            $prostorija->setPovrs($value1['povrsina']);
+                            $stan->addProstorija($prostorija);
+                            $pros++;
+                        }
                     }
                 }
 
-                $file = $request->files->all()['stan_form']['image'];
-                if (!is_null($file)) {
-                    $file = $uploadService->upload($file, $stan->getSprat()->getLamela()->getProjekat()->getUploadPath());
-                    $image = $this->em->getRepository(Image::class)->addImage($file, $stan->getSprat()->getLamela()->getProjekat()->getThumbUploadPath(), $this->getParameter('kernel.project_dir'));
-                    $stan->setImage($image);
+                $stan->setStanje('0/' . $pros);
+                $stan->setPercent(0);
+                $files = $request->files->all()['stan_form']['image'];
+
+                if (!is_null($files)) {
+                    foreach ($files as $file) {
+                        $file = $uploadService->upload($file, $stan->getSprat()->getLamela()->getProjekat()->getUploadPath());
+                        $image = $this->em->getRepository(Image::class)->addImage($file, $stan->getSprat()->getLamela()->getProjekat()->getThumbUploadPath(), $this->getParameter('kernel.project_dir'));
+                        $stan->addImage($image);
+                    }
                 }
 
-                $stan->setStanje('0/' . count($rezultat));
-                $stan->setPercent(0);
+
 
                 $this->em->getRepository(Stan::class)->save($stan);
 
@@ -744,20 +781,42 @@ class ProjekatController extends AbstractController {
 
                         }
                     }
+                    $rezultat[$i]['povrsina'] = $productData['povrsina'];
                     $i++;
                 }
 
+                
+
+
                 foreach ($rezultat as $key1 => $value1) {
                     foreach ($value1 as $key => $value) {
-                        $code = $this->em->getRepository(Sifarnik::class)->find($key);
-                        $prostorija = new Prostorija();
-                        $prostorija->setStan($stan);
-                        $prostorija->setCode($code);
-                        $prostorija->setTitle($code->getTitle());
-                        $prostorija->setArchive($value);
-                        $stan->addProstorija($prostorija);
+                        if (is_array($value)) {
+                            $code = $this->em->getRepository(Sifarnik::class)->find($key);
+                            $prostorija = new Prostorija();
+                            $prostorija->setStan($stan);
+                            $prostorija->setCode($code);
+                            $prostorija->setTitle($code->getTitle());
+                            $prostorija->setArchive($value);
+                            $prostorija->setPovrs($value1['povrsina']);
+                            $stan->addProstorija($prostorija);
+                        }
                     }
                 }
+                $rezultat = array_values(array_filter($rezultat, function ($element) {
+
+                    if (!is_array($element)) {
+                        return false;
+                    }
+
+                    $brojPodnizova = 0;
+                    foreach ($element as $vrednost) {
+                        if (is_array($vrednost)) {
+                            $brojPodnizova++;
+                        }
+                    }
+
+                    return $brojPodnizova > 0;
+                }));
 
                 $stanStanje = $stan->getStanje();
 
@@ -871,13 +930,31 @@ class ProjekatController extends AbstractController {
 
             if ($form->isSubmitted() && $form->isValid()) {
 
+                $deleteImages = $request->request->all()['image_delete'];
+                foreach ($deleteImages as $image) {
+                    if (isset($image['checked'])) {
+                        $image = $this->em->getRepository(Image::class)->find($image['value']);
+                        $stan->removeImage($image);
+                    }
+                }
+
+                $slike = $request->files->all()['stan_slika_form']['image'];
+                if (!empty($slike)) {
+                    foreach ($slike as $document) {
+                        $image = $uploadService->upload($document, $stan->getSprat()->getLamela()->getProjekat()->getUploadPath());
+                        $image = $this->em->getRepository(Image::class)->addImage($image, $stan->getSprat()->getLamela()->getProjekat()->getThumbUploadPath(), $this->getParameter('kernel.project_dir'));
+                        $stan->addImage($image);
+                    }
+                }
+
+
                 $file = $request->files->all()['stan_slika_form']['image'];
 
-                if (!is_null($file)) {
-                    $file = $uploadService->upload($file, $stan->getSprat()->getLamela()->getProjekat()->getUploadPath());
-                    $image = $this->em->getRepository(Image::class)->addImage($file, $stan->getSprat()->getLamela()->getProjekat()->getThumbUploadPath(), $this->getParameter('kernel.project_dir'));
-                    $stan->setImage($image);
-                }
+//                if (!is_null($file)) {
+//                    $file = $uploadService->upload($file, $stan->getSprat()->getLamela()->getProjekat()->getUploadPath());
+//                    $image = $this->em->getRepository(Image::class)->addImage($file, $stan->getSprat()->getLamela()->getProjekat()->getThumbUploadPath(), $this->getParameter('kernel.project_dir'));
+//                    $stan->setImage($image);
+//                }
 
                 $this->em->getRepository(Stan::class)->save($stan);
 
@@ -901,7 +978,7 @@ class ProjekatController extends AbstractController {
 
     #[Route('/view-stan/{id}', name: 'app_stan_view')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
-    public function viewStan(stan $stan, PaginatorInterface $paginator, Request $request): Response {
+    public function viewStan(Stan $stan, PaginatorInterface $paginator, Request $request): Response {
         if (!$this->isGranted('ROLE_USER')) {
             return $this->redirect($this->generateUrl('app_login'));
         }
@@ -916,6 +993,8 @@ class ProjekatController extends AbstractController {
         }
 
         $args['stan'] = $stan;
+        $args['povrsina'] = $this->em->getRepository(Prostorija::class)->getStanPovrsina($stan);
+
         $prostorije = $stan->getProstorijas()->toArray();
 //    $projekti = $this->em->getRepository(Projekat::class)->findAll();
 
@@ -932,6 +1011,160 @@ class ProjekatController extends AbstractController {
         }
 
         return $this->render('projekat/stan_view.html.twig', $args);
+
+    }
+
+    #[Route('/copy-stan/{id}', name: 'app_stan_copy', defaults: ['id' => 0])]
+    #[Entity('stan', expr: 'repository.findForForm(id)')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function copyStan(Stan $stan, PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $args = [];
+        $sprat = $this->em->getRepository(Sprat::class)->find($request->get('sprat'));
+
+
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+            if (!in_array($korisnik->getId(), (array)$stan->getSprat()->getLamela()->getProjekat()->getZaposleni())) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+
+        if ($request->isMethod('POST')) {
+                $sprat = $this->em->getRepository(Sprat::class)->find($request->get('spratcopy'));
+                $stan->setSprat($sprat);
+                $stanDb = $this->em->getRepository(Stan::class)->find($request->get('stancopy'));
+
+                $prostorijeDb = $stanDb->getProstorijas()->toArray();
+                $slikeDb = $stanDb->getImage()->toArray();
+
+
+
+               $stan->setPovrsina($request->get('povrsina'));
+               $stan->setTitle($request->get('novi'));
+
+               $pros = 0;
+
+               foreach ($prostorijeDb as $prostorijaDb) {
+                   $prostorija = new Prostorija();
+                   $prostorija->setStan($stan);
+                   $prostorija->setCode($prostorijaDb->getCode());
+                   $prostorija->setTitle($prostorijaDb->getCode()->getTitle());
+                   $prostorija->setArchive($prostorijaDb->getArchive());
+                   $prostorija->setPovrs($prostorijaDb->getPovrs());
+                   $stan->addProstorija($prostorija);
+                   $pros++;
+               }
+
+               $stan->setStanje('0/' . $pros);
+               $stan->setPercent(0);
+
+            foreach ($slikeDb as $slikaDb) {
+                $slika = new Image();
+                $slika->setThumbnail100($slikaDb->getThumbnail100());
+                $slika->setThumbnail500($slikaDb->getThumbnail500());
+                $slika->setThumbnail1024($slikaDb->getThumbnail1024());
+                $slika->setOriginal($slikaDb->getOriginal());
+                $stan->addImage($slika);
+            }
+
+
+                $this->em->getRepository(Stan::class)->save($stan);
+
+
+                //nivo sprata
+                $sprStanje = $sprat->getStanje();
+
+                list($a1, $a2) = explode('/', $sprStanje);
+                list($b1, $b2) = explode('/', $stan->getStanje());
+
+                $sum1 = (int)$a1 + (int)$b1;
+                $sum2 = (int)$a2 + (int)$b2;
+
+                $sprStanje = "{$sum1}/{$sum2}";
+                $sprat->setStanje($sprStanje);
+                if ($sum2 > 0) {
+                    $sprProcenat = round(($sum1 / $sum2) * 100, 2);
+                    $sprat->setPercent($sprProcenat);
+                }
+                $this->em->getRepository(Sprat::class)->save($sprat);
+
+                //nivo lamele
+                $lamela = $sprat->getLamela();
+                $lamStanje = $lamela->getStanje();
+
+                list($a1, $a2) = explode('/', $lamStanje);
+                list($b1, $b2) = explode('/', $stan->getStanje());
+
+                $sum1 = (int)$a1 + (int)$b1;
+                $sum2 = (int)$a2 + (int)$b2;
+
+                $lamStanje = "{$sum1}/{$sum2}";
+                $lamela->setStanje($lamStanje);
+                if ($sum2 > 0) {
+                    $lamProcenat = round(($sum1 / $sum2) * 100, 2);
+                    $lamela->setPercent($lamProcenat);
+                }
+                $this->em->getRepository(Lamela::class)->save($lamela);
+
+                //nivo projekat
+                $projekat = $lamela->getProjekat();
+                $projStanje = $projekat->getStanje();
+
+                list($a1, $a2) = explode('/', $projStanje);
+                list($b1, $b2) = explode('/', $stan->getStanje());
+
+                $sum1 = (int)$a1 + (int)$b1;
+                $sum2 = (int)$a2 + (int)$b2;
+
+                $projStanje = "{$sum1}/{$sum2}";
+                $projekat->setStanje($projStanje);
+                if ($sum2 > 0) {
+                    $projProcenat = round(($sum1 / $sum2) * 100, 2);
+                    $projekat->setPercent($projProcenat);
+                }
+                $this->em->getRepository(Projekat::class)->save($projekat);
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+                return $this->redirectToRoute('app_stan_view', ['id' => $stan->getId()]);
+
+
+        }
+
+
+        $args['stanovi'] = [];
+        $args['sprat'] = $sprat;
+        $args['stan'] = $stan;
+        $projekat = $sprat->getLamela()->getProjekat();
+        foreach ($projekat->getLamelas() as $lamela) {
+            foreach ($lamela->getSprats() as $sprat) {
+                foreach ($sprat->getStans() as $stan) {
+                    $args['stanovi'][] = [
+                        'id' => $stan->getId(),
+                        'title' => $stan->getTitle(),
+                        'sprat' => $stan->getSprat()->getTitle(),
+                        'povrsina' => $stan->getPovrsina(),
+                    ];
+                }
+            }
+        }
+
+
+
+//        $mobileDetect = new MobileDetect();
+//        if($mobileDetect->isMobile()) {
+//            return $this->render('projekat/phone/stan_view.html.twig', $args);
+//        }
+
+        return $this->render('projekat/stan_copy.html.twig', $args);
 
     }
 
@@ -978,11 +1211,6 @@ class ProjekatController extends AbstractController {
 
             return $this->redirectToRoute('app_sprat_view', ['id' => $sprat->getId()]);
         }
-
-
-
-
-
     }
 
     #[Route('/delete-prostorija/{id}', name: 'app_prostorija_delete', defaults: ['id' => 0])]
@@ -1001,7 +1229,7 @@ class ProjekatController extends AbstractController {
 
         $stan = $prostorija->getStan();
 
-        if (!is_null($prostorija->getUnos1()) && !is_null($prostorija->getUnos2()) && !is_null($prostorija->getUnos3())) {
+        if ((!is_null($prostorija->getUnos1()) && !is_null($prostorija->getUnos2()) && !is_null($prostorija->getUnos3())) || (!is_null($prostorija->getUnos1()) && !is_null($prostorija->getUnos2()) && is_null($prostorija->getUnos3()))) {
             $stanje = '-1/-1';
 
         } else {
@@ -1049,9 +1277,12 @@ class ProjekatController extends AbstractController {
         if ($sum2 > 0) {
             $stanProcenat = round(($sum1 / $sum2) * 100, 2);
             $stan->setPercent($stanProcenat);
+        } else {
+            $stan->setPercent(0);
         }
 
-
+        $razlika = $prostorija->getPovrs();
+        $stan->setPovrsina($stan->getPovrsina() - $razlika);
 
         $stan->removeProstorija($prostorija);
         $this->em->getRepository(Prostorija::class)->remove($prostorija);
@@ -1073,6 +1304,8 @@ class ProjekatController extends AbstractController {
                 if ($sum2 > 0) {
                     $sprProcenat = round(($sum1 / $sum2) * 100, 2);
                     $sprat->setPercent($sprProcenat);
+                } else {
+                    $sprat->setPercent(0);
                 }
                 $this->em->getRepository(Sprat::class)->save($sprat);
 
@@ -1091,6 +1324,8 @@ class ProjekatController extends AbstractController {
                 if ($sum2 > 0) {
                     $lamProcenat = round(($sum1 / $sum2) * 100, 2);
                     $lamela->setPercent($lamProcenat);
+                } else {
+                    $lamela->setPercent(0);
                 }
                 $this->em->getRepository(Lamela::class)->save($lamela);
 
@@ -1109,6 +1344,8 @@ class ProjekatController extends AbstractController {
                 if ($sum2 > 0) {
                     $projProcenat = round(($sum1 / $sum2) * 100, 2);
                     $projekat->setPercent($projProcenat);
+                } else {
+                    $projekat->setPercent(0);
                 }
                 $this->em->getRepository(Projekat::class)->save($projekat);
 
@@ -1143,13 +1380,20 @@ class ProjekatController extends AbstractController {
                 $form->handleRequest($request);
 
                 if ($form->isSubmitted() && $form->isValid()) {
-
-                    $prostorija->setArchive($request->get('zid')[0]);
+                    $zid = $request->get('zid');
+                    if (!is_null($zid)) {
+                        $prostorija->setArchive($request->get('zid')[0]);
+                    }
+                    $razlika = $request->get('razlika');
+                    $stan = $prostorija->getStan();
+                    $stan->setPovrsina($stan->getPovrsina() + $razlika);
                     $this->em->getRepository(Prostorija::class)->save($prostorija);
+                    $this->em->getRepository(Stan::class)->save($stan);
                     return $this->redirectToRoute('app_stan_view', ['id' => $prostorija->getStan()->getId()]);
 
                 }
             }
+
             $args['form'] = $form->createView();
             $args['prostorija'] = $prostorija;
             $args['stan'] = $prostorija->getStan();
@@ -1217,7 +1461,7 @@ class ProjekatController extends AbstractController {
                             $staro = number_format((float)$zid['merenje'], 2, '.', '');
                             $novo = number_format((float)$unos2[$key]['merenje'], 2, '.', '');
 
-                            if (bccomp($staro, $novo, 2) !== 0) {
+                            if (round($staro, 2) !== round($novo, 2)) {
                                 $isti = false;
                                 break; // nije isto, nema potrebe da nastavljaš
                             }
@@ -1231,6 +1475,7 @@ class ProjekatController extends AbstractController {
                     $unos2 = [];
                     $isti = true;
                     $prostorija->setIsCustom(true);
+                    $prostorija->setIsPlan(true);
                     foreach ($custom as $stavka) {
                         $zid = $stavka['zid'] ?? null;
 
@@ -1270,7 +1515,7 @@ class ProjekatController extends AbstractController {
                             $staro = number_format((float)$zid['merenje'], 2, '.', '');
                             $novo = number_format((float)$unos2[$key]['merenje'], 2, '.', '');
 
-                            if (bccomp($staro, $novo, 2) !== 0) {
+                            if (round($staro, 2) !== round($novo, 2)) {
                                 $isti = false;
                                 break; // nije isto, nema potrebe da nastavljaš
                             }
@@ -1376,6 +1621,10 @@ class ProjekatController extends AbstractController {
                 ];
 
                 $prostorija->setUnos1($unosData1);
+
+                if ($prostorija->isRepeat()) {
+                    $prostorija->setIsRepeat(false);
+                }
 
                 $this->em->getRepository(Prostorija::class)->save($prostorija);
 
@@ -1535,7 +1784,7 @@ class ProjekatController extends AbstractController {
                             $staro = number_format((float)$zid['merenje'], 2, '.', '');
                             $novo = number_format((float)$unos2[$key]['merenje'], 2, '.', '');
 
-                            if (bccomp($staro, $novo, 2) !== 0) {
+                            if (round($staro, 2) !== round($novo, 2)) {
                                 $isti = false;
                                 break; // nije isto, nema potrebe da nastavljaš
                             }
@@ -1549,6 +1798,7 @@ class ProjekatController extends AbstractController {
                     $unos2 = [];
                     $isti = true;
                     $prostorija->setIsCustom(true);
+                    $prostorija->setIsPlan(true);
                     foreach ($custom as $stavka) {
                         $zid = $stavka['zid'] ?? null;
 
@@ -1588,7 +1838,7 @@ class ProjekatController extends AbstractController {
                             $staro = number_format((float)$zid['merenje'], 2, '.', '');
                             $novo = number_format((float)$unos2[$key]['merenje'], 2, '.', '');
 
-                            if (bccomp($staro, $novo, 2) !== 0) {
+                            if (round($staro, 2) !== round($novo, 2)) {
                                 $isti = false;
                                 break; // nije isto, nema potrebe da nastavljaš
                             }
@@ -1785,9 +2035,19 @@ class ProjekatController extends AbstractController {
         }
         $args = [];
         $korisnik = $this->getUser();
-        if (!in_array($korisnik, $prostorija->getStan()->getSprat()->getLamela()->getProjekat()->getAssigned()->toArray()) && $korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
-            return $this->redirect($this->generateUrl('app_home'));
+
+        if ($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+            if (!in_array($korisnik->getId(), (array)$prostorija->getStan()->getSprat()->getLamela()->getProjekat()->getZaposleni())) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
         }
+
+//        if (!in_array($korisnik, $prostorija->getStan()->getSprat()->getLamela()->getProjekat()->getAssigned()->toArray()) && $korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+//            return $this->redirect($this->generateUrl('app_home'));
+//        }
+//        if (!in_array($korisnik, $prostorija->getStan()->getSprat()->getLamela()->getProjekat()->getZaposleni()) && $korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+//            return $this->redirect($this->generateUrl('app_home'));
+//        }
         $form = $this->createForm(ProstorijaMerenjeFormType::class, $prostorija, ['attr' => ['action' => $this->generateUrl('app_prostorija_admin', ['id' => $prostorija->getId()])]]);
         if ($request->isMethod('POST')) {
 
@@ -1951,10 +2211,358 @@ class ProjekatController extends AbstractController {
 
 
         $args['prostorija'] = $prostorija;
+        $args['stan'] = $prostorija->getStan();
 
 
         return $this->render('projekat/prostorija_admin.html.twig', $args);
 
+    }
+
+    #[Route('/repeat-prostorija/{id}', name: 'app_prostorija_repeat')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function repeatProstorija(Prostorija $prostorija, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $korisnik = $this->getUser();
+
+        if ($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+            if (!in_array($korisnik->getId(), (array)$prostorija->getStan()->getSprat()->getLamela()->getProjekat()->getZaposleni())) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ((!is_null($prostorija->getUnos1()) && !is_null($prostorija->getUnos2()) && !is_null($prostorija->getUnos3())) || (!is_null($prostorija->getUnos1()) && !is_null($prostorija->getUnos2()) && is_null($prostorija->getUnos3()))) {
+            $stanje = '-1/0';
+
+        } else {
+            $stanje = '0/0';
+        }
+
+            $stan = $prostorija->getStan();
+            $stanStanje = $stan->getStanje();
+
+            list($a1, $a2) = explode('/', $stanStanje);
+            list($b1, $b2) = explode('/', $stanje);
+
+            $sum1 = (int)$a1 + (int)$b1;
+            $sum2 = (int)$a2 + (int)$b2;
+
+            $stanStanje = "{$sum1}/{$sum2}";
+            $stan->setStanje($stanStanje);
+            if ($sum2 > 0) {
+                $stanProcenat = round(($sum1 / $sum2) * 100, 2);
+                $stan->setPercent($stanProcenat);
+            } else {
+                $stan->setPercent(0);
+            }
+
+            $this->em->getRepository(Stan::class)->save($stan);
+
+
+            //nivo sprata
+            $sprat = $stan->getSprat();
+            $sprStanje = $sprat->getStanje();
+
+            list($a1, $a2) = explode('/', $sprStanje);
+            list($b1, $b2) = explode('/', $stanje);
+
+            $sum1 = (int)$a1 + (int)$b1;
+            $sum2 = (int)$a2 + (int)$b2;
+
+            $sprStanje = "{$sum1}/{$sum2}";
+            $sprat->setStanje($sprStanje);
+            if ($sum2 > 0) {
+                $sprProcenat = round(($sum1 / $sum2) * 100, 2);
+                $sprat->setPercent($sprProcenat);
+            } else {
+                $sprat->setPercent(0);
+            }
+            $this->em->getRepository(Sprat::class)->save($sprat);
+
+            //nivo lamele
+            $lamela = $sprat->getLamela();
+            $lamStanje = $lamela->getStanje();
+
+            list($a1, $a2) = explode('/', $lamStanje);
+            list($b1, $b2) = explode('/', $stanje);
+
+            $sum1 = (int)$a1 + (int)$b1;
+            $sum2 = (int)$a2 + (int)$b2;
+
+            $lamStanje = "{$sum1}/{$sum2}";
+            $lamela->setStanje($lamStanje);
+            if ($sum2 > 0) {
+                $lamProcenat = round(($sum1 / $sum2) * 100, 2);
+                $lamela->setPercent($lamProcenat);
+            } else {
+                $lamela->setPercent(0);
+            }
+            $this->em->getRepository(Lamela::class)->save($lamela);
+
+            //nivo projekat
+            $projekat = $lamela->getProjekat();
+            $projStanje = $projekat->getStanje();
+
+            list($a1, $a2) = explode('/', $projStanje);
+            list($b1, $b2) = explode('/', $stanje);
+
+            $sum1 = (int)$a1 + (int)$b1;
+            $sum2 = (int)$a2 + (int)$b2;
+
+            $projStanje = "{$sum1}/{$sum2}";
+            $projekat->setStanje($projStanje);
+            if ($sum2 > 0) {
+                $projProcenat = round(($sum1 / $sum2) * 100, 2);
+                $projekat->setPercent($projProcenat);
+            } else {
+                $projekat->setPercent(0);
+            }
+            $this->em->getRepository(Projekat::class)->save($projekat);
+
+
+        $prostorija->setIsRepeat(true);
+
+
+        $prostorija->setUnos1(null);
+        $prostorija->setUnos2(null);
+        $prostorija->setUnos3(null);
+
+        $prostorija->setOdstupanje(null);
+        $prostorija->setPovrsina(null);
+
+        $prostorija->setDijagonala1(null);
+        $prostorija->setDijagonala2(null);
+        $prostorija->setDijagonala3(null);
+        $prostorija->setDijagonala4(null);
+        $prostorija->setDescription1(null);
+
+        $prostorija->setIsEditManual(false);
+        $prostorija->setIsEdit(false);
+        $prostorija->setIsCustom(false);
+        $prostorija->setIsPlan(false);
+
+        $this->em->getRepository(Prostorija::class)->save($prostorija);
+
+
+
+        notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return $this->redirectToRoute('app_stan_view', ['id' => $prostorija->getStan()->getId()]);
+
+
+
+    }
+
+    #[Route('/plan-prostorija/{id}', name: 'app_prostorija_plan')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function planProstorija(Prostorija $prostorija, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $korisnik = $this->getUser();
+
+        if ($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+            if (!in_array($korisnik->getId(), (array)$prostorija->getStan()->getSprat()->getLamela()->getProjekat()->getZaposleni())) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+
+        $prostorija->setIsPlan(false);
+
+        $this->em->getRepository(Prostorija::class)->save($prostorija);
+
+
+
+        notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+        return $this->redirectToRoute('app_prostorije_plan');
+
+
+
+    }
+
+    #[Route('/create-prostorija/{id}', name: 'app_prostorija_create')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function createProstorija(Stan $stan, Request $request)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+            if (!in_array($korisnik->getId(), (array)$stan->getSprat()->getLamela()->getProjekat()->getZaposleni())) {
+                if (!in_array($korisnik, (array)$stan->getSprat()->getLamela()->getProjekat()->getAssigned()->toArray())) {
+                    return $this->redirect($this->generateUrl('app_home'));
+                }
+            }
+        }
+
+
+        $form = $this->createForm(StanFormType::class, $stan, ['attr' => ['action' => $this->generateUrl('app_stan_edit', ['id' => $stan->getId()])]]);
+        if ($request->isMethod('POST')) {
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $products = $request->get('edit_order_products_form')['product'] ?? [];
+                $zidovi = $request->get('zid') ?? [];
+                $rezultat = [];
+
+                $i = 0;
+
+                foreach ($products as $prostorijaIndex => $productData) {
+
+                    $zidKey = "prostorija_$prostorijaIndex";
+
+                    if (isset($zidovi[$zidKey])) {
+                        foreach ($zidovi[$zidKey] as $zid) {
+                            $rezultat[$i][$productData['product']][] = [
+                                'zid' => $zid['title'] ?? '',
+                                'unos' => $zid['unos'] ?? '',
+                                'dir' => $zid['dir'] ?? '',
+                            ];
+
+                        }
+                    }
+                    $rezultat[$i]['povrsina'] = $productData['povrsina'];
+                    $i++;
+                }
+
+
+
+
+                foreach ($rezultat as $key1 => $value1) {
+                    foreach ($value1 as $key => $value) {
+                        if (is_array($value)) {
+                            $code = $this->em->getRepository(Sifarnik::class)->find($key);
+                            $prostorija = new Prostorija();
+                            $prostorija->setStan($stan);
+                            $prostorija->setCode($code);
+                            $prostorija->setTitle($code->getTitle());
+                            $prostorija->setArchive($value);
+                            $prostorija->setPovrs($value1['povrsina']);
+                            $stan->addProstorija($prostorija);
+                        }
+                    }
+                }
+                $rezultat = array_values(array_filter($rezultat, function ($element) {
+
+                    if (!is_array($element)) {
+                        return false;
+                    }
+
+                    $brojPodnizova = 0;
+                    foreach ($element as $vrednost) {
+                        if (is_array($vrednost)) {
+                            $brojPodnizova++;
+                        }
+                    }
+
+                    return $brojPodnizova > 0;
+                }));
+
+                $stanStanje = $stan->getStanje();
+
+                list($a1, $a2) = explode('/', $stanStanje);
+                list($b1, $b2) = explode('/', '0/' . count($rezultat));
+
+                $sum1 = (int)$a1 + (int)$b1;
+                $sum2 = (int)$a2 + (int)$b2;
+
+                $stanStanje = "{$sum1}/{$sum2}";
+                $stan->setStanje($stanStanje);
+                if ($sum2 > 0) {
+                    $stanProcenat = round(($sum1 / $sum2) * 100, 2);
+                    $stan->setPercent($stanProcenat);
+                }
+
+                $this->em->getRepository(Stan::class)->save($stan);
+
+
+                //nivo sprata
+                $sprat = $stan->getSprat();
+                $sprStanje = $sprat->getStanje();
+
+                list($a1, $a2) = explode('/', $sprStanje);
+                list($b1, $b2) = explode('/', '0/' . count($rezultat));
+
+                $sum1 = (int)$a1 + (int)$b1;
+                $sum2 = (int)$a2 + (int)$b2;
+
+                $sprStanje = "{$sum1}/{$sum2}";
+                $sprat->setStanje($sprStanje);
+                if ($sum2 > 0) {
+                    $sprProcenat = round(($sum1 / $sum2) * 100, 2);
+                    $sprat->setPercent($sprProcenat);
+                }
+                $this->em->getRepository(Sprat::class)->save($sprat);
+
+                //nivo lamele
+                $lamela = $sprat->getLamela();
+                $lamStanje = $lamela->getStanje();
+
+                list($a1, $a2) = explode('/', $lamStanje);
+                list($b1, $b2) = explode('/', '0/' . count($rezultat));
+
+                $sum1 = (int)$a1 + (int)$b1;
+                $sum2 = (int)$a2 + (int)$b2;
+
+                $lamStanje = "{$sum1}/{$sum2}";
+                $lamela->setStanje($lamStanje);
+                if ($sum2 > 0) {
+                    $lamProcenat = round(($sum1 / $sum2) * 100, 2);
+                    $lamela->setPercent($lamProcenat);
+                }
+                $this->em->getRepository(Lamela::class)->save($lamela);
+
+                //nivo projekat
+                $projekat = $lamela->getProjekat();
+                $projStanje = $projekat->getStanje();
+
+                list($a1, $a2) = explode('/', $projStanje);
+                list($b1, $b2) = explode('/', '0/' . count($rezultat));
+
+                $sum1 = (int)$a1 + (int)$b1;
+                $sum2 = (int)$a2 + (int)$b2;
+
+                $projStanje = "{$sum1}/{$sum2}";
+                $projekat->setStanje($projStanje);
+                if ($sum2 > 0) {
+                    $projProcenat = round(($sum1 / $sum2) * 100, 2);
+                    $projekat->setPercent($projProcenat);
+                }
+                $this->em->getRepository(Projekat::class)->save($projekat);
+
+                notyf()
+                    ->position('x', 'right')
+                    ->position('y', 'top')
+                    ->duration(5000)
+                    ->dismissible(true)
+                    ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
+
+                return $this->redirectToRoute('app_stan_view', ['id' => $stan->getId()]);
+
+            }
+        }
+        $args['form'] = $form->createView();
+
+        $args['stan'] = $stan;
+        $args['prostorije']= $stan->getProstorijas()->toArray();
+
+        return $this->render('projekat/prostorija_create.html.twig', $args);
     }
 
 }

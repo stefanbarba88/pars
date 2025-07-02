@@ -8,7 +8,17 @@
     <div class="page-content">
         {{ render(controller('App\\Controller\\WidgetController::adminMainSidebar', { '_route': app.request.attributes.get('_route') })) }}
         <!-- Main content -->
+<style>
+    #imageCarousel {
+        max-width: 400px;
+        margin: 0 auto;
+    }
 
+    #imageCarousel .card-img {
+        max-height: 400px;
+        object-fit: cover;
+    }
+</style>
         <div class="content-wrapper">
 
             <!-- Inner content -->
@@ -19,11 +29,22 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ stan.title }}: {{ prostorija.title }}
+                                Prostorija: {{ prostorija.title }}
                             </h4>
                         </div>
                     </div>
-
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_projekats') }}" class="breadcrumb-item">Projekti elaborati</a>
+                                <a href="{{ path('app_projekat_view', {id: prostorija.stan.sprat.lamela.projekat.id}) }}" class="breadcrumb-item">{{ prostorija.stan.sprat.lamela.projekat.title }}</a>
+                                <a href="{{ path('app_lamela_view', {id: prostorija.stan.sprat.lamela.id}) }}" class="breadcrumb-item">{{ prostorija.stan.sprat.lamela.title }}</a>
+                                <a href="{{ path('app_sprat_view', {id: prostorija.stan.sprat.id }) }}" class="breadcrumb-item">{{ prostorija.stan.sprat.title }}</a>
+                                <a href="{{ path('app_stan_view', {id: prostorija.stan.id }) }}" class="breadcrumb-item">{{ prostorija.stan.title }}</a>
+                                {#                                <span class="breadcrumb-item active">{{ prostorija.title }}</span>#}
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- /page header -->
 
@@ -36,6 +57,61 @@
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
+                                {# Carousel samo za male ekrane #}
+                                <div class="row d-block d-sm-block d-md-block d-lg-none">
+                                    <div class="col-12">
+                                        <div id="imageCarousel" class="carousel slide" data-bs-ride="false">
+                                            <div class="carousel-inner">
+                                                {% for image in stan.image %}
+                                                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                                        <div class="card">
+                                                            <div class="card-img-actions mx-1 mt-1 position-relative">
+                                                                <img class="card-img img-fluid" src="{{ image.thumbnail1024 }}" alt="Slika">
+                                                                <div class="card-img-actions-overlay card-img">
+                                                                    <a href="{{ image.thumbnail1024 }}"
+                                                                       class="btn btn-outline-white btn-icon rounded-pill"
+                                                                       data-bs-popup="lightbox"
+                                                                       data-gallery="gallery2">
+                                                                        <i class="ph-plus"></i>
+                                                                    </a>
+                                                                </div>
+                                                                <div id="carouselCounter" class="position-absolute bottom-0 end-0 bg-dark bg-opacity-75 text-white px-2 py-1 small me-2 mb-2 rounded">
+                                                                    Slika 1 od {{ stan.image|length }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                            <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                                                <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(100%);"></span>
+                                                <span class="visually-hidden">Prethodna</span>
+                                            </button>
+                                            <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                                                <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(100%);"></span>
+                                                <span class="visually-hidden">Sledeća</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {# Grid prikaz za srednje i veće ekrane #}
+                                <div class="row d-none d-lg-flex">
+                                    {% for image in stan.image %}
+                                        <div class="col-xl-2 col-md-3 col-sm-4 mb-3">
+                                            <div class="card">
+                                                <div class="card-img-actions mx-1 mt-1">
+                                                    <img class="card-img img-fluid" src="{{ image.thumbnail1024 }}">
+                                                    <div class="card-img-actions-overlay card-img">
+                                                        <a href="{{ image.thumbnail1024 }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery2">
+                                                            <i class="ph-plus"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
 
 
                                 <!-- Wizard with validation -->
@@ -53,16 +129,7 @@
                                             <span class="fw-bold" id="rezultat">0.00</span>
                                         </div>
 
-                                        {% if prostorija.stan.image is not null %}
-                                            <div class="my-auto ms-auto">
-                                                <a href="{{ asset(prostorija.stan.image.thumbnail1024) }}"
-                                                   data-bs-popup="lightbox"
-                                                   data-gallery="gallery1"
-                                                   title="{{ prostorija.stan.title }}">
-                                                    <i class="ph-image"></i>
-                                                </a>
-                                            </div>
-                                        {% endif %}
+
                                     </div>
 
                                     <div class="card-body">
@@ -79,16 +146,16 @@
                                                         {% for zid in prostorija.archive %}
 
                                                             <tr>
-                                                                <td class="fw-semibold" style="width: 25%;">{{ zid['zid'] }}
+                                                                <td class="fw-semibold" style="width: 28%;">{{ zid['zid'] }}
                                                                     <a href="#" class="text-danger remove-row">
                                                                         <i class="ph-x-circle"></i>
                                                                     </a>
                                                                 </td>
-                                                                <td class="fw-semibold" style="width: 8%;">{{ zid['unos'] }}</td>
-                                                                <td style="width: 32%;">
+{#                                                                <td class="fw-semibold" style="width: 8%;">{{ zid['unos'] }}</td>#}
+                                                                <td style="width: 35%;">
                                                                     <input type="number" class="form-control required" name="zid[{{ zid['zid']}}][merenje]" min="0" step="0.001">
                                                                 </td>
-                                                                <td style="width: 35%;">
+                                                                <td style="width: 37%;">
                                                                     <div class="row">
                                                                         <!-- Leva kolona -->
                                                                         <div class="col-6 ">
@@ -124,8 +191,8 @@
                                                     </table>
                                                 </div>
                                                 <div class="CUSTOM">
-                                                    <div class="mb-3 card">
-                                                        <table class="table table-bordered table-hover table-responsive table_morecondensed">
+                                                    <div class="mb-3 card ">
+                                                        <table class="table table-bordered table-hover table-responsive table_morecondensed ">
                                                             <tbody id="tbody"></tbody>
                                                         </table>
                                                     </div>
@@ -135,44 +202,99 @@
                                                 </div>
                                                 <div class="mb-3 card">
                                                     <table class="table table-bordered table-hover table-responsive table_morecondensed">
-                                                        <thead class="bg-light text-primary">
-                                                        <tr class="table-light">
-                                                            <th colspan="2"><label class="form-check">
-                                                                    <input type="checkbox" class="form-check-input" id='dijagonala' value="1">
-                                                                    <span class="form-check-label">Prostorija provera</span>
-                                                                </label>
-                                                            </th>
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                        <tr>
-                                                            <td class="fw-semibold">Dijagonala #1</td>
-                                                            <td>
-                                                                <input type="number" class="form-control disable-input" name="d1" min="0" step="0.001">
-                                                            </td>
-
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="fw-semibold">Dijagonala #2</td>
-                                                            <td>
-                                                                <input type="number" class="form-control disable-input" name="d2" min="0" step="0.001">
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="fw-semibold">Dijagonala #3</td>
-                                                            <td>
-                                                                <input type="number" class="form-control disable-input" name="d3" min="0" step="0.001">
-                                                            </td>
-
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="fw-semibold">Dijagonala #4</td>
-                                                            <td>
-                                                                <input type="number" class="form-control disable-input" name="d4" min="0" step="0.001">
-                                                            </td>
-                                                        </tr>
-                                                        </tbody>
+                                                    <thead class="bg-light text-primary">
+                                                    <tr class="table-light">
+                                                        <th colspan="1">
+                                                            <label class="form-check">
+                                                                <input type="checkbox" class="form-check-input" id="dijagonala" value="1">
+                                                                <span class="form-check-label">Prostorija provera</span>
+                                                            </label>
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td colspan="4">
+                                                            <div class="row align-items-center">
+                                                                <div class="col-8 fw-semibold">Dijagonala #1</div>
+                                                                <div class="col-4">
+                                                                    <input type="number" class="form-control required" name="d1" min="0" step="0.001">
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="4">
+                                                            <div class="row align-items-center">
+                                                                <div class="col-8 fw-semibold">Dijagonala #2</div>
+                                                                <div class="col-4">
+                                                                    <input type="number" class="form-control required" name="d2" min="0" step="0.001">
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="4">
+                                                            <div class="row align-items-center">
+                                                                <div class="col-8 fw-semibold">Dijagonala #3</div>
+                                                                <div class="col-4">
+                                                                    <input type="number" class="form-control required" name="d3" min="0" step="0.001">
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="4">
+                                                            <div class="row align-items-center">
+                                                                <div class="col-8 fw-semibold">Dijagonala #4</div>
+                                                                <div class="col-4">
+                                                                    <input type="number" class="form-control required" name="d4" min="0" step="0.001">
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
                                                     </table>
+{#                                                    <table class="table table-bordered table-hover table-responsive table_morecondensed">#}
+{#                                                        <thead class="bg-light text-primary">#}
+{#                                                        <tr class="table-light">#}
+{#                                                            <th colspan="4">#}
+{#                                                                <label class="form-check">#}
+{#                                                                    <input type="checkbox" class="form-check-input" id='dijagonala' value="1">#}
+{#                                                                    <span class="form-check-label">Prostorija provera</span>#}
+{#                                                                </label>#}
+{#                                                            </th>#}
+{#                                                        </tr>#}
+{#                                                        </thead>#}
+{#                                                        <tbody>#}
+{#                                                        <tr>#}
+{#                                                            <td class="fw-semibold" colspan="3">Dijagonala #1</td>#}
+{#                                                            <td>#}
+{#                                                                <input type="number" class="form-control disable-input" name="d1" min="0" step="0.001">#}
+{#                                                            </td>#}
+
+{#                                                        </tr>#}
+{#                                                        <tr>#}
+{#                                                            <td class="fw-semibold" colspan="3">Dijagonala #2</td>#}
+{#                                                            <td>#}
+{#                                                                <input type="number" class="form-control disable-input" name="d2" min="0" step="0.001">#}
+{#                                                            </td>#}
+{#                                                        </tr>#}
+{#                                                        <tr>#}
+{#                                                            <td class="fw-semibold" colspan="3">Dijagonala #3</td>#}
+{#                                                            <td>#}
+{#                                                                <input type="number" class="form-control disable-input" name="d3" min="0" step="0.001">#}
+{#                                                            </td>#}
+
+{#                                                        </tr>#}
+{#                                                        <tr>#}
+{#                                                            <td class="fw-semibold" colspan="3">Dijagonala #4</td>#}
+{#                                                            <td>#}
+{#                                                                <input type="number" class="form-control disable-input" name="d4" min="0" step="0.001">#}
+{#                                                            </td>#}
+{#                                                        </tr>#}
+{#                                                        </tbody>#}
+{#                                                    </table>#}
                                                 </div>
                                             </div>
                                         </div>
@@ -188,6 +310,9 @@
                                         </div>
 
                                         <div class="text-end">
+                                            <button type="button" onclick="history.back()" class="btn btn-primary">
+                                                <i class="ph-arrow-arc-left me-2"></i> Odustanite
+                                            </button>
                                             <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                                         </div>
                                     </div>
@@ -268,13 +393,143 @@
 {% block footerJavascript %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const rezultatEl = document.getElementById('rezultat');
-            const koordinateOutput = document.getElementById('koordinateOutput');
+            // const rezultatEl = document.getElementById('rezultat');
+            // const koordinateOutput = document.getElementById('koordinateOutput');
             const checkbox = document.getElementById('custom');
             const customDiv = document.querySelector('.CUSTOM');
             const definedDiv = document.querySelector('.DEFINED');
             const napomenaLabel = document.querySelector('label[for="prostorija_merenje_form_description1"]');
             const napomenaTextarea = document.getElementById('prostorija_merenje_form_description1');
+
+            // function updatePovrsina() {
+            //     let tabelaAktivna = document.querySelector('.DEFINED');
+            //     if (document.getElementById('custom').checked) {
+            //         tabelaAktivna = document.querySelector('.CUSTOM');
+            //     }
+            //
+            //     const redovi = tabelaAktivna.querySelectorAll("tbody tr");
+            //     const rezultatEl = document.getElementById('rezultat');
+            //     const koordinateOutput = document.getElementById('koordinateOutput');
+            //
+            //
+            //     let koordinate = [[0.00, 0.00]];
+            //     let x = 0, y = 0;
+            //
+            //     const duzine = [];
+            //     const pravci = [];
+            //
+            //     redovi.forEach(tr => {
+            //         const merInput = tr.querySelector("input[type='number']");
+            //         const dirInput = tr.querySelector("input[type='radio']:checked");
+            //
+            //         if (!merInput || !dirInput) return;
+            //
+            //         const duzina = parseFloat(merInput.value);
+            //         const pravac = parseInt(dirInput.value);
+            //
+            //         if (isNaN(duzina)) return;
+            //
+            //         duzine.push(duzina);
+            //         pravci.push(pravac);
+            //
+            //         switch (pravac) {
+            //             case 1: x += duzina; break; // H+
+            //             case 2: x -= duzina; break; // H-
+            //             case 3: y += duzina; break; // V+
+            //             case 4: y -= duzina; break; // V-
+            //         }
+            //
+            //         koordinate.push([parseFloat(x.toFixed(2)), parseFloat(y.toFixed(2))]);
+            //     });
+            //
+            //     koordinate.push([0.00, 0.00]); // zatvaranje
+            //
+            //     // Prikaz poslednje tačke
+            //     const poslednja = koordinate[koordinate.length - 2] || [0.00, 0.00];
+            //     rezultatEl.textContent = `[${poslednja[0].toFixed(2)}, ${poslednja[1].toFixed(2)}]`;
+            //
+            //     // Odredi toleranciju
+            //     const tacke = koordinate.length - 2;
+            //     let tolerancija;
+            //
+            //     if (tacke <= 4) {
+            //         tolerancija = 0.02;
+            //     } else if (tacke <= 8) {
+            //         tolerancija = 0.03;
+            //     } else {
+            //         tolerancija = 0.05;
+            //     }
+            //
+            //     const deltaX = poslednja[0];
+            //     const deltaY = poslednja[1];
+            //     const uToleranciji = Math.abs(deltaX) <= tolerancija && Math.abs(deltaY) <= tolerancija;
+            //
+            //     rezultatEl.classList.remove('text-success', 'text-danger');
+            //     rezultatEl.classList.add(uToleranciji ? 'text-success' : 'text-danger');
+            //
+            //     koordinateOutput.value = `${deltaX.toFixed(2)}, ${deltaY.toFixed(2)}`;
+            //
+            //     // === KOREKCIJA FIX === //
+            //
+            //     if (uToleranciji) {
+            //         const fix = [...duzine];
+            //         const maxKorekcija = 0.01;
+            //
+            //         // === Korekcija X ose (pravci 1 i 2) ===
+            //         if (Math.abs(deltaX) > maxKorekcija - 0.001) {
+            //             const brojKorekcija = Math.round(Math.abs(deltaX) / maxKorekcija);
+            //
+            //             const xIndeksi = duzine
+            //                 .map((val, i) => ({ index: i, val, dir: pravci[i] }))
+            //                 .filter(item => item.dir === 1 || item.dir === 2)
+            //                 .sort((a, b) => b.val - a.val); // najduže prve
+            //
+            //             for (let i = 0; i < brojKorekcija && i < xIndeksi.length; i++) {
+            //                 const item = xIndeksi[i];
+            //
+            //                 // Ako treba da se poveća X
+            //                 if (deltaX > 0) {
+            //                     fix[item.index] += item.dir === 1 ? maxKorekcija : -maxKorekcija;
+            //                 }
+            //                 // Ako treba da se smanji X
+            //                 else {
+            //                     fix[item.index] += item.dir === 1 ? -maxKorekcija : maxKorekcija;
+            //                 }
+            //             }
+            //         }
+            //
+            //         // === Korekcija Y ose (pravci 3 i 4) ===
+            //         if (Math.abs(deltaY) > maxKorekcija - 0.001) {
+            //             const brojKorekcija = Math.round(Math.abs(deltaY) / maxKorekcija);
+            //
+            //             const yIndeksi = duzine
+            //                 .map((val, i) => ({ index: i, val, dir: pravci[i] }))
+            //                 .filter(item => item.dir === 3 || item.dir === 4)
+            //                 .sort((a, b) => b.val - a.val); // najduže prve
+            //
+            //             for (let i = 0; i < brojKorekcija && i < yIndeksi.length; i++) {
+            //                 const item = yIndeksi[i];
+            //
+            //                 // Ako treba da se poveća Y
+            //                 if (deltaY > 0) {
+            //                     fix[item.index] += item.dir === 4 ? maxKorekcija : -maxKorekcija;
+            //                 }
+            //                 // Ako treba da se smanji Y
+            //                 else {
+            //                     fix[item.index] += item.dir === 4 ? -maxKorekcija : maxKorekcija;
+            //                 }
+            //             }
+            //         }
+            //
+            //         const fixOutput = document.getElementById('fixOutput');
+            //         if (fixOutput) {
+            //             fixOutput.value = JSON.stringify(fix.map(v => parseFloat(v.toFixed(2))));
+            //         }
+            //     } else {
+            //         const fixOutput = document.getElementById('fixOutput');
+            //         fixOutput.value = '';
+            //     }
+            // }
 
             function updatePovrsina() {
                 let tabelaAktivna = document.querySelector('.DEFINED');
@@ -298,7 +553,7 @@
 
                     if (!merInput || !dirInput) return;
 
-                    const duzina = parseFloat(merInput.value);
+                    const duzina = Math.round(parseFloat(merInput.value) * 100) / 100; // Zaokruži na 2 decimale
                     const pravac = parseInt(dirInput.value);
 
                     if (isNaN(duzina)) return;
@@ -318,11 +573,9 @@
 
                 koordinate.push([0.00, 0.00]); // zatvaranje
 
-                // Prikaz poslednje tačke
                 const poslednja = koordinate[koordinate.length - 2] || [0.00, 0.00];
                 rezultatEl.textContent = `[${poslednja[0].toFixed(2)}, ${poslednja[1].toFixed(2)}]`;
 
-                // Odredi toleranciju
                 const tacke = koordinate.length - 2;
                 let tolerancija;
 
@@ -343,55 +596,59 @@
 
                 koordinateOutput.value = `${deltaX.toFixed(2)}, ${deltaY.toFixed(2)}`;
 
-                // === KOREKCIJA FIX === //
-
                 if (uToleranciji) {
                     const fix = [...duzine];
                     const maxKorekcija = 0.01;
 
-                    // === Korekcija X ose (pravci 1 i 2) ===
+                    // === Korekcija X ose ===
                     if (Math.abs(deltaX) > maxKorekcija - 0.001) {
                         const brojKorekcija = Math.round(Math.abs(deltaX) / maxKorekcija);
-
                         const xIndeksi = duzine
                             .map((val, i) => ({ index: i, val, dir: pravci[i] }))
                             .filter(item => item.dir === 1 || item.dir === 2)
-                            .sort((a, b) => b.val - a.val); // najduže prve
+                            .sort((a, b) => b.val - a.val);
 
-                        for (let i = 0; i < brojKorekcija && i < xIndeksi.length; i++) {
+                        const xKorekcijaZidovi = new Set();
+                        let xKorekcijaBrojac = 0;
+
+                        for (let i = 0; i < xIndeksi.length && xKorekcijaBrojac < brojKorekcija; i++) {
                             const item = xIndeksi[i];
+                            if (xKorekcijaZidovi.has(item.index)) continue;
 
-                            // Ako treba da se poveća X
-                            if (deltaX > 0) {
-                                fix[item.index] += item.dir === 1 ? maxKorekcija : -maxKorekcija;
-                            }
-                            // Ako treba da se smanji X
-                            else {
-                                fix[item.index] += item.dir === 1 ? -maxKorekcija : maxKorekcija;
-                            }
+                            const korekcija = (deltaX > 0)
+                                ? (item.dir === 1 ? -maxKorekcija : maxKorekcija)
+                                : (item.dir === 1 ? maxKorekcija : -maxKorekcija);
+
+                            fix[item.index] = parseFloat((fix[item.index] + korekcija).toFixed(2));
+
+                            xKorekcijaZidovi.add(item.index);
+                            xKorekcijaBrojac++;
                         }
                     }
 
-                    // === Korekcija Y ose (pravci 3 i 4) ===
+                    // === Korekcija Y ose ===
                     if (Math.abs(deltaY) > maxKorekcija - 0.001) {
                         const brojKorekcija = Math.round(Math.abs(deltaY) / maxKorekcija);
-
                         const yIndeksi = duzine
                             .map((val, i) => ({ index: i, val, dir: pravci[i] }))
                             .filter(item => item.dir === 3 || item.dir === 4)
-                            .sort((a, b) => b.val - a.val); // najduže prve
+                            .sort((a, b) => b.val - a.val);
 
-                        for (let i = 0; i < brojKorekcija && i < yIndeksi.length; i++) {
+                        const yKorekcijaZidovi = new Set();
+                        let yKorekcijaBrojac = 0;
+
+                        for (let i = 0; i < yIndeksi.length && yKorekcijaBrojac < brojKorekcija; i++) {
                             const item = yIndeksi[i];
+                            if (yKorekcijaZidovi.has(item.index)) continue;
 
-                            // Ako treba da se poveća Y
-                            if (deltaY > 0) {
-                                fix[item.index] += item.dir === 4 ? maxKorekcija : -maxKorekcija;
-                            }
-                            // Ako treba da se smanji Y
-                            else {
-                                fix[item.index] += item.dir === 4 ? -maxKorekcija : maxKorekcija;
-                            }
+                            const korekcija = (deltaY > 0)
+                                ? (item.dir === 4 ? maxKorekcija : -maxKorekcija)
+                                : (item.dir === 4 ? -maxKorekcija : maxKorekcija);
+
+                            fix[item.index] = parseFloat((fix[item.index] + korekcija).toFixed(2));
+
+                            yKorekcijaZidovi.add(item.index);
+                            yKorekcijaBrojac++;
                         }
                     }
 
@@ -401,10 +658,11 @@
                     }
                 } else {
                     const fixOutput = document.getElementById('fixOutput');
-                    fixOutput.value = '';
+                    if (fixOutput) {
+                        fixOutput.value = '';
+                    }
                 }
             }
-
 
             function toggleView() {
                 const isCustom = checkbox.checked;
@@ -416,7 +674,7 @@
                     // Ukloni klasu 'required' sa svih inputa u DEFINED i obriši vrednosti
                     const definedInputs = definedDiv.querySelectorAll('input');
                     definedInputs.forEach(input => {
-                        input.value = '';
+                        // input.value = '';
                         input.classList.remove('required');
                     });
 
@@ -436,14 +694,15 @@
                         input.classList.add('required');
                     });
 
-                    // Ukloni klasu 'required' sa svih inputa u CUSTOM
-                    const customInputs = customDiv.querySelectorAll('input');
-                    customInputs.forEach(input => {
-                        input.classList.remove('required');
-                    });
+                    // Ukloni sve redove iz CUSTOM tabele
+                    const customTableBody = customDiv.querySelector('tbody');
+                    if (customTableBody) {
+                        customTableBody.querySelectorAll('tr').forEach(tr => tr.remove());
+                    }
                 }
 
                 updatePovrsina();
+
             }
 
             function renumerisiZidove() {
@@ -466,32 +725,32 @@
                 const oznaka = `${String({{ prostorijaRed }}).padStart(2, '0')}-${String(zidCount + 1).padStart(2, '0')}`;
 
                 const newRow = `
-<tr class="sub-row">
-    <td class="fw-semibold" style="width: 30%;">
-        <input type="text" class="form-control zid-oznaka required" value="${oznaka}">
+<tr class="sub-row p-0" style="font-size: 12px;">
+    <td class="fw-semibold" style="width: 28%;">
+        <input type="text" class="form-control zid-oznaka required w-100" value="${oznaka}" style="font-size: 12px;">
         <input type="hidden" class="zid-title" name="custom[${zidCount}][zid]" value="${oznaka}">
     </td>
-    <td style="width: 25%;">
-        <input name="custom[${zidCount}][merenje]" class="form-control required" type="number" min="0.01" step="0.001">
+    <td style="width: 27%;">
+        <input name="custom[${zidCount}][merenje]" class="form-control required w-100" type="number" min="0.01" step="0.001" style="font-size: 12px;">
     </td>
     <td style="width: 38%;">
         <div class="row">
             <div class="col-6">
-                <div class="form-check">
+                <div class="form-check" style="font-size: 12px;">
                     <input type="radio" class="form-check-input required" name="custom[${zidCount}][dir]" id="h_plus_${zidCount}" value="1">
                     <label class="form-check-label" for="h_plus_${zidCount}">H+</label>
                 </div>
-                <div class="form-check">
+                <div class="form-check" style="font-size: 12px;">
                     <input type="radio" class="form-check-input required" name="custom[${zidCount}][dir]" id="h_minus_${zidCount}" value="2">
                     <label class="form-check-label" for="h_minus_${zidCount}">H-</label>
                 </div>
             </div>
             <div class="col-6">
-                <div class="form-check">
+                <div class="form-check" style="font-size: 12px;">
                     <input type="radio" class="form-check-input required" name="custom[${zidCount}][dir]" id="v_plus_${zidCount}" value="3">
                     <label class="form-check-label" for="v_plus_${zidCount}">V+</label>
                 </div>
-                <div class="form-check">
+                <div class="form-check" style="font-size: 12px;">
                     <input type="radio" class="form-check-input required" name="custom[${zidCount}][dir]" id="v_minus_${zidCount}" value="4">
                     <label class="form-check-label" for="v_minus_${zidCount}">V-</label>
                 </div>
@@ -502,6 +761,7 @@
         <a class="btn-sm remove-subrow-btn mt-2" href="#"><i class="ph-trash text-danger"></i></a>
     </td>
 </tr>
+
         `;
                 $('#tbody').append(newRow);
                 renumerisiZidove();
@@ -581,6 +841,51 @@
             checkbox1.addEventListener('change', toggleDijagonalaInputs);
 
 
+
+                const carousel = document.querySelector('#imageCarousel');
+                const counter = document.querySelector('#carouselCounter');
+                const items = carousel.querySelectorAll('.carousel-item');
+                const total = items.length;
+
+                function updateCounter(index) {
+                    counter.textContent = `Slika ${index + 1} od ${total}`;
+                }
+
+                // Inicijalno postavi brojač
+                let currentIndex = 0;
+                updateCounter(currentIndex);
+
+                carousel.addEventListener('slide.bs.carousel', function (event) {
+                    currentIndex = event.to;
+                    updateCounter(currentIndex);
+                });
+
+
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('task_form');
+
+            form.addEventListener('submit', function (e) {
+                // Proveri da li postoje prazna required polja
+                const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+                let valid = true;
+
+                requiredFields.forEach(function (field) {
+                    if (!field.value || (field.type === 'radio' && !form.querySelector(`[name="${field.name}"]:checked`))) {
+                        valid = false;
+                    }
+                });
+
+                if (!valid) {
+                    // Ako ima nepopunjenih polja, ne prikazuj confirm dijalog
+                    return;
+                }
+
+                const potvrda = confirm('Da li ste sigurni da želite da sačuvate podatke?');
+                if (!potvrda) {
+                    e.preventDefault();
+                }
+            });
         });
     </script>
 {% endblock footerJavascript %}

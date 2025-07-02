@@ -37,6 +37,46 @@ class CalendarRepository extends ServiceEntityRepository {
     return $calendar;
   }
 
+    public function getRequestByUser(User $user, $year): array {
+        $startDate = new DateTimeImmutable("$year-01-01");
+
+        $dan = 0;
+        $odmor = 0;
+        $slava = 0;
+        $bolovanje = 0;
+
+        $requests = $user->getCalendars()->toArray();
+
+        foreach ($requests as $req) {
+            if($req->getStart() >= $startDate) {
+                if ($req->getStatus() != 0) {
+                    if ($req->getType() == CalendarColorsData::DAN) {
+                        $dan++;
+                    }
+                    if ($req->getType() == CalendarColorsData::ODMOR) {
+                        $odmor++;
+                    }
+                    if ($req->getType() == CalendarColorsData::BOLOVANJE) {
+                        $bolovanje++;
+                    }
+                    if ($req->getType() == CalendarColorsData::SLAVA) {
+                        $slava++;
+                    }
+
+                }
+            }
+        }
+
+        return  [
+            'dan' => $dan,
+            'odmor' => $odmor,
+            'bolovanje' => $bolovanje,
+            'slava' => $slava,
+            'ukupno' => $dan + $odmor + $bolovanje + $slava
+        ];
+
+    }
+
   public function countCalendarRequests(): int{
     $company = $this->security->getUser()->getCompany();
     $qb = $this->createQueryBuilder('c');
@@ -96,44 +136,20 @@ class CalendarRepository extends ServiceEntityRepository {
     ];
 
   }
-  public function getRequestByUser(User $user, $year): array {
-    $startDate = new DateTimeImmutable("$year-01-01");
+  public function checkCalendar(User $user, int $type): array {
 
-    $dan = 0;
-    $odmor = 0;
-    $slava = 0;
-    $bolovanje = 0;
 
-    $requests = $user->getCalendars()->toArray();
+    $nowMinus30 = new \DateTime('-30 seconds');
 
-    foreach ($requests as $req) {
-      if($req->getStart() >= $startDate) {
-        if ($req->getStatus() != 0) {
-          if ($req->getType() == CalendarColorsData::DAN) {
-            $dan++;
-          }
-          if ($req->getType() == CalendarColorsData::ODMOR) {
-            $odmor++;
-          }
-          if ($req->getType() == CalendarColorsData::BOLOVANJE) {
-            $bolovanje++;
-          }
-          if ($req->getType() == CalendarColorsData::SLAVA) {
-            $slava++;
-          }
-
-        }
-      }
-    }
-
-    return  [
-      'dan' => $dan,
-      'odmor' => $odmor,
-      'bolovanje' => $bolovanje,
-      'slava' => $slava,
-      'ukupno' => $dan + $odmor + $bolovanje + $slava
-    ];
-
+     return $this->createQueryBuilder('c')
+          ->where(':user MEMBER OF c.user')
+          ->andWhere('c.type = :type')
+          ->andWhere('c.created > :nowMinus30')
+          ->setParameter('user', $user)
+          ->setParameter('type', $type)
+          ->setParameter('nowMinus30', $nowMinus30)
+          ->getQuery()
+          ->getResult();
   }
 
 //  public function finish(Calendar $calendar): Calendar {

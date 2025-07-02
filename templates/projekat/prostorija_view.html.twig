@@ -16,8 +16,20 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ prostorija.stan.title }}: {{ prostorija.title }}
+                                Prostorija: {{ prostorija.title }}
                             </h4>
+                        </div>
+                    </div>
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_projekats') }}" class="breadcrumb-item">Projekti elaborati</a>
+                                <a href="{{ path('app_projekat_view', {id: prostorija.stan.sprat.lamela.projekat.id}) }}" class="breadcrumb-item">{{ prostorija.stan.sprat.lamela.projekat.title }}</a>
+                                <a href="{{ path('app_lamela_view', {id: prostorija.stan.sprat.lamela.id}) }}" class="breadcrumb-item">{{ prostorija.stan.sprat.lamela.title }}</a>
+                                <a href="{{ path('app_sprat_view', {id: prostorija.stan.sprat.id }) }}" class="breadcrumb-item">{{ prostorija.stan.sprat.title }}</a>
+                                <a href="{{ path('app_stan_view', {id: prostorija.stan.id }) }}" class="breadcrumb-item">{{ prostorija.stan.title }}</a>
+                                {#                                <span class="breadcrumb-item active">{{ prostorija.title }}</span>#}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -32,14 +44,37 @@
                             <div class="tab-pane fade active show">
                                 {% if prostorija.isEdit %}
                                     <div class="alert alert-info fade show">
-                                    <span class="fw-semibold">Automatskim podešavanjem nije bilo moguće zatvoriti merenje. Unestite podatke ručno!</span>
+                                    <span class="fw-semibold">Automatskim prepravljanjem nije bilo moguće zatvoriti merenje. Unestite podatke ručno!</span>
+                                    </div>
+                                {% endif %}
+                                {% if prostorija.isPlan %}
+                                    <div class="alert alert-info fade show">
+                                        <span class="fw-semibold">Potrebno izmeniti plan prostorije u projektu!</span>
                                     </div>
                                 {% endif %}
                                 <div class="row">
-                                    <div class="col-xl-12">
+                                    <div class="col-xl-4">
                                         <div class="card">
                                             <div class="card-header d-flex align-items-center">
                                                 <h5 class="mb-0">Zapis info</h5>
+                                                <div class="my-auto ms-auto">
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-gear"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <a href="{{ path('app_prostorija_repeat', { id: prostorija.id }) }}" class="dropdown-item" onclick="return confirm('Da li ste sigurni da želite da označite ovu prostoriju za ponovno merenje?');"><i class="ph-repeat me-2"></i> Ponovite</a>
+                                                            {% if prostorija.isPlan %}
+                                                                <a href="{{ path('app_prostorija_plan', { id: prostorija.id }) }}"
+                                                                   class="dropdown-item"
+                                                                   onclick="return confirm('Da li ste sigurni da želite da označite ovu prostoriju da joj je izmenjen plan u projektu?');">
+                                                                    <i class="ph-bookmark-simple me-2"></i> Izmenjen
+                                                                </a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                             </div>
                                             <div class="card-body">
                                                 <div class="row p-2 bg-light">
@@ -48,32 +83,27 @@
                                                         {{ prostorija.odstupanje }}
                                                     </div>
                                                 </div>
+
                                                 <div class="row p-2 ">
-                                                    <div class="col-4">Površina (m<sup>2</sup>):</div>
-                                                    <div class="col-8">
-                                                        {{ prostorija.povrsina }}
-                                                    </div>
-                                                </div>
-                                                <div class="row p-2 bg-light">
                                                     <div class="col-4">Način merenja:</div>
                                                     <div class="col-8">
                                                         {% if prostorija.isCustom %} Slobodan unos {% else %} Po projektu {% endif %}
                                                     </div>
                                                 </div>
-                                                <div class="row p-2 ">
-                                                    <div class="col-4">Način podešavanja:</div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Način prepravljanja:</div>
                                                     <div class="col-8">
                                                         {% if prostorija.isEditAuto %} Automatski {% endif %}
                                                         {% if prostorija.isEditManual %} Ručno {% endif %}
                                                     </div>
                                                 </div>
-                                                <div class="row p-2 bg-light">
+                                                <div class="row p-2 ">
                                                     <div class="col-4">Napomena o merenju:</div>
                                                     <div class="col-8">
                                                         {{ prostorija.description1 }}
                                                     </div>
                                                 </div>
-                                                <div class="row p-2">
+                                                <div class="row p-2 bg-light">
                                                     <div class="col-4">Kreirano:</div>
                                                     <div class="col-8">
                                                         <div class="d-inline-flex align-items-center">
@@ -82,7 +112,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row p-2 bg-light">
+                                                <div class="row p-2 ">
                                                     <div class="col-4">Poslednja izmena:</div>
                                                     <div class="col-8">
                                                         <div class="d-inline-flex align-items-center">
@@ -95,6 +125,314 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="card">
+
+                                            <div class="card-header d-flex align-items-center">
+                                                <h5 class="mb-0">Površina
+                                                </h5>
+                                            </div>
+                                            <div class="card-body">
+
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-6">Površina izmerena (m<sup>2</sup>):</div>
+                                                    <div class="col-6">
+                                                        {{ prostorija.povrsina | number_format(2, '.', '')  }}
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 ">
+                                                    <div class="col-6">Površina po projektu (m<sup>2</sup>):</div>
+                                                    <div class="col-6">
+                                                        {{ prostorija.povrs | number_format(2, '.', '')  }}
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-6">Razlika površina (m<sup>2</sup>):</div>
+                                                    <div class="col-6">
+                                                        {{ (prostorija.povrs - prostorija.povrsina) | number_format(2, '.', '')  }}
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% if prostorija.povrsina is not null %}
+                                        <div class="col-xl-4">
+                                            <div class="card" style="overflow: hidden;">
+                                                <div class="card-header d-flex align-items-center py-2 px-3">
+                                                    <h5 class="mb-0">Interaktivni prikaz prostorije</h5>
+                                                    <div class="dropdown ms-auto">
+                                                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                                            <i class="ph-download-simple"></i>
+                                                        </a>
+
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <button id="saveSvgBtn" class="dropdown-item"><i class="ph-file-image me-2"></i>Sačuvaj SVG</button>
+                                                            <button id="savePngBtn" class="dropdown-item"><i class="ph-file-png me-2"></i>Sačuvaj PNG</button>
+                                                        </div>
+                                                    </div>
+
+
+
+
+                                                </div>
+                                                <div class="card-body d-flex justify-content-center py-2 px-2" style="overflow: hidden;">
+                                                    <svg id="roomSvg" width="100%" height="400" viewBox="0 0 700 700"
+                                                         xmlns="http://www.w3.org/2000/svg"
+                                                         style="border: 1px solid #ccc; max-width: 100%; height: auto; display: block;">
+                                                        <defs>
+                                                            <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+                                                                <line x1="0" y1="0" x2="0" y2="10" stroke="black" stroke-width="0.5"/>
+                                                            </pattern>
+                                                        </defs>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <script>
+                                            document.addEventListener("DOMContentLoaded", function () {
+                                                const zidovi = [
+                                                    {% for key, value in prostorija.unos2['unos'] %}
+                                                    { name: "{{ key }}", duzina: {{ value['merenje']|replace({',': '.'}) }}, dir: {{ value['dir'] }} },
+                                                    {% endfor %}
+                                                ];
+
+                                                const svg = document.getElementById("roomSvg");
+                                                const NS = "http://www.w3.org/2000/svg";
+
+                                                let x = 500, y = 150;
+                                                let startX = x, startY = y;
+
+                                                // Niz tačaka za polygon
+                                                let points = [];
+                                                points.push(`${x},${y}`);
+
+                                                // Čuvamo linije i njihove dužine i imena za tekstove pored zidova
+                                                let zidLinije = [];
+
+                                                zidovi.forEach((zid) => {
+                                                    const length = zid.duzina * 80;
+                                                    let x2 = x, y2 = y;
+
+                                                    switch (zid.dir) {
+                                                        case 1: x2 += length; break;
+                                                        case 2: x2 -= length; break;
+                                                        case 3: y2 += length; break;
+                                                        case 4: y2 -= length; break;
+                                                    }
+
+                                                    points.push(`${x2},${y2}`);
+
+                                                    // Kreiramo liniju
+                                                    const line = document.createElementNS(NS, "line");
+                                                    line.setAttribute("x1", x);
+                                                    line.setAttribute("y1", y);
+                                                    line.setAttribute("x2", x2);
+                                                    line.setAttribute("y2", y2);
+                                                    line.setAttribute("stroke", "black");
+                                                    line.setAttribute("stroke-width", "2");
+                                                    line.style.cursor = "pointer";
+
+                                                    // Čuvamo liniju i info za kasnije
+                                                    zidLinije.push({
+                                                        lineElem: line,
+                                                        x1: x,
+                                                        y1: y,
+                                                        x2: x2,
+                                                        y2: y2,
+                                                        duzina: zid.duzina,
+                                                        name: zid.name
+                                                    });
+
+                                                    line.addEventListener("click", (event) => {
+                                                        document.querySelectorAll('.zid-linija').forEach(el => el.setAttribute("stroke", "black"));
+                                                        line.setAttribute("stroke", "blue");
+
+                                                        let tooltip = document.getElementById("tooltipZid");
+                                                        if (!tooltip) {
+                                                            tooltip = document.createElement("div");
+                                                            tooltip.id = "tooltipZid";
+                                                            tooltip.style.position = "fixed";
+                                                            tooltip.style.zIndex = 9999;
+                                                            tooltip.style.padding = "6px 10px";
+                                                            tooltip.style.backgroundColor = "#007bff";
+                                                            tooltip.style.color = "white";
+                                                            tooltip.style.borderRadius = "4px";
+                                                            tooltip.style.boxShadow = "0 0 8px rgba(0,0,0,0.2)";
+                                                            tooltip.style.fontSize = "14px";
+                                                            document.body.appendChild(tooltip);
+                                                        }
+
+                                                        tooltip.innerHTML = `Zid <strong>${zid.name}</strong>: ${zid.duzina} m`;
+                                                        tooltip.style.left = (event.pageX + 10) + "px";
+                                                        tooltip.style.top = (event.pageY + 10) + "px";
+                                                        tooltip.style.display = "block";
+
+                                                        clearTimeout(tooltip._timeout);
+                                                        tooltip._timeout = setTimeout(() => {
+                                                            tooltip.style.display = "none";
+                                                            line.setAttribute("stroke", "black");
+                                                        }, 3000);
+                                                    });
+
+                                                    line.classList.add("zid-linija");
+                                                    svg.appendChild(line);
+
+                                                    x = x2;
+                                                    y = y2;
+                                                });
+
+                                                // Kreiraj polygon za šrafuru
+                                                const polygon = document.createElementNS(NS, "polygon");
+                                                polygon.setAttribute("points", points.join(" "));
+                                                polygon.setAttribute("fill", "url(#diagonalHatch)");
+                                                polygon.setAttribute("stroke", "black");
+                                                polygon.setAttribute("stroke-width", "1");
+                                                svg.insertBefore(polygon, svg.firstChild);
+
+                                                // Zatvaramo prostoriju
+                                                const finalLine = document.createElementNS(NS, "line");
+                                                finalLine.setAttribute("x1", x);
+                                                finalLine.setAttribute("y1", y);
+                                                finalLine.setAttribute("x2", startX);
+                                                finalLine.setAttribute("y2", startY);
+                                                finalLine.setAttribute("stroke", "gray");
+                                                finalLine.setAttribute("stroke-dasharray", "4");
+                                                svg.appendChild(finalLine);
+
+                                                // Izračunaj centroid za beli kvadrat i tekst
+                                                function calculateCentroid(points) {
+                                                    let xSum = 0, ySum = 0;
+                                                    points.forEach(pt => {
+                                                        const [x, y] = pt.split(',').map(Number);
+                                                        xSum += x;
+                                                        ySum += y;
+                                                    });
+                                                    return [xSum / points.length, ySum / points.length];
+                                                }
+
+                                                const [centroidX, centroidY] = calculateCentroid(points);
+
+                                                // Izračunaj dimenzije kvadrata na osnovu dužine teksta i dodaj mali padding
+                                                const paddingCenter = 10;
+                                                const fontSizeCenter = 20;
+                                                const textContent = `{{ prostorija.povrsina }} m²`;
+
+                                                // Kreiraj privremeni SVG tekst element da meri širinu teksta
+                                                const tempText = document.createElementNS(NS, "text");
+                                                tempText.setAttribute("font-family", "Arial, sans-serif");
+                                                tempText.setAttribute("font-size", fontSizeCenter);
+                                                tempText.textContent = textContent;
+                                                svg.appendChild(tempText);
+                                                const bboxCenter = tempText.getBBox();
+                                                svg.removeChild(tempText);
+
+                                                const rectWidth = bboxCenter.width + paddingCenter * 2;
+                                                const rectHeight = bboxCenter.height + paddingCenter * 1.5;
+
+                                                const rectX = centroidX - rectWidth / 2;
+                                                const rectY = centroidY - rectHeight / 2;
+
+                                                // Beli pravougaonik
+                                                const whiteRect = document.createElementNS(NS, "rect");
+                                                whiteRect.setAttribute("x", rectX);
+                                                whiteRect.setAttribute("y", rectY);
+                                                whiteRect.setAttribute("width", rectWidth);
+                                                whiteRect.setAttribute("height", rectHeight);
+                                                whiteRect.setAttribute("fill", "white");
+                                                whiteRect.setAttribute("stroke", "black");
+                                                whiteRect.setAttribute("stroke-width", "1");
+                                                whiteRect.setAttribute("rx", "6");
+                                                whiteRect.setAttribute("ry", "6");
+                                                svg.appendChild(whiteRect);
+
+                                                // Tekst u belom pravougaoniku
+                                                const text = document.createElementNS(NS, "text");
+                                                text.setAttribute("x", centroidX);
+                                                text.setAttribute("y", centroidY + bboxCenter.height / 4);
+                                                text.setAttribute("font-family", "Arial, sans-serif");
+                                                text.setAttribute("font-size", fontSizeCenter);
+                                                text.setAttribute("fill", "black");
+                                                text.setAttribute("text-anchor", "middle");
+                                                text.setAttribute("alignment-baseline", "middle");
+                                                text.textContent = textContent;
+                                                svg.appendChild(text);
+
+                                                // Dodajemo duzine pored svake linije sa okvirima
+                                                zidLinije.forEach(({ x1, y1, x2, y2, duzina }) => {
+                                                    // Sredina linije
+                                                    const midX = (x1 + x2) / 2;
+                                                    const midY = (y1 + y2) / 2;
+
+                                                    // Vektor linije
+                                                    const vx = x2 - x1;
+                                                    const vy = y2 - y1;
+
+                                                    // Normalizuj vektor linije
+                                                    const len = Math.sqrt(vx*vx + vy*vy);
+                                                    const nx = -vy / len;  // normalni vektor X (rotirano 90 stepeni)
+                                                    const ny = vx / len;   // normalni vektor Y
+
+                                                    // Pomeri sredinu malo ka spolja
+                                                    const baseOffset = 20; // offset za tekst
+                                                    const extraOffset = 10; // dodatni odmak za okvir
+                                                    const totalOffset = baseOffset + extraOffset;
+
+                                                    const textX = midX + nx * totalOffset;
+                                                    const textY = midY + ny * totalOffset;
+
+                                                    // Tekst sadržaj
+                                                    const lengthStr = `${duzina.toFixed(2)} m`;
+
+                                                    // Privremeni tekst element da izmerimo bbox (dimenzije teksta)
+                                                    const tempText = document.createElementNS(NS, "text");
+                                                    tempText.setAttribute("font-family", "Arial, sans-serif");
+                                                    tempText.setAttribute("font-size", "14");
+                                                    tempText.textContent = lengthStr;
+                                                    svg.appendChild(tempText);
+                                                    const bbox = tempText.getBBox();
+                                                    svg.removeChild(tempText);
+
+                                                    const padding = 6; // padding oko teksta u pravougaoniku
+
+                                                    // Koordinate pravougaonika sa paddingom
+                                                    const rectX = textX - bbox.width / 2 - padding;
+                                                    const rectY = textY - bbox.height / 2 - padding / 1.5;
+                                                    const rectWidth = bbox.width + padding * 2;
+                                                    const rectHeight = bbox.height + padding * 2;
+
+                                                    // Pravougaonik okvir
+                                                    const rect = document.createElementNS(NS, "rect");
+                                                    rect.setAttribute("x", rectX);
+                                                    rect.setAttribute("y", rectY);
+                                                    rect.setAttribute("width", rectWidth);
+                                                    rect.setAttribute("height", rectHeight);
+                                                    rect.setAttribute("fill", "white");
+                                                    rect.setAttribute("stroke", "black");
+                                                    rect.setAttribute("stroke-width", "1");
+                                                    rect.setAttribute("rx", "4");
+                                                    rect.setAttribute("ry", "4");
+                                                    svg.appendChild(rect);
+
+                                                    // Tekst preko pravougaonika
+                                                    const lengthText = document.createElementNS(NS, "text");
+                                                    lengthText.setAttribute("x", textX);
+                                                    lengthText.setAttribute("y", textY + bbox.height / 4);
+                                                    lengthText.setAttribute("font-family", "Arial, sans-serif");
+                                                    lengthText.setAttribute("font-size", "14");
+                                                    lengthText.setAttribute("fill", "black");
+                                                    lengthText.setAttribute("text-anchor", "middle");
+                                                    lengthText.setAttribute("alignment-baseline", "middle");
+                                                    lengthText.textContent = lengthStr;
+                                                    svg.appendChild(lengthText);
+                                                });
+
+                                            });
+                                        </script>
+                                    {% endif %}
+
                                 </div>
                                 <div class="row">
                                     <div class="col-xl-6">
@@ -112,19 +450,19 @@
                                                                     <tr class="sub-row">
                                                                         <td colspan="3" class="bg-light">
                                                                             <div class="row align-items-end">
-                                                                                <div class="col-md-4">
+                                                                                <div class="col-md-6">
                                                                                     <div class="mb-3">
                                                                                         <label class="form-label">Zid:</label>
                                                                                         <input type="text" class="form-control disable-input" value="{{ zid['zid'] }}" readonly>
                                                                                     </div>
                                                                                 </div>
-                                                                                <div class="col-md-4">
+                                                                                <div class="col-md-4 d-none">
                                                                                     <div class="mb-3">
                                                                                         <label class="form-label">Unos:</label>
                                                                                         <input class="form-control disable-input" type="number" min="0.01" step="0.01" value="{{ zid['unos'] }}">
                                                                                     </div>
                                                                                 </div>
-                                                                                <div class="col-md-4">
+                                                                                <div class="col-md-6">
                                                                                     <div class="row">
                                                                                         <div class="col-md-6 mb-3">
                                                                                             <div class="form-check ">
@@ -169,7 +507,7 @@
                                         <div class="col-xl-6">
                                             <div class="card">
                                             <div class="card-header d-flex align-items-center">
-                                                <h5 class="mb-0">Zapis #2 (podešavanje)</h5>
+                                                <h5 class="mb-0">Zapis #2 (prepravljanje)</h5>
                                             </div>
                                             <div class="card-body">
                                                 <div class="row p-2 ">
@@ -243,7 +581,7 @@
                                         <div class="col-xl-6">
                                             <div class="card">
                                                 <div class="card-header d-flex align-items-center">
-                                                    <h5 class="mb-0">Zapis #2 (podešavanje)</h5>
+                                                    <h5 class="mb-0">Zapis #2 (prepravljanje)</h5>
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="row p-2 ">
@@ -439,6 +777,8 @@
 
                                 </div>
 
+
+
                             </div>
                         </div>
                         <!-- /right content -->
@@ -504,3 +844,75 @@
 
 {% endblock includeJavascript %}
 
+{% block footerJavascript %}
+    <script>
+        document.getElementById('saveSvgBtn').addEventListener('click', () => {
+            const svg = document.getElementById('roomSvg');
+            const serializer = new XMLSerializer();
+            let source = serializer.serializeToString(svg);
+
+            // Dodaj XML prolog i namespace ako treba
+            if(!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)){
+                source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
+            if(!source.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)){
+                source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+            }
+
+            // Dodaj XML header
+            source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+            const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'prostorija.svg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+        document.getElementById('savePngBtn').addEventListener('click', () => {
+            const svg = document.getElementById('roomSvg');
+            const serializer = new XMLSerializer();
+            let source = serializer.serializeToString(svg);
+
+            if(!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)){
+                source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
+            if(!source.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)){
+                source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+            }
+
+            source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+            const svgUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+
+            const image = new Image();
+            image.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = svg.clientWidth;
+                canvas.height = svg.clientHeight;
+                const ctx = canvas.getContext('2d');
+
+                // bela pozadina da ne bude transparentno
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.drawImage(image, 0, 0);
+
+                const pngUrl = canvas.toDataURL('image/png');
+
+                const link = document.createElement('a');
+                link.href = pngUrl;
+                link.download = 'prostorija.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+            image.onerror = e => {
+                alert('Greška pri učitavanju slike za eksport.');
+            };
+            image.src = svgUrl;
+        });
+
+    </script>
+{% endblock footerJavascript %}

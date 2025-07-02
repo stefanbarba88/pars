@@ -22,6 +22,9 @@ class Lamela {
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $povrsina = null;
+
     #[ORM\Column(length: 255)]
     private ?string $stanje = null;
 
@@ -175,6 +178,14 @@ class Lamela {
         }
 
         return $this;
+    }
+
+    public function getPovrsina(): ?float {
+        return $this->povrsina;
+    }
+
+    public function setPovrsina(?float $povrsina): void {
+        $this->povrsina = $povrsina;
     }
 
 }

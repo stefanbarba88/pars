@@ -16,8 +16,20 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ stan.sprat.title }}: {{ stan.title }}
+                                Stan: {{ stan.title }}
                             </h4>
+                        </div>
+                    </div>
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+
+                                <a href="{{ path('app_projekats') }}" class="breadcrumb-item">Projekti elaborati</a>
+                                <a href="{{ path('app_projekat_view', {id: stan.sprat.lamela.projekat.id}) }}" class="breadcrumb-item">{{ stan.sprat.lamela.projekat.title }}</a>
+                                <a href="{{ path('app_lamela_view', {id: stan.sprat.lamela.id}) }}" class="breadcrumb-item">{{ stan.sprat.lamela.title }}</a>
+                                <a href="{{ path('app_sprat_view', {id: stan.sprat.id }) }}" class="breadcrumb-item">{{ stan.sprat.title }}</a>
+{#                                <span class="breadcrumb-item active">{{ stan.title }}</span>#}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -32,7 +44,7 @@
                             <div class="tab-pane fade active show">
                                 {#                                {% set spratDays = getDeadlineCounterSprat(sprat.id) %}#}
                                 <div class="row">
-                                    <div class="col-xl-6">
+                                    <div class="col-xl-4">
                                         <div class="card">
                                             <div class="card-header d-flex align-items-center">
                                                 <h5 class="mb-0">{{ stan.title }}
@@ -47,17 +59,46 @@
                                                     <div class="col-8">{{ stan.title() }}</div>
                                                 </div>
 
+
                                                 <div class="row p-2 ">
-                                                    <div class="col-4">Progres:</div>
+                                                    <div class="col-4">Napomena:</div>
                                                     <div class="col-8">
-                                                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                            {{ stan.stanje }}
-                                                        </span>
+                                                        {{ stan.description }}
                                                     </div>
                                                 </div>
                                                 <div class="row p-2 bg-light">
-                                                    <div class="col-4">Realizacija:</div>
+                                                    <div class="col-4">Kreirano:</div>
                                                     <div class="col-8">
+                                                        <div class="d-inline-flex align-items-center">
+                                                            <i class="ph-calendar me-2"></i>
+                                                            {{ stan.created | date("d.m.Y")}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4">
+                                        <div class="card">
+
+                                            <div class="card-header d-flex align-items-center">
+                                                <h5 class="mb-0">Progres
+                                                </h5>
+                                            </div>
+                                            <div class="card-body">
+
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-6">Izmereno prostorija:</div>
+                                                    <div class="col-6">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ stan.stanje }}
+                                                </span>
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 ">
+                                                    <div class="col-6">Realizacija:</div>
+                                                    <div class="col-6">
                                                         {% set boja = 'bg-primary'%}
                                                         {% set procenat = stan.percent%}
                                                         {% if procenat < 26 %}
@@ -81,62 +122,29 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-6">Površina izmerena (m<sup>2</sup>):</div>
+                                                    <div class="col-6">
+                                                        {{ povrsina | number_format(2, '.', '')  }}
+                                                    </div>
+                                                </div>
                                                 <div class="row p-2 ">
-                                                    <div class="col-4">Napomena:</div>
-                                                    <div class="col-8">
-                                                        {{ stan.description }}
+                                                    <div class="col-6">Površina po projektu (m<sup>2</sup>):</div>
+                                                    <div class="col-6">
+                                                        {{ stan.povrsina | number_format(2, '.', '')  }}
                                                     </div>
                                                 </div>
                                                 <div class="row p-2 bg-light">
-                                                    <div class="col-4">Kreirano:</div>
-                                                    <div class="col-8">
-                                                        <div class="d-inline-flex align-items-center">
-                                                            <i class="ph-calendar me-2"></i>
-                                                            {{ stan.created | date("d.m.Y")}}
-                                                        </div>
+                                                    <div class="col-6">Razlika površina (m<sup>2</sup>):</div>
+                                                    <div class="col-6">
+                                                        {{ (stan.povrsina - povrsina) | number_format(2, '.', '')  }}
                                                     </div>
                                                 </div>
 
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xl-3">
-
-                                            <div class="card">
-                                                <div class="card-header d-flex align-items-center">
-                                                    <h5 class="mb-0">Slika
-                                                        <a href="{{ path('app_stan_slika', {id:stan.id}) }}"><i class="ph-note-pencil"></i></a>
-                                                    </h5>
-                                                </div>
-                                                {% if stan.image is not null %}
-                                                <div class="card-body">
-
-
-
-
-
-                                                    <div class="card">
-                                                        <div class="card-img-actions">
-                                                            <img class="card-img img-fluid" src="{{ asset(stan.image.thumbnail500) }}" alt="">
-                                                            <div class="card-img-actions-overlay card-img">
-                                                                <a href="{{ asset(stan.image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                                    <i class="ph-magnifying-glass-plus"></i>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-
-
-
-
-                                                </div>
-                                                {% endif %}
-                                            </div>
-
-                                    </div>
-                                    <div class="col-xl-3">
+                                    <div class="col-xl-4">
                                         <div class="card">
                                             <div class="card-header d-flex align-items-center">
                                                 <h5 class="mb-0">Tabelarni prikaz</h5>
@@ -193,12 +201,45 @@
                                     </div>
 
                                 </div>
+                                <div class="row">
+
+                                        <div class="col-xl-12">
+
+                                        <div class="card">
+                                            <div class="card-header d-flex align-items-center">
+                                                <h5 class="mb-0">Slike
+                                                    <a href="{{ path('app_stan_slika', {id:stan.id}) }}"><i class="ph-note-pencil"></i></a>
+                                                </h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    {% for image in stan.image %}
+                                                        <div class="col-xl-2">
+                                                            <div class="card">
+                                                                <div class="card-img-actions mx-1 mt-1">
+                                                                    <img class="card-img img-fluid" src="{{ image.thumbnail1024 }}" >
+                                                                    <div class="card-img-actions-overlay card-img">
+                                                                        <a href="{{ image.thumbnail1024 }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery2">
+                                                                            <i class="ph-plus"></i>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
                                 <div class="card">
                                     <div class="card-header d-flex align-items-center">
                                         <h5 class="mb-0">Prostorije</h5>
-                                        {#                                        <div class="my-auto ms-auto">#}
-                                        {#                                            <a href="{{ path('app_prostorija_form', {stan: stan.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>#}
-                                        {#                                        </div>#}
+                                        <div class="my-auto ms-auto">
+                                            <a href="{{ path('app_prostorija_create', {id: stan.id}) }}" class="btn btn-primary"><i class="ph-plus me-2"></i> Dodajte</a>
+                                        </div>
                                     </div>
 
                                     <div class="card-body">
@@ -208,6 +249,9 @@
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Naziv</th>
+                                                    <th>Projekat (m<sup>2</sup>)</th>
+                                                    <th>Merenje (m<sup>2</sup>)</th>
+                                                    <th>Razlika (m<sup>2</sup>)</th>
                                                     <th>Odstupanje</th>
                                                     <th>Za izmenu</th>
                                                     <th>Auto izmena</th>
@@ -227,6 +271,15 @@
                                                             <div class="fw-semibold">
                                                                 <a href="{{ path('app_prostorija_view', { id: prostorija.id}) }}">{{ prostorija.title }}</a>
                                                             </div>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            {{ prostorija.povrs | number_format(2, '.', '')  }}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            {{ prostorija.povrsina | number_format(2, '.', '')  }}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            {{ (prostorija.povrs - prostorija.povrsina) | number_format(2, '.', '')  }}
                                                         </td>
                                                         <td class="text-center">
                                                             {{ prostorija.odstupanje }}
@@ -262,11 +315,23 @@
                                                                     {% if prostorija.isEdit %}
                                                                         <a href="{{ path('app_prostorija_admin', { id: prostorija.id}) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Admin izmena</a>
                                                                     {% endif %}
+                                                                    {% if prostorija.isPlan %}
+                                                                        <a href="{{ path('app_prostorija_plan', { id: prostorija.id }) }}"
+                                                                           class="dropdown-item"
+                                                                           onclick="return confirm('Da li ste sigurni da želite da označite ovu prostoriju da joj je izmenjen plan u projektu?');">
+                                                                            <i class="ph-bookmark-simple me-2"></i> Izmenjen
+                                                                        </a>
+                                                                    {% endif %}
                                                                     {% if prostorija.unos1 is null %}
                                                                         <a href="{{ path('app_prostorija_form', { id: prostorija.id}) }}" class="dropdown-item"><i class="ph-plus me-2"></i> Unesite merenje</a>
                                                                     {% endif %}
                                                                     <a href="{{ path('app_prostorija_view', { id: prostorija.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
                                                                     <a href="{{ path('app_prostorija_edit', { id: prostorija.id}) }}" class="dropdown-item"><i class="ph-note-pencil me-2"></i> Izmenite</a>
+                                                                    <a href="{{ path('app_prostorija_repeat', { id: prostorija.id }) }}"
+                                                                       class="dropdown-item"
+                                                                       onclick="return confirm('Da li ste sigurni da želite da označite ovu prostoriju za ponovno merenje?');">
+                                                                        <i class="ph-repeat me-2"></i> Ponovite
+                                                                    </a>
                                                                     <a href="{{ path('app_prostorija_delete', { id: prostorija.id}) }}" class="dropdown-item"><i class="ph-trash me-2"></i> Obrišite</a>
                                                                 </div>
                                                             </div>

@@ -19,6 +19,9 @@ class Prostorija {
     private ?string $title = null;
 
     #[ORM\Column(nullable: true)]
+    private ?float $povrs = null;
+
+    #[ORM\Column(nullable: true)]
     private ?string $odstupanje = null;
 
     #[ORM\Column(nullable: true)]
@@ -46,6 +49,12 @@ class Prostorija {
 
     #[ORM\Column]
     private bool $isCustom = false;
+
+    #[ORM\Column]
+    private bool $isRepeat = false;
+
+    #[ORM\Column]
+    private bool $isPlan = false;
 
     #[ORM\Column]
     private bool $isEditManual = false;
@@ -290,6 +299,30 @@ class Prostorija {
 
     public function setDijagonala4(?float $dijagonala4): void {
         $this->dijagonala4 = $dijagonala4;
+    }
+
+    public function getPovrs(): ?float {
+        return $this->povrs;
+    }
+
+    public function setPovrs(?float $povrs): void {
+        $this->povrs = $povrs;
+    }
+
+    public function isRepeat(): bool {
+        return $this->isRepeat;
+    }
+
+    public function setIsRepeat(bool $isRepeat): void {
+        $this->isRepeat = $isRepeat;
+    }
+
+    public function isPlan(): bool {
+        return $this->isPlan;
+    }
+
+    public function setIsPlan(bool $isPlan): void {
+        $this->isPlan = $isPlan;
     }
 
 

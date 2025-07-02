@@ -20,7 +20,15 @@
                             </h4>
                         </div>
                     </div>
+{#                    <div class="page-header-content d-lg-flex border-top">#}
+{#                        <div class="d-flex">#}
+{#                            <div class="breadcrumb py-2">#}
 
+{#                                <a href="{{ path('app_projekats') }}" class="breadcrumb-item">Projekti elaborati</a>#}
+{#                                <span class="breadcrumb-item active">{{ projekat.title }}</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
                 </div>
                 <!-- /page header -->
 
@@ -58,16 +66,23 @@
                                     {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4">
                                                 <div class="mb-3">
                                                     {{ form_label(form.title, 'Naziv:*', {'label_attr': {'class': 'form-label'}}) }}
                                                     {{ form_widget(form.title, {attr: { class: 'form-control required' }}) }}
                                                 </div>
                                             </div>
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4">
                                                 <div class="mb-3">
                                                     {{ form_label(form.client, 'Klient:*', {'label_attr': {'class': 'form-label'}}) }}
                                                     {{ form_widget(form.client, {attr: { class: 'form-control select required' }}) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.povrsina, 'Površina:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.povrsina, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Površina po projektu u m<sup>2</sup></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -115,6 +130,10 @@
                                         </div>
 
                                         <div class="text-end">
+                                            <button type="button" onclick="history.back()" class="btn btn-primary">
+                                                <i class="ph-arrow-arc-left me-2"></i> Odustanite
+                                            </button>
+
                                             <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                                         </div>
                                     </div>

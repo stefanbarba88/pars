@@ -33,6 +33,8 @@ class NotifyMessagesData {
   public const CALENDAR_DELETE = 'Uspešno ste obrisali zahtev.';
   public const CALENDAR_EDIT = 'Uspešno ste izmenili zahtev.';
 
+    public const CALENDAR_ERROR = 'Zahtev je već kreiran. Niste kreirali zahtev.';
+
   //Poruke za beleske
   public const NOTE_ADD = 'Uspešno ste kreirali novu belešku.';
   public const NOTE_DELETE = 'Uspešno ste obrisali belešku.';

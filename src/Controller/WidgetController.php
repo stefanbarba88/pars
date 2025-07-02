@@ -118,6 +118,7 @@ class WidgetController extends AbstractController {
 
       $args['countProjekti'] = $this->em->getRepository(Projekat::class)->count([]);
       $args['countAdminMerenja'] = $this->em->getRepository(Prostorija::class)->count(['isEdit' => true]);
+      $args['countZaIzmenu'] = $this->em->getRepository(Prostorija::class)->count(['isPlan' => true]);
       $args['countZaMerenje'] = 0;
 
 

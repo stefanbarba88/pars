@@ -92,11 +92,29 @@ class CalendarController extends AbstractController {
 
       if ($form->isSubmitted() && $form->isValid()) {
 
+
+
+
         if ($calendar->getUser()->isEmpty()) {
           $data = $request->request->all();
           $user = $this->em->getRepository(User::class)->find($data['form']['zaposleni']);
           $calendar->addUser($user);
         }
+
+
+        $koris = $calendar->getUser()->first();
+        $type = $calendar->getType();
+        $calendarDb = $this->em->getRepository(Calendar::class)->checkCalendar($koris, $type);
+        if (!empty($calendarDb)) {
+            notyf()
+                ->position('x', 'right')
+                ->position('y', 'top')
+                ->duration(5000)
+                ->dismissible(true)
+                ->addError(NotifyMessagesData::CALENDAR_ERROR);
+            return $this->redirectToRoute('app_employee_calendar_view', ['id' => $korisnik->getId()]);
+        }
+
         $this->em->getRepository(Calendar::class)->save($calendar);
         $korisnik = $calendar->getUser()->first();
         $mailService->calendar($calendar, $company->getEmail());
@@ -152,6 +170,18 @@ class CalendarController extends AbstractController {
           $user = $this->em->getRepository(User::class)->find($data['form']['zaposleni']);
           $calendar->addUser($user);
         }
+          $koris = $calendar->getUser()->first();
+          $type = $calendar->getType();
+          $calendarDb = $this->em->getRepository(Calendar::class)->checkCalendar($koris, $type);
+          if (!empty($calendarDb)) {
+              notyf()
+                  ->position('x', 'right')
+                  ->position('y', 'top')
+                  ->duration(5000)
+                  ->dismissible(true)
+                  ->addError(NotifyMessagesData::CALENDAR_ERROR);
+              return $this->redirectToRoute('app_calendar_list');
+          }
         $this->em->getRepository(Calendar::class)->save($calendar);
         $mailService->calendar($calendar, $company->getEmail());
         if ($company->getId() == 1) {
@@ -278,7 +308,11 @@ class CalendarController extends AbstractController {
       }
     }
 
-    return $this->redirectToRoute('app_calendar_list');
+        if ($this->getUser()->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+            return $this->redirectToRoute('app_employee_calendar_view', ['id' => $this->getUser()->getId()]);
+        }
+
+        return $this->redirectToRoute('app_calendar_list');
   }
 
 }

@@ -16,11 +16,22 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ prostorija.stan.title }}: {{ prostorija.title }}
+                                Prostorija: {{ prostorija.title }}
                             </h4>
                         </div>
                     </div>
-
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+                                <a href="{{ path('app_projekats') }}" class="breadcrumb-item">Projekti elaborati</a>
+                                <a href="{{ path('app_projekat_view', {id: prostorija.stan.sprat.lamela.projekat.id}) }}" class="breadcrumb-item">{{ prostorija.stan.sprat.lamela.projekat.title }}</a>
+                                <a href="{{ path('app_lamela_view', {id: prostorija.stan.sprat.lamela.id}) }}" class="breadcrumb-item">{{ prostorija.stan.sprat.lamela.title }}</a>
+                                <a href="{{ path('app_sprat_view', {id: prostorija.stan.sprat.id }) }}" class="breadcrumb-item">{{ prostorija.stan.sprat.title }}</a>
+                                <a href="{{ path('app_stan_view', {id: prostorija.stan.id }) }}" class="breadcrumb-item">{{ prostorija.stan.title }}</a>
+                                {#                                <span class="breadcrumb-item active">{{ prostorija.title }}</span>#}
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- /page header -->
 
@@ -33,13 +44,32 @@
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
-
+                                <div class="row d-lg-flex">
+                                    {% for image in stan.image %}
+                                        <div class="col-xl-2 col-md-3 col-sm-4 mb-3">
+                                            <div class="card">
+                                                <div class="card-img-actions mx-1 mt-1">
+                                                    <img class="card-img img-fluid" src="{{ image.thumbnail1024 }}">
+                                                    <div class="card-img-actions-overlay card-img">
+                                                        <a href="{{ image.thumbnail1024 }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery2">
+                                                            <i class="ph-plus"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
                                 <div class="row">
                                     {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
-                                    <div class="col-xl-6">
+                                    <div class="row">
+                                        <div class="col-xl-6">
                                         <div class="card">
                                             <div class="card-header d-flex align-items-center">
                                                 <h5 class="mb-0">Zapis #3 (admin)</h5>
+                                                <div class="ms-auto">
+                                                    <span class="fw-bold" id="rezultat">0.00</span>
+                                                </div>
                                             </div>
                                             <div class="card-body">
                                                 <div class="row p-2 ">
@@ -47,41 +77,42 @@
                                                         <div class="table-responsive">
                                                             <table class="table table-bordered table_morecondensed">
                                                                 <tbody id="tbody">
-                                                                {% for zid in prostorija.archive %}
+                                                                {% for key, value in prostorija.unos1.unos %}
+
                                                                     <tr class="sub-row">
                                                                         <td colspan="3" class="bg-light">
                                                                             <div class="row align-items-end">
                                                                                 <div class="col-md-4">
                                                                                     <div class="mb-3">
                                                                                         <label class="form-label">Zid:</label>
-                                                                                        <input type="text" class="form-control required" placeholder="{{ zid['zid'] }}" name="zid[{{ zid['zid'] }}][zid]">
+                                                                                        <input type="text" class="form-control required" value="{{ key }}" name="zid[{{ key }}][zid]">
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-4">
                                                                                     <div class="mb-3">
                                                                                         <label class="form-label">Unos:</label>
-                                                                                        <input class="form-control required" type="number" min="0.01" step="0.01" placeholder="{{ zid['unos'] }}" name="zid[{{ zid['zid'] }}][merenje]">
+                                                                                        <input class="form-control required" type="number" min="0.01" step="0.01" value="{{ value['merenje'] }}" name="zid[{{ key }}][merenje]">
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-4">
                                                                                     <div class="row">
                                                                                         <div class="col-md-6 mb-3">
                                                                                             <div class="form-check ">
-                                                                                                <input type="radio" class="form-check-input required" name="zid[{{ zid['zid'] }}][dir]" id="cr_l_i_s" value="1" {% if zid['dir'] == 1 %} checked {% endif %}>
+                                                                                                <input type="radio" class="form-check-input required" name="zid[{{ key }}][dir]" id="cr_l_i_s" value="1" {% if value['dir'] == 1 %} checked {% endif %}>
                                                                                                 <label class="form-check-label" for="cr_l_i_s">H+</label>
                                                                                             </div>
                                                                                             <div class="form-check ">
-                                                                                                <input type="radio" class="form-check-input required" name="zid[{{ zid['zid'] }}][dir]" id="cr_l_i_u" value="2" {% if zid['dir'] == 2 %} checked {% endif %}>
+                                                                                                <input type="radio" class="form-check-input required" name="zid[{{ key }}][dir]" id="cr_l_i_u" value="2" {% if value['dir'] == 2 %} checked {% endif %}>
                                                                                                 <label class="form-check-label" for="cr_l_i_u">H-</label>
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-md-6">
                                                                                             <div class="form-check ">
-                                                                                                <input type="radio" class="form-check-input required" name="zid[{{ zid['zid'] }}][dir]" id="cr_l_i_s" value="3" {% if zid['dir'] == 3 %} checked {% endif %}>
+                                                                                                <input type="radio" class="form-check-input required" name="zid[{{ key }}][dir]" id="cr_l_i_s" value="3" {% if value['dir'] == 3 %} checked {% endif %}>
                                                                                                 <label class="form-check-label" for="cr_l_i_s">V+</label>
                                                                                             </div>
                                                                                             <div class="form-check ">
-                                                                                                <input type="radio" class="form-check-input required" name="zid[{{ zid['zid'] }}][dir]" id="cr_l_i_u" value="4" {% if zid['dir'] == 4 %} checked {% endif %}>
+                                                                                                <input type="radio" class="form-check-input required" name="zid[{{ key }}][dir]" id="cr_l_i_u" value="4" {% if value['dir'] == 4 %} checked {% endif %}>
                                                                                                 <label class="form-check-label" for="cr_l_i_u">V-</label>
                                                                                             </div>
                                                                                         </div>
@@ -132,7 +163,148 @@
                                                 <div class="row p-2 ">
                                                     <div class="col-12">
                                                         <div class="text-end">
-                                                            <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
+                                                            <button type="button" onclick="history.back()" class="btn btn-primary">
+                                                                <i class="ph-arrow-arc-left me-2"></i> Odustanite
+                                                            </button>
+                                                            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                                                                <i class="ph-floppy-disk me-2"></i> Sačuvajte
+                                                            </button>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+{#                                        <div class="col-xl-4">#}
+{#                                        <div class="card">#}
+{#                                            <div class="card-header d-flex align-items-center">#}
+{#                                                <h5 class="mb-0">Zapis po projektu</h5>#}
+{#                                            </div>#}
+{#                                            <div class="card-body">#}
+{#                                                <div class="row p-2 ">#}
+{#                                                    <div class="col-12">#}
+{#                                                        <div class="table-responsive">#}
+{#                                                            <table class="table table-bordered table_morecondensed">#}
+{#                                                                <tbody id="tbody">#}
+{#                                                                {% for zid in prostorija.archive %}#}
+{#                                                                    <tr class="sub-row">#}
+{#                                                                        <td colspan="3" class="bg-light">#}
+{#                                                                            <div class="row align-items-end">#}
+{#                                                                                <div class="col-md-4">#}
+{#                                                                                    <div class="mb-3">#}
+{#                                                                                        <label class="form-label">Zid:</label>#}
+{#                                                                                        <input type="text" class="form-control disable-input" value="{{ zid['zid'] }}" >#}
+{#                                                                                    </div>#}
+{#                                                                                </div>#}
+{#                                                                                <div class="col-md-4">#}
+{#                                                                                    <div class="mb-3">#}
+{#                                                                                        <label class="form-label">Unos:</label>#}
+{#                                                                                        <input class="form-control required disable-input" type="number" min="0.01" step="0.01" value="{{ zid['unos'] }}" >#}
+{#                                                                                    </div>#}
+{#                                                                                </div>#}
+{#                                                                                <div class="col-md-4">#}
+{#                                                                                    <div class="row">#}
+{#                                                                                        <div class="col-md-6 mb-3">#}
+{#                                                                                            <div class="form-check ">#}
+{#                                                                                                <input type="radio" class="form-check-input required disable-input"  id="cr_l_i_s" value="1" {% if zid['dir'] == 1 %} checked {% endif %}>#}
+{#                                                                                                <label class="form-check-label" for="cr_l_i_s">H+</label>#}
+{#                                                                                            </div>#}
+{#                                                                                            <div class="form-check ">#}
+{#                                                                                                <input type="radio" class="form-check-input required disable-input" id="cr_l_i_u" value="2" {% if zid['dir'] == 2 %} checked {% endif %}>#}
+{#                                                                                                <label class="form-check-label" for="cr_l_i_u">H-</label>#}
+{#                                                                                            </div>#}
+{#                                                                                        </div>#}
+{#                                                                                        <div class="col-md-6">#}
+{#                                                                                            <div class="form-check ">#}
+{#                                                                                                <input type="radio" class="form-check-input required disable-input"  id="cr_l_i_s" value="3" {% if zid['dir'] == 3 %} checked {% endif %}>#}
+{#                                                                                                <label class="form-check-label" for="cr_l_i_s">V+</label>#}
+{#                                                                                            </div>#}
+{#                                                                                            <div class="form-check ">#}
+{#                                                                                                <input type="radio" class="form-check-input required disable-input"  id="cr_l_i_u" value="4" {% if zid['dir'] == 4 %} checked {% endif %}>#}
+{#                                                                                                <label class="form-check-label" for="cr_l_i_u">V-</label>#}
+{#                                                                                            </div>#}
+{#                                                                                        </div>#}
+{#                                                                                    </div>#}
+{#                                                                                </div>#}
+{#                                                                            </div>#}
+{#                                                                        </td>#}
+
+{#                                                                    </tr>#}
+{#                                                                {% endfor %}#}
+{#                                                                </tbody>#}
+{#                                                            </table>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+                                        <div class="col-xl-6">
+                                            <div class="card">
+                                                <div class="card-header d-flex align-items-center">
+                                                    <h5 class="mb-0">Zapis merenja</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row p-2 ">
+                                                        <div class="col-4">Kreirano:</div>
+                                                        <div class="col-8">
+                                                            {{ getUserById(prostorija.unos1['userId']) }} - {{ prostorija.unos1['time'] }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row p-2 ">
+                                                        <div class="col-12">
+                                                            <div class="table-responsive">
+                                                                <table class="table table-bordered table_morecondensed">
+                                                                    <tbody id="tbody">
+                                                                    {% for key, value in prostorija.unos1['unos'] %}
+                                                                        <tr class="sub-row">
+                                                                            <td colspan="3" class="bg-light">
+                                                                                <div class="row align-items-end">
+                                                                                    <div class="col-md-4">
+                                                                                        <div class="mb-3">
+                                                                                            <label class="form-label">Zid:</label>
+                                                                                            <input type="text" class="form-control disable-input" value="{{ key }}" readonly>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-md-4">
+                                                                                        <div class="mb-3">
+                                                                                            <label class="form-label">Unos:</label>
+                                                                                            <input class="form-control disable-input" type="number" min="0.01" step="0.01" value="{{ value['merenje'] }}">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-md-4">
+                                                                                        <div class="row">
+                                                                                            <div class="col-md-6 mb-3">
+                                                                                                <div class="form-check ">
+                                                                                                    <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_s" value="1" {% if value['dir'] == 1 %} checked {% endif %}>
+                                                                                                    <label class="form-check-label" for="cr_l_i_s">H+</label>
+                                                                                                </div>
+                                                                                                <div class="form-check ">
+                                                                                                    <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_u" value="2" {% if value['dir'] == 2 %} checked {% endif %}>
+                                                                                                    <label class="form-check-label" for="cr_l_i_u">H-</label>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="col-md-6">
+                                                                                                <div class="form-check ">
+                                                                                                    <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_s" value="3" {% if value['dir'] == 3 %} checked {% endif %}>
+                                                                                                    <label class="form-check-label" for="cr_l_i_s">V+</label>
+                                                                                                </div>
+                                                                                                <div class="form-check ">
+                                                                                                    <input type="radio" class="form-check-input disable-input" name="" id="cr_l_i_u" value="4" {% if value['dir'] == 4 %} checked {% endif %}>
+                                                                                                    <label class="form-check-label" for="cr_l_i_u">V-</label>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -222,5 +394,165 @@
 
 {% endblock includeJavascript %}
 {% block footerJavascript %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
 
+            function updatePovrsina() {
+                const tabela = document.querySelector('#tbody');
+                const redovi = tabela.querySelectorAll('tr.sub-row');
+
+                const rezultatEl = document.getElementById('rezultat');
+                const koordinateOutput = document.getElementById('koordinateOutput') || { value: '' };
+                const fixOutput = document.getElementById('fixOutput') || { value: '' };
+                const submitBtn = document.getElementById('submitBtn');
+
+                let koordinate = [[0.00, 0.00]];
+                let x = 0, y = 0;
+
+                const duzine = [];
+                const pravci = [];
+
+                redovi.forEach(tr => {
+                    const merInput = tr.querySelector("input[name*='[merenje]']");
+                    const dirInput = tr.querySelector("input[name*='[dir]']:checked");
+
+                    if (!merInput || !dirInput) return;
+
+                    const duzina = Math.round(parseFloat(merInput.value) * 100) / 100;
+                    const pravac = parseInt(dirInput.value);
+
+                    if (isNaN(duzina)) return;
+
+                    duzine.push(duzina);
+                    pravci.push(pravac);
+
+                    switch (pravac) {
+                        case 1: x += duzina; break; // H+
+                        case 2: x -= duzina; break; // H-
+                        case 3: y += duzina; break; // V+
+                        case 4: y -= duzina; break; // V-
+                    }
+
+                    koordinate.push([parseFloat(x.toFixed(2)), parseFloat(y.toFixed(2))]);
+                });
+
+                koordinate.push([0.00, 0.00]);
+                const poslednja = koordinate[koordinate.length - 2] || [0.00, 0.00];
+                rezultatEl.textContent = `[${poslednja[0].toFixed(2)}, ${poslednja[1].toFixed(2)}]`;
+
+                const tacke = koordinate.length - 2;
+                const tolerancija = tacke <= 4 ? 0.02 : tacke <= 8 ? 0.03 : 0.05;
+
+                const deltaX = poslednja[0];
+                const deltaY = poslednja[1];
+                // const uToleranciji = Math.abs(deltaX) <= tolerancija && Math.abs(deltaY) <= tolerancija;
+                const uToleranciji = deltaX.toFixed(2) === '0.00' && deltaY.toFixed(2) === '0.00';
+                rezultatEl.classList.remove('text-success', 'text-danger');
+                rezultatEl.classList.add(uToleranciji ? 'text-success' : 'text-danger');
+                koordinateOutput.value = `${deltaX.toFixed(2)}, ${deltaY.toFixed(2)}`;
+
+                // Disable/enable dugmeta na osnovu tolerancije
+                if (submitBtn) {
+                    submitBtn.disabled = !uToleranciji;
+                }
+
+                if (!uToleranciji) {
+                    fixOutput.value = '';
+                    return;
+                }
+
+                const fix = [...duzine];
+                const maxKorekcija = 0.01;
+
+                // Korekcija X ose
+                if (Math.abs(deltaX) > maxKorekcija - 0.001) {
+                    const brojKorekcija = Math.round(Math.abs(deltaX) / maxKorekcija);
+                    const xIndeksi = duzine
+                        .map((val, i) => ({ index: i, val, dir: pravci[i] }))
+                        .filter(item => item.dir === 1 || item.dir === 2)
+                        .sort((a, b) => b.val - a.val);
+
+                    const xKorekcijaZidovi = new Set();
+                    let xKorekcijaBrojac = 0;
+
+                    for (let i = 0; i < xIndeksi.length && xKorekcijaBrojac < brojKorekcija; i++) {
+                        const item = xIndeksi[i];
+                        if (xKorekcijaZidovi.has(item.index)) continue;
+
+                        const korekcija = (deltaX > 0)
+                            ? (item.dir === 1 ? -maxKorekcija : maxKorekcija)
+                            : (item.dir === 1 ? maxKorekcija : -maxKorekcija);
+
+                        fix[item.index] = parseFloat((fix[item.index] + korekcija).toFixed(2));
+
+                        xKorekcijaZidovi.add(item.index);
+                        xKorekcijaBrojac++;
+                    }
+                }
+
+                // Korekcija Y ose
+                if (Math.abs(deltaY) > maxKorekcija - 0.001) {
+                    const brojKorekcija = Math.round(Math.abs(deltaY) / maxKorekcija);
+                    const yIndeksi = duzine
+                        .map((val, i) => ({ index: i, val, dir: pravci[i] }))
+                        .filter(item => item.dir === 3 || item.dir === 4)
+                        .sort((a, b) => b.val - a.val);
+
+                    const yKorekcijaZidovi = new Set();
+                    let yKorekcijaBrojac = 0;
+
+                    for (let i = 0; i < yIndeksi.length && yKorekcijaBrojac < brojKorekcija; i++) {
+                        const item = yIndeksi[i];
+                        if (yKorekcijaZidovi.has(item.index)) continue;
+
+                        const korekcija = (deltaY > 0)
+                            ? (item.dir === 4 ? maxKorekcija : -maxKorekcija)
+                            : (item.dir === 4 ? -maxKorekcija : maxKorekcija);
+
+                        fix[item.index] = parseFloat((fix[item.index] + korekcija).toFixed(2));
+
+                        yKorekcijaZidovi.add(item.index);
+                        yKorekcijaBrojac++;
+                    }
+                }
+
+                fixOutput.value = JSON.stringify(fix);
+            }
+
+// Reaguj na promene
+            ['input', 'change'].forEach(eventName => {
+                document.querySelector('#tbody').addEventListener(eventName, updatePovrsina);
+            });
+
+// Pokreni odmah na učitavanje stranice
+            window.addEventListener('DOMContentLoaded', updatePovrsina);
+
+
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('task_form');
+
+            form.addEventListener('submit', function (e) {
+                // Proveri da li postoje prazna required polja
+                const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+                let valid = true;
+
+                requiredFields.forEach(function (field) {
+                    if (!field.value || (field.type === 'radio' && !form.querySelector(`[name="${field.name}"]:checked`))) {
+                        valid = false;
+                    }
+                });
+
+                if (!valid) {
+                    // Ako ima nepopunjenih polja, ne prikazuj confirm dijalog
+                    return;
+                }
+
+                const potvrda = confirm('Da li ste sigurni da želite da sačuvate podatke?');
+                if (!potvrda) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
 {% endblock footerJavascript %}

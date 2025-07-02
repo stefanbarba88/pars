@@ -160,9 +160,16 @@
                         </a>
                         <a href="{{ path('app_prostorije_merenje') }}" class="nav-link {{ current_route == 'app_prostorije_merenje' ? 'active' : '' }}">
                             <i class="ph-spinner-gap"></i>
-                            <span>Neizmerene prostorija</span>
+                            <span>Neizmerene prostorije</span>
                             {% if countZaMerenje > 0 %}
                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countZaMerenje }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{{ path('app_prostorije_plan') }}" class="nav-link {{ current_route == 'app_prostorije_plan' ? 'active' : '' }}">
+                            <i class="ph-bookmarks"></i>
+                            <span>Izmenjene prostorije</span>
+                            {% if countZaIzmenu > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countZaIzmenu }}</span>
                             {% endif %}
                         </a>
                         <a href="{{ path('app_codes') }}" class="nav-link {{ current_route == 'app_codes' ? 'active' : '' }}">
@@ -946,6 +953,13 @@
                             <span>Neizmerene prostorije</span>
                             {% if countZaMerenje > 0 %}
                                 <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countZaMerenje }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{{ path('app_prostorije_plan') }}" class="nav-link {{ current_route == 'app_prostorije_plan' ? 'active' : '' }}">
+                            <i class="ph-bookmarks"></i>
+                            <span>Izmenjene prostorije</span>
+                            {% if countZaIzmenu > 0 %}
+                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countZaIzmenu }}</span>
                             {% endif %}
                         </a>
                         <a href="{{ path('app_codes') }}" class="nav-link {{ current_route == 'app_codes' ? 'active' : '' }}">

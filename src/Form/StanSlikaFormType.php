@@ -34,7 +34,7 @@ class StanSlikaFormType extends AbstractType {
             ->add('image', FileType::class, [
                 'attr' => ['accept' => 'image/jpeg,image/png,image/jpg,image-gif', 'data-show-upload' => 'false'],
                 // unmapped means that this field is not associated to any entity property
-                'multiple' => false,
+                'multiple' => true,
                 'mapped' => false,
                 // make it optional so you don't have to re-upload the PDF file
                 // every time you edit the Product details
@@ -42,9 +42,12 @@ class StanSlikaFormType extends AbstractType {
                 // unmapped fields can't define their validation using annotations
                 // in the associated entity, so you can use the PHP constraint classes
                 'constraints' => [
-                    new Image([
-                        'maxSize' => '2048k',
-                        'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 2Mb'
+                    new All([
+                        new Image([
+                            'maxSize' => '2048k',
+                            'maxSizeMessage' => 'Veličina slike je prevelika. Dozvoljena veličina je 2Mb.',
+                            'mimeTypesMessage' => 'Molimo Vas postavite dokument u jednom od ponuđenih formata za sliku.'
+                        ])
                     ])
                 ],
             ]);

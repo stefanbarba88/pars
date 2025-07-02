@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -47,6 +48,14 @@ class ProjekatFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
+        ->add('povrsina', NumberType::class, [
+            'required' => false,
+            'html5' => true,
+            'attr' => [
+                'min' => '0.01',
+                'step' => '0.01'
+            ],
+        ])
               ->add('assigned', EntityType::class, [
         'class' => User::class,
         'placeholder' => '--Izaberite zadužene na zadatku--',

@@ -49,6 +49,14 @@ class LamelaFormType extends AbstractType {
       ->add('description', TextareaType::class, [
         'required' => false,
       ])
+        ->add('povrsina', NumberType::class, [
+            'required' => false,
+            'html5' => true,
+            'attr' => [
+                'min' => '0.01',
+                'step' => '0.01'
+            ],
+        ])
         ->add('prostor', ChoiceType::class, [
             'placeholder' => '--Izaberite tip prostora--',
             'attr' => [

@@ -20,7 +20,17 @@
                             </h4>
                         </div>
                     </div>
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
 
+                                <a href="{{ path('app_projekats') }}" class="breadcrumb-item">Projekti elaborati</a>
+                                <a href="{{ path('app_projekat_view', {id: sprat.lamela.projekat.id}) }}" class="breadcrumb-item">{{ sprat.lamela.projekat.title }}</a>
+                                <a href="{{ path('app_lamela_view', {id: sprat.lamela.id}) }}" class="breadcrumb-item">{{ sprat.lamela.title }}</a>
+{#                                <span class="breadcrumb-item active">{{ sprat.title }}</span>#}
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- /page header -->
 
@@ -65,6 +75,13 @@
                                                     <input hidden="hidden" name="stan_form[sprat]" value="{{sprat.id}}">
                                                 </div>
                                             </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.povrsina, 'Površina:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.povrsina, {attr: { class: 'form-control required disable-input' }}) }}
+                                                    <span class="form-text">Površina po projektu u m<sup>2</sup></span>
+                                                </div>
+                                            </div>
                                             </div>
                                         <div class="row">
 
@@ -84,7 +101,7 @@
                                                 </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    {{ form_label(form.image, 'Slika stana:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_label(form.image, 'Slike stana:', {'label_attr': {'class': 'form-label'}}) }}
                                                     {{ form_widget(form.image, {attr: { class: 'form-control file-input' }}) }}
                                                     <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
                                                 </div>
@@ -107,6 +124,9 @@
                                         </div>
 
                                         <div class="text-end">
+                                            <button type="button" onclick="history.back()" class="btn btn-primary">
+                                                <i class="ph-arrow-arc-left me-2"></i> Odustanite
+                                            </button>
                                             <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                                         </div>
                                     </div>
@@ -192,13 +212,20 @@
             <tr id="prostorija_${currentRowIdx}" class="main-row">
                 <td style="width: 600px;">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-lg-8">
                             <div class="mb-3">
                                 <label class="form-label required" for="order_form_product_${currentRowIdx}">Prostorija:*</label>
                                 <select id="order_form_product_${currentRowIdx}" name="edit_order_products_form[product][${currentRowIdx}][product]" class="form-control select-remote-data required">
                                     <option value="">--Izaberite prostoriju--</option>
                                 </select>
                             </div>
+                        </div>
+              <div class="col-lg-4">
+                            <div class="mb-3">
+                                <label class="form-label required" for="order_form_product1_${currentRowIdx}">Površina:*</label>
+                                <input id="order_form_product1_${currentRowIdx}" name="edit_order_products_form[product][${currentRowIdx}][povrsina]" type="text" class="form-control required" min="0.01" step="0.01">
+<span class="form-text">Površina po projektu u m<sup>2</sup></span>
+</div>
                         </div>
                     </div>
                 </td>
@@ -246,6 +273,13 @@
                         maximumSelected: function(args) { return "Možete izabrati samo " + args.maximum + " stavki"; }
                     },
                 });
+
+                izracunajUkupnuPovrsinu();
+
+                // Prati unos u ovom novom polju
+                $(`#order_form_product1_${currentRowIdx}`).on('input', function () {
+                    izracunajUkupnuPovrsinu();
+                });
             });
 
             // Dodavanje sub-row reda (zidova)
@@ -261,20 +295,20 @@
             <tr class="sub-row" data-parent="${mainRowId}">
                 <td class="bg-light" colspan="2">
                     <div class="row align-items-end">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label">Zid:</label>
                                 <input type="text" class="form-control zid-oznaka" value="" readonly>
                                 <input type="hidden" class="zid-title" name="" value="">
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 d-none">
                             <div class="mb-3">
                                 <label class="form-label">Unos:</label>
                                 <input name="" class="form-control" type="number" min="0.01" step="0.01">
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="row">
 								<div class="col-md-6 mb-3">
 		                            <div class="form-check ">
@@ -324,6 +358,7 @@
                 $(`tr.sub-row[data-parent="${mainRowId}"]`).remove();
                 mainRow.remove();
                 renumerisiZidove();
+                izracunajUkupnuPovrsinu(); // <--- dodaj ovde
             });
 
             // Brisanje zida
@@ -377,6 +412,17 @@
 
             function formatRepoSelection(repo) {
                 return repo.text || repo.id;
+            }
+
+            function izracunajUkupnuPovrsinu() {
+                let total = 0;
+                $('input[name^="edit_order_products_form"][name$="[povrsina]"]').each(function () {
+                    let val = parseFloat($(this).val());
+                    if (!isNaN(val)) {
+                        total += val;
+                    }
+                });
+                $('#stan_form_povrsina').val(total.toFixed(2));
             }
         });
 {#        $(document).ready(function () {#}

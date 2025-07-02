@@ -64,6 +64,18 @@ class OvertimeRepository extends ServiceEntityRepository {
       ->getQuery();
   }
 
+    public function checkOvertime(User $user): array {
+        $nowMinus30 = new \DateTime('-30 seconds');
+
+        return $this->createQueryBuilder('c')
+            ->where(':user = c.user')
+            ->andWhere('c.created > :nowMinus30')
+            ->setParameter('user', $user)
+            ->setParameter('nowMinus30', $nowMinus30)
+            ->getQuery()
+            ->getResult();
+    }
+
 //  public function getOvertimePaginator() {
 //    $company = $this->security->getUser()->getCompany();
 //    return $this->createQueryBuilder('c')

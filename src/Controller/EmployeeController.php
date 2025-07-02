@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Classes\AppConfig;
+use App\Classes\Avatar;
 use App\Classes\Data\AvailabilityData;
 use App\Classes\Data\CalendarData;
 use App\Classes\Data\NotifyMessagesData;
@@ -1404,6 +1405,44 @@ class EmployeeController extends AbstractController {
             return $this->render('employee/phone/edit_info.html.twig', $args);
         }
         return $this->render('employee/edit_info.html.twig', $args);
+    }
+
+    #[Route('/avatar-image/{id}', name: 'app_employee_avatar_image_form')]
+//  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function avatarImage(User $usr, Request $request, UploadService $uploadService)    : Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+        $korisnik = $this->getUser();
+        if ($korisnik->getUserType() != UserRolesData::ROLE_SUPER_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_ADMIN && $korisnik->getUserType() != UserRolesData::ROLE_MANAGER) {
+            if ($korisnik->getId() != $usr->getId()) {
+                return $this->redirect($this->generateUrl('app_home'));
+            }
+        }
+        if ($korisnik->getCompany() != $usr->getCompany()) {
+            return $this->redirect($this->generateUrl('app_home'));
+        }
+
+
+        $usr->setEditBy($this->getUser());
+
+        $file = Avatar::generateLocalAvatar($this->getParameter('kernel.project_dir') . $usr->getAvatarUploadPath(), $usr);
+        $image = $this->em->getRepository(Image::class)->addImage($file, $usr->getThumbUploadPath(), $this->getParameter('kernel.project_dir'));
+        $usr->setImage($image);
+
+
+
+        $this->em->getRepository(User::class)->save($usr, null);
+
+        notyf()
+            ->position('x', 'right')
+            ->position('y', 'top')
+            ->duration(5000)
+            ->dismissible(true)
+            ->addSuccess(NotifyMessagesData::EDIT_USER_SUCCESS);
+
+        return $this->redirectToRoute('app_employee_profile_view', ['id' => $usr->getId()]);
+
     }
     #[Route('/edit-account/{id}', name: 'app_employee_edit_account_form')]
 //  #[Security("is_granted('USER_EDIT', usr)", message: 'Nemas pristup', statusCode: 403)]

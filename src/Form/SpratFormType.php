@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Sprat;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -29,6 +30,14 @@ class SpratFormType extends AbstractType {
       ->add('description', TextareaType::class, [
         'required' => false,
       ])
+        ->add('povrsina', NumberType::class, [
+            'required' => false,
+            'html5' => true,
+            'attr' => [
+                'min' => '0.01',
+                'step' => '0.01'
+            ],
+        ])
       ->add('deadline', DateType::class, [
         'required' => false,
         'widget' => 'single_text',

@@ -3,7 +3,11 @@
 namespace App\Repository;
 
 use App\Classes\Data\UserRolesData;
+use App\Entity\Lamela;
+use App\Entity\Projekat;
 use App\Entity\Prostorija;
+use App\Entity\Sprat;
+use App\Entity\Stan;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -33,9 +37,106 @@ class ProstorijaRepository extends ServiceEntityRepository {
             $this->getEntityManager()->flush();
         }
     }
+
+    public function getStanPovrsina(Stan $stan): float {
+        $rez = $this->createQueryBuilder('e')
+            ->select('SUM(e.povrsina)')
+            ->where('e.povrsina IS NOT NULL')
+            ->andWhere('e.stan = :stan')
+            ->setParameter('stan', $stan)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (float) $rez;
+    }
+    public function getSpratPovrsina(Sprat $sprat): float {
+        $povrs = 0;
+
+        $stanovi = $sprat->getStans()->toArray();
+
+        foreach ($stanovi as $stan) {
+            $rez = $this->getStanPovrsina($stan);
+            $povrs += $rez;
+        }
+
+        return (float) $povrs;
+    }
+
+    public function getLamelaPovrsina(Lamela $lamela): float {
+        $povrs = 0;
+
+        $spratovi = $lamela->getSprats()->toArray();
+
+        foreach ($spratovi as $sprat) {
+            $rez = $this->getSpratPovrsina($sprat);
+            $povrs += $rez;
+        }
+
+        return (float) $povrs;
+    }
+    public function getProjekatPovrsina(Projekat $projekat): float {
+        $povrs = 0;
+
+        $lamele = $projekat->getLamelas()->toArray();
+
+        foreach ($lamele as $lamela) {
+            $rez = $this->getLamelaPovrsina($lamela);
+            $povrs += $rez;
+        }
+
+        return (float) $povrs;
+    }
+
+
     public function getProstorijeCheck($filter, $user): array {
         $rez =  $this->createQueryBuilder('e')
                 ->where('e.isEdit  = 1')
+                ->orderBy('e.id', 'ASC')
+                ->getQuery()->getResult();
+
+        $prostorije = [];
+        if (!empty($filter['projekat'])) {
+            foreach ($rez as $prostorija) {
+                if ($prostorija->getStan()->getSprat()->getLamela()->getProjekat()->getId() == $filter['projekat']) {
+                    $prostorije[] = $prostorija;
+                }
+            }
+            if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+                $konacno = [];
+                foreach ($prostorije as $prostorija) {
+                    if (in_array($user->getId(), (array)$prostorija->getStan()->getSprat()->getLamela()->getProjekat()->getZaposleni())) {
+                        $konacno[] = $prostorija;
+                    }
+                    if (in_array($user, $prostorija->getStan()->getSprat()->getLamela()->getProjekat()->getAssigned()->toArray())) {
+                        if (!in_array($prostorija, $konacno)) {
+                            $konacno[] = $prostorija;
+                        }
+                    }
+                }
+                return $konacno;
+            }
+            return $prostorije;
+        } else {
+            if ($user->getUserType() == UserRolesData::ROLE_EMPLOYEE) {
+                $konacno = [];
+                foreach ($rez as $prostorija) {
+                    if (in_array($user->getId(), (array)$prostorija->getStan()->getSprat()->getLamela()->getProjekat()->getZaposleni())) {
+                        $konacno[] = $prostorija;
+                    }
+                    if (in_array($user, $prostorija->getStan()->getSprat()->getLamela()->getProjekat()->getAssigned()->toArray())) {
+                        if (!in_array($prostorija, $konacno)) {
+                            $konacno[] = $prostorija;
+                        }
+                    }
+                }
+                return $konacno;
+            }
+            return $rez;
+        }
+    }
+    public function getProstorijePlan($filter, $user): array {
+        $rez =  $this->createQueryBuilder('e')
+                ->where('e.isPlan  = 1')
                 ->orderBy('e.id', 'ASC')
                 ->getQuery()->getResult();
 

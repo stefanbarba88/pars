@@ -51,6 +51,10 @@
                                 </div>
 
                                 <div class="text-end">
+                                    <button type="button" class="btn btn-primary"
+                                            onclick="window.location.href = this.closest('form').action;">
+                                        <i class="ph-arrow-counter-clockwise me-2"></i> Reset
+                                    </button>
                                     <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
                                 </div>
                             </div>
@@ -62,6 +66,8 @@
                                     <tr>
                                         <th>Prostorija</th>
                                         <th>Stan</th>
+                                        <th>Sprat</th>
+                                        <th>Lamela</th>
                                         <th>Projekat</th>
 
                                         <th>Kreiran</th>
@@ -85,6 +91,20 @@
                                                     <div class="text-body">
                                                         <a href="{{ path('app_stan_view', {id: prostorija.stan.id}) }}" class="fw-semibold">
                                                             {{ prostorija.stan.title }}
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="text-body">
+                                                        <a href="{{ path('app_sprat_view', {id: prostorija.stan.sprat.id}) }}" class="fw-semibold">
+                                                            {{ prostorija.stan.sprat.title }}
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="text-body">
+                                                        <a href="{{ path('app_lamela_view', {id: prostorija.stan.sprat.lamela.id}) }}" class="fw-semibold">
+                                                            {{ prostorija.stan.sprat.lamela.title }}
                                                         </a>
                                                     </div>
                                                 </td>

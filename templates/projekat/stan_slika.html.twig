@@ -16,99 +16,101 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ stan.sprat.title }}: {{ stan.title }}
+                                Stan: {{ stan.title }}
                             </h4>
                         </div>
                     </div>
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
 
+                                <a href="{{ path('app_projekats') }}" class="breadcrumb-item">Projekti elaborati</a>
+                                <a href="{{ path('app_projekat_view', {id: stan.sprat.lamela.projekat.id}) }}" class="breadcrumb-item">{{ stan.sprat.lamela.projekat.title }}</a>
+                                <a href="{{ path('app_lamela_view', {id: stan.sprat.lamela.id}) }}" class="breadcrumb-item">{{ stan.sprat.lamela.title }}</a>
+                                <a href="{{ path('app_sprat_view', {id: stan.sprat.id }) }}" class="breadcrumb-item">{{ stan.sprat.title }}</a>
+{#                                <span class="breadcrumb-item active">{{ stan.title }}</span>#}
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- /page header -->
 
                 <!-- Content area -->
                 <div class="content">
-
+                    {% if not form.vars.valid %}
+                        {% for child in form.children %}
+                            {%for error in child.vars.errors%}
+                                <div class="alert alert-danger alert-dismissible fade show">
+                                    <span class="fw-semibold">{{error.message}}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {%endfor%}
+                        {%endfor%}
+                    {%endif%}
                     <!-- Inner container -->
                     <div class="d-lg-flex align-items-lg-start">
 
                         <!-- Right content -->
                         <div class="tab-content flex-fill">
                             <div class="tab-pane fade active show">
-                                {% if not form.vars.valid %}
-                                    {% for child in form.children %}
-                                        {%for error in child.vars.errors%}
-                                            <div class="alert alert-danger alert-dismissible fade show">
-                                                <span class="fw-semibold">{{error.message}}</span>
-                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                            </div>
-                                        {%endfor%}
-                                    {%endfor%}
-                                {%endif%}
-
-                                <!-- Wizard with validation -->
                                 <div class="card">
                                     <div class="card-header">
-                                        <h6 class="mb-0">
-                                            {% if stan.id is not null %}
-                                                Izmena slike
-                                            {% else %}
-                                                Dodavanje stana
-                                            {% endif %}
-                                        </h6>
+                                        <h5 class="mb-0">Izmena slika</h5>
                                     </div>
-                                    {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data', 'id': 'task_form' }}) }}
+
+
+
+                                    {{ form_start(form, {'attr': {'class' : 'form-validate-jquery', 'novalidation': 'novalidation', 'enctype': 'multipart/form-data' }}) }}
                                     <div class="card-body">
-
+                                        <div class="fw-bold border-bottom pb-2 mb-3">Slike</div>
                                         <div class="row">
-
-                                            <div class="col-lg-3">
-                                                <div class="mb-3">
-                                                    {% if stan.image is not null %}
-                                                        <div class="card">
-
-                                                            <div class="card-body">
-
-                                                                <div class="card">
-                                                                    <div class="card-img-actions">
-                                                                        <img class="card-img img-fluid" src="{{ asset(stan.image.thumbnail500) }}" alt="">
-                                                                        <div class="card-img-actions-overlay card-img">
-                                                                            <a href="{{ asset(stan.image.thumbnail1024) }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery1">
-                                                                                <i class="ph-magnifying-glass-plus"></i>
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
+                                            {% for image in stan.image %}
+                                                <div class="col-xl-2">
+                                                    <div class="card">
+                                                        <div class="card-img-actions mx-1 mt-1">
+                                                            <img class="card-img img-fluid" src="{{ image.thumbnail1024 }}">
+                                                            <div class="card-img-actions-overlay card-img">
+                                                                <a href="{{ image.thumbnail1024 }}" class="btn btn-outline-white btn-icon rounded-pill" data-bs-popup="lightbox" data-gallery="gallery2">
+                                                                    <i class="ph-plus"></i>
+                                                                </a>
                                                             </div>
                                                         </div>
-                                                    {% endif %}
+                                                        <div class="card-body">
+                                                            <div class="d-flex align-items-start flex-nowrap">
+                                                                <div>
+                                                                    <div class="fw-semibold me-2">Označiti za brisanje</div>
+                                                                </div>
+
+                                                                <div class="d-inline-flex ms-auto">
+                                                                    <input type="checkbox" name="image_delete[{{ loop.index }}][checked]" class="form-check-input">
+                                                                    <input type="text" hidden="hidden" value="{{ image.id }}" name="image_delete[{{ loop.index }}][value]" class="form-check-input">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-
-                                            </div>
-
-
+                                            {% endfor %}
                                         </div>
+                                    </div>
+                                    <div class="card-body">
                                         <div class="row">
-
                                             <div class="col-lg-12">
                                                 <div class="mb-3">
-                                                    {{ form_label(form.image, 'Slika stana:', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_label(form.image, 'Slike:', {'label_attr': {'class': 'form-label'}}) }}
                                                     {{ form_widget(form.image, {attr: { class: 'form-control file-input' }}) }}
                                                     <span class="form-text">Format: png, jpg, gif. Maksimalna veličina fajla 2Mb.</span>
                                                 </div>
-
                                             </div>
-
                                         </div>
-
-
                                         <div class="text-end">
+                                            <button type="button" onclick="history.back()" class="btn btn-primary">
+                                                <i class="ph-arrow-arc-left me-2"></i> Odustanite
+                                            </button>
                                             <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                                         </div>
                                     </div>
                                     {{ form_end(form) }}
-
                                 </div>
-                                <!-- /wizard with validation -->
                             </div>
                         </div>
                         <!-- /right content -->

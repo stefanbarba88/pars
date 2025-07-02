@@ -35,9 +35,11 @@ class DailyReportService {
         $projectList = [];
         $usersList = [];
 
+        //dodat i exing element gradiliste
+        $wellport = 201;
 
         foreach ($projects as $project) {
-            if ($project->getClient()->first()->getId() === $client->getId()) {
+            if ($project->getClient()->first()->getId() === $client->getId() || $project->getId() == $wellport) {
                 $users = $this->taskRepository->getUsersByDateExing($danas, $project);
 
                 if (!empty($users['lista'])) {

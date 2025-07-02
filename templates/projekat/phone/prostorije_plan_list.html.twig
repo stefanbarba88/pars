@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                               Prostorije sa nepotpunim merenjem
+                               Prostorije sa izmenjenim frontovima
                             </h4>
                         </div>
                     </div>
@@ -36,41 +36,51 @@
                                 </div>
 {#                            {% endif %}#}
                         </div>
-                        <form method="get" action="{{ path('app_prostorije_check') }}" class="form-validate-jquery" novalidation="novalidation">
-                            <div class="card-body">
-                                <div class="col-lg-4">
-                                    <div class="mb-3">
-                                        <label class="form-label required" for="company">Projekat:</label>
-                                        <select id="company" name="projekat" class="form-control select">
-                                            <option value="">--Izaberite projekat--</option>
-                                            {% for projekat in projekti %}
-                                                <option value="{{ projekat.id }}">{{ projekat.title }}</option>
-                                            {% endfor %}
-                                        </select>
+                        <div class="card-body">
+                            <div class="accordion" id="accordion_collapsed">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsed_item_filter" aria-expanded="false">
+                                            Filter
+                                        </button>
+                                    </h2>
+                                    <div id="collapsed_item_filter" class="accordion-collapse collapse" data-bs-parent="#accordion_collapsed" style="">
+                                        <form method="get" action="{{ path('app_prostorije_plan') }}" class="form-validate-jquery" novalidation="novalidation">
+                                            <div class="card-body">
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        <label class="form-label required" for="company">Projekat:</label>
+                                                        <select id="company" name="projekat" class="form-control select">
+                                                            <option value="">--Izaberite projekat--</option>
+                                                            {% for projekat in projekti %}
+                                                                <option value="{{ projekat.id }}">{{ projekat.title }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="text-end">
+                                                    <button type="button" class="btn btn-primary"
+                                                            onclick="window.location.href = this.closest('form').action;">
+                                                        <i class="ph-arrow-counter-clockwise me-2"></i> Reset
+                                                    </button>
+                                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
+                                                </div>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
-
-                                <div class="text-end">
-                                    <button type="button" class="btn btn-primary"
-                                            onclick="window.location.href = this.closest('form').action;">
-                                        <i class="ph-arrow-counter-clockwise me-2"></i> Reset
-                                    </button>
-                                    <button type="submit" class="btn btn-primary"><i class="ph-gear-six me-2"></i> Prikažite</button>
-                                </div>
                             </div>
-                        </form>
+                        </div>
+
                         <div class="card-body">
                             <div class="card">
-                                <table class="table table-bordered table-hover table-responsive table-sm">
+                                <table class="table table-bordered table-hover table-responsive table_morecondensed">
                                     <thead class="bg-light text-primary">
                                     <tr>
                                         <th>Prostorija</th>
-                                        <th>Stan</th>
-                                        <th>Sprat</th>
-                                        <th>Lamela</th>
                                         <th>Projekat</th>
                                         <th>Odstupanje</th>
-                                        <th>Kreiran</th>
                                         <th class="text-center text-muted" style="width: 30px;"><i class="ph-dots-three"></i></th>
                                     </tr>
                                     </thead>
@@ -87,27 +97,7 @@
                                                     </a>
                                                 </div>
                                             </td>
-                                                <td>
-                                                    <div class="text-body">
-                                                        <a href="{{ path('app_stan_view', {id: prostorija.stan.id}) }}" class="fw-semibold">
-                                                            {{ prostorija.stan.title }}
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="text-body">
-                                                        <a href="{{ path('app_sprat_view', {id: prostorija.stan.sprat.id}) }}" class="fw-semibold">
-                                                            {{ prostorija.stan.sprat.title }}
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="text-body">
-                                                        <a href="{{ path('app_lamela_view', {id: prostorija.stan.sprat.lamela.id}) }}" class="fw-semibold">
-                                                            {{ prostorija.stan.sprat.lamela.title }}
-                                                        </a>
-                                                    </div>
-                                                </td>
+
                                                 <td>
                                                     <div class="text-body">
                                                         <a href="{{ path('app_projekat_view', {id: prostorija.stan.sprat.lamela.projekat.id}) }}" class="fw-semibold">
@@ -125,12 +115,6 @@
                                                 </td>
 
 
-                                        <td>
-                                            <div class="d-inline-flex align-items-center">
-                                                <i class="ph-calendar me-2"></i>
-                                                {{ prostorija.unos1['time']}}
-                                            </div>
-                                        </td>
 
                                             <td class="text-center">
                                                     <div class="dropdown">
@@ -138,15 +122,14 @@
                                                             <i class="ph-gear"></i>
                                                         </a>
                                                         <div class="dropdown-menu dropdown-menu-end">
-                                                            {% if prostorija.isEdit %}
-                                                                <a href="{{ path('app_prostorija_admin', { id: prostorija.id}) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Admin izmena</a>
+                                                            {% if prostorija.isPlan %}
+                                                                <a href="{{ path('app_prostorija_plan', { id: prostorija.id }) }}"
+                                                                   class="dropdown-item"
+                                                                   onclick="return confirm('Da li ste sigurni da želite da označite ovu prostoriju da joj je izmenjen plan u projektu?');">
+                                                                    <i class="ph-bookmark-simple me-2"></i> Izmenjen
+                                                                </a>
                                                             {% endif %}
                                                             <a href="{{ path('app_prostorija_view', { id: prostorija.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                            <a href="{{ path('app_prostorija_repeat', { id: prostorija.id }) }}"
-                                                               class="dropdown-item"
-                                                               onclick="return confirm('Da li ste sigurni da želite da označite ovu prostoriju za ponovno merenje?');">
-                                                                <i class="ph-repeat me-2"></i> Ponovite
-                                                            </a>
                                                         </div>
                                                     </div>
                                                 </td>

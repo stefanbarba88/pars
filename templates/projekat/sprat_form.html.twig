@@ -20,7 +20,16 @@
                             </h4>
                         </div>
                     </div>
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
 
+                                <a href="{{ path('app_projekats') }}" class="breadcrumb-item">Projekti elaborati</a>
+                                <a href="{{ path('app_projekat_view', {id: lamela.projekat.id}) }}" class="breadcrumb-item">{{ lamela.projekat.title }}</a>
+{#                                <span class="breadcrumb-item active">{{ lamela.title }}</span>#}
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- /page header -->
 
@@ -65,6 +74,13 @@
                                                     <input hidden="hidden" name="lamela_form[lamela]" value="{{lamela.id}}">
                                                 </div>
                                             </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    {{ form_label(form.povrsina, 'Površina:*', {'label_attr': {'class': 'form-label'}}) }}
+                                                    {{ form_widget(form.povrsina, {attr: { class: 'form-control required' }}) }}
+                                                    <span class="form-text">Površina po projektu u m<sup>2</sup></span>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-6">
@@ -90,6 +106,9 @@
                                         </div>
 
                                         <div class="text-end">
+                                            <button type="button" onclick="history.back()" class="btn btn-primary">
+                                                <i class="ph-arrow-arc-left me-2"></i> Odustanite
+                                            </button>
                                             <button type="submit" class="btn btn-primary"><i class="ph-floppy-disk me-2"></i> Sačuvajte</button>
                                         </div>
                                     </div>

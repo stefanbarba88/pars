@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\UserRolesData;
+use App\Entity\Calendar;
 use App\Entity\Overtime;
 use App\Entity\Task;
 use App\Entity\User;
@@ -101,6 +102,17 @@ class OvertimeController extends AbstractController {
       $overtime->setNote($napomena);
       $overtime->setTask($task);
 
+        $koris = $overtime->getUser();
+        $overtimeDb = $this->em->getRepository(Overtime::class)->checkOvertime($koris);
+        if (!empty($overtimeDb)) {
+            notyf()
+                ->position('x', 'right')
+                ->position('y', 'top')
+                ->duration(5000)
+                ->dismissible(true)
+                ->addError(NotifyMessagesData::CALENDAR_ERROR);
+            return $this->redirectToRoute('app_overtime_archive');
+        }
 
       $this->em->getRepository(Overtime::class)->save($overtime);
 
@@ -146,6 +158,17 @@ class OvertimeController extends AbstractController {
       $overtime->setNote($napomena);
       $overtime->setTask($task);
 
+        $koris = $overtime->getUser();
+        $overtimeDb = $this->em->getRepository(Overtime::class)->checkOvertime($koris);
+        if (!empty($overtimeDb)) {
+            notyf()
+                ->position('x', 'right')
+                ->position('y', 'top')
+                ->duration(5000)
+                ->dismissible(true)
+                ->addError(NotifyMessagesData::CALENDAR_ERROR);
+            return $this->redirectToRoute('app_employee_calendar_view', (['id' => $user->getId()]));
+        }
 
       $this->em->getRepository(Overtime::class)->save($overtime);
 

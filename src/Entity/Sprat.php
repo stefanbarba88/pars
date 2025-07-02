@@ -25,6 +25,9 @@ class Sprat {
     private ?string $stanje = null;
 
     #[ORM\Column(nullable: true)]
+    private ?float $povrsina = null;
+
+    #[ORM\Column(nullable: true)]
     private ?float $percent = null;
 
 
@@ -161,6 +164,14 @@ class Sprat {
         }
 
         return $this;
+    }
+
+    public function getPovrsina(): ?float {
+        return $this->povrsina;
+    }
+
+    public function setPovrsina(?float $povrsina): void {
+        $this->povrsina = $povrsina;
     }
 
 }

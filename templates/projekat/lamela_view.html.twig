@@ -16,8 +16,18 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                                {{ lamela.projekat.title }}: {{ lamela.title }}
+                                Lamela: {{ lamela.title }}
                             </h4>
+                        </div>
+                    </div>
+                    <div class="page-header-content d-lg-flex border-top">
+                        <div class="d-flex">
+                            <div class="breadcrumb py-2">
+
+                                <a href="{{ path('app_projekats') }}" class="breadcrumb-item">Projekti elaborati</a>
+                                <a href="{{ path('app_projekat_view', {id: lamela.projekat.id}) }}" class="breadcrumb-item">{{ lamela.projekat.title }}</a>
+{#                                <span class="breadcrumb-item active">{{ lamela.title }}</span>#}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -32,92 +42,129 @@
                             <div class="tab-pane fade active show">
                                 {% set lamelaDays = getDeadlineCounterLamela(lamela.id) %}
 
-                                <div class="card">
+                                <div class="row">
+                                    <div class="col-xl-6">
+                                        <div class="card">
 
-                                    <div class="card-header d-flex align-items-center">
-                                        <h5 class="mb-0">{{ lamela.title }}
-{#                                            {% if not is_granted('ROLE_EMPLOYEE') %}#}
-                                                <a href="{{ path('app_lamela_edit', {id:lamela.id}) }}"><i class="ph-note-pencil"></i></a>
-{#                                            {% endif %}#}
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Naziv:</div>
-                                            <div class="col-8">{{ lamela.title() }}</div>
-                                        </div>
-                                        <div class="row p-2">
-                                            <div class="col-4">Tip prostora:</div>
-                                            <div class="col-8">
-                                                {% if lamela.prostor == 1 %} Stambeni prostor{% endif %}
-                                                {% if lamela.prostor == 2 %} Poslovni prostor{% endif %}
-                                                {% if lamela.prostor == 3 %} Garažni prostor{% endif %}
+                                            <div class="card-header d-flex align-items-center">
+                                                <h5 class="mb-0">{{ lamela.title }}
+                                                    {#                                            {% if not is_granted('ROLE_EMPLOYEE') %}#}
+                                                    <a href="{{ path('app_lamela_edit', {id:lamela.id}) }}"><i class="ph-note-pencil"></i></a>
+                                                    {#                                            {% endif %}#}
+                                                </h5>
                                             </div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Progres:</div>
-                                            <div class="col-8">
-                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
-                                                    {{ lamela.stanje }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 bg">
-                                            <div class="col-4">Realizacija:</div>
-                                            <div class="col-8">
-                                                {% set boja = 'bg-primary'%}
-                                                {% set procenat = lamela.percent%}
-                                                {% if procenat < 26 %}
-                                                    {% set boja = 'bg-danger'%}
-                                                {% endif %}
-                                                {% if procenat > 25 and procenat < 76 %}
-                                                    {% set boja = 'bg-warning'%}
-                                                {% endif %}
-                                                {% if procenat > 75 and procenat < 99 %}
-                                                    {% set boja = 'bg-info'%}
-                                                {% endif %}
-                                                {% if procenat == 100 %}
-                                                    {% set boja = 'bg-success'%}
-                                                {% endif %}
-                                                <div class="progress">
-                                                    <div class="progress-bar {{ boja }}" role="progressbar" style="width: {{ procenat }}%" aria-valuenow="{{ procenat }}" aria-valuemin="0" aria-valuemax="100">
-                                                        {% if procenat > 0 %}
-                                                            {{ procenat }}%
+                                            <div class="card-body">
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Naziv:</div>
+                                                    <div class="col-8">{{ lamela.title() }}</div>
+                                                </div>
+                                                <div class="row p-2">
+                                                    <div class="col-4">Tip prostora:</div>
+                                                    <div class="col-8">
+                                                        {% if lamela.prostor == 1 %} Stambeni prostor{% endif %}
+                                                        {% if lamela.prostor == 2 %} Poslovni prostor{% endif %}
+                                                        {% if lamela.prostor == 3 %} Garažni prostor{% endif %}
+                                                    </div>
+                                                </div>
+
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Rok:</div>
+                                                    <div class="col-8">
+                                                        {% if lamela.deadline is not null %}
+                                                            <div class="d-inline-flex align-items-center">
+                                                                <i class="ph-calendar me-2"></i>
+                                                                {{ lamela.deadline | date("d.m.Y")}}
+                                                                {% if lamelaDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ lamelaDays.poruka }}" data-bs-original-title="{{ lamelaDays.poruka }}"></i>{% endif %}
+                                                            </div>
                                                         {% endif %}
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Rok:</div>
-                                            <div class="col-8">
-                                                {% if lamela.deadline is not null %}
-                                                    <div class="d-inline-flex align-items-center">
-                                                        <i class="ph-calendar me-2"></i>
-                                                        {{ lamela.deadline | date("d.m.Y")}}
-                                                        {% if lamelaDays.poruka is not empty %}<i class="ph-info me-2" data-bs-popup="tooltip" aria-label="{{ lamelaDays.poruka }}" data-bs-original-title="{{ lamelaDays.poruka }}"></i>{% endif %}
+                                                <div class="row p-2 ">
+                                                    <div class="col-4">Napomena:</div>
+                                                    <div class="col-8">
+                                                        {{ lamela.description }}
                                                     </div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 ">
-                                            <div class="col-4">Napomena:</div>
-                                            <div class="col-8">
-                                                {{ lamela.description }}
-                                            </div>
-                                        </div>
-                                        <div class="row p-2 bg-light">
-                                            <div class="col-4">Kreirano:</div>
-                                            <div class="col-8">
-                                                <div class="d-inline-flex align-items-center">
-                                                    <i class="ph-calendar me-2"></i>
-                                                    {{ lamela.created | date("d.m.Y")}}
                                                 </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Kreirano:</div>
+                                                    <div class="col-8">
+                                                        <div class="d-inline-flex align-items-center">
+                                                            <i class="ph-calendar me-2"></i>
+                                                            {{ lamela.created | date("d.m.Y")}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-xl-6">
+                                        <div class="card">
 
+                                            <div class="card-header d-flex align-items-center">
+                                                <h5 class="mb-0">Progres
+                                                </h5>
+                                            </div>
+                                            <div class="card-body">
+
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Izmereno prostorija:</div>
+                                                    <div class="col-8">
+                                                <span class="badge bg-yellow align-self-center rounded-pill ms-auto">
+                                                    {{ lamela.stanje }}
+                                                </span>
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 ">
+                                                    <div class="col-4">Realizacija:</div>
+                                                    <div class="col-8">
+                                                        {% set boja = 'bg-primary'%}
+                                                        {% set procenat = lamela.percent%}
+                                                        {% if procenat < 26 %}
+                                                            {% set boja = 'bg-danger'%}
+                                                        {% endif %}
+                                                        {% if procenat > 25 and procenat < 76 %}
+                                                            {% set boja = 'bg-warning'%}
+                                                        {% endif %}
+                                                        {% if procenat > 75 and procenat < 99 %}
+                                                            {% set boja = 'bg-info'%}
+                                                        {% endif %}
+                                                        {% if procenat == 100 %}
+                                                            {% set boja = 'bg-success'%}
+                                                        {% endif %}
+                                                        <div class="progress">
+                                                            <div class="progress-bar {{ boja }}" role="progressbar" style="width: {{ procenat }}%" aria-valuenow="{{ procenat }}" aria-valuemin="0" aria-valuemax="100">
+                                                                {% if procenat > 0 %}
+                                                                    {{ procenat }}%
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Površina izmerena (m<sup>2</sup>):</div>
+                                                    <div class="col-8">
+                                                        {{ povrsina | number_format(2, '.', '')  }}
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 ">
+                                                    <div class="col-4">Površina po projektu (m<sup>2</sup>):</div>
+                                                    <div class="col-8">
+                                                        {{ lamela.povrsina | number_format(2, '.', '')  }}
+                                                    </div>
+                                                </div>
+                                                <div class="row p-2 bg-light">
+                                                    <div class="col-4">Razlika površina (m<sup>2</sup>):</div>
+                                                    <div class="col-8">
+                                                        {{ (lamela.povrsina - povrsina) | number_format(2, '.', '')  }}
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+
                                 <div class="card">
                                     <div class="card-header d-flex align-items-center">
                                         <h5 class="mb-0">Spratovi</h5>

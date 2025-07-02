@@ -16,7 +16,7 @@
                     <div class="page-header-content d-lg-flex">
                         <div class="d-flex">
                             <h4 class="page-title mb-0">
-                               Prostorije sa nepotpunim merenjem
+                                Prostorije sa izmenjenim frontovima
                             </h4>
                         </div>
                     </div>
@@ -36,7 +36,7 @@
                                 </div>
 {#                            {% endif %}#}
                         </div>
-                        <form method="get" action="{{ path('app_prostorije_check') }}" class="form-validate-jquery" novalidation="novalidation">
+                        <form method="get" action="{{ path('app_prostorije_plan') }}" class="form-validate-jquery" novalidation="novalidation">
                             <div class="card-body">
                                 <div class="col-lg-4">
                                     <div class="mb-3">
@@ -138,15 +138,15 @@
                                                             <i class="ph-gear"></i>
                                                         </a>
                                                         <div class="dropdown-menu dropdown-menu-end">
-                                                            {% if prostorija.isEdit %}
-                                                                <a href="{{ path('app_prostorija_admin', { id: prostorija.id}) }}" class="dropdown-item"><i class="ph-pencil me-2"></i> Admin izmena</a>
+                                                            {% if prostorija.isPlan %}
+                                                                <a href="{{ path('app_prostorija_plan', { id: prostorija.id }) }}"
+                                                                   class="dropdown-item"
+                                                                   onclick="return confirm('Da li ste sigurni da želite da označite ovu prostoriju da joj je izmenjen plan u projektu?');">
+                                                                    <i class="ph-bookmark-simple me-2"></i> Izmenjen
+                                                                </a>
                                                             {% endif %}
                                                             <a href="{{ path('app_prostorija_view', { id: prostorija.id}) }}" class="dropdown-item"><i class="ph-eye me-2"></i> Vidite</a>
-                                                            <a href="{{ path('app_prostorija_repeat', { id: prostorija.id }) }}"
-                                                               class="dropdown-item"
-                                                               onclick="return confirm('Da li ste sigurni da želite da označite ovu prostoriju za ponovno merenje?');">
-                                                                <i class="ph-repeat me-2"></i> Ponovite
-                                                            </a>
+
                                                         </div>
                                                     </div>
                                                 </td>

@@ -11,6 +11,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -35,6 +36,14 @@ class ProstorijaFormType extends AbstractType {
 
     $builder
       ->add('title')
+        ->add('povrs', NumberType::class, [
+            'required' => false,
+            'html5' => true,
+            'attr' => [
+                'min' => '0.01',
+                'step' => '0.01'
+            ],
+        ])
       ->add('description', TextareaType::class, [
         'required' => false,
       ])

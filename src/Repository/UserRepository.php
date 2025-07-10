@@ -1374,6 +1374,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       ->getQuery();
   }
 
+    public function getNoviZaposleni($startDate, $endDate): array {
+
+        return $this->createQueryBuilder('u')
+            ->where('u.created BETWEEN :startDate AND :endDate')
+            ->andWhere('u.isSuspended = 0')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getResult();
+
+    }
+
 
 
 //    /**

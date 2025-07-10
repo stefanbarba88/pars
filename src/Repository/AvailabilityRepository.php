@@ -1437,6 +1437,67 @@ class AvailabilityRepository extends ServiceEntityRepository {
 
   }
 
+    public function getDaysByUserMesecNemanja(User $user, $startDate, $endDate): array {
+
+        $praznik = 0;
+        $nedelja = 0;
+
+        $niz = [];
+        $dani = [];
+
+
+        $requests = $this->createQueryBuilder('c')
+            ->where('c.datum BETWEEN :startDate AND :endDate')
+            ->andWhere('c.User = :user')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+
+
+        foreach ($requests as $req) {
+            if ($req->getType() == AvailabilityData::PRISUTAN) {
+
+                if ($req->getTypeDay() == TipNeradnihDanaData::PRAZNIK) {
+                    $dani[] = $req->getDatum()->format('d.m.Y.') . ' - praznik';
+                    $praznik++;
+                }
+
+                if ($req->getTypeDay() == TipNeradnihDanaData::NEDELJA) {
+                    $dani[] = $req->getDatum()->format('d.m.Y.') . ' - nedelja';
+                    $nedelja++;
+                }
+                if ($req->getTypeDay() == TipNeradnihDanaData::NEDELJA_PRAZNIK) {
+                    $dani[] = $req->getDatum()->format('d.m.Y.') . ' - praznik i nedelja';
+                    $nedelja++;
+                    $praznik++;
+                }
+            }
+
+        }
+
+        return [ $dani, $praznik, $nedelja, $praznik + $nedelja];
+
+    }
+
+    public function getDaysNemanja(DateTimeImmutable $date): array {
+
+
+
+        $startDate = $date->setTime(0, 0);
+        $endDate = $date->setTime(23, 59);
+
+        return $this->createQueryBuilder('c')
+            ->where('c.datum BETWEEN :startDate AND :endDate')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getResult();
+
+
+    }
+
 //    /**
 //     * @return Availability[] Returns an array of Availability objects
 //     */

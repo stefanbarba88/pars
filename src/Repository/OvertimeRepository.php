@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Availability;
 use App\Entity\Overtime;
 use App\Entity\User;
 use DateTimeImmutable;
@@ -199,6 +200,65 @@ class OvertimeRepository extends ServiceEntityRepository {
     return [sprintf("%02d:%02d", $sati, $minuti), $overtimes];
 
   }
+
+
+    public function getOvertimeByUserMesecNemanja(User $user, $startDate, $endDate): array {
+
+        $sati = 0;
+        $minuti = 0;
+        $niz = [];
+        $projekti = [];
+        $overtimes = $this->createQueryBuilder('c')
+            ->where('c.status = :status')
+            ->andWhere('c.user = :user')
+            ->andWhere('c.datum BETWEEN :startDate AND :endDate')  // Dodajte uvjet za datum
+            ->setParameter('status', 1)
+            ->setParameter('user', $user)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getResult();
+
+//
+//
+//    $overtimes = $this->createQueryBuilder('c')
+//      ->where('c.status = :status')
+//      ->andWhere('c.user = :user')
+//      ->setParameter('status', 1)
+//      ->setParameter('user', $user)
+//      ->getQuery()
+//      ->getResult();
+
+        $overtime = [];
+        if (!empty($overtimes)) {
+            foreach ($overtimes as $over) {
+                $sati = $sati + ($over->getHours() * 60);
+                $minuti = $minuti + $over->getMinutes();
+
+                $ukupno1 = $over->getHours() * 60 + $over->getMinutes();
+                $sati1 = floor($ukupno1 / 60);
+                $minuti1 = $ukupno1 % 60;
+                $niz[] = sprintf("%02d:%02d", $sati1, $minuti1);
+                $projekti[] = [sprintf("%02d:%02d", $sati1, $minuti1) => $over->getTask()->getProject()->getTitle()];
+            }
+            $ukupno = $sati + $minuti;
+
+            $sati = floor($ukupno / 60);
+            $minuti = $ukupno % 60;
+
+            $overtime = [sprintf("%02d:%02d", $sati, $minuti), $niz, $projekti];
+        }
+
+
+        $days = $this->getEntityManager()->getRepository(Availability::class)->getDaysByUserMesecNemanja($user, $startDate, $endDate);
+
+        return [
+            'overtime' => $overtime,
+            'days' => $days,
+            'user' => $user->getFullName(),
+        ];
+
+    }
 
 //    /**
 //     * @return Overtime[] Returns an array of Overtime objects

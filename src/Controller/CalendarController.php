@@ -93,8 +93,6 @@ class CalendarController extends AbstractController {
       if ($form->isSubmitted() && $form->isValid()) {
 
 
-
-
         if ($calendar->getUser()->isEmpty()) {
           $data = $request->request->all();
           $user = $this->em->getRepository(User::class)->find($data['form']['zaposleni']);
@@ -112,11 +110,11 @@ class CalendarController extends AbstractController {
                 ->duration(5000)
                 ->dismissible(true)
                 ->addError(NotifyMessagesData::CALENDAR_ERROR);
-            return $this->redirectToRoute('app_employee_calendar_view', ['id' => $korisnik->getId()]);
+            return $this->redirectToRoute('app_employee_calendar_view', ['id' => $koris->getId()]);
         }
 
-        $this->em->getRepository(Calendar::class)->save($calendar);
-        $korisnik = $calendar->getUser()->first();
+        $calendar = $this->em->getRepository(Calendar::class)->save($calendar);
+        $koris = $calendar->getUser()->first();
         $mailService->calendar($calendar, $company->getEmail());
         if ($company->getId() == 1) {
           $mailService->calendar($calendar, 'marceta.pars@gmail.com');
@@ -129,8 +127,45 @@ class CalendarController extends AbstractController {
           ->dismissible(true)
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
         //ako je bolovanje
-        if ($calendar->getType() == 3) {
-          return $this->redirectToRoute('app_calendar_allow', ['id' => $calendar->getId()]);
+        if ($type == 3) {
+            $calendar->setStatus(2);
+
+            $start = $calendar->getStart();
+            $finish = $calendar->getFinish();
+            $datumi = [];
+            $current = clone $start;
+
+            while ($current <= $finish) {
+                $datumi[] = clone $current;
+                $current = $current->add(new DateInterval('P1D'));
+            }
+
+            foreach ($datumi as $datum) {
+                if ($datum->format('N') != 7) {
+                    $check = $this->em->getRepository(Availability::class)->findBy(['User' => $koris, 'datum' => $datum]);
+                    if (empty($check)) {
+                        $dostupnost = new Availability();
+                        $dostupnost->setDatum($datum);
+                        $dostupnost->setUser($koris);
+                        $dostupnost->setZahtev($calendar->getType());
+
+                        $dostupnost->setType(AvailabilityData::NEDOSTUPAN);
+
+                        if ($calendar->getPart() == 1) {
+                            $dostupnost->setType(AvailabilityData::IZASAO);
+                            $dostupnost->setVreme($calendar->getVreme());
+                        }
+                        $dostupnost->setCalendar($calendar->getId());
+                        $dostupnost->setCompany($calendar->getCompany());
+                        $this->em->getRepository(Availability::class)->save($dostupnost);
+                    }
+                }
+            }
+
+            $mailService->responseCalendar($calendar);
+
+            $this->em->getRepository(Calendar::class)->save($calendar);
+
         }
 
         return $this->redirectToRoute('app_employee_calendar_view', ['id' => $korisnik->getId()]);
@@ -182,7 +217,7 @@ class CalendarController extends AbstractController {
                   ->addError(NotifyMessagesData::CALENDAR_ERROR);
               return $this->redirectToRoute('app_calendar_list');
           }
-        $this->em->getRepository(Calendar::class)->save($calendar);
+          $calendar = $this->em->getRepository(Calendar::class)->save($calendar);
         $mailService->calendar($calendar, $company->getEmail());
         if ($company->getId() == 1) {
           $mailService->calendar($calendar, 'marceta.pars@gmail.com');
@@ -196,7 +231,7 @@ class CalendarController extends AbstractController {
           ->addSuccess(NotifyMessagesData::EDIT_SUCCESS);
 
         //ako je bolovanje
-        if ($calendar->getType() == 3) {
+        if ($type == 3) {
           return $this->redirectToRoute('app_calendar_allow', ['id' => $calendar->getId()]);
         }
 

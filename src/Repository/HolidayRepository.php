@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Classes\Data\CalendarColorsData;
 use App\Classes\Data\TipNeradnihDanaData;
+use App\Entity\Availability;
 use App\Entity\Company;
 use App\Entity\Holiday;
 use App\Entity\User;
@@ -462,6 +463,126 @@ class HolidayRepository extends ServiceEntityRepository {
     return $tip;
 
   }
+    public function neradniDaniNemanja($startDate, $endDate): array {
+
+        $dani = $this->createQueryBuilder('c')
+            ->where('c.datum BETWEEN :startDate AND :endDate')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getResult();
+
+        if (empty($dani)) {
+            return [];
+        }
+
+        $prisutnost = [];
+
+        foreach ($dani as $dan) {
+            $requests = $this->getEntityManager()->getRepository(Availability::class)->getDaysNemanja($dan->getDatum());
+
+            foreach ($requests as $request) {
+                $prisutnost[$request->getDatum()->format('d.m.Y.')][] = $request->getUser()->getFullName();
+            }
+        }
+
+        if (empty($prisutnost)) {
+            return [];
+        }
+
+        $maxLength = 0;
+        $pattern = [];
+
+        foreach ($prisutnost as $dan => $imena) {
+            if (count($imena) > $maxLength) {
+                $maxLength = count($imena);
+                $pattern = $imena;
+            }
+        }
+
+        sort($pattern, SORT_FLAG_CASE | SORT_STRING);
+
+        $final = [];
+
+        foreach ($prisutnost as $dan => $imena) {
+            $imenaMapa = array_flip($imena);
+
+            $noviNiz = [];
+            foreach ($pattern as $ime) {
+                $noviNiz[] = isset($imenaMapa[$ime]) ? $ime : '';
+            }
+
+            $final[$dan] = $noviNiz;
+        }
+
+        return $final;
+    }
+
+//    public function neradniDaniNemanja($startDate, $endDate): array {
+//
+//        $dani =  $this->createQueryBuilder('c')
+//            ->where('c.datum BETWEEN :startDate AND :endDate')
+//            ->setParameter('startDate', $startDate)
+//            ->setParameter('endDate', $endDate)
+//            ->getQuery()
+//            ->getResult();
+//
+//        $prisutnost = [];
+//
+//        if (!empty($dani)) {
+//            foreach ($dani as $dan) {
+//
+//                $requests = $this->getEntityManager()->getRepository(Availability::class)->getDaysNemanja($dan->getDatum());
+//
+//                foreach ($requests as $request) {
+//
+//                    $prisutnost[$request->getDatum()->format('d.m.Y.')][] = $request->getUser()->getFullName();
+//
+//                }
+//
+//            }
+//        }
+//
+//        $maxLength = 0;
+//        $pattern = null;
+//
+//        foreach ($prisutnost as $dan => $imena) {
+//            if (count($imena) > $maxLength) {
+//                $maxLength = count($imena);
+//                $pattern = $imena;
+//            }
+//        }
+//
+//// Sortiramo šablon po abecedi uzlazno
+//        sort($pattern, SORT_FLAG_CASE | SORT_STRING);
+//
+//// 2. Sada treba da za svaki ostali niz kreiramo novi niz sa istim redosledom kao u $pattern
+//        $final = [];
+//
+//        foreach ($prisutnost as $dan => $imena) {
+//            // Napravimo mapu trenutnog niza za brzu proveru
+//            $imenaMapa = array_flip($imena);
+//
+//            $noviNiz = [];
+//            foreach ($pattern as $ime) {
+//                if (isset($imenaMapa[$ime])) {
+//                    $noviNiz[] = $ime;
+//                } else {
+//                    $noviNiz[] = '';
+//                }
+//            }
+//            $final[$dan] = $noviNiz;
+//        }
+//
+//// Sada su svi nizovi iste dužine i u istom redosledu kao $pattern
+//// Možeš koristiti $final kako želiš
+//
+//
+//
+//
+//        return $final;
+//
+//    }
 
 //    /**
 //     * @return Holiday[] Returns an array of Holiday objects

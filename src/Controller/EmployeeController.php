@@ -44,6 +44,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Knp\Snappy\Pdf;
 use Exception;
 use Knp\Component\Pager\PaginatorInterface;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -1849,7 +1850,6 @@ class EmployeeController extends AbstractController {
         $args['type'] = 1;
         return $this->render('report_employee/view_files.html.twig', $args);
     }
-
     #[Route('/pdf-reports-year', name: 'app_employee_reports_year_pdf')]
 //  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
     public function pdfReportsYear(PaginatorInterface $paginator, Request $request): Response {
@@ -1932,6 +1932,484 @@ class EmployeeController extends AbstractController {
 
 
         return $this->render('report_employee/view_files.html.twig', $args);
+    }
+    #[Route('/xls-reports', name: 'app_employee_reports_xls')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function xlsReports(PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $projectDir = $this->getParameter('kernel.project_dir');
+        $reportsPath = $projectDir . '/public/assets/user/';
+
+
+
+        if ($request->isMethod('POST')) {
+            $data = $request->request->all();
+            $args['period'] = $data['report_form']['period'];
+
+            list($start, $end) = explode(' - ', $args['period']);
+
+            $startDate = DateTimeImmutable::createFromFormat('d.m.Y', trim($start));
+            $endDate = DateTimeImmutable::createFromFormat('d.m.Y', trim($end));
+
+            $args['prviDan'] = $startDate->setTime(0, 0);
+            $args['poslednjiDan'] = $endDate->setTime(23, 59, 59);
+
+            $datum = new DateTimeImmutable();
+
+
+            header('Content-Type: application/openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . time() . '_' . date('m') . '.xls"');
+            header('Cache-Control: max-age=0');
+
+            $users = $this->em->getRepository(User::class)->findBy([
+                'isSuspended' => false,
+                'company' => 1,
+                'userType' => UserRolesData::ROLE_EMPLOYEE
+            ], ['prezime' => 'ASC']);
+
+            foreach ($users as $usr) {
+                $args['report'][] = $this->em->getRepository(Overtime::class)->getOvertimeByUserMesecNemanja($usr, $args['prviDan'], $args['poslednjiDan']);
+            }
+
+            $args['neradni'] = $this->em->getRepository(Holiday::class)->neradniDaniNemanja($args['prviDan'], $args['poslednjiDan']);
+
+
+            $args['novi'] = $this->em->getRepository(User::class)->getNoviZaposleni($args['prviDan'], $args['poslednjiDan']);
+
+
+            $spreadsheet = new Spreadsheet();
+
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
+            $sheet->getPageSetup()->setFitToWidth(1);
+            $sheet->getPageSetup()->setFitToHeight(0);
+            $sheet->getPageMargins()->setTop(1);
+            $sheet->getPageMargins()->setRight(0.75);
+            $sheet->getPageMargins()->setLeft(0.75);
+            $sheet->getPageMargins()->setBottom(1);
+
+            $styleBorder = [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                    ],
+                ],
+            ];
+
+
+
+            $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getColumnDimension('A')->setAutoSize(true);
+            $sheet->getColumnDimension('B')->setAutoSize(true);
+            $sheet->getColumnDimension('C')->setAutoSize(true);
+            $sheet->getColumnDimension('D')->setAutoSize(true);
+            $sheet->getColumnDimension('E')->setAutoSize(true);
+            $sheet->getColumnDimension('F')->setAutoSize(true);
+            $sheet->getColumnDimension('G')->setAutoSize(true);
+            $sheet->getColumnDimension('H')->setAutoSize(true);
+            $sheet->getColumnDimension('I')->setAutoSize(true);
+
+
+
+            $sheet->mergeCells('A1:E1');
+            $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A1')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            $sheet->setCellValue('A1', 'PREKOVREMENI SATI ' . $args['prviDan']->format('d.m.Y.') . ' - ' . $args['poslednjiDan']->format('d.m.Y.'));
+            $style = $sheet->getStyle('A1:E1');
+            $font = $style->getFont();
+            $font->setSize(18); // Postavite veličinu fonta na 14
+            $font->setBold(true); // Postavite font kao boldiran
+
+
+            $sheet->setCellValue('A2', 'Zaposleni');
+            $sheet->setCellValue('B2', 'Sati');
+            $sheet->setCellValue('C2', 'Dani');
+            $sheet->setCellValue('D2', 'Ukupno sati');
+            $sheet->setCellValue('E2', 'Ukupno dani');
+            $sheet->setCellValue('H2', 'Napomena sati');
+            $sheet->setCellValue('I2', 'Napomena dani');
+
+
+            $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+            $sheet->getStyle('B2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('B2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+            $sheet->getStyle('C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('C2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+            $sheet->getStyle('D2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('D2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+            $sheet->getStyle('E2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('E2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+            $sheet->getStyle('H2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('H2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+            $sheet->getStyle('I2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('I2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+
+
+            $font = $sheet->getStyle('A')->getFont();
+            $font->setSize(14); // Postavite veličinu fonta na 14
+            $font = $sheet->getStyle('B')->getFont();
+            $font->setSize(14); // Postavite veličinu fonta na 14
+            $font = $sheet->getStyle('C')->getFont();
+            $font->setSize(14); // Postavite veličinu fonta na 14
+            $font = $sheet->getStyle('D')->getFont();
+            $font->setSize(16); // Postavite veličinu fonta na 14
+            $font = $sheet->getStyle('E')->getFont();
+            $font->setSize(16); // Postavite veličinu fonta na 14
+            $font = $sheet->getStyle('H')->getFont();
+            $font->setSize(14); // Postavite veličinu fonta na 14
+            $font = $sheet->getStyle('I')->getFont();
+            $font->setSize(14); // Postavite veličinu fonta na 14
+
+            $start = 3;
+
+            foreach ($args['report'] as $item) {
+
+                if (!empty($item['overtime'])) {
+
+                    $niz = implode(' + ', $item['overtime'][1]);
+
+                    $sheet->setCellValue('B' . $start, $niz);
+
+                    $sheet->getStyle('B' . $start)->getAlignment()->setWrapText(true);
+                    $sheet->getStyle('B' . $start)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('B' . $start)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+                    $sheet->setCellValue('D' . $start, $item['overtime'][0]);
+
+                    $sheet->getStyle('D' . $start)->getAlignment()->setWrapText(true);
+                    $sheet->getStyle('D' . $start)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('D' . $start)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                    $font = $sheet->getStyle('D')->getFont();
+                    $font->setSize(16); // Postavite veličinu fonta na 14
+                    $font->setBold(true); // Postavite font kao boldiran
+
+                    $rezultat = '';
+                    $ukupno = count($item['overtime'][2]);
+
+                    foreach ($item['overtime'][2] as $i => $par) {
+                        foreach ($par as $vreme => $naziv) {
+                            $rezultat .= "$vreme - $naziv";
+                            if ($i < $ukupno - 1) {
+                                $rezultat .= "\n";
+                            }
+                        }
+                    }
+
+
+                    $sheet->setCellValue('H' . $start, $rezultat);
+
+                    $sheet->getStyle('H' . $start)->getAlignment()->setWrapText(true);
+                    $sheet->getStyle('H' . $start)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('H' . $start)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+                }
+                if ($item['days'][3] > 0) {
+
+                    $broj = count($item['days'][0]);
+                    $niz = implode(' + ', array_fill(0, $broj, '1'));
+
+
+                    $sheet->setCellValue('E' . $start, $item['days'][3]);
+
+                    $sheet->getStyle('E' . $start)->getAlignment()->setWrapText(true);
+                    $sheet->getStyle('E' . $start)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('E' . $start)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                    $font = $sheet->getStyle('E')->getFont();
+                    $font->setSize(16); // Postavite veličinu fonta na 14
+                    $font->setBold(true); // Postavite font kao boldiran
+
+
+                    $sheet->setCellValue('C' . $start, $niz);
+
+                    $sheet->getStyle('C' . $start)->getAlignment()->setWrapText(true);
+                    $sheet->getStyle('C' . $start)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('C' . $start)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+                    $rezultat = implode("\n", $item['days'][0]);
+
+                    $sheet->setCellValue('I' . $start, $rezultat);
+
+                    $sheet->getStyle('I' . $start)->getAlignment()->setWrapText(true);
+                    $sheet->getStyle('I' . $start)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('I' . $start)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                }
+
+                if (!empty($item['overtime']) || $item['days'][3] > 0) {
+                    $sheet->setCellValue('A' . $start, $item['user']);
+                    $sheet->getStyle('A' . $start)->getAlignment()->setWrapText(true);
+                    $sheet->getStyle('A' . $start)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('A' . $start)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                    $start++;
+                }
+            }
+
+            $sheet->getStyle("A2:E" . $start-1)->applyFromArray($styleBorder);
+
+            $sheet->getStyle("H2:I" . $start-1)->applyFromArray($styleBorder);
+
+            $start1 = $start + 4;
+
+
+            if (!empty($args['neradni'])) {
+
+                $colIndex = 1;
+                foreach ($args['neradni'] as $key => $item) {
+
+                    $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+
+                    $sheet->setCellValue($colLetter . $start1, $key);
+                    $sheet->getStyle($colLetter . $start1)->getAlignment()->setWrapText(true);
+                    $sheet->getStyle($colLetter . $start1)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle($colLetter . $start1)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+                    $colIndex++;
+                }
+                $sheet->mergeCells('A' . $start1 - 1 . ':' . $colLetter . $start1 - 1);
+                $sheet->getStyle('A' . $start1 - 1)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('A' . $start1 - 1)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                $sheet->setCellValue('A' . $start1 - 1, 'RAD NA NERADNI DAN');
+                $style = $sheet->getStyle('A' . $start1 - 1 . ':' . $colLetter . $start1);
+                $font = $style->getFont();
+                $font->setSize(14); // Postavite veličinu fonta na 14
+                $font->setBold(true); // Postavite font kao boldiran
+
+                $sheet->getStyle('A' . $start1 - 1 . ':' . $colLetter . $start1)->applyFromArray($styleBorder);
+                $sheet->getStyle('A' . $start1 - 1 . ':' . $colLetter . $start1)->getFill()->setFillType(Fill::FILL_SOLID);
+                $sheet->getStyle('A' . $start1 - 1 . ':' . $colLetter . $start1)->getFill()->getStartColor()->setRGB('CCCCCC');
+
+
+                $colIndex = 1;
+                foreach ($args['neradni'] as $value) {
+                    $start2 = $start1 + 1;
+                    foreach ($value as $item) {
+
+                        $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+
+                        $sheet->setCellValue($colLetter . $start2, $item);
+                        $sheet->getStyle($colLetter . $start2)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle($colLetter . $start2)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                        $sheet->getStyle($colLetter . $start2)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                        $sheet->getStyle($colLetter . $start2)->applyFromArray($styleBorder);
+                        $start2++;
+                    }
+                    $colIndex++;
+                }
+
+                $colIndex = $colIndex + 2;
+                $start3 = $start + 3;
+
+                if (!empty($args['novi'])) {
+
+                    $colLetter = "H";
+                    $colLetter1 = "I";
+
+                    $sheet->mergeCells($colLetter . $start3 . ':' . $colLetter1 . $start3);
+                    $sheet->getStyle($colLetter . $start3)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle($colLetter . $start3)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                    $sheet->setCellValue($colLetter . $start3, 'ZAPOSLILI SE U PERIODU ' . $args['prviDan']->format('d.m.Y.') . ' - ' . $args['poslednjiDan']->format('d.m.Y.'));
+                    $style = $sheet->getStyle($colLetter . $start3);
+                    $font = $style->getFont();
+                    $font->setSize(14); // Postavite veličinu fonta na 14
+                    $font->setBold(true); // Postavite font kao boldiran
+                    $sheet->getStyle($colLetter . $start3 . ':' . $colLetter1 . $start3)->applyFromArray($styleBorder);
+                    $sheet->getStyle($colLetter . $start3)->getFill()->setFillType(Fill::FILL_SOLID);
+                    $sheet->getStyle($colLetter . $start3)->getFill()->getStartColor()->setRGB('CCCCCC');
+
+                    $sheet->getStyle($colLetter . $start3 + 1)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle($colLetter . $start3 + 1)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                    $sheet->setCellValue($colLetter . $start3 + 1, 'Datum');
+                    $style = $sheet->getStyle($colLetter . $start3 + 1);
+                    $font = $style->getFont();
+                    $font->setSize(14); // Postavite veličinu fonta na 14
+                    $font->setBold(true); // Postavite font kao boldiran
+                    $sheet->getStyle($colLetter . $start3 + 1)->applyFromArray($styleBorder);
+                    $sheet->getStyle($colLetter . $start3 + 1)->getFill()->setFillType(Fill::FILL_SOLID);
+                    $sheet->getStyle($colLetter . $start3 + 1)->getFill()->getStartColor()->setRGB('CCCCCC');
+
+                    $sheet->getStyle($colLetter1 . $start3 + 1)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle($colLetter1 . $start3 + 1)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                    $sheet->setCellValue($colLetter1 . $start3 + 1, 'Zaposleni');
+                    $style = $sheet->getStyle($colLetter1 . $start3 + 1);
+                    $font = $style->getFont();
+                    $font->setSize(14); // Postavite veličinu fonta na 14
+                    $font->setBold(true); // Postavite font kao boldiran
+                    $sheet->getStyle($colLetter1 . $start3 + 1)->applyFromArray($styleBorder);
+                    $sheet->getStyle($colLetter1 . $start3 + 1)->getFill()->setFillType(Fill::FILL_SOLID);
+                    $sheet->getStyle($colLetter1 . $start3 + 1)->getFill()->getStartColor()->setRGB('CCCCCC');
+
+
+                    $start4 = $start3 + 2;
+
+                    foreach ($args['novi'] as $user) {
+
+                        $sheet->setCellValue($colLetter . $start4, $user->getCreated()->format('d.m.Y.'));
+                        $sheet->getStyle($colLetter . $start4)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle($colLetter . $start4)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                        $sheet->getStyle($colLetter . $start4)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                        $sheet->getStyle($colLetter . $start4)->applyFromArray($styleBorder);
+
+                        $sheet->setCellValue($colLetter1 . $start4, $user->getFullName());
+                        $sheet->getStyle($colLetter1 . $start4)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle($colLetter1 . $start4)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                        $sheet->getStyle($colLetter1 . $start4)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                        $sheet->getStyle($colLetter1 . $start4)->applyFromArray($styleBorder);
+
+                        $start4++;
+                    }
+
+                }
+
+            }
+
+            $sheet->getStyle('A1:E2')->getFill()->setFillType(Fill::FILL_SOLID);
+            $sheet->getStyle('A1:E2')->getFill()->getStartColor()->setRGB('CCCCCC');
+
+            $sheet->getStyle('H2:I2')->getFill()->setFillType(Fill::FILL_SOLID);
+            $sheet->getStyle('H2:I2')->getFill()->getStartColor()->setRGB('CCCCCC');
+
+            // Postavite font za opseg od A1 do M2
+            $style = $sheet->getStyle('A2:I2');
+            $font = $style->getFont();
+            $font->setSize(14); // Postavite veličinu fonta na 14
+            $font->setBold(true); // Postavite font kao boldiran
+
+
+
+            $sheet->setTitle("Izvestaj");
+
+            // Create your Office 2007 Excel (XLSX Format)
+            $writer = new Xls($spreadsheet);
+
+            // In this case, we want to write the file in the public directory
+//    $publicDirectory = $this->getParameter('kernel.project_dir') . '/var/excel';
+//    // e.g /var/www/project/public/my_first_excel_symfony4.xlsx
+//    $excelFilepath =  $publicDirectory . '/'.$user->getFullName() . '_'. $datum .'.xls';
+
+            // Create the file
+            $writer = new Xls($spreadsheet);
+            $writer->save('php://output');
+            return $this->render('report_employee/view_availability.html.twig', $args);
+
+        }
+
+
+
+        $args['users'] =  $this->em->getRepository(User::class)->findBy(['company' => $this->getUser()->getCompany(), 'userType' => UserRolesData::ROLE_EMPLOYEE, 'isSuspended' => false], ['prezime' => 'ASC']);
+
+
+        // Učitavamo sve foldere unutar $reportsPath
+        $folders = array_filter(scandir($reportsPath), function ($folder) use ($reportsPath) {
+            return $folder !== '.' && $folder !== '..' && is_dir($reportsPath . '/' . $folder);
+        });
+        $putanje = [];
+
+        foreach ($folders as $folder) {
+            $putanje[] = [
+                'ime' => $folder,
+                'putanja' => $reportsPath . $folder
+            ];
+        }
+
+        $args['folderi'] = $putanje;
+        $args['title'] = 'Godine';
+        $args['type'] = 1;
+        return $this->render('report_employee/view_files_xls.html.twig', $args);
+    }
+
+    #[Route('/xls-reports-year', name: 'app_employee_reports_year_xls')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function xlsReportsYear(PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $godina = (int)$request->query->get('year');
+
+        $projectDir = $this->getParameter('kernel.project_dir');
+        $reportsPath = $projectDir . '/public/assets/user/' . $godina;
+
+
+        // Učitavamo sve foldere unutar $reportsPath
+        $folders = array_filter(scandir($reportsPath), function ($folder) use ($reportsPath) {
+            return $folder !== '.' && $folder !== '..' && is_dir($reportsPath . '/' . $folder);
+        });
+        $putanje = [];
+
+        foreach ($folders as $folder) {
+            $putanje[] = [
+                'ime' => $folder,
+                'putanja' => $reportsPath . $folder
+            ];
+        }
+
+        $args['folderi'] = $putanje;
+        $args['title'] = $godina;
+        $args['type'] = 2;
+        return $this->render('report_employee/view_files_xls.html.twig', $args);
+    }
+
+    #[Route('/xls-reports-month', name: 'app_employee_reports_month_xls')]
+//  #[Security("is_granted('USER_VIEW', usr)", message: 'Nemas pristup', statusCode: 403)]
+    public function xlsReportsMonth(PaginatorInterface $paginator, Request $request): Response {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirect($this->generateUrl('app_login'));
+        }
+
+        $godina = $request->query->get('year', date('Y'));
+        $mesec = $request->query->get('month', date('m'));
+
+        $projectDir = $this->getParameter('kernel.project_dir');
+        $reportsPath = $projectDir . '/public/assets/user/' . $godina . '/' . $mesec;
+        $reportPath = 'assets/user/' . $godina . '/' . $mesec;
+
+        $pdfFiles = array_filter(scandir($reportsPath), function ($file) use ($reportsPath) {
+            return is_file($reportsPath . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'xls';
+        });
+
+//        dd($pdfFiles);
+//
+//        // Pravimo listu fajlova sa ID-jem
+//        $pdfReports = [];
+//        foreach ($pdfFiles as $file) {
+//            $parts = explode('_', $file);
+//            if (isset($parts[0]) && is_numeric($parts[0])) {
+//                $pdfReports[] = [
+//                    'id' => (int) $parts[0],
+//                    'file' => $file
+//                ];
+//            }
+//        }
+
+
+        $putanje = [];
+
+        foreach ($pdfFiles as $file) {
+            $putanje[] = [
+                'user' => '',
+                'putanja' => $reportPath . '/'. $file
+            ];
+        }
+
+        $args['folderi'] = $putanje;
+        $args['type'] = 3;
+        $args['title'] = $mesec;
+        $args['year'] = $godina;
+        $args['month'] = $mesec;
+
+
+        return $this->render('report_employee/view_files_xls.html.twig', $args);
     }
 
 

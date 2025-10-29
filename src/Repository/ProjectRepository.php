@@ -134,6 +134,25 @@ class ProjectRepository extends ServiceEntityRepository {
     return $qb;
   }
 
+  public function getAllProjectsToVerify($user): \Doctrine\ORM\QueryBuilder {
+
+    $qb = $this->createQueryBuilder('p');
+
+    $qb->andWhere('p.isSuspended = :suspended')
+      ->andWhere('p.company = :company')
+      ->andWhere('p.isApproved = :approved')
+      ->setParameter(':approved', true)
+      ->setParameter(':suspended', false)
+      ->setParameter(':company', $user->getCompany());
+
+    $qb
+      ->orderBy('p.isCreated', 'DESC')
+      ->addOrderBy('p.title', 'ASC')
+      ->getQuery();
+
+    return $qb;
+  }
+
 
 
 

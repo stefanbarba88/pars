@@ -6,6 +6,7 @@ use App\Classes\Data\NotifyMessagesData;
 use App\Classes\Data\UserRolesData;
 use App\Entity\Calendar;
 use App\Entity\Overtime;
+use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\User;
 use DateTimeImmutable;
@@ -16,6 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/overtimes')]
@@ -33,13 +35,25 @@ class OvertimeController extends AbstractController {
     }
     $args = [];
 
-    $holidays = $this->em->getRepository(Overtime::class)->getOvertimePaginator();
+    $search = [];
+    $search['zaposleni'] = $request->query->get('zaposleni');
+    $search['projekat'] = $request->query->get('project');
+    $search['period'] = $request->query->get('period');
+
+
+    $holidays = $this->em->getRepository(Overtime::class)->getOvertimePaginator($search);
 
     $pagination = $paginator->paginate(
       $holidays, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
       15
     );
+
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $this->getUser()->getCompany(), 'isSuspended' => false],['prezime' => 'ASC']);
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
 
     $args['pagination'] = $pagination;
     $mobileDetect = new MobileDetect();
@@ -59,14 +73,24 @@ class OvertimeController extends AbstractController {
       return $this->redirect($this->generateUrl('app_login'));
     }
     $args = [];
+      $search = [];
+      $search['zaposleni'] = $request->query->get('zaposleni');
+      $search['projekat'] = $request->query->get('project');
+      $search['period'] = $request->query->get('period');
 
-    $holidays = $this->em->getRepository(Overtime::class)->getOvertimeArchivePaginator();
+    $holidays = $this->em->getRepository(Overtime::class)->getOvertimeArchivePaginator($search);
 
     $pagination = $paginator->paginate(
       $holidays, /* query NOT result */
       $request->query->getInt('page', 1), /*page number*/
       15
     );
+
+    $args['users'] =  $this->em->getRepository(User::class)->findBy(['userType' => UserRolesData::ROLE_EMPLOYEE, 'company' => $this->getUser()->getCompany(), 'isSuspended' => false],['prezime' => 'ASC']);
+    $args['projects'] = $this->em->getRepository(Project::class)->findBy(['company' => $this->getUser()->getCompany(), 'isSuspended' => false], ['title' => 'ASC']);
+
+    $session = new Session();
+    $session->set('url', $request->getRequestUri());
 
     $args['pagination'] = $pagination;
     $mobileDetect = new MobileDetect();

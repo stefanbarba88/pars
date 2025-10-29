@@ -109,6 +109,23 @@
                                             </div>
                                         </div>
                                         <div class="row p-2 bg-light">
+                                            <div class="col-4">Odobrenje:</div>
+                                            <div class="col-8">
+                                                {% if project.isApproved %}
+                                                    Za ovaj projekat je potrebno svakodnevno odobrenje pri kreiranju zadataka.
+                                                {% else %}
+                                                    Za ovaj projekat nije potrebno odobrenje pri kreiranju zadataka.
+                                                {% endif %}
+                                                {% if project.isApproved %}
+                                                    {% if project.isCreated %}
+                                                        (trenutno je nije odobreno kreiranje zadataka)
+                                                    {% else %}
+                                                        (trenutno je odobreno kreiranje zadataka)
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="row p-2 ">
                                             <div class="col-4">Kreirao:</div>
                                             <div class="col-8">
                                                 {% if is_granted('ROLE_EMPLOYEE') %}

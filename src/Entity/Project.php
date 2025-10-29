@@ -59,6 +59,12 @@ class Project implements JsonSerializable {
   private bool $isSuspended = false;
 
   #[ORM\Column]
+  private bool $isApproved = false;
+
+  #[ORM\Column]
+  private bool $isCreated = false;
+
+  #[ORM\Column]
   private bool $isClientView = false;
 
   #[ORM\Column]
@@ -932,6 +938,24 @@ class Project implements JsonSerializable {
 
       return $this;
   }
+
+  public function isApproved(): bool {
+    return $this->isApproved;
+  }
+
+  public function setIsApproved(bool $isApproved): void {
+    $this->isApproved = $isApproved;
+  }
+
+  public function isCreated(): bool {
+    return $this->isCreated;
+  }
+
+  public function setIsCreated(bool $isCreated): void {
+    $this->isCreated = $isCreated;
+  }
+
+
 
 
 }

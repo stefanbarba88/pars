@@ -1815,6 +1815,45 @@ class TaskRepository extends ServiceEntityRepository {
         ];
     }
 
+    public function getUsersByDatePlato(DateTimeImmutable $date, $project, $project1): array  {
+
+        $startDate = $date->format('Y-m-d 00:00:00'); // Početak dana
+        $endDate = $date->format('Y-m-d 23:59:59'); // Kraj dana
+
+        $qb = $this->createQueryBuilder('t');
+        $qb
+            ->where($qb->expr()->between('t.datumKreiranja', ':start', ':end'))
+            ->andWhere('t.isDeleted <> 1')
+            ->andWhere('t.category = 5')
+            ->andWhere(
+                $qb->expr()->orX(
+                    't.project = :project',
+                    't.project = :project1'
+                )
+            )
+            ->setParameter('project', $project)
+            ->setParameter('project1', $project1)
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate);
+
+        $query = $qb->getQuery();
+        $taskovi = $query->getResult();
+        $lista = [];
+        $listaSign = [];
+        foreach ($taskovi as $tsk) {
+            foreach ($tsk->getAssignedUsers() as $user) {
+                if (!in_array($user, $lista)) {
+                    $lista[] = $user;
+                    $listaSign[] = $user->getId();
+                }
+            }
+        }
+        return [
+            'lista' => $lista,
+            'listaSign' => $listaSign,
+        ];
+    }
+
     public function sortTask(Task $task): int {
 
         if ($task->getProject()->getType() == 1) {

@@ -125,7 +125,7 @@ class NotifyMessagesData {
   public const ELABORAT_ADD = 'Uspešno ste kreirali/izmenili elaborat.';
   public const ELABORAT_DELETE = 'Uspešno ste obrisali elaborat.';
 
-
+  public const PROJECT_VERIFY_TASK = 'Odobrili ste kreiranje zadataka na projektu. Dozvola važi do narednog dana.';
   public const VERIFY_ACTIVITY_CHECKED = 'Prihvatili aktivnost.';
   public const VERIFY_ACTIVITY_UNCHECKED = 'Odbili ste aktivnost.';
   public const VERIFY_ACTIVITY_DELETE = 'Obrisali ste aktivnost.';

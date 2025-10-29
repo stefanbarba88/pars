@@ -76,6 +76,7 @@ class WidgetController extends AbstractController {
       $args['countProjectsMix'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'type' => TipProjektaData::KOMBINOVANO, 'company' => $loggedUser->getCompany()]);
       $args['countProjectsArchive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => true, 'company' => $loggedUser->getCompany()]);
       $args['countProjectsActive'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'company' => $loggedUser->getCompany()]);
+      $args['countProjectVerifyCheck'] = $this->em->getRepository(Project::class)->count(['isSuspended' => false, 'company' => $loggedUser->getCompany(), 'isCreated' => true]);;
 
       $args['countCalendarRequests'] = $this->em->getRepository(Calendar::class)->countCalendarRequests();
 

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Availability;
 use App\Entity\Overtime;
+use App\Entity\Project;
 use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -51,19 +52,141 @@ class OvertimeRepository extends ServiceEntityRepository {
     return $this->getEntityManager()->getRepository(Overtime::class)->find($id);
   }
 
-  public function getOvertimePaginator() {
-    $company = $this->security->getUser()->getCompany();
-    return $this->createQueryBuilder('c')
-      ->leftJoin('c.user', 'u') // Spajanje sa entitetom korisnika
-      ->leftJoin('c.task', 't')
-      ->where('c.status = :status')
-      ->andWhere('c.company = :company')
-      ->setParameter('company', $company)
-      ->setParameter('status', 0)
-      ->orderBy('c.datum', 'DESC')
-      ->addOrderBy('c.id', 'DESC')
-      ->getQuery();
-  }
+//  public function getOvertimePaginator() {
+//    $company = $this->security->getUser()->getCompany();
+//    return $this->createQueryBuilder('c')
+//      ->leftJoin('c.user', 'u') // Spajanje sa entitetom korisnika
+//      ->leftJoin('c.task', 't')
+//      ->where('c.status = :status')
+//      ->andWhere('c.company = :company')
+//      ->setParameter('company', $company)
+//      ->setParameter('status', 0)
+//      ->orderBy('c.datum', 'DESC')
+//      ->addOrderBy('c.id', 'DESC')
+//      ->getQuery();
+//  }
+
+    public function getOvertimePaginator($filter) {
+
+        $company = $this->security->getUser()->getCompany();
+        $qb = $this->createQueryBuilder('c');
+
+        $qb->leftJoin('c.user', 'u')
+            ->leftJoin('c.task', 't')
+            ->leftJoin('t.project', 'p') // Dodaje povezivanje sa 'projects' tabelom
+            ->where('c.status = :status')
+            ->andWhere('c.company = :company')
+            ->setParameter('company', $company)
+            ->setParameter('status', 0);
+
+        if (!empty($filter['projekat'])) {
+            $qb->andWhere('t.project = :project');
+            $qb->setParameter('project', $filter['projekat']);
+        }
+        if (!empty($filter['zaposleni'])) {
+            $qb->andWhere('c.user = :zaposleni');
+            $qb->setParameter('zaposleni', $filter['zaposleni']);
+        }
+        if (!empty($filter['period'])) {
+            $dates = explode(' - ', $filter['period']);
+
+            $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0])->setTime(0, 0, 0);
+            $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1])->setTime(23, 59, 59);
+
+            $qb->andWhere('c.datum BETWEEN :start_date AND :stop_date')
+                ->setParameter('start_date', $start)
+                ->setParameter('stop_date', $stop);
+        }
+
+        $qb->orderBy('c.datum', 'ASC')
+            ->getQuery();
+
+        return $qb;
+
+
+
+//        if (!empty($filter['project'])) {
+//            $qb->andWhere('t.project = :project');
+//            $qb->setParameter('project', $filter['project']);
+//        }
+//        if (!empty($filter['zaposleni'])) {
+//            $qb->andWhere('c.user = :zaposleni');
+//            $qb->setParameter('zaposleni', $filter['zaposleni']);
+//        }
+//        $company = $this->security->getUser()->getCompany();
+//        return $this->createQueryBuilder('c')
+//            ->leftJoin('c.user', 'u')
+//            ->leftJoin('c.task', 't')
+//            ->leftJoin('t.project', 'p') // Dodaje povezivanje sa 'projects' tabelom
+//            ->where('c.status = :status')
+//            ->andWhere('c.company = :company')
+//            ->setParameter('company', $company)
+//            ->setParameter('status', 0)
+//            ->orderBy('c.datum', 'DESC')
+//            ->addOrderBy('c.id', 'DESC')
+//            ->getQuery();
+    }
+
+    public function getOvertimeArchivePaginator($filter) {
+
+        $company = $this->security->getUser()->getCompany();
+        $qb = $this->createQueryBuilder('c');
+
+        $qb->leftJoin('c.user', 'u')
+            ->leftJoin('c.task', 't')
+            ->leftJoin('t.project', 'p') // Dodaje povezivanje sa 'projects' tabelom
+            ->where('c.status > :status')
+            ->andWhere('c.company = :company')
+            ->setParameter('company', $company)
+            ->setParameter('status', 0);
+
+        if (!empty($filter['projekat'])) {
+            $qb->andWhere('t.project = :project');
+            $qb->setParameter('project', $filter['projekat']);
+        }
+        if (!empty($filter['zaposleni'])) {
+            $qb->andWhere('c.user = :zaposleni');
+            $qb->setParameter('zaposleni', $filter['zaposleni']);
+        }
+        if (!empty($filter['period'])) {
+            $dates = explode(' - ', $filter['period']);
+
+            $start = DateTimeImmutable::createFromFormat('d.m.Y', $dates[0])->setTime(0, 0, 0);
+            $stop = DateTimeImmutable::createFromFormat('d.m.Y', $dates[1])->setTime(23, 59, 59);
+
+            $qb->andWhere('c.datum BETWEEN :start_date AND :stop_date')
+                ->setParameter('start_date', $start)
+                ->setParameter('stop_date', $stop);
+        }
+
+        $qb->orderBy('c.datum', 'ASC')
+            ->getQuery();
+
+        return $qb;
+
+
+
+//        if (!empty($filter['project'])) {
+//            $qb->andWhere('t.project = :project');
+//            $qb->setParameter('project', $filter['project']);
+//        }
+//        if (!empty($filter['zaposleni'])) {
+//            $qb->andWhere('c.user = :zaposleni');
+//            $qb->setParameter('zaposleni', $filter['zaposleni']);
+//        }
+//        $company = $this->security->getUser()->getCompany();
+//        return $this->createQueryBuilder('c')
+//            ->leftJoin('c.user', 'u')
+//            ->leftJoin('c.task', 't')
+//            ->leftJoin('t.project', 'p') // Dodaje povezivanje sa 'projects' tabelom
+//            ->where('c.status = :status')
+//            ->andWhere('c.company = :company')
+//            ->setParameter('company', $company)
+//            ->setParameter('status', 0)
+//            ->orderBy('c.datum', 'DESC')
+//            ->addOrderBy('c.id', 'DESC')
+//            ->getQuery();
+    }
 
     public function checkOvertime(User $user): array {
         $nowMinus30 = new \DateTime('-30 seconds');
@@ -76,22 +199,13 @@ class OvertimeRepository extends ServiceEntityRepository {
             ->getQuery()
             ->getResult();
     }
-
-//  public function getOvertimePaginator() {
-//    $company = $this->security->getUser()->getCompany();
-//    return $this->createQueryBuilder('c')
-//      ->where('c.status = :status')
-//      ->andWhere('c.company = :company')
-//      ->setParameter('company', $company)
-//      ->setParameter('status', 0)
-//      ->orderBy('c.datum', 'DESC')
-//      ->addOrderBy('c.id', 'DESC')
-//      ->getQuery();
-//  }
-
+//
+//
 //  public function getOvertimeArchivePaginator() {
 //    $company = $this->security->getUser()->getCompany();
 //    return $this->createQueryBuilder('c')
+//      ->leftJoin('c.user', 'u') // Spajanje sa entitetom korisnika
+//      ->leftJoin('c.task', 't')
 //      ->where('c.status > :status')
 //      ->andWhere('c.company = :company')
 //      ->setParameter('company', $company)
@@ -100,20 +214,6 @@ class OvertimeRepository extends ServiceEntityRepository {
 //      ->addOrderBy('c.id', 'DESC')
 //      ->getQuery();
 //  }
-
-  public function getOvertimeArchivePaginator() {
-    $company = $this->security->getUser()->getCompany();
-    return $this->createQueryBuilder('c')
-      ->leftJoin('c.user', 'u') // Spajanje sa entitetom korisnika
-      ->leftJoin('c.task', 't')
-      ->where('c.status > :status')
-      ->andWhere('c.company = :company')
-      ->setParameter('company', $company)
-      ->setParameter('status', 0)
-      ->orderBy('c.datum', 'DESC')
-      ->addOrderBy('c.id', 'DESC')
-      ->getQuery();
-  }
 
   public function getOvertimeByUser(User $user): string {
     $yearStart = new DateTimeImmutable(date('Y-01-01'));

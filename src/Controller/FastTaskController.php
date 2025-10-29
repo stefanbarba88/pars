@@ -137,9 +137,9 @@ class FastTaskController extends AbstractController {
     $args['drivers'] = $args['users'];
     $args['unavailableUsers'] = $this->em->getRepository(User::class)->getUsersUnvailable($datum);
     $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
-    $projects = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
-    $projectsS = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO]);
-    $projectsM = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::KOMBINOVANO]);
+    $projects = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE, 'isCreated' => false]);
+    $projectsS = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO, 'isCreated' => false]);
+    $projectsM = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::KOMBINOVANO, 'isCreated' => false]);
 
     $args['projects'] = array_merge($projects, $projectsM);
     $args['projectsS'] = array_merge($projectsS, $projectsM);
@@ -193,9 +193,9 @@ class FastTaskController extends AbstractController {
     $args['unavailableUsers'] = $this->em->getRepository(User::class)->getUsersUnvailable($fastTask->getDatum()->format('d.m.Y'));
 
     $args['activities'] = $this->em->getRepository(Activity::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany()]);
-    $projects = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE]);
-    $projectsS = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO]);
-    $projectsM = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::KOMBINOVANO]);
+    $projects = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::LETECE, 'isCreated' => false]);
+    $projectsS = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::FIKSNO, 'isCreated' => false]);
+    $projectsM = $this->em->getRepository(Project::class)->findBy(['isSuspended' => false, 'company' => $this->getUser()->getCompany(), 'type' => TipProjektaData::KOMBINOVANO, 'isCreated' => false]);
 
     $args['projects'] = array_merge($projects, $projectsM);
     $args['projectsS'] = array_merge($projectsS, $projectsM);

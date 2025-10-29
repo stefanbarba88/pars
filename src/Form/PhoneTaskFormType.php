@@ -60,6 +60,8 @@ class PhoneTaskFormType extends AbstractType {
               return $em->createQueryBuilder('g')
                 ->andWhere('g.isSuspended = :isSuspended')
                 ->andWhere('g.company = :company')
+                ->andWhere('g.isCreated = :isCreated')
+                ->setParameter(':isCreated', 0)
                 ->setParameter(':company', $company)
                 ->setParameter(':isSuspended', 0)
                 ->orderBy('g.title', 'ASC');
@@ -78,6 +80,8 @@ class PhoneTaskFormType extends AbstractType {
                 ->andWhere('g.isSuspended = :isSuspended')
                 ->andWhere('g.company = :company')
                 ->andWhere('g.type = :type')
+                ->andWhere('g.isCreated = :isCreated')
+                ->setParameter(':isCreated', 0)
                 ->setParameter(':company', $company)
                 ->setParameter(':isSuspended', 0)
                 ->setParameter(':type', $projectType)

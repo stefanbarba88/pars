@@ -269,12 +269,13 @@ class DailyReportService {
         $attachments = [];
 
         $project = $this->em->getRepository(Project::class)->find(152);
+        $project1 = $this->em->getRepository(Project::class)->find(247);
         $danas = new \DateTimeImmutable();
 
         $projectList = [];
         $usersList = [];
 
-        $users = $this->taskRepository->getUsersByDateExing($danas, $project);
+        $users = $this->taskRepository->getUsersByDatePlato($danas, $project, $project1);
 
 
         if (!empty($users['lista'])) {
@@ -380,6 +381,7 @@ class DailyReportService {
 
 
         $this->mail->reportsDailyPlato('marceta.pars@gmail.com', $project, $danas, $attachments, $projectList, $geoZ+$geoM);
+        $this->mail->reportsDailyPlato('marija.mitrovic@alfapreving.rs', $project, $danas, $attachments, $projectList, $geoZ+$geoM);
 
         // Briši fajlove
         foreach (glob($platoPath . '/*') as $file) {

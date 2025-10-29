@@ -105,6 +105,14 @@ class ProjectFormType extends AbstractType {
         'expanded' => false,
         'multiple' => false,
       ])
+      ->add('isApproved', ChoiceType::class, [
+        'attr' => [
+          'data-minimum-results-for-search' => 'Infinity',
+        ],
+        'choices' => PotvrdaData::form(),
+        'expanded' => false,
+        'multiple' => false,
+      ])
 //      ->add('isViewLog', ChoiceType::class, [
 //        'attr' => [
 //          'data-minimum-results-for-search' => 'Infinity',

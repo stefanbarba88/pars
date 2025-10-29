@@ -9,6 +9,7 @@ use App\Classes\Data\UserRolesData;
 use App\Entity\Image;
 use App\Entity\Overtime;
 use App\Entity\Pdf;
+use App\Entity\Project;
 use App\Entity\StopwatchTime;
 use App\Entity\TaskLog;
 use App\Entity\TimeTask;
@@ -822,6 +823,56 @@ class StopwatchController extends AbstractController {
     return $this->render('task/activities_to_check.html.twig', $args);
 
   }
+
+  #[Route('/list-verify-tasks/', name: 'app_stopwatch_verify_tasks_list')]
+  public function listVerifyTasks(PaginatorInterface $paginator, Request $request)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $args = [];
+    $user = $this->getUser();
+
+
+    $activities = $this->em->getRepository(Project::class)->getAllProjectsToVerify($user);
+
+    $pagination = $paginator->paginate(
+      $activities, /* query NOT result */
+      $request->query->getInt('page', 1), /*page number*/
+      15
+    );
+
+    $args['pagination'] = $pagination;
+
+    $mobileDetect = new MobileDetect();
+
+    if($mobileDetect->isMobile()) {
+      return $this->render('task/phone/projects_to_check.html.twig', $args);
+    }
+
+    return $this->render('task/projects_to_check.html.twig', $args);
+
+  }
+
+
+  #[Route('/check-verify-task/{id}', name: 'app_stopwatch_verify_task_check')]
+  public function checkVerifyTask(Project $project, MailService $mailService)    : Response {
+    if (!$this->isGranted('ROLE_USER')) {
+      return $this->redirect($this->generateUrl('app_login'));
+    }
+    $project->setIsCreated(false);
+    $message = NotifyMessagesData::PROJECT_VERIFY_TASK;
+    $this->em->getRepository(Project::class)->save($project);
+
+    notyf()
+      ->position('x', 'right')
+      ->position('y', 'top')
+      ->duration(5000)
+      ->dismissible(true)
+      ->addSuccess($message);
+
+    return $this->redirectToRoute('app_stopwatch_verify_tasks_list');
+  }
+
 
   #[Route('/check-verify-activity/{id}', name: 'app_stopwatch_verify_activity_check')]
   public function checkVerifyActivity(VerifyActivity $verifyActivity, MailService $mailService)    : Response {

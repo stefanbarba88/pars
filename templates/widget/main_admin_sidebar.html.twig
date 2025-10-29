@@ -87,6 +87,7 @@
                             <span>Prijemi za potvrdu</span>
                         </a>
                     </li>
+
                     <li class="nav-item">
                         <a href="{{ path('app_signatures') }}" class="nav-link {{ current_route == 'app_signatures' ? 'active' : '' }}">
                             <i class="ph-thumbs-up"></i>
@@ -631,17 +632,25 @@
                         </a>
                     </li>
 
-                    <li class="nav-item nav-item-submenu {{ current_route starts with 'app_' and current_route matches '/app_(stopwatch_verify_activity_list|signatures|stopwatch_list)/' ? 'nav-item-open' : '' }}">
-                        <a href="#" class="nav-link {{ current_route starts with 'app_' and current_route matches '/app_(stopwatch_verify_activity_list|signatures|stopwatch_list)/' ? 'active' : '' }}">
+                    <li class="nav-item nav-item-submenu {{ current_route starts with 'app_' and current_route matches '/app_(stopwatch_verify_activity_list|signatures|stopwatch_list|app_stopwatch_verify_tasks_list)/' ? 'nav-item-open' : '' }}">
+                        <a href="#" class="nav-link {{ current_route starts with 'app_' and current_route matches '/app_(stopwatch_verify_activity_list|signatures|stopwatch_list|app_stopwatch_verify_tasks_list)/' ? 'active' : '' }}">
                             <i class="ph-archive-box"></i>
                             <span>Provere i dozvole</span>
                         </a>
-                        <ul class="nav-group-sub collapse {{ current_route starts with 'app_' and current_route matches '/app_(stopwatch_verify_activity_list|signatures|stopwatch_list)/' ? 'show' : '' }}">
+                        <ul class="nav-group-sub collapse {{ current_route starts with 'app_' and current_route matches '/app_(stopwatch_verify_activity_list|signatures|stopwatch_list|app_stopwatch_verify_tasks_list)/' ? 'show' : '' }}">
                             <li class="nav-item">
                                 <a href="{{ path('app_stopwatch_verify_activity_list') }}" class="nav-link {{ current_route == 'app_stopwatch_verify_activity_list' ? 'active' : '' }}">
                                     <span>Prijemi za potvrdu</span>
                                     {% if countVerifyCheck > 0 %}
                                         <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countVerifyCheck }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_stopwatch_verify_tasks_list') }}" class="nav-link {{ current_route == 'app_stopwatch_verify_tasks_list' ? 'active' : '' }}">
+                                    <span>Projekti za odobrenje</span>
+                                    {% if countProjectVerifyCheck > 0 %}
+                                        <span class="badge bg-yellow align-self-center rounded-pill ms-auto">{{ countProjectVerifyCheck }}</span>
                                     {% endif %}
                                 </a>
                             </li>

@@ -281,6 +281,10 @@ class ProjectController extends AbstractController {
 
 //        $test1 = $serializer->deserialize($test->getContent(), Project::class, 'json');
 
+              if ($project->isApproved()) {
+                $project->setIsCreated(true);
+              }
+
                 $this->em->getRepository(Project::class)->saveProject($project, $user, $history);
 
                 notyf()

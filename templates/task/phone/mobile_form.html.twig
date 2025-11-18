@@ -96,7 +96,7 @@
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             {{ form_label(form.oprema, 'Oprema:', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.oprema, {attr: { class: 'form-control' }}) }}
+                                            {{ form_widget(form.oprema, {attr: { class: 'form-control select' }}) }}
                                         </div>
                                     </div>
                                 </div>
@@ -217,7 +217,7 @@
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             {{ form_label(form.activity, 'Aktivnosti:', {'label_attr': {'class': 'form-label'}}) }}
-                                            {{ form_widget(form.activity, {attr: { class: 'form-control' }}) }}
+                                            {{ form_widget(form.activity, {attr: { class: 'form-control listbox-basic' }}) }}
                                         </div>
                                     </div>
                                 </div>
@@ -384,8 +384,7 @@
     <script src="{{ asset('assets/demo/pages/form_validation_library.js') }}"></script>
     <script src="{{ asset('assets/js/vendor/forms/inputs/dual_listbox.min.js') }}"></script>
     <script src="{{ asset('assets/demo/pages/form_dual_listboxes.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/editors/ckeditor/ckeditor_classic.js') }}"></script>
-    <script src="{{ asset('assets/demo/pages/editor_ckeditor_classic.js') }}"></script>
+
     {% if app.request.locale == 'sr-RS' %}
         <script type="text/javascript" src="{{ asset('assets/js/vendor/forms/validation/localization/messages_sr_lat.js') }}"></script>
     {% endif %}

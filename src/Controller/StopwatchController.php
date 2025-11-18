@@ -1050,9 +1050,9 @@ class StopwatchController extends AbstractController {
 
 
 
-    if ($mobileDetect->isMobile()) {
-      return $this->render('task/mobile_stopwatch_form_in_task.html.twig', $args);
-    }
+//    if ($mobileDetect->isMobile()) {
+//      return $this->render('task/mobile_stopwatch_form_in_task.html.twig', $args);
+//    }
 
     return $this->render('task/stopwatch_form_in_task.html.twig', $args);
   }

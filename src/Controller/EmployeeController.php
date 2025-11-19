@@ -975,7 +975,7 @@ class EmployeeController extends AbstractController {
                 $sheet->setCellValue('A1', $user->getFullName() . ': ' . $datum);
                 $style = $sheet->getStyle('A1:N1');
                 $font = $style->getFont();
-                $font->setSize(18); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font->setBold(true); // Postavite font kao boldiran
 
                 $sheet->mergeCells('A2:A3');
@@ -1052,33 +1052,33 @@ class EmployeeController extends AbstractController {
 
 
                 $font = $sheet->getStyle('A')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('B')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('C')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('D')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('E')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('F')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('G')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('H')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('I')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('J')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('K')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('L')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('M')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font = $sheet->getStyle('N')->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
 
                 $dani = [];
 
@@ -1192,21 +1192,21 @@ class EmployeeController extends AbstractController {
                         $sheet->getStyle('C' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
                         $sheet->getStyle('C' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
                         $font = $sheet->getStyle('C' . $startAktivnosti)->getFont();
-                        $font->setSize(18); // Postavite veličinu fonta na 14
+                       $font->setSize(18);; // Postavite veličinu fonta na 14
 
                         $sheet->setCellValue('D' . $startAktivnosti, $stopwatch['additionalDesc']);
                         $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setWrapText(true);
                         $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
                         $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
                         $font = $sheet->getStyle('D' . $startAktivnosti)->getFont();
-                        $font->setSize(18); // Postavite veličinu fonta na 14
+                       $font->setSize(18);; // Postavite veličinu fonta na 14
 
 //            $sheet->setCellValue('D' . $startAktivnosti, $stopwatch['additionalActivity']);
 //            $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setWrapText(true);
 //            $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 //            $sheet->getStyle('D' . $startAktivnosti)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 //            $font = $sheet->getStyle('D' . $startAktivnosti)->getFont();
-//            $font->setSize(14); // Postavite veličinu fonta na 14
+//           $font->setSize(18);; // Postavite veličinu fonta na 14
 
                         $sheet->setCellValue('F' . $startAktivnosti, $stopwatch['start']->format('H:i'));
                         $sheet->getStyle('F' . $startAktivnosti)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -1289,7 +1289,7 @@ class EmployeeController extends AbstractController {
                 // Postavite font za opseg od A1 do M2
                 $style = $sheet->getStyle('A2:N3');
                 $font = $style->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font->setBold(true); // Postavite font kao boldiran
 //      $sheet->getStyle('A4:M14')->applyFromArray($styleArray);
 //      $sheet->getStyle('A15:M16')->applyFromArray($styleArray);
@@ -2021,7 +2021,7 @@ class EmployeeController extends AbstractController {
             $sheet->setCellValue('A1', 'PREKOVREMENI SATI ' . $args['prviDan']->format('d.m.Y.') . ' - ' . $args['poslednjiDan']->format('d.m.Y.'));
             $style = $sheet->getStyle('A1:E1');
             $font = $style->getFont();
-            $font->setSize(18); // Postavite veličinu fonta na 14
+           $font->setSize(18);; // Postavite veličinu fonta na 14
             $font->setBold(true); // Postavite font kao boldiran
 
 
@@ -2058,19 +2058,19 @@ class EmployeeController extends AbstractController {
 
 
             $font = $sheet->getStyle('A')->getFont();
-            $font->setSize(14); // Postavite veličinu fonta na 14
+           $font->setSize(18);; // Postavite veličinu fonta na 14
             $font = $sheet->getStyle('B')->getFont();
-            $font->setSize(14); // Postavite veličinu fonta na 14
+           $font->setSize(18);; // Postavite veličinu fonta na 14
             $font = $sheet->getStyle('C')->getFont();
-            $font->setSize(14); // Postavite veličinu fonta na 14
+           $font->setSize(18);; // Postavite veličinu fonta na 14
             $font = $sheet->getStyle('D')->getFont();
-            $font->setSize(16); // Postavite veličinu fonta na 14
+           $font->setSize(18); // Postavite veličinu fonta na 14
             $font = $sheet->getStyle('E')->getFont();
-            $font->setSize(16); // Postavite veličinu fonta na 14
+           $font->setSize(18); // Postavite veličinu fonta na 14
             $font = $sheet->getStyle('H')->getFont();
-            $font->setSize(14); // Postavite veličinu fonta na 14
+           $font->setSize(18);; // Postavite veličinu fonta na 14
             $font = $sheet->getStyle('I')->getFont();
-            $font->setSize(14); // Postavite veličinu fonta na 14
+           $font->setSize(18);; // Postavite veličinu fonta na 14
 
             $start = 3;
 
@@ -2092,7 +2092,7 @@ class EmployeeController extends AbstractController {
                     $sheet->getStyle('D' . $start)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     $sheet->getStyle('D' . $start)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
                     $font = $sheet->getStyle('D')->getFont();
-                    $font->setSize(16); // Postavite veličinu fonta na 14
+                   $font->setSize(18); // Postavite veličinu fonta na 14
                     $font->setBold(true); // Postavite font kao boldiran
 
                     $rezultat = '';
@@ -2127,7 +2127,7 @@ class EmployeeController extends AbstractController {
                     $sheet->getStyle('E' . $start)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     $sheet->getStyle('E' . $start)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
                     $font = $sheet->getStyle('E')->getFont();
-                    $font->setSize(16); // Postavite veličinu fonta na 14
+                   $font->setSize(18); // Postavite veličinu fonta na 14
                     $font->setBold(true); // Postavite font kao boldiran
 
 
@@ -2182,7 +2182,7 @@ class EmployeeController extends AbstractController {
                 $sheet->setCellValue('A' . $start1 - 1, 'RAD NA NERADNI DAN');
                 $style = $sheet->getStyle('A' . $start1 - 1 . ':' . $colLetter . $start1);
                 $font = $style->getFont();
-                $font->setSize(14); // Postavite veličinu fonta na 14
+               $font->setSize(18);; // Postavite veličinu fonta na 14
                 $font->setBold(true); // Postavite font kao boldiran
 
                 $sheet->getStyle('A' . $start1 - 1 . ':' . $colLetter . $start1)->applyFromArray($styleBorder);
@@ -2221,7 +2221,7 @@ class EmployeeController extends AbstractController {
                     $sheet->setCellValue($colLetter . $start3, 'ZAPOSLILI SE U PERIODU ' . $args['prviDan']->format('d.m.Y.') . ' - ' . $args['poslednjiDan']->format('d.m.Y.'));
                     $style = $sheet->getStyle($colLetter . $start3);
                     $font = $style->getFont();
-                    $font->setSize(14); // Postavite veličinu fonta na 14
+                   $font->setSize(18);; // Postavite veličinu fonta na 14
                     $font->setBold(true); // Postavite font kao boldiran
                     $sheet->getStyle($colLetter . $start3 . ':' . $colLetter1 . $start3)->applyFromArray($styleBorder);
                     $sheet->getStyle($colLetter . $start3)->getFill()->setFillType(Fill::FILL_SOLID);
@@ -2232,7 +2232,7 @@ class EmployeeController extends AbstractController {
                     $sheet->setCellValue($colLetter . $start3 + 1, 'Datum');
                     $style = $sheet->getStyle($colLetter . $start3 + 1);
                     $font = $style->getFont();
-                    $font->setSize(14); // Postavite veličinu fonta na 14
+                   $font->setSize(18);; // Postavite veličinu fonta na 14
                     $font->setBold(true); // Postavite font kao boldiran
                     $sheet->getStyle($colLetter . $start3 + 1)->applyFromArray($styleBorder);
                     $sheet->getStyle($colLetter . $start3 + 1)->getFill()->setFillType(Fill::FILL_SOLID);
@@ -2243,7 +2243,7 @@ class EmployeeController extends AbstractController {
                     $sheet->setCellValue($colLetter1 . $start3 + 1, 'Zaposleni');
                     $style = $sheet->getStyle($colLetter1 . $start3 + 1);
                     $font = $style->getFont();
-                    $font->setSize(14); // Postavite veličinu fonta na 14
+                   $font->setSize(18);; // Postavite veličinu fonta na 14
                     $font->setBold(true); // Postavite font kao boldiran
                     $sheet->getStyle($colLetter1 . $start3 + 1)->applyFromArray($styleBorder);
                     $sheet->getStyle($colLetter1 . $start3 + 1)->getFill()->setFillType(Fill::FILL_SOLID);
@@ -2282,7 +2282,7 @@ class EmployeeController extends AbstractController {
             // Postavite font za opseg od A1 do M2
             $style = $sheet->getStyle('A2:I2');
             $font = $style->getFont();
-            $font->setSize(14); // Postavite veličinu fonta na 14
+           $font->setSize(18);; // Postavite veličinu fonta na 14
             $font->setBold(true); // Postavite font kao boldiran
 
 

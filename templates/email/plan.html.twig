@@ -126,6 +126,7 @@ a[x-apple-data-detectors] {
                                      <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Oprema</th>
                                      <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Vozilo</th>
                                      <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Vreme</th>
+                                     <th style="font-size: 12px; margin: 0; padding: 5px; border-color: #e2e8f0; border-style: solid; border-width: 1px 1px 2px;" align="left" valign="top">Napomena</th>
                                  </tr>
                                  </thead>
                                  <tbody>
@@ -178,9 +179,9 @@ a[x-apple-data-detectors] {
                                                      {% if task.vreme is not null %}
                                                          {{ task.vreme}}
                                                      {% endif %}</td>
-{#                                                 <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">#}
-{#                                                     {{ task['napomena'] }}#}
-{#                                                 </td>#}
+                                                 <td style="font-size: 12px; margin: 0; padding: 5px; border: 1px solid #e2e8f0;" align="left" valign="top">
+                                                     {{ task['napomena'] }}
+                                                 </td>
                                              </tr>
                                          {% endif %}
                                      {% endfor %}
